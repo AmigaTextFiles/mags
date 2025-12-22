@@ -1,0 +1,291 @@
+<html>
+ <head>
+  <title>Bochs</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique&nbsp;: Bochs </font>par&nbsp;<a href="mailto:niffo@free.fr">Nicolas&nbsp;Gressard</a></div><br><br><br>
+
+<div align="center"><img src="../gfx/bochs3.gif" title="" alt="Bochs 1" width="483" height="406"></div>
+<br><br>
+
+<font size="+1" color="#ccbb33">Introduction</font><br><br>
+
+Bochs (prononcez "Box") est un émulateur de PC complet, open-source et multi plate-forme écrit en C++.
+Il inclut l'émulation du processeur x86, des périphériques d'entrée/sortie courants ainsi qu'un BIOS maison.
+Actuellement, il peut émuler un 386, 486 et Pentium. Les systèmes d'exploitations supportés sont DOS, Windows 95,
+Windows NT4 et Linux. Presque toutes les plates-formes existantes disposent d'un portage de Bochs. Nous bénéficions
+sous MorphOS de la version 2.02 (porté par Sigbjørn Skjæret), c'est à dire la dernière version stable jusqu'à il y a
+peu puisqu'une version 2.1 stable vient de voir le jour il y a moins d'un mois sur le site officiel.<br><br>
+
+<font size="+1" color="#ccbb33">Pr&eacute;sentation</font><br><br>
+
+Vous pouvez t&eacute;l&eacute;charger cette version sur le FTP
+BetaTesteur-2 dans le r&eacute;pertoire "utils". L'archive est au
+format tar.bz2, il vous faudra donc les outils ad&eacute;quats pour la
+d&eacute;compacter. Le site officiel du projet est sur <a href="http://bochs.sourceforge.net/">http://bochs.sourceforge.net/</a>.<br>
+
+La grosse diff&eacute;rence de Bochs par rapport &agrave; certains de
+ses concurrents commerciaux comme VMWare r&eacute;side dans le fait
+qu'il &eacute;mule enti&egrave;rement chaque instruction du processeur
+x86 et n'utilise pas les instructions du processeur existant
+(contrairement &agrave; MacOnLinux par exemple). Ce type de
+fonctionnement a donc deux cons&eacute;quences directes&nbsp;:<br>
+
+<ul>
+<li>Bochs fonctionne sur les plates-formes dont le processeur n'est pas un x86.
+<li>Bochs est beaucoup plus lent que les &eacute;mulateurs qui n'&eacute;mulent pas le processeur (lapalissade&nbsp;?).
+</ul>
+<br>
+
+Dans la suite de cet article, nous allons voir pas &agrave; pas la
+configuration de l'&eacute;mulateur et l'installation du syst&egrave;me
+d'exploitation Windows 95 (TM) (R) (C) (X) (Z) (Q) (W).<br><br>
+
+<font size="+1" color="#ccbb33">Configuration de l'&eacute;mulateur</font><br><br>
+
+Il existe des GUI (interfaces graphiques) pour la configuration et
+l'utilisation de Bochs. Nous n'en utiliserons pas ici pour la simple et
+bonne raison que cela nous &eacute;loignerait de la compr&eacute;hension du
+programme original, d'autant plus qu'il n'est absolument pas difficile
+&agrave; utiliser. Rien ne vous emp&ecirc;che d'utiliser une GUI par la
+suite...<br>
+L'installation de Bochs se r&eacute;sume au d&eacute;compactage de
+l'archive et &agrave; la copie de la font VGA dans le r&eacute;pertoire
+syst&egrave;me "Fonts" (fichier "vga.font" et r&eacute;pertoire "vga").<br>
+
+La premi&egrave;re chose que nous allons faire est de cr&eacute;er un
+disque virtuel sous forme de fichier qui servira &agrave; Bochs de
+disque dur. Pour cela, il faut lancer, en ligne de commande,
+l'utilitaire "bximage". La premi&egrave;re question pos&eacute;e
+concerne le type d'image que l'on souhaite cr&eacute;er&nbsp;: disquette ou
+disque dur. Nous allons donc r&eacute;pondre "hd". Ensuite nous devons
+entrer la taille que devra faire le disque virtuel&nbsp;: 100 Mo suffiront
+pour l'installation de Windows 95 mais vous pouvez mettre plus.
+"bximage" affiche ensuite la g&eacute;om&eacute;trie du disque
+virtuel ainsi cr&eacute;&eacute;. Il convient de la noter soigneusement
+car il faudra par la suite en informer Bochs afin qu'il sache utiliser
+le disque virtuel. Si vous avez cr&eacute;&eacute; un disque de 100 Mo,
+la g&eacute;om&eacute;trie doit &ecirc;tre&nbsp;: <b>cyl&nbsp;: 203, heads&nbsp;: 16,
+sectors&nbsp;: 63</b>. La derni&egrave;re question &agrave; laquelle nous ayons
+&agrave; r&eacute;pondre est le nom de l'image. Entrez le nom que vous
+voulez attribuer au fichier image&nbsp;: par exemple "c.img".<br><br>
+
+Toute la configuration de Bochs se trouve dans le fichier ".bochsrc".
+C'est un fichier au format texte, enti&egrave;rement comment&eacute;,
+que vous pouvez ouvrir avec votre &eacute;diteur favori. Il est
+&eacute;galement possible de configurer Bochs &agrave; partir d'une
+arborescence de menus textuels accessibles lorsqu'on lance
+l'&eacute;mulateur, mais cette possibilit&eacute; me semble moins
+intuitive.<br>
+La plupart des p&eacute;riph&eacute;riques et fonctionnalit&eacute;s
+sont d&eacute;sactiv&eacute;s dans la configuration par d&eacute;faut.
+Voici donc le minimum de ce qu'il va falloir activer pour obtenir un PC
+virtuel qui fonctionne&nbsp;:<br><br>
+
+- D&eacute;commenter la ligne (supprimer le "#")&nbsp;: <b>floppya&nbsp;:
+1_44="boot.img", status=inserted</b>.<br>
+Cette ligne active l'&eacute;mulation du lecteur de disquette en
+utilisant "boot.img" comme image de disquette. Il n'est pas possible
+sous MorphOS d'utiliser un vrai lecteur de disquette.<br><br>
+
+- D&eacute;commenter la ligne&nbsp;: <b>ata0-master: type=disk, path="c.img",
+cylinders=4161, heads=16, spt=63</b>.<br>
+Cette ligne active l'&eacute;mulation du disque dur en utilisant
+"c.img" comme disque virtuel. Il faut la modifier de mani&egrave;re &agrave;
+faire appara&icirc;tre la bonne g&eacute;om&eacute;trie renvoy&eacute;e
+pr&eacute;c&eacute;demment par la commande "bximage".<br><br>
+
+- D&eacute;commenter la ligne&nbsp;: <b>ata0-slave: type=cdrom,
+path="ide.device 1", status=inserted.</b><br>
+Cette ligne active le lecteur de cédérom de votre Pegasos. Vous
+aurez peut-&ecirc;tre &agrave; ajuster le "ide.device 1" en fonction du
+num&eacute;ro de p&eacute;riph&eacute;rique qu'occupe votre lecteur de
+cédé sur les bus IDE (Lancez l'outil UnitControl de MorphOS pour savoir sur
+quelle unité votre cédérom se trouve).<br><br>
+
+- D&eacute;commenter la ligne&nbsp;: <b>boot: floppy</b>.<br>
+Cette ligne permet de choisir le p&eacute;riph&eacute;rique sur lequel
+Bochs va booter. Dans un premier temps nous allons devoir booter sur la
+disquette.<br><br>
+
+- Modifier la ligne <b>"fullscreen: enabled=1"</b> en <b>"fullscreen: enabled=0".</b><br>
+Ceci permet de travailler en mode fen&ecirc;tr&eacute;. C'est plus
+confortable, surtout lors de l'installation de Windows, car le mode
+plein &eacute;cran ne permet pas de g&eacute;rer correctement le
+changement intempestif de r&eacute;solution et l'affichage du DOS ne
+semble pas fonctionner correctement dans des r&eacute;solutions
+sup&eacute;rieures &agrave; 640x480.<br><br>
+
+Il est possible de jouer sur la vitesse d'affichage et
+d'&eacute;mulation avec les param&egrave;tres "vga_update_interval" et
+"ips". Une &eacute;mulation SoundBlaster existe dans Bochs, mais je ne pense
+pas qu'elle soit support&eacute;e dans la version MorphOS.<br><br>
+
+<font size="+1" color="#ccbb33">Installation de Windows 95</font><br><br>
+
+Le cédé de Windows 95 n'&eacute;tant pas bootable, la premi&egrave;re
+chose dont vous allez avoir besoin pour lancer l'installation est
+l'image d'une disquette bootable Windows 95. C'est en fait
+essentiellement une disquette DOS contant un pilote pour le lecteur de
+cédé (&ccedil;a vous rappelle l'installation de l'OS 3.5 ou 3.9&nbsp;?&nbsp;;). Il
+y a plusieurs solutions pour l'obtenir&nbsp;:<br>
+
+<ul>
+<li>Soudoyer un ami pour qu'il vous l'envoie par email, par exemple.
+<li>Rechercher activement sur le net...
+<li>Aller voir votre PC favori et utiliser l'utilitaire "rawwrite" (par exemple) pour g&eacute;n&eacute;rer
+l'image d'une disquette de boot Windows 95 bien r&eacute;elle.
+</ul>
+<br>
+
+Une fois cette image de disquette obtenue, nommez l&agrave; "boot.img"
+et placez l&agrave; dans le r&eacute;pertoire de Bochs. Mettez dors et
+d&eacute;j&agrave; le cédé de Windows 95 dans le lecteur de cédé, cela vous
+&eacute;vitera une longue attente ressemblant &agrave; un plantage lors
+du lancement de Bochs. Lancer l'&eacute;mulateur en tapant "Bochs" en
+ligne de commande. Un menu se pr&eacute;sente alors vous permettant
+d'effectuer diverses actions. Choisissez "5&nbsp;: Begin simulation". Si
+toutes les &eacute;tapes pr&eacute;c&eacute;dentes se sont bien
+d&eacute;roul&eacute;es (et si je n'ai rien oubli&eacute;), Bochs doit
+booter sur la disquette Windows 95. Apr&egrave;s quelques secondes,
+vous retrouvez l'invite de commande "A:\&gt;".<br><br>
+
+<div align="center"><img src="../gfx/bochs1.gif" title="" alt="Bochs" width="483" height="346"></div>
+<br><br>
+
+Il va maintenant falloir
+partitionner notre disque &agrave; l'aide de l'utilitaire DOS "fdisk".
+Tapez donc "fdisk" puis sur Entr&eacute;e.<br><br>
+
+- Un menu s'affiche dans lequel vous allez choisir "1 - Cr&eacute;er
+une partition DOS ou un lecteur logique DOS" (le pav&eacute;
+num&eacute;rique ne fonctionne pas).<br><br>
+
+- Dans le menu suivant, choisissez "1 - Cr&eacute;er une partition dos
+principale".<br><br>
+
+- A la question "Utiliser la taille maximale disponible&nbsp;?",
+r&eacute;pondez O (oui).<br><br>
+
+Pour que les modifications soient prises en compte, il va maintenant
+falloir rebooter. Le plus simple pour cela est d'utiliser l'ic&ocirc;ne
+de la barre d'outil de Bochs&nbsp;: "Reset". Comment &ccedil;a vous n'avez
+plus de souris&nbsp;? Ah oui, c'est vrai il faut la d&eacute;bloquer,
+parce que pour le moment elle est r&eacute;serv&eacute;e &agrave;
+Bochs, donc appuyez simultan&eacute;ment sur Left-CTRL + Left-SHIFT + Left-MOS
+(ou AMIGA, ou WIN). Il faut refaire la m&ecirc;me manipulation pour
+rendre la souris &agrave; Bochs. Une fois boot&eacute; &agrave;
+nouveau, il reste &agrave; formater la partition cr&eacute;&eacute;e.
+Sous DOS, tapez "format c:". Cette op&eacute;ration ne devrait pas
+prendre plus de 2 secondes car nous sommes sur un disque virtuel. Si
+votre disquette de boot contient bien un pilote de cédérom, vous devriez
+&agrave; pr&eacute;sent pourvoir y acc&eacute;der. Tapez la commande
+"d:", vous &ecirc;tes sur le cédé. Tapez ensuite "cd win95" pour entrer
+dans le r&eacute;pertoire d'installation et enfin "install" pour lancer
+l'installation.<br><br>
+
+<div align="center"><img src="../gfx/bochs2.gif" title="" alt="Bochs" width="483" height="382"></div>
+<br><br>
+
+A partir de cet instant l&agrave;, sur un Pegasos
+G3/600 il faut pr&eacute;voir une bonne heure pour l'installation
+compl&egrave;te de Windows 95. Suivez simplement les indications
+&agrave; l'&eacute;cran, et ne vous inqui&eacute;tez pas trop vite si
+l'installation semble fig&eacute;e &agrave; certains moment.<br><br>
+
+Une fois l'installation termin&eacute;e Windows va vous inviter
+&agrave; rebooter. A ce moment l&agrave;, &eacute;teignez Bochs (avec
+la barre d'outils par exemple&nbsp;: "Power"). Il faut maintenant modifier le fichier
+de configuration ".bochsrc" afin de lui dire de d&eacute;sormais booter
+sur le disque dur. Pour cela, recommentez la ligne <b>"boot: floppy"</b>
+(ajoutez un "#" devant) et d&eacute;commentez la ligne <b>"boot: disk"</b>.
+Relancez Bochs et admirez le travail&nbsp;:).<br><br>
+
+<font size="+1" color="#ccbb33">La barre d'ic&ocirc;nes de Bochs</font><br><br>
+
+<div align="center">
+<img src="../gfx/bochs4.gif" title="" alt="Bochs" width="458" height="32">
+</div><br><br>
+
+Voici les ic&ocirc;nes que vous retrouverez en haut de la fen&ecirc;tre
+de Bochs. Les deux ic&ocirc;nes repr&eacute;sentant une disquette
+permettent de savoir si les lecteurs "A" et "B" sont activ&eacute;s et
+si une image disque y est associ&eacute;e. La troisi&egrave;me
+ic&ocirc;ne repr&eacute;sentant un cédé permet de savoir si le lecteur de
+cédérom est activ&eacute; et si un cédé y est pr&eacute;sent. La
+quatri&egrave;me ic&ocirc;ne permet de conna&icirc;tre l'&eacute;tat de
+"capture" de la souris. Lorsque la souris n'est plus attribu&eacute;e
+&agrave; Bochs (Left-CTRL + Left-SHIFT + Left-MOS), vous pouvez
+&eacute;galement la lui r&eacute;attribuer en cliquant sur cette
+ic&ocirc;ne.<br>
+Les ic&ocirc;nes "copy" et "paste" sont visiblement sans effet dans la
+version MOS de Bochs. Elles sont cens&eacute;es permettre l'interaction
+entre le presse papier du syst&egrave;me &eacute;mul&eacute; et celui
+du syst&egrave;me h&ocirc;te. L'ic&ocirc;ne "snapshot" permet de faire
+une capture du texte de l'&eacute;cran lorsque l'&eacute;mulateur se
+trouve dans un mode texte (DOS par exemple) dans un fichier
+nomm&eacute; "snapshot.txt". L'ic&ocirc;ne "config" g&egrave;le
+l'&eacute;mulation et affiche un menu sur la ligne de commande
+permettant d'intervenir sur les p&eacute;riph&eacute;riques un peu
+&agrave; la mani&egrave;re de UAE. Il vous est alors possible par
+exemple de changer l'image disque d'un lecteur de disquette et encore
+de modifier la valeur de rafra&icirc;chissement de l'affichage. Une des
+options du menu permet de revenir &agrave; l'&eacute;mulation.
+L'ic&ocirc;ne "reset" porte bien son nom ;), et l'ic&ocirc;ne "power"
+permet d'&eacute;teindre le PC virtuel.<br><br>
+
+<font size="+1" color="#ccbb33">Conclusion</font><br><br>
+
+Bochs, bien qu'assez lent, s'est montr&eacute; extr&ecirc;mement
+stable au cours de ce test et aucun plantage n'a &eacute;t&eacute;
+&agrave; d&eacute;plorer. Ce genre d'&eacute;mulateur peut &ecirc;tre
+tr&egrave;s utile, non pas pour travailler car trop lent, mais pour
+nous mettre &agrave; disposition un processeur x86 dans le cadre de
+tests voire de portage d'applications. Il reste tr&egrave;s
+utilisable sous DOS ou sous Linux en ligne de commande sur un Pegasos
+G3/600. Sur un Pegasos II G4/1 GHz, il devrait &ecirc;tre &agrave; peu
+pr&egrave;s deux fois plus rapide et je vais m'empresser de
+r&eacute;quisitionner celui de Mahen pour faire l'essai&nbsp;;). (&agrave;
+moins que le mien ne me soit livr&eacute; un jour&nbsp;!?).<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

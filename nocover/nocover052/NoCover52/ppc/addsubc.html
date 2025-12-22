@@ -1,0 +1,55 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="addsub.html">PREV</a> | <a href="addsubusec.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Add/Sub with Carry </b>
+
+Note: For Add's the Carry is used as Carry-Bit. For Subs, the mechanism is not
+the same like for 68k (Borrow-Bit). The mechanism with Borrow-Handling was not
+described correctly in earlier versions of this document, so be careful !!!
+
+What really happens, is, that, if a Subtract Command would set the Borrow Bit
+on the *68k*, the *PPC* sets the Carry Bit to the *inverted Borrow Bit*. This is
+done in this way, as the PPC implements a subtraction as a negative addition,
+while the 68k has real subtraction commands.
+
+Example for using the Carry/Borrow with 64 Bit Numbers in two registers:
+
+subfc   r5,r4,r5
+subfe   r7,r6,r7      ;64-Bit-Number (r7:r5) - 64-Bit-Number (r6:r4)
+
+Now as to the command list for Add/Sub with Carry:
+
+addic  Rt,Ra,SI
+
+Rt=Ra+SI, Carry will be set correctly, SI is a unsigned 16 Bit Integer.
+
+subic  Rt,Ra,SI
+
+Rt=Ra-SI, Carry will be set correctly, SI is a unsigned 16 Bit Integer.
+
+subfic Rt,Ra,SI
+
+Rt=SI-Ra, Carry will be set correctly, SI is a signed 16 Bit Integer.
+
+addic and subic support the . Notation, like outlined in <a href="imp.html">Important things</a>,
+but not the o notation. subfic supports none of the two.
+
+addc   Rt,Ra,Rb
+subfc  Rt,Ra,Rb
+subc   Rt,Ra,Rb
+
+These commands work similar to the above three commands, only that the third
+parameter is not an Integer, but a register also. They support both the . and
+the o Notation.
+
+</pre>
+</body>
+</html>

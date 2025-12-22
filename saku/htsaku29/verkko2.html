@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><TITLE>Käyttökokemuksia kiinteästä Internet-yhteydestä</TITLE></HEAD>
+<BODY>
+
+ <HR>
+ <B>Käyttökokemuksia kiinteästä Internet-yhteydestä</B><BR>
+ <I>Janne Pikkarainen</I>
+ <HR>
+
+ <P>
+Viime Sakussa kerroin asuinalueelleni tulleesta kiinteästä
+Internet-yhteydestä ja siitä, miten liitin A1200:ni verkkoon
+PCMCIA-verkkokortin avulla. Kerron nyt verkon käyttökokemuksista ja
+tapahtuneista muutoksista.
+ </P>
+
+ <P>
+Sinnittelimme toukokuuhun saakka 64-kilobittisellä yhteydellä, joka kaiken
+lisäksi tahmasi, pätki ja hidasteli. Ulkomaankaistakin oli niin ahdas,
+ettei sinne meinannut millään päästä. Kun vielä ulkomaanyhteyksistä
+veloitettiin erillistä maksuakin, päätimme vaihtaa verkko-operaattoria.
+ </P>
+
+ <P>
+Toukokuun alussa saimmekin Telialta 256-kilobittisen yhteyden, jolla kelpaa
+surffata. Yhteys ei ole vielä kertaakaan tahmannut, data liikkuu
+kaksisuuntaisesti 30 kilotavua sekunnissa. Pahimmillaankin siirto on
+hidastunut 15 kilotavun sekuntivauhdin tasolle, joka vastaa suunnilleen
+kaksikaistaista ISDN:ää. Ruokahalu kasvaa syödessä, tällä hetkellä
+suunnitelmissa on jo 2 Mbit/s -yhteys, joka toteutuu heti kun saamme lisää
+osakkaita verkkoon.
+ </P>
+
+ <P>
+Kokeilevana eksperimentalistina olen toki tehnyt yhteydellä kaikenlaista.
+JPnet on saanut täysin uutta pontta oman FTP-palvelimen, telnet-linjojen,
+WWW-sivujen, AmiComSys-palvelimen ja muiden uudistusten johdosta. Kaiken
+asentaminen ei ole aina onnistunut kertaheitolla, mutta yleensä ottaen
+uudet palvelut asentuvat yllättävänkin helposti.
+ </P>
+
+ <P>
+Haastavampi homma olikin sitten asentaa Linux toiselle kiintolevylleni.
+Päädyin Debianiin ja päätin kokeilla, miten sen asentaminen sujuu
+ensikertalaiselta. Hain <A HREF="ftp://ftp.debian.org">ftp.debian.org</A>ista
+itselleni Linuxin perusasennuspaketin (Amiga-install.lha ja base-xx.tgz).
+Amiga-installin purettuani ja asennusdokumentin printattuani painoin
+jännityksellä "Amiga Install" -ikonia. Ja kas, hetken konettani tutkittuaan
+Linux valtasikin koko koneen haltuunsa. Eteen ilmestyi asennusruutu.
+ </P>
+
+ <P>
+Alku aina helppoa. Asennusohjelma kyseli näytön tyyppiä,
+näppäimistökarttaa, pakettien sijaintia, asennustyyppiä, aikavyöhykettä ja
+vastaavaa. Ensimmäisellä kerralla verkkokorttiajurit jäivät kuitenkin
+asentamatta, kun en vielä tiennyt oman verkkokorttiajurini tyypin olevan
+"apne". Ohjeidenlukusession jälkeen tämäkin selvisi.
+ </P>
+
+ <P>
+Seuraavaksi asennusohjelma kysyi, mitä kaikkea haluan asentaa. Uhrasin
+Linuxille parin gigatavun partition, joten täysi asennus sallittakoon. Nyt
+edessä oli asennusmedian valinta. Minullahan ei Linux-CD:tä tai vastaavaa
+ollut, joten jouduin asentamaan Linuxin suoraan verkon yli. Valitsin
+asennustyypiksi "FTP" ja annoin installerin jatkaa omaa elämäänsä.
+ </P>
+
+ <P>
+Kas, nyt päästiin jo käyttäjiä luomaan. Tein root- ja muut tunnukset ja
+jatkoin eteenpäin. Ensimmäisellä yrittämällä komento dselect
+(asennuspakettien noutaminen & asentaminen) ei toiminut, sillä yhteyttä
+FTP-palvelimelle ei saatu. Niinpä tietysti. Kerneliin oli asennettu kyllä
+apnen ajurit, mutta muuten kone ei vielä tiennyt siitä. Näinpä edessä oli
+ifconfigilla ja routella leikkiminen:
+ </P>
+
+ <P>
+ifconfig eth0 62.236.120.129 broadcast 62.236.120.255 netmask 255.255.255.0<BR>
+route add -net 62.236.120.0<BR>
+route add -net 62.236.120.1<BR>
+route add -net 62.236.120.2<BR>
+route add default gw 62.236.120.1
+ </P>
+
+ <P>
+Ylläolevankin olisi ehkä voinut tehdä vähemmällä, mutta ensikertalaisena
+otin varman päälle. Johan alkoi lyyti kirjoittaa, dselect pääsi
+FTP-palvelimelle. Noin neljän tunnin ja reilun 400 megatavun
+imuroimistuokion jälkeen kaikki paketit olivat saapuneet. Asennusohjelma
+jatkoi automaattisesti ohjelmien asennusta ja configuroimista. Yllättävän
+helpostihan tämä tuntuu sujuvan, luulin etukäteen että minun tulisi itse
+purkaa ja asentaa paketit.
+ </P>
+
+ <P>
+Asentamisen jälkeen edessä oli tuttu Linuxin shell-prompti. Aikani
+tekstipohjaisilla ohjelmilla leikittyäni päätin kokeilla, toimiiko X ja jos
+toimii, miten nopeasti. Gosh. Ensimmäisellä yrityksellä X ei saanut näyttöä
+avattua. Onneksi hakemistosta /usr/doc/X11R6/ löytyi pelastava
+esimerkkitiedosto XF86Config, jonka kopioiminen hakemistoon /etc/X11
+auttoi. Tuostakin tosin piti käydä muuttamassa hiiren tyypiksi /dev/mousen
+tilalle /dev/amigamouse.
+ </P>
+
+ <P>
+No nih, X käynnistyi. Sääli kyllä, näyttötila oli rupuinen 640x480. Eihän
+sellaista kukaan voi käyttää, joten äkkiä pois painamalla
+Ctrl-Alt-Backspace ja /etc/X11/XF86Configin modelinejä muokkaamaan.
+m68k-Linuxin FAQ-sivuilta löytyi onneksi pelastava rivi, jolla sain
+832x600-tilan toimimaan kuten pitääkin. Valitettavasti X vain on aivan
+liian hidas AGA-koneessa, jos värejä iskee enemmän kuin 16 kappaletta. Edes
+68060-prosessori ei auta asiaa, joten näytönohjain on enemmän kuin
+paikallaan.
+ </P>
+
+ <P>
+Muutoin Linux toimii aivan kuten sen pitääkin. Tähän asti se on tuntunut
+erittäin vakaalta, ja jos minulla olisi toinen kone, tekisin siitä
+WWW-palvelimen ja jotain muutakin. Normaalikäytössä AmigaOS on minulle
+edelleenkin se luontevin vaihtoehto, sillä se on huomattavasti
+yksinkertaisemmin muokattavissa ja peruskäytössä tuntumaltaan paras. Kuten
+ylläolevasta huomaatte, Linux ei ole maailman yksinkertaisin asennettava
+tai muokattava, jos Unix-kokemus uupuu. Kokeilemisen arvoinen se
+ehdottomasti on, sillä onhan sille paljon mukavaa ohjelmistoa ja se on
+erittäin vakaa.
+ </P>
+
+ <P>
+Lisätietoja:
+ </P>
+
+ <P>
+<A HREF="http://kannu.hai.fi">http://kannu.hai.fi</A><BR>
+<A HREF="http://wea2.hai.fi">http://wea2.hai.fi</A><BR>
+<A HREF="http://www.linux-m68k.org">http://www.linux-m68k.org</A><BR>
+<A HREF="http://www.debian.org">http://www.debian.org</A><BR>
+ </P>
+
+</BODY>
+</HTML>

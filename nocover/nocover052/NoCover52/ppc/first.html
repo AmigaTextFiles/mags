@@ -1,0 +1,50 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="ext.html">PREV</a> | <a href="imp.html">NEXT</a>
+<hr>
+<pre>
+
+<b> A First Program </b>
+
+Create the following file named first.p :
+
+    include &quot;stormc:include/powerpc/ppcmacros.i&quot;
+    executable
+start:
+    prolog
+    liw     r3,$1000000
+    mtctr   r3
+.loop
+    bdnz    .loop
+    epilog
+
+You see, PPC programs look like that:
+
+    1. The Pseudo-Opcode executable
+    2. The Pseudo-Opcode prolog
+    3. The Main Program
+    4. The Pseudo-Opcode epilog
+
+prolog builds a &quot;Stack Frame&quot;, epilog removes it again (The PPC always needs
+a correctly initialized Stackpointer !!!) If your programs use Subfunctions,
+then you even migh need multiple &quot;prolog&quot; and &quot;epilog&quot; macros. I will come
+to this later. ppcmacros.i defines (among others) prolog and epilog.
+
+To ASM it, you type (in the CLI) : powerasm first.p to first
+
+Then start it. Well, it does not do anything really great.
+
+When you understood how you have to build a PPC ASM program, i suggest you
+read about the commands that the PPC supports and then code something :)
+
+You always have to include the macro &quot;executable&quot;, if you want, that your
+program will be ASM'ed as an executable.
+
+</pre>
+</body>
+</html>

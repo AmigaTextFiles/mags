@@ -1,0 +1,88 @@
+2
+1*
+
+{3                        Installerin ohjelmointi - Osa 2
+{3                        -------------------------------
+ 
+                                Ilkka Lehtoranta
+ 
+ 
+Ensimmäisessä osassa  käsittelimme  hiukan  yleisesti  Installerin  lausekkeita.
+Tässä toisessa osassa käymme vielä läpi joitakin herkullisia  lisäominaisuuksia,
+joita Installer tarjoaa.
+ 
+Joskus omassa asennusohjelmassa voi tulla tarvetta käsitellä  ikoneita,  esimer-
+kiksi asettaa tooltype. Tähän tarkoitukseen löytyy 'tooltype'-lauseke:
+ 
+{5(tooltype
+{5(prompt "Käsitellään T-hakemiston ikonia")
+{5(help "Ei apuja")
+{5(dest "T:/t")
+{5(noposition)
+{5(settooltype "VUOSI" "2000")
+{5(confirm)
+{5)
+ 
+Kohdeparametriksi annetaan käsiteltävän ikonin  nimi  ilman  info-päätettä,  eli
+siis 'T:/t'. Parametri 'noposition' aiheuttaa ikonin uudelleensijoituksen,  jol-
+loin ikonilla ei ole enää mitään määrättyä paikkaa. Kun ikkuna, jossa ikoni  si-
+jaitsee, avataan seuraavan kerran, Workbench sijoittaa ikonin niin kuin parhaak-
+si katsoo. 'settooltype' taas  on  se  useimmin  käytetty  ominaisuus.  Sen  en-
+simmäinen parametri määrää tooltypen nimen ja jälkimmäinen sen arvon. Näin ollen
+ikoniin ilmestyisi tooltype 'VUOSI=2000'. Tooltypen saa  poistettua  laittamalla
+pelkästään tooltypen nimen ilman parametriä.
+ 
+'Tooltype'-lauseke tunnistaa  myös  parametrit  'setstack'  ja  'setdefaulttool'
+joista ensimmäinen asettaa pinon ja jälkimmäinen  ohjelman,  joka  käynnistetään
+automaattisesti, kun ikonia kaksoisklikataan.
+ 
+AmigaOS 3.5 tarjoaa joitakin uusia ominaisuuksia, joita voit hyödyntää myös Ins-
+tallerissa. Yksi pitkään kaivattu ominaisuus on mahdollisuus avata  hakemistoik-
+kunoita suoraan ohjelmasta käsin. Myös Installer osaa hyödyntää tätä ominaisuut-
+ta.
+ 
+'openwbobject' avaa halutun kohteen työpöydällä, aivan kuten käyttäjä olisi kak-
+soisklikannut sitä. 'closewbobject' puolestaan sulkee sen samaan  tapaan.  Para-
+metriksi käy kohteen nimi ilman info-päätettä,  ja  kohdeikoni  voi  olla  minkä
+tyyppinen tahansa. Tietenkään tool- tai project-tyyppistä ikonia ei voi  sulkea,
+mutta minkä tahansa kohteen voi kuitenkin avata, oli sillä ikonia tai  ei.  Hie-
+nosäätöön löytyy 'showwbobject'-lauseke,  joka  tarvittaessa  vierittää  halutun
+ikonin näkyviin.
+ 
+Uusi Installer tarjoaa  myös  multimediaominaisuuksia.  'showmedia'-lausekkeella
+voi esittää erityyppisiä tiedostoja, edellyttäen kuitenkin, että vaadittu  data-
+tyyppi on asennettu. Lauseke tuntee kasan parametrejä, mutta sen käyttö on  kui-
+tenkin kohtalaisen helppoa.
+ 
+Lausekkeen ensimmäinen parametri on nimi, joka kohteelle annetaan.  Se  ei  siis
+ole esitettävän tiedoston nimi. Sen käyttö voi aluksi tuntua oudolta, mutta sitä
+tarvitaan myöhemmin 'setmedia'-lausekkeessa, jotta tiedetään, mille medialle ko-
+mento annetaan. Vasta seuraava parametri on  varsinaisen  esitettävän  tiedoston
+nimi. Loput parametrit ovat sen verran mutkikkaita, ettei  niitä  kannata  tässä
+sen tarkemmin esitellä.
+'setmedia'-lausekkeella voidaan antaa komentoja medialle, tyypillisesti aloittaa
+animaatio tai soittaa ladattu äänitiedosto. Alla on esimerkki,  kuinka  vaikkapa
+asennuksen lopuksi avataan hakemisto, johon ohjelma on  asennettu  ja  soitetaan
+äänimerkki:
+ 
+{5(if (> @installer-version 2883583)
+{5(
+{5(showmedia 'media' "Misc/Sproing.snd" 'center' 'none' 0)
+{5(openwbobject @default-dest)
+{5(setmedia media 'play')
+{5)
+{5)
+ 
+Muista, että Installerin vanhemmat versiot  eivät  tunnista  uusia  lausekkeita,
+vaan antavat virheilmoituksen. Tällöin asennusskriptin suoritus  hyytyy  kalkki-
+viivoilla, ja käyttäjälle jää epävarma olo asennuksen onnistumisesta. Sitä  var-
+ten täytyy varmistaa, ettei lausekkeita yritetä suorittaa Installerilla, joka ei
+niitä pysty suorittamaan. Kannattaa myös  huomata,  ettei  OS-versiota  tarvitse
+erikseen testata eli 'openwbobject' sujuu ongelmitta  myös  vanhemmilla  OS-ver-
+sioilla, joskaan haluttu hakemistokaan ei silloin avaudu.
+ 
+Sama koskee myös multimediaominaisuuksia; jos  tarvittavaa  datatyyppiä  ei  ole
+asennettu tai käyttöjärjestelmä on niin vanha ettei se niitä  edes  tunne,  niin
+Installer jatkaa suoritusta ohittamalla kyseiset lausekkeet.
+ 
+Kirjoittajan tavoittaa sähköpostitse osoitteesta iti@solutions.fi.

@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+
+<HTML>
+  <HEAD>
+    <META name="generator" content="HTML Tidy, see www.w3.org">
+    <META name="AUTHOR" content="Thomas Nawroth">
+    <META name="DESCRIPTION" content=
+    "Ein Computer-Magazin von 1984">
+
+    <TITLE>Happy Computer</TITLE>
+  </HEAD>
+
+  <BODY bgcolor="#fffff4" background="Images/mm_hc18b.gif">
+    <TABLE border="0" cellpadding="8">
+      <TR>
+        <TD>
+          <P>Leider hat in der No Cover 120 der Fehlerteufel
+          zugeschlagen. In der NC 119 hatte ich die Ideenecke als
+          n&auml;chste Folge angek&uuml;ndigt. Erschienen ist
+          jedoch die halbfertige Folge die f&uuml;r April geplant
+          war. Deshalb erscheinen in dieser No Cover Folge Nr. 17 -
+          "Ideenecke" und Folge Nr. 18 - "Noch mehr Joy ohne
+          Stick".</P>
+
+          <CENTER>
+            <IMG src="Images/mm_hc18a.gif"><BR>
+            <I>Folge 18</I>
+          </CENTER>
+          <BR>
+
+          <H1 align="CENTER">Noch mehr Joy ohne Stick</H1>
+
+          <P>Die Simulation eines Joysticks auf der TI-Tastatur hat
+          ein gro&szlig;es Echo gefunden.</P>
+
+          <P>Viele Leser fanden die Joystick-Routine, die wir in
+          Happy Computer 7 unter dem Titel "Auch ohne Stick viel
+          Joy" vorstellten, viel zu tr&auml;ge und
+          umst&auml;ndlich. Etliche machten sich daran, das kurze
+          Listing zu verbessern. Lesen Sie drei wirkungsvolle
+          L&ouml;sungen, die uns die Leser zugeschickt haben.</P>
+
+          <CENTER>
+            <IMG src="Images/mm_hc18c.gif" alt="Vorschlag 1" width=
+            "239" height="28"><BR>
+          </CENTER>
+
+          <P>Die abgedruckte Routine ben&ouml;tigt acht Tasten um
+          s&auml;mtliche Joystick-R&uuml;ckmeldungen zu simulieren.
+          Einfacher ist es, nur vier Tasten zu belegen. Mann kann
+          die Abfrage links, rechts beziehungsweise nach oben und
+          unten, inklusive der Diagonalwerte durch Mischen
+          erzeugen. In &auml;hnlicher Weise funktioniert auch ein
+          Joystick. Durch einfaches Umschalten der Tastenmodi 1 und
+          2 kann die Tastatur des TI99/4A geteilt werden. Ich
+          benutze dazu die Tasten "Z" f&uuml;r links, "X" f&uuml;r
+          rechts, ";" f&uuml;r unten und "/" f&uuml;r oben. Das
+          Kommando "links oben" wird dann durch gleichzeitiges
+          Bet&auml;tigen der "Z" und "/" Tasten bewerkstelligt.
+          Diese L&ouml;sung ist sicherlich einfacher, als wenn man
+          mit acht Tasten arbeiten m&uuml;&szlig;te.<BR>
+          Speziell beim Spielen kommt es auf eine m&ouml;glichst
+          schnelleJoystick-Abfrage an. Das in Ausgabe 7 abgedruckte
+          Programm d&uuml;rfte f&uuml;r schnelle Spiele zu langsam
+          sein. Mehrfache "IF THEN"-Abfragen sollte man deshalb
+          vermeiden. Schnell hintereinander auszuf&uuml;hrende
+          Befehle sollte man des weiteren in einer oder
+          m&ouml;glichst wenigen Programmzeilen unterbringen.
+          Tats&auml;chlich kann man in Extended Basich das gesamte
+          Unterprogramm zur Joystick-Abfrage in einer einzigen
+          Programmzeile unterbringen. Das s&auml;he dann so
+          aus:</P>
+          5000 SUB JOYST(1,X,Y)::CALL
+          KEY(1,K,S)::X=4*((K=15)-(K=0))::CALL
+          KEY(2,K,S)::Y=4*((K=17)-(K=16))::SUBEND<BR>
+           
+
+          <P>Man mu&szlig; dann in der obigen Programmzeile, bei
+          jedem Aufruf das "O" des "CALLJOYST(1,X,Y)" in eine Null
+          umwandeln. So wie die Programmzeile oben abgedruckt ist,
+          leistet sie in etwa so viel wie die Joystickabfrage aus
+          der Happy-Computer Ausgabe 7. Es soll nicht verschwiegen
+          werden, da&szlig; das von mir vorgestellte Unterprogramm
+          um etliches schneller ist.<BR>
+          Zu einem guten Programmstil geh&ouml;rt weiterhin,
+          da&szlig; man entweder die Tastatur oder die Joysticks
+          als Eingabemedium verwendet Am einfachsten ist es, wenn
+          man zum Programmstart nach der gew&uuml;nschten Art der
+          Steuerung fragt. Die gew&auml;hlte Option k&ouml;nnte
+          dann in einer Variablen "JOY" abgespeichert werden, die
+          normalerweise den Wert "0" enth&auml;lt. Bevorzugt man
+          die Fernbedienung, k&ouml;nnte die Variable den Wert "-1"
+          annehmen. Die entsprechende Programm&auml;nderung
+          k&ouml;nnte dann so aussehen:</P>
+          10 DISPLAY AT(23,1)BEEP:"WILLST DU EINEN
+          JOYSTICK":"VERWENDEN?"<BR>
+          11 CALL KEY(3,K,S)::IF S=0 THEN 11 ELSE JOY=(K=74)<BR>
+          ..<BR>
+          ..<BR>
+          5000 SUB JOYST(JOY,X,Y)::IF JOY THEN CALL
+          JOYST(1,X,Y)::SUBEXIT<BR>
+          5010 CALL KEY(1,K,S)::X=4*((K=15)-(K=0))::CALL
+          KEY(2,K,S)::Y=4*((K=17)-(K=16))::SUBEND<BR>
+           
+
+          <P>So ist das Programm schon wesentlich komfortabler,
+          aber immer noch nicht perfekt. Ein gutes Programm sollte
+          benutzerfreundlich sein. Bekanntlich ist der TI99/4A
+          f&uuml;r den Anschlu&szlig; von zwei Joysticks
+          ausger&uuml;stet. Jetzt k&ouml;nnte man es nat&uuml;rlich
+          dem Benutzer &uuml;berlassen welchen Joystick er
+          verwenden m&ouml;chte. Ich verfahre dann
+          folgenderma&szlig;en. Durch Bet&auml;tigung des
+          entsprechenden Feuerknopfes kann der Benutzer selber
+          w&auml;hlen welchen Joystick er verwenden
+          m&ouml;chte.</P>
+          10 DISPLAY AT(23,1)BEEP:"WILLST DU EINEN
+          JOYSTICK":"VERWENDEN?"<BR>
+          11 CALL KEY(3,K,S)::IF S=0 THEN 11 ELSE JOY=(K=74)<BR>
+          12 IF NOT JOY THEN 100 !SPRUNG INS HAUPTPROGRAMM<BR>
+          13 DISPLAY AT(24,1)ERASE ALL BEEP:"STARTE MIT DER
+          FEUERTASTE"<BR>
+          14 FOR NR=1 TO 2<BR>
+          15 CALL KEY(NR,K,S)::IF K=18 THEN 100<BR>
+          16 NEXT NR::GOTO 14<BR>
+          ..<BR>
+          ..<BR>
+          100 REM HAUPTPROGRAMM<BR>
+          ..<BR>
+          ..<BR>
+          5000 SUB JOYST(JOY,NR,X,Y)::IF JOY THEN CALL
+          JOYST(NR,X,Y)::SUBEXIT<BR>
+          5010 CALL KEY(1,K,S)::X=4*((K=15)-(K=0))::CALL
+          KEY(2,K,S)::Y=4*((K=17)-(K=16))::SUBEND<BR>
+           
+
+          <P>Die entsprechenden Aufrufe "CALL JOYST(1,X,Y)"
+          beziehungsweise "CALL JOYST(2,X,Y)" des umzuarbeitenden
+          Programms m&uuml;ssen dann durch "CALL JOYST(JOY,NR,X,Y)"
+          ersetzt werden.</P>
+
+          <P>Weniger erfahrene Programmierer k&ouml;nnten die
+          Abfragen wie "IF JOY THEN .." oder "IF NOT JOY THEN .."
+          vielleicht falsch verstehen. Es handelt sich hierbei um
+          verk&uuml;rzte und wie ich finde, einpr&auml;gsame
+          Schreibweisen f&uuml;r "IF JOY&lt;&gt;0 THEN .." und "IF
+          JOY=0 THEN ..".</P>
+
+          <P>Den in Klammern gesetzten Gleichungen in Zeile 5010
+          sind Zahlenwerte zugeordnet. Wie das funktioniert wird
+          auf den Seiten 56 und 59 des TIBasic-Handbuches
+          erkl&auml;rt. Leider haben nur wenige TI99/4A-Besitzer
+          die M&ouml;glichkeiten genutzt die "LET" und "IF THEN
+          ELSE" Befehle zu umschreiben. Dabei sind diese
+          M&ouml;glichkeiten wichtig, wenn es auf Schnelligkeit und
+          m&ouml;glichst wenig Speicherplatz ankommt.</P>
+
+          <P>Hier noch eine Anmerkung f&uuml;r Benutzer, denen das
+          Extended-Basic-Modul nicht zur Verf&uuml;gung steht: Die
+          oben erw&auml;hnten Abfragen funktionieren &uuml;brigens
+          nicht vollst&auml;ndig auf der Grundversion des TI99/4A.
+          F&uuml;r die links und rechts Abfrage k&ouml;nnen die "Z"
+          und "X"-Tasten nicht verwendet werden, da es hier zu
+          einem Fehler kommt. Wahrscheinlich liegt hier ein Mangel
+          im Betriebssystem vor, da "K=0" nicht der geforderte Wert
+          "-1" zugeordnet wird, wenn man die "X"-Taste
+          bet&auml;tigt. Ich verwende in diesem Fall die "A" und
+          "S" Tasten, die auch ganz bequem mit der linken und
+          rechten Hand zu erreichen sind. Das Basich Programm sieht
+          dann so aus:</P>
+          5000 IF JOY THEN 5060<BR>
+          5010 CALL KEY(2,K,S)<BR>
+          5020 X=4*((K=1)-(K=2))<BR>
+          5030 CALL KEY(2,K,S)<BR>
+          5040 Y=4*((K=17)-(K=16))<BR>
+          5050 RETURN<BR>
+          5060 CALL JOYST(NR,X,Y)<BR>
+          5070 RETURN<BR>
+           
+
+          <P>Man mu&szlig; nur beachten, da&szlig; jeder "CALL
+          JOYST(...)" Aufruf im Programm durch "GOSUB 5000" ersetzt
+          wird.</P>
+          (Dieter Taube/wb)<BR>
+          <BR>
+
+          <CENTER>
+            <IMG src="Images/mm_hc18d.gif" alt="Vorschlag 2" width=
+            "239" height="28"><BR>
+          </CENTER>
+
+          <P>Der folgende Vorschlag setzt die Konsole sowie das
+          Extended Basic Modul voraus:</P>
+          30010 SUB JOYSTICK(X,Y)<BR>
+          30011 X,Y=0::CALL KEY(0,K,S)::IF S=0 THEN SUBEXIT<BR>
+          30012 X=POS("ZSWzswCDRcdr",CHR$(K),1)::IF X THEN
+          X=4*SGN(X-6.5)<BR>
+          30013 Y=POS("ZXCzxcWERwer",CHR$(K),1)::IF Y THEN
+          Y=4*SGN(Y-6.5)<BR>
+          30014 SUBEND<BR>
+           
+
+          <P>Die obige Kurzroutine simuliert einen Joystick auf der
+          Tastatur und arbeitet verh&auml;ltnism&auml;&szlig;ig
+          schnell. Die Stellung der "ALPHA LOCK"-Taste ist dabei
+          unwichtig. Eine Anpassung an TI-Basic kann durch
+          weglassen der "SUB"-Befehle und hintereinander schreiben
+          der restlichen Programmanweisungen leicht vorgenommen
+          werden. "SUBEXIT" und "SUBEND" sind dann durch "RETURN"
+          zu ersetzen.</P>
+          (Stefan Schwarzer/wb)<BR>
+          <BR>
+
+          <CENTER>
+            <IMG src="Images/mm_hc18e.gif" alt="Vorschlag 3" width=
+            "239" height="28"><BR>
+          </CENTER>
+
+          <P>Die meisten "IF"-Abfragen lassen sich mit nur geringen
+          Kenntnissen in Mathematik und etwas logischem
+          Denkverm&ouml;gen vermeiden. Hier mein Vorschlag:</P>
+          30000 SUB JOYST(N,X,Y)<BR>
+          30010 CALL
+          KEY(N,K,S)::X=((K=2)+(K=4)+(K=15)-(K=3)-(K=6)-(K=14))*4:
+          :Y=((K=0)+(K=15)+(K=14)-(K=5)-(K=4)-(K=6)))*4<BR>
+          30020 SUBEND<BR>
+           
+
+          <P>Mit Hilfe der "REDO"-Taste ist es dann m&ouml;glich
+          das Unterprogramm in eine Zeile zu schreiben. Versieht
+          man die Zeile 30000 mit einem "REM" und schreibt jeden
+          Befehl in eine Zeile, kann das Unterprogramm auch von
+          TI-Basic aus aufgerufen werden. In diesem Fall
+          m&uuml;&szlig;te man es mit "GOSUB 30000" aufrufen.
+          Allerdings mu&szlig; vorher der Tastaturmodus mit "N=1"
+          oder "N=2" angew&auml;hlt werden.</P>
+
+          <P>Diese M&ouml;glichkeit steht einem mit Extended Basic
+          auch zur Verf&uuml;gung. Es sind dann allerdings die
+          Werte f&uuml;r K in Zeile 30010 an die entsprechenden
+          ASCII-Werte anzupassen. Auf diese Art und Weise lassen
+          sich dann beliebige Tasten zur Steuerung verwenden. In
+          Extended Basic erfolgt der Aufruf mit "CALL
+          JOYST(N,X,Y)", entsprechend dem Aufruf der Joysticks,
+          wenn diese angeschlossen sind.</P>
+
+          <P>Sollten Joysticks angeschlossen sein, wird dennoch nur
+          das Unterprogramm f&uuml;r die Tastatursteuerung
+          ausgef&uuml;hrt. M&ouml;chte man sie aber verwenden, ist
+          lediglich das Unterprogramm zu entfernen. Das hat den
+          Vorteil, da&szlig; nicht zu viele &Auml;nderungen im
+          Programm vorgenommen werden m&uuml;ssen.</P>
+          (Dietrich Terasa/wb)<BR>
+          <HR>
+          <BR>
+          In der n&auml;chsten NoCover gibt es eine Schaltung, die
+          die Bandsignale beim ZX81 kontrolliert.
+        </TD>
+      </TR>
+    </TABLE>
+    <BR>
+    <BR>
+
+    <TABLE align="CENTER" border="3">
+      <TR bgcolor="#ffffff">
+        <TD><A href="mailto:">Thomas Nawroth</A></TD>
+      </TR>
+    </TABLE>
+  </BODY>
+</HTML>
+

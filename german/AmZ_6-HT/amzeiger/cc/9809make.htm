@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 09/98 - Debugging-Tools</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Makefiles nutzen</H1>von<BR><A HREF="mailto:C.Jahn@gmx.de">Carsten Jahn</A></DIV>
+
+<P>Dateien wie &quot;<B>Makefile</B>&quot; oder &quot;<B>SMakefile</B>&quot; sind wohl schon vielen beim
+Durchst&ouml;bern fremder Quelltextarchive aufgefallen. Und vom Sinn hat
+man auch schnell etwas geh&ouml;rt: die Dateien beinhalten die Aufrufe
+von Compilern und anderen Tools, die n&ouml;tig sind, um ein Programmpaket
+lauff&auml;hig zu machen.
+</P><P>
+Ich bin vor kurzem auch wieder &uuml;ber so ein Makefile gestolpert und habe
+mir Gedanken gemacht, ob ich sowas nicht auch nutzbringend einsetzen
+k&ouml;nnte. Makefiles werden von &quot;make&quot;-Programmen interpretiert, ich habe
+den GNU-Make (von der Geek Gadgets 2), also bezieht sich dieser Artikel
+auf ihn. Andere Makes (SAS) sollten aber weitestgehend kompatibel sein.
+</P><P>
+<B>Was Make leistet</B>
+</P><P>
+In Makefiles sind Bl&ouml;cke von Shell-Aufrufen erfa&szlig;t, die bestimmte Dateien
+produzieren. Zum Beispiel kommt beim Linker (hoffentlich) das ausf&uuml;hrbare
+Programm heraus. Gleichzeitig schreibt man im Makefile auf, welche Dateien
+n&ouml;tig sind, damit der Linker das Programm produzieren kann. Da man sich
+nur auf die Dateien beschr&auml;nkt, die sich durch das Programmieren ver&auml;ndern,
+gibt man normalerweise alle Objekt-Dateien an (Endung .o).
+</P><P>
+Wenn sich ein Objekt &auml;ndert, sollte das Programm neu gelinkt werden,
+um auf den neuesten Stand zu sein. Make vergleicht das Dateidatum von
+Programm und Objektfiles und ruft ggfs. den Linker auf.
+</P><P>
+Wichtig ist, da&szlig; hier Abh&auml;ngigkeiten definiert werden. Das Programm h&auml;ngt
+von den Objektfiles ab.
+</P><P>
+Die Power von Make kommt daher, da&szlig; es eine Vielzahl von Dateien und
+Abh&auml;ngigkeiten geschickt verwalten kann. Denn die Objekt-Dateien sind
+von den Quelltexten und Headern abh&auml;ngig. So gen&uuml;gt es, nach der
+&Auml;nderung eines Quelltextes einfach &quot;make&quot; auszuf&uuml;hren. Es erkennt, da&szlig;
+ein Quelltext ge&auml;ndert wurde und ruft den Compiler auf, um ein neues
+Objektfile zu erstellen. Anschlie&szlig;end bemerkt es, da&szlig; das Programm von
+den Objektfiles abh&auml;ngig ist und ruft den Linker auf.
+</P><P>
+Die Art der Dateien und der Shell-Aufrufe ist Make v&ouml;llig gleich. Man
+kann Make also auch benutzen, um TeX bei ver&auml;nderten Texten zu starten.
+Der Anwendungsbereich ist nur durch die Phantasie des Anwenders
+begrenzt. :-)
+</P><P>
+<B>Wie ein einfaches Makefile aussieht</B>
+</P><P>
+Wenn man das Makefile auch &quot;Makefile&quot; nennt, wird Make es automatisch
+finden, wenn man im richtigen Verzeichnis ist. Das Makefile sieht dann
+z.B. so aus:
+<PRE>
+# Kommentare...
+# ...laber s&uuml;lz
+
+Snake: snake.o
+        ld -o Snake snake.o -lnix -lgcc -lamiga
+
+snake.o: snake.c snake.h
+        gcc -c -noixemul -s -O2 -msmall-code -o demo.o demo.c
+
+</PRE>
+Hier treten zwei Zeilen mit einem Doppelpunkt auf, &quot;Snake:...&quot; und
+&quot;snake.o:...&quot;. Das sind zwei Regeln (Rules), die Make auswertet und
+dann entscheidet, ob die darunterstehenden, mit Tab (!) einger&uuml;ckten
+Zeilen ausgef&uuml;hrt werden soll.
+</P><P>
+In jeder Zeile wird ein Ziel (Target) definiert, z.B. Snake. Das ist
+das ausf&uuml;hrbare Programm unseres Snake-Spiels, wow, was f&uuml;r ein Demo-
+Makefile! Hinter dem Doppelpunkt steht, welche (v.a. zum Projekt
+geh&ouml;rende, sich &auml;ndernde) Dateien ben&ouml;tigt werden, um Snake zu erstellen.
+</P><P>
+In diesem Fall ist das snake.o, die vom Compiler erzeugte Objektdatei.
+</P><P>
+Da es der Sinn von Make ist, alles auf den neuesten Stand zu bringen und,
+in diesem Beispiel, alle Binaries den ge&auml;nderten Quelltexten anzupassen,
+will sich Make jetzt vergewissern, da&szlig; das f&uuml;r Snake ben&ouml;tigte snake.o
+noch aktuell ist.
+</P><P>
+Es wird dabei die zweite Regel finden, die beschreibt, von welchen Dateien
+snake.o abh&auml;ngt: n&auml;mlich von snake.c und snake.h. Um herauszufinden, ob
+snake.o noch auf den neuesten Stand ist, vergleicht es das Dateidatum mit
+den Quelldateien, die rechts neben dem Doppelpunkt angegeben sind.
+</P><P>
+Angenommen, snake.c ist j&uuml;nger als snake.o und snake.h ist &auml;lter als
+snake.o. Dann w&uuml;rde seit der letzten Compilierung der Quelltexte ein
+Quelltext, n&auml;mlich snake.c, ver&auml;ndert. Die &Auml;nderung auch nur einer
+Quelldatei unter tausenden treibt Make zur Entscheidung, da&szlig; die
+Zieldatei veraltet ist.
+</P><P>
+Um nun ein snake.o zu erzeugen, das j&uuml;nger ist als all seine Quelldateien,
+f&uuml;hrt es die unter der Regel stehende(n) Zeile(n) in der Shell aus. Diese
+m&uuml;ssen unbedingt mit Tabs einger&uuml;ckt sein, es kann ein wenig dauern, bis
+man seinen GoldEd umkonfiguriert hat... Bei mir wird GNU-C (gcc)
+aufgerufen, mit der &quot;-c&quot;-Option, damit GCC nach dem Compileren aufh&ouml;rt
+-- und nicht linkt, daf&uuml;r gibt's ja einen extra Aufruf von &quot;ld&quot;.
+</P><P>
+Make freut sich &uuml;ber die Erzeugung von snake.o, aber es erinnert sich
+langsam wieder, da&szlig; ja eigentlich Snake auf den neuesten Stand gebracht
+werden sollte. Pl&ouml;tzlich ist snake.o j&uuml;nger als Snake, und der werte
+Leser kann raten, was passieren wird... ein neues Snake mu&szlig; her,
+nat&uuml;rlich &uuml;ber untenstehendes Shell-Kommando.
+</P><P>
+Mit Snake ist Make wieder am Anfang angekommen und beendet sich.
+</P><P>
+Nat&uuml;rlich kann man die Komplexit&auml;t des Makefiles mit den Regeln beliebig
+weit treiben, f&uuml;r die meisten Projekte d&uuml;rfte es aber reichen, ein Haufen
+#?.o - Ziele mit #?.c - Quellen zu defineren und ein Executable-Ziel mit
+den #?.o - Quellen. Make kann selbstverst&auml;ndlich jedes Programm mit Shell-
+Interface aufrufen, also auch brush2c: wenn man f&uuml;r sein MUI-Programm
+eine Grafik ge&auml;ndert hat, merkt Make das und wandelt die Grafik in
+C-Source um, anschlie&szlig;end wird das betreffende Objekt, das den Source
+einbindet, neu gelinkt. Wenn man sich nur genug Gedanken macht, was sich
+alles mit Make automatisieren l&auml;&szlig;t, kann man sich leicht einiges an
+Aufwand ersparen.
+</P><P>
+<B>Variablen</B>
+</P><P>
+Variablen (bei anderen Makes evtl. auch Makros genannt) ersetzen h&auml;ufig
+wiederkehrende Texte in Makefiles (z.B. Compileroptionen) durch ein
+&uuml;bersichtlicheres Schl&uuml;sselwort, das man sich selbst generieren kann.
+</P><P>
+Das geht beispielsweise so:
+<PRE>
+# Variable deklarieren und initialisieren
+COMPILEROPTS = -c -noixemul -s -O2 -msmall-code
+
+Snake: snake.o highscore.o
+        ld -o Snake snake.o -lnix -lgcc -lamiga
+
+snake.o: snake.c snake.h
+        gcc $(COMPILEROPTS) -o demo.o demo.c
+
+highscore.o: highscore.c highscore.h
+        gcc $(COMPILEROPTS) -o highscore.o highscore.c
+
+</PRE>
+Man kann mit Variablen noch einige sinnvolle und unn&uuml;tze Dinge machen,
+aber das geht alles zu weit f&uuml;r diesen Kurs. Wer m&ouml;chte, kann in die
+Anleitung von Make einsteigen, bei GNU erstreckt sich das AmigaGuide-
+File wieder &uuml;ber 400kB...
+</P><P>
+<B>Noch was zu den Shell-Aufrufen von Make</B>
+</P><P>
+Wer das obige Beispiel schon in der harten Wirklichkeit ausprobiert hat,
+wird gemerkt haben, da&szlig; Make jedes Kommando textuell in der Shell ausgibt,
+bevor es ausgef&uuml;hrt wird. Das kann ganz sch&ouml;n un&uuml;bersichtlich werden.
+Plaziert man den Klammeraffen @ vor dem Kommando, wird das &quot;Echoing&quot;
+unterdr&uuml;ckt:
+<PRE>
+Snake: snake.o highscore.o
+        @echo Making Snake
+        @ld -o Snake snake.o -lnix -lgcc -lamiga
+
+</PRE>
+Das sieht gleich viel sch&ouml;ner aus.
+</P><P>
+<B>R&uuml;ckgabewerte</B>
+</P><P>
+Wenn ein Kommando mit einem Wert ungleich 0 abbricht, wird das von Make
+als Fehlermeldung verstanden. Make steigt dann auch aus. Das l&auml;&szlig;t sich
+verhindern, indem man einen Bindestrich - vor das Kommando schreibt.
+</P><P>
+Oft ist es aber sinnvoll, bei fehlerhaften &Uuml;bersetzung eines Quelltexts
+noch die anderen Quelltexte zu &uuml;bersetzen, auch wenn das Linken sowieso
+nicht m&ouml;glich sein wird. Dann kann man im Editor schon die Fehler
+korrigieren, w&auml;hrend Make weiterarbeitet. Dieses Verhalten l&auml;&szlig;t sich
+mit dem Flag -k oder --keep-going einstellen, Make macht dann alles,
+was sich machen l&auml;&szlig;t...
+</P><P>
+<B>Ausblick</B>
+</P><P>
+Make ist auch in der Lage, verschiedene Kommandos gleichzeitig
+auszuf&uuml;hren. Andere Makefiles lassen sich &quot;includen&quot;, Makefiles k&ouml;nnen
+in Abh&auml;ngigkeit von Variablen ausgef&uuml;hrt werden (&auml;hnlich den Preprozessor-
+Direktiven #ifdef, sogar Schleifen sind m&ouml;glich), mit Variablen k&ouml;nnen
+allerlei Ver&auml;nderungen angestellt werden (Search-Replace, Verzeichnis-
+oder Dateinamen abschneiden, Suffixe anh&auml;ngen). Es gibt haufenweise
+vordefinierte Variablen, $@ ist der Dateiname des Ziels, $? sind die
+Namen aller Quellen, die neuer sind als das Ziel... Es gibt spezielle
+Ziele, die nur durch ihre Definition bestimmte Auswirkungen auf das
+Verhalten von Make haben (die Definition von .PRECIOUS verhindert, da&szlig;
+Make Zieldateien l&ouml;scht, wenn ein Kommando gescheitert ist). Hier fangen
+sicher auch die Grauzonen der Make-Implementationen an, Features gehen
+&uuml;ber den &quot;Standard&quot; hinaus und werden nicht von allen Makes unterst&uuml;tzt.
+Es ist wirklich hilfreich, sich einmal die vollst&auml;ndige Dokumentation
+vom GNU-Make anzusehen.
+</P>
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9809pb.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0998/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9809bb.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>
+

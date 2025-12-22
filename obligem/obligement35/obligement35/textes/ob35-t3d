@@ -1,0 +1,190 @@
+\T
+
+ --> EN PRATIQUE : TORNADO 3D par Arg
+======================================
+
+~   La course : animation
+
+   Aujourd'hui, nous allons _tudier la course d'un personnage. Pour ce faire, cet
+article se divisera en deux chapitres principaux : la cr_ation d'un personnage
+simple puis de son animation. Animation que nous allons _laborer a l'aide de la
+technique du Keyframe, ce qui correspond a la d_finition des images clefs d'une
+animation, pour que le programme de 3D puisse d_finir lui m_me l'interpolation
+des images intercalaires de la s_quence anim_e.
+
+   Un petit tips pour les configurations modestes : travaillez en mode fil de fer 
+(pav_ num_rique 1 ou 2 pour une visualisation totale de l'objet ou de la surface
+maill_e seulement) et ne visualisez l'objet textur_ ou color_ (7 ou 8 sur le pav_
+num_rique) qu'une fois de temps a autre, pour v_rification. Le d_lai d'affichage 
+(surtout sous AGA) sera plus faible en fil de fer qu'en textur_. Hum Hum, bon ce
+tips ne vaut que ce qu'il vaut mais cela peut toujours aider. (Vivement l'Aone non ?).
+
+~ 1) Cr_ation d'un personnage simple
+
+~   Les textures
+   Comme le personnage que nous allons cr_er n'est qu'un simple exemple, il ne 
+n_cessite aucune _laboration pr_cise, il peut donc se passer de texture. N_anmoins, 
+j'en ai gliss_ une sur chaque articulation qui servira dans notre exemple. Cette 
+texture contraste _galement avec la couleur du personnage (rouge dans notre 
+exemple), histoire de bien voir ce qui se passe a l'_cran.
+
+ö
+
+\T
+
+~   Mod_lisation du personnage
+
+}   La t_te
+   La t_te sera compos_e de cinq sph_res et d'un tore. Oui, oui, ce sera tr_s simple 
+comme je l'ai dis plus haut, l'int_r_t _tant de simuler la course et de tacher 
+d'en faire le mouvement le plus r_aliste possible.
+
+   Donc commencons par une simple sph_re, que nous conserverons blanche, copions et
+collons la (A+c/A+v) et rendons la toute petite (s). Nous venons en fait de former
+l'oeil et la pupille de notre personnage. Si la pupille se retrouve dans l'oeil, 
+veuillez la d_placer (m) pour qu'elle d_passe d'une moiti_ de la grosse sph_re. 
+S_lectionnez les 2 sph_res et copiez/collez, puis mettez les a une autre _chelle,
+histoire de donner un cot_ humoristique a notre hote m_canique. Une sph_re plus 
+grosse encore, plac_e derri_re ces quatre premi_res devra servir de t_te. Un tore 
+(menu objet/polygons/tore) lui, servira de "col". Vous pourrez a l'occasion 
+l'incliner l_g_rement (r puis x puis clic maintenu dans la fen_tre de profil).
+
+   Groupez tout ceci (A+a puis A+g) puis sauvez en "t_te" par exemple.
+
+}   Le corps 
+   Pour les configurations plus modestes vous pouvez fermer ce projet et en ouvrir 
+un vierge. Ceci fait, cr_ez une nouvelle sph_re, grosse celle-ci, elle doit 
+repr_senter le corps de notre robot. Vous pouvez ensuite _tirer ses deux 
+h_misph_res droite et gauche vers leurs extr_mit_s respectives (bouton d'_dition 
+de points, s_lection bouton droit maintenu sur le cot_ gauche de la sph_re, puis "m"
+puis _tirement vers un des extr_mes, op_ration identique pour le cot_ oppos_. 
+
+ö
+
+\T
+
+
+   Placez ensuite trois sph_res de taille moyenne a gauche, droite et en dessous de
+cette sph_re _tir_e. Ces sph_res de taille moyenne vont servir d'articulation.
+Pour une meilleure visualisation, changez la couleur (vert pourquoi pas histoire 
+de contraster avec le rouge du corps ou alors texturez les). Pour gagner du temps, 
+faites en une et copiez/collez la a la suite.
+
+   Groupez votre sc_ne et sauvez l'objet sous "corps". C'est bien ca "corps" comme
+nom, non ?
+
+}   Les bras
+   Les bras seront compos_s de sph_res qui serviront de jointure (voir le torse du 
+robot) et de simples cylindres allong_s.
+
+   Sauvons en tant que "bras".
+
+}   Les jambes
+   Et si nous faisions un simple copier/coller des bras ? Un peu remani_ bien sur.
+Et puis sauvons sous "jambes" cette fois.
+
+}   Finalement 
+   Et bien selon la m_thodologie pour laquelle vous avez opt_, chargez et placez
+tous les objets que vous avez cr__s pour fignoler votre personnage et l'avoir en 
+entier devant vous.
+
+ö
+
+\T
+
+~ 2) L'animation de notre robot
+   
+   Pour se faire, nous allons cr_er trois images clefs. Ces images clefs, ou points
+clefs, ou encore keyframe officient selon le m_me principe que pour la r_alisation
+d'un dessin anim_ dit "classique". Le chef animateur dessine les diff_rentes images
+qui d_composent le mouvement, dans son strict minimum. (Par exemple, un personnage
+tourne une manivelle, position 1 : la main est en haut de la roue, la main sur la 
+manivelle, deuxi_me position clef la main et la manivelle seront a droite, puis 
+pour l'image clef suivante en bas, puis enfin a gauche. Dans le cas ou plusieurs 
+tours sont pr_vus, on recommence l'animation en partant du haut. Dans cet exemple, 
+le chef animateur aura fait quatre dessins (points clefs du mouvement). Les 
+animateurs feront ensuite les dessins intercalaires (multipliant le nombre de 
+dessins si l'animation doit _tre limpide et longue ou avec peu de dessins si elle 
+doit _tre rapide).
+
+Passons dans le mode animation sous T3D.
+
+   Nous pouvons conserver le nombre d'images par d_faut, qui est de 50 sous T3D. En 
+sachant qu'en vid_o 24 a 25 images correspondent a une dur_e de une seconde. Donc 
+par d_faut, c'est deux secondes d'animation que nous allons r_aliser. Pour une 
+course, cela convient tout a fait.
+
+   Pour commencer, d_finissons ensemble les mouvements clefs d'une course. Un 
+personnage en pleine course doit avoir un de ses membres, inf_rieur et post_rieur,
+vers l'avant lorsque l'autre est vers l'arri_re, et ce, de facon invers_e entre 
+membres inf_rieurs et post_rieurs.
+
+ö
+
+\T
+
+~Explications
+
+}   Les trois positions clefs
+   La t_te conservera toujours la m_me orientation : vers l'avant.
+Premi_re position, (vous allez comprendre pourquoi nous avons enregistr_ chaque 
+membre de facon s_par_e). Toutes les rotations se feront grace a cette touche 
+magique "r" (en rajoutant x, y ou z pour les coordonn_es voulues). 
+
+   Donc, pour d_buter, vous ferez correspondre inclinaison du torse et membres 
+inf_rieurs, taille et membres post_rieurs. 
+
+- Faites pivoter le torse sur lui m_me, de droite ou de gauche comme bon vous semble.
+Si vous avez group_ la t_te et le torse s_par_ment, vous ne devez a priori pas
+toucher a la t_te (en fait un petit peu mais pas avec une rotation, juste une
+simple reposition). Faites pivoter ensuite la taille mais en sens inverse, de la
+m_me facon. Faites pivoter chaque membre pour qu'il aille dans le sens du corps, 
+par exemple, le bras gauche vers l'avant la jambe gauche vers l'arri_re, le bras
+droit vers l'arri_re la jambe gauche vers l'avant. Un petit clic sur la touche
+rouge "REC".
+
+- Apr_s avoir d_fini notre premi_re position clef, d_finissons la seconde. Pour 
+commencer, tapez dans le compteur 00 : 00 : 01 : 00, ce qui signifie que nous
+allons nous positionner juste apr_s la premi_re seconde de l'animation. (pour 
+rappel, 25 images par seconde, le panneau d'enregistrement se compose comme 
+suit = heures : minutes : secondes : num_ro d'image en cours). Une fois le
+nombre correct d'images atteint, positionnez les membres et le corps de votre 
+
+ö
+
+\T
+
+personnage, a l'inverse de ce qu'il est actuellement (m_me technique, m_me proc_d_).
+Seule la t_te doit conserver son inclinaison et orientation, et toujours regarder
+vers l'avant. Une petite pression sur la touche "REC".
+
+- Et bien il vous faudra vous placer tout d'abord sur le panneau du magn_toscope,
+a la deuxi_me seconde de l'animation et positionner votre personnage comme il le
+fut a la premi_re image, pour ainsi cr_er une boucle (l'animation que vous allez 
+cr_er permettra d'_tre mise bout a bout avec elle m_me pour cr_er plusieurs pas).
+
+}   L'animation finale
+   Et voila, une petite preview en cliquant sur "Play" (en mode fil de fer sinon 
+le frame rate est tr_s limite !), histoire de v_rifier le travail.
+
+   Bon et bien un petit "F10" maintenant, on clique de-ci de-la, histoire de 
+calculer toutes les frames de l'anim, de choisir sa r_solution, de choisir un 
+r_pertoire d'enregistrement, etc...
+
+   Puis de faire un fichier MPEG par exemple ou MOV ou AVI, selon votre convertisseur
+d'images.
+
+Je vous souhaite de bonnes courses !
+
+ö
+
+\I t3d
+\X 180
+\Y 20
+\T
+
+
+
+
+
+ö

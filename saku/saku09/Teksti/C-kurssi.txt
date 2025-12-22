@@ -1,0 +1,1229 @@
+5
+1*
+
+{3                        C-ohjelmointikurssi - Osa 1
+{3                        ---------------------------
+
+                           Ville-Pertti Keinonen
+
+
+Ensimm‰inen osa: 
+
+    - johdantoa 
+    - l‰hdekoodi 
+    - k‰‰nt‰j‰
+    - muotoilu
+    - funktiot, tyypit ja muuttujat alustavasti
+    - lauseet, lausekkeet (perus-operaatiot)
+    - vertailuoperaattorit, if-rakenne
+
+
+{3C-kieli ja muut kielet, eli miksi kannattaa opetella C:t‰
+
+Alunperin C-kieli on  kehitetty  UNIX-k‰yttˆj‰rjestelm‰n  toteutusta  varten
+PDP-tietokoneilla. Kieli onnistui kuitenkin siin‰ m‰‰rin hyvin, ett‰  se  on
+yleistynyt l‰hes kaikentyyppisill‰ tietokonelaitteistoilla. Amigalla C-kieli
+on ohjelmointikielist‰ ehk‰ merkitt‰vin, koska Amigan  k‰yttˆj‰rjestelm‰  on
+suurelta osin sill‰ kirjoitettu.
+
+C-kieli on rakenteellinen ohjelmointikieli. Sen hallinta vaatii enemm‰n har-
+joitusta kuin matalamman tason (esim. assembler) tai korkeamman tason  (Ami-
+galla p‰‰asiassa BASICit ja ARexx) kielet, mutta siit‰ huolimatta sen  opet-
+teleminen on vaivan arvoista, sill‰ C-kielell‰ on huomattavia  etuja  molem-
+piin luokituksiin verrattuna:
+
+Matalamman tason kieliin verrattuna C-kieli on v‰hemm‰n vaivalloista ja  bu-
+gialtista. Ohjelmointi on siis huomattavasti nopeampaa ja mukavampaa. Samoin
+mahdollisten bugien m‰‰r‰ on pienempi ja ilmenevien bugien  etsint‰  nopeam-
+paa, kuin assemblerilla ohjelmoitaessa. Monilla assembleria k‰ytt‰vill‰  oh-
+jelmoijilla, jotka eiv‰t osaa C:t‰, on vahvasti se k‰sitys, ett‰ C olisi BA-
+SICin kaltainen korkean tason kieli ja tuottaisi hidasta koodia.  Totta  on,
+ett‰ C-k‰‰nt‰j‰n tuottama koodi ei ole aivan niin  tehokasta  kuin  vastaava
+koodi huolellisesti assemblerilla tehtyn‰ (mihin kuluu  ohjelmoijalta  aikaa
+v‰hint‰‰n kymmenkertaisesti enemm‰n), mutta ero ei  ole  normaalitilanteissa
+kovin suuri; se lienee noin 20-30% yksinkertaisilla k‰‰nt‰jill‰ ja  v‰hemm‰n
+sellaisilla, jotka optimoivat  tehokkaasti  tuottamaansa  koodia.  Kuitenkin
+joissain poikkeustilanteissa, joissa assemblerissa voisi tehd‰  jotain  eri-
+koisempia teknisi‰ optimointeja, voi ero olla niin suuri, ett‰  moni  ohjel-
+moija tekee ainakin kyseisen kohdan mieluummin assemblerilla. Mit‰  BASICin-
+kaltaisuuteen   tulee,    osoittaa    sen    tyyppinen    k‰sitys    l‰hinn‰
+ymm‰rt‰m‰ttˆmyytt‰, sill‰:
+
+Korkeamman tason kieliin verrattuna C tuottaa k‰‰nnettyn‰ paljon  tehokkaam-
+paa koodia, koska sen rakenteet vastaavat hyvin l‰heisesti sit‰, mit‰ kesku-
+syksikkˆ k‰yt‰nnˆss‰ tekee. Korkeamman tason kielet ovat  usein  komentopoh-
+jaisia, eiv‰tk‰ niiden muuttujien tyypit vastaa keskusyksikˆn  k‰sittelemi‰,
+joten jokaista komentoa tai lausekkeen osaa vastaa jokin kokonainen  assemb-
+ler-rutiini, joka on useimmiten aivan turhan monimutkainen kyseisen  operaa-
+tion suorittamiseen.
+
+Amigalle on ilmestynyt uusi, ilmeisesti  C:n  haastajaksi  tarkoitettu  mel-
+kein-rakenteellinen ohjelmointikieli, E, joka on helpompaa kuin C  ja  jossa
+on nopeampi k‰‰nt‰j‰ (joka tosin ei pahemmin optimoi  tuotettua  koodia)  ja
+mahdollisuus k‰ytt‰‰ helpommin suoraan assemblerkomentoja  koodin  joukossa.
+Omasta mielest‰ni E ei kuitenkaan sovellu oikein mihink‰‰n, paitsi ehk‰ sel-
+laisiin aivan pieniin ohjelmiin, jotka ovat assembleria, lukuunottamatta jo-
+tain kutsuja E:n tai k‰yttˆj‰rjestelm‰n korkeamman tason rutiineihin.
+
+
+{3C-kielen kehitys
+
+C-kieli on ajan mittaan muuttunut hieman alkuper‰isest‰  muodostaan.  Jotkut
+asiat ovat olleet ep‰selvi‰, ja niiden toiminta  on  vaihdellut  k‰‰nt‰j‰st‰
+toiseen. T‰m‰n vuoksi ANSI (American National Standard for Information  Sys-
+tems) loi X3J11:n, teknillisen toimikunnan, jonka teht‰v‰n‰  oli  standardi-
+soida C-kieli. T‰m‰ standardisoitu muoto C-kielest‰ tunnetaan nykyisin ylei-
+sesti "ANSI C":n‰. Muista C:n "m‰‰ritelmist‰" lienee merkitt‰vin K&R  (viit-
+taa Brian Kernighanin ja Dennis Ritchien teokseen C-kielest‰), johon ANSI  C
+osin pohjautuu.
+
+Suurin osa Amigan C-k‰‰nt‰jist‰ on p‰‰piirteilt‰‰n ANSI C-standardin  mukai-
+sia. Useimmiten kuitenkin joitain asioita on laajennettu, ja k‰‰nt‰j‰t  ovat
+joidenkin asioiden suhteen suvaitsevampia kuin standardin mukaisen k‰‰nt‰j‰n
+tulisi olla. T‰ss‰ kurssissa pyrin parhaiden tietojeni  mukaan  mainitsemaan
+kyseisenlaiset poikkeamat niihin liittyv‰n materiaalin yhteydess‰.
+
+
+{3T‰m‰ kurssi
+
+T‰m‰n kurssin tarkoituksena on selitt‰‰ C-kielen perusteet ja  antaa  hieman
+pitemm‰llekin menev‰‰ tietoa sill‰ ohjelmoinnista, eli kurssista lienee apua
+myˆs monille sellaisille, jotka jo osaavat C:t‰.
+
+Pelkk‰ kurssin lukeminen ei kuitenkaan riit‰ C-kielen ohjelmointiin:  t‰ytyy
+myˆs pyrki‰ ymm‰rt‰m‰‰n lukemansa, joten  suosittelen,  ett‰  luette  kaiken
+huolellisesti ja etenette seuraavaan kohtaan vasta ymm‰rretty‰nne  edellisen
+kohdan mahdollisimman hyvin. Muistakaa myˆs, ett‰ kertaus ja  k‰yt‰nnˆn  ko-
+keilut auttavat muistamaan asioita. T‰m‰ kurssi ei  takaa  ohjelmointitaidon
+kehittymist‰, mutta jos kykenee ymm‰rt‰m‰‰n sis‰llˆn ja n‰iden tietojen  pe-
+rusteella l‰htee  rohkeasti  kokeilemaan  ja  harjoittelemaan  ohjelmointia,
+pit‰isi v‰hitellen synty‰ C-kieleen hyv‰ tuntuma,  jonka  avulla  voikin  jo
+aloittaa varsinaisen ohjelmoinnin.
+
+T‰m‰ kurssi ei sin‰ns‰ vaadi mit‰‰n aiempaa ohjelmointitaitoa, mutta assemb-
+lerin jonkinasteinen hallitseminen on hyˆdyksi, sill‰  se  helpottaa  koneen
+toiminnan ja joidenkin k‰sitteiden k‰yt‰nnˆn merkityksen ymm‰rt‰mist‰.  Jon-
+kinlainen C-k‰‰nt‰j‰ on hyv‰ olla, jotta voi myˆs kokeilla oppimiaan  asioi-
+ta. Amigalle on saatavilla ainakin seuraavia k‰‰nt‰ji‰:
+
+{3Aztec (Manx) C
+
+T‰t‰ ei  varmaan  en‰‰  moni  k‰yt‰.  Aztec  on  vanhanaikainen  (ja  vanha)
+k‰‰nt‰j‰, aikoinaan se on ollut ilmeisesti aika suosittukin. En tied‰,  onko
+t‰t‰ k‰‰nt‰j‰‰ en‰‰ mist‰‰n saatavilla, enk‰ n‰e mit‰‰n  syyt‰,  miksi  joku
+haluaisi viel‰ nyky‰‰n k‰ytt‰‰ Aztecia.
+
+{3DICE C
+
+DICE on alunperin Matthew Dillonin sharewarena julkaisema C-k‰‰nt‰j‰.  Uudet
+versiot ovat kaupallisia, mutta vapaasti  levitett‰vi‰  versioita  on  viel‰
+liikkeell‰, ja ne ovat ominaisuuksiltaan jo eritt‰in k‰yttˆkelpoisia. Vaikka
+koneessa ei olisi paljon muistia, DICE  toimii  hyvin  ja  k‰‰nt‰‰  ohjelmat
+eritt‰in nopeasti. DICE:n tuottama koodi on suhteellisen pient‰  ja  nopeaa,
+vaikka DICE ei suorita  sille  mit‰‰n  monimutkaisempia  optimointeja.  Itse
+k‰yt‰n  enimm‰kseen  DICE:n   rekisterˆity‰   shareware-versiota   ohjelmien
+k‰‰nt‰miseen.
+
+{3GNU C (eli GCC)
+
+GCC on muista j‰rjestelmist‰ portattu C-k‰‰nt‰j‰, joka on ilmainen (GNU  li-
+cense takaa ohjelman olevan t‰ysin ilmainen, vapaasti  k‰ytett‰viss‰,  levi-
+tett‰viss‰ ja jopa muuteltavissa). GCC k‰‰nt‰‰ ohjelmia kohtuullisen nopeas-
+ti ja optimoi hyvin tehokkaasti, mutta vaatii suhteellisen  paljon  muistia.
+GCC:n tuottamat ohjelmat vaativat ixemul.libraryn.  GCC  soveltuu  parhaiten
+k‰ytett‰v‰ksi   UNIX-tyyppisi‰,   helposti   eri   j‰rjestelmille    suoraan
+k‰‰nnett‰vi‰ ohjelmia teht‰ess‰.
+
+{3SAS/C (entinen Lattice C)
+
+SAS/C on ollut jo pitk‰‰n Amigan suosituin C-k‰‰nt‰j‰. SAS/C on kaupallinen,
+mutta sen kehitys on lopetettu. SAS/C toimii suhteellisen v‰h‰ll‰  muistilla
+ja k‰‰nt‰‰ kohtuullisen nopeasti, jos optimointi on pois p‰‰lt‰, mutta tuot-
+taa eritt‰in hidasta koodia. Optimoinnin kanssa tuotettu koodi on paljon te-
+hokkaampaa, mutta k‰‰nt‰minen on eritt‰in hidasta ja muistia  kuluu  monissa
+tapauksissa valtavia m‰‰ri‰.
+
+Myˆs joitain pienempi‰, ilmaisia k‰‰nt‰ji‰ on  saatavilla  (ainakin  PDC  ja
+North C), mutta ne ovat vanhoja ja hyvin alkeellisia.
+
+Jossain vaiheessa pit‰isi ilmesty‰ Amigalle viel‰ yksi  merkitt‰v‰  ilmainen
+C-k‰‰nt‰j‰, joka lienee harkitsemisen  arvoinen.  Olen  nimitt‰in  itse  te-
+kem‰ss‰ k‰‰nt‰j‰‰. Toistaiseksi sill‰ ei ole viel‰  nime‰,  mutta  k‰‰nt‰j‰n
+p‰‰osa on jo varsin pitk‰ll‰ ja toimii hyvin niin pitk‰lle kuin sit‰ on ole-
+massa. Generoidun koodin pit‰isi olla GCC:n tuottaman  tasoa  (myˆs  joitain
+GCC:n ja muiden k‰‰nt‰jien  C-laajennuksia,  kuten  case  rangeja  ja  __ty-
+peof__:ia,  tuetaan),  mutta  lis‰ksi   toiminta   soveltuu   hyvin   Amiga-
+ymp‰ristˆˆn. Mainostan vain etuk‰teen, ettei  kannata  v‰ltt‰m‰tt‰  ainakaan
+ostaa C-k‰‰nt‰j‰‰, kurssin ajaksi ja muutenkin aloitteluvaiheeseen on DICE:n
+ilmaisversio useimmille ehk‰ paras vaihtoehto. T‰ydellisempi k‰‰nt‰j‰  olisi
+tietysti GCC, joka on hyv‰ valinta, jos pit‰‰  erityisesti  UNIX-tyyppisist‰
+ohjelmistoista ja omistaa riitt‰v‰sti kovalevy- sek‰ muistitilaa.
+
+K‰‰nt‰j‰n lis‰ksi on tietysti oltava jokin tekstieditori, jolla syˆtt‰‰  oh-
+jelmat koneelle. T‰llaisia on varmasti  jokaisen  saatavilla;  Amigan  Work-
+bench-diskeill‰ tulee n‰it‰ jo kolme: ed, edit, memacs. Ne riitt‰v‰t jo  hy-
+vin C-ohjelmoinnin opetteluun, mutta pitemm‰lle p‰‰st‰ess‰ on  hyv‰  hankkia
+jokin monipuolisempi (configuroitavuudeltaan) editori.
+
+Kurssi pyrkii olemaan mahdollisimman kattava, mutta kuitenkin selke‰. Alussa
+joudutaan k‰ytt‰m‰‰n joidenkin asioiden  esitt‰misess‰  esimerkkej‰,  joiden
+varsinaisen sis‰llˆn merkitys selvi‰‰ vasta myˆhemm‰ss‰  vaiheessa,  erityi-
+sesti koska kurssi pyrkii olemaan "oikeaoppinen" alusta alkaen.
+
+Kurssissa k‰ytetyt termit saattavat  poiketa  virallisista  suomenkielisist‰
+termeist‰, koska itse tunnen oikeat termit vain englanniksi. Monet asiat  on
+selitetty hieman kierrellen  jonkun  hankalan  tai  oudon  kuuloisen  termin
+k‰ytˆn v‰ltt‰miseksi. Joissain yhteyksiss‰ on myˆs  englanninkielinen  termi
+mainittu.
+
+
+{3L‰hdekoodi ja k‰‰nnˆs
+
+C-kielt‰ ohjelmoitaessa kirjoitetaan ensin ohjelma tekstieditorilla ja  tal-
+lennetaan se tiedostoon. T‰t‰ tiedostoa sanotaan  l‰hdekoodiksi.  Yleisemmin
+k‰ytet‰‰n kuitenkin vastaavasta englanninkielisest‰ termist‰  "source  code"
+johdettua slanginimityst‰  "sorsa".  C-kielen  l‰hdekooditiedostot  nimet‰‰n
+yleens‰ k‰ytt‰en p‰‰tett‰ ".c".
+
+Jotta ohjelma  saadaan  l‰hdekoodista  ajettavaksi  tiedostoksi,  t‰ytyy  se
+k‰‰nt‰‰ jollain C-k‰‰nt‰j‰ll‰. K‰‰nnˆksess‰ on useita vaiheita, joita  k‰si-
+tell‰‰n myˆhemmin. Ohjelmoijan ei yksinkertaisia ohjelmia tehdess‰  tarvitse
+huomioida eri vaiheita, koska C-k‰‰nt‰j‰n liittym‰osa osaa  useimmiten  ajaa
+kaikki k‰‰nnˆksen vaiheet automaattisesti.
+
+Hyvin yleist‰ on kuitenkin, ettei  k‰‰nt‰j‰  kykene  k‰‰nt‰m‰‰n  l‰hdekoodia
+ajettavaksi ohjelmaksi, koska siin‰ on virheit‰. T‰llˆin k‰‰nt‰j‰  ilmoittaa
+virheist‰ ja kertoo yleens‰ ainakin virheen  tyypin  sek‰  rivin,  jolla  se
+l‰hdekoodissa esiintyy. Kun n‰in tapahtuu, kannattaa katsoa l‰hdekoodin  ri-
+vi‰, jolla  k‰‰nt‰j‰  ilmoittaa  virheen  olevan.  Yleens‰  virheet,  joista
+k‰‰nt‰j‰ ilmoittaa, ovat v‰littˆm‰sti n‰kyviss‰ olevia (esimerkiksi  kirjoi-
+tusvirheit‰). Jos kyseiselt‰ rivilt‰ ei lˆydy mit‰‰n,  mik‰  vaikuttaa  vir-
+heelliselt‰, kannattaa katsoa paria edellist‰ rivi‰.
+
+Monet k‰‰nt‰j‰t eiv‰t yhdest‰ virheest‰ keskeyt‰  k‰‰nnˆst‰,  vaan  jatkavat
+eteenp‰in, jolloin virheit‰ saatetaan luetella useampia. Useimmat  k‰‰nt‰j‰t
+saattavat myˆs varoittaa jostain asioista. N‰m‰ varoitukset eiv‰t ole varsi-
+naisia virheit‰, ja ohjelma yleens‰  k‰‰ntyy  varoituksista  huolimatta.  Ne
+saattavat kuitenkin tarkoittaa, ettei ohjelma tule toimimaan aivan kunnolla,
+eli ohjelman ei pit‰isi k‰‰nnett‰ess‰ tuottaa edes varoituksia.
+
+Kun ohjelma lopulta k‰‰ntyy kunnolla ilman virheit‰ tai varoituksia, pit‰isi
+tuloksena olla ajettava tiedosto, jota voi jo kokeilla. Kuitenkaan se,  ett‰
+k‰‰nt‰j‰ on onnistunut k‰‰nt‰m‰‰n ohjelman l‰hdekoodista ajettavaan muotoon,
+ei takaa ohjelman toimivan halutusti. Ohjelmassa voi olla kaikenlaisia suun-
+nitteluvirheit‰,  "bugeja",  jotka   saattavat   olla   hyvinkin   vaikeasti
+lˆydett‰viss‰. T‰llaisten vikojen  etsint‰‰  eli  "debuggausta"  k‰sitell‰‰n
+kurssissa vasta myˆhemmin, kun on aluksi k‰yty l‰pi itse C-kielen perusteet.
+Kurssin esimerkkiohjelmien pit‰isi kuitenkin toimia mill‰ tahansa  kunnolli-
+sella C-k‰‰nt‰j‰ll‰ k‰‰nnettyn‰. (Niiden esimerkkiohjelmien kohdalla,  joita
+t‰m‰ ei koske, on erillinen maininta.)
+
+T‰ss‰ vaiheessa voimmekin jo kokeilla yksinkertaisen  ohjelman  k‰‰nt‰mist‰.
+K‰ynnist‰ tekstieditori ja kirjoita siihen seuraava: 
+
+#include <stdio.h>
+
+int main(int ac, char **av)
+{{
+  puts("Hello World!");
+  return 0;
+}
+
+Tallenna ohjelma vaikka tiedostoon nimelt‰ "hello.c". T‰m‰ hello.c on ohjel-
+man l‰hdekoodi, kuten ylemp‰n‰ selitettiin. Nyt voidaan kokeilla k‰ytt‰‰  C-
+k‰‰nt‰j‰‰, jotta saadaan t‰m‰ hello.c k‰‰nnetty‰ ajettavaan muotoon,  vaikka
+tiedostoksi nimelt‰ "hello". K‰‰nnˆs tapahtuu yll‰k‰sitellyill‰  k‰‰nt‰jill‰
+seuraavasti: 
+
+{3Aztec
+
+(Jos joku k‰ytt‰‰ Aztecia, voi ehk‰ osata tehd‰ j‰rkev‰mminkin.)
+
+Yleisesti: cc <l‰hde>.c
+           ln <l‰hde>.o -l<kohde>
+
+Eli hello.c k‰‰nnet‰‰n:
+
+cc hello.c
+ln hello.o -lhello
+
+{3DICE C
+
+Yleisesti: dcc <l‰hde> -o <kohde>
+
+Eli hello.c k‰‰nnet‰‰n:
+
+dcc hello.c -o hello
+
+{3GCC
+
+Yleisesti: gcc <l‰hde> -o <kohde>
+
+Eli hello.c k‰‰nnet‰‰n:
+
+gcc hello.c -o hello
+
+{3SAS/C
+
+Yleisesti: sc <l‰hde> link to <kohde>
+
+Eli hello.c k‰‰nnet‰‰n:
+
+sc hello.c link to hello
+
+Kaikki k‰‰nt‰j‰t osaavat paljon muutakin, joten kannattaa tutustua huolelli-
+sesti k‰ytt‰m‰‰ns‰ k‰‰nt‰j‰‰n.
+
+Jos k‰‰nnˆs on onnistunut, pit‰isi tuloksena olla ajettava tiedosto "hello".
+Kokeile ajaa se; sen pit‰isi  tulostaa  "Hello  World!"  CLI/Shell-ikkunaan,
+josta se ajettiin.
+
+
+{3V‰liss‰ kehittyneemp‰‰ tietoa kiinnostuneille
+
+Yksi syy, miksi C-kielt‰ on virheellisesti pidetty tehottomana, on se,  ett‰
+t‰llainenkin esimerkki tuottaa  varsin  suuren  ajettavan  tiedoston.  T‰m‰n
+"hello":n koko k‰‰nnettyn‰ on k‰‰nt‰j‰kohtaisesti n. 2-5kB. T‰st‰  kuitenkin
+itse l‰hdekoodissa oleva osuus on enint‰‰n hieman yli 200 tavua,  vaihdellen
+k‰‰nt‰j‰n ja k‰ytettyjen optioiden mukaan. Kokonaisuuden suhteessa suuri ko-
+ko johtuu siit‰, ett‰ ohjelman lopullisessa ajettavassa muodossa on  linkat-
+tuna mukaan kaksi alustuskooditasoa. (Linkkauksesta puhutaan myˆhemmin kurs-
+sissa.) Niist‰ matalampitasoinen  yleens‰  tallentaa  pino-osoittimen  arvon
+(jotta ohjelmasta voidaan poistua helpommin riippumatta  poistumiskohdasta),
+avaa dos.library-systeemikirjaston ja varautuu siihen, ett‰ ohjelma on k‰yn-
+nistetty Workbenchist‰. T‰m‰n j‰lkeen kutsutaan korkeamman tason alustuskoo-
+dia, joka valmistelee C:n stdio-tiedostot ja muotoilee komentorivill‰  anne-
+tut parametrit C:n main():in k‰ytt‰m‰‰n muotoon. Vasta kaiken t‰m‰n  j‰lkeen
+kutsutaan main():ia eli varsinaista k‰ytt‰j‰n tekem‰‰ ohjelmaa. Alustuskoodi
+itsess‰‰nk‰‰n ei vie niin paljon tilaa, vaan ohjelmaan joudutaan linkkaamaan
+myˆs C:n tavallisia funktioita, hello.c:n tapauksessa ainakin seuraavia: fo-
+pen(), fclose(), fwrite(), write(), puts() ja malloc(). (GCC on t‰ss‰  poik-
+keus; osa n‰ist‰ rutiineista on sijoitettu  ixemul.library-kirjastoon,  jol-
+loin niit‰ ei tarvitse sis‰llytt‰‰ jokaiseen ohjelmaan erikseen.)
+
+Suuremmissa ohjelmissa koon kasvu linkatun informaation takia  ei  ole  niin
+merkitt‰v‰‰, koska niiss‰ itse ohjelman  osuus  on  huomattavasti  suurempi.
+Pieni‰ ohjelmia tehdess‰‰n monet kuitenkin  haluavat  minimoida  ohjelmiensa
+koon j‰tt‰m‰ll‰ kaikki C:n alustukset pois. T‰m‰ vaatii jonkinasteista  Ami-
+gan k‰yttˆj‰rjestelm‰n tuntemusta, koska vain joitain harvoja yksinkertaisia
+(l‰hinn‰ merkkijonon manipulointiin k‰ytettyj‰) C:n standardifunktioita voi-
+daan kutsua. T‰ll‰ tavalla tehtyn‰ esimerkisi hello.c voitaisiin tehd‰  seu-
+raavasti: 
+
+#include <exec/types.h>
+#include <exec/libraries.h>
+#include <dos/dos.h>
+
+#ifdef __GNUC__
+
+#include <inline/exec.h>
+#include <inline/dos.h>
+
+int callstart(void)
+{{
+  return start();
+}
+
+#else
+
+#include <clib/exec_protos.h>
+#include <clib/dos_protos.h>
+
+#include <proto/exec.h>
+#include <proto/dos.h>
+
+#endif
+
+int start(void)
+{{
+  struct Library *SysBase, *DOSBase;
+
+  SysBase = *(struct Library **)4;
+  if (DOSBase = OpenLibrary("dos.library", 0)) {
+    Write(Output(), "Hello World!\n", 13);
+    CloseLibrary(DOSBase);
+  }
+  return 0;
+}
+
+T‰m‰n pit‰isi k‰‰nty‰ ainakin DICE:lla, SAS/C:ll‰ ja GCC:ll‰, jos osaa aset-
+taa optiot oikein ja omistaa tarpeelliset includet. Tuloksena olevan ajetta-
+van ohjelman koon  pit‰isi  olla  alle  130  tavua  DICE:lla  tai  SAS/C:ll‰
+k‰‰nnettyn‰, GCC:ll‰ t‰m‰n tyyppinen tekniikka toimii varsin huonosti.  Pal-
+joa t‰t‰ pienemm‰ksi ei vastaavaa ohjelmaa  saisi  assemblerillakaan.  Kokoa
+voisi hieman v‰hent‰‰ j‰tt‰m‰ll‰ pois rekisterien tallentaminen pinoon, joka
+poikkeuksellisesti ei ole t‰ss‰ tarpeellista.
+
+
+{3C-kielen muotoilu
+
+C-kieli on hyvin vapaamuotoista: siin‰ voi olla jokaisen  elementin  v‰liss‰
+rajoittamaton m‰‰r‰ "tyhj‰‰" (tyhj‰ksi lasketaan v‰lilyˆnnit, tabulaattorit,
+rivinvaihdot sek‰ kommentit). Ottakaamme  esimerkiksi  hello.c:ss‰  k‰ytetty
+funktion puts() kutsu: 
+
+puts("Hello World!");
+
+puts ( "Hello World!" ) ;
+
+puts
+     (
+      "Hello World!"
+     )
+     ;
+
+ 
+Kaikki yll‰olevat tarkoittavat  C-k‰‰nt‰j‰n  n‰kˆkulmasta  samaa,  koska  ne
+koostuvat samoista viidest‰ elementist‰: "puts", "(", "Hello World!", ")" ja
+";".
+
+Kuten useimmissa muissakin kieliss‰, myˆs C-kieless‰ voidaan ohjelman l‰hde-
+koodiin kirjoittaa kommentteja,  jotka  eiv‰t  vaikuta  itse  ohjelmaan  mi-
+tenk‰‰n, koska k‰‰nt‰j‰ ei huomioi niit‰. C-kielen  kommentit  alkavat  mer-
+keill‰ "/*" ja loppuvat merkkeihin "*/" ja voivat sijaita l‰hes miss‰  vain.
+Yll‰ esimerkkin‰ k‰ytetty tarkoittaisi edelleen samaa, vaikka  sen  kirjoit-
+taisi muotoon: 
+
+puts /* this is a comment */ (
+  "Hello World!"
+  /*
+   * this is a block comment
+   */
+  );
+
+Lis‰ksi monet C-k‰‰nt‰j‰t hyv‰ksyv‰t C++-tyylisi‰ kommentteja. N‰m‰  alkavat
+merkeill‰  "//"  ja  jatkuvat  rivin  loppuun.  Edelleen  samaa   esimerkki‰
+k‰ytt‰en: 
+
+puts ( // This is a C++ comment
+      "Hello World!");
+
+Aivan erityinen "tyhj‰n" merkki on "\" rivin lopussa. T‰ll‰  ilmaistaan  ri-
+vin jatkumista seuraavan rivin alusta, ja se voi vaikka jakaa jonkun normaa-
+listi yhten‰isen koodin osan muuttamatta sen merkityst‰: 
+
+pu\
+ts("Hello World!");
+
+Rivin lopussa oleva "\" ei kuitenkaan yleens‰  ole  t‰llaisissa  tilanteissa
+hyˆdyllinen. K‰yt‰nnˆss‰ sit‰ k‰ytet‰‰n yleisimmin esik‰sittelij‰n ohjausko-
+mentojen yhteydess‰. Ne ovat varsinaiseen C-koodiin n‰hden poikkeuksellisia,
+koska ne ovat aina rivin mittaisia. N‰ist‰ lis‰‰ myˆhemmin.
+
+Joillakin k‰‰nt‰jill‰ voi myˆs kommenteilla hajottaa osia muuttamatta niiden
+merkityst‰. Seuraava toimii useilla k‰‰nt‰jill‰:
+
+pu/* */ts("Hello World!");
+
+T‰llainen saattaa myˆs toimia:
+
+pu/*
+   */ts("Hello World!");
+
+N‰iden kommenttijakojen toimivuuteen ei kuitenkaan kannata luottaa.
+
+Usein vaaditaan osien v‰lille v‰hint‰‰n yksi tyhj‰, jotta ne voidaan erottaa
+toisistaan, esimerkiksi hello.c:ss‰ on er‰‰ll‰ rivill‰: 
+
+int main(int ac, char **av)
+
+Mahdollisimman paljon tiivistettyn‰ t‰m‰ olisi: 
+
+int main(int ac,char**av)
+
+T‰m‰n enemp‰‰ ei voida tiivist‰‰, koska "intmain" tai  "intac"  n‰ytt‰isiv‰t
+yhdelt‰ "sanalta".
+
+Vaikka C-kielt‰ voidaan muotoilla n‰in vapaasti, k‰ytet‰‰n kuitenkin yleens‰
+t‰ysin s‰‰nnˆnmukaista muotoilua ohjelman rakenteen selkeyden vuoksi. Mit‰‰n
+virallista  tapaa  ei  varsinaisesti  ole,  mutta  on   kuitenkin   "yleinen
+k‰yt‰ntˆ", jota useimmat C-ohjelmoijat seuraavat. T‰m‰ k‰yt‰ntˆ  ei  kuiten-
+kaan ole kovinkaan tarkka, vaan aika yleinen, joten jotkut asiat vaihtelevat
+aina ohjelmoijan mukaan.
+
+Yleiseen k‰yt‰ntˆˆn kuuluu, ett‰ jokainen ohjelman lohko ("{"- ja  "}"-merk-
+kien v‰liss‰ oleva ohjelmaosuus) sisennet‰‰n. Kuitenkin sisennyksen m‰‰r‰ ja
+aaltosulkeiden sijoittelu vaihtelee. Yleens‰ sisennys on 2-4 merkki‰. Jotkut
+k‰ytt‰v‰t 8 merkin sisennyst‰, mik‰ tosin vaikeuttaa ohjelman rakenteen hah-
+mottamista jo siin‰ m‰‰rin, ett‰ ohjelmoijan on vaikea hyˆdynt‰‰ C:n  raken-
+teellisuuden etuja, ja ohjelman tekninen toiminta k‰rsii (oma "teoria" -  ei
+ole pakko uskoa). T‰ss‰ pari esimerkki‰ sisennyksest‰ ja aaltosulkeiden  si-
+joittelusta (typer‰ esimerkkifunktio, ei kokeiltavaksi  tai  ymm‰rrett‰v‰ksi
+tarkoitettu): 
+
+/*
+ * yksinkertainen sijoittelu, 2 merkin sisennykset
+ */
+
+void procedure(void)
+{{
+  int i, s;
+
+  for (i = 10, s = 5; i; --i)
+  {
+    s += i * 3;
+    if (i == 5)
+    {
+      printf("at i = 5, s = %d\n", s);
+      i -= s / 10;
+    }
+    else
+    {
+      printf("loop iteration %d\n", i);
+      s = -s;
+    }
+  }
+  puts("done");
+}
+
+/*
+ * hieman erikoisempi sijoittelu, 4 merkin sisennykset
+ */
+
+void procedure(void)
+{{
+    int i, s;
+
+    for (i = 10, s = 5; i; --i)
+      {
+        s += i * 3;
+        if (i == 5)
+          {
+            printf("at i = 5, s = %d\n", s);
+            i -= s / 10;
+          }
+        else
+          {
+            printf("loop iteration %d\n", i);
+            s = -s;
+          }
+      }
+    puts("done");
+}
+
+/*
+ * tiiviimpi sijoittelu, 2 merkin sisennykset
+ * (t‰ss‰ kurssissa k‰ytetty muoto)
+ */
+
+void procedure(void)
+{{
+  int i, s;
+
+  for (i = 10, s = 5; i; --i) {
+    s += i * 3;
+    if (i == 5) {
+      printf("at i = 5, s = %d\n", s);
+      i -= s / 10;
+    } else {
+      printf("loop iteration %d\n", i);
+      s = -s;
+    }
+  }
+  puts("done");
+}
+
+Yll‰olevissa esimerkeiss‰  tulee  esille  myˆs  muita  muotoiluun  liittyvi‰
+asioita, kuten v‰lien k‰yttˆ. Kun kutsutaan/m‰‰ritell‰‰n  funktioita  (t‰ss‰
+niit‰ ovat "procedure", "printf" ja "puts"), ei yleens‰ laiteta  v‰li‰  sul-
+keiden ymp‰rille eik‰ sis‰puolelle. (Tosin jotkut - aika harvat -  k‰ytt‰v‰t
+v‰li‰ rutiinin nimen ja "("-merkin v‰liss‰.) Kun taas k‰ytet‰‰n  C:n  raken-
+teita (t‰ss‰: "for", "if"; muita: "while", "switch"), laitetaan yleens‰ sul-
+keiden  ymp‰rille  v‰lit  (j‰lleen  kerran  poikkeuksia  lˆytyy).  Sulkeiden
+sis‰puolella harvat k‰ytt‰v‰t miss‰‰n yhteydess‰ v‰lej‰.
+
+Pilkun j‰lkeen tulee aina v‰li, ennen pilkkua ei. (Tosin t‰m‰kin  voi  vaih-
+della pilkkun k‰yttˆpaikan mukaan.)
+
+Lausekkeissa yleens‰ k‰ytet‰‰n v‰lej‰ eri operaattoreiden ("=",  "==",  "+",
+"-" jne.) molemmin puolin, poikkeuksena esimerkiksi "-" silloin, kun se tar-
+koittaa negatiivista arvoa eik‰ v‰hennyslaskua.
+
+Kommentit sijoitetaan yleens‰ rivin  loppuun  tai  tyhj‰lle  riville.  Usein
+tyhj‰lle riville laitettu kommentti  kannattaa  laittaa  useammalle  riville
+esimerkkien selostuksissa n‰kyv‰‰n tyyliin.
+
+Enemm‰nkin "k‰yt‰ntˆj‰" on, mutta ne k‰yv‰t ilmi myˆhemmin itse kielen opet-
+telun yhteydess‰.
+
+Jos joutuu lukemaan paljon toisten kirjoittamaa  C-koodia  ja  on  muotoilun
+suhteen yht‰ neuroottinen kuin min‰, kannattaa etsi‰ k‰siins‰ "indent"-  oh-
+jelma, joka automaattisesti muotoilee C-sorsia  sille  annettujen  optioiden
+mukaisesti. 
+
+
+{3Funktiot
+
+C-kielisen ohjelman er‰it‰ oleellisia osia ovat  funktiot  (tai  "rutiinit",
+englanniksi "functions" tai "procedures"). Funktioita voidaan m‰‰ritell‰  ja
+kutsua. Esimerkkiohjelma hello.c m‰‰ritteli funktion main() ja kutsui  funk-
+tiota puts(): 
+
+int main(int ac, char **av) /* funktion esittely                 */
+{{                           /* funktion koodin m‰‰rittely alkaa  */
+  puts("Hello World!");     /* kutsutaan funktiota puts()        */
+  return 0;                 /* palautetaan 0                     */
+}                           /* funktion koodin m‰‰rittely loppuu */
+
+Funktion esittely m‰‰rittelee funktion nimen, mink‰tyyppisen  arvon  funktio
+palauttaa sek‰ mink‰tyyppiset parametrit sill‰ on (tyypeist‰  tarkemmat  se-
+lostukset myˆhemmin). Esimerkiss‰ funktion nimi on main, se palauttaa arvon,
+jonka tyyppi on int (er‰s kokonaislukutyyppi), parametrien tyypit  ovat  int
+ja char **, joille annetaan muuttujanimikkeet ac  ja  av  funktion  sis‰llˆn
+ajaksi, eli ne ovat k‰ytett‰viss‰ kuten mitk‰ tahansa paikalliset  muuttujat
+(muuttujistakin lis‰‰ tietoa myˆhemmin).
+
+Funktion esittelyn muuttujien m‰‰rittelylle on myˆs toinen  tapa.  Yll‰oleva
+ja  t‰ss‰  kurssissa  yleens‰  k‰ytetty  on  ANSI:n  mukainen  tapa.  Jotkut
+k‰ytt‰v‰t vanhaa K&R tyyli‰: 
+
+int main(ac, av)
+  int ac;
+  char **av;
+{{
+  puts("Hello World!");
+  return 0;
+}
+
+Funktiolla main() on erityinen merkitys, sill‰  C-ohjelman  suoritus  kutsuu
+sit‰ automaattisesti. T‰m‰n takia ovat main():in parametrien ja  palautuksen
+tyypit aina samat, vaikka ohjelma ei k‰ytt‰isik‰‰n parametreja mihink‰‰n.
+
+Funktion varsinainen sis‰ltˆ tulee esittelyn j‰lkeen aaltosulkeiden v‰liss‰.
+Funktion sis‰ltˆ m‰‰r‰‰, mit‰ funktio tekee, kun sit‰ kutsutaan.
+
+Kun funktiosta poistutaan, se voi palauttaa jonkin arvon. Funktiomme  main()
+palauttaa arvon, joka on tyypilt‰‰n int, kuten on m‰‰ritelty funktion  esit-
+telyss‰. Arvo palautetaan komennolla  (yksi  C-kielen  kahdesta  komennosta)
+"return", jolla asetetaan palautusarvo ja poistutaan  funktiosta.  hello.c:n
+tapauksessa on palautusarvona luku 0. Mit‰‰n return:in j‰lkeisi‰  toimintoja
+funktiossa ei suoriteta, jos muuttaisimme j‰rjestyst‰ hello.c:ss‰: 
+
+int main(int ac, char **av)
+{{
+  return 0;
+  puts("Hello World!"); /* ei koskaan suoriteta */
+}
+
+T‰ss‰ ei ohjelman suoritus edes p‰‰sisi puts():in kutsuun, koska  funktiosta
+on poistuttu jo ennen sit‰.
+
+Komentoa "return" voidaan k‰ytt‰‰ myˆs ilman palautusarvoa, jos  funktio  on
+m‰‰ritelty sellaiseksi, joka ei palauta mit‰‰n (eli esittelyss‰ on palautus-
+tyypiksi m‰‰ritelty pseudo-tyyppi "void"). Tyyppi‰  "void"  voidaan  k‰ytt‰‰
+myˆs ilmaisemaan, ettei funktiolle anneta parametreja. 
+
+/*
+ * funktio, joka ei ota parametreja eik‰ palauta mit‰‰n
+ */
+
+void func1(void)
+{{
+  return;
+}
+
+/*
+ * kun funktio ei palauta mit‰‰n, voidaan return-komento j‰tt‰‰ pois,
+ * sill‰ funktiosta poistutaan automaattisesti myˆs kun funktio loppuu
+ */
+
+void func2(void)
+{{
+}
+
+Seuraavaksi esimerkkiohjelma, joka demonstroi sellaisen funktion kutsumista,
+joka ei ota parametreja:
+
+#include <stdio.h>
+
+void test(void)
+{{
+  puts("testing...");
+}
+
+int main(int ac, char **av)
+{{
+  test();
+  puts("ok");
+  return 0;
+}
+
+T‰m‰n esimerkin pit‰isi tulostaa shell-ikkunaan:
+
+testing...
+ok
+
+T‰ss‰ funktion test() voisi m‰‰ritell‰ vanhaan tyyliin ilman "void":ia para-
+metrien korvikkeena:
+
+void test()
+{{
+  puts("testing...");
+}
+
+Funktioiden m‰‰rittelemist‰ ja  kutsumista  k‰sitell‰‰n  myˆhemmin  enemm‰n.
+Aluksi on kuitenkin syyt‰ perehty‰ hieman tarkemmin  tyyppeihin  ja  muuttu-
+jiin. 
+
+
+{3Muuttujat ja tyypit alustavasti
+
+C-kieless‰ on muuttujille m‰‰ritelt‰viss‰ useita eri tyyppej‰. Perustyyppej‰
+on tehokas k‰sitell‰, koska ne ovat samoja tyyppej‰, joita koneen prosessori
+osaa k‰sitell‰ suoraan.
+
+Ennen tyyppien selityst‰ ja muuta kurssissa tulevaa on syyt‰ k‰sitell‰  joi-
+takin tietokoneiden toimintaan liittyvi‰ perusk‰sitteit‰, jotka lienev‰t mo-
+nille jo ennest‰‰n tuttuja:
+
+Bitti (englanniksi "bit"): Nykyisten tietokoneiden toiminta pohjautuu  digi-
+taalisiin signaaleihin (vastakohtana  olisivat  esimerkiksi  stereolaitteet,
+joissa k‰ytet‰‰n analogisia signaaleita), joilla on vain  kaksi  mahdollista
+tilaa. N‰ist‰ tiloista k‰ytet‰‰n numeerisia ilmaisuja 0  ja  1.  K‰yt‰nnˆss‰
+n‰m‰ signaalit liikkuvat s‰hkˆn‰ johtimia pitkin, ja  numeerisia  merkintˆj‰
+vastaavat yleens‰ j‰nnitteet 0V (eli 0) ja +5V (eli 1). Tietoa k‰sitelt‰ess‰
+t‰llaisesta yksitt‰isest‰ signaalista (ja samalla tiedon pienimm‰st‰ mahdol-
+lisesta yksikˆst‰) k‰ytet‰‰n nimityst‰ bitti.
+
+Tavu (englanniksi "byte"): Koska bitill‰ voi ilmaista vain lukuja  0  ja  1,
+yhdistet‰‰n yleens‰ useampia bittej‰, jotka yhdess‰ voivat esitt‰‰ hyˆdylli-
+sempi‰ lukuja (k‰yt‰nnˆss‰ t‰m‰ tehd‰‰n rinnakkaisilla johtimilla).  Yleens‰
+pienin t‰ll‰ tavalla k‰sitelty tiedon yksikkˆ on tavu,  eli  8  rinnakkaista
+bitti‰. Tavun bitit numeroidaan nollasta seitsem‰‰n. Tavun  arvo  on  p‰‰ll‰
+(eli tilassa 1) olevien bittien arvojen summa. Bitin arvo on  2^n  (jossa  ^
+tarkoittaa potenssiin korotusta ja n on bitin numero).  Bitti  numero  7  on
+siis tavun eniten merkitsev‰, ja bitti numero 0  v‰hiten  merkitsev‰  bitti.
+Kun tavun arvo kirjoitetaan bin‰‰rimuotoon  (2-kantainen  luku),  aloitetaan
+eniten merkitsev‰st‰ bitist‰.
+
+Heksadesimaalinotaatio: Koska 10-kantaiset luvut eiv‰t sovellu  kovin  hyvin
+tietokoneissa k‰ytett‰viksi (ne eiv‰t mene bittein‰ tasan), k‰ytet‰‰n moniin
+tarkoituksiin 16-j‰rjestelm‰‰ (heksadesimaalilukuja), jossa k‰ytet‰‰n  nume-
+roiden 0-9 lis‰ksi kirjaimia a-f lukujen kirjoittamiseen.  Heksadesimaalilu-
+vun tunnuksena on C-kieless‰ 0x (assemblerissa se on  $).  Heksadesimaalilu-
+vuissa on se etu, ett‰ jokainen numero vastaa suoraan nelj‰‰ bitti‰, eli ta-
+vun arvo on aina ilmaistavissa kahdella heksanumerolla. Tavun arvo  on  siis
+v‰lilt‰ 0x00 (desimaalina 0) - 0xff (desimaalina 255).
+
+Muisti: Tiedon ilmaisemisesta hetkellisin‰ signaaleina ei  ole  sellaisenaan
+mit‰‰n hyˆty‰, vaan tietoa t‰ytyy voida  s‰ilytt‰‰  jotenkin.  Tieto  s‰ily-
+tet‰‰n muistin avulla, joka on periaatteessa vain alue  per‰kk‰isi‰  tavuja.
+Yleisimmin muistina k‰sitetty muisti on RAM-muistia  ("Random  Access  Memo-
+ry"), johon voidaan kirjoittaa ja josta voidaan lukea. Amigassa  dos-komento
+"avail" kertoo vapaana olevan RAM-muistin m‰‰r‰n, miten  paljon  sit‰  enim-
+mill‰‰n voisi olla ja miten paljon sit‰ on k‰ytˆss‰. (Amigassa RAM-muisti on
+edelleen jaoteltu kahdentyyppiseen muistiin: chip-muisti, joka on  keskusyk-
+sikˆn lis‰ksi kaikkien erikoisprosessoreiden osoitettavissa ja  fast-muisti,
+joka on nopeampaa, koska keskusyksikkˆ saa sill‰ enemm‰n v‰yl‰aikaa.)  Muis-
+tin suhteen ei sin‰ns‰ ole olemassa  k‰sitteit‰  "vapaana"  tai  "k‰ytˆss‰",
+vaan Amigan k‰yttˆj‰rjestelm‰ (kuten  useimmat  muutkin  k‰yttˆj‰rjestelm‰t)
+pit‰‰  lukua  RAM-muistin  k‰ytˆst‰.  Muistin  "m‰‰r‰"  lasketaan  tavuissa.
+Lis‰ksi on ROM-muistia ("Read Only Memory"), jota voi vain  lukea.  Amigassa
+keskeisimm‰t osat k‰yttˆj‰rjestelm‰st‰ ovat ROM-muistissa. (Juuri  t‰st‰  on
+kyse, kun puhutaan "Kickstart ROM":ista.)
+
+Muistiosoite: Muistia k‰sitelt‰ess‰ on  kyett‰v‰  ilmaisemaan,  mit‰  kohtaa
+muistissa halutaan k‰sitell‰. T‰m‰n takia muisti on kartoitettu osoitteiksi.
+Periaatteessa muistiosoite ilmoittaa vain, monesko tavu muistia on kyseess‰,
+tosin kaikissa osoitteissa ei v‰ltt‰m‰tt‰ ole muistia. Motorolan  680x0-sar-
+jan prosessoreissa (joita Amigassa k‰ytet‰‰n) muistiosoitteet ovat 32-bitti-
+si‰ lukuja (tosin 68000/68010 huomioivat vain v‰hiten  merkitsev‰t  24  bit-
+ti‰), eli nelj‰n tavun mittaisia. Muistiosoitteet voivat siis  periaatteessa
+olla v‰lilt‰ 0 - 0xffffffff (desimaalina 4294967295 - hyv‰ esimerkki  siit‰,
+miksi heksadesimaaliluvut ovat k‰yt‰nnˆllisi‰). Amigan  RAM-muistista  chip-
+muisti alkaa yleens‰ osoitteesta 0 ja jatkuu enint‰‰n osoitteeseen  0x1fffff
+(jos on 2MB chip-muistia). 16-bittinen fast-muisti  (60000/68010-pohjaisissa
+koneissa oleva fast-muisti) sijaitsee osoitteesta 0x200000  alkaen  enint‰‰n
+8MB  eteenp‰in.  32-bittinen  fast-muisti  (jonka  osoittamiseen   tarvitaan
+v‰hint‰‰n 68020) alkaa osoitteesta 0x7800000. Amigan Kickstart ROM sijaitsee
+joko osoitteesta 0xf80000 (2.0 ja uudemmat versiot) tai  0xfc0000  osoittee-
+seen 0xffffff. N‰iden muistityyppien  lis‰ksi  on  Amigassa  sek‰  kiinteit‰
+pseudomuistipaikkoja, joiden avulla ohjataan erikoisprosessoreita (osoitteet
+0xdff???) ja CIA-piirej‰ (osoitteet 0xbfe?01 ja 0xbfd?00),  ett‰  oheislait-
+teiden ohjausosoitteita.
+
+Pino (englanniksi "stack"): Jokaisella k‰ynniss‰ olevalla ohjelmalla on alue
+muistia, jota kutsutaan pinoksi. Amigassa k‰ynnistett‰vien  ohjelmien  pinon
+kokoa voi muuttaa shellist‰ stack-komennolla ja Workbenchist‰ ohjelman  iko-
+nin tiedoilla. Pinoa k‰ytet‰‰n esimerkiksi  ohjelman  kutsuessa  aliohjelmia
+(C:ss‰ funktiokutsut) paluuosoitteen s‰ilytt‰miseen. Pino toimii pino-osoit-
+timella, joka asetetaan aluksi osoittamaan muistialueen  loppuun.  Aina  kun
+pinoon tallennetaan jotain, v‰hennet‰‰n ensin pino-osoittimesta tallennetta-
+van olion koko, ja  sitten  asetetaan  pino-osoittimen  osoittamaan  kohtaan
+olion sis‰ltˆ. Pino-osoitin osoittaa siis aina viimeksi  pinoon  tallennetun
+olion alkuun. Kun  pinosta  otetaan  jotain  pois,  otetaan  pino-osoittimen
+osoittamasta kohdasta olion arvo ja lis‰t‰‰n pino-osoittimeen sen koko.  Pi-
+nosta on siis aina otettava pois kaikki, mit‰ sinne laitetaan p‰invastaises-
+sa j‰rjestyksess‰ kuin miss‰ ne on laitettu sinne. C-kielell‰ ohjelmoitaessa
+ei tarvitse sen enemp‰‰ v‰litt‰‰ pinon toiminnasta, mutta koska Amigalla  on
+ohjelmilla tavallisesti kiinte‰t pinot, kannattaa v‰ltt‰‰  k‰ytt‰m‰st‰  run-
+saasti pino-muistia vaativaa ohjelmointitekniikkaa.
+
+C-kielen yksinkertaisimpia tyyppej‰ ovat kokonaisluvut.  N‰it‰kin  on  usean
+tyyppisi‰ (erikokoisia, etumerkillisi‰ ja etumerkittˆmi‰). T‰ss‰ ovat  tyyp-
+pien koot lueteltuna sellaisina kuin ne ovat  yleisimmin  Amigalla.  Jos  ei
+tied‰, mink‰ kokoisina k‰‰nt‰j‰ss‰ on toteutettu n‰m‰, kannattaa katsoa inc-
+lude-tiedostosta "limits.h" (include-tiedostoista lis‰‰ myˆhemmin). 
+
+  char
+  signed char
+
+"char" on tavun mittainen eli 8-bittinen kokonaisluku. Arvo voi olla -128  -
+127. T‰t‰ tyyppi‰ k‰ytet‰‰n usein tekstin yhteydess‰, koska  ASCII-tekstiss‰
+jokainen merkki on yksi tavu.
+
+T‰m‰ tyyppi on etumerkillinen, eli jos eniten merkitsev‰  bitti  on  p‰‰ll‰,
+ilmaisee se luvun olevan negatiivinen. Negatiivinen arvo lasketaan vastaava-
+na positiivisena arvona v‰hennettyn‰ nollasta, eli suurin negatiivinen  luku
+(-1) on 0xff, pienin negatiivinen luku (-128) on 0x80.
+
+Joissain k‰‰nt‰jiss‰ on optio, jota k‰ytett‰ess‰ "char" tarkoittaa "unsigned
+char":ia, ja etumerkillist‰ tavua varten t‰ytyy k‰ytt‰‰ "signed char":ia. 
+
+  unsigned char
+
+Kuten char, mutta etumerkitˆn. Arvo voi olla 0 - 255 (0x00 - 0xff).
+
+  short
+  signed short
+  short int
+  signed short int
+
+"short" on etumerkillinen, 16-bittinen (kahden tavun mittainen)  kokonaislu-
+ku. 680x0-prosessoreilla short tallennetaan  muistiin  kahteen  per‰kk‰iseen
+tavuun,  eniten  merkitsev‰  tavu  ensin  (pienemm‰ss‰   muistiosoitteessa).
+68000/68010:ll‰ on shortin oltava parillisessa osoitteessa  (shortin  osoite
+on sen ensimm‰isen tavun osoite). Arvo voi olla -32768 - 32767. 
+
+  unsigned short
+  unsigned short int
+
+Kuten short, mutta etumerkitˆn. Arvo voi olla 0 - 65535 (0x0000 - 0xffff).
+
+  int
+  signed int
+
+"int" on yleens‰ samanlainen kuin "long". Joissain k‰‰nt‰jiss‰ se  voi  olla
+joko optiolla tai aina (Aztec) kuten "short". 
+
+  unsigned int
+
+Kuten int, mutta etumerkitˆn.
+
+  long
+  signed long
+  long int
+  signed long int
+
+"Long" on etumerkillinen, 32-bittinen (nelj‰n tavun mittainen) kokonaisluku.
+680x0-prosessoreilla long tallennetaan muistiin nelj‰‰n per‰kk‰iseen tavuun,
+eniten merkitsev‰ tavu ensin. 68000/68010:ll‰ on longin oltava  parillisessa
+osoitteessa. Arvo voi olla -2147483648 - 2147383647. 
+
+  unsigned long
+  unsigned long int
+
+Kuten long, mutta etumerkitˆn. Arvo voi olla 0 -  4294967295  (0x00000000  -
+0xffffffff).
+
+  long long 
+  signed long long
+  long long int
+  signed long long int
+
+Joissain k‰‰nt‰jiss‰ (ainakin GCC:ss‰) on  k‰ytett‰viss‰  64-bittinen  koko-
+naislukutyyppi. 680x0-prosessorit eiv‰t suoraan tue 64-bittisi‰ lukuja,  jo-
+ten n‰iden k‰sittely on hieman monimutkaisempaa ja hitaampaa kuin muiden ko-
+konaislukutyyppien. Etumerkillisen, 64-bittisen kokonaisluvun arvo voi  olla
+-9223372036854775808 - 9223372036854775807. 
+
+  unsigned long long
+  unsigned long long int
+
+Kuten long long, mutta etumerkitˆn. Arvo voi olla  0 -  18446744073709551615
+(0x0000000000000000 - 0xffffffffffffffff).
+
+
+{3Muuttujan m‰‰rittely
+
+Muuttujaa m‰‰ritelt‰ess‰ on muuttujalle  annettava  jokin  tyyppi  ja  nimi.
+Tyyppi voi olla esimerkiksi jokin yll‰olevista kokonaislukutyypeist‰.  Muut-
+tujan nimi voi olla periaatteessa mink‰ pituinen vain (tosin  jotkut  vanha-
+naikaiset k‰‰nt‰j‰t tunnistavat muuttujan vain nimen  ensimm‰isen  kahdeksan
+merkin perusteella - ANSIn mukaan tarvitsee huomioida v‰hint‰‰n  ensimm‰iset
+31 merkki‰) ja voi sis‰lt‰‰ kirjaimia a-z (sek‰ isoja ett‰ pieni‰), numeroi-
+ta sek‰ "_"-merkkej‰. Muuttujan nimen ensimm‰inen merkki ei saa olla numero.
+Isot kirjaimet ja pienet kirjaimet eiv‰t vastaa  toisiaan,  joten  voi  olla
+esimerkiksi muuttuja nimelt‰ A ja muuttuja nimelt‰ a ilman, ett‰ ne  sekoit-
+tuvat kesken‰‰n.
+
+Muuttujan nimeksi ei voi antaa mit‰‰n C-kielen kannalta  jotain  merkitsevi‰
+avainsanoja (kuten tyyppien nimi‰).
+
+Esimerkkej‰ muuttujien m‰‰rittelyst‰: 
+
+/*
+ * m‰‰ritell‰‰n muuttuja alpha tyyppi‰ long:
+ */
+
+long alpha;
+
+/*
+ * muuttujia voidaan m‰‰ritell‰ myˆs useampia kerralla:
+ *
+ * m‰‰ritell‰‰n muuttujat a, b ja c, tyyppi‰ short:
+ */
+
+short a, b, c;
+
+/*
+ * joka on sama asia kuin:
+ */
+
+short a;
+short b;
+short c;
+
+/*
+ * m‰‰ritell‰‰n muuttuja mychr tyyppi‰ unsigned char:
+ */
+
+unsigned char mychr;
+
+Usein muuttujia nimetess‰ kannattaa k‰ytt‰‰ nimityst‰, joka  kuvaa  (yleens‰
+lyhennettyn‰ englanninkielest‰) jotenkin muuttujan teht‰v‰‰.  Jos  muuttujaa
+k‰ytet‰‰n vain hetkellisesti, eik‰ sille lˆydy mit‰‰n  loogista  lyhennett‰,
+nimet‰‰n muuttuja usein yhdell‰ tai  kahdella  kirjaimella.  Muuttujien  ni-
+me‰minen esim. suomeksi tai sanoin, jotka eiv‰t liity mitenk‰‰n  asiaan,  on
+kaikkea muuta kuin suositeltavaa.
+
+Muuttujaa voidaan m‰‰rittelyn j‰lkeen k‰ytt‰‰ ohjelman siin‰  lohkossa  (eli
+aaltosulkeiden v‰liss‰ olevassa osassa), jossa muuttuja on  m‰‰ritelty.  Jos
+muuttujan  m‰‰rittely  ei  ole  mink‰‰n  funktion   sis‰ll‰,   on   muuttuja
+k‰ytett‰viss‰ kaikissa funktioissa koko loppuohjelmassa, eli se on  "globaa-
+li" muuttuja. Muulloin on kyseess‰ paikallinen muuttuja.
+
+Funktion parametreissa nimetty muuttuja on k‰ytett‰viss‰ aina kyseisen funk-
+tion sis‰ll‰.
+
+Muuttuja vaatii tietysti paikan, jossa sit‰ voi s‰ilytt‰‰. S‰ilytystilaa  se
+tarvitsee tyyppins‰ koon  verran.  Periaatteessa  C-k‰‰nt‰j‰  saa  s‰ilytt‰‰
+muuttujia miten haluaa, mutta ainakin Amigalla tuntuvat kaikki k‰‰nt‰j‰t te-
+kev‰n sen suunnilleen samoin. Globaalit muuttujat sijoitetaan  ohjelman  da-
+ta/bss-hunkkeihin, jotka ovat ohjelman ajon ajan kiinte‰sti muistissa olevia
+alueita. Paikallisista muuttujista osa sijoitetaan keskusyksikˆn rekisterei-
+hin (yleens‰ eniten k‰ytetyt) ja  osalle  varataan  tilaa  pinosta  kyseisen
+funktion suorituksen ajaksi.
+
+
+{3Lauseet ja lausekkeet
+
+C-kielinen ohjelma  koostuu  useimmiten  p‰‰asiassa  lauseista  (englanniksi
+"statements"), jotka ovat funktion sis‰llˆn toiminnallisia osia. Tyhj‰ lause
+olisi pelkk‰ ";"-merkki. Lauseet ovat usein joitakin rakenteita (if,  while,
+for, switch jne.) tai komentoja (return, goto). Lause voi myˆs olla  lauseke
+(englanniksi "expression"), jonka per‰ss‰ on ";"-merkki. Myˆs komentolausei-
+den per‰ss‰ on ";"-merkki. Lauseke koostuu puolestaan  yleens‰  yhdest‰  tai
+useammasta lausekkeesta, joiden v‰liss‰ tai yhteydess‰ on operaatioita.  Pe-
+ruslausekkeita (eiv‰t koostu useammasta lausekkeesta operaattoreilla  yhdis-
+tettyn‰) ovat esimerkiksi muuttujat, vakiot ja  funktiokutsut.  Lausekkeella
+on l‰hes poikkeuksetta arvo, mutta lauseke ei v‰ltt‰m‰tt‰ tee mit‰‰n. Yksin-
+kertainen esimerkki lausekkeen muodostamasta lauseesta, joka ei tee mit‰‰n: 
+
+0;
+
+T‰ss‰ on kyseess‰ perustyyppi‰ oleva lauseke, vakio. Lausekkeen arvo on  va-
+kion arvo, eli 0.
+
+Hieman hyˆdyllisempi esimerkki lausekkeesta voisi olla arvon antaminen muut-
+tujalle. T‰m‰ tehd‰‰n "="-operaattorilla. Esimerkiksi jos meill‰ on muuttuja
+"a", joka on jotain kokonaislukutyyppi‰, voimme antaa sille arvon 0  seuraa-
+valla tavalla:
+
+a = 0;
+
+Operaattori "=" toimii siten, ett‰ sen molemmilla  puolilla  on  operandeina
+lausekkeet. Myˆs t‰m‰ kokonaisuus on lauseke, joten jos meill‰ on  muuttujat
+a ja b (jotka ovat jossain m‰‰rin yhteensopivan tyyppisi‰):
+
+b = a = 0;
+
+T‰m‰ antaa siis ensin muuttujalle a arvon nolla, sitten antaa muuttujalle  b
+lausekkeen (a = 0) arvon, joka on myˆs 0. (Per‰kk‰iset "="-operaatiot suori-
+tetaan aina oikealta vasemmalle.) T‰m‰ on siis sama kuin:
+
+a = 0;
+b = a;
+
+Operaattorin "=" vasemmalla puolella olevalla operandilla on sellainen  vaa-
+timus, ett‰ sen on oltava muutettavissa. (Englanniksi t‰llaisen  vaatimuksen
+t‰ytt‰v‰‰ lauseketta kutsutaan nimell‰  "modifiable  lvalue".)  Toistaiseksi
+kurssissa on k‰sitelty vasta yksi mahdollinen  lauseketyyppi,  joka  t‰ytt‰‰
+t‰m‰n vaatimuksen, eli muuttuja.
+
+Lausekkeita voivat olla myˆs yksinkertaiset matemaattiset  laskutoimitukset;
+normaali laskuj‰rjestys p‰tee ja sulkeita voidaan k‰ytt‰‰ sen muuttamiseen:
+
+int a, b, c; 
+
+a = 1 + 5 * 8;   /* a:n arvoksi tulee 41  */
+b = 10 / 4 - a;  /* b:n arvoksi tulee -39 */
+c = 2 * (a + b); /* c:n arvoksi tulee 4   */
+
+Muita laskennallisia operaattoreita ovat:
+
+        %  jakoj‰‰nnˆs
+
+K‰yttˆ esimerkiksi:
+
+a = 5 % 3; /* a:n arvoksi tulee 2 */
+
+
+        &  "ja"-bin‰‰rioperaattori
+
+Tuloksessa ovat tilassa 1 vain ne bitit, jotka olivat molemmissa operandeis-
+sa p‰‰ll‰, bin‰‰rilukuina esimerkiksi:
+
+  0111001011010110 (heksana 0x72d6)
+& 1010100110101101 (heksana 0xa9ad)
+antaa tulokseksi:
+  0010000010000100 (heksana 0x2084)
+
+K‰yttˆ esimerkiksi:
+
+a = 0xf0f0 & 0x5555; /* a:n arvoksi tulee 0x5050 */
+
+/*
+ * sama desimaaliluvuilla (vaikeampi hahmottaa):
+ */
+
+a = 61680 & 21845; /* a:n arvoksi tulee 20560 */
+
+
+        |  "tai"-bin‰‰rioperaattori
+
+Tuloksessa ovat kaikki ne bitit ykkˆsi‰, jotka olivat jommassakummassa  ope-
+randissa p‰‰ll‰, bin‰‰rin‰ esim.:
+
+  01001101 (heksana 0x4d)
+| 11010110 (heksana 0xd6)
+antaa tulokseksi:
+  11011111 (heksana 0xdf)
+
+K‰yttˆ esimerkiksi:
+
+a = 0x1111 | 0x3232; /* a:n arvoksi tulee 0x3333 */
+
+/*
+ * sama desimaaliluvuilla:
+ */
+
+a = 4369 | 12850; /* a:n arvoksi tulee 13107 */
+
+
+        ^  "ehdoton tai"-bin‰‰rioperaattori
+
+Tuloksessa ovat kaikki ne bitit ykkˆsi‰, jotka olivat jommassakummassa  ope-
+randissa mutta eiv‰t molemmissa p‰‰ll‰, bin‰‰rin‰ esim.:
+
+  10110100 (heksana 0xb4)
+^ 11011001 (heksana 0xd9)
+antaa tulokseksi:
+  01101101 (heksana 0x6d)
+
+  K‰yttˆ esimerkiksi:
+
+a = 0x1f42 ^ 0x3729; /* a:n arvoksi tulee 0x286b */
+
+/*
+ * sama desimaaliluvuilla:
+ */
+
+a = 8002 ^ 14121; /* a:n arvoksi tulee 10347 */
+
+
+        ~  "ei"-bin‰‰rioperaattori
+
+T‰m‰ on edelt‰m‰‰ns‰ lausekkeeseen liittyv‰ operaattori (englanniksi  "unary
+operator").
+
+Tuloksen bitit ovat p‰invastaisessa tilassa kuin operandin bitit,  bin‰‰rin‰
+esim.:
+
+~ 01100101 (heksana 0x65)
+antaa tulokseksi:
+  10011010 (heksana 0x9a)
+
+K‰yttˆ esimerkiksi:
+
+a = ~0x4e82; /* a:n arvoksi tulee 0xb17d */
+
+/*
+ * sama desimaaliluvuilla:
+ */
+
+a = ~20098; /* a:n arvoksi tulee 45437 */
+
+
+        <<  bittien siirto vasemmalle
+
+Antaa tulokseksi vasemman operandin bitit siirrettyn‰ vasemmalle oikean ope-
+randin verran. Ellei laskussa tapahdu ylivuotoa, niin a << b on sama kuin  a
+kerrottaisiin 2^b:ll‰ (jossa ^ esitt‰‰ potenssiin korotusta). 
+
+a = 1 << 2; /* a:n arvoksi tulee 4 */
+
+
+        >>  bittien siirto oikealle
+
+Antaa tulokseksi vasemman operandin bitit siirrettyn‰ oikealle  oikean  ope-
+randin verran. Jos oikea operandi ei ole negatiivinen, niin a >> b  on  sama
+kuin a jaettaisiin 2^b:ll‰ (jossa ^ esitt‰‰ potenssiin korotusta). 
+
+a = 12 >> 1; /* a:n arvoksi tulee 6 */
+
+
+{3Vertailuoperaattorit, if-rakenne
+
+Lausekkeissa k‰ytet‰‰n myˆs sellaisia operaatioita,  joilla  on  vain  kaksi
+mahdollista arvoa: tosi tai ep‰tosi. Tosi tarkoittaa mit‰ tahansa arvoa, jo-
+ka ei ole nolla. Nolla on ainoa ep‰tosi. N‰it‰ operaatioita on kahdentyyppi-
+si‰: vertailulliset ja loogiset operaatiot.  Vertailuoperaattorit  vertaavat
+molemmin puolin olevien lausekkeiden arvoja. Niit‰ ovat seuraavat:
+
+ ==  samanarvoinen
+ !=  eriarvoinen
+ <   pienempi
+ >   suurempi
+ <=  pienempi tai sama
+ >=  suurempi tai sama
+
+N‰it‰ voidaan k‰ytt‰‰ t‰h‰n asti esitettyyn tyyliin, eli esimerkiksi:
+
+a = b == 10;
+
+(Asettaa muuttujan a 1:ksi jos muuttujan b arvo on  10,  muussa  tapauksessa
+nollaa a:n).
+
+Tai jopa:
+
+a >= b;
+
+(Ei tee mit‰‰n, koska tulosta ei k‰ytet‰ mihink‰‰n.)
+
+T‰m‰ ei kuitenkaan ole  kovin  hyˆdyllist‰.  Vertailuoperaatioita  k‰ytet‰‰n
+yleens‰ silmukoiden (myˆhemmin) ja if-rakenteiden yhteydess‰:
+
+if (<lauseke>) {
+  /* ohjelman osa, joka suoritetaan vain jos <lauseke> on tosi */
+}
+/* ohjelma jatkuu */
+
+tai:
+
+if (<lauseke>) {
+  /* ohjelman osa, joka suoritetaan vain jos <lauseke> on tosi */
+} else {
+  /* ohjelman osa, joka suoritetaan jos <lauseke> on ep‰tosi */
+}
+/* ohjelma jatkuu */
+
+Jos "if ()" - tai "else"-kohdan j‰lkeen tuleva ohjelman osa  muodostuu  vain
+yhdest‰ lauseesta, voidaan aaltosulkeet j‰tt‰‰ pois.
+
+Esimerkkej‰ if-rakenteesta:
+
+if (a == 5) {
+  puts("a == 5 on tosi");
+  a = 10;
+}
+
+Jos muuttujan a arvo on 5, tulostaa tekstin "a == 5 on tosi" ja muuttaa  a:n
+arvon 10:ksi. Huomaa, ett‰ lausekkeen per‰ss‰ ei ole ";"-merkki‰,  koska  se
+ei t‰ss‰ tapauksessa muodosta lausetta. If-rakenne sen sijaan on kokonaisuu-
+tena lause, johon kuuluu  per‰ss‰  oleva  toinen  lause  (t‰ss‰  tapauksessa
+useamman lauseen muodostama ohjelmalohko). 
+
+if (a < b) 
+  puts("a on pienempi kuin b");
+else if (a == b) {
+  puts("a on samanarvoinen kuin b");
+  b = 0;
+}
+
+T‰ss‰ tapuksessa on ensimm‰isen if:n ja else:n j‰lkeiset aaltosulkeet  voitu
+j‰tt‰‰ pois, toisen if:n j‰lkeen ei. T‰m‰n voisi kirjoittaa myˆs  j‰tt‰m‰tt‰
+aaltosulkeita pois:
+
+if (a < b) {
+  puts("a on pienempi kuin b");
+} else {
+  if (a == b) {
+    puts("a on samanarvoinen kuin b");
+    b = 0;
+  }
+}
+
+Jotkut  k‰ytt‰v‰t  aina  aaltosulkeita,  vaikka  niit‰  ei  tarvittaisikaan.
+T‰ss‰kin tapauksessa on havaittavissa, ett‰ se voi selkeytt‰‰ hieman  koodin
+rakennetta.
+
+C-kielen grammatiikan ainoa ep‰selvyys on useamman vailla aaltosulkeita ole-
+van if:n j‰lkeen tulevan else:n tapaus. (Jos joku tiet‰‰, miten v‰ltt‰‰ par-
+serissa  t‰m‰n  takia  ilmenev‰n  shift/reduce-conflictin  keksim‰tt‰   omia
+ylim‰‰r‰isi‰ s‰‰ntˆj‰‰n ja monimutkaistamatta parseria pahemmin, niin kerto-
+koon). Jos meill‰ on esimerkiksi: 
+
+if (b != 10)
+  if (a)
+    puts("text1");
+  else
+    puts("text2");
+
+T‰m‰ n‰ytt‰‰ selke‰lt‰ (erityisesti muotoilun ansiosta), mutta sis‰lt‰‰ kui-
+tenkin ep‰selvyyden. Periaatteessa else voisi olla kummalle  tahansa  if-eh-
+dolle vaihtoehto. T‰m‰ kuitenkin tulkitaan siten (kuten esimerkin muotoilus-
+sa on otettu huomioon), ett‰ else on vaihtoehtona aina sisimm‰lle  mahdolli-
+selle if-ehdolle. Hyv‰ tapa  on  kuitenkin  n‰iss‰  ep‰selviss‰  tapauksissa
+k‰ytt‰‰ aaltosulkeita: 
+
+if (b != 10) {
+  if (a)
+    puts("text1");
+  else
+    puts("text2");
+}
+
+T‰st‰ k‰y myˆs ilmi, ett‰ if:n ehdon ei tarvitse sis‰lt‰‰ vertailuoperaatto-
+reita. T‰ss‰ sisempi if testaa, onko muuttujan  a  arvo  tosi  vai  ei,  eli
+"text2" tulostuu, jos a on 0, muuten tulostetaan "text1".
+
+
+{3Ensimm‰inen osa p‰‰ttyy...
+
+T‰h‰n asti en ole voinut esitt‰‰ useampia kokonaisia esimerkkiohjelmia, kos-
+ka annettu tieto itse kielest‰ on viel‰ hyvin v‰h‰ist‰.  Myˆhemmiss‰  osissa
+n‰it‰ tulee olemaan enemm‰n. Tarkoitus on k‰sitell‰ ainakin seuraavia aihei-
+ta jatkossa:
+
+    - loogiset operaatiot (&&, ||, !)
+    - operaattoreiden lyhenteit‰
+    - silmukat (for, while, do { } while)
+    - switch
+    - esik‰sittelyn ohjaaminen
+    - lis‰‰ tietoa tyypeist‰, muuttujista ja funktioista
+    - main()-funktion parametrit
+    - merkkijono- ja merkkivakiot
+    - lis‰‰ operaattoreita (*, &, ->, ., ?:, ",")
+    - operaatioiden suoritusj‰rjestys
+    - liukuluvut, liukulukuvakiot
+    - goto-komento, miksi ei pid‰ k‰ytt‰‰
+    - standardeja (ANSI) C-funktioita ja include-tiedostoja, niiden k‰yttˆ
+    - tiedon k‰sittelytekniikkaa (muisti, tiedostot, muuttujat)
+    - k‰‰nnˆksen vaiheet
+    - suuremman projektin kasassapito
+    - C-k‰‰nt‰j‰n toimintaa: C-kielen teoriaa
+    - bugien etsint‰
+    - C-laajennuksia
+    - ohjelmointitekniikka: vihjeit‰
+    - Amigan k‰yttˆj‰rjestelm‰: alustavaa tietoa, mist‰ jatkaa

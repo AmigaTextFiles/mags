@@ -1,0 +1,110 @@
+;	  _______  ___                    ___        _______
+;	 /°-     \/. /    _____   ____   / ./       /°-     \
+;	 \   \___//  \___/°    \_/°   \_/   \___    \   \___/
+;	_/\__    \      ~\_  /\  \  /\ ~\      °\_ _/\__    \
+;	\\       /   /\   /  \/. /  \/   \ //\   / \\       /
+;	 \______/\__/  \_/\_____/\____/\_/_/  \_/ o \______/ Issue 1
+
+;*+*+*+*+*+*+*+*+*+*+*+- Keyboard Read -+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+- Returns the ASCII value ( In upper case ) in d0
+;*+*+- a null value  = "n"
+
+;To use this routine, just use the following...
+;	bsr	inkeys
+;	cmp.b	#"n",d0
+;	beq.s	.no_key_pressed
+;	...			;Do your groovy thang here
+;.no_key_pressed
+;	...
+
+inkeys:
+	move.b	$bfec01,d0	;Load in the keyboard value...
+	not.b	d0		;...and manipulate it
+	ror.b	d0		;to get rawkey code
+	move.b	#$0,$bfec01
+	or.b	#$40,$bfee01	;Do something strange
+
+	cmp.b	#key_p,d0	;As an example, check for "p" so we can
+	bne.s	.not_pause	;pause our brand new game
+	move.b	#"p",d0
+	bra.s	.not_keyboard
+.not_pause
+
+.null
+	move.b	#"n",d0
+
+.not_keyboard:
+	move.b	#%10001000,$bfee01
+	rts
+
+;Keyboard stuff, 6/5/94
+;Note :- No keypad codes, 'cause of the lame A600
+
+key_squiggle		equ	$0		; "`"
+key_1			equ	$1
+key_2			equ	$2
+key_3			equ	$3
+key_4			equ	$4
+key_5			equ	$5
+key_6			equ	$6
+key_7			equ	$7
+key_8			equ	$8
+key_9			equ	$9
+key_0			equ	$a
+key_minus		equ	$b
+key_equals		equ	$c
+key_backslash		equ	$d		; "\"
+key_q			equ	$10
+key_w			equ	$11
+key_e			equ	$12
+key_r			equ	$13
+key_t			equ	$14
+key_y			equ	$15
+key_u			equ	$16
+key_i			equ	$17
+key_o			equ	$18
+key_p			equ	$19
+key_funnybracket1	equ	$1a		; "{"
+key_funnybracket2	equ	$1b		; "}"
+key_a			equ	$20
+key_s			equ	$21
+key_d			equ	$22
+key_f			equ	$23
+key_g			equ	$24
+key_h			equ	$25
+key_j			equ	$26
+key_k			equ	$27
+key_l			equ	$28
+key_semicolon		equ	$29
+key_speechmark		equ	$2a
+key_z			equ	$31
+key_x			equ	$32
+key_c			equ	$33
+key_v			equ	$34
+key_b			equ	$35
+key_n			equ	$36
+key_m			equ	$37
+key_greaterthan		equ	$38		; "<"
+key_lessthan		equ	$39		; ">"
+key_slash		equ	$3a		; "/"
+key_space		equ	$40
+key_backspace		equ	$41
+key_tab			equ	$42
+key_return		equ	$44
+key_escape		equ	$45
+key_del			equ	$46
+key_up			equ	$4c
+key_down		equ	$4d
+key_right		equ	$4e
+key_left		equ	$4f
+key_f1			equ	$50
+key_f2			equ	$51
+key_f3			equ	$52
+key_f4			equ	$53
+key_f5			equ	$54
+key_f6			equ	$55
+key_f7			equ	$56
+key_f8			equ	$57
+key_f9			equ	$58
+key_f10			equ	$59
+key_help		equ	$5f

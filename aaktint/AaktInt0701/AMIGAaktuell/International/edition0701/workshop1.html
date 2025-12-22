@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops / Background reports / Book introductions</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="workshop.html" OnMouseOver="status='Workshops / Background reports / Book introductions' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="workshop.html" OnMouseOver="status='Workshops / Background reports / Book introductions' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="test.html" OnMouseOver="status='Test reports' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Workshops / Background reports / Book introductions
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H1>Workshops / Background reports / Book introductions</H1>
+<H2>1. Workshop: Virtual Network Computing - part 3 (by Uwe Pannecke)</H2>
+<P><B>The master of remote control - part 3</B></P>
+<P><B>A Telnet daemon on the Amiga</B></P>
+<H3>1. One more server</H3>
+<P>
+In the article on VNCS on the last issue of Amiga aktuell, the
+Amiga was acting as a server, making its screen output available
+over an Intranet or even worldwide through the Internet, if
+desired.
+</P>
+<P>
+This required an Amiga well equipped with RAM and processing
+power. But as you will learn now, a much more modest
+configuration can be remote-controlled via TCP/IP, even if it is
+a little more inconvenient for an Amiga user who is used to
+intuitive mouse control.
+</P>
+<P>
+We are talking about the old and honored telnet. Clients for
+controlling other computers can be found in vast amounts on the
+Aminet and are usable without much installation. Let's see if
+this is also true for telnet daemons...
+</P>
+<H3>2. System requirements</H3>
+<P>
+The program package of our choice will be  &quot;Telnetd 2.0&quot; [1] from
+Peter Simons and Steve Holland. The requirements are quite
+humble. All you need is an Amiga with a TCP/IP stack. Telnetd was
+written for use with AmiTCP, but, as you will see, it also works
+well with Miami.
+</P>
+<H3>3. Installation</H3>
+<P>
+After unarchiving the file extracted either from Aminet or the
+Aminet CD-ROM No. 15, you'll find several subdirectories.
+</P>
+<P>
+<A HREF="img/telnet_dir.png"><IMG SRC="thumb/telnet_dir.jpg" WIDTH="120" HEIGHT="83" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+All files from the directories  &quot;c&quot;, &quot;devs&quot; and &quot;s&quot; have to be
+copied to the corresponding directories on the system partitions.
+Then move the directory &quot;serv&quot; into the Miami drawer and the
+manual anywhere you want.
+That's all.
+</P>
+<H3>4. Miami configuration</H3>
+<H4>4.1 InetD</H4>
+<P>
+Start up Miami, go to the database section and select the entry
+InetD. Add the following: service &quot;telnet&quot;, socket &quot;stream&quot;,
+protocol &quot;TCP&quot; and &quot;nowait&quot;, the user will be &quot;root&quot;, the server
+is  &quot;Miami:/serv/telnetd&quot; and the name can be left blank.
+</P>
+<P><B><A HREF="img/telnet_miami1.png"><IMG SRC="thumb/telnet_miami1.jpg" WIDTH="120" HEIGHT="43" ALT="Screenshot"  BORDER="0"></A></B></P>
+<P>
+4.2 Users
+The user to login later is configured in the same database module
+in the section &quot;users&quot;. Probably there are already some existing
+users from earlier configurations. All potential users who want
+access through telnet will need a password and a shell,
+because the complete telnet access is handled in this shell.
+The user in our example will be called &quot;uwep&quot;. He gets a password
+and under 'Shell' the entry &quot;*NewShell * from s:remote-startup&quot;.
+This is to make sure that the output of the Shell will be sent to
+the remote computer.
+</P>
+<P><B><A HREF="img/telnet_miami2.png"><IMG SRC="thumb/telnet_miami2.jpg" WIDTH="120" HEIGHT="38" ALT="Screenshot"  BORDER="0"></A></B></P>
+<P>
+This completes the configuration. Save it under a telling name.
+Now it is time to go online.
+</P>
+<H3>5. Using the server</H3>
+<P>
+From now on, all users defined in Miami can log into the Amiga
+and manipulate it as they wish. Of course, we are going to test
+that right now. Almost every operating system includes a telnet
+client. Under Linux, you can evoke telnet by entering &quot;telnet
+hostname&quot; or &quot;telnet IP address&quot; into a shell. Of course you have
+to give the correct hostname or IP address of the Amiga we
+prepared earlier. The Amiga in this example can be reached under
+the name &quot;amiga.xwing.de&quot; or the IP  &quot;192.168.0.2&quot;.
+</P>
+<P><B><A HREF="img/telnet_linux.png"><IMG SRC="thumb/telnet_linux.jpg" WIDTH="120" HEIGHT="62" ALT="Screenshot"  BORDER="0"></A></B></P>
+<P>
+Under Windows, you can use the MS-DOS prompt to start telnet. The
+syntax is the same as under Linux. You will then be requested to
+enter a username and the password. If this information was
+correct, you will find yourself in a Shell on the Amiga.
+You can check the logon on the Amiga itself, because Miami keeps
+an entry in its Log window.
+</P>
+<P><B><A HREF="img/telnet_miami3.png"><IMG SRC="thumb/telnet_miami3.jpg" WIDTH="120" HEIGHT="19" ALT="Screenshot"  BORDER="0"></A></B></P>
+<H3>6. Security</H3>
+<P>
+As easy as installation and usage of a telnet daemon may be, you
+should be aware that all information is transferred unencrypted
+over telnet. This includes passwords and other valuable data.
+This might be acceptable for use in an Intranet, but if you want
+to control the Amiga over an Internet connection, this is a
+serious security issue. In these cases, SSH is a safer method,
+since it encrypts the transferred information.
+</P>
+<P>
+You should also never forget that the Amiga is a single user
+operating system.
+</P>
+<P>
+Every user who is logged in via telnet or another service can do
+serious harm to your system. This can be helped by using the
+MultiUser-Filessystem [2] from Geert Uytterhoeven, but this takes
+some effort.
+</P>
+<P>
+[1] im Aminet unter <A HREF="http://de.aminet.net/pub/aminet/comm/tcp/telnetd2_0.lha">/comm/tcp/telnetd2_0.lha</A><BR>
+[2] im Aminet unter <A HREF="http://de.aminet.net/aminetbin/find?util+misc+MultiUser+.lha">/util/misc/MultiUser**.lha</A>
+</P>
+<P><B>Uwe Pannecke &lt;<A HREF="mailto:Uwe.Pannecke@t-online.de">Uwe.Pannecke@t-online.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="workshop.html" OnMouseOver="status='Workshops / Background reports / Book introductions' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="test.html" OnMouseOver="status='Test reports' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops / Background reports / Book introductions</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="workshop.html" OnMouseOver="status='Workshops / Background reports / Book introductions' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="workshop.html" OnMouseOver="status='Workshops / Background reports / Book introductions' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="test.html" OnMouseOver="status='Test reports' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Workshops / Background reports / Book introductions
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H1>Workshops / Background reports / Book introductions</H1>
+<H2>1. Workshop: Extending the CyberstormPPC with a ZIF Socket - Part 2 (by Dirk Wenk)</H2>
+<P>
+[Attention: If you dare to execute the actions specified hereafter, you do so at your own
+risk!]
+</P>
+<P>
+This currently is ONLY a purely theoretical consideration. That means, something like
+this should/could work as a modification. It does not mean that it really will operate!
+</P>
+<P>
+You are urgently dissuaded from making any changes to a CSPPC board prompted by this
+article!
+</P>
+<P>
+Should anybody be brave (stupid) enough to try it anyway, I'll deny any knowledge or
+responsibility for it!
+</P>
+<P><B>.......Part 2</B></P>
+<P>
+Well, here we are back in our workshop, which will conclude without a clear-cut solution
+... (sorry). I have received a few very interesting eMails about this project and I wish
+to thank those persons very much once more.
+</P>
+<P>
+By the way, this text is created on the Metro on my way to MG [Moenchen-Gladbach = City
+in north-west of Germany]. Mobile on a Palm with keyboard! But this only as a marginal
+note ;)
+</P>
+<P>
+And now let's go on with the thread.
+</P>
+<P>
+As mentioned previously, there are two possibilities to connect the new CPU:
+</P>
+<P>1. We remove the original processor and connect the leads to our ZIF board</P>
+<P>
+or
+</P>
+<P>
+2. We design a board which we can insert into the extension port of the CSPPC. For the
+latter I lack some information.
+</P>
+<P>But the following would be quite nice, too:</P>
+<P>
+We take one of those new PCI extension boards with one slot and we plug in one of the
+G3/G4 boards used in the Mac.
+</P>
+<P>
+Advantage: Less development cost, stable seat and no alterations to the CSPPC hardware.
+</P>
+<P>
+Disadvantage: The Powerup/Warpup drivers have to be adapted to enable correct addressing
+of the CPU. And of course such a board has to be detected, because the PPC processor is
+not soldered on. Somehow sounds like SharkPPC? Yes, and there is not a big difference.
+</P>
+<P>
+Back to 1.
+</P>
+<P>
+In the later processor generations following the 604 CPU new connector pins have been
+added, and some have been removed or changed. Most importantly, the L2 cache connections
+have been added. But fortunately this will not bother us, because on the ZIF board
+everything is installed correctly with the cache belonging to it.
+</P>
+<P>
+Only the signals left out can produce problems. Signals with interesting names like
+&quot;Halt&quot;, &quot;Stop&quot; and &quot;Databus Ready&quot; are involved.
+</P>
+<P>
+Additionally there are uncertainties about which connectors of the 604 CPU are in use!
+</P>
+<P>
+But let's proceed with the level adaptation.
+</P>
+<P>
+As you can see in the PDF files (upon request) for the 74xxx234 chips, there are faster
+ones and slower ones and the operating voltages are variable, as well.
+</P>
+<P>
+But in fact the output voltage never exceeds the supply voltage. Come on ... can you
+guess what I am going to do? Exactly ... for receipt of data we switch down all
+74-components to 3.3 volts and vice versa back to 5 volts!
+But this indeed again is a lot of fumbling to wire so many 74-chips anew. And then the
+address lines still are missing. Have you ever seen how oddly the 74-chips in between the
+two SIMM sockets are wired? From 1st chip output to 2nd chip input and its output to
+input of chip 3. What exactly this is aiming at I do not know, unfortunately. But maybe
+you will come up with an idea ... (I'm expecting your mail :)
+</P>
+<P>
+The next point is the connection of the ZIF socket. If we have a look at the schematic
+for the ZIF socket, we notice that the layout of the pins is nearly identical to the 60x
+bus. That means that connecting this socket is quite easy.
+</P>
+<P>
+We only have to compare the pins of the CSPPC side with those of the ZIF socket and to
+connect them. (But don't forget the level adaptation!). The only difference is, that at
+the ZIF socket there are some spare pins which allow the setting of the MHz value. If we
+install a dip switch on our adapter board or an electrically activated switch which is
+controlled from the ZIF board, we would be able to set the MHz value or the clock
+division. For future ZIF boards it is important to be able to manage high div
+isions as well, because the possible bus frequency is increasing more and more.
+</P>
+<P>
+With current processors, bus frequencies of 33 MHz up to 133 MHz are possible. And the
+higher the bus speed, the higher the memory throughput. Unfortunately based upon the
+CSPPC architecture and the memory in use we are limited to a maximum of 75 MHz. (Though I
+have heard from people who pushed the bus up to 80 MHz, using the unfortunately quite
+rare 50ns memory components.)
+</P>
+<P>
+Of course at those extreme loads it must be cooled intensively.
+</P>
+<P>
+Let's sum up all possibilities, so that we don't get lost.
+</P>
+<P>
+1. Possibility: We remove the 604 CPU, connect all pins to our adaptor board, where the
+signals are adjusted by level adaptor components to 3.3 volts and vice versa (by the way,
+we do not have to worry about the timing due to the very fast level adaptation of appr.
+2.2 ns with these components). From the level adaptation the leads go directly to the ZIF
+socket. Additionally we have to install the power supply.
+</P>
+<P>
+A hint: If a good, powerful chip is installed, which offers the necessary power, but
+delivers too many volts, it is easiest to decrease the voltage by diodes connected in
+series (this hint comes from the Motorola website, <A HREF="http://www.mot.com" TARGET="_top">http://www.mot.com</A>). E.g. if the core
+voltage is 2.7 volts, and the power IC delivers 3.3 volts, then we daisy-chain a diode
+and with the voltage drop across the diode (0.7 or 0.5 volts according to type) we have
+the desired voltage. You have to keep in mind that core voltages have been
+steadily dropping. In the beginning it was 3.3 volts (060 and 603/604), today it is only
+1.8 volts!
+</P>
+<P>
+Now that we have the correct voltage, only the bus clock needs to be set, which we
+quickly settle with a dip switch. In the ZIF PDF file there is an exact description where
+to connect this switch.
+</P>
+<P>
+What now is left to do shouldn't be so hard. Processor board into the ZIF socket and
+power on! (Don't forget to cross your fingers ;)
+</P>
+<P>
+2. Possibility: We perform a part of the level adaptation by changing the supply voltage
+of the 74-components on the CSPPC. For the rest we will then need only one level adaptor
+chip as described under solution number 1. But it must be observed, that any signals that
+do not go to the PPC, ie to the 68k, must be set to 5 volts.
+</P>
+<P>
+But there is a problem: this is not valid for the 74 components, which have saved the
+signals for the PPC CPU! This could be realized by the &quot;Databus Ready&quot; signals of the PPC
+processor (do it at your own risk). But I really do not know how that might work. The
+rest is done as described at solution number 1.
+</P>
+<P>
+When performing the 3. solution, we do not tap the signals directly from the delicate
+contacts of the CSPPC board, but from the extension slot of the CSPPC.
+</P>
+<P>
+That slot should have all the important signals available that we need. Any signals not
+connected there we can directly tap on the board. And we can put our adaptor board
+directly into the extension slot with this solution. That means more stability.
+Unfortunately I do not know how the bus is connected there. But I mentioned this before.
+</P>
+<P>
+And now we approach the 4. and easiest solution: We simply take a PCI board adaptor,
+which we set into the extension slot in order to install there the PCI G4 boards used in
+the Mac. A big advantage hereby is as mentioned in the beginning, that we get rid of the
+tinkering, but the disadvantage is we need an adapted driver to be able to address this
+CPU (just like the SharkPPC, for which drivers are also needed).
+</P>
+<P>
+A further advantage is that these boards could be furnished with individual memory, but
+bear in mind the limitation of the bus speed of the CSPPC. Of course, most PPC processors
+are not inserted in a ZIF socket, but are soldered in.
+</P>
+<P>
+If you need more information, just send me a mail.
+</P>
+<P>
+Most disappointing are some PPC programs whose performance is worse than with an 060
+processor. This is because the software has not been optimized. A well known example here
+is the PPC version of LHA! You can see that processor speed is not enough to be really
+fast!
+</P>
+<P>
+Due to my professional occupation, unfortunately I will have to lay off the further
+development of this project for an indeterminate time. Right now my job is more important
+than my private hobbies; I hope you will understand this.
+</P>
+<P>
+But I certainly would enjoy hearing from you, and how you get along with this project ...
+if anybody has the mind to carry it on. I'll be glad to send you all documents I have.
+The eMail address is &quot;Dirk Wenk &lt;<A HREF="mailto:dirk@wax7.de">dirk@wax7.de</A>&gt;&quot;, the files mostly are PDF files. The most
+interesting of course come from the www.mot.com site ;)
+</P>
+<P><B>Dirk Wenk &lt;<A HREF="mailto:wax@topmail.de">wax@topmail.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="workshop.html" OnMouseOver="status='Workshops / Background reports / Book introductions' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="test.html" OnMouseOver="status='Test reports' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

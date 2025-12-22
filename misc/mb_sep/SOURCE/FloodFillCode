@@ -1,0 +1,65 @@
+
+    1 FILE$=Fsel$(,,"Load a Pic","Right MB for Volumes"): Hide
+    2 Screen Close 0
+
+    3 Load Iff FILE$, 1
+
+    4 Load Iff FILE$, 2
+    5 Screen 2: Curs Off : Flash Off
+    6 Cls 0
+
+    7 SPLERGE[0,1,2]
+
+    8 Wait 50
+    9 Fade 2
+   10 Wait 30
+
+   11 Screen Close 1 : Screen Close 2
+   12 End 
+
+
+   13 Procedure SPLERGE[SPEED,SOURCE,DEST]
+   14    Screen SOURCE
+   15    SOURCE_SIZE=Screen Height
+   16    Screen DEST
+   17    DEST_SIZE=Screen Height
+   18    V=Min(SOURCE_SIZE,DEST_SIZE)
+   19    Screen SOURCE
+   20    SOURCE_SIZE=Screen Width
+   21    Screen DEST
+   22    DEST_SIZE=Screen Width
+   23    H=Min(SOURCE_SIZE,DEST_SIZE)
+
+   24    For LOP=V-1 To 1 Step -1
+   25       _FILL[DEST,0,0,H,SOURCE,LOP]
+
+   26       If SPEED
+   27          Wait SPEED
+   28       End If 
+
+   29    Next LOP
+
+   30 End Proc
+
+
+   31 Procedure _FILL[DEST,SX,SY,WIDTH_X,SRC,LINE]
+   32    Screen Copy SRC,0,LINE,WIDTH_X,LINE+1 To DEST,SX,SY
+   33    STP=1 : COUNT=1
+
+   34    While COUNT<LINE
+   35       Screen Copy DEST,0,0,WIDTH_X,STP To DEST,0,STP
+   36       STP=STP*2
+   37       COUNT=COUNT+STP
+   38    Wend 
+
+   39    If COUNT>LINE
+   40       Screen Copy DEST,0,0,WIDTH_X,LINE-STP To DEST,0,STP
+   41    End If 
+
+   42    If COUNT=LINE
+   43       Screen Copy DEST,0,0,WIDTH_X,1 To DEST,0,LINE-1
+   44    End If 
+
+   45    Wait Vbl 
+
+   46 End Proc

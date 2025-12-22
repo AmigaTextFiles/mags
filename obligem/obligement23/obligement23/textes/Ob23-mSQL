@@ -1,0 +1,450 @@
+\T
+
+ --> LABO : MINI-SQL par Olivier Adam (2eme partie)
+=================================================
+
+   NDLR : retrouvez cet article au complet (1ere + 2eme partie) dans le r_pertoire
+Obligement23/Labo.
+
+
+~ \ Installation !
+
+ ^ Consid_rons l'interface r_seau par d_faut, lo0, comme _tant fonctionnelle, soit :
+
+ SYS:> ping localhost
+ PING localhost (127.0.0.1): 56 data bytes
+ 64 bytes from 127.0.0.1: icmp_seq=0 ttl=255 time=1 ms
+ 64 bytes from 127.0.0.1: icmp_seq=1 ttl=255 time=1 ms
+ 64 bytes from 127.0.0.1: icmp_seq=2 ttl=255 time=1 ms
+ 64 bytes from 127.0.0.1: icmp_seq=3 ttl=255 time=1 ms
+ 64 bytes from 127.0.0.1: icmp_seq=4 ttl=255 time=1 ms
+
+ --- localhost ping statistics ---
+ 5 packets transmitted, 5 packets received, 0% packet loss
+ round-trip min/avg/max = 1/1/1 ms
+
+ ^ Consid_rons que MultiUser est actif :
+
+ SYS:> who am i
+ System Administrator (root)
+
+ö
+
+\T
+
+   Nous sommes root, et poss_dons tous les droits.
+
+A supposer que les r_pertoires de multiuser et ou de amitcp pointent vers les
+r_pertoires standards de l'Amiga soit S: pour les scripts et C: pour les commandes.
+(La structure de votre File-System n'en sera que simplifi_e et les protections aussi).
+
+   ATTENTION C'EST TRES TRES CHAUD
+(conseil multiuser : utiliser MuMu1.0 est une bonne id_e.)
+
+On a donc :
+
+ SYS:> assign amitcp: sys:
+ SYS:> makelink sys:db sys:s force soft
+ SYS:> makelink sys:bin sys:c force soft
+
+SYS:> makekeyfiles sys:s sys:s sys:
+
+Nous cr_ons un nouvel utilisateur par addition d'une ligne au fichier des mots de passe,
+exemple  :
+
+ SYS:S> echo "msqlII4098I2048IDatabase UserISYS:Homes/users/msqlI" >> passwd
+
+Avec, par exemple, le fichier de groupe (multiuser.group) :
+
+ SYS:S> type group
+ rootI65535I65535IThe root group
+ usersI2048I65535IUsers Group
+
+ö
+
+\T
+
+On a omit le dernier champ de S:passwd, "NewCLI" par exemple, pour ne pas laisser de
+"trou de s_curit_". Parce que SQL n'est pas un utilisateur mais l'identit_ sous laquelle
+tourne cette base de donn_e. Cette combine ne nous prive pas du droit de faire "su
+msql" et d'obtenir un shell sous cet utilisateur, pour la maintenance, par exemple...
+On lui choisira un mot de passe, pour _viter les bavures, avec passwd msql.
+
+ ^ Apr_s avoir d_compress_ les archives msql2-0.10...
+
+le lha (si c'est une archive lha) par :
+ SYS:> lha x chemin/source disque:chemin/
+
+le tar par :
+ tar -xvf /disque/chemin/source /disque/chemin/
+
+le tgz par :
+ tar -xzvf /disque/chemin/source /disque/chemin/
+
+(tar est trouv_ par exemple dans l'archive Geek-Gadgets par exemple). Que l'on utilise
+ou non des chemins Amiga (tronc:branche/feuille) ou Un*X (/tronc/branche/feuille)
+importe peu, puisque ceci est param_trable grace a ixprefs, ce qui nous permet au
+passage de v_rifier que la couche r_seau est bien du type AmiTCP et que celle de
+s_curit_ est bien MultiUser.
+En fait, Assign: _quivaut a /Assign/, c'est tout. Il n'y a pas de "/." chez Amiga.
+
+ ^ A supposer que l'installation de msql se trouve une fois d_compress_e dans sys:msql
+(On a utilis_ pour cela le script Installer fourni avec). On doit d'abord attribuer une
+assignation a mslq :
+
+ö
+
+\T
+
+ SYS:> assign msql: sys:msql
+ SYS:> path msql: msql:bin add
+
+ ^ De m_me, certains fichiers se doivent d'apartenir au serveur :
+
+ SYS:> msql:
+ SYS:msql> mlist
+ License                            2264 ----rwedr---r--- 01-Mai-99   root
+ Amiga-mSQL.guide                   2548 ----rw-dr---r--- 13-Juil-00  root
+ RELEASE_NOTES                      1919 ----rwedr---r--- 01-Mai-99   root
+ MSQL_BOOK                           528 ----rwedr---r--- 01-Mai-99   root
+ install msql                       1987 ----rwedr---r--- 01-Mai-99   root
+ bin                                 Dir ----rwedr---r--- 22-Juil-00  root
+ lib                                 Dir ----rwedr---r--- 22-Juil-00  root
+ src                                 Dir ----rwedr---r--- 22-Juil-00  root
+ msql2.sock                            0 ----rwedrwedrwed 11-Aout-00  root
+ INSTALL                            3882 ----rwedr---r--- 03-Juin-99  root
+ msqldb                              Dir ----rwedr---r--- 01-Aout-00  msql
+ www                                 Dir ----rwedr---r--- 12-Juil-00  root
+ README                             3116 ----rwedr---r--- 01-Mai-99   root
+ msql2d.pid                           10 ----rwed-------- 11-Aout-00  msql
+ msql.conf                          1107 ----rw-dr---r--- 22-Juil-00  msql
+ misc                                Dir ----rwedr---r--- 12-Juil-00  root
+ makegen                             Dir ----rwedr---r--- 12-Juil-00  root
+ doc                                 Dir ----rwedr---r--- 12-Juil-00  root
+ msql.acl                            195 ----rwedr---r--- 04-Jan-98   root
+ doc.info                           2058 ----rw-dr---r--- 13-Juil-00  root
+ Amiga-mSQL.guide.info              1573 ----rw-dr---r--- 13-Juil-00  root
+
+ö
+
+\T
+
+
+
+ Install mSQL.info                  2257 ----rw-dr---r--- 22-Juil-00  root
+ 14 files - 8 directories - 76 blocks used
+
+Bien que j'ai un doute sur msql2.sock, enfin si quelqu'un a une bonne id_e, je lui
+sugg_re de me la confier. J'en ferais part aux autres ! :-)
+
+ ^ De m_me voici le fichier de configuration msql.conf :
+
+ SYS:msql> type msql.conf
+ #
+ # msql.conf  -  Configuration file for Mini SQL Version 2
+ #
+ #---------------------------------------------------------------------------
+ #
+ # This file is an example configuration and may require modification to
+ # suit your needs or your site.  The values given are the default values
+ # and will be used by the software if either this file is missing or a
+ # specific value is not specified.
+ #
+ #---------------------------------------------------------------------------
+ # NOTE : The install directory and all files/directories below it -must-
+ #        be owned by the user specifed in the mSQL-User parameter (the
+ #        user msql by default).  If you change the mSQL-User value then
+ #  you must 'chown -R' the install directory.
+ #
+
+ö
+
+\T
+
+
+
+ (general)
+
+ Inst Dir = /mSQL
+ DB Dir = %I/msqldb
+ mSQL User = msql
+ Admin User = root
+ Pid File = %I/msql2d.pid
+ TCP Port = 1114
+ UNIX Port = %I/msql2.sock
+
+ (system)
+
+ Msync Timer = 30
+ Host Lookup = True
+ Read Only = False
+ Remote Access = True
+ Local Access = True
+ #Query Log = False
+ #Query Log File = %I/query.log
+
+ (w3-msql)
+
+ Auth Host = NULL
+ Footer = True
+ Force Private = False
+
+ö
+
+\T
+
+ ^ Pour lancer le serveur :
+
+ SYS:> stack 200000
+ SYS:> startnet
+ SYS:> run msql2d
+
+Voila, si quelque chose a rat_, les messages d'erreur fournis par les diff_rentes
+applications sont suffisamment clairs pour pouvoir analyser la situation et rem_dier
+au probl_me, malgr_ tout, utilisez snoopdos et lisez les fichiers .log, en dernier lieu,
+laissez un message sur mon mail.
+
+ ^ Pour v_rifier que tout fonctionne :
+
+ SYS:> status
+ Process  1: Loaded as command: AmiTCP
+ Process  2: Loaded as command: executive
+ Process  3: Loaded as command: massign
+ Process  4: Loaded as command: massign
+ Process  5: Loaded as command: mubackdrop
+ Process  6: Loaded as command: Workbench
+ Process  7: Loaded as command: inetd
+ Process  8: Loaded as command: msql2d
+ Process  9: status
+
+Donc tout les cadrans au vert, on peut envisager la seconde partie de l'op_ration.
+J'aime quand un plan se d_roule sans accrocs.
+
+ö
+
+\T
+
+~ \ Usage :
+
+ ^ Les commandes msql
+
+La base lanc_e, le serveur tourne en tache de fond, seul moyen d'y acc_der, les
+commandes livr_es avec :
+
+msqladmin 
+msql
+relshow
+msqlimport
+msqlexport
+
+ ^ Cr_ation d'une base
+
+A cet effet nous utilisons
+
+ SYS:> msqladmin
+
+ usage : msqladmin (-h host) (-f conf) (-q) <Command>
+
+ where command =  drop DatabaseName
+                      create DatabaseName
+                      copy FromDB ToDB
+                      move FromDB ToDB
+                      shutdown
+                      reload
+                      version
+                      stats
+
+ö
+
+\T
+
+ -q   Quiet mode.  No verification OF commands.
+ Ce qui est lumineux, et appelle peu de commentaires.
+
+D'ou :
+
+ SYS:> msqladmin create ma-base
+ Database "ma-base" created.
+
+
+ ^ Cr_ation d'une table
+
+A pr_sent, nous devons nous connecter, a l'aide du client msql.
+
+ SYS:> msql ma-base
+ Welcome TO the miniSQL monitor.  Type /h for help.
+
+ mSQL >
+Nous sommes a pr_sent connect_ a notre base vide. Cr_ons une table, table qui sera la
+brique fondamentale de notre base, elle sera constitu_e par la liste de nos copains,
+avec leur e-mail. Soit un tableau de 3 colonnes : nom, pr_nom, email.
+Appelons ce tableau carnet et donnons une longueur quelconque aux chaines :
+
+ mSQL > create table carnet (nom CHAR(15), prenom CHAR(15), email CHAR(30))
+ mSQL > //g
+
+ Query OK.  1 row(s) modified OR retrieved.
+
+ mSQL >
+
+ö
+
+\T
+
+R_capitulons :
+//g ex_cute la phrase sql, qui se lit dans le sens naturel du langage :
+
+"cr_e une table dont le nom est carnet dont les _l_ments sont successivement nom
+qui est du type chaine de 15 caract_res maximum de longueur puis prenom qui est
+du type...."
+
+Jusqu'a pr_sent seule l'ossature de la base est cr__e, Or, il nous faut remplir ce
+r_cipient. D_s lors quittons le client pour donner a manger a notre base.
+
+ mSQL > //q
+
+ Bye !
+
+ SYS:>
+
+ ^ Production des donn_es
+
+Utilisons Ed pour cette tache :
+
+ SYS:> HOME:
+ HOME:> ed fichier-saisie window=*
+ adam,olivier,olivieradam@123india.com
+ seldon,harry,harry.seldon@fondation.org
+ .
+ .
+ .
+ (Esc):x
+
+ö
+
+\T
+
+ HOME:>
+
+Notre saisie termin_e, il suffit de l'importer dans la base :
+
+ HOME:> msqlimport <fichier-saisie mabase carnet
+ HOME:>
+
+
+ ^ Les requ_tes d'interrogation
+
+Notre base est nourrie, examinons la avec le client msql :
+
+ HOME:> msql mabase
+ Welcome to the miniSQL monitor.  Type /h for help.
+
+ mSQL >
+
+Soit la phrase : "S_lectionne tout le contenu de la table carnet" :
+
+ mSQL > select * from carnet
+           -> //g
+ Query OK.  2 row(s) modified or retrieved.
+
+ +-----------------+-----------------+--------------------------------+
+ I nom                I prenom            I email                               I
+ +-----------------+-----------------+--------------------------------+
+ I adam               I olivier             I olivieradam@123indiacom            I
+ I seldon              I harry             I harry.seldon@fondation.org          I
+ +-----------------+-----------------+--------------------------------+
+
+ö
+
+\T
+
+ mSQL >
+
+De la m_me facon :
+
+ mSQL > select nom from carnet where prenom like 'o%'
+           -> //g
+ Query OK.  1 row(s) modified or retrieved.
+
+ +-----------------+
+ I nom                I
+ +-----------------+
+ I adam               I
+ +-----------------+
+
+ mSQL >
+
+Cette requ_te est donc : "S_lectionne dans la table carnet le(s) nom(s) pour le(s)quel(s)
+la premi_re lettre du pr_nom est 'o' "
+
+J'esp_re que maintenant vous commencez a entrevoir les possibilit_s offertes par cette
+philosophie !
+
+Terminons cette introduction par un outil, relshow, qui permettra d'appr_cier le trajet
+parcouru :
+
+ HOME:> relshow
+
+ö
+
+\T
+
+ +---------------------------+
+ I         Databases             I
+ +---------------------------+
+ I mabase                        I
+ +---------------------------+
+
+ HOME:> relshow mabase
+
+ Database = mabase
+
+ +-------------------------------+
+ I            Table                    I
+ +-------------------------------+
+ I carnet                              I
+ +-------------------------------+
+
+ HOME:> relshow mabase carnet
+
+ Database = mabase
+ Table    = carnet
+
+ +-----------------+----------+--------+----------+--------------+
+ I     Field           I   Type    I Length  I Not Null  I Unique Index    I
+ +-----------------+----------+--------+----------+--------------+
+ I nom                I char       I 15      I N          I N/A            I
+ I prenom             I char       I 15      I N          I N/A            I
+ I email               I char       I 30      I N          I N/A           I
+ +-----------------+----------+--------+----------+--------------+
+
+ö
+
+\T
+
+
+Allons, toutes les bonnes choses ayant une fin, nous voici a la fin de ce laborieux
+article. J'esp_re que personne n'est traumatis_, j'adorerais avoir un feedback sur
+la formule employ_e d'alternance de lignes de commentaires parmi des lignes
+d'AmigaDOS.
+
+   En attendant la suite, je vous conseille de bien r_viser, parce que la fois
+prochaine, on programmera un peu, en E, en A-Rexx, en SQL donc, ou encore en
+AmigaGuide ou en Installer, parce que les langages de script ne manquent pas sur
+notre machine. En effet, pourquoi ne pas fournir une interface en AmigaGuide, qui
+lance des scripts A-Rexx g_n_rant des pages AmigaGuide dynamiques, en fonction des
+requ_tes, voila une solution syst_me, pure ligne du Parti !
+
+Jusqu'a cette occasion je vous dis :
+
+ break `status command=msql2d` ALL
+
+Pour faire propre :-)
+
+Apr_s tout, en Linux je vous dirais : "shutdown -fr now", mais ce n'est pas Linux, car
+pour _teindre un Amiga, point n'est besoin de devoir gratter plus sur les disques durs,
+on se penche et on arrache la prise du mur.
+Il est temps d'aller manger un tube d'Aspirine ! Avec deux verres d'alcool a bruler.
+
+      A bientot
+ö

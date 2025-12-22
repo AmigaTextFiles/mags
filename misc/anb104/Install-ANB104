@@ -1,0 +1,157 @@
+; $VER: 2.11 AMiGA NEWSBiTS Installer Script written by David Tiberio
+; email dtiberio@libserv1.ic.sunysb.edu for more information
+
+    (set AR_dest (getassign "AR"))
+
+    (set FALSE 0)
+    (set TRUE 1)
+    (set @default-dest "SYS:")
+
+
+; Viewer routines excerpted from the Amiga/Toaster Reference Manual with permission
+(procedure Viewer
+    (if (exists "SYS:Utilities/MultiView")              ;use MultiView if detected
+        (
+            (tooltype
+                (prompt "MultiView has been detected in your SYS:Utilities/ drawer. "
+                        "AMiGA NEWSBiTS can be configured to automatically access MultiView. "
+                        "The AmigaGuide DataType will have to be available to the system. "
+                        "Do you wish to use MultiView to access AMiGA NEWSBiTS?")
+                (help "No help available.")
+                (dest "ANB104.guide")
+                (setdefaulttool "SYS:Utilities/MultiView")
+                (noposition)
+                (confirm)
+                )
+            (if (AND (NOT(exists "DEVS:DataTypes/AmigaGuide")) (NOT(exists "SYS:WBStartup/AmigaGuide")))
+                (message "\nThe AmigaGuide DataType was not found. You will have to place it in "
+                         "your WBStartup drawer or your DEVS:DataTypes drawer before MultiView can "
+                         "use the Amiga/Toaster Reference Manual.")
+                )
+            )
+        (
+            (if (exists "AmigaGuide")
+                (copylib                                    ;otherwise, install AmigaGuide
+                    (source "AmigaGuide")
+                    (dest "SYS:Utilities/")
+                    (infos)
+                    )
+                )
+            (if (exists "SYS:Utilities/AmigaGuide")         ;otherwise, use AmigaGuide if detected
+                (
+                    (tooltype
+                        (prompt "AmigaGuide has been detected in your SYS:Utilities/ drawer. "
+                                "AMiGA NEWSBiTS can be configured to automatically access AmigaGuide. "
+                                "Do you wish to use AmigaGuide to access AMiGA NEWSBiTS?")
+                        (help "No help available.")
+                        (dest "ANB104.guide")
+                        (setdefaulttool "SYS:Utilities/AmigaGuide")
+                        (noposition)
+                        (confirm)
+                        )
+                    )
+                )
+            )
+        )
+    )
+
+; Display routines excerpted from the Amiga/Toaster Reference Manual with permission
+(procedure Display
+    (if (exists "SYS:Utilities/MultiView")              ;use MultiView if detected
+        (
+            (textfile
+                (prompt "MultiView has been detected in your SYS:Utilities drawer. "
+                        "This will be used for the picture display driver. "
+                        "The ILBM DataType will have to be available to the system. "
+                        "Do you wish to create a MultiView picture driver?")
+                (help "No help available.")
+                (dest "T:display.s")
+                (append ".key x,y,picture,title\n\nSYS:Utilities/MultiView WINDOW <picture>")
+                (confirm)
+                )
+            (if (AND (NOT(exists "DEVS:DataTypes/ILBM")) (NOT(exists "SYS:WBStartup/ILBM")))
+                (message "\nThe ILBM DataType was not found. You will have to place it in "
+                         "your WBStartup drawer or your DEVS:DataTypes drawer before MultiView can "
+                         "display pictures from the Amiga/Toaster Reference Manual.")
+                )
+            )
+        (
+            (if (exists "WDisplay")
+                (copyfiles
+                    (prompt "Installing the WDisplay picture viewer...")
+                    (help   "No help available")
+                    (source "WDisplay")
+                    (dest "SYS:Utilities/")
+                    (infos)
+                    (confirm)
+                    )
+                )
+            (if (exists "SYS:Utilities/WDisplay")           ;use WDisplay if detected
+                (textfile
+                    (prompt "WDisplay has been detected in your SYS:Utilities drawer. "
+                            "This will be used for the picture display driver. "
+                            "Do you wish to create a WDisplay picture driver?")
+                    (help "No help available.")
+                    (dest "T:display.s")
+                    (append ".key x,y,picture,title\n\nSYS:Utilities/WDisplay WIDTH <x> HEIGHT <y> <picture> TITLE <title>")
+                    (confirm)
+                    )
+                (if (exists "SYS:Utilities/Display")        ;use Display if detected
+                    (textfile
+                        (prompt "Do you wish to create a Display picture driver?")
+                        (help "No help available.")
+                        (dest "T:display.s")
+                        (append ".key x,y,picture,title\n\nSYS:Utilities/Display <picture>")
+                        (confirm)
+                        )
+                    )
+                )
+            )
+        )
+
+    (copyfiles (source "T:display.s") (dest AR_dest))
+    (protect (tackon AR_dest "display.s") "+s")
+    )
+
+(procedure Library
+    (if (exists "AmigaGuide.library")
+        (copylib
+            (prompt "Updating your AmigaGuide.Library...")
+            (help "This will install the AmigaGuide library if you do not already have it.")
+            (source "AmigaGuide.library")
+            (dest "LIBS:")
+            )
+        )
+    )
+
+(procedure Destination
+    (message "\nWARNING: Using with XPK may cause problems.\n\n"
+            "AmigaGuide may not function properly when accessed via the xloadseg handler. "
+            "Similar programs that compress executable files may pose similar problems.\n\n"
+            "XPK and XFH are shareware products and are not included with your "
+            "normal Workbench. Please disregard if you do not use XPK.\n")
+
+    (set AR_dest
+        (tackon
+        (askdir
+        (prompt "In which disk or drawer should AMiGA NEWSBiTS be installed? (A drawer named AMiGA_NEWSBiTS will be created there.)")
+        (help @askdir-help)
+        (default @default-dest)
+        )"AMiGA_NEWSBiTS")
+        )
+
+    (set @default-dest AR_dest)
+
+    (makedir AR_dest (infos))
+    (makeassign "AR" AR_dest)
+    )
+
+
+(Destination)
+(Viewer)
+(Display)
+(Library)
+
+(copyfiles (source "ANB104.guide") (dest AR_dest) (infos))
+
+(exit "AMiGA NEWSBiTS Install Script\nwritten by\n\nDavid Tiberio")

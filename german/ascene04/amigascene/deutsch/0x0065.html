@@ -1,0 +1,600 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+	<TITLE>AmigaScene 0x04 - Effizientes Programmieren (3/6)</TITLE>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="TEXT/HTML;CHARSET=iso8859-1">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#101010" LINK="#BF0000" VLINK="#101010" ALINK="#E04040">
+	<TABLE WIDTH="100%" CELLPADDING=3 CELLSPACING=0 BORDER=0>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP WIDTH="80%" HEIGHT=75>
+				<A NAME="00" HREF="welcome.html"><IMG SRC="../images/_amiga.gif" WIDTH=125 HEIGHT=48 ALT="[Amiga]" ALIGN=RIGHT BORDER=0></A><A HREF="#99"><IMG SRC="../images/_krumm_lo.gif" WIDTH=37 HEIGHT=29 ALT="[Down]" ALIGN=LEFT BORDER=0></A>
+				<BR CLEAR=ALL><BR>
+				<TABLE ALIGN=CENTER WIDTH=170 BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD ALIGN=CENTER>
+					<A HREF="../deutsch/0x0065.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" BORDER=1></A>
+				</TD></TR></TABLE>
+ 			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=RIGHT WIDTH=175>
+				<A HREF="welcome.html"><IMG SRC="../images/_scene.gif" WIDTH=110 HEIGHT=47 ALT="[Scene]" ALIGN=LEFT BORDER=0></A>
+				<A HREF="0x0064.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x0066.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=CENTER>
+				<CENTER>&nbsp;<BR>
+
+					<IMG WIDTH=155 HEIGHT=25 SRC="../images/_workshop_.gif" ALT="[Workshop]">&nbsp;<BR><BR>
+
+					<TABLE WIDTH="90%" BORDER=0>
+						<TR><TD ALIGN=CENTER><FONT SIZE="-1">
+
+| <A HREF="0x0063.html">Tunnel Anims</A> | <A HREF="0x0064.html">WGet</A> | <A HREF="0x0065.html">Programmieren</A> | <A HREF="0x0066.html">TCP/IP</A> |
+
+						</FONT></TD></TR>
+					</TABLE>&nbsp;<BR>
+				</CENTER>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER WIDTH=175 ROWSPAN=2>
+				<CENTER>&nbsp;<BR>
+					<IMG SRC="../images/__.gif" HEIGHT=1 WIDTH=175 ALT=" "><BR>
+					<A HREF="0x0059.html"><IMG WIDTH=77  HEIGHT=25 SRC="../images/_cover.gif"     ALT="[Cover]"     BORDER=0></A><BR>
+					<A HREF="0x005A.html"><IMG WIDTH=117 HEIGHT=25 SRC="../images/_editorial.gif" ALT="[Editorial]" BORDER=0></A><BR>
+					<A HREF="0x005B.html"><IMG WIDTH=85  HEIGHT=25 SRC="../images/_inhalt.gif"    ALT="[Inhalt]"    BORDER=0></A><BR>
+					<A HREF="0x005D.html"><IMG WIDTH=70  HEIGHT=25 SRC="../images/_news.gif"      ALT="[News]"      BORDER=0></A><BR>
+					<A HREF="0x005E.html"><IMG WIDTH=131 HEIGHT=25 SRC="../images/_hardware.gif"  ALT="[Hardware]"  BORDER=0></A><BR>
+					<A HREF="0x0060.html"><IMG WIDTH=121 HEIGHT=25 SRC="../images/_software.gif"  ALT="[Software]"  BORDER=0></A><BR>
+					<A HREF="0x0063.html"><IMG WIDTH=135 HEIGHT=25 SRC="../images/_workshop.gif"  ALT="[Workshop]"  BORDER=0></A><BR>
+					<A HREF="0x0067.html"><IMG WIDTH=73  HEIGHT=25 SRC="../images/_spiele.gif"    ALT="[Spiele]"    BORDER=0></A><BR>
+					<A HREF="0x0068.html"><IMG WIDTH=91  HEIGHT=25 SRC="../images/_special.gif"   ALT="[Special]"   BORDER=0></A><BR>
+					<A HREF="0x0069.html"><IMG WIDTH=112 HEIGHT=25 SRC="../images/_feedback.gif"  ALT="[Feedback]"  BORDER=0></A><BR>
+					<A HREF="0x006C.html"><IMG WIDTH=46  HEIGHT=25 SRC="../images/_etc.gif"       ALT="[Etc]"       BORDER=0></A><BR>
+				<BR></CENTER>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+
+<BR><H1 ALIGN=LEFT><FONT FACE="Arial"><B>Effizientes Programmieren - Kurs 3</B></FONT></H1>&nbsp;
+
+<BR><FONT SIZE="+1">Diesmal wollen wir eine sehr m&auml;chtige und
+universell einsetzbare Datenstruktur besprechen: den Baum (tree). Im
+speziellen wollen wir dann auf die besondere Eignung von B&auml;umen zum
+Suchen eingehen.</FONT><BR>
+
+<BR><CENTER><A NAME="01" HREF="#00"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>In der ersten Folge dieses Kurses haben wir uns mit linearen Listen
+besch&auml;ftigt und haben bemerkt, da&szlig; die Suchoperation bei
+Verwendung der verketteten Speicherung nicht in zufriedenstellender
+Geschwindigkeit abl&auml;uft. Um nun die Vorteile einer schnellen Suche, wie
+wir sie bei der Implementierung durch ein Array hatten, mit den schnellen
+Einf&uuml;ge- und Entferne-Operationen und dem flexibeln dynamischen Aufbau
+der verketteten Speicherung kombinieren zu k&ouml;nnen, ben&ouml;tigen wir
+eine neue Datenstruktur: den Suchbaum. Zum besseren Verst&auml;ndnis
+m&uuml;ssen Sie erst einmal wissen, was ein Baum ist. B&auml;ume sind im
+Prinzip eine Erweiterung von einfachen linearen Listen. Anders wie bei
+Listen, bei denen jedes Element einen Vorg&auml;nger und einen Nachfolger
+besitzt, hat bei einem Baum jeder Knoten einen Vater und eine bestimmte
+Anzahl von S&ouml;hnen. Wir wollen hier nur B&auml;ume mit maximal zwei
+S&ouml;hnen betrachten, die Bin&auml;rb&auml;ume (binary tree). Ein Knoten
+im Baum ist als Wurzel ausgezeichnet, er hat als einziger keinen Vater und
+stellt somit quasi den &quot;Anfang&quot; des Baumes dar. B&auml;ume
+veranschaulicht man sich grafisch wie in Abbildung 1. Dabei zeichnet man die
+Wurzel ganz oben und h&auml;ngt die entsprechenden S&ouml;hne links und
+rechts an die Wurzel. An diese S&ouml;hne h&auml;ngt man dann wieder neue
+Knoten und so weiter. Das Ende dieses Pfades ist erreicht, wenn ein Knoten
+keine S&ouml;hne mehr hat. Einen solchen Knoten nennt man dann auch Blatt,
+alle anderen bezeichnet man als innere Knoten.<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 CELLPADDING=0 CELLSPACING=2>
+<TR><TD ALIGN=CENTER><IMG WIDTH=245 HEIGHT=178 SRC="../images_04/abb_3-1.gif" ALT="[Abb 3-1]"></TD></TR>
+<TR><TD ALIGN=CENTER><TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 WIDTH=245>
+<TR><TD ALIGN=LEFT BGCOLOR="#FFFFFF"><FONT SIZE="-1" COLOR="#000000">
+Abbildung 1: Ein sortierter Bin&auml;rbaum
+</FONT></TD></TR></TABLE></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="02" HREF="#01"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Zum Suchen ben&ouml;tigen wir einen sortierten Baum. Ein Bin&auml;rbaum
+ist dann sortiert, wenn f&uuml;r jeden Knoten gilt, da&szlig; der
+Schl&uuml;ssel des linken Sohnes immer kleiner oder gleich dem
+Schl&uuml;ssel des Knotens selbst und dieser kleiner oder gleich dem
+Schl&uuml;ssel des rechten Sohnes ist. Der kleinste Knoten steht in einem
+Bin&auml;rbaum also immer ganz links, der gr&ouml;&szlig;te ist immer ganz
+rechts zu finden. Wenn wir nun einen bestimmten Knoten auffinden wollen,
+beginnen wir bei der Wurzel und vergleichen deren Schl&uuml;sseln mit dem
+gesuchten. Sind die beiden Schl&uuml;sseln identisch, dann haben wir den
+gesuchten Knoten gefunden. Ist der Schl&uuml;ssel der Wurzel aber
+gr&ouml;&szlig;er als der gesuchte, wissen wir nun, da&szlig; wir den
+rechten Teilbaum der Wurzel nicht mehr durchsuchen brauchen, da alle Knoten,
+die rechts von der Wurzel h&auml;ngen, noch gr&ouml;&szlig;ere
+Schl&uuml;sseln haben, als die Wurzel selbst. Wir setzen also die Suche mit
+dem linken Sohn der Wurzel fort. Hier verfahren wir gleich wie mit der
+Wurzel. Ist der gesuchte Schl&uuml;ssel aber gr&ouml;&szlig;er als der eben
+betrachtete, steigen wir nat&uuml;rlich zum rechten Sohn hinunter. Diese als
+bin&auml;res Suchen bezeichnete Methode haben wir schon bei den Listen in
+&auml;hnlicher Form kennengelernt. Wir setzen sie solange fort, bis wir den
+gesuchten Knoten gefunden haben oder an das Ende des Baumes gesto&szlig;en
+sind. In diesem Fall ist der gesuchte Schl&uuml;ssel im Suchbaum nicht
+vorhanden. Wie der enorme Zeitgewinn zustande kommt, ist leicht zu
+verstehen. Wie Sie sich leicht vorstellen k&ouml;nnen, fallen bei jedem
+Vergleich gleich eine Menge von Knoten unter den Tisch. W&auml;hrend wir
+beim sequentiellen Suchen in konventionellen Listen bei jedem Vergleich
+immer nur sagen k&ouml;nnen, ob der eben betrachtete Knoten der gesuchte ist
+oder nicht, kann man beim bin&auml;ren Suchen gleich entweder den gesamten
+linken oder den gesamten rechten Teilbaum vergessen. Wir ersparen uns somit
+viele unn&ouml;tige Vergleiche. Der Nachteil dabei ist, da&szlig; wir den
+Baum sortiert halten m&uuml;ssen, um den Erfolg eines solchen Suchvorgangs
+gew&auml;hrleisten zu k&ouml;nnen. Somit dauert das Einf&uuml;gen eines
+solchen Knotens l&auml;nger als bei unsortierten Listen, bei denen wir ein
+neues Element einfach am Ende der Liste anh&auml;ngen. Trotzdem sind solche
+Suchverfahren sehr beliebt, da dieser kleine Nachteil durch den
+Geschwindigkeitsgewinn beim Suchen mehr als wettgemacht wird. Wagen wir uns
+nun einmal an die programmtechnische Realisierung des Suchens in
+Bin&auml;rb&auml;umen. Wir w&auml;hlen dazu eine Datenstruktur, die aus zwei
+Zeigern - auf den linken und den rechten Sohn - besteht.<BR>
+
+<BR><CENTER><A NAME="03" HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>struct tree_node {
+<BR>  struct tree_node *left,*right;
+<BR>};
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Diese Struktur ist jedoch nur von theoretischem Wert, denn sie
+enth&auml;lt noch keinen Schl&uuml;ssel. Dazu mu&szlig; erst eine weitere
+Struktur von tree_node abgeleitet werden. Unter ableiten verstehen wir
+dabei, da&szlig; diese Struktur die gleichen Eigenschaften hat wie
+tree_node, weshalb alle Operationen, die f&uuml;r tree_node definiert sind,
+auch f&uuml;r die abgeleitete Struktur gelten. In C++ w&uuml;rde eine solche
+Ableitung beispielsweise so aussehen:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>class bsp_node : public tree_node {
+<BR>  int key;
+<BR>  ...
+<BR>};
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>In C stellt man hingegen die Basisklasse einfach an den Anfang der
+abgeleiteten Klasse; das hat dann aber den Nachteil, da&szlig; man bei
+Funktionsaufrufen immer entweder die Adresse der tree_node &uuml;bergeben
+mu&szlig; oder die ganze Struktur in eine tree_node umcastet.<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>struct bsp_node {
+<BR>  struct tree_node node;
+<BR>  int key;
+<BR>  ...
+<BR>};
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="04" HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Unsere Suchprozedur schreiben wir, wie oben beschrieben. Zus&auml;tzlich
+ben&ouml;tigen wir aber noch Routinen zum Einf&uuml;gen bzw. Entfernen von
+Knoten aus dem Bin&auml;rbaum.<BR>
+
+<BR>Beim Einf&uuml;gen verfahren wir &auml;hnlich wie beim Suchen. Wir
+durchlaufen den Baum, als ob wir den einzuf&uuml;genden Knoten suchen
+w&uuml;rden. Wenn wir die Stelle gefunden haben, an der dieser Knoten stehen
+sollte, dann f&uuml;gen wir ihn eben dort ein. Dazu brauchen wir nur den
+Zeiger des &uuml;bergeordneten Knotens auf ihn zu richten und der Knoten ist
+eingef&uuml;gt.<BR>
+
+<BR>Das Entfernen eines Knotens aus einem Bin&auml;rbaum gestaltet sich
+schon etwas schwieriger. W&auml;hrend ein neuer Knoten immer ein Blatt wird,
+kann es beim Entfernen auch passieren, da&szlig; wir einen inneren Knoten
+rauswerfen m&uuml;ssen. Unterscheiden wir also drei F&auml;lle:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>(1) Wir sollen ein Blatt entfernen. Dies ist der einfachste Fall. Hier 
+setzen wir den Zeiger seines Vaters einfach auf NULL und der Knoten 
+ist drau&szlig;en.
+<BR>
+<BR>(2) Der zu entfernende Knoten k hat nur einen Sohn. Hier ersetzen wir den 
+Knoten einfach durch seinen einzigen Sohn. Dadurch ist er aus dem Baum 
+entfernt.
+<BR>
+<BR>(3) Der Knoten k hat zwei S&ouml;hne. Hier wird es schon etwas schwieriger. Wir 
+k&ouml;nnen den Knoten nicht einfach hinauswerfen, weil dann die Zeiger auf 
+die beiden S&ouml;hne verlorengehen. Wir gehen vielmehr folgenderma&szlig;en vor: 
+Wir suchen uns im rechten Teilbaum unseres Knotens den Knoten mit dem 
+kleinsten Schl&uuml;ssel heraus. Da unser Baum sortiert ist, ist das immer 
+der am weitesten links stehende Knoten im rechten Teilbaum. Er wird 
+als der symmetrische Nachfolger von k bezeichnet. Wenn wir diesen 
+Knoten gefunden haben, entfernen wir ihn von seiner alten Position und 
+setzen ihn dort rein, wo bisher k gestanden hat.
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="05" HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Der letzte Fall ist wohl der schwierigste. Deshalb wollen wir dazu ein
+kleines Beispiel machen. Nehmen wir an, wir wollen die 7 aus Abbildung 1
+entfernen (in diesem Fall die Wurzel). Da die 7 zwei S&ouml;hne hat,
+n&auml;mlich die 4 und die 20, handelt es sich wohl eindeutig um Fall 3. Wir
+suchen also zun&auml;chst den symmetrischen Nachfolger der 7. Das ist - wie
+besprochen - der linkeste Knoten im rechten Teilbaum. Der rechte Teilbaum
+von 7 hat die Wurzel 20 und der linkeste Knoten dieses Teilbaumes ist die
+17. Wir entfernen also diesen Knoten gem&auml;&szlig; der Vorschrift.
+Beachten Sie bitte, da&szlig; es sich hier immer entweder um Fall 1 oder um
+Fall 2 handelt, nie aber um Fall 3. Das erscheint insofern logisch,
+da&szlig; der linkeste Knoten nie einen linken Sohn haben kann, weil dieser
+ja sonst noch weiter links liegen w&uuml;rde. In unserem Beispiel handelt es
+sich um den Fall 1, denn die 17 ist ein Blatt. Wir h&auml;ngen also die 17
+von ihrem Vater, der 20, ab und setzen Sie dorthin, wo bisher die 7 stand,
+n&auml;mlich an die Wurzel. Auf diese Weise ist die 7 aus unserem Baum
+verschwunden und der Vorgang des Entfernens beendet.<BR>
+
+<BR>Die bisher besprochenen Routinen f&uuml;r das Suchen, Einf&uuml;gen und
+Entfernen sind in Listing 1 als fertiges Programm zu sehen. Es handelt sich
+dabei um eine Unterprogrammbibliothek, die die Funktionen tree, tree_find,
+tree_insert und tree_remove zur Verf&uuml;gung stellt. tree ist der
+Konstruktor f&uuml;r diesen Baum. Er mu&szlig; immer vor der ersten
+Verwendung des Baumes aufgerufen werden. An ihn wird neben dem zu
+konstruierenden Baum ein Zeiger auf eine Funktion &uuml;bergeben, mit der
+zwei Knoten (bzw. deren Schl&uuml;sseln) verglichen werden k&ouml;nnen. Sie
+erinnern sich, wir haben schon in der ersten Folge unseres Kurses
+besprochen, wie wir auf diese Weise eine Datenstruktur implementieren
+k&ouml;nnen, die unabh&auml;ngig vom eigentlich verwendeten
+(Schl&uuml;ssel-)Typ arbeitet.<BR>
+
+<BR><CENTER><A NAME="06" HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>An tree_find wird ein Zeiger auf den zu durchsuchenden Baum
+&uuml;bergeben und ein weiterer auf den zu suchenden Beispielknoten. Mit
+diesem Beispielknoten hat es eine besondere Bewandtnis. Es ist kein Zeiger
+auf einen Knoten im Baum, sondern nur ein Knoten, der denselben
+Schl&uuml;ssel hat, wie der gesuchte. Durch einen Vergleich der Knoten im
+Baum mit dem Beispielknoten kann tree_find dann den richtigen Knoten finden.
+tree_insert bekommt den obligaten Zeiger auf den Baum und den
+einzuf&uuml;genden Knoten k &uuml;bergeben. Da unsere B&auml;ume in der Form
+nur f&uuml;r exklusive Schl&uuml;ssel gedacht sind, k&ouml;nnen nie zwei
+Knoten in einem Baum denselben Schl&uuml;ssel haben. Findet tree_insert also
+im Baum einen Knoten mit derselben Schl&uuml;sselinformation wie k, dann
+wird der Zeiger auf diesen Knoten zur&uuml;ckgegeben und k nicht
+eingef&uuml;gt. Andernfalls gibt tree_insert NULL zur&uuml;ck und f&uuml;gt
+k in den Baum ein.<BR>
+
+<BR>Die letzte Funktion, tree_remove, ben&ouml;tigt wieder einen Zeiger auf
+den Baum und einen zweiten auf den Beispielknoten. F&uuml;r diesen Knoten
+gilt das bei tree_find gesagte. tree_remove entfernt anschlie&szlig;end den
+zu diesem Beispielknoten &auml;quivalenten Knoten und gibt einen Zeiger auf
+ihn zur&uuml;ck. Konnte kein passender Knoten gefunden werden, wird NULL
+zur&uuml;ckgegeben. Diese Implementation von Bin&auml;rb&auml;umen stellt
+schon eine recht akzeptable L&ouml;sung unseres Suchproblems dar. Jedoch hat
+die Sache einen Haken. Wenn Sie noch einmal einen Blick auf Abbildung 1
+werfen, sehen Sie einen typischen Baum, wie wir ihn gerne haben
+m&ouml;chten. Er besitzt sieben Knoten und hat die H&ouml;he drei. Als
+H&ouml;he bezeichnet man dabei den maximalen Abstand eines Knotens von der
+Wurzel. Um in einem solchen optimalen Baum einen beliebigen Knoten zu finden
+braucht man maximal drei Vergleiche. Leider kommt es in der Praxis oft vor,
+da&szlig; B&auml;ume ausarten. Nehmen wir beispielsweise an, wir f&uuml;gen
+in einen anfangs leeren Baum in dieser Reihenfolge folgende Schl&uuml;sseln
+ein: 3, 4, 6, 7, 17, 20 und 33. Probieren Sie selbst einmal, den daraus
+entstehenden Baum auf Papier aufzuzeichnen. Er m&uuml;&szlig;te genau so wie
+in Abbildung 2 aussehen. Dies w&auml;re ein extremes Beispiel eines
+entarteten Baumes. Hier ist er praktisch zu einer linearen Liste
+degeneriert. Um hier ein Element herauszusuchen kann man im Fall der 33
+schon 7 Schritte ben&ouml;tigen, dieser Suchbaum ist also ebenso schlecht
+wie eine lineare Liste, mit dem zus&auml;tzlichen Handicap einer
+langsamereren Einf&uuml;geroutine.<BR>
+
+<BR><CENTER><A NAME="07" HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><TABLE ALIGN=CENTER BORDER=0 CELLPADDING=0 CELLSPACING=2>
+<TR><TD ALIGN=CENTER><IMG WIDTH=250 HEIGHT=250 SRC="../images_04/abb_3-2.gif" ALT="[Abb 3-2]"></TD></TR>
+<TR><TD ALIGN=CENTER><TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 WIDTH=250>
+<TR><TD ALIGN=LEFT BGCOLOR="#FFFFFF"><FONT SIZE="-1" COLOR="#000000">
+Abbildung 2: Ein entarteter Baum
+</FONT></TD></TR></TABLE></TD></TR></TABLE>&nbsp;
+
+<BR>Obwohl solche zu Listen degenerierte B&auml;ume eher selten vorkommen,
+m&ouml;chte man manchmal gew&auml;hrleisten, da&szlig; die H&ouml;he eines
+Baumes stets minimal bleibt, der Baum also optimal zum Suchen ist. Aus
+diesem Grund hat man sogenannte h&ouml;henbalancierte B&auml;ume erfunden,
+bei denen es in angemessener Zeit m&ouml;glich ist, den Baum beim
+Einf&uuml;gen oder Entfernen eines beliebigen Knotens immer optimal zu
+halten. Ber&uuml;hmteste Vertreter solcher h&ouml;henbalancierter B&auml;ume
+sind die AVL-B&auml;ume, benannt nach den beiden sowjetischen Erfindern
+Adelson-Velskii und Landis. Wie Sie sich sicherlich vorstellen k&ouml;nnen,
+ist das Einf&uuml;gen und Entfernen von Schl&uuml;sseln in einem solchen
+Baum nicht mehr ganz so einfach.<BR>
+
+<BR><CENTER><A NAME="08" HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Zun&auml;chst brauchen wir f&uuml;r jeden Knoten k einen Balancefakor
+&szlig;(k). Hier speichern wir immer die Differenz der H&ouml;he des rechten
+Teilbaumes von k und der H&ouml;he des linken Teilbaumes von k ab. Weiters
+legen wir fest, da&szlig; die Balance f&uuml;r jeden inneren Knoten nur die
+Werte -1, 0 oder +1 annehmen darf. Damit gew&auml;hrleisten wir, da&szlig;
+f&uuml;r jeden Knoten entweder der linke Teilbaum gleich gro&szlig; wie der
+rechte ist, oder einer von beiden um nur einen Knoten h&ouml;her ist. Beim
+Einf&uuml;gen und Entfernen mu&szlig; also stets beachtet werden, da&szlig;
+diese Bedingungen nicht verletzt werden. Das Suchen hingegen l&auml;uft ganz
+gleich ab wie bei den nat&uuml;rlichen Bin&auml;rb&auml;umen.<BR>
+
+<BR>Betrachten wir zuerst das Einf&uuml;gen eines Knotens k in einen
+AVL-Baum. Da ein neuer Knoten immer als Blatt an einen Baum angeh&auml;ngt
+wird, bekommt unser Knoten k den Balancefaktor 0. Anschlie&szlig;end wird er
+ganz normal in den Baum eingef&uuml;gt. Nun erfolgt die Ausbalancierung.
+Dazu wird der Vater des eben eingef&uuml;gten Knotens k &uuml;berpr&uuml;ft.
+Nennen wir diesen Vater beispielsweise p. Wir machen nun eine
+Unterscheidung, ob k der linke oder rechte Sohn von p ist.<BR>
+
+<BR><CENTER><A NAME="09" HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#10"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>(1) k ist linker Sohn von p:
+<BR>Nun untersuchen wir die Balance von p.
+<BR>
+<BR>(a) p hat die Balance +1. In diesem Fall war die H&ouml;he des rechten 
+Teilbaumes von p um einen Knoten h&ouml;her als die des linken. Nachdem 
+p aber einen linken Sohn dazubekommen hat, ist die Balance nun 
+wieder ausgeglichen, wir brauchen also nur &szlig;(p)=0 setzen und der 
+Einf&uuml;gevorgang ist beendet, da sich die H&ouml;he des Teilbaumes ab dem 
+Knoten p nicht ver&auml;ndert hat.
+<BR>
+<BR>(b) p hat die Balance 0. Das bedeutet, da&szlig; die H&ouml;he des linken 
+Teilbaumes von p gleich der H&ouml;he des rechten Teilbaumes war. Da 
+sich der linke Teilbaum aber erh&ouml;ht hat, setzen wir &szlig;(p)=-1. 
+Beachten Sie bitte, da&szlig; sich in diesem Fall die H&ouml;he des 
+Teilbaumes mit der Wurzel p um eins erh&ouml;ht haben mu&szlig;! Aus diesem 
+Grund mu&szlig; auch ein eventueller Vater von p ausbalanciert werden, 
+da sich auch f&uuml;r ihn eine &Auml;nderung der Balance ergeben wird.
+<BR>
+<BR>(c) p hat die Balance -1. Hier war die H&ouml;he des linken Teilbaumes 
+sowieso schon h&ouml;her als die des rechten. Jetzt haben wir ihn aber 
+noch um einen Knoten erh&ouml;ht, das ist zuviel. Die Balance-Bedingung 
+wurde verletzt und wir m&uuml;ssen eine Umstrukturierung des Baumes 
+vornehmen. Man bezeichnet diese im allgemeinen als Rotationen und 
+man unterscheidet zwischen einfachen und doppelten Rotationen. Wie 
+diese Rotationen im Detail aussehen, zeigen die Abbildungen 3 und 
+4. Die Dreiecke stehen hierbei f&uuml;r einen beliebigen Baum und die 
+darunter stehenden Ausdr&uuml;cke geben die m&ouml;glichen H&ouml;hen dieser 
+Teilb&auml;ume an. Die Zahlen neben den Knoten geben deren Balance an. 
+Je nach Balance von k, also des linken Sohnes von p, mu&szlig; eine 
+einfache Rotation nach rechts (s. Abbildung 3, bei &szlig;(k)=-1), oder 
+eine doppelte Rotation nach links-rechts (s. Abbildung 4, bei 
+&szlig;(k)=+1) durchgef&uuml;hrt werden. Eine Balance von &szlig;(k)=0 ist nicht 
+m&ouml;glich, wenn k kein Blatt ist. In jedem Fall ist die H&ouml;he des 
+Teilbaumes ab p nach der Rotation wieder gleich wie vor dem 
+Einf&uuml;gen, soda&szlig; eine Betrachtung des Vaters von p nicht mehr n&ouml;tig 
+ist.
+<BR>
+<BR>(2) k ist der rechte Sohn von p. Dieser Fall verl&auml;uft symmetrisch zum Fall 
+1. F&uuml;r 2c sind hier entsprechend Linksrotationen und Doppelrotationen 
+nach rechts-links notwendig.
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="10" HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#11"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><TABLE ALIGN=CENTER BORDER=0 CELLPADDING=0 CELLSPACING=2>
+<TR><TD ALIGN=CENTER><IMG WIDTH=393 HEIGHT=227 SRC="../images_04/abb_3-3.gif" ALT="[Abb 3-3]"></TD></TR>
+<TR><TD ALIGN=CENTER><TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 WIDTH=393>
+<TR><TD ALIGN=LEFT BGCOLOR="#FFFFFF"><FONT SIZE="-1" COLOR="#000000">
+Abbildung 3: Einfache Rotation nach rechts
+</FONT></TD></TR></TABLE></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="11" HREF="#10"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#12"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Verpacken wir nun unser neues Wissen in ein Programm. Betrachten Sie
+dazu Listing 2. Auch f&uuml;r die AVL-B&auml;ume ben&ouml;tigen wir einen
+Konstruktor (namens avl), dem die zu verwendende Vergleichsfunktion
+&uuml;bergeben werden mu&szlig;. Am Anfang stehen die Rotationsroutinen nach
+links, rechts, links-rechts und rechts-links. Die Einfachrotationen sind
+nicht schwer nachzuvollziehen. Nach der Rotation haben sowohl der Knoten k
+als auch p immer die Balance 0. Bei den Doppelrotationen ist es schon etwas
+schwieriger. Sie setzen sich, wie der Name schon sagt, aus zwei
+Einzelrotationen zusammen. Nehmen wir das Beispiel einer
+links-rechts-Rotation in Abbildung 4. Zuerst wird der Knoten k nach links
+rotiert. Danach erfolgt eine Rechtsrotation des Knotens p. Der dadurch an
+die Spitze kommende Knoten - in der Abbildung mit q bezeichnet - hat danach
+immer die Balance 0, da der Baum wieder vollst&auml;ndig ausbalanciert
+wurde. Schwieriger zu erkennen ist aber, welche Balancen die Knoten p und k
+erhalten. Dazu betrachten wir die unter dem Teilb&auml;umen stehenden
+H&ouml;hen. Wie Sie am urspr&uuml;nglichen Baum sehen, hat der Knoten q
+entweder links oder rechts einen k&uuml;rzeren Teilbaum (sofern q nicht das
+eben eingef&uuml;gte Blatt ist). Je nachdem, ob nun der linke Sohn von q
+kleiner ist oder der rechte, hat q vor der Rotation die Balance +1 bzw. -1.
+Aus der Abbildung entnehmen wir nun, wie die Teilb&auml;ume durch die
+Rotation neu verteilt wurden. Wie Sie sehen, bekommt k den Teilbaum 2 als
+rechten Sohn und p den Teilbaum 3 als linken Sohn. War nun der Teilbaum 3
+der k&uuml;rzere, dann bekommt k die Balance 0 und p die Balance +1. War
+hingegen der Teilbaum 2 k&uuml;rzer, dann wird &szlig;(k)=-1 und
+&szlig;(p)=0. Der dritte Fall tritt auf, wenn q unser eben eingef&uuml;gtes
+Blatt war, in diesem Fall setzen wir sowohl die Balance von p als auch die
+Balance von k auf 0.<BR>
+
+<BR><CENTER><A NAME="12" HREF="#11"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#13"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><TABLE ALIGN=CENTER BORDER=0 CELLPADDING=0 CELLSPACING=2>
+<TR><TD ALIGN=CENTER><IMG WIDTH=425 HEIGHT=310 SRC="../images_04/abb_3-4.gif" ALT="[Abb 3-4]"></TD></TR>
+<TR><TD ALIGN=CENTER><TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 WIDTH=425>
+<TR><TD ALIGN=LEFT BGCOLOR="#FFFFFF"><FONT SIZE="-1" COLOR="#000000">
+Abbildung 4: Doppelrotation nach links-rechts
+</FONT></TD></TR></TABLE></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="13" HREF="#12"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#14"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Nach den Rotationsfunktionen ist die Suchroutine zu finden. avl_find
+sieht tree_find aus Listing 1 sehr &auml;hnlich, es gibt aber einen
+entscheidenden Unterschied. Da die Einf&uuml;ge- und Entferne-Operationen
+f&uuml;r AVL-B&auml;ume im Extremfall eine R&uuml;ckverfolgung vom eben
+eingef&uuml;gten Knoten beginnend hinauf bis zur Wurzel erfordern, wird der
+beim Suchen zur&uuml;ckgelegte Pfad auf einem Stapel abgelegt. Auf diese
+Weise konnte vermieden werden, da&szlig; jeder Knoten eines AVL-Baumes auch
+einen Zeiger auf seinen Vater ben&ouml;tigt.<BR>
+
+<BR>Die Prozedur avl_insert &uuml;bernimmt das Einf&uuml;gen eines Knotens
+in einen bestehenden AVL-Baum. An sie wird ein Zeiger auf den Baum und ein
+Zeiger auf den einzuf&uuml;genden Knoten &uuml;bergeben. Als
+R&uuml;ckgabewert erh&auml;lt man NULL f&uuml;r den Fall, da&szlig; alles
+gutgegangen ist. Ist jedoch im Baum schon ein Knoten vorhanden, der
+denselben Schl&uuml;ssel hat, wie der einzuf&uuml;genden Knoten, wird ein
+Zeiger auf diesen Knoten zur&uuml;ckgegeben und nichts eingef&uuml;gt.<BR>
+
+<BR>Die zweite, ebenfalls etwas schwer zu verstehende Operation ist das
+Entfernen eines Knotens aus einem AVL-Baum, im Listing 2 als avl_remove
+bezeichnet. Wir wollen nun die Funktionsweise dieses Algorithmusses
+besprechen. &Auml;hnlich wie beim Entfernen aus einem nat&uuml;rlichen
+Bin&auml;rbaum unterscheiden wir hier drei F&auml;lle:<BR>
+
+<BR><CENTER><A NAME="14" HREF="#13"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#15"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+(1) Der zu entfernende Knoten k ist ein Blatt. In diesem Fall h&auml;ngen wir 
+es einfach von seinem Vater p ab und balancieren p neu aus.
+<BR>
+<BR>(2) k hat nur einen einzigen Sohn q. Wir setzen also - wie bei den 
+nat&uuml;rlichen B&auml;umen - q an die Stelle von k und balancieren den Vater 
+von k neu aus.
+<BR>
+<BR>(3) k hat zwei S&ouml;hne. Auch hier ersetzen wir k durch seinen symmetrischen 
+Nachfolger, wie bei den nat&uuml;rlichen B&auml;umen besprochen.
+Jetzt interessiert es uns nat&uuml;rlich noch, wie die Ausbalancierung des 
+Knotens p auszusehen hat. Wir werden auch hier nur den Fall untersuchen, 
+da&szlig; p der linke Sohn seines Vaters v ist, da der umgekehrte Fall wieder 
+symmetrisch verl&auml;uft. Wir untersuchen dazu die Balance des Vaters v.
+<BR>
+<BR>(3.a) v hat die Balance -1. In diesem Fall war die H&ouml;he des linken 
+Teilbaumes von v um einen Knoten h&ouml;her als die H&ouml;he des rechten 
+Teilbaumes von v. Da wir nun den linken Teilbaum um eins reduziert 
+haben, ist der Baum wieder ausgeglichen. Wir setzen somit &szlig;(v)=0. Da 
+sich nun aber die H&ouml;he des Teilbaumes ab v um eins erniedrigt hat, 
+m&uuml;ssen wir auch noch den Vater von v ausbalancieren.
+<BR>
+<BR>(3.b) v hat die Balance 0. Hier war der Knoten v h&ouml;henbalanciert, wir haben 
+aber links einen Knoten entfernt. Deshalb mu&szlig; die Balance auf +1 
+gesetzt werden. Beachten Sie aber bitte, da&szlig; sich die H&ouml;he des 
+Teilbaumes ab v nicht ge&auml;ndert hat, da der rechte Teilbaum von v immer 
+noch gleich hoch ist wie vorher (und somit h&ouml;her als der linke). Eine 
+Betrachtung des Vaters von v ist in diesem Fall also nicht n&ouml;tig. Da 
+dies anfangs oft etwas schwer zu verstehen ist, zeigt Abbildung 5 ein 
+Beispiel zu diesem Punkt. Wie Sie sehen, hat der linke Teilbaum vor 
+der Rotation die H&ouml;he 2, der gesamte Baum ab v die H&ouml;he 3. Nach dem  
+Entfernen von p erniedrigt sich der linke Teilbaum um eins. Da der 
+rechte Teilbaum aber immer noch die H&ouml;he 2 hat, bleibt die H&ouml;he des 
+gesamten Baumes ab v unver&auml;ndert auf 3.
+<BR> 
+<BR>(3.c) v hat die Balance +1. Hier ist eine weitere Fallunterscheidung n&ouml;tig. 
+Wir untersuchen nun den rechten Sohn von v, nennen wir ihn q.
+<BR>
+<BR>(3.c.1) &szlig;(q)=0. In diesem Fall ist eine Rotation von v nach links 
+erforderlich. Die H&ouml;he des Baumes bleibt dabei unver&auml;ndert, was 
+ein Zur&uuml;ckverfolgen des Vaters von v unn&ouml;tig macht. Die Balance 
+von v wird dadurch auf +1 gesetzt und q erh&auml;lt die Balance -1.<BR>
+<BR>
+<BR>(3.c.2) &szlig;(q)=+1. Auch hier rotieren wir v nach links. Der Unterschied zum 
+vorigen Fall besteht aber darin, da&szlig; sowohl die Balance von v als 
+auch jene von q 0 wird, und auch die H&ouml;he des Baumes um eins 
+vermindert wird. Das erfordert die Ausbalancierung des Vaters
+von v.
+<BR>
+<BR>(3.c.3) &szlig;(q)=-1. Hier sorgt eine Doppelrotation von v nach rechts-links 
+f&uuml;r die Balancierung des Baumes. Da auch hier die H&ouml;he des Baumes 
+um eins gefallen ist, mu&szlig; auch der Vater von v betrachtet werden.<BR>
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="15" HREF="#14"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#16"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><TABLE ALIGN=CENTER BORDER=0 CELLPADDING=0 CELLSPACING=2>
+<TR><TD ALIGN=CENTER><IMG WIDTH=491 HEIGHT=162 SRC="../images_04/abb_3-5.gif" ALT="[Abb 3-5]"></TD></TR>
+<TR><TD ALIGN=CENTER><TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 WIDTH=491>
+<TR><TD ALIGN=LEFT BGCOLOR="#FFFFFF"><FONT SIZE="-1" COLOR="#000000">
+Abbildung 5: Die H&ouml;he ab v bleibt nach dem Entfernen von p unver&auml;ndert
+</FONT></TD></TR></TABLE></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="16" HREF="#15"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#99"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Auch die Entferne-Funktion ist in Listing 2 zu finden. Die beiden
+Unterprogramme leftRemoved und rightRemoved enthalten den eben besprochenen
+Ausbalancierungsalgorithmus. avl_remove ist der Einsprungspunkt zum
+Entfernen von Schl&uuml;sseln aus einem AVL-Baum. Es erwartet als Parameter
+den Zeiger auf den Baum und einen Zeiger auf den (nicht im Baum enthaltenen)
+zu entfernenden Beispielknoten. avl_remove liefert als R&uuml;ckgabe einen
+Zeiger auf den entfernten Knoten oder NULL, wenn der Knoten nicht gefunden
+werden konnte.<BR>
+
+<BR>Mit diesen Funktionen kann relativ einfach mit AVL-B&auml;umen
+gearbeitet werden. Selbst wenn Sie die ihnen zugrundeliegende Theorie nicht
+vollst&auml;ndig verstanden haben, sollten Sie in der Lage sein, die sich
+ergebenden Vorteile auszunutzen. Solche B&auml;ume sind beispielsweise bei
+der Programmierung von Dateiverwaltungen sehr wichtig, wenn Sie mit
+index-sequentiellen Datens&auml;tzen arbeiten. Der damit erreichte
+Geschwindigkeitsvorteil ist enorm und rechtfertigt den Mehraufwand beim
+Programmieren gegen&uuml;ber einem einfachen sequentiellen Suchen in
+linearen Listen. Es lohnt sich also, sich n&auml;her damit
+auseinanderzusetzen, denn wie so oft ist die einfachste L&ouml;sung doch
+nicht die beste.<BR>
+
+<BR><TT>
+<BR>Kurs&uuml;bersicht:
+<BR>
+<BR>Teil 1 -- Einf&uuml;hrung und lineare Listen.
+<BR>Teil 2 -- Der Stapel und seine Anwendung.
+<BR><B>Teil 3 -- Der Baum.</B>
+<BR>Teil 4 -- Anwendung von B&auml;umen.
+<BR>Teil 5 -- Hashverfahren
+<BR>Teil 6 -- Sortieren
+<BR>
+</TT><BR>
+
+			<BR>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+				<P ALIGN=RIGHT>
+
+					<A HREF="as-redax.html#markus">Markus &Ouml;llinger</A>
+					&nbsp;&nbsp;&nbsp;
+					<A HREF="../deutsch/0x0065.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" VSPACE=0 HSPACE=0 BORDER=1></A>
+					&nbsp;&nbsp;&nbsp;
+					<BR>
+
+				</P>
+				<BR><TABLE BORDER=0 CELLPADDING=8 CELLSPACING=0 ALIGN=CENTER WIDTH="90%">
+				<TR VALIGN=TOP ALIGN=LEFT><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_04/list_3-1.c">Listing 3-1.c</A> (shift-click!)<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_04/list_3-2.c">Listing 3-2.c</A> (shift-click!)<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_04/abb_3-1.gif">Abbildung 3-1</A> (GIF;1K)<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_04/abb_3-2.gif">Abbildung 3-2</A> (GIF;1K)<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x0033.html">Workshop Teil 1</A><BR>
+
+				</TD><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_04/abb_3-3.gif">Abbildung 3-3</A> (GIF;2K)<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_04/abb_3-4.gif">Abbildung 3-4</A> (GIF;3K)<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_04/abb_3-5.gif">Abbildung 3-5</A> (GIF;3K)<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_04/eff_prog.lha">Gepackte Listings</A> (LHA;4K)<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x004D.html">Workshop Teil 2</A><BR>
+
+				</TD></TR>
+				</TABLE>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER> &nbsp; 
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=LEFT>
+				<A HREF="#00"><IMG SRC="../images/_krumm_hi.gif" WIDTH=37 HEIGHT=29 BORDER=0 ALT="[Up]"></A>
+				<A NAME="99"><FONT COLOR="#FFFFFF">&nbsp;</FONT></A>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=BOTTOM ALIGN=RIGHT>
+				<A HREF="0x0064.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x0066.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+	</TABLE>
+</BODY>
+</HTML>

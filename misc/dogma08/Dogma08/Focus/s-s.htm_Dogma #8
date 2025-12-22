@@ -1,0 +1,332 @@
+<HTML>
+<HEAD>
+<TITLE>
+Догма - электронное Амижное издание
+</TITLE>
+<meta http-equiv="content-type" content="text/html; charset=windows-1251">
+<BODY TEXT="white" bgcolor="black">
+</HEAD>
+<script language="JavaScript" src="../topalt.js"></script>
+<script language="JavaScript" src="../leftalt.js"></script>
+
+<table BACKGROUND="../GFX/fon.jpg" align="center" width="90%" border="0" cellspacing="0" cellpadding="0" bgcolor="black">
+<tr>
+<td colspan="3"><font color="white">
+<CENTER><BR><font size="+1" color="yellow"><b>В помощь пользователю StartUp-Sequence</b></font><BR>
+<font size="-1" color="white">Автор -=\<font size="-1" color="yellow">Lazybones (lzb/j77)</font>/=-</font><HR></CENTER>
+<p align="center"><font size="-1" color="yellow"><PRE>
+                        #########
+                     ####:::    #####        #########
+          ######    ###::           ##    ####:::    #####
+         ####::##   ##::  #######::   #  ###::           ##
+         ###::  ##  ###::##    ###::  #  ##::  #######::   #
+         ###::   #   #####     ##::  #   ###::##    ###::  #
+          ##::   #             ##:   #    #####     ##::  #
+          ##:    #            ##:   #               ##:   #
+           ##:   #           ##:   #               ##:   #
+           ##:   #          ##:   #               ##:   #
+            ##:  #         ##:   #               ##:   #
+   ####     ##:  #        ##:   #    born at    ##:   #
+ ####:#     ##:  #       ##::   #  3-oct-1997  ##:   #
+###:: #     ##:  #       ##::   #             ##:    #
+##::  ##   ##:   #       ##::   #             ##:    #
+##::   #####:   ##       ###:: ##             ##:    #
+ ###:         ###         ######              ###:  ##
+   ############                                ######
+</PRE></font></p><BR>
+Решил я написать что-нибудь полезное для начинающих амижников. В качестве
+дружеской помощи, так сказать. Подумал - а о чём же написать то? Как-то
+само собой пришла мысль показать пример startup-sequence для A1200 с
+акселератором (в моем случае B1260/60MHz/scsi/128mb fast).
+<BR><BR>
+Зная, что у некоторых людей возникают разные вопросы - как софткикнуть
+Амигу, какие патчи установить, нужен ли CyberGraphX и разные другие, я
+решил показать пример построения s-s на своем примере.
+<BR><BR>
+Строчки, начинающиеся с символа '#' - это строчки из моего s-s. Порядок их
+расположения именно такой, в каком порядке они рассмотрены здесь. В
+документации на программы вы можете сами узнать, почему порядок следования
+команд именно такой. После некоторых команд указана их версия (на всякий
+случай). Итак, начнём.
+<BR><BR>
+<font color="yellow">#;$VER: startup-sequence от 09.01.2004</font><BR>
+Комментарий. Сугубо для личных целей, дабы знать дату последнего
+серьёзного изменения стартапа (предпоследний раз я менял стартап
+1dec2002 :)
+<BR><BR><font color="yellow">
+#;c:bootcontrol install boot quiet mode=vga vgaonly</font><BR>
+(Bootcontrol 2.1)<BR>
+У меня к Амиге подключается то PAL-монитор, то SVGA. Весьма удобно
+не вспоминать каждый раз, чего же там исправить, чтобы бутовое меню
+было видно в SVGA-режиме, а удалять комментарий, когда это нужно :)
+<BR><BR><font color="yellow">
+#c:blizkick sys:devs/kickstarts/ks441 extresbuf=80960 module noclick fixgetmsg romfixes quiet</font><BR>
+(BlizKick 1.24)<BR>
+Переносить ПЗУ в fastram можно перемычкой на акселераторе. Но если есть
+exec.library v44.1, то имеет смысл загружать его программно, заодно
+поставив некоторые патчи, для которых раньше требовались отдельные программы:<BR>
+noclick - отключение надоедливых кликов амижных дисководов<BR>
+fixgetmsg - патч сугубо для 060<BR>
+romfixes - Piru рекомендует патчить кикстарт этим модулем<BR>
+quiet - подавляем вывод каких-либо сообщений<BR>
+Описания остальных модулей и ключей вы можете прочитать в документации.
+<BR><BR><font color="yellow">
+#c:tude vbase=fast >NIL:</font><BR>
+(TUDE version 1.1 07 June 1995 XXMC Tm by N.O.M.A.D)<BR>
+Перемещаем VBR в fast-ram. Необходимо для эмуляторов Макинтоша.
+Вместо этой команды можно поставить модуль FusionReserve (и FixPatchMAC)
+из BlizKick (пока не пробовал) - это должно работать надежнее tude.
+<BR><BR><font color="yellow">
+#c:cpu060 >NIL:</font><BR>
+(CPU060 1.6)<BR>
+Довольно странно, но именно эта команда должна выполниться для того, чтобы
+ваша Амига поняла, что в ней стоит 68060 (также требуется 68060.library).
+(примечание редакции: для акселераторов с PPC-процессорами эта команда не нужна, впрочем как и библиотека, так как она всегда находится в памяти, инициализируясь при старте из Flash-ROM)
+<BR><BR><font color="yellow">
+#c:SetPatch noromupdate >NIL:</font><BR>
+(setpatch 44.38)<BR>
+Как и все программы, AmigaOS содержит ошибки. SetPatch ставит заплатки
+на найденные ошибки. Должно быть на ЛЮБОЙ Амиге, независимо от типа
+процессора и версии ОС.
+<BR><BR><font color="yellow">
+#c:segtracker</font><BR>
+(SegTracker 37.76)<BR>
+До сих пор точно не понял, зачем оно нужно, но оно действительно должно
+запускаться.
+<BR><BR><font color="yellow">
+#c:poolmem install nochip >NIL:</font><BR>
+(PoolMem 1.53)<BR>
+Запускаем весьма полезный дефрагментатор памяти.
+<BR><BR><font color="yellow">
+#c:loadide reset >NIL:</font><BR>
+(LoadIDE 3.2)<BR>
+Делаем IDEFIX резидентным, что является более правильным, чем c:idefix.
+<BR><BR><font color="yellow">
+#c:cmq060<BR>
+#c:patchmult64</font><BR>
+(CMQ060 1.5, PatchMult64 1.5)<BR>
+Ускоряют работу систем на 060. Без них жить можно, но будет трудно :)
+<BR><BR><font color="yellow">
+#c:patchcontrol</font><BR>
+(PatchControl V2.3 (25-Apr-96))<BR>
+Какая-то нужная программа, если вы используете разные патчи для системы.
+В инструкции к ней сказано, что она должна запускаться СРАЗУ после SetPatch
+<BR><BR><font color="yellow">
+#c:addbuffers df0: 35 >NIL:</font><BR>
+Совсем не обязательно. Увеличиваем число буферов для DF0:, что ускоряет
+обращения к нему.
+<BR><BR><font color="yellow">
+#OpenAWS -a -k0 -p0 -m00029004</font><BR>
+(OpenAWS 1.5)<BR>
+Открываем интересное окно с информацией о системе. Мне так и не удалось
+заставить его открываться в режиме SVGA.
+<BR><BR><font color="yellow">
+#Assign CON: DISMOUNT<BR>
+#Assign RAW: DISMOUNT</font><BR>
+Мы же не дураки использовать старые устройства CON: и RAW:, когда есть
+более новая и лучшая их реализация. Но прежде чем подменить эти устройства,
+старые надо отключить, что мы и делаем этими двумя командами.
+<BR><BR><font color="yellow">
+#c:Version >NIL:<BR>
+#FailAt 21</font><BR>
+Записываем в переменные Workbench и Kickstart номера версий WB и KS. Зачем
+тут FailAt, я не знаю, скажу честно :) Но если её убрать, то ничего плохого
+не случится.
+<BR><BR><font color="yellow">
+#c:MakeDir RAM:Clipboards RAM:ENV<BR>
+#c:Copy >NIL: ENVARC: RAM:ENV ALL NOREQ buf=0</font><BR>
+Создаем логический девайс ENVARC на Ram Disk, чтобы все изменения настроек
+действовали локально (USE), а не только глобально (SAVE). Так же делаем
+папку Clipboards, где будем хранить буфера обмена (их может быть до 255,
+только я не знаю практического применения такому большому числу клипов)
+<BR><BR><font color="yellow">
+#Resident c:Assign PURE</font><BR>
+Эта команда будет использоваться довольно часто, поэтому её можно сделать
+резидентной (она позволяет это), дабы не подгружать её каждый раз с
+загрузочного устройства.
+<BR><BR><font color="yellow">
+#Assign ENV: RAM:ENV<BR>
+#Assign CLIPS: RAM:Clipboards<BR>
+#Assign REXX: SYS:Rexx<BR>
+#Assign PRINTERS: DEVS:Printers<BR>
+#Assign KEYMAPS: DEVS:Keymaps<BR>
+#Assign LOCALE: SYS:Locale<BR>
+#Assign HELP: LOCALE:Help<BR>
+#Assign T: sys:t<BR>
+#Assign FONTS: SYS:Fonts_RUS add</font><BR>
+Устанавливаем нужные системе ассигны. Без них работать можно, но программы
+каждый раз будут у вас что-то просить.
+<BR><BR><font color="yellow">
+#Assign INet: SYS:net<BR>
+#Assign samba: lzb_work:samba<BR>
+#Assign AmiTCP: SYS:net<BR>
+#Assign YAM: sys:net/Yam<BR>
+#Assign AWeb3: sys:net/AWeb3<BR>
+#assign Miami: sys:net/miami<BR>
+#Assign FMS: ram:<BR>
+#Assign GG: sys:gg<BR>
+#Assign MUI: SYS:mui<BR>
+#Assign LIBS: SYS:Classes MUI:Libs ADD</font><BR>
+Эти ассигны нужны для работы установленных мною программ. Как видно, я
+использую MUI, YAM и прочие программы. Логичнее эти ассигны поместить в
+user-startup, но мне удобнее видеть их здесь.
+<BR><BR><font color="yellow">
+#Mount CON: from DEVS:KingCON-mountlist<BR>
+#Mount RAW: from DEVS:KingCON-mountlist</font><BR>
+Теперь можно смонтировать новые CON: и RAW:
+<BR><BR><font color="yellow">
+#IF EXISTS s:user-startup<BR>
+#  Execute s:user-startup<BR>
+#EndIF</font><BR>
+Смотрим, существует ли файл user-startup, и выполняем его, если он есть.
+Обычно инсталлируемые программы записывают туда нужные им ассигны. Даже
+если вы перенесли ВСЕ команды из u-s в s-s, u-s ДОЛЖЕН существовать, на
+случай установки каких-нибудь программ. Впрочем, можно его и убить :)
+<BR><BR><font color="yellow">
+#sys:system/rexxmast >NIL:</font><BR>
+Запускаем сервер REXX. Иначе ARexx-порты в программах не будут работать.
+<BR><BR><font color="yellow">
+#c:Mount DEVS:DOSDrivers/~(#?.info)</font><BR>
+Монтируем все нужные устройства (ненужные лежат в sys:storage)
+<BR><BR><font color="yellow">
+#c:loadmondrvs</font><BR>
+(LoadMonDrvs 45.3)<BR>
+Загружаем все драйвера мониторов из DEVS:Monitors. Раньше это занимало
+несколько строчек (посмотрите старые стартапы), делающих тоже самое.
+<BR><BR><font color="yellow">
+#copy s:ram.info to ram:disk.info</font><BR>
+Копируем иконку для ram disk на ram disk :)
+<BR><BR><font color="yellow">
+#c:fblit</font><BR>
+(FBlit 3.80)<BR>
+Запускается очень нужный патч, ускоряющий работу с графикой.
+<BR><BR><font color="yellow">
+#;run >nil: c:fscreen lace delay=1 prond</font><BR>
+(FScreen 0.21ntt)<BR>
+Можно запустить еще один патч, хранящий все битмапы в fast-памяти, но он
+слишком медленно переключает экраны, что может быть заметно при
+проигрывании mp3, да и просто быть неудобным.
+<BR><BR><font color="yellow">
+#SetEnv Workbench $Workbench<BR>
+#SetEnv Kickstart $Kickstart<BR>
+#UnSet Workbench<BR>
+#UnSet Kickstart</font><BR>
+Записываем содержимое переменных Kickstart и Workbench в файлы Kickstart
+и Workbench, содержащимися в ENV:
+<BR><BR><font color="yellow">
+#c:AddDataTypes refresh quiet</font><BR>
+Говорим Амиге, чтоб она просмотрела существующие дататайпы и обновила для
+себя их список (если были добавлены новые).
+<BR><BR><font color="yellow">
+#c:IPrefs</font><BR>
+(IPrefs 45.13)<BR>
+Подгоняем систему под установки, содержащиеся в ENV:Sys и отслеживаем
+все дальнейшие изменения установок, оповещая систему об их изменениях.
+<BR><BR><font color="yellow">
+#c:fpprefs</font><BR>
+(FPPrefs 40.22)<BR>
+FullPalette позволяет использовать (и редактировать) в WB все 256 цветов,
+вместо ранее позволенных восьми.
+<BR><BR><font color="yellow">
+#c:ConClip</font><BR>
+Разрешаем использовать clipboard в shell-окнах.
+<BR><BR><font color="yellow">
+#Path SYS:Utilities SYS:Rexxc SYS:System SYS:Prefs SYS:Tools SYS:Tools/Commodities add<BR>
+#Path SYS:net/c SYS:ProNET SYS:editors SYS:snd_tools SYS:gfx_tools SYS:Rippers SYS:packers add<BR>
+#Path sys:c mui: s: samba:bin lzb_work:Tools miami: gg:bin add</font><BR>
+Указываем операционной системе, где мы храним файлы, которые желаем запускать
+по их имени, не вводя полных путей.
+<BR><BR><font color="yellow">
+#;c:systempatch >NIL: NOEXEC noutil mmu</FONT><BR>
+(SystemPatch 2.1d)<BR>
+Разные полезные пачти для AGA-машин. У меня на данный момент отключено,
+так как нужно найти набор оптимальных нужных мне патчей :)
+<BR><BR><font color="yellow">
+#c:settdretry 0 rc=1 quiet</font><BR>
+(SetTDRetry 37.1)<BR>
+Для дисковода устанавливаем в 1 число попыток чтения, для убыстрения
+опознавания вставленного диска.
+<BR><BR><font color="yellow">
+#c:smartcrash >NIL:</font><BR>
+(SmartCrash 1.3.3)<BR>
+Очень хорошая программа, заменяющая стандартный crash-реквестер. Советую
+поставить всем.
+<BR><BR><font color="yellow">
+#sys:tools/sfstools/sfsc4ad l=16 rahs=16 inaf=2</font><BR>
+Изменяем размер кешей для SFS (на каждой Амиге - свои значения)
+<BR><BR><font color="yellow">
+#c:rndwbpatt wbdir=lzb_wb:prefs/Presets/BACKDROPS/</font><BR>
+(RndWBPatt V1.0 (23.1.2002) ©2002 Juha Hyvцnen)<BR>
+Бакграунды окон и WB можно менять не вручную, а автоматизировано, при
+каждом ребуте, что эта программа и делает.
+<BR><BR><font color="yellow">
+#openaws -x</font><BR>
+Закрываем красивое окошко.
+<BR><BR><font color="yellow">
+#Resident Assign REMOVE</font><BR>
+Удаляем из памяти ставший ненужным резидент.
+<BR><BR><font color="yellow">
+#echo >>t:startup.log boot time:<BR>
+#date >>t:startup.log</font><BR>
+Я веду лог ребутов Амиги. Сугубо для личных целей. Можете делать также и
+смотреть, включался ли компьютер за время вашего отсутствия.
+<BR><BR><font color="yellow">
+#c:cardreset 100</font><BR>
+(CardReset 3.0)<BR>
+Коммодоровские инженеры тоже люди, и им свойственно было делать ошибки.
+Этой командой мы исправляем глюк с PCMCIA-устройствами (можно это сделать
+аппаратно, но у меня нет никакого желания что-то паять :)
+<BR><BR><font color="yellow">
+#c:fasterforbid</font><BR>
+Немного увеличивает скорость работы Forbid(), что должно вылиться в
+увеличении скорости работы многозадачности.
+<BR><BR><font color="yellow">
+#c:wbctrl imt=iconfast<BR>
+#c:LoadWB simplegels >NIL:</font><BR>
+(WBCtrl 1.3, LoadWB 44.2)<BR>
+AmigaOS 3.9 запускается именно так, если вы хотите использовать fast ram
+для хранения там иконок.
+<BR><BR><font color="yellow">
+#c:memtrailer</font><BR>
+(MemTrailer 1.7)<BR>
+Патчим AllocMem() и FreeMem(), что может помочь некоторым криво написанным
+программам.
+<BR><BR><font color="yellow">
+#avail flush >NIL:</font><BR>
+Пытаемся выгрузить оставшиеся неиспользуемые ресурсы, чтобы WB получил как
+можно больше памяти в свое распоряжение (пусть даже уже фрагментированной
+:)
+<BR><BR><font color="yellow">
+#EndCLI</font><BR>
+voila! Закрываем shell, вываливаемся в Workbench - теперь грузятся все
+программы, находящиеся в SYS:WBStatup.
+<BR><BR>
+Подробное описание каждой программы/патча вы сможете найти внутри архивов
+этих программ. Задавать вопросы, почему у меня стоит именно такой патч, а не
+другой, почему использованы именно такие ключи, а не другие, мне не нужно.
+Вы можете сами перепробовать всевозможные патчи и сделать вывод о нужности
+вам конкретной заплатки. Все патчи лежат в интернете, так что не задавайте
+мне лишних вопросов.
+<BR><BR>
+Само собой, более-менее стабильная работа системы зависит и от содержимого
+u-s, папки WBStartup, DEVS:Monitors, DEVS:DOSDrivers, от версий библиотек,
+от процессора, от памяти, от наличия в вашей системе MUI и от качества
+напряжения питания вашей Амиги. :) Поэтому прежде чем задавать разные
+вопросы по поводу глючности вашей машины, советую прочитать документацию на
+используемые программы, проверить качество питания компьютера, etc, etc...
+<BR><BR>
+Привожу несколько скриншотов со своей Амиги, что является подтверждением того,
+что каждая конфигурация сугубо индивидуальна, и всё выглядит и работает по
+разному. Например, удобная программа TinyMeter v4.30 написана не очень хорошо,
+и, как вы можете видеть, chip-памяти становится всё меньше и меньше...
+<BR><BR>
+<IMG SRC="../GFX/wb1_12jan2004.png" border=0 alt="TinyMeter v4.30" WIDTH="640" HEIGHT="480"><BR><BR>
+<IMG SRC="../GFX/wb2_12jan2004.png" border=0 alt="TinyMeter v4.30" WIDTH="640" HEIGHT="480"><BR><BR>
+<IMG SRC="../GFX/wb3_12jan2004.png" border=0 alt="TinyMeter v4.30" WIDTH="640" HEIGHT="480"><BR><BR>
+<IMG SRC="../GFX/wb4_12jan2004.png" border=0 alt="TinyMeter v4.30" WIDTH="640" HEIGHT="480"><BR><BR>
+</font></td></tr>
+</table>
+
+<script language="JavaScript" src="../downalt.js"></script>
+</BODY>
+</HTML>

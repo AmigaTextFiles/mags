@@ -1,0 +1,95 @@
+; $VER: Install_M.I.P.report #4 by Wincle/VRT v2.0 (17.4.99) Lame Code & Design
+
+(
+
+
+(procedure testcomp
+  (set procesor (database "cpu"))
+(set frek (database "vblank"))
+(set chip (database "graphics-mem"))
+(set total (database "total-mem"))
+)
+
+(procedure getcurrentversion name
+  ( (set vernum (getversion name (resident)))
+    (set ver (/ vernum 65536))
+    (set rev (- vernum (* ver 65536)))
+  )
+)
+
+(procedure copymip
+ (
+    (copyfiles (source "mip1.dat") (dest @default-dest))
+    (copyfiles (source "engine.dat") (dest @default-dest))
+    (copyfiles (source "mip.index") (dest @default-dest))
+    (copyfiles (source "mip") (dest @default-dest))
+    (copyfiles (source "mipreport") (dest @default-dest))
+    (copyfiles (source "readme") (dest @default-dest))
+    (copyfiles (source "intro") (dest @default-dest))
+    (copyfiles (source "prefs") (dest @default-dest))
+    (copyfiles (source "mipprefs") (dest @default-dest))
+    (copyfiles (source "m.i.p.prefs") (dest @default-dest))
+    (copyfiles (source "mipfonts/") (dest (tackon @default-dest "MIPfonts")) (ALL) )
+
+    (copyfiles (source "icony/mip_prefs.info") (dest @default-dest) (newname "Prefs.info"))
+    (copyfiles (source "icony/mip_mip.info") (dest @default-dest) (newname "mip.info"))
+    (copyfiles (source "icony/mip_intro.info") (dest @default-dest) (newname "Intro.info"))
+    (copyfiles (source "icony/mip_readme.info") (dest @default-dest) (newname "ReadmE.info"))
+ )
+)
+
+(procedure askmwb
+(
+(getcurrentversion "intuition.library")
+
+(if (>= ver 40) (set text "OS 3.1 ...Hmmmm")
+(if (< ver 39)  (set text "OS 2.04 ?!?, What's up?"))
+(set text "OS 3.0 , macht niX")
+)
+
+(testcomp)
+
+    (set MWB
+	(askchoice
+	    (prompt "\n" text "\n Procesor:  " procesor "        VBlank:   " frek "    \n Chip RAM:  " chip "     Fast RAM:  " (- total chip) "\n\nDo you wanna install the Special Icon Set?\n")
+
+	    (help (cat "\n\n  Fuck the best we are the rest\n\n")
+	    )
+            (choices "YeS! I do" "No, I do")
+	    (default 0)
+        )
+     )
+)
+)
+
+
+(welcome "M.I.P Installer\nMonkey Island Party - Speed Edition\n Sorry,NoW 0nly Czech LanguAg3\n\nM.I.P. report #4   © Vertical Syndicate '99")
+(if (= @user-level 0) (abort "\n\nLAMER MODE\n\n :)")
+ (if (= @user-level 1) (abort "\n\nBoMb MODE\n\n "))
+)
+(set @user-level 2)
+(set @app-name "MIP #4")
+
+;  ( (set insver (getversion "c:installer" ))
+;    (message insver)
+;  )
+
+    (testcomp)
+    (askmwb)
+; HDD
+ (
+   (set @default-dest
+    (askdir (prompt "Select the directory to install MIPpreport #4")
+	    (help @askdir-help)
+	    (default @default-dest)
+    )
+   )
+    (makedir (tackon @default-dest "MIP4"))
+    (copyfiles (source "icony/MIP_drawer.info")(dest @default-dest) (newname "MIP4.info"))
+    (set @default-dest (tackon @default-dest "mip4"))
+    (copymip)
+
+
+(exit "\n\n\nMip Report has just been installed on your\n grandmother with the special Speed (no)Icons set.\n" (quiet))
+
+))

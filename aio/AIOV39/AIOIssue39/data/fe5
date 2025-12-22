@@ -1,0 +1,143 @@
+
+{center}
+{subhead}The Tech Guy: Changing to SFS- Part 2{def}{p}
+Article by Paul Harvey (gLorTzP/csirac)
+{left}
+{p} {p}
+{bold}3: Using HDToolBox{nobold}
+{p} {p}
+3.1: Adding a Hard Disk
+{p} {p}
+Note: You only need to do this if you have a new drive or one that has no RDB installed (eg. A 
+HD out of a Mac or PC)
+{p} {p}
+You will be presented with a window with various buttons in it. Find the one labelled 'Change
+Drive Type'. Ignore any existing drive types. Ensure the 'Drive Types' cycle menu is on SCSI. Click
+on 'Define New...'. In the next window, click on 'Read Configuration'. The parameters should
+match your hard drive. If they don't, enter them manually. Click OK. You may have to reboot -
+follow the requesters.
+{p} {p}
+3.2: Partitioning a Hard Disk
+{p} {p}
+In the main window, select the HD you want to partition and click on 'Partition Drive'. 
+HDToolBox automatically creates two partitions for you, of equal size. Generally, you only need 
+two partitions, one for SYS: and one for Work:. Your SYS: drive should be at least 20MB, but any 
+bigger than 100MB would be a waste of space. Once you have created a partition scheme that 
+suites you, you are ready to customize them. You may enter meaningful device names for each 
+partition; personally, I follow the linux convention of naming devices SCA0, HDA0, SCB0, HDB1 
+etc. Make sure your intended SYS: partition is marked Bootable, and that your work: partition is 
+not. Click the 'Advanced Options' Box.
+{p} {p}
+Firstly we will change the buffers. Default is 30, but as you probably know, you should have 
+around 200-300 buffers for a FFS drive. With SFS, 200 is probably overkill, but it shouldn't cause 
+any problems with only two partitions. 100 buffers would probably be ok. You can change all 
+this later (including the SFS cache options) without affecting the contents of a volume. Your boot 
+partition should have a boot priority of no higher than 0. Change these settings for each partition 
+you have created.
+{p} {p}
+3.3: Adding the SFS file system
+{p} {p}
+Now you can add the SFS file system into your HD's RDB. You do this in the same place you 
+partitioned your drive. You should see a button labelled 'Add/Update...'. When selected, you 
+should see a new window come up with an empty window telling you what FSs are available on 
+your HD at the moment. To add SFS, click 'Add New File System...'. Delete what is in the text 
+box that comes up, and enter:
+{p} {p}
+  L:SmartFileSystem
+{p} {p}
+and then click Ok. You will now need to enter a DosType for the File System, which is a hex 
+number (beginning with 0x). The identifier for SFS in the SFS184.lha archive is: 0x53465301. 
+Similarly, the identifier for FFS in OS3.0 is: 0x444f5303. In the Version text box, enter the 
+number 1. In the revision text box, enter the number 58. This equates to a version number of 
+1.58. Press Ok, and then Ok again. You have now Added SFS to the RDB of your HD.
+{p} {p}
+3.4: Selecting SFS as your file system for a selected partition.
+{p} {p}
+With SFS installed in the RDB, there is no need to keep the SmartFileSystem handler in L: in the
+future, except for when installing SFS from scratch. To use SFS, however, you must select it for 
+each partition. Do this by firstly selecting the partition you want as SFS, and then clicking 
+'Change...'. You have two ways of telling HDToolBox you want to use SFS. You can select 'Custom 
+File System' in the File System: cycle menu, and entering the hex code 0x53465301. Or, you 
+should be able to keep cycling through the menu until you see SFS/01, and HDToolBox will enter 
+the hex code for you. Nothing else should need to be changed here, but for reference, you 
+should have 'Automount this partition:' ticked, and File system block size: can be kept at 512. 
+You can increase this number for higher performance, but you will lose storage efficiency if you 
+have lots of small files. 'Use custom boot code:' should NOT be ticked. If you normally have to 
+change Mask and MaxTransfer values here, do so. Otherwise they should be left at 0x7ffffffe for 
+Mask or 0xffffff for MaxTransfer.
+{p} {p}
+Click OK to change to SFS. Repeat step 3.4 for each partition you want to use SFS with, and then
+finally click Ok to end. To complete the changes, click 'Save Changes to Drive', and then click 
+Exit. HDToolBox will prompt you for a reboot. You have now successfully installed SFS!
+{p} {p}
+{bold}4: Formatting a SFS volume{nobold}
+{p} {p}
+You should not use the Workbench or any other format commands to initially format a SFS drive.
+Especially, you should NEVER use 'full format' to format a drive. Always use quick format. Not 
+only is a full format a waste of time, but it is dangerous to SFS partitions. The quick-format 
+command, however, is OK to use with SFS partitions once a SFS volume has been formatted with 
+the SFSFormat program.
+{p} {p}
+To format the SFS device HDA0: with the volume name 'Workbench', with a .recycled directory 
+and no case sensitivity, type:
+{p} {p}
+1> df0:SFSFormat drive HDA0: name Work SHOWRECYCLED
+{p} {p}
+for case sensitivity and to disable the .recycled directory, type:
+{p} {p}
+1> df0:SFSFormat drive HDA0: name Work NORECYCLED CASESENSITIVE
+{p} {p}
+You now have a working SFS partition ready for use! Repeat this step for all the partitions you
+created.
+{p} {p}
+{bold}5: Setting cache parameters{nobold}
+{p} {p}
+As mentioned, SFS has some nifty cache options. You can set these options at any time to meet 
+your performance/memory needs. You use the SetCache program in the SFS archive.
+{p} {p}
+To set 10 readahead buffers of 8192 bytes:
+{p} {p}
+1> df0:SetCache SFS Lines=10 ReadAhead=8192
+{p} {p}
+To disable copyback, add the keyword NOCOPYBACK. You shouldn't normally need to do this 
+however, except perhaps for benchmarking.
+{p} {p}
+{bold}6: SFSCheck and DevInf{nobold}
+{p} {p}
+SFSCheck is a program that manually 'verifies' the structure of a SFS volume. If you suspect 
+trouble, you can run this program to check it. As of yet, I haven't needed this program. You type:
+{p} {p}
+1> df0:SFSCheck <volumename: eg. HDA0:>
+{p} {p}
+DevInf gives information about a particular device. It is similar to a utilitiy called SCSIQuery,
+also on aminet. It's used like this:
+{p} {p}
+1> df0:DevInf
+{p} {p}
+(analyse all devices)  or
+{p} {p}
+1> df0:DevInf <device name, eg. HDA0:>
+{p} {p}
+{bold}Conclusion{nobold}
+{p} {p}
+Well, after using this file system continuously for 8 months, I have not had any problems with it.
+Only twice has SFS told me that a previous write operation had been interrupted and that it 
+would attempt to complete it - in both cases, no data was lost. I think it is fair to say that SFS is 
+very well polished and is a must for anyone that uses an Amiga seriously. It is perhaps the most 
+important piece of freeware software we have.
+{p} {p}
+Certainly, reliability couldn't get any better. I also have the added comforts of long(er) filenames,
+case sensitivity if I need it, a good file recovery option, and efficient(er) chacheing. As far as
+speed is concerned, I haven't really noticed any increase. In fact, boot-up time is only about
+one second faster (out of 25, if I recall correctly), and seeking in large files still isn't as fast
+as on PC systems, but I can really see a difference from FFS. Deleting and renaming files are
+faster, but overall, if you want a 'faster' file system, you should get PFS. Perhaps you need better
+than the 25Mhz ec030/A4000 I have to see the difference, however, I don't think there is any
+reason for people to put up with FFS.
+{p} {p}
+The future of SFS? The author speaks of automatic defragmentation and mirroring, but we
+have yet to see that happen. I'm not entirely sure, but I'm certain I saw someone mention a PPC
+compiled version of SFS for MorphOS... then again, I could be dreaming :)
+{p} {p}
+Good luck and enjoy your Amiga!
+{p} {p}               

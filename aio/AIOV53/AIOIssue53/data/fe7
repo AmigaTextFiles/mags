@@ -1,0 +1,175 @@
+{center}
+{p}
+{subhead}{bold}Using vbcc{nobold}{def}
+{pp}
+{left}
+By Paul Harvey (paul@aioworld.com)
+{pp}
+This article is just a short one, to explain basic usage of this free compiler. You can find vbcc in 
+/dev/c on aminet. 
+{pp}
+Quick instructions:
+{pp}
+- Unarchive the vbcc.lha file to the desired place on you're HDD{p}
+- Jump into a CLI, switch to the vbcc directory, and execute "init_vbcc"{p}
+- Now you're ready to compile away..{p}
+{pp}
+A C source file is really just a plain ASCII file. You write the source in your favourite text editor, such as
+GoldED or even "ed" that comes with AmigaOS 3.x. You should use the extension .c for c source files. To see how vbcc
+deals with different extensions, refer to the manual included with the aminet archive of vbcc.
+{pp}
+{bold}Basic useage:{nobold}
+{pp}
+{fixed}vc program.c{def}
+{pp}
+will compile program.c to an executable called a.out, which you can then run like a normal 
+program from the CLI.
+{pp}
+{fixed}vc program.c -o program{def}
+{pp}
+will compile program.c to an executable called program
+{pp}
+{fixed}vc program.c -o program -lmieee{def}
+{pp}
+will compile program.c to an executable called program, with floating point support
+{pp}
+Quoting from the vbcc manual (in pdf format, and quite well laid out):
+{pp}
+{fixed}
+assign >NIL: vbcc: <path to vbcc directory>{p}
+assign >NIL: C: vbcc:bin add{p}
+assign >NIL: vbccm68k: vbcc:targets/m68k-amigaos{p}
+assign >NIL: vincludem68k: vbccm68k:include{p}
+assign >NIL: vincludem68k: <path to your AmigaOS header files> ADD{p}
+;assign >NIL: ixinclude: <path to ixemul header files, if needed>{p}
+assign >NIL: vlibm68k: vbccm68k:lib{p}
+assign >NIL: vbccppc: vbcc:targets/ppc-powerup{p}
+assign >NIL: vincludeppc: vbccppc:include{p}
+assign >NIL: vlibppc: vbccppc:lib{p}
+assign >NIL: vincludeppc: <path to your AmigaOS header files> ADD{p}
+assign >NIL: vbccwos: vbcc:targets/ppc-warpos{p}
+assign >NIL: vincludewos: vbccwos:include{p}
+assign >NIL: vlibwos: vbccwos:lib{p}
+assign >NIL: vincludewos: <path to your AmigaOS header files> ADD{p}
+assign >NIL: vbccmos: vbcc:targets/ppc-morphos{p}
+assign >NIL: vincludemos: vbccmos:include{p}
+assign >NIL: vlibmos: vbccmos:lib{p}
+assign >NIL: vincludemos: <path to your MorphOS header files> ADD{p}
+{pp}
+Also, the stack-size has to be increased from the default. 40KB is a sensible value, for very
+large projects higher values might be necessary.
+{pp}
+There is a sample script file `init_vbcc'. Changing to the vbcc-directory and executing
+this script will set up a basic vbcc system. However, it is recommended to adapt the script
+and put it into your `s:user-startup'.
+{pp}
+There are different configuration files provided in the `config'-subdirectory to choose dif-
+ferent targets (i.e. the system you want to generate programs for) and hosts (i.e. the system
+you want the compiler an tools to run on). The general naming-scheme for these files ist
+<target> <host>.
+{pp}
+The systems available as targets are `m68k' (AmigaOS on 68k with standard libraries),
+`ixemul' (AmigaOS on 68k using ixemul library), `ppc' (PPC boards using the PowerUp
+system), `warpos' (PPC boards using the WarpOS system) and `morphos' (PPC systems
+running MorphOS).
+{pp}
+`m68k', `ppc' and `warpos' are available as host specifiers on AmigaOS.
+You can choose one of these systems using the `+'-option of vc, e.g.
+{pp}
+vc +m68k_ppc ...
+{pp}
+will compile for AmigaOS/68k using the compiler running on PowerUp.
+You may choose to create copies of some of these configuration files with simpler names.
+E.g. if you usually want the compiler to run on WarpOS you could copy `m68k_warpos' to
+`m68k', `warpos_warpos' to `warpos' and so on. Then you can just specify the target and
+your preferred host system will be chosen automatically.
+{pp}
+Additionally, you may copy the configuration file for your preferred host/target-combination
+to `vc.config'. This configuration will be chosen by default if you do not specify anything.
+{pp}
+By default, the target-only-specifications use 68k-native tools, e.g. `+warpos' will create
+code for WarpOS, but the compiler and tools will run on the 68k. The default `vc.config'
+will create code for 68k using tools running on 68k.
+{pp}
+{def}
+
+As you can see, it's just a labourious task of setting up all those assigns.
+{pp}
+Quoting again from the manual:
+{pp}
+{fixed}
+assign >NIL: vbcc: <path to vbcc directory>{p}
+assign >NIL: C: vbcc:bin add{p}
+assign >NIL: vbccm68k: vbcc:targets/m68k-amigaos{p}
+assign >NIL: vincludem68k: vbccm68k:include{p}
+assign >NIL: vincludem68k: <path to your AmigaOS header files> ADD{p}
+;assign >NIL: ixinclude: <path to ixemul header files, if needed>{p}
+assign >NIL: vlibm68k: vbccm68k:lib{p}
+assign >NIL: vbccppc: vbcc:targets/ppc-powerup{p}
+assign >NIL: vincludeppc: vbccppc:include{p}
+assign >NIL: vlibppc: vbccppc:lib{p}
+assign >NIL: vincludeppc: <path to your AmigaOS header files> ADD{p}
+assign >NIL: vbccwos: vbcc:targets/ppc-warpos{p}
+assign >NIL: vincludewos: vbccwos:include{p}
+assign >NIL: vlibwos: vbccwos:lib{p}
+assign >NIL: vincludewos: <path to your AmigaOS header files> ADD{p}
+assign >NIL: vbccmos: vbcc:targets/ppc-morphos{p}
+assign >NIL: vincludemos: vbccmos:include{p}
+assign >NIL: vlibmos: vbccmos:lib{p}
+assign >NIL: vincludemos: <path to your MorphOS header files> ADD{p}
+{pp}
+Also, the stack-size has to be increased from the default. 40KB is a sensible value, for very
+large projects higher values might be necessary.
+There is a sample script file `init_vbcc'. Changing to the vbcc-directory and executing
+this script will set up a basic vbcc system. However, it is recommended to adapt the script
+and put it into your `s:user-startup'.
+{pp}
+There are different configuration files provided in the `config'-subdirectory to choose dif-
+ferent targets (i.e. the system you want to generate programs for) and hosts (i.e. the system
+you want the compiler an tools to run on). The general naming-scheme for these files ist
+<target> <host>.
+{pp}
+The systems available as targets are `m68k' (AmigaOS on 68k with standard libraries),
+`ixemul' (AmigaOS on 68k using ixemul library), `ppc' (PPC boards using the PowerUp
+system), `warpos' (PPC boards using the WarpOS system) and `morphos' (PPC systems
+running MorphOS).
+{pp}
+`m68k', `ppc' and `warpos' are available as host specifiers on AmigaOS.
+You can choose one of these systems using the `+'-option of vc, e.g.
+{pp}
+vc +m68k_ppc ...
+{pp}
+will compile for AmigaOS/68k using the compiler running on PowerUp.
+You may choose to create copies of some of these configuration files with simpler names.
+E.g. if you usually want the compiler to run on WarpOS you could copy `m68k_warpos' to
+`m68k', `warpos_warpos' to `warpos' and so on. Then you can just specify the target and
+your preferred host system will be chosen automatically.
+Additionally, you may copy the configuration file for your preferred host/target-combination
+to `vc.config'. This configuration will be chosen by default if you do not specify anything.
+{pp}
+By default, the target-only-specifications use 68k-native tools, e.g. `+warpos' will create
+code for WarpOS, but the compiler and tools will run on the 68k. The default `vc.config'
+will create code for 68k using tools running on 68k.
+{pp}
+{def}
+
+I recommend using the init_vbcc script that is supplied, and modifying it for your own use 
+(actually it works without modification, until you reboot..).
+{pp}
+Also remember the floating point switches; a few of the examples in Part 1 of the AIO C Tutorial 
+require this.
+{pp}
+Quoting from the manual (again!):
+{pp}
+{fixed}
+If your program uses floating point, you may have to link with a math-library. The details
+are dependent on the target, but usually `-lm' will be suitable (for AmigaOS on m68k
+choose one of `-lmieee', `-lm881' or `-lm040').
+{pp}
+vc calc.c -o calc -lmieee
+{pp}
+There may also be an extra.lib which includes a few functions that are no standard C
+functions but some people seem to regard them as standard functions. If you use one of
+these add `-lextra' to the commandline.
+{def}
+{pp}

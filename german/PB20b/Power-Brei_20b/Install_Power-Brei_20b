@@ -1,0 +1,145 @@
+; $VER: Install_Power-Brei_20b V1.1 (23.07.95)
+
+; Author    Date      Remark
+; -------------------------------------------------------
+; Indy      06.04.95  Version 1.0
+; Indy      23.07.95  Version 1.1 (Aminet-Edition)
+;
+; Feel free to use it for own installer-scripts.
+
+
+(MESSAGE "Mit diesen Installer-Script kann die Power-Brei #20b auf eine Festplatte oder ähnliches installiert werden.\n\
+\n* WICHTIG * WICHTIG * WICHTIG * \n\
+Die Text-, Bild- und Musik-Dateien auf der Power-Brei sind mit den \
+Power-Packer gepackt. Um Probleme zu vermeiden sollte ein laufendes \
+Programm, das diese Daten automatisch im Hintergrund entpackt, vor Fortführung der \
+Installation deaktiviert werden.\n\
+* WICHTIG * WICHTIG * WICHTIG *")
+
+(
+  (SET @default-dest
+    (ASKDIR
+     (PROMPT "In welches Verzeichnis soll das Verzeichnis PB20b zur Installation der PB20b angelegt werden?")
+     (HELP @askdir-help)
+     (DEFAULT @default-dest)
+     (NEWPATH)
+    )
+  )
+  
+  (SET @default-dest (TACKON @default-dest "PB20b"))
+  (MAKEDIR @default-dest
+    (PROMPT ("Verzeichnis '%s' wird angelegt." @default-dest))
+    (HELP @makedir-help)
+    (CONFIRM)
+    (INFOS)
+  )
+
+  ; *** Root kopieren ***
+  (COPYFILES
+   (PROMPT "Kopiere Root...")
+   (HELP @copyfiles-help)
+   (SOURCE "Root/")
+   (DEST @default-dest)
+   (PATTERN "~(Installer-Scripts#?|Make#?|Undo#?|Wozu#?)")
+  )
+  (COMPLETE 20)
+
+  
+  ;*** Texte kopieren ***
+  
+  (MAKEDIR (TACKON @default-dest "Texte"))
+  
+  (COPYFILES
+   (PROMPT "Kopiere Texte...")
+   (HELP @copyfiles-help)
+   (SOURCE "Texte/")
+   (DEST (TACKON @default-dest "Texte/"))
+   (ALL)
+  )
+  (COMPLETE 50)
+  
+
+  ;*** Brushes kopieren ***
+  
+  (MAKEDIR (TACKON @default-dest "Brushes"))
+  
+  (COPYFILES
+   (PROMPT "Kopiere Brushes...")
+   (HELP @copyfiles-help)
+   (SOURCE "Brushes/")
+   (DEST (TACKON @default-dest "Brushes/"))
+   (ALL)
+  )
+  (COMPLETE 60)
+  
+  
+  ;*** C kopieren ***
+  
+  (MAKEDIR (TACKON @default-dest "c"))
+  
+  (COPYFILES
+   (PROMPT "Kopiere c...")
+   (HELP @copyfiles-help)
+   (SOURCE "c/")
+   (DEST (TACKON @default-dest "c/"))
+   (ALL)
+  )
+  (COMPLETE 65)
+  
+  
+  ;*** S kopieren ***
+  
+  (MAKEDIR (TACKON @default-dest "s"))
+  
+  (COPYFILES
+   (PROMPT "Kopiere s...")
+   (HELP @copyfiles-help)
+   (SOURCE "s/")
+   (DEST (TACKON @default-dest "s/"))
+   (ALL)
+  )
+  (COMPLETE 70)
+  
+  
+  ; *** Libraries installieren ***
+  
+  (FOREACH "Libs/" "(powerpacker.library|arp.library|iff.library|Medplayer.library)"
+    (
+      (COPYLIB
+       (PROMPT ("Installiere `%s'..." @each-name))
+       (HELP @copyfiles-help)
+       (SOURCE (CAT "Libs/" @each-name))
+       (DEST "Libs:")
+       (CONFIRM)
+      )
+    )
+  )
+  (COMPLETE 90)
+  
+  
+  ;*** Zeichensätze installieren ***
+  
+  (COPYFILES
+   (PROMPT "Installiere Zeichensätze...")
+   (HELP @copyfiles-help)
+   (SOURCE "Fonts/")
+   (DEST "FONTS:")
+   (ALL)
+   (FONTS)
+   (CONFIRM)
+  )
+  (COMPLETE 98)
+  
+  
+  (STARTUP "Assign für Power-Brei #20b"
+    (PROMPT "Setze Assign PB20b: für Power-Brei #20b in die User-StartUp-Sequenz.")
+    (HELP @startup-help)
+    (COMMAND ("ASSIGN PB20b: %s\n" @default-dest))
+  )
+  (MAKEASSIGN "PB20b" @default-dest)
+  
+  (COMPLETE 100)
+
+)
+
+(EXIT "Viel Spaß beim Lesen!")

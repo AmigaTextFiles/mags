@@ -1,0 +1,46 @@
+(message
+
+"__________________________________\n"
+"*                                  *\n"
+"*   PHASE6 Installationsprogramm   *\n"
+"*__________________________________*\n\n\n"
+"Dieses Utility installiert PHASE6\n"
+"auf einem Datenträger (z.B. Festplatte)\n\n\n"
+"© 1997 Andy Collin"
+)
+(set #prgdir
+(cat "Bitte einen Platz für PHASE6 auswählen:\n"
+     "Ein Verzeichnis namens \"Phase6_5\" wird\nautomatisch erzeugt\n"
+))
+
+(set dd (askdir (prompt #prgdir)
+                (default "SYS:")
+                (help #prgdirhelp)
+))
+
+(set @default-dest (tackon dd "Phase6_5"))
+(set tdir (tackon @default-dest "t"))
+(set gdir (tackon @default-dest "g"))
+
+(makedir @default-dest)
+
+(copyfiles (source "Phase6.exe")
+           (dest @default-dest)
+           (infos))
+
+(makedir tdir)
+(copyfiles (source "t")
+           (dest tdir)
+           (all)
+)
+
+(makedir gdir)
+(copyfiles (source "g")
+           (dest gdir)
+           (all)
+)
+
+(copylib   (prompt "ptreplay.library")
+           (source "libs/ptreplay.library")
+           (dest "LIBS:")
+)

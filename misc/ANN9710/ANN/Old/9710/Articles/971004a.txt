@@ -1,0 +1,88 @@
+From: "Wolf Dietrich" <wd@gf.phase5.de>
+Newsgroups: comp.sys.amiga.misc
+Subject: Re: WarpOS released !!!
+Date: Mon, 29 Sep 1997 16:33:05 +0200
+Organization: phase 5 digital products
+Lines: 73
+Message-ID: <342FBC21.51AC66DD@gf.phase5.de>
+References: <02000206229292420427@BIRDLAND.es.bawue.de> <342E63DF.6ABE2601@gf.phase5.de> <60lu0a$a7c@arcadia.informatik.uni-muenchen.de> <342E7C45.676DD199@gf.phase5.de> <60ntac$jhi$8@pania.unipi.it> <342F7A23.392CD685@gf.phase5.de> <60o4aj$jhi$10@pania.unipi.it>
+NNTP-Posting-Host: ufoo.phase5.de
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Mailer: Mozilla 3.0Gold (X11; I; Linux 2.0.0 i586)
+Path: 195.95.96.10!news.unisource.be!planetinternet.be!newsgate.unisource.nl!surfnet.nl!howland.erols.net!news.nacamar.de!not-for-mail
+
+Rudi Chiarito wrote:
+> 
+> >Could it be that the demo showing the "advantages" has been provided by
+> >Haage&Partner?
+> 
+> Of course, you can't expect a demo of WarpUp from anyone else but them ;)
+
+Yes, and the demo program running under the PowerUp System Software has
+also been provided by them. Oh, by the way, was it the "Set Pixel"-Demo
+which they have shown you? If so, this demo is as useful as testing a
+Porsche by driving backwards.
+ 
+> >I assume that you have seen "advantages" of a Storm C compiled program
+> >running under WarpUp compared to the Storm C compiled version which is
+> >compatible with the PowerUp system software. This is a useless
+> >comparison, because software which is developed for PowerUp with Storm C
+> >is wasting most of the possible performance of the PowerUp boards due to
+> >it's "quick-and-dirty-conversion" concept.
+> 
+> Ok.. what is "most of the possible performance" lost for, then? What are
+> they doing so terribly wrong to get such a performance loss? I'm trying to
+> get some detailed FACTS, but all I see are vague statements.
+> 
+
+I am not a software developer, and can just explain it with the basic
+understanding that I have, so please excuse if this is not going too
+much into the details. We at phase 5 digital products do recommend that
+software developers who want to support PowerUp rewrite their programs
+in a way that they build software modules in form of tasks which run on
+PPC and 68k. In this way, the software is well structured, open for
+future developments and object oriented. A simple program for example
+could consist of a 68k task which handles the GUI and OS calls, and
+calls PPC tasks for executing operations which shall be accelerated by
+using the PPC. As we provide comprehensive functionality and a very fast
+new message system in our PowerUp System Software, this solution is very
+efficient, and it allows full parallel operation of multiple CPUs; in
+the example above, the 68k task could continue with execution of
+commands while one or more PPC tasks are busy with other stuff, and
+wouldn't need to wait until the PPC task(s) returns (unless, of course,
+the 68k task would need the result of the PPC task(s) to continue it's
+work). 
+
+By using such a structured and object oriented programming approach, the
+software is also much more easily updatable. If e.g. GUI and OS calls
+would change in future revisions of an OS, the developer would only need
+to replace the module that handles the GUI and the OS calls, and
+continue to use the other modules.
+
+H&P have been promoting their Storm C with a concept that you simply
+recompile the existing C code which has been written for 68k Amiga and
+tell the compiler to generate PPC code. This may be very comfortable for
+the developer, but is completely unefficient. Not only that in the worst
+case you have a random mix of 68k and PPC code, but also the two CPUs
+will not run in parallel as it is one continuous program flow which
+jumps between PPC and 68k. If a linear code sequence is executed, the
+68k and the PPC always work one after the other, in the worst case with
+lots of switches and a useless overhead.
+
+A significant loss of performance is the result of this way of porting
+applications to the PowerPC. It could result in a scenario where
+developers use Storm C, recompile their code, find that it is two times
+faster than on a 68060 and decide that this is OK, while with some
+thinking and conceptual consideration the program may would work five or
+ten times faster than on the 68060. Insofar this is a poor solution from
+which maybe a less motivated developer would benefit, being enabled to
+do a quick-and-dirty conversion, but not the customer, who would get
+products that do not exploit the performance of his hardware at all.
+
+------------------------------------------------------------
+  Wolf Dietrich, General Manager  phase 5 digital products  
+ Return mail address: wd@gf.phase5.de  http://www.phase5.de
+------------------------------------------------------------
+

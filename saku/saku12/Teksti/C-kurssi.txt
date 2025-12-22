@@ -1,0 +1,1487 @@
+5
+1*
+
+{3                        C-ohjelmointikurssi - Osa 3
+{3                        ---------------------------
+
+                           Ville-Pertti Keinonen
+
+
+{3Kolmas osa 
+
+Valitettavasti kurssin kolmas osa ei ehtinyt edelliseen Sakuun, kuten  alun
+perin oli tarkoitus. Syynä tähän oli yksinkertaisesti se, että koneeni  oli
+sekaisin, mikä rajoitti pahasti sen käytettävyyttä. Nyt kone toimii taas.
+
+Edellisessä osassa oli yhdessä esimerkissä pieni moka, jonka  takia  se  ei
+toimi kaikilla kääntäjillä. #define-makroja selitettäessä oli esimerkkinä: 
+
+#define clrvar(var) do { \\
+                      var = 0; \\
+                      puts(__FILE__ ":" # __LINE__ ": variable " # var \\
+                           " cleared"); \\
+                    } while (0)
+
+Tästä kohta # __LINE__ voi aiheuttaa  virheen,  koska  #-merkinnän  pitäisi
+toimia vain  sen  makron  parametreille,  jossa  se  esiintyy.  Tarkemmalla
+kääntäjällä esimerkin makroa tulokseltaan vastaava olisi: 
+
+#define clrvar(var) do { \\
+                      var = 0; \\
+                      printf(__FILE__ ":%d:variable " # var \\
+                             " cleared\\n", __LINE__); \\
+                    } while (0)
+
+
+{3Lisää main()-funktiosta 
+
+Kurssin edellisessä osassa jäimme main()-funktiolle annettaviin parametrei-
+hin.  Näistä  voisi  vielä  mainita  sen   verran,   että   vaikka   Amigan
+käyttöjärjestelmä antaa ohjelmalle sen ajamiseen käytetyn komentorivin sel-
+laisenaan, C-kielisten ohjelmien alustuskoodi käsittelee tämän komentorivin
+main()-funktiota varten ja  jakaa  sen  aiemmin  mainittuihin  osiin  väli-
+lyöntien kohdalta. Poikkeuksena  on  lainausmerkeissä  oleva  teksti,  joka
+käsitetään  kokonaisuudessaan  yhtenä  parametrina,  vaikka   siinä   olisi
+välejäkin. Lisäksi alustuskoodi saattaa joissain tapauksissa pyrkiä  toimi-
+maan unix-shellin tavoin ja tarkistaa, olisivatko  parametrit  laajennetta-
+vissa, ts. olisiko niissä on kuvioita, joiden pohjalta yksi  parametri  voi
+viitata useampaan tiedostoon. Yleensä kääntäjät tulkitsevat nämä AmigaDOSin
+"wildcard"-sääntöinä (kaikki  varmaan  tuntevat  näistä  ainakin  '?':n  ja
+"#?":n merkityksen), jotka eroavat hieman tavanomaisista  "regular  expres-
+sion" -tyyppisistä kuvioista.
+
+Tällaista parametrien laajentamista tekee ainakin GCC (sekä ixemul.librarya
+että libnixiä käytettäessä tämä on mahdollista, mutta vaihtoehtoista).  DI-
+CE:n C-kirjastoissa on ylimääräisenä rutiinina  expand_args(),  jolla  tämä
+voidaan tehdä main()-funktion alussa.
+
+Myöhemmissä esimerkkiohjelmissa tulee toivottavasti esille  main():in  par-
+metrien käytännön tulkitsemista.
+
+
+
+{3Ehdollinen lauseke, pilkkulauseke 
+
+?:
+
+Tämä on siitä poikkeuksellinen operaattori, että siihen kuuluu  kaksi  mer-
+kintää. Kyseessä on ehdollinen arvo, ts.  se  on  hieman  kuin  if-rakenne,
+paitsi että oleellista ei ole  ohjelman  suoritustien  ehdollinen  valinta,
+vaan lausekkeen arvon ehdollinen määräytyminen. Operaattorin  käytön  muoto
+on:
+
+<ehto> ? <lauseke 1> : <lauseke 2>
+
+Riippuen lausekkeen <ehto> arvosta, on kokonaisuuden arvo  joko  lausekkeen
+<lauseke 1> tai <lauseke 2> arvo. Jos <ehto> on  tosi,  saa  lauseke  arvon
+<lauseke 1>, muuten se saa arvon <lauseke 2>. Esimerkiksi:
+
+b = a == 2 ? 10 : 5;
+
+Saman voisi tehdä myös: 
+
+if (a == 2)
+  b = 10;
+else
+  b = 5;
+
+Toiminta on siis yksinkertaisesti se, että b saa arvon 10, jos a:n arvo  on
+2, muuten se saa arvon 5. Lausekkeiden  sivuvaikutukset  kannattaa  miettiä
+läpi, koska ainoastaan se lauseke evaluoidaan, joka tulee kokonaisuuden ar-
+voksi.
+
+Ehdollinen lauseke on usein hyödyllinen  makroissa,  joissa  if-rakenne  ei
+edes toimisi. Pari yleistä makroa ovat: 
+
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
+
+Näiden toiminnan pitäisi olla varsin selvä selittämättäkin.
+
+,
+
+Pilkkulauseke muodostuu kahdesta lausekkeesta, joiden välissä on pilkku.
+
+<lauseke 1>, <lauseke 2>
+
+Ensin suoritetaan <lauseke 1>, sitten <lauseke  2>.  Kokonaisuuden  arvoksi
+tulee oikeanpuolimmaisen lausekkeen arvo.
+
+Pilkkulauseketta voi käyttää yleensä vain silloin, kun  pilkulla  ei  olisi
+muuten mitään merkitystä. Yleisimmin pilkkulauseketta näkee ehkä for-silmu-
+kan määrittelyn alku-, ehto- ja  iteraatiolausekkeissa.  Pilkkulauseke  voi
+usein olla hyödyllinen myös yllämainitun ehdollisen lausekkeen yhteydessä:
+
+b = a == 2 ? (puts("a == 2"), 10) : 5;
+
+Tämä on muuten samanlainen kuin ensimmäinen esimerkki ehdollisesta  lausek-
+keesta, paitsi että teksti "a == 2" tulostetaan, jos a:n arvo on  2.  Tämän
+voisi toteuttaa myös: 
+
+if (a == 2) {
+  puts("a == 2");
+  b = 10;
+} else
+  b = 5;
+
+ 
+{3Suoritusjärjestys 
+
+C-kielen operaatioiden suoritusjärjestys on seuraava:
+
+1. "()", "[]", "->", "."
+
+Ensimmäiseksi suoritetaan vasemmalta oikealle sulkeissa olevat  lausekkeet,
+indeksiosoitukset ja osoitukset struct/union-kenttiin.
+
+2. "!", "~", "++", "--", "-", "*", "&", cast, "sizeof"
+
+Nämä ovat kaikki "yksiparametrisia" operaattoreita, jotka  suoritetaan  oi-
+kealta vasemmalle. "-", "*" ja "&" esiintyvät lisäksi myöhemmin, koska tämä
+on vain näiden "unary"-merkityksen suoritusprioriteetti.
+
+3. "*", "/", "%"
+4. "+", "-"
+5. "<<", ">>"
+6. "<", "<=", ">", ">="
+7. "==", "!="
+8. "&"
+9. "^"
+10. "|"
+11. "&&"
+12. "||"
+
+Laskutoimitukset, vertailut ja loogiset operaatiot  suoritetaan  vasemmalta
+oikealle yllä olevassa järjestyksessä.
+
+13. "?:"
+
+Ehdollisen lausekkeen kolme lauseketta suoritetaan vasemmalta oikealle  tai
+ei ollenkaan (toisesta ja kolmannesta vain jompi kumpi  lausekkeista  tulee
+suoritettua).
+
+14. "=", "*=", "/=", "%=", "+=", "-=", "<<=", ">>=", "&=", "^=", "|="
+
+Arvon sijoittaminen muuttujaan tai muistiin suoritetaan oikealta vasemmalle
+- tietysti, sillä ensin täytyy laskea lausekkeen arvo, ennenkuin arvoa voi-
+daan sijoittaa minnekään.
+
+15. ","
+
+Viimeisenä suoritetaan pilkkulausekkeet tai muuten pilkulla  erotetut  lau-
+sekkeet, kuten funktion parametrit. Nämä yleensä käsitellään vasemmalta oi-
+kealle, poikkeuksena funktiokutsun parametrit, jotka täytyy laittaa  pinoon
+takaperin.
+
+Suorituksen suunta on sen takia oleellinen, että sivuvaikutukselliset  lau-
+sekkeet voivat vaikuttaa toisten samassa ketjussa olevien lausekkeiden  ar-
+voihin tai lausekeketjun kokonaisuuden sivuvaikutuksiin, koska useissa  ta-
+pauksissa kaikkia lausekkeita ei suoriteta. Jos lauseke toimii ehtona, suo-
+ritetaan sitä siihen asti, kunnes tiedetään ehdon olevan tosi tai  epätosi.
+Esimerkiksi: 
+
+if (a == 2 || b++ == 5)
+  ;
+
+Tämä ei varsinaisesti vaikuta mihinkään, paitsi b:n arvoon. Jos alussa  a:n
+arvo on 2, ei b:n arvo muutu, muuten se kasvaa yhdellä.  Jos  a:n  arvo  on
+kaksi, tiedetään jo ensimmäisen vertailun tuloksena, että ehto on tosi, jo-
+ten voidaan hypätä toisen vertailun yli koodiin, jonka suoritus  on  kysei-
+sestä ehdosta riippuvaa. Vastaavasti esimerkiksi: 
+
+if (a == 2 && b++ == 5)
+  ;
+
+Tässä b:n arvo kasvaa yhdellä vain siinä tapauksessa, jos a:n arvo on  kak-
+si, koska jos a:n arvo on jokin muu, tiedetään jo ensimmäisen vertailun tu-
+loksena, että kokonaisehto ei voi olla tosi.
+
+
+{3Liukuluvut 
+
+C-kielessä on periaatteessa kolme liukulukutyyppiä:
+
+float
+double
+long double
+
+Näistä "float" on tarkkuudeltaan pienin, "double" on tätä tarkempi ja "long
+double" on tarkin. Usein kuitenkin näistä ainakin "double" ja "long double"
+ovat käytännössä saman kokoisia.  Lisää  tietoa  näistä  tyypeistä,  niiden
+ko'oista,  tarkkuuksista  ja  rajoituksista,   löytyy   include-tiedostosta
+"float.h".
+
+Liukulukutyypit toimivat muuten samalla tavalla kuin  kokonaisluvut,  mutta
+niiden arvo ei ole "absoluuttinen" (mutta ei myöskään pyöristetty kokonais-
+luvuksi), esimerkiksi: 
+
+double a;
+
+a = 1.0;
+
+Tämän tuloksena a:n arvo ei  välttämättä  ole  tasan  1,  vaan  se  saattaa
+käytännössä saada arvon 0.99999... riippuen tarkkuudesta.  Tämän  takia  on
+varsin hyödytöntä verrata liukulukujen yhtäläisyyttä. yllä  olevan  jälkeen
+ei lauseke "a == 1.0" ole välttämättä tosi. Sen  sijaan  kannattaa  käyttää
+suhteellisia vertailuja - ainakin "a > 0.9 && a < 1.1" pitäisi  olla  tosi,
+samoin edelleen "a > 0.9999 && a < 1.0001"  jne.  kääntäjän  double-lukujen
+toteutuksen tarkkuuden rajaan saakka.
+
+Epätarkempi tapa toteuttaa vastaava vertailu olisi muuttaa luku ensin koko-
+naisluvuksi, eli cast-operaattorilla suoraan "(long)a == 1" olisi myös mel-
+ko varmasti tosi.
+
+Kun kirjoittaa liukulukuvakioita ohjelmaan, kannattaa aina  merkitä  siihen
+piste, jotta kääntäjä varmasti käsittelee sen liukulukuna, eikä kokonaislu-
+kuna (esimerkiksi yllä annettiin a:lle arvo 1.0, eikä 1). Muunnokset  koko-
+naislukujen ja liukulukujen välillä ovat automaattisia, mutta joissain  ti-
+lanteissa saatetaan jokin lasku suorittaa kokonaislukuina liukulukujen  si-
+jaan, ellei kääntäjä tiedä lukujen olevan liukulukuja.  Esimerkiksi  (olet-
+taen edelleen yllä määritelty liukulukumuuttuja a):
+
+a = 10 / 3;
+
+Tämä antaisi a:lle arvon n. 3.0, koska se laskisi ensin kokonaislukuina  10
+/ 3, joka antaisi tulokseksi 3, ja  sitten  muuntaisi  tämän  liukuluvuksi.
+Sensijaan:
+
+a = 10.0 / 3.0;
+
+Tämä antaisi a:lle arvon 3.33333... riippuen tarkkuudesta.
+
+Koska  liukulukutyypit  käsitellään  liukulukuina,  ne  voivat  saada  sekä
+erittäin suuria että erittäin pieniä arvoja. Tämän takia on hyvä voida kir-
+joittaa liukulukuvakiot liukulukumuodossa. Esimerkiksi jos haluttaisiin an-
+taa a:n arvoksi miljoona, voitaisiin tämä tehdä joko: 
+
+a = 1000000.0;
+
+tai:
+
+/*
+ *                   6
+ * 1000000 = 1.0 * 10
+ *
+ * joka voidaan merkitä liukulukuvakioksi muodossa:
+ */
+
+a = 1.0E+6;
+
+Vastaavasti esimerkki negatiivisesta eksponentista:
+
+a = 0.0000522;
+
+voitaisiin tehdä myös:
+
+/*
+ *                      -5
+ * 0.0000522 = 5.22 * 10
+ */
+
+a = 5.22E-5;
+
+Liukulukujen kanssa toimivat kaikki  C-kielen  normaalit  laskutoimitukset,
+paitsi jakojäännös ("%"). Lisäksi C:n standardikirjastoihin  kuuluu  useita
+tavallisia matemaattisia funktioita (kuten trigonometriset funktiot,  loga-
+ritmifunktiot yms.), joiden prototyypit pitäisi löytyä  include-tiedostosta
+"math.h".
+
+Liukulukujen käsittely ohjelmassa on varsin hidasta, jos  koneessa  ei  ole
+matematiikkaprosessoria.
+
+
+{3Olemassaoleva, mutta ei käytettäväksi suositeltava: goto 
+
+C-kielessä on goto-komento, kuten monissa  muissakin  kielissä,  mutta  sen
+käyttöä kannattaa välttää. Jos hallitsee C-kielen rakenteellisen tekniikan,
+ei tälle komennolle pitäisi koskaan tulla tarvettakaan. Melkein aina  asian
+voi  tehdä  toisellakin  tavalla.  Esimerkiksi  aliohjelma,   joka   hyppää
+määrättyjen merkkien yli merkkijonossa käyttäen switch-rakennetta  nopeuden
+vuoksi: 
+
+char *skipchars(const char *s)
+{{
+loop:
+  switch (*s++) {
+    case ' ':
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+    case '(':
+    case ')':
+    case '[':
+    case ']':
+    case '{':
+    case '}':
+    case '|':
+      goto loop;
+  }
+  return s - 1;
+}
+
+Tämän voisi toteuttaa myös ilman goto-komentoa: 
+
+char *skipchars(const char *s)
+{{
+  for (;;) {
+    switch (*s++) {
+      case ' ':
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '(':
+      case ')':
+      case '[':
+      case ']':
+      case '{':
+      case '}':
+      case '|':
+        continue;
+      default:
+        break;
+    }
+    break;
+  }
+  return s - 1;
+}
+
+Itse asiassa yllä olevan voisi toteuttaa vielä yksinkertaisemmin laittamal-
+la return-komento switch-rakenteen default:ksi, mutta tällaisena  samanlai-
+sen silmukan voisi tehdä tilanteessa, jossa tämä toiminto ei  olisi  alioh-
+jelman muodossa.
+
+
+{3Muuttujien alustus 
+
+Muuttujille voi antaa jo määrittelyvaiheessa arvon. Esimerkiksi:
+
+int a = 1;
+
+Muuttujia voi edelleen määritellä useampia kerralla:
+
+int a = 1, b = 2;
+
+Ainoa rajoitus määrittelyissä on se, että globaalien muuttujien alustusarvo
+ei saa riippua mistään, joka saattaisi vaihdella, kuten toisten  muuttujien
+arvoista. Esimerkiksi:
+
+int a = 1, b = a + 1;
+
+Tämä olisi toimiva ainoastaan paikallisilla muuttujilla.  Muuttujan  osoite
+on kuitenkin vakio, joten esimerkiksi: 
+
+int a, *ptr_to_a = &a,
+    b[10], *ptr_to_b = b;
+
+Yllä oleva toimisi siis myös globaaleilla muuttujilla.
+
+Hieman erilaista muotoa joudutaan käyttämään structure-tyyppien kanssa, jos
+niille halutaan antaa alustus. Esimerkiksi: 
+
+struct record {
+  char *id;
+  long a, b, c;
+  long array[2];
+};
+
+struct record r = {
+  "id points here", /* r.id = "id points here" */
+  1, 2, 3,          /* r.a = 1, r.b = 2, r.c = 3 */
+  4, 5              /* r.array[0] = 4, r.array[1] = 5*/
+};
+
+Tässä siis määritellään r:n tyypiksi "struct record" ja alustetaan  se  va-
+kio-arvoilla. Tässä kannattaa  huomata  sekin,  että  merkkijonovakio  (sen
+osoite) on myös vakio. Alustettaessa structure-tyyppistä muuttujaa on  myös
+paikallisille muuttujille alustusarvon oltava vakio. Ellei kaikille kentil-
+le määritellä alustusarvoa, annetaan lopuille kentille vakiona arvoksi 0.
+
+Samaan tyyliin voidaan myös alustaa taulukoita: 
+
+long a[3] = {
+  1, 2, 3 /* a[0] = 1, a[1] = 2, a[2] = 3 */
+};
+
+Voidaan myös alustaa useampiulottuvuuksisia taulukoita: 
+
+long m[3][3] = {
+  1,  0,  3, /* m[0][0] = 1,  m[0][1] = 0, m[0][2] = 3 */
+  -9, 4,  5, /* m[1][0] = -9, m[1][1] = 4, m[1][2] = 5 */
+  1,  4, -2  /* m[2][0] = 1,  m[1][1] = 4, m[1][2] = -2 */
+};
+
+Taulukolle ei ole pakko määritellä kokoa, jos se alustetaan: 
+
+long a[] = {
+  1, 2, 3, 4 /* a[0] = 1, a[1] = 2, a[2] = 3, a[3] = 4 */
+};
+
+Taulukon kooksi tulee tässä tapauksessa 4.
+
+Jos taulukolla on useampia ulottuvuuksia ja niistä on muilla kuin uloimmal-
+la määrittelemätön koko, täytyy käyttää sisäkkäisiä alustusryhmittymiä: 
+
+long m[][] = {
+  { 0, 1, 2 }, /* m[0][0] = 0, m[0][1] = 1, m[0][2] = 2
+                  (Nyt tiedetään koosta jo sisin, joka on 3.) */
+  { 1 },       /* m[1][0] = 1, m[1][1] = 0, m[1][2] = 0
+                  (Tiedettiin jo sisäkoko, joten lisättiin nollia.) */
+  { -1, 0, 1, 2 }
+               /* m[2][0] = -1, m[2][1] = 0, m[2][2] = 1
+                  (Lopussa oleva 2 jätettiin huomiotta, koska koko
+                   oli jo tiedossa - kääntäjästä riippuen saatetaan
+                   katsoa tämä virheeksi ja valittaa.) */
+};
+
+Taulukkojen alustuksessa ovat lisäksi erityistapauksena  merkkijonot.  Esi-
+merkiksi: 
+
+char str[] = {
+  's', 't', 'r', 'i', 'n', 'g', '\\0'
+};
+
+Tämä on varsin hankalan näköinen ja työläs kirjoittaa, paljon  helpompi  on
+käyttää merkkijonovakion näköistä muotoa: 
+
+char str[] = {
+  "string"
+};
+
+  
+{3enum 
+
+Nykyään harvemmin käytetty C-kielen pseduo-tyyppi on "enum". Tämä  on  muo-
+doltaan hieman kuten struct/union-tyyppimäärittelyt, mutta se antaa muuttu-
+jalle käytännössä aina  tyypin  "int",  eikä  sen  nimekkeillä  ole  mitään
+käytännön merkitystä. Sen sijaan enum määrittelee symboleja, jotka  vastaa-
+vat numeerisia vakioita, ja se voi olla hyödyllinen ilman mitään nimekkeitä
+tai määriteltyjä muuttujia. Esimerkiksi: 
+
+enum {
+  alpha,
+  beta,
+  gamma
+};
+
+int var = gamma;
+
+Tämä määrittelee symbolit "alpha", "beta" ja "gamma" ja antaa niille merki-
+tykset 0, 1 ja 2. Muuttuja var saa alustusarvokseen 2.
+
+Useimmiten  kannattaa  käyttää  esikäsittelijän  makroja  enum:in   sijaan.
+Näyttää siltä, kuin enum olisi alunperin tarkoitettu hieman  monimutkaisem-
+maksi toiminnoksi kuin sen käytännön toteutus on.
+
+
+{3Standardeja C-funktioita 
+
+Huom.: En voi taata, että kaikki tässä käsitellyt funktiot  olisivat  ANSI-
+standardin mukaisia, koska en ole löytänyt  kyseistä  standardia  täydelli-
+sessä muodossaan mistään. (Osa voi olla muuten vain yleisiä tai POSIX-stan-
+dardin mukaisia.) Kaikkien näiden pitäisi kuitenkin  löytyä  useimmista  C-
+funktiokirjastoista. Funktioita ei myöskään  ole  kaikkia  selitetty,  eikä
+kaikkea ole selitetty kovin pitkästi, koska kääntäjän mukana tulee  yleensä
+ohjeet näiden käytöstä.
+
+{3Tiedostojen käsittelyfunktioita - stdio 
+
+(Tässä oletetaan perustietous tiedostojen olemuksesta.)
+
+C-kielessä on joukko korkeatasoisia, puskuroituja funktioita, joiden avulla
+voidaan käsitellä tiedostoja. Tiedostoja  käsitellään  osoittimen  välityk-
+sellä. Osoittimen kohdetyyppi ja tiedostojen käsittelyyn  liittyvien  funk-
+tioiden prototyypit on määritelty  include-tiedostossa  "stdio.h".  Osoitin
+tiedostoon määritellään:
+
+FILE *fp;
+
+Jotta tiedostolle voidaan tehdä mitään, on tiedoston oltava auki. Tässä ta-
+pauksessa se tarkoittaa sitä, että ohjelma kutsuu funktiota fopen(),  jolta
+se saa yllä olevanlaisen osoittimen tiedostoon. Tämän  osoittimen  välityk-
+sellä voidaan lukea tiedostoa tai kirjoittaa  tiedostoon,  kunnes  tiedosto
+suljetaan. C-kielisestä ohjelmasta poistuttaessa  kaikki  tiedostot,  joita
+oli auki, suljetaan automaattisesti. Kuitenkin on hyvä sulkea tiedosto itse
+siinä vaiheessa, kun sitä ei enää tarvitse  kutsumalla  fclose()-funktiota.
+Tämä on sen takia hyödyllistä, että tiedoston aukiolo kuluttaa muistia.
+
+Tiedoston ollessa auki pidetään lukua siitä, missä kohtaa tiedostoa ollaan.
+Luku- ja kirjoitusoperaatiot alkavat aina  siitä  kohtaa,  mihin  edellinen
+jäi. Yleensä tiedoston avaamisen jälkeen ollaan tiedoston alussa.
+
+C-alustuskoodi avaa aina valmiiksi kolme tiedostoa: stdin,  stdout  ja  st-
+derr. Nämä ovat useimmiten pseudo-tiedostoja,  jotka  viittaavat  shelliin,
+josta ohjelma käynnistettiin. (Ne voivat myös olla  tavallisia  tiedostoja,
+mutta tämä ei liity varsinaisesti C-kieleen, vaan  shellin  käyttöön,  joka
+jokaisen pitäisi ehdottomasti hallita ennen kuin edes harkitsee  ohjelmoin-
+nin opettelemista.) Tarkemmin ottaen ne ovat:
+
+stdin: Tämän tiedoston kautta voidaan lukea tietoa, yleensä näppäimistöltä.
+Puskuroinnin takia tietoa ei voida lukea merkki kerrallaan, vaan tieto  tu-
+lee perille vasta enterin painalluksen jälkeen.
+
+stdout: Tähän tiedostoon kirjoitettu tieto tulee useimmiten näkyviin  teks-
+tinä shell-ikkunaan.
+
+stderr: Vastaava kuin stdout, mutta tarkoitettu nimenomaisesti  virheilmoi-
+tuksille. Tämä on hyvä olla erikseen stdout:ista  silloin,  kun  jompikumpi
+näistä ohjataan shellin sijasta tavalliseen tiedostoon.
+
+Puskuroinnin ansiosta stdio-funktioilla  tiedostojen  lukeminen  ja  niihin
+kirjoittaminen on varsin nopeaa, vaikka sen tekisi pienempinä osina.
+
+Tässä on selitettynä joitakin tärkeimpiä itse funktioista:
+
+{3fopen 
+
+FILE *fopen(const char *filename, const char *modes)
+
+fopen() avaa tiedoston lukemista ja/tai kirjoittamista varten.
+
+fopen():lle annetaan kaksi parametria:
+
+filename - tiedoston nimi (mahdollisesti sisältäen hakemistopolun)
+modes - merkkijono, joka ilmaisee avaamistilan seuraavasti: 
+
+"r"  - Halutaan avata tiedosto lukemista varten.
+"w"  - Halutaan avata tiedosto kirjoittamista varten. Tiedosto luodaan, jos
+       sitä ei ole jo olemassa ja tyhjennetään, jos se on jo ennestään
+       olemassa.
+"a"  - Halutaan avata tiedosto kirjoittamista varten. Tiedosto luodaan, jos
+       sitä ei ole jo olemassa. Jos se on jo olemassa, kaikki tiedostoon
+       kirjoitettu lisätään tiedoston loppuun.
+"r+" - Halutaan avata tiedosto lukemista ja mahdollisesti myös
+       kirjoittamista varten.
+"w+" - Kuten "w", paitsi että tiedostoa voi myös lukea.
+
+(Näitä kirjaimia sekä "+"-merkkiä voidaan yhdistellä muillakin tavoin.)
+
+fopen() palauttaa osoittimen avattuun tiedostoon tai  NULL-osoittimen,  jos
+tiedostoa ei voitu avata. (Tähän voi olla useita syitä. Ellei tiedosto  ole
+olemassa, sitä ei voi avata lukemista varten. Ellei hakemistopolku ole ole-
+massa tai jos tiedosto on olemassa mutta käytössä,  ei  voida  luoda  uutta
+tiedostoa. Voi myös olla, että muisti on lopussa tms. Myöhemmin käsitellään
+virheitä.)
+
+{3fclose 
+
+int fclose(FILE *fp)
+
+fclose() sulkee tiedoston, joka on avattu fopen():lla.  Parametriksi  anne-
+taan fopen():lta saatu osoitin. Tämän jälkeen ei osoittimella kannata tehdä
+mitään, koska se ei enää osoita mihinkään järkevään tietoon.
+
+fclose() palauttaa kokonaislukuarvon, joka on 0, ellei mitään virheitä  ta-
+pahtunut. Yleensä palautetusta arvosta ei tarvitse välittää, koska tiedosto
+suljetaan joka tapauksessa.
+
+{3fread 
+
+int fread(void *buffer, size_t objsize, size_t numobjs, FILE *fp)
+
+(size_t on typedef:llä includeissa määritelty kokonaislukutyyppi)
+
+fread() lukee tiedostosta tietoa.
+
+fread():lle annetaan neljä parametria:
+
+buffer - osoitin paikkaan muistissa, johon halutaan lukea tietoa.
+objsize - luettavien alkioiden koko tavuissa.
+numobjs - luettavien alkioiden määrä.
+fp - fopen():n palauttama osoitin.
+
+fread() palauttaa luettujen alkioiden lukumäärän. Jos tiedosto loppui  kes-
+ken, luettujen alkioiden määrä voi olla haluttua pienempi. Jos tapahtuu jo-
+kin virhe tai jos ei ollut enää luettavaa jäljellä, palautettaa fread() ar-
+von 0.
+
+{3fwrite 
+
+int fwrite(void *buffer, size_t objsize, size_t numobjs, FILE *fp)
+
+fwrite() kirjoittaa tiedostoon tietoa.
+
+fwrite():lle annetaan neljä parametria:
+
+buffer - osoitin paikkaan muistissa, jossa kirjoitettava tieto on.
+objsize - kirjoitettavien alkioiden koko tavuissa.
+numobjs - kirjoitettavien alkioiden määrä.
+fp - fopen():n palauttama osoitin.
+
+fwrite() palauttaa kirjoitettujen alkioiden  lukumäärän.  Niitä  saatettiin
+saada pyydettyä vähemmän kirjoitettua virheiden takia.
+
+                                   - - -
+
+Tähän asti käsitellyillä funktioilla saakin jo aikaan jonkinlaisen esimerk-
+kiohjelman: 
+
+#include <stdio.h>
+
+int main(int ac, char **av)
+{{
+  FILE *fp1, *fp2;
+  char buf[64];
+  size_t n;
+
+  /*
+   * Ensin avataan tiedosto nimeltä "file1" lukemista varten.
+   */
+  if (fp1 = fopen("file1", "r")) {
+    /*
+     * Jos tämä onnistui, luodaan toinen tiedosto, "file2",
+     * kirjoittamista varten.
+     */
+    if (fp2 = fopen("file2", "w")) {
+      /*
+       * Jos sekin onnistui, luetaan tietoa ensimmäisestä
+       * tiedostosta ja kirjoitetaan sitä toiseen (tieto
+       * kopioidaan taulukon buf kautta) niin kauan, kunnes
+       * tapahtuu jokin virhe tai päästään ensimmäisen
+       * tiedoston loppuun.
+       */
+      while (n = fread(buf, 1, sizeof buf, fp1)) {
+        if (fwrite(buf, 1, n, fp2) != n) {
+          puts("Error while writing to \\"file2\\"");
+          break;
+        }
+      }
+      /*
+       * Suljetaan molemmat tiedostot ennen poistumista
+       * (vaikka sillä ei tässä olekaan mitään väliä, mutta
+       * yleisesti se on hyvä tapa).
+       */
+      fclose(fp2);
+    } else
+      puts("Couldn't open/create \\"file2\\" for writing");
+    fclose(fp1);
+  } else
+    puts("Couldn't open \\"file1\\" for reading");
+  return 0;
+}
+
+Ennen ohjelman ajamista täytyy tietysti olla olemassa tiedosto nimeltä "fi-
+le1".
+
+                                   - - -
+
+{3fseek 
+
+int fseek(FILE *fp, long offset, int mode)
+
+fseek() muuttaa käsiteltävää kohtaa tiedostossa.
+
+fseek():lle annetaan kolme parametria:
+
+fp - fopen():n palauttama osoitin.
+offset - suhteellinen kohta tiedostossa  tavuina,  johon  halutaan  siirtyä
+(voi olla myös negatiivinen).
+mode - ilmoittaa, mihin suhteessa offset on annettu: 
+
+SEEK_SET - tiedoston alkuun.
+SEEK_CUR - nykyiseen kohtaan tiedostossa.
+SEEK_END - tiedoston loppuun (järkevä vain, jos offset on negatiivinen tai
+           nolla).
+
+Esimerkiksi fseek(fp, 0, SEEK_SET); siirtyy tiedoston alkuun, fseek(fp, 10,
+SEEK_CUR);  siirtyy  kymmenen  tavua  nykyisestä  kohdasta   eteenpäin   ja
+fseek(fp, -10, SEEK_END); siirtyy kohtaan, joka on 10 tavua ennen tiedoston
+loppua.
+
+fseek() palauttaa 0:n, jos mitään virheitä ei tapahtunut.
+
+{3fputs 
+
+int fputs(const char *string, FILE *fp)
+
+fputs() kirjoittaa merkkijonon tiedostoon. Merkkijonon lopussa olevaa  nol-
+laa ei kirjoiteta.
+
+fputs():lle annetaan kaksi parametria:
+
+string - merkkijono, joka halutaan kirjoittaa tiedostoon.
+fp - fopen():n palauttama osoitin.
+
+fputs() palauttaa 0:n tai positiivisen luvun, jos  kaikki  onnistui,  mutta
+negatiivisen luvun, jos tapahtui virheitä.
+
+
+
+{3puts 
+
+int puts(const char *string)
+
+puts() kirjoittaa merkkijonon stdout-tiedostoon. Merkkijonon lopussa olevaa
+nollaa  ei  kirjoiteta.  Merkkijonon  kirjoittamisen  jälkeen  kirjoitetaan
+lisäksi rivinvaihto.
+
+puts():lle annetaan parametriksi kirjoitettava merkkijono.
+
+puts() palauttaa 0:n tai positiivisen luvun, jos kaikki onnistui, mutta ne-
+gatiivisen luvun, jos tapahtui virheitä.
+
+Esimerkiksi:
+
+puts("nothing special");
+
+tekee aivan saman kuin
+
+fputs("nothing special\\n", stdout);
+
+{3fgets 
+
+char *fgets(char *buffer, size_t maxlen, FILE *fp)
+
+fgets() lukee rivin tiedostosta. Tietoa luetaan  annettuun  muistialueeseen
+niin pitkälle, kunnes tulee vastaan rivinvaihto, tiedosto loppuu  tai  yli-
+tetään rivin enimmäiskoko. Rivin perään lisätään nolla.
+
+fgets():lle annetaan kolme parametria: 
+
+buffer - kohta muistissa, johon halutaan lukea rivi.
+maxlen - enimmäismäärä tavuja, joille on tilaa annetusta muistiosoitteesta
+         eteenpäin.
+fp - fopen():n palauttama osoitin.
+
+fgets() palauttaa joko  ensimmäisenä  parametrina  annetun  osoittimen  tai
+NULL, jos tapahtui virheitä tai tiedosto loppui kesken.
+
+{3gets 
+
+char *gets(char *buffer)
+
+Kuten fgets(), paitsi että enimmäispituudeksi  oletetaan  256,  tiedostoksi
+oletetaan stdin eikä luettuun tietoon sisällytetä itse rivinvaihtoa.
+
+{3fputc 
+
+int fputc(int c, FILE *fp)
+
+fputc() kirjoittaa tavun mittaisen merkin tiedostoon.
+
+fputc():lle annetaan kaksi parametria: 
+
+c - kirjoitettava merkki (tyyppinä on int, mutta ainoastaan vähiten
+    merkitsevä tavu tästä huomioidaan).
+fp - fopen():n palauttama osoitin.
+
+fputc() palauttaa joko kirjoitetun merkin tai EOF:n (stdio.h:ssa määritelty
+makro, jonka arvo on -1).
+
+{3putc 
+
+int putc(int c, FILE *fp)
+
+Kuten fputc(), paitsi makro (nopeampi).
+
+{3fgetc 
+
+int fgetc(FILE *fp)
+
+fgetc() lukee tiedostosta tavun mittaisen merkin.
+
+fgetc():lle annetaan parametriksi fopen():n palauttama osoitin.
+
+fgetc() palauttaa joko luetun merkin arvon tai EOF:n.
+
+{3getc 
+
+int getc(FILE *fp)
+
+Kuten fgetc(), paitsi makro (nopeampi).
+
+{3ungetc 
+
+int ungetc(int c, FILE *fp)
+
+ungetc() laittaa merkin takaisin tiedoston  puskuriin.  Tämä  merkki  tulee
+fgetc():llä tai getc():llä tiedostoa luettaessa seuraavana merkkinä.
+
+Yleensä kannattaa luottaa ungetc():n osaavan tunkea takaisin puskuriin  ai-
+noastaan yhden merkin. Jotkut stdio-kirjastot mahdollistavat useamman  mer-
+kin "unget:aamisen".
+
+ungetc() palauttaa merkin arvon tai EOF:in, jos ei  voitu  laittaa  merkkiä
+takaisin puskuriin.
+
+{3printf 
+
+int printf(const char *fmtstring, ...)
+
+printf() kirjoittaa annetun merkkijonon string  stdout-tiedostoon  muuttaen
+erityisiä muotoilumerkintöjä funktiokutsun lisäparametrien arvojen mukaan.
+
+Merkkijonossa olevat '%'-merkit  tulkitaan  muotoilumerkinnän  aloituksena.
+Jos halutaan tulostaa '%'-merkki, täytyy merkkijonoon  laittaa  kaksi  sel-
+laista peräkkäin.
+
+Muotoilumerkintöjen muoto on seuraava (hakasuluissa olevat merkinnät  eivät
+ole pakollisia):
+
+%[-][+][ ][0][minimileveys][.tarkkuus][l][L]<muotoilutyyppi>
+
+Yksinkertaisin muoto on siis "%<muotoilutyyppi>".
+
+Eri muotoilutyyppejä ovat (tässä on vain osa lueteltuna): 
+
+d   Tulostetaan parametrina oleva kokonaisluku etumerkillisenä lukuna.
+    (Esim. printf("%d %d", 10, -1); tulostaisi merkkijonon "10 -1".)
+
+u   Tulostetaan parametrina oleva kokonaisluku etumerkittömänä lukuna.
+    (Esim. printf("%u %u", 10, -1); tulostaisi merkkijonon "10 4294967295",
+    olettaen 32-bittiset int-arvot.)
+
+x tai
+X   Tulostetaan parametrina oleva kokonaisluku heksadesimaalimuodossa.
+    (Esim. printf("%x %X", 200, 1234); tulostaisi merkkijonon "c8 4D2".)
+
+o   Tulostetaan parametrina oleva kokonaisluku oktaalimuodossa.
+    (Esim. printf("%o", 16); tulostaisi merkkijonon "20".)
+
+s   Tulostetaan parametrina oleva merkkijono.
+    (Esim. printf("%s", "string"); tulostaisi merkkijonon "string".)
+
+c   Tulostetaan yksittäinen merkki parametrin arvon mukaan.
+    (Esim. printf("%c", 'a'); tulostaisi merkkijonon "a".)
+
+e tai
+E   Tulostetaan parametrina oleva double-liukuluku liukulukumuodossa.
+    (Esim. printf("%e %E", 0.01, 100.0); tulostaisi merkkijonon
+    "1.000000e-02 1.000000E+02".)
+
+f   Tulostetaan parametrina oleva double-liukuluku yksinkertaisessa
+    muodossa.
+    (Esim. printf("%f", 100.0); tulostaisi merkkijonon "100.000000".)
+
+g tai
+G   Tulostetaan joko f:n tai e(E):n kaltaisessa muodossa ilman ylimääräisiä
+    nollia lopussa, riippuen luvun koosta.
+    (Esim. printf("%g %g", 0.01, 0.00001); tulostaisi merkkijonon
+    "0.01 1e-05".)
+
+Vaihtoehtoiset lisämerkinnät ovat merkitykseltään:
+
+-   Muotoiltu osa tulostetaan vasempaan laitaan muotoilukenttää.
+    (Ei vaikutusta, jos kentälle ei ole määritelty minimileveyttä.)
+
++   Jos luku on positiivinen, siihen laitetaan '+'-merkki eteen.
+
+    (väli) Jos luku on positiivinen, siihen laitetaan väli eteen.
+
+0   Jos kentällä on minimileveys, laitetaan välien sijaan nollia numeron
+    eteen.
+
+minimileveys
+
+    Kentän minimileveys - jos muotoiltu kenttä ei olisi sellaisenaan
+    vähintään tämänlevyinen, laitetaan eteen välejä. Tämä on joko numero
+    tai '*'-merkki, jolloin minimileveys otetaan parametreista.
+
+tarkkuus
+
+    Tulostetun tiedon tarkkuus. Merkkijonoille tämä rajoittaa kentälle
+    enimmäisleveyden, liukuluvuille taas ilmoittaa desimaalipisteen jälkeen
+    tulevien numeroiden lukumäärän. Kuten minimileveys, voidaan tämä
+    määritellä '*'-merkkinä.
+
+l   Ilmoittaa kyseessä olevan kokonaisluvun olevan kooltaan long, eikä int,
+    tai liukuluvun olevan double, eikä float. Useimmilla kääntäjillä,
+    joissa on 32-bittiset int-arvot, tämä ei vaikuta mitään.
+
+L   Ilmoittaa kyseessä olevan liukuluvun olevan kooltaan long double.
+
+Esimerkkejä minimileveyden ja tarkkuuden käytöstä:
+
+printf("%10d", 12345);       tulostaisi "     12345".
+printf("%04d", 42);          tulostaisi "0042".
+printf("%-10d", 12345);      tulostaisi "12345     ".
+printf("%.4s", "string");    tulostaisi "stri".
+printf("%*s", 10, "string"); tulostaisi "    string".
+printf("%.2f", 3.1416);      tulostaisi "3.14".
+
+printf() palauttaa tulostettujen merkkien määrän  tai  negatiivisen  luvun,
+jos tuli virheitä.
+
+{3fprintf 
+
+int fprintf(FILE *fp, const char *fmtstring, ...)
+
+Kuten printf(), mutta kirjoittaa stdout:in sijasta annettuun tiedostoon.
+
+{3sprintf 
+
+int sprintf(char *buffer, const char *fmtstring, ...)
+
+Kuten printf(), mutta kirjoittaa tiedoston sijasta merkkijonoon, johon  an-
+netaan osoitin buffer-parametrina. Merkkijonon  loppuun  laitetaan  lisäksi
+nolla.
+
+sprintf():n  kanssa  kannattaa  huolehtia,  että  buffer-merkkijonossa   on
+riittävästi tilaa muotoillulle tekstille.
+
+{3scanf 
+
+int scanf(const char *fmtstring, ...)
+
+scanf() on printf():iin nähden toiminnaltaan käänteinen. Se lukee stdin:stä
+merkkejä, tulkitsee ne muotoilumerkintöjen mukaisesti ja  laittaa  tulokset
+muuttujiin, joihin annetaan osoittimet scanf():lle parametreina.  scanf():n
+parametrina olevassa muotoilumerkkijonossa olevat välit jättävät  stdin:stä
+saadun yhden tai useamman välin sarjan huomiotta, muut merkit vaativat  st-
+din:stä saatavan juuri ne merkit. Ellei scanf() löydä stdin:stä näitä  vaa-
+dittuja merkkejä, se keskeyttää tulkinnan siihen.
+
+scanf():lle annetun muotoilumerkkijonon muotoilumerkinnät ovat samankaltai-
+sessa, mutta yksinkertaisemmassa muodossa kuin printf():n:
+
+%[*][leveys][l][L]<muotoilutyyppi>
+
+Muotoilutyyppejä ovat: 
+
+d   Luetaan kokonaisluku ja laitetaan arvo parametrin osoittamaan
+    kokonaislukumuuttujaan.
+
+x   Luetaan heksadesimaalimuotoinen kokonaisluku ja laitetaan sen arvo
+    parametrin osoittamaan kokonaislukumuuttujaan.
+
+o   Luetaan oktaalimuotoinen kokonaisluku ja laitetaan sen arvo parametrin
+    osoittamaan kokonaislukumuuttujaan.
+
+c   Luetaan merkki tai leveys kpl. merkkejä luetaan parametrin osoittamaan
+    merkkimuuttujaan tai -taulukkoon.
+
+s   Luetaan merkkejä parametrin osoittamaan taulukkoon, kunnes tulee vastaan
+    joko väli tai ylitetään leveydeksi määritelty raja. Luettujen merkkien
+    perään laitetaan nollatavu.
+
+e tai
+f tai
+g   Luetaan vapaamuotoinen liukuluku ja laitetaan sen arvo parametrin
+    osoittamaan liukulukumuuttujaan. (Liukuluku tulkitaan samalla tavalla
+    kuin liukulukuvakiot lähdekoodissa.)
+
+[ ... ]
+
+    Luetaan merkkejä parametrin osoittamaan taulukkoon niin kauan kuin
+    merkit kuuluvat '['- ja ']'-merkkien välissä lueteltujen merkkien
+    joukkoon. Jos joukon määrittely alkaa '^'-merkillä, tulkitaan joukko
+    käänteisenä, ts. kaikki merkit, jotka eivät kuulu joukkoon,
+    hyväksytään. Myös ']'-merkki voidaan sisällyttää joukkoon, jos se on
+    ensimmäinen merkki joukossa (eli joukko on esim. "[]abc123]" tai
+    "[^]abc123]"). Joidenkin C-kirjastojen versiot osaavat myös tulkita
+    joukossa muodon <merkki 1> '-' <merkki 2> merkitsevän "merkit välillä
+    merkki 1 - merkki 2", esim. joukko "[A-Za-z]" sisältäisi kaikki
+    aakkosten isot ja pienet kirjaimet a:sta z:aan.
+
+Vaihtoehtoisten lisämerkintöjen merkitykset ovat:
+
+*   Tälle muotoiluryhmälle ei ole annettu scanf():lle parametria, se
+    tulkitaan, mutta tulosta ei sijoiteta minnekään eikä tätä lasketa
+    scanf():n palauttamaan arvoon.
+
+leveys
+
+    Rajoittaa joidenkin muotoilujen leveyden annettuun määrään merkkejä.
+
+l   Ilmoittaa parametrina olevan osoittimen osoittavan long-kokoiseen
+    kokonaislukumuuttujaan, eikä int:iin. Tällä ei ole merkitystä
+    kääntäjillä, jotka käyttävät 32-bittisiä int:ejä.
+
+L   Ilmoittaa parametrina olevan osoittimen osoittavan long
+    double -kokoiseen liukulukumuuttujaan eikä double:iin.
+
+scanf() palauttaa tulkittujen muotoiluryhmien määrän.
+
+{3fscanf 
+
+int fscanf(FILE *fp, const char *fmtstring, ...)
+
+Kuten scanf(), mutta lukee stdin:n sijasta parametrina annettua tiedostoa.
+
+{3sscanf 
+
+int sscanf(const char *string, const char *fmtstring, ...)
+
+Kuten scanf(), mutta lukee stdin:n sijasta ensimmäisenä parametrina  annet-
+tua merkkijonoa.
+
+                                   - - -
+
+Nämä olivat oleellisimmat stdio-funktiot,  muitakin  on.  Lisäksi  useimmat
+kääntäjät tukevat matalamman tason tiedostofunktioita, joita ei  kuitenkaan
+tässä käsitellä. Näistä löytyy tietoa  mm.  include-tiedostosta  "fcntl.h",
+osa prototyypeistä on tiedostossa "unistd.h".
+
+{3Merkkijonojen käsittelyfunktioita 
+
+Kurssin edellisessä osassa mainittiin jo pari näistä standardeista  merkki-
+jonojen käsittelyyn käytetyistä funktioista. Kaikkien tällaisten  prototyy-
+pit löytyvät include-tiedostosta "string.h".  Tässä  on  selostettu  niistä
+joitakin oleellisimpia, osasta on lähdekoodit myös annettu funktioiden toi-
+minnan havainnollistamiseksi. (Lähdekoodit ovat omasta  C-funktiokirjastos-
+tani otettuja, hieman yksinkertaistetussa muodossa.)
+
+{3strlen 
+
+size_t strlen(const char *string)
+
+strlen() palauttaa parametriksi annetun merkkijonon pituuden. Pituuteen  ei
+lasketa mukaan merkkijonon lopussa olevaa nollatavua.
+
+strlen()-funktion lähdekoodi: 
+
+#include <string.h>
+
+size_t strlen(const char *s)
+{{
+  const char *p = s;
+
+  while (*s++)
+    ;
+  return s - p - 1;
+}
+
+{3strcpy 
+
+char *strcpy(char *destination, const char *source)
+
+strcpy() kopioi merkkijonon "source" kohteeseen "destination" ja  palauttaa
+osoittimen kohdealueen alkuun.
+
+strcpy()-funktion lähdekoodi: 
+
+char *strcpy(char *d, const char *s)
+{{
+  char *p = d;
+
+  while (*d++ = *s++)
+    ;
+  return p;
+}
+
+{3strcat 
+
+char *strcat(char *destination, const char *source)
+
+strcat() kopioi merkkijonon "source" merkkijonon  "destination"  perään  ja
+palauttaa osoittimen kohdemerkkijonon alkuun.
+
+strcat()-funktion lähdekoodi: 
+
+char *strcat(char *d, const char *s)
+{{
+  char *p = d;
+
+  while (*d++)
+    ;
+  --d;
+  while (*d++ = *s++)
+    ;
+  return p;
+}
+
+{3strcmp 
+
+int strcmp(const char *str1, const char *str2)
+
+strcmp() vertaa merkkijonoja str1 ja str2 keskenään. Se  palauttaa  nollan,
+jos merkkijonot olivat samanlaiset,  positiivisen  arvon,  jos  ensimmäinen
+eriävä merkki oli ASCII-arvoltaan korkeampi merkkijonossa str1 tai negatii-
+visen arvon, jos ensimmäinen eriävä merkki  oli  ASCII-arvoltaan  korkeampi
+merkkijonossa str2.
+
+strcmp()-funktion lähdekoodi (cast-operaatiot unsigned char:ksi  ovat  sitä
+varten, että merkit, joiden ASCII arvo on >= 128 verrattaisiin oikein, eikä
+tehtäisi turhaan int-muunnoksessa etumerkillistä laajennusta): 
+
+int strcmp(const char *s1, const char *s2)
+{{
+  int c1, c2;
+
+  while (c1 = (unsigned char)*s1++) {
+    if (!(c2 = (unsigned char)*s2++) || c1 != c2)
+      return c1 - c2;
+  }
+  return -(unsigned char)*s2;
+}
+
+{3stricmp 
+
+int stricmp(const char *str1, const char *str2)
+
+Kuten strcmp(), mutta katsoo isojen ja pienien  kirjainten  vastaavan  toi-
+siaan.
+
+stricmp()-funktion lähdekoodi (ei käänny oikein kaikilla ctype.h-includeil-
+la - ei toimi, jos tolower()-makrolla on ylimääräisiä sivuvaikutuksia): 
+
+#include <ctype.h>
+
+#define lwr(c) ((unsigned char)tolower((unsigned char)(c)))
+
+int stricmp(const char *s1, const char *s2)
+{{
+  int c1, c2;
+
+  while (c1 = lwr(*s1++)) {
+    if (!(c2 = lwr(*s2++)) || c1 != c2)
+      return c1 - c2;
+  }
+  return -(unsigned char)*s2;
+}
+
+{3strchr 
+
+char *strchr(const char *string, int chr)
+
+strchr() etsii merkkiä chr merkkijonosta  string.  (Vaikka  parametrin  chr
+tyyppi on int, etsitään kuitenkin  tavua.)  strchr()  palauttaa  osoittimen
+merkkijonon kohtaan, josta merkki löytyi, tai NULL, jos merkkiä ei löytynyt
+merkkijonosta.
+
+strchr()-funktion lähdekoodi: 
+
+#include <string.h>
+
+char *strchr(const char *s, int c)
+{{
+  int c1;
+
+  while (c1 = (unsigned char)*s++) {
+    if (c1 == c)
+      return (char *)(s - 1);
+  }
+  return (char *)(c ? NULL : s - 1);
+}
+
+{3memmove 
+
+void *memmove(void *dest, const void *source, size_t bytes)
+
+memmove() kopioi "bytes" tavua muistia  lähdeosoitteesta  "source"  kohdeo-
+soitteeseen "dest" ja palauttaa osoittimen kohdealueen alkuun.
+
+memmove() osaa käsitellä muistialueita, jotka sijaitsevat osittain  samalla
+alueella, ts. sitä voi käyttää myös tiedon "siirtämiseen" muistialueessa.
+
+{3memcpy 
+
+void *memcpy(void *dest, const void *source, size_t bytes)
+
+Kuten memmove(), mutta ei välttämättä osaa käsitellä  muistialueita,  jotka
+sijaitsevat osittain samalla alueella.
+
+memcpy() saattaa joissain toteutuksissa olla hieman  nopeampi  kuin  memmo-
+ve().
+
+{3memset 
+
+void *memset(void *dest, int chr, size_t bytes)
+
+memset() täyttää "bytes" tavua muistia alkaen  osoitteesta  "dest"  arvolla
+"chr" (josta huomioidaan vain vähiten merkitsevä tavu) ja palauttaa  osoit-
+timen kohdealueen alkuun.
+
+                                   - - -
+
+Lisäksi voitaneen mainita, että osasta funktioita löytyy variaatiot:
+
+char *strncpy(char *, const char *, size_t);
+char *strncat(char *, const char *, size_t);
+int strncmp(const char *, const char *, size_t);
+int strnicmp(const char *, const char *, size_t);
+
+Nämä ovat muuten samanlaisia kuin vastaavat  funktiot  strcpy(),  strcat(),
+strcmp() ja stricmp(), mutta lopussa on lisäksi kokonaislukuparametri, joka
+rajoittaa merkkijono(i)sta käsiteltävän osan pituutta.
+
+Seuraavana on esimerkki joidenkin stdio- ja string-rutiinien käytöstä, joka
+on myös esimerkkinä siitä, millaista tietoa tiedosto voi sisältää: 
+
+#include <stdio.h>
+#include <string.h>
+
+/*
+ * Käytetään käsiteltävän tiedon nimenä makroa, jotta sitä
+ * on helppo muuttaa.
+ */
+
+#define DATAFILE "elements"
+
+/*
+ * Määritellään structure-tyyppi, johon voidaan laittaa
+ * jotakin tietoa alkuaineesta.
+ */
+
+struct element {
+  char name[17]; /* alkuaineen nimi */
+  char sym[3];   /* kemiallinen merkki */
+  int z;         /* järjestysluku */
+  double m;      /* atomimassa */
+  double en;     /* elektronegatiivisuus */
+};
+
+/*
+ * prototyyppejä ohjelman aliohjelmille
+ */
+
+void list(FILE *);
+void add(FILE *);
+void search(FILE *);
+
+int main(int ac, char **av)
+{{
+  FILE *fp;
+
+  /*
+   * Ensin avataan käsiteltävä tiedosto.
+   */
+
+  if (!(fp = fopen(DATAFILE, "r+"))) {
+
+    /*
+     * Jos tiedostoa ei voitu avata, yritetään luoda se.
+     */
+
+    if (fp = fopen(DATAFILE, "w+"))
+      puts("Uusi tiedosto \"" DATAFILE "\" luotu.");
+
+  } else
+    puts("Tiedosto \"" DATAFILE "\" avattu.");
+
+  if (fp) {
+    /*
+     * Jos tiedosto onnistuttiin avaamaan tai luomaan,
+     * voidaan mennä ohjelman pääsilmukkaan.
+     */
+
+    for (;;) {
+      char cmd[2];
+
+      /*
+       * Tulostetaan eri vaihtoehdot, mitä voidaan tehdä.
+       */
+
+      puts("\nValitse toiminto:\n");
+      puts("l  luettele tiedostossa olevat alkuaineet");
+      puts("u  lisää tiedostoon uusi alkuaine");
+      puts("e  etsi tiedostosta alkuainetta");
+      puts("p  sulje tiedosto ja poistu\n");
+
+      /*
+       * Luetaan merkki, tai oikeastaan yhden merkin pituinen
+       * merkkijono, stdin:stä.
+       *
+       * (Tässä voitaisiin käyttää muotoa %c, mutta se ei sovi
+       * kokonaisen rivin lukemiseen, koska se ei jätä huomiotta
+       * ylimääräisiä välejä saadusta tiedosta.)
+       */
+
+      scanf("%1s", cmd);
+
+      switch (cmd[0]) {
+        /*
+         * Toiminnot voisi tehdä myös suoraan tässä, mutta
+         * ohjelman jakaminen osiin on siistimpää.
+         */
+        case 'L':
+        case 'l':
+          list(fp);
+          break;
+        case 'U':
+        case 'u':
+          add(fp);
+          break;
+        case 'E':
+        case 'e':
+          search(fp);
+          break;
+        case 'P':
+        case 'p':
+          fclose(fp);
+          puts("\nTiedosto suljettu");
+          return 0;
+        default:
+          printf("\nTuntematon toiminto '%c'\n", cmd[0]);
+          break;
+      }
+    }
+  }
+
+  puts("Tiedostoa \"" DATAFILE "\" ei voitu avata/luoda");
+  return 0;
+}
+
+void list(FILE *fp)
+{{
+  struct element elm;
+  int n = 0;
+
+  puts("\nAlkuaine         km. jl.     am.     en.");
+  puts("---------------------------------------------------");
+
+  /*
+   * Siirrytään ensin tiedoston alkuun.
+   */
+
+  fseek(fp, 0, SEEK_SET);
+
+  /*
+   * Luetaan tiedostosta tietoa yksi tietue kerrallaan ja
+   * tulostetaan tietueen sisältö.
+   *
+   * Lasketaan ohella tietueiden määrä.
+   */
+
+  while (fread(&elm, sizeof elm, 1, fp)) {
+    printf("%-16s %-2s   %-3d  %10.4lf   %.1lf\n",
+            elm.name, elm.sym, elm.z, elm.m, elm.en);
+    ++n;
+  }
+
+  printf("\nYhteensä %d alkuaine%s.\n", n, n == 1 ? "" : "tta");
+}
+
+void add(FILE *fp)
+{{
+  struct element elm;
+
+  /*
+   * Nollataan ensin muuttujan sisältö.
+   */
+
+  memset(&elm, 0, sizeof elm);
+
+  puts("\nAnna alkuaineesta välilyönneillä eroteltuna seuraavat tiedot:");
+  puts(" nimi, kemiallinen merkki, järjestysluku, atomimassa, "
+       "elektronegatiivisuus\n");
+
+  /*
+   * Luetaan stdin:stä muotoiltua tietoa.
+   */
+
+  if (scanf("%16s %3s %d %lf %lf", elm.name, elm.sym,
+            &elm.z, &elm.m, &elm.en) != 5) {
+    puts("Virhe annettujen tietojen muodossa!");
+    return;
+  }
+
+  /*
+   * Kaikki kentät löydettiin annetuista tiedoista oikein,
+   * joten voidaan jatkaa..
+   *
+   * Siirrytään tiedoston loppuun.
+   */
+
+  fseek(fp, 0, SEEK_END);
+
+  /*
+   * Kirjoitetaan uusi tietue, tulostetaan virheilmoitus,
+   * jos ei onnistunut.
+   */
+
+  if (!fwrite(&elm, sizeof elm, 1, fp))
+    puts("Tietoa ei voitu kirjoittaa!");
+}
+
+void search(FILE *fp)
+{{
+  struct element elm;
+  char srch;
+  char str[18];
+  int val, r;
+
+  puts("\nValitse tieto, jonka perusteella etsitään:\n");
+  puts("n - nimen");
+  puts("k - kemiallisen merkin");
+  puts("j - järjestysluvun\n");
+
+  scanf("%1s", str);
+
+  srch = str[0];
+  switch (srch) {
+    case 'N':
+      srch = 'n';
+    case 'n':
+      puts("\nAnna etsittävän alkuaineen nimi");
+      scanf("%16s", str);
+      break;
+    case 'K':
+      srch = 'k';
+    case 'k':
+      puts("\nAnna etsittävän alkuaineen kemiallinen merkki");
+      scanf("%2s", str);
+      break;
+    case 'J':
+      srch = 'j';
+    case 'j':
+      puts("\nAnna etsittävän alkuaineen järjestysluku");
+      scanf("%d", &val);
+      break;
+    default:
+      printf("\nTuntematon etsintäperuste '%c'\n", srch);
+      return;
+  }
+
+  /*
+   * Siirrytään tiedoston alkuun.
+   */
+
+  fseek(fp, 0, SEEK_SET);
+
+  puts("\nOdota...");
+
+  /*
+   * Luetaan tiedostosta tietueita, kunnes tullaan tiedoston
+   * loppuun, tapahtuu virhe tai löydetään oikea alkuaine.
+   */
+
+  while (r = fread(&elm, sizeof elm, 1, fp)) {
+    if ((srch == 'n' && !stricmp(str, elm.name)) ||
+        (srch == 'k' && !stricmp(str, elm.sym)) ||
+        (srch == 'j' && val == elm.z))
+      break;
+  }
+
+  if (r)
+    printf("Löytyi: %s, %s, %d, %.4f, %.1f\n", elm.name, elm.sym,
+           elm.z, elm.m, elm.en);
+  else
+    puts("Tiedostosta ei löytynyt etsittyä alkuainetta");
+}
+
+Ohjelmaa DICE:lla kääntäessä täytyy antaa optio "-lm", jotta mukaan linkat-
+taisiin versiot printf():stä ja scanf():stä, jotka osaavat  muotoilla  myös
+liukulukuja.
+
+Ohjelman käytön pitäisi olla varsin selkeä sanomattakin. Lisäksi voisi mai-
+nita, että scanf():n yleisen  luonteen  sivuvaikutuksena  voidaan  useampia
+tietoja antaa suoraan etukäteen,  eli  voitaisiin  vaikka  antaa  heti  en-
+simmäiseen toiminnon valintaan rivi:
+
+u vety H 1 1.008 2.1 l
+
+Tällöin ohjelma lisää tiedostoon alkuaineen "vety" ja luettelee tiedostossa
+olevat alkuaineet.
+
+Kannattaa huomata, ettei esimerkkiohjelmaa ole tarkoitettu olemaan  erityi-
+sen hyödyllinen, monipuolinen eikä käyttäjäystävällinen, vaan  yksinkertai-
+nen. Käyttöliittymä on toteutettu sellaisena kuin se on  ainoastaan  stdio-
+funktioiden  demonstroimiseksi.  Yleensä  kannattaa   harkita   ohjelmiensa
+käyttöliittymää huomattavasti huolellisemmin kuin tässä on tehty.
+
+Kurssin seuraavassa osassa jatketaan standardien  C-funktioiden  käsittele-
+mistä. 

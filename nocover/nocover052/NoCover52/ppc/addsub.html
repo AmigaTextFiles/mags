@@ -1,0 +1,55 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="arith.html">PREV</a> | <a href="addsubc.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Normal Additions/Subtractions</b>
+
+addi  Rt,Ra,SI
+addis Rt,Ra,SI
+add   Rt,Ra,Rb
+subi  Rx,Ry,val
+subis Rx,Ry,val
+subf  Rt,Ra,Rb
+sub   Rt,Ra,Rb
+
+These commands do addition and substraction. In fact the substructions are
+only extended commands defined by adding a negative value. the *i commands
+are used to add/subtract (signed) integers, the *is for (signed) integers,
+but the Constant is shifted 16 Bit Left before it is used - the constant itself
+can only be 16 Bit, because of this the *i and *is versions are supported.
+The plain add/sub is for adding/subtracting register values. These commands
+use 16 Bit Integers as SI. The . and o Notation, like outlined in
+<a href="imp.html">Important things</a> is valid with add, subf and sub, but not
+for addi/addis/subi/subis. subf does Rt=Rb-Ra, sub does does Rt=Ra-Rb.
+
+neg Rt,Ra
+
+This negates Ra and saves the result into Rt. (2-Complement). The . and
+o notations are both supported.
+
+If Ra is the lowest possible number, 0x8000 0000 0000 0000 (or 0x8000 0000
+in 32 Bit Implementations), Rt is set to this number, and if the o notation
+was used, SO is set to 1.
+
+There are some extended commands, defined by the above commands:
+
+li Rx,val = addi Rx,0,val
+
+(read the comments about this command in the section about the Load/Store
+commands, where i put it, because i found it more fitting to be put there).
+
+la Rx,Disp(Ry) = addi Rx,Ry,Disp
+
+(Read the comments about this command also in the section about the Load/Store
+commands, where i put it, because i found it more fitting to be put there).
+
+</pre>
+</body>
+</html>

@@ -1,0 +1,1611 @@
+5
+1*
+
+{3                          TechnoBBS - Osa 3: Menukieli
+{3                          ----------------------------
+
+                                  Sami Klemola
+
+
+Artikkelin t‰ss‰ osassa k‰sittelen TechMenun ja sen k‰ytt‰m‰n kielen.  Kieli  on
+C:n tyylinen, mutta paljon yksinkertaisempi. Ensiksi kuvailen kielen  rakenteen,
+sitten siirryt‰‰n ohjelmointiin ja tehd‰‰n muutama komento. Sen j‰lkeen  esitte-
+len lis‰‰ TechnoBBS:n funktioita ja komentoja. Lopuksi tulee valmiita uusia  ko-
+mentoja menukoodilistauksina. T‰m‰ on  n‰ill‰  n‰kymin  viimeinen  TechnoBBS:‰‰n
+liittyv‰ artikkeli. Jatkossa k‰sitelt‰vi‰ aiheita kuitenkin voisivat olla  Tech-
+Mail ja TechnoBBS:n liitt‰minen verkkoon. 
+
+
+{3Ohjelmat ja niiden ajaminen
+{3---------------------------
+ 
+TechMenu on menukooditulkki, joka ajaa tokenisoitua menukoodia.  ASCII-muotoinen
+l‰hdekoodi on ensin k‰‰nnett‰v‰ ajettavaksi koodiksi. Siihen tarkoitukseen  kuu-
+luu ohjelmistoon TechMenuComp:
+
+TechMenuComp <source> <destination>
+
+L‰hdekoodin oikeellisuuden kanssa kannattaa olla tarkkana, koska  kun  TechMenu-
+Comp sekoaa, se valittaa aivan jokaisesta merkist‰, joka  tiedostossa  on.  Vir-
+heilmoituksia tulee satoja... Lis‰ksi virhetilanteessa ohjelma aiheuttaa laitto-
+mia muistiosoituksia, Enforcer-hittej‰ ja jumiutuu joillakin tietyill‰ virheill‰
+ja kaatuileekin! Virheettˆm‰n koodin k‰‰nt‰misess‰ ei ole onglemia.
+
+ASCII-tiedoston p‰‰te on dat ja k‰‰nnetyn koodin menu. Esimerkiksi Doors-valikko
+k‰‰ntyy n‰in:
+
+TechMenuComp Doors.dat Doors.menu
+
+TechMenuComp k‰‰nt‰‰ Doors.dat:n ja  tuottaa  sen  pohjalta  Doors.menun,  jonka
+TechMenu lataa ja suorittaa. TechMenulle annetaan myˆs noden numero:
+
+TechMenu <node> <menu>
+
+Silloin k‰ynnistet‰‰n p‰‰valikko tai jokin muu, se valikko, johon k‰ytt‰j‰n  ha-
+lutaan tulevan sis‰‰n:
+
+TechMenu 1 Main.menu
+
+Valmis menukoodi on nimelt‰‰n MainMenu.menu. Min‰ k‰yt‰n kuitenkin vain  valikon
+nime‰, koska "Menu" olisi nimess‰ aivan turha ja ep‰looginen lis‰. Login-koodis-
+sa suoritettava k‰sky tuli jo edellisess‰ osassa, mutta laitan sen  t‰h‰n  viel‰
+uudestaan. Heti login-ohjelmien ajamisen j‰lkeen suoritetaan:
+
+address command "TechMenu "||ln||" BBS:Menu/Main.menu"
+
+TechMenun ajo keskeytet‰‰n esimerkiksi,  kun  k‰ytt‰j‰  antaa  Goodbye-komennon.
+Silloin suoritus palaa Rexx-ohjelmaan, ja siin‰ tulisi seuraavana olla tarvitta-
+va Goodbye-koodi. T‰ydellinen login-ohjelma julkaistiin edellisess‰ osassa. 
+
+
+
+
+
+{3L‰hdetiedosto
+{3-------------
+ 
+TechMenuCompille annettava l‰hdekoodi on tavallista ASCII-teksti‰.  Siihen  voi-
+daan sis‰llytt‰‰ kommentteja tavalliseen C-tyyliin.  Kommentti  alkaa  merkeill‰
+"/*" ja p‰‰ttyy merkkeihin "*/". Kieli on muutenkin hyvin l‰hell‰  C:t‰.  Kielen
+operaattorit ovat samantapaisia, lauseet p‰‰tet‰‰n ";"-merkkiin ja  ryhm‰t  koo-
+taan kaarisulkeisiin. TechMenu tuntee kahdeksan toimintoa: 
+
+         Command           M‰‰rittelee komennon
+         Execute           Suorittaa toimintoja
+         MenuName          Asettaa valikon nimen
+         MenuText          M‰‰rittelee valikkotekstitiedoston nimen
+         Prompt            M‰‰rittelee kehoitteen
+         HotOn             Asettaa ohjelman hotkey-tilaan tai sitten ei
+         LoadMenu          Lataa toisen valikon
+         Unknown           M‰‰rittelee virhemerkkijonon
+
+N‰ist‰ merkitt‰vin on Command. Se m‰‰rittelee purkkiin komennon.  Useita  n‰ist‰
+ei tarvita kuin kerran tai ei ollenkaan yhdess‰ menukooditiedostossa.  K‰yn  nyt
+n‰m‰ kaikki l‰pi yksitellen. 
+
+Formaatti   MenuName <string>
+Esimerkki   MenuName "Extras"
+
+MenuName asettaa valikon nimen. Nykyisell‰‰n sit‰ ei k‰ytet‰ muuhun kuin valikon
+nimen n‰ytt‰miseen TechCon-ikkunassa, joten sill‰ ei ole juuri k‰yttˆ‰. 
+
+Formaatti   MenuText <filename>
+Esimerkki   MenuText "Extras"
+
+MenuText m‰‰rittelee sen tiedoston nimen, jonka  TechnoBBS  l‰hett‰‰  komennolla
+SendMenu. P‰‰tett‰ nimeen ei tarvitse laittaa, vaan TechnoBBS kokeilee eri vaih-
+toehtoja ja katsoo k‰ytt‰j‰n Extensions-m‰‰rittelyn. TechnoBBS:n mukana tulevis-
+sa valikoissa t‰t‰ toimintoa ei hyˆdynnet‰. 
+
+Formaatti   Prompt <expression>
+Esimerkki   Prompt "\(27)[35m<\(GetTimeLeft())> \(27)[32mExtras: \(27)[0m"
+
+Prompt m‰‰rittelee kehotteen, jonka TechnoBBS l‰hett‰‰ k‰ytt‰j‰lle aina, kun  se
+on valmis vastaanottamaan komennon. Se voi olla yksinkertainen  merkkijono,  tai
+kuten yll‰, sis‰lt‰‰ funktiokutsuja. Yll‰ m‰‰ritelty kehote n‰ytt‰isi  kutakuin-
+kin t‰lt‰:
+
+<30> Extras:
+
+Siin‰ 30 kuvaa j‰ljell‰ olevaa aikaa minuutteina. Nuo kaksi  osaa  tulostuisivat
+viel‰ eri v‰reill‰. M‰‰rittelyn ymm‰rt‰minen ei  ole  t‰rke‰‰  t‰ss‰  vaiheessa.
+Myˆhemmin tutustutaan tarkemmin kielen koukeroihin. Erikoistapaus  on  viestiva-
+likko, jossa promptissa kannattaa kertoa lis‰tietoa. Minulla n‰ytet‰‰n viestiva-
+likon promptissa nykyisen viestialueen nimi ja olemassa olevien  viestien  rajat
+eli alueen ensimm‰isen ja viimeisen viestin numerot. 
+
+Formaatti   Unknown <expression>
+Esimerkki   Unknown "\(27)[31mKomentosi \"%s\" on minulle vieras.\(27)[0m"
+
+Unknown m‰‰rittelee merkkijonon, joka l‰hetet‰‰n k‰ytt‰j‰lle, kun h‰n on antanut
+tuntemattoman komennon. Komento on tuntematon, kun sit‰ ei ole m‰‰ritelty nykyi-
+sess‰ menukoodissa tai miss‰ tahansa ladatussa menukoodissa globaalina  komento-
+na. Unknown hyv‰ksyy samanlaisen m‰‰rittelyn kuin Prompt. Merkkijonossa oleva %s
+korvataan komennon nimell‰, ja t‰ss‰ se tulostuu lainausmerkkien  sis‰‰n,  jotka
+on escapoitava slashilla, jotta tulkki ei luulisi quoten olevan merkkijonon ter-
+minaattori. 
+
+Formaatti   HotOn <misc>
+Esimerkki   HotOn "HOTKEYS"
+
+HotOn m‰‰rittelee UserMisc-muuttujan, jonka arvo m‰‰r‰‰,  menn‰‰nkˆ  Hotkey-moo-
+diin vai ei. Jos m‰‰ritellyn muuttujan arvo on nolla, toimitaan, kuin HotOn-toi-
+mintoa ei olisi m‰‰riteltyk‰‰n. Muussa  tapauksessa  siirryt‰‰n  Hotkey-moodiin,
+jossa  komentojen  nimien  kirjoittamisen  sijaan  ne   valitaan   yksitt‰isill‰
+n‰pp‰imenpainalluksilla. T‰llˆin luonnollisesti kaikkien  k‰ytett‰v‰ksi  tarkoi-
+tettujen komentojen on erottava ensimm‰isest‰ merkist‰‰n, joka on Hotkey-moodis-
+sa se koodi, joka laukaisee komennon. 
+
+Formaatti   LoadMenu <menu>
+Esimerkki   LoadMenu "Extras.menu"
+
+LoadMenu m‰‰rittelee ladattavan menukoodin. Normaalisti  TechMenu  ajetaan  vain
+kerran, jolloin sen k‰sket‰‰n ladata p‰‰valikko. P‰‰valikossa on erin‰inen m‰‰r‰
+LoadMenu-toimintoja, jotka lataavat kaikki muut valikot. T‰llˆin voidaan helpos-
+ti siirty‰ valikosta  toiseen  menu()-funktiolla.  TechMenun  sis‰iset  funktiot
+k‰sitell‰‰n yksityiskohtaisesti myˆhemmin. Kussakin valikossa voi olla myˆs glo-
+baaleja komentoja, joiden ajaminen onnistuu mist‰ tahansa valikosta, kun  kaikki
+valikot on ladattu. 
+
+Formaatti   Execute { <actions> }
+
+Execute suorittaa kaarisulkuihin sis‰llytetyt toimenpiteet. T‰m‰ toiminto ei ole
+ollenkaan k‰yttˆkelpoinen, koska sen  ollessa  k‰ytˆss‰  kaikki  muut  toiminnot
+j‰tet‰‰n huomiotta. Executea k‰ytett‰ess‰ tuloksena ei olekaan valikko vaan  sk-
+ripti, joten toiminnossa ei ole mit‰‰n j‰rke‰. Parempi vaihtoehto  olisi  ollut,
+ett‰ n‰m‰ toimenpiteet suoritetaan valikkoon siirrytt‰ess‰ ja sen j‰lkeen  aloi-
+tetaan normaali toiminta, mutta sen sijaan  koodin  suoritus  p‰‰ttyy.  J‰rjetˆn
+toiminto! 
+
+Formaatti   Command "<id>" [<options>] { <actions> } ["<name>"];
+
+Command on TechMenun t‰rkein toiminto. Sill‰ m‰‰ritell‰‰n purkkiin komento.  Ko-
+mennon nimi on ensimm‰isess‰ merkkijonossa, ja se on merkitty yll‰ id:ksi. T‰m‰n
+j‰lkeen tulevat optiot, jotka m‰‰r‰‰v‰t, kenell‰  on  oikeus  k‰ytt‰‰  komentoa.
+Seuraavaksi tulevat komennossa suoritettavat toimenpiteet kaarisuluissa eli var-
+sinainen komennon koodi. Toimenpiteet k‰yd‰‰n l‰pi seuraavassa luvussa.  Viimei-
+sen‰ voidaan viel‰ m‰‰ritell‰ komennolle nimi, joka l‰hetet‰‰n k‰ytt‰j‰lle  Hot-
+key-moodissa, kun se on tunnistettu.
+
+Command-toiminnon optiot voivat olla standalone-optioita tai niihin voi  liitty‰
+parametri. Optioilla rajoitetaan komennon k‰yttˆ‰: 
+
+        A:<value>         Asettaa minimioikeustason komennon k‰ytt‰j‰lle
+        G:                M‰‰rittelee komennon globaaliksi
+        M:<value>         Asettaa maskin komennon k‰ytt‰j‰lle
+        N:<value>         M‰‰rittelee tarpeellisten merkkien m‰‰r‰n
+        O:<expression>    Tarjoaa mahdollisuuden monimutkaiseen kontrolliin
+
+Optiot A ja M asettavat k‰ytt‰j‰lt‰  vaadittavat  oikeusm‰‰rittelyt.  Voidakseen
+k‰ytt‰‰ komentoa k‰ytt‰j‰n oikeustason tulee olla v‰hint‰‰n yht‰ suuri  kuin  A-
+optiossa annettu luku. Lis‰ksi M-optiossa annetun luvun p‰‰ll‰  olevien  bittien
+tulee olla p‰‰ll‰ myˆs k‰ytt‰j‰n maskissa.  Kolmas  k‰yttˆrajoituksiin  liittyv‰
+optio on O. Sit‰ seuraa kokonainen lause, jonka pit‰‰ olla tosi (arvo  muu  kuin
+nolla), jotta komentoa voi k‰ytt‰‰.
+
+Optio G m‰‰rittelee komennon globaaliksi.  Globaali  komento  voidaan  suorittaa
+miss‰ tahansa valikossa. Optio N m‰‰rittelee, kuinka monta merkki‰ komennon  ni-
+mest‰ tarvitsee t‰sm‰t‰, ett‰ katsotaan komento annetuksi. T‰m‰  luku  kannattaa
+laittaa aika pieneksi, jotta komennot voidaan lyhent‰‰ reilusti. Lyhyill‰ komen-
+noilla optiota ei kannata k‰ytt‰‰ ollenkaan, vaan komennot kannattaa  edellytt‰‰
+kokonaisina. 
+
+
+{3Toimenpiteet
+{3------------
+
+Komennossa suoritettavat toimenpiteet ovat l‰hinn‰ muuttujan asettaminen, suori-
+tuksen ohjaus tai funktiokutsu. Muuttujat menukieless‰ alkavat aina  dollarimer-
+kill‰. Suorituksen ohjaukseen ovat olemassa  funktiontyyliset  if()  ja  while()
+sek‰ quit ja break. Funktiokutsu voi olla TechMenun sis‰inen tai ulkoinen  Tech-
+Con:n tai TechnoBBS:n funktio. TechnoBBS:n funktioita menukoodista  kutsuttaessa
+tulee huomata, ettei noden numeroa tarvita. TechMenu hoitaa sen automaattisesti.
+
+Muuttuja asetetaan tutusti:
+
+$<id> = <expression>
+
+T‰ss‰ id on muuttujan nimi ja expression lause, joka tulkitaan ja jonka evaluaa-
+tion tulos asetetaan muuttujaan. Lauseiden rakenne k‰yd‰‰n l‰pi  yksityiskohtai-
+sesti myˆhemmin. Koodin suoritusta ohjaavista toimenpiteist‰  if()  on  useimmin
+k‰ytetty ja hyˆdyllisin. Sen avulla voidaan koodin suoritusta ehdollistaa: 
+
+if(<expression>) <action>
+
+tai
+
+if(<expression>) {
+    <actions>
+}
+ 
+Ylemp‰‰ tapaa voi k‰ytt‰‰ silloin, kun ehdollistettavia  toimenpiteit‰  on  vain
+yksi. Kun niit‰ on useampia,  ne  erotetaan  ryhm‰ksi  kaarisuluilla.  Myˆs  yk-
+sitt‰inen toimenpide voidaan laittaa kaarisulkeiden sis‰‰n. Ehdollistettu koodi,
+if():n per‰ss‰ olevat toimenpiteet, suoritetaan silloin,  kun  if():lle  annettu
+lause on tosi. Jos on tarpeen suorittaa tietyt toimenpiteet, kun se ei ole tosi,
+lauseen voi invertoida. Lis‰ksi on mahdollista k‰ytt‰‰ else-rakennetta: 
+
+else <action>
+
+tai
+
+else {
+    <actions>
+}
+
+T‰llˆin else-rakenne tulee heti if():n per‰‰n, ja  sen  sis‰lt‰m‰t  toimenpiteet
+suoritetaan silloin, kun lause ei ole tosi. If() ja else ovat  erilliset  raken-
+teelliset osat, eik‰ kaarisulkeita tarvitse k‰ytt‰‰ kummassakin, vaikka toisessa
+ne olisivatkin. Toinen koodin suoritusta ohjaava toimenpide on while(): 
+
+while(<expression>) <action>
+
+tai
+
+while(<expression>) {
+    <actions>
+}
+
+ 
+While() suorittaa per‰ss‰ tulevia toimenpiteit‰ niin kauan  kuin  sille  annettu
+lause on tosi. Jos se ei ole tosi ensimm‰isell‰ while():n  suorituskerralla,  ei
+per‰ss‰ tulevia toimenpiteit‰ suoriteta ollenkaan. While()-looppi  voidaan  kes-
+keytt‰‰ break:lla. Mik‰li break ei ole while()-toimenpidesarjassa, se keskeytt‰‰
+koko komennon suorituksen. On mahdollista tehd‰ looppi, josta ei poistuta ollen-
+kaan, paitsi break:n avulla: 
+
+while(1) {
+    /* suoritettavat toimenpiteet */
+}
+
+Nelj‰s koodin suoritusta ohjaava toimenpide on quit. Se keskeytt‰‰  suorituksen,
+ja quit:n kohdatessaan TechMenu palaa sen ajaneeseen ohjelmaan. 
+
+
+{3Sis‰iset funktiot
+{3-----------------
+ 
+TechMenu tarjoaa nelj‰ funktiota, jotka eiv‰t palauta arvoa,  vaan  ne  toimivat
+enemm‰nkin komentoina ja suoritetaan toimintoina: 
+
+         menu()            Vaihtaa valikkoa
+         dos()             Suorittaa DOS-komennon
+         rexx()            Suorittaa Rexx-komennon
+         rxport()          Vaihtaa Rexx-porttia
+
+Jo aikaisemmin tuli ilmi mahdollisuus ladata useita valikoita yhtaikaa. Kun  va-
+likko on LoadMenu-toiminnolla ladattu, voidaan siihen vaihtaa funktiolla menu().
+Parametriksi funktiolle annetaan k‰‰nnetyn menukoodin tiedostonimi  ilman  hake-
+mistopolkua. 
+
+Esimerkki: menu("Extras.menu");
+
+Funktio dos() suorittaa DOS-komennon. Yleens‰ sille annetaan suoraan merkkijono,
+mutta sille voidaan antaa myˆs funktiokutsu tai niit‰ voi olla  osana  merkkijo-
+noa. Parametrin‰ annetun lauseen evaluaation tulos ajetaan DOS-komentona. 
+
+Esimerkki: dos("MakeFList");
+
+Rexx-ohjelmalle annetaan yleens‰ parametrin‰,  kuten  tunnettua,  noden  numero,
+jonka avulla ne kommunikoivat suoraan TechnoBBS-prosessin kanssa.  Ulkoinen  oh-
+jelma ei kuitenkaan v‰ltt‰m‰tt‰ osaa k‰ytt‰‰  TechnoBBS:n  Rexx-liittym‰‰,  vaan
+kommunikoi standardien I/O-v‰ylien kautta. Avuksi  tulee  TechIO,  jonka  avulla
+saadaan ohjelman stdin- ja stdout-kanavat ohjattua modeemille. Esimerkiksi  tie-
+dostolistaus l‰hetett‰isiin n‰in: 
+
+dos("List BBS:Menu <>TECHIO:\(node())");
+
+TechIO:n t‰ytyy tiet‰‰, mink‰ noden kanssa ohjelman  tulee  kommunikoida.  Tieto
+saadaan sis‰isell‰ funktiolla node(). N‰in mit‰ tahansa ohjelmaa voidaan helpos-
+ti k‰ytt‰‰ linjalta, kunhan se ei avaa omia ikkunoita tai pyytimi‰.
+
+Funktio rexx() suorittaa Rexx-komennon. Se toimii samaan tapaan kuin dos().  Ko-
+mento l‰hetet‰‰n aktiiviseen Rexx-porttiin, jonka  voi  vaihtaa  funktiolla  rx-
+port(). Se vastaa toiminnaltaan melko lailla Rexx-kielen Address-komentoa. 
+
+Esimerkki: rexx("SendModem Hello, world!");
+Esimerkki: rxport("TECHCON");
+
+Yleens‰ Rexx-portti, johon menukoodista l‰hetetyt komennot menev‰t, on  kyseisen
+noden TechnoBBS-prosessin portti. N‰in esimerkiksi yll‰ oleva  SendModem-komento
+menisi oikeaan osoitteeseen ja toimisi samoin kuin Rexx-koodista. Kaikille funk-
+tioille annettavat parametrit ovat lauseita, ja funktiolle varsinaisesti  annet-
+tavat argumentit ovat niiden evaluaation tuloksia. 
+
+TechMenun varsinaiset sis‰iset funktiot ovat:
+
+         arg()             Palauttaa komennon argumentteja
+         node()            Palauttaa noden numeron
+         str()             Ottaa osan merkkijonosta
+         len()             Palauttaa merkkijonon pituuden
+         upper()           Muuttaa merkkijonon isokirjaimiseksi
+         lower()           Muuttaa merkkijonon pienikirjaimiseksi
+         split()           Etsii merkkijonosta toista merkkijonoa
+
+Komennon nimen saa selville kutsumalla arg(0):aa. Muut arvot palauttavat  varsi-
+naisia argumentteja, yksi ensimm‰isen, kaksi toisen jne. TechnoBBS ei osaa k‰si-
+tell‰ lainausmerkkej‰  komentorivill‰,  joten  monisanaiset  argumentit  tulevat
+erillisin‰. Esimerkiksi komennolle parametrin‰ annettava  k‰ytt‰j‰n  nimi  tulee
+aina v‰hint‰‰n kahtena argumenttina. N‰iden kanssa tulee olla tarkkana. Kuten jo
+tulikin ilmi, node():lla saa selville, mill‰ nodella koodia ajetaan.
+
+Funktio str() vastaa BASICin MID$()-funktiota.  Esimerkiksi  str("tapuli",  2,3)
+antaisi ulos merkkijonon "apu". Toinen argumentti siis kertoo, mist‰ kohtaa ale-
+taan ottaa merkkijonoa. Arvo 1 tarkoittaa merkkijonon ensimm‰ist‰ merkki‰.  Vii-
+meinen parametri kertoo, kuinka monta  merkki‰  merkkijonosta  otetaan.  Funktio
+len() palauttaa merkkijonon pituuden. Upper() ja lower() muuttavat  kaikki  kir-
+jaimet isoiksi ja pieniksi. Funktio split() palauttaa kohdan,  jossa  merkkijono
+alkaa toisessa:
+
+split("hirsikasa","sika")
+
+T‰m‰ lause saisi arvon 4. Merkkijono "sika" lˆytyy  ensimm‰isest‰  merkkijonosta
+alkaen merkist‰ 4. J‰lleen arvo 1 tarkoittaa merkkijonon ensimm‰ist‰  kirjainta.
+Itse asiassa n‰iden lauseiden ei tarvitse olla merkkijonoja. Periaatteessa Tech-
+Menu k‰sittelee kaikkia lauseita merkkijonoina, ja siksi sen toiminta on joissa-
+kin tilanteissa v‰hint‰‰n omituista. 
+
+
+{3Lauseet
+{3-------
+ 
+Lauseet koostuvat kahdentyyppisist‰ elementeist‰, operaattoreista  ja  arvoista.
+Operaattorit ovat samantyylisi‰ kuin C:ss‰ ja niit‰ on kasap‰in. Ne  k‰sitell‰‰n
+yksitellen myˆhemmin. Lauseessa voi olla yksi tai useampi elementti.  Arvoja  on
+oltava v‰hint‰‰n yksi, mutta niit‰ voi olla useita, jolloin ne erotetaan toisis-
+taan operaattoreilla, jotka suorittavat niiden v‰lill‰ jonkin operaation. Lopul-
+ta koko lauseen arvo saadaan selville, kun kaikki yksitt‰iset arvot on selvitet-
+ty ja operaatiot ratkaistu. Arvot voivat olla seuraavia: 
+
+         $<id>             muuttuja
+         "<string>"        merkkijono
+         <number>          numero
+         <name>([<args>])  funktiokutsu
+
+Muuttujan nimi, esimerkiksi $muuttuja, tuo sen kohdalle lauseessa muuttujan  ar-
+von. Merkkijono ja numero ovat kiinteit‰ arvoja, jotka ovat samat joka kerta kun
+lausetta ratkaistaan. Funktiokutsu tuo sen kohdalle lauseeseen funktion  palaut-
+taman arvon. Lis‰ksi lauseessa voi olla kolmella tavalla lis‰‰ lauseita: 
+
+         ~<expression>     k‰‰nteistys
+         !<expression>     looginen k‰‰nteistys
+         (<expression>)    sulkeistus
+
+Normaalisti suoraan, muuttujasta tai funktiolta saatu arvo tulee lauseeseen sel-
+laisenaan, mutta laittamalla "~"- tai "!"-merkki lauseen eteen sen arvo  voidaan
+invertoida. Sulkeiden avulla lauseiden suoritusj‰rjestyst‰ voidaan muuttaa. Nor-
+maalisti lauseet tulkitaan vasemmalta oikealle, eik‰ laskus‰‰nnˆist‰ ole tietoa-
+kaan. Lause ei siis oikeastaan olekaan vain yksi  lause,  vaan  siin‰  voi  olla
+vaikka kuinka monta lausetta, jotka on kaikki ratkaistava, ennen kuin  sen  arvo
+on selvill‰. 
+
+Menukoodissa hyv‰ksytt‰v‰t operaattorit ovat:
+
+==       yht‰suuruus: arvo on 1, jos operaattorin kahta puolta olevat
+         arvot ovat samat
+
+!=       erisuuruus: arvo on 0, jos ne ovat samat, muuten 1
+
+>        suurempi kuin: arvo on 1, jos arvo vasemmalla puolella on suurempi
+
+<        pienempi kuin: arvo on 1, jos arvo vasemmalla puolella on pienempi
+
+>=       suurempi tai yht‰ suuri kuin: arvo on 1, jos arvo vasemmalla
+         puolella on suurempi tai sama kuin oikealla puolella
+
+<=       pienempi tai yht‰ suuri kuin: arvo on 1, jos arvo vasemmalla
+         puolella on pienempi tai sama kuin oikealla puolella
+
++        yhteenlasku: arvo on operaattorin kahta puolta olevien arvojen
+         summa
+
+-        v‰hennyslasku: arvo on vasemmalla puolella oleva arvo v‰hennettyn‰
+         oikealla puolella olevalla arvolla
+
+*        kertolasku: arvo on operaattorin kahta puolta olevien arvojen
+         tulo
+
+/        jakolasku: arvo on vasemmalla puolella oleva arvo jaettuna
+         oikealla puolella olevalla luvulla
+
+++       merkkijonoyhteenlasku: yhdist‰‰ operaattorin kahta puolta olevat
+         merkkijonot
+
+|        tai-toiminto operaattorin kahta puolta olevilla arvoilla
+
+||       looginen tai-toiminto
+
+&        ja-toiminto
+
+&&       looginen ja-toiminto
+
+^        ehdoton tai -toiminto
+
+Merkkijonoa on syyt‰ viel‰ k‰sitell‰ tarkemmin. Siin‰ k‰ytet‰‰n kenoviivaa esca-
+pe-merkkin‰. Esimerkiksi lainausmerkki saadaan merkkijonoon,  kun  sit‰  edelt‰‰
+kenoviiva. Muuten se tulkitaan merkkijonon p‰‰tˆsmerkiksi. N‰in  myˆs  kenoviiva
+itse on escapoitava. Kenoviivaa voivat seurata sulkeet, jolloin merkkijonoon tu-
+lee sulkeissa olevaa arvoa vastaava ASCII-merkki. Se voi olla myˆs merkkijono  -
+jotkin funktiot palauttavat merkkijonon.
+
+Rivinvaihtoon on k‰ytett‰v‰ CRLF:‰‰ eli t‰ss‰ tapauksessa "\(13)\(10)", mik‰  on
+hieman hankalaa. V‰rej‰ voi tulostuksessa k‰ytt‰‰  ESCAPE-koodin  avulla,  kuten
+normaalistikin ANSI:n mukaan. ESCAPE-koodin saa merkkijonoon  laittamalla  sinne
+"\(27)".
+
+Sulkeiden sis‰ll‰ voi olla myˆs kokonainen lause, jonka arvo sis‰llytet‰‰n merk-
+kijonoon. Lause voidaan suorittaa k‰ynnistysvaiheessa tai joka kerta  uudelleen.
+Mik‰li se halutaan suoritettavaksi vain kerran,  sit‰  tulee  edelt‰‰  avainsana
+"PARSE". Lauseen arvo voi olla myˆs merkkijono, jolloin se liittyy  varsinaiseen
+merkkijonoon siihen kohtaan, jossa lause on. 
+
+
+{3Ohjelmointi menukielell‰
+{3------------------------
+
+Menukielell‰ voi tehd‰ miltei samat asiat  kuin  Rexx-ohjelmassa.  Jotkin  asiat
+ovat helpommin teht‰viss‰, jotkin vaikeammin ja jotkut  ovat  jopa  mahdottomia.
+Menukieli sopii lyhyiden koodien tekemiseen ja yksinkertaisten komentojen imple-
+mentointiin. V‰h‰nk‰‰n monimutkaisemmat toiminnot kannattaa tehd‰ Rexx-kielell‰.
+Rexx-ohjelman voi helposti ajaa menukoodista  dos()-funktiolla.  Rexx()  ei  ole
+t‰h‰n teht‰v‰‰n oikea funktio, koska se l‰hett‰‰ Rexx-komennon ohjelmalle,  eik‰
+aja mit‰‰n ohjelmaa.
+
+Komentojen nime‰miselle ja lyhennyksille kannattaa  omaksua  jokin  tyyli,  joka
+toistuu l‰pi valikoiden. Komentojen nimet voivat  esimerkiksi  olla  yksitt‰isi‰
+verbej‰ tai sitten aina tekemist‰ ja sen kohdetta kuvaava predikaatin ja  objek-
+tin yhdistelm‰, jonka lyhenne tulee aina kummastakin sanasta.
+
+Useimmiten komennot kannattaa tehd‰ tiettyyn valikkoon. Hirve‰‰ m‰‰r‰‰ globaale-
+ja komentoja tulee v‰ltt‰‰. Usein komennot liittyv‰t esimerkiksi viesteihin  tai
+tiedostoihin, joten niiden sijoitusvalikko on selv‰. Itsell‰ni on joukko yleisi‰
+komentoja, jotka eiv‰t liity mihink‰‰n erityisesti, joten tein niille oman  Ext-
+ras-valikon. Minulla on komentoja esimerkiksi koneen muistin  ja  prosessilistan
+tutkailuun sek‰ ajan kyselyyn ja ohjelmiston versionumeron tiedusteluun.  L‰hde-
+koodeja n‰ihin on viimeisess‰ luvussa.
+
+Voi myˆs olla, ett‰ teet jonkin erityisen palvelun purkkiisi. T‰llˆin on kannat-
+tavaa tehd‰ sille oma valikko. Minulla on Saku-valikko, jossa voi lukea linjalla
+aina uusimman Sakun artikkeleita sek‰ ime‰ niit‰ yksitt‰in. T‰llaisia toimintoja
+varten on yleens‰ syyt‰ tehd‰ oma valikko. Ihan muutamaa komentoa varten ei niin
+kuitenkaan kannata tehd‰.
+
+T‰ss‰ vaiheessa on jo syyt‰ antaa v‰h‰n muutakin  kuin  irrallisia  esimerkkej‰.
+T‰ss‰ on esimerkki oman valikon k‰ynnist‰miseen: 
+
+Command "extras" (N:1) {
+    rexx("LogEntry Extras");
+    menu("Extras.menu");
+};
+
+T‰m‰ on yksinkertainen komento, jossa vaihdetaan  valikkoa.  Komennon  ajamiseen
+riit‰‰ ensimm‰inen merkki, E. T‰ss‰ on ensimm‰inen kunnollinen  komennon  l‰hde-
+koodi tuosta Extras-valikosta: 
+
+Command "lc" {
+    rexx("LogEntry Viewing last callers");
+    rexx("SendASCII Text/LastCallers.txt");
+    rexx("SendModem \(13)\(10)");
+};
+
+Janne Sirenin LastCallers-ohjelma, jonka k‰ytt‰misen kuvasin artikkelin  edelli-
+sess‰ osassa, yll‰pit‰‰ listaa viimeisist‰ soittajista tiedostossa Text/LastCal-
+lers.txt. Komennolla lc k‰ytt‰j‰ voi nyt katsoa edelliset soittajat myˆs purkis-
+sa eritt‰in yksinkertaisella koodilla.  Kaikkien  komentojen  on  syyt‰  lopuksi
+l‰hett‰‰ rivinvaihto eli CRLF, koodit 13 ja 10.
+
+K‰ytt‰j‰st‰ voisi olla  mukavaa  saada  jotenkin  apua  hankalampien  komentojen
+k‰ytt‰misess‰. Yksi mahdollisuus on tehd‰ Help-komento, jolle annetaan  komennon
+nimi, josta halutaan apua. T‰llainen tosin kannattaisi tehd‰ Rexx-kielell‰.  Oh-
+jelma voisi k‰ytt‰‰ kullekin valikolle vaikkapa helppitiedostoja, joista se  tu-
+lostaisi halutun komennon osuuden rivipohjaisesti. Toinen tapa on antaa lyhyesti
+tietoa, kun komennolle annetaan  parametriksi  kysymysmerkki,  vastaavasti  kuin
+shelliss‰. Itsell‰ni jokainen komento antaa kysymysmerkill‰ formaattinsa,  mutta
+apu voi olla muutakin: 
+
+Command "jokainenkomento" {
+    if(arg(1) == "?") {
+        rexx("SendModem <Jonkinlaista apua>\(13)\(10)");
+        break;
+    }
+    ...
+};
+
+J‰rjestelm‰n toiminnasta kertovia  komentoja  saa  helposti  aikaiseksi  useita.
+T‰ss‰ on yksi: 
+
+Command "sys" {
+    rexx("LogEntry Showing system information");
+    dos("CPU >TECHIO:\(node())");
+};
+
+K‰ytt‰j‰lle ajetaan komento CPU, jonka tuloste ohjataan TechIO:n  avulla  modee-
+mille. Tuloste voi olla esimerkiksi:
+
+System: 68030 68882 FastROM (INST: Cache Burst) (DATA: Cache NoBurst)
+
+Moni k‰ytt‰j‰ ei ehk‰ ole t‰llaisesta tiedosta kiinnostunut, mutta heit‰ kuiten-
+kin on. Eri asia on, haluaako t‰st‰ teht‰v‰n lokimerkint‰‰. Minulla tehd‰‰n var-
+sin monipuoliset lokimerkinn‰t, mutta joku muu voi haluta  v‰hemm‰n  merkintˆj‰.
+Minulla ei k‰ytt‰j‰n tarvitse kuin tulla sis‰‰n ja katsella ymp‰rilleen kymmeni-
+sen minuuttia, niin loki kasvaa kilokaupalla... Komento VER  kertoo  ohjelmiston
+versionumeroita: 
+
+Command "version" (N:3 G:) {
+    rexx("LogEntry Inquiring software version");
+    dos("Version >TECHIO:\(node())");
+    dos("Version BBS:Bin/TechCon >TECHIO:\(node())");
+    dos("Version BBS:Bin/StarTech >TECHIO:\(node())");
+};
+ 
+Tuota viimeist‰ ei tietenk‰‰n kannata  ajaa,  jos  k‰ynnist‰‰  nodensa  jollakin
+muulla ohjelmalla. T‰llˆin komennon voi korvata asianmukaisella komennolla, esi-
+merkiksi "Version Bin:TrapDoor", jolloin komennon tuloste voisi olla: 
+
+Kickstart 40.9, Workbench 40.6
+TechCon 0.93
+TrapDoor 4.279
+
+Ehkei tuo olekaan hyv‰ idea. Tiet‰‰kseni TrapDoorini versio on 1.83  -  jostakin
+syyst‰ se kuitenkin kertoo Version-komennolle ihan muuta. Valikkoon on  muistet-
+tava laittaa mahdollisuus palata p‰‰valikkoon: 
+
+Command "quit" {
+    Menu("Main.menu");
+};
+
+
+{3Lis‰‰ TechnoBBS-komentoja ja -funktioita
+{3----------------------------------------
+
+T‰ss‰ luvussa esittelen tukun tehokkaita TechnoBBS:n  komentoja  ja  funktioita.
+Yksityiskohtaisessa k‰sittelyss‰ ovat komennot ListFiles ja SelectFiles. Seuraa-
+vassa luvussa on valmiita menukoodeja uusien komentojen aikaansaamiseksi. Niiss‰
+hyˆdynnet‰‰n t‰ss‰ luvussa esitelt‰vi‰ komentoja ja funktioita.
+
+ListFiles on eritt‰in tehokas tiedostojenlistauskomento. Sill‰ voi listata kaik-
+ki, tietyn ajankohdan j‰lkeen upitut tai kuvaukseen  osuvat  tiedostot  kaikilta
+tai tietylt‰ alueelta tai yhdelt‰ alueelta ja  kaikilta  sen  ala-alueilta  joko
+erikseen tai yhdess‰ vanhimmasta uusimpaan, uusimmasta vanhimpaan, aakkosj‰rjes-
+tyksess‰ tai k‰‰nteisess‰ aakkosj‰rjestyksess‰. 
+
+T‰ss‰ ovat komennon optiot:
+
+         A        Kaikki tiedostot kaikilta alueilta
+         E        Kaikki tiedostot t‰ll‰ alueella ja sen ala-alueilla
+         C        Jatkuva listaus, ei promptia
+         B        Ei ala-alueita
+         I        Ei hakemistoja, kaikkien alueiden tiedostot samassa listassa
+         N        Ei tyhji‰ hakemistoja
+         M        N‰yt‰ tiedostojen numerot
+         L        N‰yt‰ pitk‰t kuvaukset
+         G        Kokonaiset aluenimet (todelliset hakemistopolut)
+
+N‰iden optioiden lis‰ksi on viisi optiota, joille annetaan myˆs parametri:
+
+         O <formatointimerkkijono>
+         P <pattern>
+         F <string>
+         D <date>
+         S <method>
+
+Komennon tulosteen voi formatoida haluamallaan  tavalla.  Optioon  O  liitetyss‰
+formatointimerkkijonossa voi k‰ytt‰‰ seuraavia m‰‰rittelyj‰: 
+
+         %n       tiedoston nimi
+         %s       tiedoston pituus
+         %c       kommentti
+         %d       p‰iv‰ys
+         %t       aika
+         %a       p‰iv‰
+         %p       protection-bitit
+
+Tiedostoja voi myˆs etsi‰ komennon  avulla.  Tiedostoja  voi  listata  m‰‰ritte-
+lem‰ll‰ patternin (optio P), johon niit‰ verrataan. Voi myˆs antaa  merkkijonon,
+jota etsit‰‰n tiedoston nimest‰ ja kuvauksesta (ei kuitenkaan  pitk‰st‰  kuvauk-
+sesta) ja listataan ne, joista se  lˆytyi  (optio  F).  Optiolla  D  voit  antaa
+p‰iv‰yksen, josta l‰htien tiedostot listataan. P‰iv‰ys voi olla joko standardis-
+sa dd-mmm-yy -muodossa tai p‰ivien m‰‰r‰ tammikuun ensimm‰isest‰ p‰iv‰st‰ vuonna
+1978 (TechnoBBS:n yleinen p‰iv‰m‰‰r‰formaatti). 
+
+Optiolla S (sort) voit valita, miten tiedostot listataan:
+
+         N        Uusimmasta vanhimpaan
+         O        Vanhimmasta uusimpaan
+         A        Aakkosj‰rjestyksess‰ (suositeltavin tapa)
+         Z        K‰‰nteisess‰ aakkosj‰rjestyksess‰
+
+Seuraavassa luvussa on esimerkki ListFiles-komennon implementoinnista  purkkiin.
+Annan suoraan koko l‰hdekoodin omassa purkissani olevaan  List-komentoon.  Sill‰
+voi myˆs k‰ynnist‰‰ kokoruututiedostolistaimen, joka aktivoituu  komennolla  Se-
+lectFiles. Myˆs se on hyvin tehokas tiedostojenlistauskomento ja  pystyy  samaan
+kuin ListFiles, mutta se  on  interaktiivinen,  ja  sen  avulla  voi  seikkailla
+alueelta toiselle ja myˆs ime‰ tiedostoja ja merkit‰ niit‰. 
+
+SelectFilesin optiot poikkeavat hieman ListFilesin optioista:
+
+         A        Kaikki tiedostot, kaikki ala-alueet
+         E        Kaikki tiedostot t‰ll‰ alueella ja sen ala-alueilla
+         H        N‰yt‰ nykyisen tiedoston nimi vahvennetulla (katso alla)
+         C        N‰yt‰ ala-alueet ja salli alueen vaihto (korvaa E:n)
+
+Kokoruututiedostonvalitsin toimii niin, ett‰ se n‰ytt‰‰ ruudullisen  tiedostoja,
+ja listauksessa voi liikkua nuolin‰pp‰imill‰. Normaalisti  kursorin  paikka  il-
+maistaan ">"-merkill‰ vasemmassa reunassa, mutta sen sijaan voidaan k‰ytt‰‰  ni-
+men vahventamista (optio H), mik‰ ei kuitenkaan ole  suotavaa.  Optiot  A  ja  E
+n‰ytt‰v‰t tiedostot samassa listauksessa. Paras  vaihtoehto  on  optio  C,  joka
+n‰ytt‰‰ tiedostot alueittain ja antaa mahdollisuuden vaihtaa aluetta.
+
+Normaalien Download- ja Upload-komentojen lis‰ksi TechnoBBS:ss‰ on  mahdollisuus
+siirt‰‰ tiedostoja yht‰ aikaa kumpaankin suuntaan. Sit‰ varten on  olemassa  ko-
+mento DlAndReceive. Sill‰ voi ime‰ ja uppia yht‰ aikaa. Ensin imett‰v‰t  tiedos-
+tot tulee merkit‰  ja  sen  j‰lkeen  vaihtaa  alueelle,  jolle  uppii.  Komennon
+k‰ytt‰minen edellytt‰‰ kaksisuuntaista protokollaa. Sellainen on ainakin DModem,
+joka on myˆs yksisuuntaisena nopeampi kuin ZModem. Jostakin syyst‰  vain  harvat
+purkit   tukevat    sit‰.    Esimerkki    DModemin    alustusmerkkijonoksi    on
+"XY,LY,IY,B2048".
+
+Lis‰ksi tiedostoja voi siirt‰‰ funktioilla SendFiles() ja ReceiveFiles(). Recei-
+veFiles():i‰ k‰ytet‰‰n esimerkiksi vastaanotettaessa replypakettia.  SendFiles()
+taas on k‰ytˆss‰ tekstikirjastosovelluksessani, jonka l‰hdekoodi on  seuraavassa
+luvussa. Nodella on l‰hetett‰vist‰ tiedostoista lista, jonka voi  tyhjent‰‰  ko-
+mennolla ClearFiles. T‰m‰n j‰lkeen l‰hetett‰v‰t tiedostot lis‰t‰‰n listaan yksi-
+tellen komennolla AddFile. Lopuksi ne l‰hetet‰‰n kutsumalla SendFiles():i‰, joka
+palauttaa nollan, jos siirto ep‰onnistui.
+
+Viestipuolella on monia kiinnostavia komentoja. Yksi niist‰ on  ReWriteMsg.  Sen
+avulla voidaan toteuttaa BBBS:n dup-komentoa vastaava komento. ReWriteMsg  <msg>
+lataa m‰‰ritellyn viestin editoriin, jolloin sit‰ voidaan muutella ja  tallentaa
+siit‰ uusi versio. T‰m‰ uusi versio j‰‰ voimaan ja vanha tuhotaan.  Viesti  voi-
+daan tuhota komennolla KillMsg. Viestej‰  ei  kuitenkaan  koskaan  varsinaisesti
+poisteta viestikannasta, koska se olisi liian hidasta, vaan ne  ainoastaan  mer-
+kit‰‰n kuolleiksi.
+
+Ihmettelen kyll‰, miksei sitten ole olemassa komentoa UnkillMsg,  koska  viestin
+her‰tt‰minen kuolleista olisi eritt‰in yksinkertaista. Olen kuullut, ett‰  vies-
+tej‰ tapetaan helposti vahingossa, joten  t‰llainen  olisi  tarpeen.  ReWriteMsg
+edellytt‰‰ k‰ytt‰j‰lt‰ viestineditointioikeuksia, jos viesti ei  ole  h‰nen  it-
+sens‰ kirjoittama. KillMsg ei tee tarkistuksia, joten on syyt‰ itse varoa  anta-
+masta kaikkien k‰ytt‰‰ sit‰.
+
+ConvertMsg <msg> <set> konvertoi viestikannassa olevan  viestin  annetusta  mer-
+kistˆst‰ ISO:ksi. T‰m‰ on k‰tev‰ toiminto, jos esimerkiksi k‰ytt‰j‰  on  uppinut
+replyns‰ v‰‰r‰ll‰ merkistˆll‰. T‰llˆin tosin  inbound-konversiossa  merkit  ovat
+saattaneet k‰‰nty‰ v‰‰rin. TechnoBBS tarjoaa eritt‰in  hyv‰t  merkistˆkonversio-
+toiminnot. Hankalinta onkin saada k‰ytt‰j‰t valitsemaan oikea merkistˆ!
+
+Komennolla EditMsg <msg> p‰‰see editoimaan viestin statusbittej‰. Se vastaa  E:n
+painamista viestej‰ lukiessa. Bittieditorissa voi  esimerkiksi  tehd‰  viestist‰
+yksityisen. Suositeltava tapa viestien lukemiseen on ReadNext. Se aloittaa vies-
+tien lukemisen ensimm‰isest‰ lukemattomasta viestist‰ ja lukee ne loppuun kysei-
+sell‰ alueella. Toinen vaihtoehto on ReadAllNew, joka toimii muuten samoin, mut-
+ta lukee uudet viestit kaikilta alueilta.
+
+Viel‰  yksi  komento  on  syyt‰  ottaa  puheeksi.  ShowMessage  <text>   n‰ytt‰‰
+k‰ytt‰j‰lle lyhyen tiedonannon. Sen  per‰‰n  tulostetaan  prompti  ja  odotetaan
+n‰pp‰imenpainallusta. T‰m‰ komento on tarkoitettu k‰ytett‰v‰ksi noden  laukaise-
+missa  asynkronisissa  ohjelmissa.  Esimerkiksi  TechQWK  ja  TechWWF  k‰ytt‰v‰t
+ShowMessagea kertoessaan, ett‰ viestipaketti on valmis.
+
+Funktioiden puolella tulee ensiksi kiinnostavista vastaan GetDateVal().  Se  pa-
+lauttaa systeemikellon ajan p‰ivien  m‰‰r‰n‰  tammikuun  ensimm‰isest‰  p‰iv‰st‰
+vuonna 1978. T‰m‰ on TechnoBBS:n k‰ytt‰m‰ p‰iv‰m‰‰r‰formaatti.  Tiedostoalueista
+saa tietoa funktioilla GetLowMsg(), GetHighMsg() ja GetHighRead(). Funktiot  pa-
+lauttavat alueen ensimm‰isen ja viimeisen viestin numeron sek‰ viimeisen  luetun
+viestin numeron. N‰it‰ k‰ytet‰‰n useissa seuraavassa luvussa  esitelt‰viss‰  ko-
+mennoissa.
+
+Viestialueen ja alueryhm‰n numeron saa selville funktioilla GetMsgArea() ja Cur-
+rentSIG(), alueen nimen funktiolla GetMsgAreaName(). SIG:n nimen pit‰isi selvit‰
+funktiolla SIGName(), mutta se ei toimi. Ainakin minulla se palauttaa  aina  en-
+simm‰isen SIG:n nimen, joten siit‰ ei ole hyˆty‰.  K‰ytt‰j‰n  oikeudet  jollekin
+alueelle voi tarkistaa funktiolla HasMsgAcc().  Se  palauttaa  arvon  yksi,  jos
+k‰ytt‰j‰ll‰ on p‰‰sy alueelle.
+
+Viimeinen tarkastelun kohteeksi p‰‰sev‰ funktio on SIGtoReal(). Se muuttaa anne-
+tun viestialueen numeron todelliseksi aluenumeroksi. Sille annetaan alueen nume-
+ro SIG:n sis‰ll‰, ja se palauttaa numeron, joka vastaa msga<n>.dat- sek‰  muiden
+tiedostojen numerointia. Jotkin komennot haluavat parametrin‰‰n alueen  todelli-
+sen numeron. T‰llainen on esimerkiksi MoveMsg. T‰st‰ komennosta on lis‰‰  tietoa
+seuraavassa luvussa, jossa k‰sittelen l‰hemmin myˆs muutamia muita komentoja.
+
+
+{3Uusia komentoja
+{3---------------
+
+T‰ss‰ viimeisess‰ luvussa julkaisen useita valmiita komentoja vapaasti portatta-
+vaksi mihin tahansa purkkiin. Jos k‰yt‰t t‰ss‰ julkaistua koodia, kerro kaikille
+siit‰! 
+
+Aloitamme omalla versiollani tiedostojenlistauskomennosta. Komento korvaa  alku-
+per‰isen list-komennon. 
+
+Command "list" (N:1) {
+    $sel = 0;
+    $selmode = "-C";
+    $sort = "-SA";
+    $an = 1;
+    $opt = "";
+    if(arg(1) != "") while(arg($an) != "") {
+        $curr = upper(arg($an));
+        $temp = "";
+        if($curr == "ALL") {
+            $temp = "-E";
+            $selmode = "-E";
+        }else if($curr == "SELECTOR") $sel = 1;
+        else if($curr == "FILES") $temp = "-I";
+        else if($curr == "DAYS") {
+            $an = $an + 1;
+            $temp = "-D\(GetDateVal() - arg($an))"
+        } else if($curr == "SINCE") {
+            $an = $an + 1;
+            $temp = "-D\(arg($an))"
+        } else if($curr == "NEWFILES") {
+            $temp = "-D\(GetUserMisc("LASTFSCAN"))";
+            SetUserMisc("LASTFSCAN",GetDateVal());
+        } else if($curr == "ALPHA") $sort = "-SA";
+        else if($curr == "REVERSE") $sort = "-SZ";
+        else if($curr == "CRON") $sort = "-SO";
+        else if($curr == "REVCRON") $sort = "-SN";
+        else if($curr == "FIND") {
+            $an = $an + 1;
+            $temp = "-F'\(arg($an))'"
+        } else $temp = "-P\($curr)";
+        if($temp != "") $opt = "\($opt) \($temp)";
+        $an = $an + 1;
+    }
+    if($sel) {
+        rexx("LogEntry Selecting");
+        rexx("SelectFiles \($selmode) -H \($opt) \($sort)");
+    } else {
+        rexx("LogEntry Listing");
+        rexx("ListFiles -G -M -L \($opt) \($sort)");
+    };
+};
+
+Komennon formaatti on t‰llainen:
+
+LIST [ALL] [FILES] [NEWFILES] [DAYS <n>] [SINCE <date>] [SELECTOR]
+     [ALPHA|REVERSE|CRON|REVCRON] [FIND <string>] [<Pattern>]
+ 
+T‰m‰ on ep‰ilem‰tt‰ er‰s tehokkaimmista ja  monimutkaisimmista  list-komennoista
+kautta purkkimaailman. Komennolla voi tehd‰ melkein mit‰ vain - listata  tiedos-
+toja, etsi‰ niit‰, ime‰ niit‰, ottaa newfiles-listauksen jne. T‰ss‰ on  selvitys
+komennon optioista: 
+
+         ALL               Kaikki tiedostot kaikilta alueilta
+         FILES             Vain tiedostot (ALL-option kanssa myˆs ala-alueiden)
+         NEWFILES          Uudet tiedostot (viime filescanin j‰lkeen upitut)
+         DAYS <n>          N p‰iv‰‰ sitten ja sen j‰lkeen upitut tiedostot
+         SINCE <date>      Sama juttu, toimii aivan kuin DOS-Listiss‰
+         SELECTOR          K‰yt‰ tiedostojen n‰ytt‰miseen FSE-valitsinta
+         ALPHA             N‰yt‰ tiedostot aakkosj‰rjestyksess‰ (oletus)
+         REVERSE           K‰‰nteinen aakkosj‰rjestys
+         CRON              Aikaj‰rjestys
+         REVCRON           K‰‰nteinen aikaj‰rjestys
+         FIND <string>     Vain tiedostot, joissa on annettu merkkijono
+         <Pattern>         Pattern, johon t‰sm‰‰v‰t tiedostot listataan
+
+FIND-option yhteydess‰ annettua merkkijonoa siis etsit‰‰n tiedoston  nimest‰  ja
+lyhyest‰ kuvauksesta - ei tiedostosta itsest‰‰n. Merkkijonossa ei saa olla v‰li-
+lyˆntej‰. Optiolla ALL listataan kaikkien  alueiden  tiedostot  aluekohtaisesti.
+FILES-optiolla listataan vain tiedostot, eik‰ ala-alueita n‰ytet‰ ollenkaan. Yh-
+dess‰ k‰ytettyn‰ ALL- ja FILES-optiot saavat aikaan sen, ett‰ kaikkien  alueiden
+tiedostot n‰ytet‰‰n samassa  listassa!  Kokoruutuvalitsinta  k‰ytett‰ess‰  t‰h‰n
+riitt‰‰ pelkk‰ ALL-optio - itse asiassa sen kanssa FILES-optiolla ei ole  merki-
+tyst‰, koska SelectFiles ei tue I-optiota.
+
+Virheellisist‰ tai tunnistamattomista optioista ei huomauteta, vaan ne ohitetaan
+olankohautuksella. Parametrillisten optioiden parametrien olemassaoloa  ei  tar-
+kisteta, mutta en usko TechnoBBS:n siihen kaatuvan, vaikka jonkin  option  para-
+metri puuttuisikin, mutta tietysti k‰ytt‰j‰n tulee varmistua siit‰, ett‰  kaikki
+parametrit annetaan. BBS:ni on "high-end",  joten  myˆs  k‰ytt‰jien  tulee  olla
+asiantuntevia!
+
+Muutama esimerkki kertoo v‰hint‰‰n yht‰ paljon kuin 1024 sanaa: 
+
+list all files newfiles
+
+N‰ytt‰‰ uudet tiedostot samassa listassa (files-optio) kaikilta alueilta  (all).
+Itse asiassa kaikki alueet ei ole absoluuttinen k‰site. Kaikilla  alueilla  tar-
+koitetaan sit‰ aluetta, jolla k‰ytt‰j‰ on sek‰ sen ala-alueita.  ListFiles-  tai
+SelectFiles-komennolle (kumpaa k‰ytet‰‰n, ratkeaa siit‰, onko komentorivill‰ op-
+tio SELECTOR) annetaan all-option ollessa m‰‰ritelty optio E. Optiota A ei  t‰m‰
+komento koskaan k‰yt‰. 
+
+list days 30 cron
+
+Listaa viimeisen kuukauden aikana upitut tiedostot aikaj‰rjestyksess‰. 
+
+list all find Tech
+ 
+Listaa kaikki tiedostot, joiden nimess‰ tai lyhyess‰  kuvauksessa  esiintyy  sa-
+nanp‰tk‰ "Tech". Tiedostoja etsit‰‰n kaikilta alueilta ja ne n‰ytet‰‰n  aluekoh-
+taisesti aakkosj‰rjestyksess‰. 
+
+list all files since 01-Jan-95
+ 
+Voiko en‰‰ inhimillisemm‰ksi BBS:n  k‰ytt‰minen  menn‰?  Kyll‰  voi,  mutta  sen
+k‰sittely j‰‰kˆˆn toistaiseksi. T‰m‰ komento vastaa itse  asiassa  t‰ysin  DOSin
+List-komennon toimintaa. Komento luettelee kaikki t‰ll‰  alueella  ja  sen  ala-
+alueilla olevat tiedostot, jotka on upittu t‰n‰ vuonna.
+
+Olen kirjoittanut useimmat TechnoBBS:n komennot suurilta osin tai t‰ysin  uusik-
+si. Vakiona TechnoBBS:‰‰n kuuluvat  viestikomennot  ovat  aika  sekavia.  Jotkin
+k‰ytt‰v‰t optioita, mutta ne ovat kryptisi‰  Unix-tyylisi‰  optioita.  T‰ss‰  on
+esimerkiksi viel‰ viestivalikon list-komentoni: 
+
+Command "list" (N:1) {
+    $area = GetMsgArea();
+    if(GetHighRead($area) == GetHighMsg($area)) $defstart = GetLowMsg($area);
+        else $defstart = GetHighRead($area) + 1;
+    if(arg(1) == "") $start = AskInput("\(27)[32mFrom message? \(27)[0m",
+        $defstart, 10, "NUMERIC");
+        else $start = arg(1);
+    if(arg(2) == "") $end = AskInput("\(27)[32mTo message? \(27)[0m",
+        GetHighMsg(GetMsgArea()), 10, "NUMERIC");
+        else $end = arg(2);
+    rexx("SendModem \(13)\(10)";
+    rexx("ListMessages \($start) \($end)");
+};
+ 
+Komento ottaa parametreikseen listauksen alun ja lopun. Mik‰li niit‰  ei  m‰‰ri-
+tell‰, ne kysyt‰‰n. Oletuksena tarjotaan promptissa aloitusviestiksi ensimm‰ist‰
+lukematonta viesti‰ tai, jos alueen kaikki viestit on luettu,  ensimm‰ist‰  ole-
+massa olevaa viesti‰ sek‰ lopetusviestiksi viimeist‰ viesti‰.  Samoja  oletuksia
+tarjoaa myˆs esimerkiksi Find-komentoni. Lis‰ksi minulla on  BBBS-tyylinen  Mark
+Group -toiminto, joka k‰ytt‰‰ samantapaista logiikkaa. En listaa en‰‰ muita  va-
+kiokomentoja, mutta niiden l‰hdekoodia saa minulta pyyt‰m‰ll‰.
+
+Siirtyminen viestivalikkoon ei ole niin helppoa kuin voisi luulla. T‰ss‰ on  pa-
+ranneltu versio teht‰v‰n tekev‰st‰ komennosta: 
+
+Command "messages" (N:1) {
+    rexx("LogEntry Messages");
+    rexx("SelectSIG \(arg(1))");
+    if(!CurrentSIG()) rexx("SelectSIG 1");
+    rexx("SendModem \(12)");
+    rexx("SelectSIGArea \(arg(2))");
+    menu("Msg.menu");
+};
+
+T‰ll‰ komennolla varmistutaan siit‰, ett‰ p‰‰st‰‰n viestivalikkoon,  vaikka  ty-
+per‰ k‰ytt‰j‰ painaisikin vain enteri‰ tajuamatta valita SIG:i‰ tai viestialuet-
+ta. Alkuper‰isell‰ koodillahan silloin silloin takaisin p‰‰valikkoon, mutta t‰m‰
+koodi vie silloin ensimm‰isen SIG:n ensimm‰iselle viestialueelle,  joka  yleens‰
+on postialue, tai sinne, miss‰ viimeksi on oltu.
+
+Viestit luetaan k‰tev‰sti painamalla enteri‰, mutta miten olisi  viestivalikkoon
+meneminen enterin painalluksella, kuten BBBS:ss‰? Kas t‰ss‰: 
+
+Command "" {
+    $sig = GetUserMisc("DEFAULTSIG");
+    if($sig == "") $sig = 1;
+    if(($sig < 1) | ($sig > 6) {
+        rexx("SendModem\(27)[31mYour default SIG setting is invalid.
+        \(13)\(10)\(13)\(10)\(27)[33m
+        Using default default setting.\(13)\(10)");
+        $sig = 1;
+    }
+    rexx("LogEntry Messages");
+    rexx("SelectSIG \($sig)");
+    rexx("SelectSIGArea 1");
+    menu("Msg.menu");
+};
+
+T‰m‰ tulee siis p‰‰valikkoon, ja se vie k‰ytt‰j‰n  viestivalikkoon  painettaessa
+enteri‰ tyhj‰lle riville. N‰in viestej‰ p‰‰st‰‰n lukemaan loginin  j‰lkeen  kah-
+della enterin painalluksella! Laita ennen k‰‰nt‰mist‰  ensimm‰inen  rexx()-funk-
+tiokutsu yhdelle riville.
+
+Komento vaatinee hieman selvityst‰. Aikaisemmin minulla oli siin‰ vain  "Select-
+SIG 1", mutta nyt SIG:n numero otetaan k‰ytt‰j‰muuttujasta DEFAULTSIG. T‰lle tu-
+li tarvetta, koska haluan yleens‰ p‰‰st‰ suoraan SakuNet-alueille, mik‰ n‰in on-
+nistuu helposti laittamatta sit‰ kiinte‰ksi  oletusarvoksi.  Riitt‰‰,  ett‰  DE-
+FAULTSIG:n arvo on 3, joka on SakuNetin SIG:n numero. T‰m‰n asettamiseksi tarvi-
+taan tietysti sopiva koodi esimerkiksi terminaaliasetusvalikkoon: 
+
+    des = GetUserMisc(ln, "DEFAULTSIG")
+    select
+        when des = 1 then des = "Yleiset alueet"
+        when des = 3 then des = "SakuNet"
+        when des = 6 then des = "WebNet"
+        otherwise des = "<NONE>"
+        end
+    SendModem "12     "||CYAN||"Default SIG: "||WHITE||des||CRLF
+
+T‰m‰ koodi tulee sinne alkuun, miss‰ tulostetaan olemassaolevat  valinnat.  Seu-
+raava koodi tulee loppuun. Itsell‰ni valinnan numero on  12,  mutta  siihen  voi
+laittaa muutakin, mik‰ sitten sattuu olemaan ensimm‰inen vapaa numero.  SIG-koo-
+deistani on tarkoituksella poistettu SIG:t 2, 4 ja 5. 
+
+        when cmdid = "12" then do
+            dez = GetUserMisc(ln, "DEFAULTSIG")
+            if dez = "" then dez = 1
+            des = "<NONE>"
+            do while des = "<NONE>"
+                SendModem CRLF
+                SendASCII "Text/DefaultSIG.txt"
+                des = AskInput(ln, "Select: ", "", 2, "NUMERIC");
+                select
+                    when des = "1" then nop
+                    when des = "2" then nop
+                    when des = "3" then nop
+                    when des = "4" then nop
+                    when des = "5" then nop
+                    when des = "6" then nop
+                    when des = "" then des = dez
+                    otherwise des = "<NONE>"
+                    end
+                end
+
+Koodi toimii vastaavasti kuin esimerkiksi offlinerin valinta (tulee  myˆhemmin).
+Ovelalla  manipuloinnilla  saadaan   k‰ytt‰j‰   valitsemaan   oletusarvo   h‰nen
+tiet‰m‰tt‰‰n. Tosin myˆs koodi, joka arvoa k‰ytt‰‰, osaa valita oletusoletuksen,
+jos arvo on v‰‰r‰ tai puuttuu. Ohjeeksi l‰hetet‰‰n tiedosto DefaultSIG.txt: 
+
+    The following SIGs are available in this system:
+
+       1 Yleiset alueet
+       3 SakuNet
+       6 WebNet
+
+Select one or press enter for no change or default selection.
+ 
+Ensimm‰inen varsinainen uusi komento tulee t‰ss‰. Komennolla voi siirt‰‰ viestin
+toiselle alueelle: 
+
+Command "move" (N:2) {
+    if(GetUserAccess() < 1000) {
+        rexx("SendModem \(27)[31mNo access\(13)\(10)");
+        rexx("LogEntry Attempted to move a message");
+        break;
+    }
+    $msg = arg(1);
+    $area = arg(2);
+    if($msg == "") {
+        $msg = AskInput("Message number: ", "", 10, "NUMERIC");
+    }
+    if($area == "") {
+        $area = AskInput("Destination area: ", "", 10, "NUMERIC");
+        rexx("SendModem \(13)\(10)\(13)\(10)");
+    }
+    if($msg != "") if($area != "") {
+        rexx("SendModem Moving message.\(13)\(10)");
+        rexx("MoveMsg \($msg) \($area)");
+        rexx("KillMsg \($msg)");
+        rexx("LogEntry Moved message \($msg) from \(GetMsgAreaName(
+            GetMsgArea())) to \(GetMsgAreaName($area)) as #\(
+            GetHighMsg($area))\(13)\(10)");
+    }
+};
+
+En tied‰, miten TechMenuComp suhtautuu tuolla tavalla jaettuihin riveihin, mutta
+uskoisin, ett‰ viimeinen rexx()-funktiokutsu kannattaa palauttaa yhdelle  rivil-
+le. Jaoin sen kahdelle riville  taittoteknisist‰  syist‰...  Komento  varmistaa,
+ett‰ k‰ytt‰j‰ll‰ on SysOp-oikeudet (oikeustaso  =>  1000).  Komennolle  annetaan
+siirrett‰v‰n viestin numero ja alue, jolle viesti siirret‰‰n. Jos niit‰ ei anne-
+ta komentorivill‰, ne kysyt‰‰n erikseen.
+
+Kohdealueen numero on t‰ss‰ nyt alueen  todellinen  numero  sellaisena  kuin  se
+msg<n>.dat-tiedoston  nimess‰  on.  T‰t‰  voisi  helpottaa  k‰ytt‰m‰ll‰   SIGto-
+Real()-funktiota, mutta ainakin minulla on tarve siirt‰‰ joskus viestej‰ SIG:st‰
+toiseen,  joten  tuollaista  ei  voi  k‰ytt‰‰,  koska  siirto  estyisi.  Viestin
+siirt‰misen j‰lkeen alkuper‰inen tuhotaan, koska MoveMsg ei tee sit‰ itse.  Itse
+asiassa se onkin toiminnaltaan pikemminkin CopyMsg...
+
+J‰lleen tehd‰‰n perusteellinen lokimerkint‰... Alkuper‰isen viestin numerolla ei
+tosin en‰‰ ole merkityst‰, eik‰ uudenkaan viestin numero  v‰ltt‰m‰tt‰  ole  aina
+oikein, mutta mahdollisuus sen v‰‰rin menemiseen on hyvin pieni (jos jokin  toi-
+nen node ehtii v‰liss‰ laittaa kohdealueelle toisen viestin). 
+
+TechnoBBS:ss‰ ei ole mink‰‰nlaista viestialueiden l‰pik‰yntikomentoa. Esimerkik-
+si BBBS:ss‰ on hyv‰ show (conference status) -komento. Olen kirjoittanut vastaa-
+van  TechnoBBS:lle.  Se  ei  ole  yht‰  monipuolinen,  koska  olisi  k‰yt‰nnˆss‰
+‰‰rettˆm‰n hidasta ja miltei mahdotonta skannata lennossa, kuinka monta  viesti‰
+nimenomaiselle k‰ytt‰j‰lle on. Senh‰n saa selville mc-komennolla, joten alueilla
+olevien viestien kokon‰ism‰‰r‰ ja uusien viestien m‰‰r‰ riitt‰nev‰t: 
+
+Command "scan" (N:2) {
+    $curr = GetMsgArea();
+    $signum = arg(1);
+    $mode = arg(2);
+    if($signum == "") $signum = CurrentSIG();
+    if(upper(arg(1)) == "NEW") {
+        $signum = CurrentSIG();
+        $mode = "NEW";
+    }
+    if($signum == 6) {
+        $sig = "WebNet";
+        $area = 101;
+        $max = 130;
+    } else if($signum == 3) {
+        $sig = "SakuNet";
+        $area = 31;
+        if(GetUserAccess() > 999) $max = 64; else $max = 61;
+    } else {
+        $sig = "Yleiset alueet";
+        $area = 3;
+        $max = 12;
+    }
+    rexx("SendModem \(27)[32mScanning message areas: \(
+        $sig)\(13)\(10)\(13)\(10)");
+    rexx("LogEntry Scanning SIG \($sig)");
+    $hightotal = 0;
+    $msgtotal = 0;
+    while($area <= $max) {
+        $highread = GetHighRead($area);
+        $highmsg = GetHighMsg($area);
+        $areaname = "\(GetMsgAreaName($area)):";
+        if($highmsg) {
+            $doarea = 1;
+            if($mode != "") if($highmsg == $highread) $doarea = 0;
+            if(!(GetAreaMode($area))) $doarea = 0;
+            if($doarea) {
+                rexx("SendModem \(27)[33m\(str($areaname,1,24))\(27)[0m\(
+                    $highmsg - $highread) unread messages (\(
+                    $highmsg) total, last read \($highread))\(13)\(10)");
+                $hightotal = $hightotal + $highread;
+                $msgtotal = $msgtotal + $highmsg;
+            }
+        }
+        $area = $area + 1;
+    }
+    rexx("SendModem \(13)\(10)\(27)[33m\(str("Total:",1,24))\(27)[0m\(
+        $msgtotal - $hightotal) unread messages (\(
+        $msgtotal) total, read \($hightotal))\(13)\(10)");
+};
+
+Komento k‰y l‰pi halutun SIG:n alueet ja kertoo niist‰ tietoa. T‰ss‰ on esimerk-
+kituloste: 
+
+AZ.Muut:                4 unread messages (61 total, last read 57)
+AZ.Net:                 43 unread messages (282 total, last read 239)
+AZ.SciFi & Trek:        2 unread messages (22 total, last read 20)
+AZ.Tee-se-itse:         0 unread messages (26 total, last read 26)
+AZ.TV & Elokuvat:       0 unread messages (50 total, last read 50)
+AZ.SAKU/Yleinen:        5 unread messages (28 total, last read 23)
+AZ.SAKU/Info:           0 unread messages (21 total, last read 21)
+AZ.SAKU/Ohjelmointi:    0 unread messages (6 total, last read 6)
+AZ.SAKU/Toimitus:       0 unread messages (3 total, last read 3)
+AZ.SAKU/Yhdistys:       0 unread messages (6 total, last read 6)
+
+Total:                  54 unread messages (505 total, read 451)
+
+Komento ottaa parametrin‰‰n skannattavan SIG:n  numeron.  Jos  sit‰  ei  anneta,
+skannataan se SIG, jossa ollaan. Lis‰ksi  komento  tunnistaa  option  NEW,  joka
+m‰‰rittelem‰ll‰ n‰ytet‰‰n vain alueet, joilla on uusia viestej‰. Option NEW  voi
+antaa myˆs ilman SIG-numeroa. Koodissa on hieman logiikkaa. Vain alueet,  joille
+k‰ytt‰j‰ on liittynyt ja joilla on viestej‰, n‰ytet‰‰n.
+
+SIG:n nimet on asetettava k‰sin, koska SIGName  ei  toimi.  Lis‰ksi  SIG-numeron
+vertailussa asetetaan  asianmukaiset  aluerajat.  Huomaa  SakuNetin  tapauksessa
+vaihtoehtoinen loppumisalue. Lopussa on kolme  aluetta,  jotka  eiv‰t  n‰y  lop-
+puk‰ytt‰jille, joten niit‰ ei myˆsk‰‰n n‰ytet‰ skannatessa kuin SysOpille.
+
+Janne Siren on tehnyt myˆs viestialuestatistiikkaa kertovan ohjelman.  Olen  vi-
+ritt‰nyt myˆs siihen SIG-pohjaisen toiminnan: 
+
+Command "mstats" (N:2 G:) {
+    $signum = arg(1);
+    if($signum == "") $signum = CurrentSIG();
+    if($signum == 6) {
+        $sig = "WebNet";
+        $area = 101;
+        $max = 130;
+    } else if($signum == 3) {
+        $sig = "SakuNet";
+        $area = 31;
+        if(GetMask()&1024) $max = 64; else $max = 61;
+    } else {
+        $sig = "Yleiset alueet";
+        $area = 3;
+        $max = 12;
+    }
+    rexx("SendModem \(27)[32mViewing message area statistics for SIG \(
+        $sig)\(13)\(10)\(13)\(10)");
+    dos("RX >NIL: BBS:Rexx/MessageStats.rexx \(node()) \($area) \($max)");
+    rexx("LogEntry Examining message area statistics for SIG \($sig)");
+};
+
+T‰m‰ vaatii muutoksia myˆs itse ohjelmaan. Poista MessageStats.rexxist‰  FirstA-
+rea- ja LastArea-m‰‰rittelyt ja korvaa ln-m‰‰rittely komennolla: 
+
+Parse ARG ln FirstArea LastArea .
+
+ƒl‰ unohda lopussa olevaa pistett‰. N‰ill‰  muutoksilla  myˆs  MessageStats  k‰y
+l‰pi vain yhden SIG:n, mik‰ on j‰rkevin toimintatapa. 
+ 
+TechnoBBS:n mukana ei tule myˆsk‰‰n tarpeellista SIG:n  vaihtokomentoa.  Seuraa-
+valla koodinp‰tk‰ll‰ homma hoituu: 
+
+Command "sig" (N:1) {
+    $sig = arg(1);
+    $area = arg(2);
+    if(($sig != "") && ($area == "")) $area = 1;
+    rexx("SelectSIG \($sig)");
+    if($area == "") {
+        rexx("SendModem \(12)");
+        rexx("SelectSIGArea");
+    } else rexx("SelectSIGArea \($area)");
+    rexx("LogEntry Message area: \(GetMsgAreaName(GetMsgArea()))");
+};
+
+Komennolle annetaan halutun SIG:n numero sek‰ viestialueen  numero  siell‰.  Jos
+n‰it‰ ei anneta, ne kysyt‰‰n. Poikkeustapaus on kuitenkin se, ett‰ SIG:n  numero
+on m‰‰ritelty, mutta alueen ei. Silloin siirryt‰‰n suoraan alueelle  yksi.  T‰m‰
+on helppo tapa vaihtaa nopeasti alueryhm‰‰. 
+ 
+Joskus verkosta tulee viestej‰, joiden merkistˆ on v‰‰r‰. N‰it‰ voi  tulla  myˆs
+k‰ytt‰jien replypaketeissa. Viestin voi kuitenkin merkistˆkonvertoida sen olles-
+sa jo viestikannassa: 
+
+Command "convert" (N:4) {
+    if(GetUserAccess() < 1000) {
+        rexx("SendModem \(27)[31mNo access\(13)\(10)");
+        rexx("LogEntry Attempted to convert a message");
+        break;
+    }
+    $msg = arg(1);
+    $set = arg(2);
+    if($msg == "") $msg = AskInput(
+        "\(27)[32mConvert which message: \(27)[0m", "", 10, "NUMERIC");
+    if($set == "") $set = AskInput(
+        "\(27)[32mFrom which charset? \(27)[0m", "", 10);
+    if($msg != "") if($set != "") {
+        rexx("SendModem \(27)[32m\(13)\(10)Converting message \(
+            $msg) from \($set) to ISO\(13)\(10)");
+        rexx("LogEntry Converting message \($msg) from \($set) to ISO");
+        rexx("ConvertMsg \($msg) \($set)");
+    } else rexx("SendModem \(27)[31m\(13)\(10)Required argument missing");
+}
+
+Komento ottaa parametrikseen konvertoitavan viestin numeron sek‰ merkistˆn, jos-
+ta konvertoidaan. Yleens‰ l‰hdemerkistˆ on SF7 tai IBM. SF7:ss‰  olevassa  vies-
+tiss‰ n‰kyv‰t esimerkiksi pienet ‰-kirjaimet avautuvina kaarisulkuina ja  pienet
+ˆ-kirjaimet pystyviivoina. IBM-merkistˆll‰ esimerkiksi ‰-kirjaimesta tulee  kur-
+sorin siirto alasp‰in - TechnoBBS:ll‰ IBM-merkistˆn havainnee niin, ett‰ skandi-
+merkit puuttuvat kokonaan. 
+ 
+BBBS:ss‰ on myˆs Duplicate-komento, jolla voidaan jo  kirjoitettu  viesti  ottaa
+uudelleen editoitavaksi. TechnoBBS tarjoaa komennon ReWriteMsg, jota k‰ytt‰m‰ll‰
+vastaavan komennon toteuttaminen siihen on eritt‰in helppoa: 
+
+Command "duplicate" (N:3) {
+    $msg = arg(1);
+    if($msg == "") $msg = AskInput(
+        "\(27)[32mDuplicate which message: \(27)[0m", "", 10, "NUMERIC");
+    if($msg != "") {
+        rexx("LogEntry Duplicating message \($msg) as \(GetHighMsg(
+            GetMsgArea()) + 1)");
+        rexx("ReWriteMsg \($msg)");
+    } else rexx(
+        "SendModem \(27)[31m\(13)\(10)Operation cancelled\(13)\(10)");
+}
+
+Komennolle annetaan parametrin‰ dupattavan viestin numero.  Viestin  voi  dupata
+vain sen kirjoittaja tai k‰ytt‰j‰, jolla on viestineditointi-  tai  SysOp-oikeu-
+det. 
+ 
+Laitan t‰h‰n nyt niit‰ lupaamiani Extras-valikon ylim‰‰r‰isi‰ komentoja.  Komen-
+not ajavat jonkin j‰rjestelm‰komennon ja kertovat k‰ytt‰j‰lle n‰in  tietoa  sys-
+teemist‰. 
+
+Command "processes" (N:2) {
+    rexx("LogEntry Listing processes");
+    if(upper(arg(1)) == "ALL") dos("PS >T:pr_\(node())");
+        else dos("Status >T:pr_\(node())");
+    rexx("SendASCII T:pr_\(node())");
+    dos("Delete T:pr_\(node())");
+};
+
+T‰m‰ ohjelma l‰hett‰‰  k‰ytt‰j‰lle  prosessilistan.  Vaihtoehtoisesti  k‰ytet‰‰n
+Status-komentoa  tai  perusteellisempaa  PS-komentoa,  joka  listaa  myˆs  Exec-
+teht‰v‰t. Tulostus voi olla pitk‰,  joten  se  ohjataan  temppitiedostoon,  joka
+l‰hetet‰‰n SendASCII-komennolla. N‰in listaukseen saadaan tarpeen vaatiessa  Mo-
+re-prompti. K‰yt‰n temppitiedoston nimess‰ nodenumeroa, koska on  olemassa  mah-
+dollisuus, ett‰ komento ajettaisiin yht‰ aikaa useammalla kuin yhdell‰ nodella. 
+
+Command "memory" (N:3) {
+    rexx("LogEntry Checking available memory");
+    dos("Avail >TECHIO:\(node())");
+};
+ 
+Yksinkertainen komento MEM kertoo koneen muistitilanteen. 
+
+Command "time" (N:3 G:) {
+    rexx("LogEntry Acquiring current time");
+    dos("Date >TECHIO:\(node())");
+};
+
+Yht‰ yksinkertainen TIM-komento kertoo oikean ajan. 
+
+Command "ds" {
+    rexx("LogEntry Checking disk space");
+    if(upper(arg(1)) == "FULL") dos("Inf >T:ds_\(node())");
+        else dos("Info >T:ds_\(node())");
+    rexx("SendASCII T:ds_\(node())");
+    dos("Delete T:ds_\(node())");
+};
+
+Komento DS toimii samalla tavalla kuin PR. Se kertoo massamuistien  tilan.  Sit‰
+tarkoitusta varten ajetaan Info-komento. Vaihtoehtoisesti  ajetaan  Inf-komento,
+joka kertoo enemm‰n tietoa kuin vakiokomento Info. Tiedot tulostetaan samaan ta-
+paan kuin prosessilistakin - Inf tulostaa myˆs muistitilanteen ja Volume-luette-
+lon, joten senkin tuloste voi olla yli sivun mittainen. 
+ 
+T‰h‰n menness‰ pit‰isi jo olla selv‰‰,  ett‰  ihannoin  BBBS:‰‰!  No,  ei  aivan
+sent‰‰n, mutta BBBS:ss‰ on monia hyvi‰ ominaisuuksia, ja niit‰ olen tuonut Tech-
+noBBS:‰‰n useita. Yksi n‰ist‰ on tuki  bulletiineille  eli  "tekstikirjastolle".
+Bulletiinit ovat tekstitiedostoja, joita voi lukea linjalla ja ime‰ yksitellen: 
+
+Command "bulletins" (N:4 G:) {
+    rexx("LogEntry Bulletins");
+    $read = arg(1);
+    $bull = "?";
+    while ($bull != "") {
+        if($read == "") $bull = AskInput(
+            "\(27)[32mBulletin number (? for list): \(27)[0m","",40);
+            else {
+                $bull = $read;
+                $read = "";
+            }
+        if($bull == "?") $bull = "list";
+        if(str($bull,1,1) == "q") $bull = "";
+            else if($bull == "d") {
+            rexx("ClearFiles");
+            while($bull != "") {
+                rexx("SendModem \(13)\(10)");
+                $bull = AskInput(
+                    "\(27)[32mBulletin number to download: \(27)[0m","",40);
+                if($bull != "") {
+                    rexx("LogEntry Downloading bulletin \($bull)");
+                    rexx("AddFile BBS:Bulletins/\($bull)");
+                }
+            };
+            $dl = 1;
+            while($dl) {
+                if(SendFiles()) $dl = 0; else {
+                    rexx("SendModem \(13)\(10)\(13)\(10)\(13)\(10)\(27)[31m
+                        Transfer failed.\(13)\(10)\(13)\(10)");
+                    if(!(GetYesNo("\(27)[36mSend again? \(27)[0m",1,1)))
+                        $dl = 0;
+                }
+            }
+        } else if($bull != "") {
+            rexx("LogEntry Reading bulletin \($bull)");
+            rexx("SendModem \(12)");
+            rexx("SendASCII BBS:Bulletins/\($bull)");
+            rexx("SendModem \(13)\(10)");
+        };
+    }
+};
+
+T‰m‰ komento  k‰ytt‰‰  hyv‰kseen  ClearFiles/AddFile/SendFiles()-toimintosarjaa.
+Olen ajatellut kirjoittaa koodin uusiksi Rexx-kielell‰, koska nykyisell‰‰n  bul-
+letiineja ei voi konvertoida. Online-Saku-lukijassani olisi valmis konvertointi-
+koodi sek‰ pakkaus. Ne voisi helposti kopioida  myˆs  bulletiinitukeen,  jolloin
+myˆs imett‰v‰t bulletiinit voisi konvertoida oikealle  merkistˆlle  sek‰  pakata
+ennen siirtoa.
+
+Komennolle  voi   antaa   parametriksi   bulletiinin   numeron,   joka   luetaan
+v‰littˆm‰sti, mink‰ j‰lkeen tulostetaan prompti. Muuten sen saa  heti.  Paramet-
+riksi voi antaa bulletiinin numeron tai komentoja. T‰ll‰ hetkell‰  hyv‰ksytt‰vi‰
+komentoja ovat d, jolla voi ime‰ bulletiineja, tai ?, joka tulostaa  bulletiini-
+listan, sek‰ q, jolla p‰‰see takaisin p‰‰valikkoon, mik‰ onnistuu  myˆs  enterin
+painamisella tyhj‰lle riville.
+
+Bulletiinit pidet‰‰n hakemistossa BBS:Bulletins. Bulletiinilista on  tiedostossa
+BBS:Bulletins/list.  Kun  promptiin  vastataan  kysymysmerkill‰,  se   muutetaan
+"list":ksi, jolloin l‰hetet‰‰n tuo lista. K‰ytt‰j‰lle l‰hetet‰‰n suoraan sen ni-
+minen tiedosto, mink‰ h‰n on promptiin kirjoittanut. Lis‰ksi siit‰ tehd‰‰n loki-
+merkint‰. Listan tapauksessa tiedoston nimi on "list", joten lokientryksi  tulee
+n‰pp‰r‰sti Reading bulletin list... T‰ss‰ on esimerkiksi oma bulletiinilistani: 
+
+       Bulletin List
+
+    0   Tietoa bulletiineista
+    1   Uploading Instructions
+    2   Star Fleet Top Callers
+    3   Star Fleet Top Message Writers
+    4   Star Fleet Top Uploaders
+    5   Star Fleet Top Downloaders
+
+       Alaryhm‰t
+
+    20  SAKU
+    30  Amigan tulevaisuus
+    40  Amigan laitteisto ja ohjelmisto
+    60  Tee-se-itse
+    80  Sekalaiset
+    100 Star Trek
+
+    enter to quit bulletins, cls to clear screen, d to download
+
+Lopussa oleva ylim‰‰r‰inen ohje on syyt‰ pit‰‰ mukana, koska  noita  tietoja  ei
+anneta muualla. Bulletiinit ovat hyv‰ paikka pit‰‰ TopTechin tuottamat  top-lis-
+tat. Niiden generointi lennossa on hidasta ja ep‰suotavaa, koska TopTech voi se-
+koittaa TechConin toimintaa. Alaryhmien tekeminen on myˆs mahdollista. Bulletii-
+nien ei ole pakko olla numeroituja. Niiden nimen‰ voi olla myˆs jokin sana, mut-
+ta sanav‰lej‰ siin‰ ei ole suotavaa olla.
+
+Alaryhmien hakemistot pidet‰‰n vastaavissa tiedostoissa, esimerkiksi SAKU-bulle-
+tinien hakemisto on tiedostossa BBS:Bulletins/20: 
+
+       Bulletin List - SAKU
+
+    21  Amiga-k‰ytt‰j‰t perustavat rekisterˆidyn yhdistyksen
+    22  Uusi HTML-formaatin SAKU-lukija, ideoijana Jukka Aho (30k)
+    23  SAKU-kokous IRC:ss‰
+    24  Seuraavan Sakun uusin tilannekatsaus
+    25  Esa Heikkinen perustaa SAKU-netin!
+    26  SAKU-netin nodelista
+
+    enter to quit bulletins, cls to clear screen, d to download
+
+Ohje on aina syyt‰ laittaa kaikkiin hakemistoihin. Varsinaiset bulletiinit  ovat
+tietysti tiedostonimilt‰‰n BBS:Bulletins/21, BBS:Bulletins/22 ja niin  edelleen.
+Olen n‰hnyt vastaavan palvelun ainakin Amiga Zonessa, ja se on minun  mielest‰ni
+eritt‰in k‰tev‰ tapa v‰litt‰‰ tekstimuotoista tietoa. 
+ 
+Nyky‰‰n er‰s t‰rkeimmist‰ BBS:n palveluista on viestien et‰luvun  j‰rjest‰minen.
+TechnoBBS tukee QWK:ta ja WWF:‰‰ ja tarjoaa hyv‰t mahdollisuudet et‰lukuun, mut-
+ta BA/BW/QU/WU-sarja on aivan liian mahdoton  muistettavaksi.  N‰in  ollen  olen
+kirjoittanut kaksi komentoa, grab ja put. Grabilla otetaan  viestit  ja  putilla
+laitetaan vastaukset. Komennot sis‰lt‰v‰t alkuper‰isten komentojen koodin, mutta
+ne on ymp‰rˆity uudenlaisella liittym‰ll‰: 
+
+Command "grab" (G:) {
+    $format = GetUserMisc("OFFLINER");
+    if($format == "") {
+        rexx("SendModem \(13)\(10)\(27)[31mThere is no Offliner defined.
+            \(13)\(10)\(13)\(10)");
+        $resp = GetYesNo("\(27)[0mDo you want to use WWF (or QWK) ", 1, 1);
+        if($resp == 1) $format = "WWF";
+            else $format = "QWK";
+        SetUserMisc("OFFLINER",$format);
+    }
+    if(lower(arg(1)) == "a") SetUserMisc("OFFLINERMODE", 1);
+        else if(lower(arg(1)) == "s") SetUserMisc("OFFLINERMODE", 0);
+    if(GetUserMisc("OFFLINERMODE") == "") {
+        rexx("SendModem \(13)\(10)\(27)
+            [31mYou have no offliner operation mode defined. Using default.
+            \(13)\(10)\(13)\(10)");
+        SetUserMisc("OFFLINERMODE",0);
+        SetUserMisc("WWFASYNC",0);
+        SetUserMisc("QWKASYNC",0);
+    }
+    if($format == "QWK") {
+        rexx("SendModem \(13)\(10)\(27)[33mPacking QWK messages");
+        if(GetUserMisc("OFFLINERMODE")) {
+            rexx("LogEntry Packing QWK messages asynchronously");
+            rexx("SendModem  asynchronously, you will be informed on
+                completion\(13)\(10).\(13)\(10)\(27)[0m");
+            dos("Run <>NIL: TechQWK \(node()) O BBS:Cfg/TechQWK.Cfg");
+        } else {
+            rexx("LogEntry Packing QWK messages");
+            rexx("SendModem .\(13)\(10)\(13)\(10)");
+            dos("TechQWK \(node()) O BBS:Cfg/TechQWK.Cfg");
+            rexx("SendModem \(13)\(10)");
+            GetHotkey("\(27)[32mPress any key to start sending...\(27)[0m");
+            rexx("SendModem \(13)\(10)\(13)\(10)");
+            rexx("MarkAnyFile \(GetUserPath(GetUserName()))/SFL.QWK");
+            rexx("Download MARKEDONLY");
+        }
+    } else {
+        rexx("SendModem \(13)\(10)\(27)[33mPacking WWF messages");
+        if(GetUserMisc("OFFLINERMODE")) {
+            rexx("LogEntry Packing WWF messages asynchronously");
+            rexx("SendModem  asynchronously, you will be informed on
+                completion\(13)\(10)\(13)\(10)\(27)[0m");
+            dos("Run <>NIL: TechWWF \(node()) O BBS:Cfg/TechWWF.Cfg");
+        } else {
+            rexx("LogEntry Packing WWF messages");
+            rexx("SendModem .\(13)\(10)\(13)\(10)");
+            dos("TechWWF \(node()) O BBS:Cfg/TechWWF.Cfg");
+            rexx("SendModem \(13)\(10)");
+            GetHotkey("\(27)[32mPress any key to start sending...\(27)[0m");
+            rexx("SendModem \(13)\(10)\(13)\(10)");
+            rexx("MarkAnyFile \(GetUserPath(GetUserName()))/SFL.WWF");
+            rexx("Download MARKEDONLY");
+        }
+    }
+};
+
+Command "put" (G:) {
+    $format = GetUserMisc("OFFLINER");
+    if($format == "") {
+        rexx("SendModem \(13)\(10)\(27)[31mThere is no Offliner defined.
+            \(13)\(10)\(13)\(10)");
+        $resp = GetYesNo("\(27)[0mAre you using WWF (or QWK) ", 1, 1);
+        if($resp == 1) $format = "WWF";
+            else $format = "QWK";
+        SetUserMisc("OFFLINER",$format);
+    }
+    if(lower(arg(1)) == "a") SetUserMisc("OFFLINERMODE", 1);
+    else if(lower(arg(1)) == "s") SetUserMisc("OFFLINERMODE", 0);
+    if(GetUserMisc("OFFLINERMODE") == "") {
+        rexx("SendModem \(13)\(10)\(27)[31mYou have no offliner operation
+            mode defined. Using default.\(13)\(10)\(13)\(10)");
+        SetUserMisc("OFFLINERMODE",0);
+        SetUserMisc("WWFASYNC",0);
+        SetUserMisc("QWKASYNC",0);
+    }
+    if($format == "QWK") {
+        rexx("SendModem \(13)\(10)\(27)[33mUploading QWK messages.
+            \(13)\(10)\(13)\(10)");
+        rexx("LogEntry Uploading QWK messages");
+        dos("Delete \(GetUserPath(GetUserName()))/SFL.REP quiet");
+        rexx("SendModem \(13)\(10)\(27)[33mStart sending SFL.REP
+            \(13)\(10)\(13)\(10)\(27)[0m");
+        if(ReceiveFiles()) {
+            if(GetUserMisc("OFFLINERMODE")) {
+                dos("Run >NIL: TechQWK \(node()) I BBS:Cfg/TechQWK.Cfg");
+                rexx("SendModem \(27)[33mProcessing replies asynchronously
+                    \(13)\(10)\(27)[0m");
+            } else dos("TechQWK \(node()) I BBS:Cfg/TechQWK.Cfg");
+        } else rexx("SendModem \(13)\(10)\(13)\(10)\(27)[31mTransfer failed
+            \(13)\(10)\(27)[0m");
+    } else {
+        rexx("SendModem \(13)\(10)\(27)[33mUploading WWF messages.
+            \(13)\(10)\(13)\(10)");
+        rexx("LogEntry Uploading WWF messages");
+        dos("delete \(GetUserPath(GetUserName()))/SFL.RRF quiet");
+        rexx("\(13)\(10)\(27)[33mStart sending SFL.RRF
+            \(13)\(10)\(13)\(10)\(27)[0m");
+        if(ReceiveFiles()) {
+            if(GetUserMisc("OFFLINERMODE")) {
+                dos("Run >NIL: TechWWF \(node()) I BBS:Cfg/TechWWF.Cfg");
+                rexx("SendModem \(27)[33mProcessing replies asynchronously
+                    \(13)\(10)\(27)[0m");
+            } else dos("TechWWF \(node()) I BBS:Cfg/TechWWF.Cfg");
+        } else rexx("SendModem \(13)\(10)\(13)\(10)\(27)[31mTransfer failed
+            \(13)\(10)\(27)[0m");
+    }
+};
+
+T‰m‰ koodi meni varsin risaiseksi, koska jouduin jakamaan useita rivej‰. Jos ha-
+luat hyˆdynt‰‰ sit‰, parasta lienee pyyt‰‰ minulta suoraan  kunnollinen  versio.
+Komennoissa on paljon p‰‰llekk‰ist‰ koodia, joten tuota voisi parannella  viel‰.
+Ideana on, ett‰ viestien ottaminen ja laittaminen  onnistuu  samalla  komennolla
+riippumatta siit‰, mit‰ formaattia k‰ytt‰‰.  K‰yt‰n  k‰ytt‰j‰muuttujaa  OFFLINER
+v‰litt‰m‰‰n tiedon siit‰, miss‰ formaatissa  viestien  tulee  olla.  Vaihtoehdot
+ovat tuetut QWK ja WWF.
+
+Toinen k‰ytt‰m‰ni muuttuja on OFFLINERMODE.  Se  sis‰lt‰‰  periaatteessa  tiedon
+siit‰, pakataanko linjalla vaiko taustalla. Lis‰ksi sen avulla voidaan aktivoida
+automaattipakkaus loginissa. Lis‰ksi t‰ytyy kuitenkin asettaa myˆs  QWKASYNC  ja
+WWFASYNC, jotta bundlerit osaavat toimia oikein.
+
+OFFLINERMODE voi olla 0, 1, 2 tai 3. Nolla tarkoittaa pakkausta linjalla ja yksi
+taustalla. Myˆs arvoilla kaksi ja kolme pakataan taustalla. Lis‰ksi  arvo  kaksi
+aktivoi automaattipakkauksen. Arvo kolme toimii muuten samoin, mutta  asia  var-
+mistetaan viel‰ k‰ytt‰j‰lt‰. N‰it‰ toimintoja varten tarvitaan koodia Login.rex-
+xiin: 
+
+    Mode = GetUserMisc(ln,"OFFLINERMODE")
+    if Mode = 3 then do
+        Mode = Mode - GetYesNo(ln, "Engage bundler? ", 1, 1)
+        SendModem CRLF
+        end
+    if Mode = 2 then do
+        Format = GetUserMisc(ln,"OFFLINER")
+        if Format = "WWF" then address command 'Run >NIL: TechWWF '||ln
+            ||' O BBS:Cfg/TechWWF.Cfg'
+        if Format = "QWK" then address command 'Run >NIL: TechQWK '||ln
+            ||' O BBS:Cfg/TechQWK.Cfg'
+        LogEntry "Autopacking messages using "||Format
+        end
+
+T‰m‰ koodi tulee Login.rexxin loppuun juuri  ennen  LoginExtra.rexxin  ajamista.
+Koodi ajaa bundlerin, jos OFFLINERMODE on kaksi. Jos se on kolme, asiaa kysyt‰‰n
+k‰ytt‰j‰lt‰. Koodi v‰hent‰‰ ovelasti vastauksen moodiarvosta, jolloin siit‰  tu-
+lee kaksi, kun k‰ytt‰j‰ vastaa myˆnt‰v‰sti, eli pakkaus k‰ynnistet‰‰n! Ja lokiin
+tehd‰‰n tietysti merkint‰ unohtamatta mainita, mit‰ formaattia k‰ytet‰‰n...
+
+Olen koonnut et‰lukuvalinnat omaan asetusvalikkoonsa, Offliner  settings.  Koodi
+on tiedostossa BBS:Rexx/OS.rexx. En laita t‰h‰n koko koodia, koska sen pituus on
+yhdeks‰n kilotavua, mutta otan mukaan olennaisimman. Suurin osa  koodista  onkin
+samaa, joka on jo vakiona. T‰ss‰ tulee kuitenkin koodi, jolla valitaan  offline-
+rin moodi, paketin formaatti ja merkistˆkonversio. Mik‰‰n n‰ist‰  ei  ole  Tech-
+noBBS:n vakiotoiminto. Ensiksi tulee aina asetusohjelman alkuun tuleva asetuksen
+n‰ytt‰v‰ koodi ja sitten sen muuttamiseen tarvittava koodi. 
+
+    des = GetUserMisc(ln, "OFFLINERMODE")
+    select
+        when des = 0 then des = "Online"
+        when des = 1 then des = "Background"
+        when des = 2 then des = "Auto"
+        when des = 3 then des = "Query"
+        otherwise des = "<NONE>"
+        end
+    SendModem CRLF||PURPLE||"Offliner Settings"||CRLF||CRLF||WHITE
+    SendModem "1   "||CYAN||"Packing mode ........................ "||
+        WHITE||des||CRLF
+
+        when cmdid = "1" then do
+            des = GetUserMisc(ln, "OFFLINERMODE")
+            select
+                when des = 0 then des = 1
+                when des = 1 then des = 2
+                when des = 2 then des = 3
+                when des = 3 then des = 0
+                otherwise des = 0
+                end
+            call SetUserMisc ln, "OFFLINERMODE", des
+            if des = 0 then do
+                call SetUserMisc ln, "WWFASYNC", 0
+                call SetUserMisc ln, "QWKASYNC", 0
+                call SetUserMisc ln, "WWFTASKPRI", 0
+                call SetUserMisc ln, "QWKTASKPRI", 0
+                end
+            else do
+                call SetUserMisc ln, "WWFASYNC", 1
+                call SetUserMisc ln, "QWKASYNC", 1
+                call SetUserMisc ln, "WWFTASKPRI", -1
+                call SetUserMisc ln, "QWKTASKPRI", -1
+                end
+            end
+
+    des = GetUserMisc(ln, "OFFLINER")
+    if des = "" then des = "<NONE>"
+    SendModem "2   "||CYAN||"Bundle format ....................... "||
+        WHITE||des||CRLF
+
+        when cmdid = "2" then do
+            dez = GetUserMisc(ln, "OFFLINER")
+            if dez = "" then dez = "WWF"
+            des = "<NONE>"
+            do while des = "<NONE>"
+                SendModem CRLF
+                SendASCII "Text/Offliner.txt"
+                des = AskInput(ln, "Select: ", "", 2, "NUMERIC");
+                select
+                    when des = "1" then des = "WWF"
+                    when des = "2" then des = "QWK"
+                    when des = "" then des = dez
+                    otherwise des = "<NONE>"
+                    end
+                end
+            call SetUserMisc ln, "OFFLINER", des
+            end
+
+    des = GetUserMisc(ln, "QWKOUTCSET")
+    select
+        when des = "BBS:CharSet/ISO" then des = "ISO"
+        when des = "BBS:CharSet/IBM" then des = "IBM"
+        when des = "BBS:CharSet/SF7" then des = "SF7"
+        when des = "BBS:CharSet/ISOSF7" then des = "ISOSF7"
+        when des = "BBS:CharSet/IBMSF7" then des = "IBMSF7"
+        otherwise des = "<NONE>"
+        end
+    SendModem "8   "||CYAN||"QWK Outbound Character Conversion ... "
+        ||WHITE||des||CRLF
+
+        when cmdid = "8" then do
+                CSet = ""
+                do while CSet = ""
+                    SendASCII "Text/CharSet.txt"
+                    CSet = AskInput(ln, "Select: ", "0", 2, "NUMERIC")
+                    select
+                        when CSet = "0" then CSet = "BBS:CharSet/ISO"
+                        when CSet = "1" then CSet = "BBS:CharSet/IBM"
+                        when CSet = "2" then CSet = "BBS:CharSet/SF7"
+                        when CSet = "3" then CSet = "BBS:CharSet/ISOSF7"
+                        when CSet = "4" then CSet = "BBS:CharSet/IBMSF7"
+                        otherwise CSet = "0"
+                        end
+                    end
+                call SetUserMisc ln, "QWKOUTCSET", CSet
+                SendModem CRLF
+                end
+
+ 
+T‰ss‰ viel‰ esimerkiksi Offliner.txt, joka l‰hetet‰‰n formaattia valittaessa: 
+
+    The following offliners are available in this system:
+
+       1 WWF
+       2 QWK
+
+Select one or press enter for no change or default selection.

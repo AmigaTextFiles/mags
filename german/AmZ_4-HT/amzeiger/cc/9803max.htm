@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/98 - MaxonC und MUI</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Nachtrag zum MUI-Kurs in AmZeiger 12/97</H1>von<BR><A HREF="mailto:T.Heinrich@t-online.de">Thomas Heinrich</A></DIV>
+<P>
+Carsten Jahn:<BR>
+Der Anfang des Kurses (s. letzte Ausgabe) besch&auml;ftigte sich damit,
+die MUI-Includes und einen Beispiel-Quelltext &uuml;berhaupt mit MaxonC++
+in Einklang zu bringen. Weil der Compiler kein &Auml;quivalent zu den
+&quot;tagcalls&qout; von SAS-C hat, habe ich empfohlen, Funktionen wie
+MUI_NewObject einfach auszukommentieren (MUI_NewObjectA geht ja).
+</P><BR>
+Thomas Heinrich wei&szlig; eine bessere L&ouml;sung, und hat sie mir auch
+geschrieben:
+<BR><HR><BR>
+Genau das gleiche Problem der MUI-Funktionen hatte ich auch (MaxonC++ 4).
+<P>
+Die L&ouml;sung ist ziemlich einfach, ich wei&szlig; allerdings nicht, ob es
+inzwischen eine bessere (mitgelieferte) gibt.
+</P>
+Hier meine L&ouml;sung in ANSI-C:
+<PRE>
+   #include <exec/types.h>
+   #include <intuition/classes.h>
+   #include <utility/tagitem.h>
+
+   /**********************************************/
+   /* Stub functions to be used in applications. */
+   /* A call to one function invokes linkage of  */
+   /* all functions !                            */
+   /**********************************************/
+
+   Object *MUI_NewObjectA      (char *classname,struct TagItem *tags);
+   Object *MUI_MakeObjectA     (LONG type,ULONG *params);
+   LONG    MUI_RequestA        (APTR app,APTR win,LONGBITS flags,
+                                char *title,char *gadgets,char *format,
+                                APTR params);
+   APTR    MUI_AllocAslRequest (unsigned long reqType,
+                                struct TagItem *tagList);
+   BOOL    MUI_AslRequest      (APTR requester, struct TagItem *tagList);
+
+   #pragma amicall(MUIMasterBase,0x1e,MUI_NewObjectA(a0,a1))
+   #pragma amicall(MUIMasterBase,0x2a,MUI_RequestA(d0,d1,d2,a0,a1,a2,a3))
+   #pragma amicall(MUIMasterBase,0x30,MUI_AllocAslRequest(d0,a0))
+   #pragma amicall(MUIMasterBase,0x36,MUI_AslRequest(a0,a1))
+   #pragma amicall(MUIMasterBase,0x78,MUI_MakeObjectA(d0,a0))
+
+   Object *MUI_NewObject(char *classname, Tag tag1, ...)
+   {
+      return(MUI_NewObjectA(classname, (struct TagItem *) &tag1));
+   }
+
+   Object *MUI_MakeObject(LONG type, ULONG arg1, ...)
+   {
+      return(MUI_MakeObjectA(type, &arg1));
+   }
+
+   LONG MUI_Request(APTR app,APTR win,LONGBITS flags,char *title,
+                    char *gadgets,char *format, APTR arg1, ...)
+   {
+      return(MUI_RequestA(app, win, flags, title, gadgets, format, &arg1));
+   }
+
+   APTR MUI_AllocAslRequestTags(unsigned long reqType, Tag tag1, ...)
+   {
+      return(MUI_AllocAslRequest(reqType, (struct TagItem *) &tag1));
+   }
+
+   BOOL MUI_AslRequestTags(APTR requester, Tag tag1, ...)
+   {
+      return(MUI_AslRequest(requester, (struct TagItem *) &tag1));
+   }
+</PRE>
+Der Trick besteht nur darin, die Parameter von Stack (&quot;Tag tag1, ...&quot;) in
+einen &quot;TagItem *&quot; zu verwandeln, und der passenden Funktion zu &uuml;bergeben.
+Danach muss man das entstandene Objectfile nur noch bei Bedarf dazulinken.&quot;
+<HR>
+Das Objektfile entsteht, wenn man den Text hier einfach so in den
+Compiler gibt und ihn compiliert.<P>
+Der Quelltext und die Objektdatei sind innerhalb des <A HREF="9803dat.lha">Bin&auml;rarchivs</A>
+verf&uuml;gbar. Letztere geh&ouml;rt ins Libs-Verzeichnis des
+Compilers.</P>
+           
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9803bla.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0398/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9803mui.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

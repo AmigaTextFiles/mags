@@ -1,0 +1,567 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 12/97 - MUI-Applikationen in C</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<H1 ALIGN="CENTER"><U>MUI-Applikationen in C</U></H1><P ALIGN="CENTER">von<BR><A HREF="C.Jahn@gmx.de">Carsten Jahn</A></P>
+
+<P>Sozusagen im Anschlu&szlig; an den Artikel &uuml;ber C-Strings wage ich mich an eine
+Einf&uuml;hrung in die Programmierung von MUI-Applikationen. Weil das Thema
+enorm umfangreich geworden ist, ist mein Ziel nicht unbedingt, dem Leser
+MUI komplett darzustellen.</P>
+<P>Ich will aber erreichen, da&szlig; der Einstieg durch diesen Artikel (und
+vielleicht durch weitere Artikel &uuml;ber MUI) erleichtert wird und da&szlig;
+man den Mut fassen kann, sich die Antworten auf weitere Fragen selbst
+zu erschlie&szlig;en.</P>
+<P>Vorausgesetzt werden Grundkenntnisse &uuml;ber C, wo es damit brenzlig wird
+erkl&auml;re ich nat&uuml;rlich noch mehr.</P>
+<P>N&ouml;tig ist sicher auch das Computer-Englisch, das zum Programmieren
+sowieso fast unverzichtbar ist. Ich kann und will MUI nicht vollst&auml;ndig
+erkl&auml;ren, das eigentst&auml;ndige Erschlie&szlig;en der Details ist ohne
+Englischkenntnisse wohl nicht m&ouml;glich.</P>
+<B>Erste H&uuml;rde: der Compiler</B>
+<P>Bevor die Besch&auml;ftigung mit MUI &uuml;berhaupt Sinn macht, sollte man in der
+Lage sein, einen Beispielquelltext aus dem Demo-Verzeichnis von MUI
+unver&auml;ndert kompilieren zu k&ouml;nnen.</P>
+<P>Das h&ouml;rt sich harmlos an, aber ich habe in meiner Anfangsphase mit
+MaxonC++ eine Weile get&uuml;ftelt, bis sich der erste Source &uuml;bersetzen lie&szlig;.
+Je nach Compiler hat man also mehr oder weniger Arbeit, mit dem Standard
+&quot;SAS&quot; wohl gar keine. Auf jeden Fall mu&szlig; man nat&uuml;rlich die Includes und
+evtl. auch die Linkerlibraries (#?.lib) aus dem MUI-Developer-Archiv
+installieren.</P>
+<P>Im Usenet gab es mal eine Anfrage (von J&uuml;rgen Sachs) bez&uuml;glich MUI und
+MaxonC++. Ich habe mich mit J&uuml;rgen weiter unterhalten.</P>
+<HR>
+<!-- Bla, warum darf ich denn jetzt keine Tabelle nehmen!? Warum denken alle, sie wissen es immer
+besser als ich. seufz. ;-) //-->
+<P><B>J&uuml;rgen</B>:<BR>
+Bei mir scheitert es immer an den Includefiles so wie es ausssieht.
+Ich kann naemlich nicht mal ein einfaches Beispielprog compilieren :((</P>
+<P><B>Ich</B>:<BR>
+Das kannst Du nie.<BR>
+Ist leider so. Mich nervt es auch gewaltig, aber die M&ouml;glichkeit, einen
+Quelltext downzuloaden und mit Deinem ANSI-C-kompatiblen MaxonC++ zu
+kompilieren, existiert nicht. Kann sein, da&szlig; es umgekehrt genauso ist.
+Mach Dir einfach keine Hoffnungen, dann lebt sich das leichter...</P>
+<P><B>J&uuml;rgen</B>:<BR>
+Waere dir trotzdem dankbar, wenn du mir die passenden Includefiles fuer
+MUI mit dem Maxon C++ schicken koenntest !</P>
+<P><B>Ich</B>:<BR>
+Ich habe (eher zuf&auml;llig) gestern Abend bei einem Freund genau das
+gleiche Problem gel&ouml;st (hat sicher 20-30min gebraucht), er hatte das
+Mui3.8-developer-Archiv und MaxonC++ Dev 4, und ich sollte was draus
+machen...</P>
+<P>Also, die Includefiles kopierst Du nat&uuml;rlich soweit sinnvoll. Bei
+den pragma/ bzw. pragmas/ mu&szlig;t Du die Datei nehmen, wo mehr mit
+&quot;#pragma amicall&quot; steht. Mit &quot;#pragma libcall&quot; kann der Compiler
+herzlich wenig anfangen. [...]</P>
+<P>Die &quot;#pragma tagcall&quot; mu&szlig;t Du einfach auskommentieren. Maxon meckert
+blo&szlig;.</P>
+<P>Jetzt sollte sich der Quelltext problemlos compilieren lassen.</P>
+<P>Mal davon abgesehen, da&szlig; Maxon unbedingt seine &quot;casts&quot; haben mu&szlig;, z.B.
+reicht nicht </P>
+<LISTING>
+MUI_DisposeObject( app );
+</LISTING>es mu&szlig;<LISTING>
+MUI_DisposeObject( (Object *) app );
+</LISTING><P>sein. Kann sein, da&szlig; man das umgehen kann, indem man einfach den
+C++-Modus des Compilers ausmacht. (Sollte man auch machen, wenn man
+mal was mit Hooks und Zeigern auf Funktionen macht, meine Kenntnisse
+reichen jedenfalls nicht soweit, den kryptischen Cast f&uuml;r Zeiger auf
+Funktionen hinzukriegen...) Das l&auml;&szlig;t sich beim Maxon &uuml;ber &quot;#pragma -&quot;
+und &quot;#pragma +&quot; steuern.</P>
+<P>Blo&szlig; beim Linken gibt's jetzt noch Probleme. Die Tagcall-Library-
+Funktionen, die Du oben auskommentieren mu&szlig;test, werden nat&uuml;rlich in
+den Beispielprogrammen kr&auml;ftig verwendet (und, ich glaube, auch an 500
+Stellen in libraries/mui.h).</P>
+<P>Weil Du und ich das absolut extreme Gl&uuml;ck haben, da&szlig; MUI ein vielbenutztes
+Softwarepaket ist, und man sich deshalb sogar um den Maxon-Compiler
+gek&uuml;mmert hat (und andere, die mit Tag-calls nicht gleich klarkommen),
+gibt es f&uuml;r diese Funktionen eine Linker-Library (die aus MUI_NewObject,
+das nicht mehr geht, ein MUI_NewObject macht, das einfach die
+Stackparameter in Register tut und das auch in Maxon funktionierende
+MUI_NewObjectA aufruft).</P>
+<P>Also: Projekt f&uuml;r den Beispiel-Source anlegen, und in dem Developer-Archiv
+nach Dateien wie &quot;muilr.lib&quot; (es gibt in etwa vier davon, ich benutze
+&quot;muil.lib&quot; und &quot;muilr.lib&quot;) suchen. (&quot;mui.lib&quot; aus manx/ tut es nicht.)</P>
+<P>Mu&szlig;te Dir eins ausprobieren, ist aber egal, soweit ich da durchblicke.
+Dieses File ist irgendwo im Developer-Archiv versteckt (zwischen den
+Sourcecodes?), wir haben gestern jedenfalls am l&auml;ngsten danach gesucht...</P>
+<P>Wie Du siehst, MUI zu benutzen ist nicht einfach. Es liegt nicht direkt
+an den Headerfiles (die haben luxuri&ouml;serweise sogar &quot;#ifdef __MAXON__&quot;-
+Abfragen), sondern an dem ganzen Aufbau insgesamt.</P><HR><P>Diese Mail hat ihm anscheinend weitergeholfen, oder er hat total
+aufgegeben, mich erreichte jedenfalls keine weitere Antwort.</P>
+<P>Wer Probleme bei der Compilierung eines Beispiels hat, m&ouml;chte sich doch
+bitte beim AmZeiger oder bei mir melden, dann diskutieren wir &ouml;ffentlich
+weiter.</P><P>Wenn es mit anderen Compilern nicht klappt, sind sicher auch die
+<B>MUI-Mailingliste</B>: email mit dem Betreff &quot;SUBSCRIBE&quot; an
+<A HREF="mailto:mui-request@sunsite.informatik.rwth-aachen.de">mui-request@sunsite.informatik.rwth-aachen.de</A>
+und die <B>Amiga-Programmierbretter</B> im Usenet ein Tip.<BR>
+(Z-Netz/Rechner/Amiga/Programmieren und Comp/Sys/Amiga/Programmer)</P>
+<H3>Basics von MUI:</H3>
+<P>MUI funktioniert &quot;objektorientiert&quot;, trotzdem braucht man keinen
+C++-Compiler, und man versteht es (hoffentlich) auch ohne OOP-Kenntnisse.</P>
+<H3>- Objekte, Attribute</H3>
+<P>MUI stellt eine Reihe von Klassen bereit, z.B. f&uuml;r Listen und
+Stringgadgets, zur Laufzeit des Programms werden gewisserma&szlig;en &quot;Instanzen&quot;
+von diesen Klassen gebildet, also Objekte im MUI-Sprachgebrauch. Nochmal
+auf deutsch: das Programm holt sich von MUI z.B. drei Stringgadget-Objekte,
+damit sich eine Adresse eingeben l&auml;&szlig;t (Name, Stra&szlig;e, Ort).</P>
+<P>Jede Objektklasse bietet eine Anzahl von Attributen und Methoden. Wenn wir
+beim Beispiel von Strings bleiben, finden wir jedoch nur Attribute vor
+(String hat keine Methoden).</P>
+<P>Ein Blick in Autodocs/MUI_String.doc best&auml;tigt das, die Attribute von
+String hei&szlig;en z.B. &quot;MUIA_String_Accept&quot; und &quot;MUIA_String_Contents&quot;.</P>
+<P>Was sind diese Attribute, wie benutzt man sie?</P>
+<P>Wie in Taglisten beim AmigaOS kann man f&uuml;r jedes Attribut einen Wert
+&uuml;bergeben. Der String verwaltet unter dem Attribut MUIA_String_Contents
+den Inhalt des Strings.</P>
+<P>Man kann das Attribut setzen (set), auslesen (get) und initialisieren,
+also: man kann dem String zur Laufzeit des Programms einen neuen Inhalt
+geben, man kann jederzeit erfragen, welchen Inhalt er gerade hat (weil
+der Inhalt schlie&szlig;lich durch den Anwender des Programms ge&auml;ndert werden
+kann), und man darf bereits bei der Erstellung des String-Objekts, also
+wenn man es sich gerade von MUI holt, vorbestimmen, was der erste Inhalt
+sein soll (Initialize).</P>
+<P>In den Autodocs steht bei beiden Attributen der Text &quot;[ISG]&quot; hinter den
+Attributnamen. Das bedeutet genau die oben beschriebenen M&ouml;glichkeiten.
+Ein Attribut mit &quot;[..G]&quot; l&auml;&szlig;t sich nur auslesen.</P>
+<P>Attribute beschreiben also den Zustand eines Objekts. Mit Makroaufrufen
+wie</P>
+<LISTING>
+set( Mystring, MUIA_String_Contents, &quot;Hallo!&quot; );
+</LISTING><P>[definiert in libraries/mui.h als SetAttrs(), jedoch sind dort die
+Parameter vertauscht] lassen sich Attribute setzen. </P>
+<P>Einen Stringinhalt fragt man so wieder ab:</P>
+<LISTING>
+char *s;
+get( Mystring, MUIA_String_Contents, &amp;s );
+printf(&quot;Im String steht %s\n.&quot;, s );
+</LISTING><P>Die Referenz auf s (&amp;s) ist n&ouml;tig, weil String keinen String in s
+hereinkopiert, sondern nur einen Zeiger auf den String in s zur&uuml;ckgibt.</P>
+<P>Wie man an Mystring herankommt, zeige ich sp&auml;ter. Es gen&uuml;gt zu wissen,
+da&szlig; Mystring ein Zeiger auf das bestimmte String-Objekt ist.</P>
+<P>Ebenso kann man, wenn die Situation es erfordert, mit MUIA_String_Accept
+verfahren. Dann nimmt das Stringgadget nur noch bestimmte Zeichen an. L&auml;&szlig;t
+man ein Attribut unangetastet, beh&auml;lt es seinen Standardwert, im Beispiel
+kann man alle &uuml;blichen Zeichen ins Stringgadget eintragen.</P>
+<H3>Methoden</H3>
+<P>Seltener als Attribute sind Methoden zu finden. Methoden lassen das
+Objekt auf eine bestimmte Weise aktiv werden. Proportional-Gadgets
+(also Proportional-Objekte) bieten die Methode MUIM_Prop_Increase.</P>
+<P>Wie die Autodoc erkl&auml;rt, kann man damit das Proportionalgadget um einen
+bestimmen Betrag weiterscrollen lassen. MUIM_Prop_Increase erleichtert
+so den Vorgang, erst die Position des Prop-Sliders mit MUIA_Prop_First
+auszulesen, um einen Betrag zu addieren und MUIA_Prop_First wieder zu
+setzen.</P><P>Eine Methode ist wie eine Funktion in einem Programm, sie kann Parameter
+erwarten. Hier ist der einzige Parameter der Betrag, um den sich der Prop
+vorw&auml;rtsschiebt. Ein m&ouml;glicher Aufruf der Methode:</P><LISTING>
+DoMethod( Myprop, MUIM_Prop_Increase, 1 );
+</LISTING><P>DoMethod ist, wie Set/GetAttr eine BOOPSI-(Intuition-)Systemfunktion.
+Doch das mu&szlig; nicht weiter interessieren.</P>
+<P>Ein transparenteres Beispiel bietet z.B. die List-Klasse: mit dem Aufruf
+von MUIM_List_Sort werden die Eintr&auml;ge einer Liste von sortiert. Ein
+Beispielaufruf findet sich in den Autodocs (MUI_List.doc).</P>
+<H3>Vererbung im Klassenbaum</H3>
+<P>Viele Objekte verf&uuml;gen &uuml;ber die gleichen Eigenschaften.</P>
+<P>Man kann ein Cycle wie jedes andere sichtbare Bedienelement &quot;disablen&quot;,
+also unbedienbar machen. Ein grauer Schleier steht &uuml;ber dem Gadget. Es
+w&auml;re denkbar, das jedes Gadget ein passendes Attribut besitzt, mit dem
+man den Disabled-Zustand &auml;ndern kann, also MUIA_Cycle_Disabled,
+MUIA_String_Disabled,... all diese Attribute existieren nicht.</P>
+<P>Daf&uuml;r gibt es nur MUIA_Disabled, das f&uuml;r Slider, Cycles und andere
+gleicherma&szlig;en gesetzt und ausgelesen (und initialisiert...) werden kann.</P>
+<P>Das ist nicht nur eine praktische Abk&uuml;rzung. Wenn man die Autodocs von
+MUI durchsucht, in der Shell z.B. mit</P>
+<PRE>13.Work:.../Autodocs> search #? MUIA_Disabled QUICK</PRE>
+<P>erh&auml;lt man die Ausgabe</P>
+<PRE>Work:util/libs/MUI/Developer/Autodocs/MUI_Area.doc
+    10 Area.mui/MUIA_Disabled
+   253 .Area.mui/MUIA_Disabled
+   256  MUIA_Disabled -- (V4 ) [ISG], BOOL
+   274     string, 3, MUIM_Set, MUIA_Disabled, TRUE);
+   277     string, 3, MUIM_Set, MUIA_Disabled, TRUE);
+   280     string, 3, MUIM_Set, MUIA_Disabled, FALSE);
+Work:util/libs/MUI/Developer/Autodocs/MUI_Notify.doc
+   489  DoMethod(xxx, MUIM_MultiSet, MUIA_Disabled, TRUE,
+   585               &quot;negative&quot; attributes like MUIA_Disabled.
+</PRE>
+
+<P>In der Zitatzeile 256 sieht man den Definitionskopf von MUIA_Disabled.</P>
+<P>MUIA_Disabled ist also ein Attribut der Klasse &quot;Area&quot;. Schaut man an den
+Anfang des Includes libraries/mui.h, sieht man, da&szlig; ziemlich viele Klassen
+von Area abh&auml;ngen, also von Area &quot;abgeleitet&quot; sind.</P>
+<P>Das Besondere dabei: Alle Klassen, die in diesem Objektbaum an &quot;Area&quot;
+h&auml;ngen, erben die Eigenschaften von Area.</P>
+<P>Wie dort auch steht, ist Area &quot;base class for all GUI elements&quot;, also die
+Basisklasse f&uuml;r alle im Fenster sichtbaren Objekte.</P>
+<P>Das hat die weitreichenden Folgen, da&szlig; sich nicht nur alle darstellbaren
+Objekte (welche das sind, sieht man im Baum) MUIA_Disable'n lassen, alle
+k&ouml;nnen auch mit einer bestimmten Taste aktiviert werden (MUIA_ControlChar)
+oder bieten Drag&amp;Drop-Unterst&uuml;tzung.</P>
+<H3>- Verkettung der Objekte als MUI-Applikation</H3><P>Jede Applikation besitzt ein Application-Objekt, das Aussagen &uuml;ber den
+Autor des Programms aufnimmt, den Namen des ARexx-Ports definiert und
+&auml;hnliche Festlegungen vornimmt.</P>
+<P>Das Application-Objekt h&auml;lt auch eine Liste auf Zeiger f&uuml;r die Fenster,
+die die Applikation bereith&auml;lt (ob offen oder nicht). Auch ein f&uuml;r alle
+Fenster geltendes Men&uuml; ist setzbar.</P><P>Die Fenster k&ouml;nnen ihrerseits ein Men&uuml; haben, vor allem haben sie einen
+Fensterinhalt: eine (vertikale) Gruppe.</P>
+<P>&Auml;hnlich den Verzeichnissen auf einer Festplatte, kann die Gruppe (fast)
+beliebige Objekte beinhalten, vor allem Gadgets und weitere Gruppen.
+Gruppen k&ouml;nnen bei ihrer Erstellung zu horizontalen, vertikalen und
+Column- (Spalten-) Gruppen erkl&auml;rt werden.</P>
+<P>Dieses Attribut wirkt sich auf die graphische Anordnung der Kinder der
+Gruppe aus. F&uuml;r den ReqTools-Filerequester, den ich gerade vor mir habe,
+hoffentlich jedem im Bild, ben&ouml;tige ich eine vertikale Gruppe, die
+ihrerseits</P>
+<UL><LI>das Listview,</LI><LI>eine horizontale Gruppe mit folgendem Inhalt:
+<UL><LI>eine Beschriftung &quot;Muster:&quot;</LI><LI>Stringgadget</LI></UL>
+</LI><LI>eine horizontale Gruppe, die beinhaltet<UL><LI>eine &quot;Laufwerk liest&quot;-Anzeige</LI><LI>ein Stringgadget f&uuml;r das Verzeichnis</LI>
+<LI>ein &quot;Neu&quot;-Knopf</LI></UL></LI><LI>eine horizontale Gruppe mit<UL><LI>einem Stringgadget f&uuml;r den Dateinamen</LI>
+<LI>ein &quot;.info&quot;-Knopf</LI></UL></LI><LI>eine horizontale Gruppe mit<UL><LI>einem Button &quot;Okay&quot;</LI><LI>einem Button &quot;Mutterverzeichnis&quot;</LI>
+<LI>einem Button &quot;Laufwerke&quot;</LI><LI>einem Button &quot;Abbruch&quot;</LI></UL></LI></UL>
+enth&auml;lt.
+<P>(Zur Vollst&auml;ndigkeit: ColumnGroups arrangieren die Child-Objekte wie in
+einer Tabelle, man &uuml;bergibt die Anzahl der Spalten dieser Tabelle, daher
+der eigenwillige Name.)</P><P>MUI erledigt die Errechnung der endg&uuml;ltigen X/Y-Positionen der Gadgets
+im Fenster automatisch. Diese Automatik ist im Prinzip auch schon das
+wichtigste Argument f&uuml;r einen Programmierer, MUI &uuml;berhaupt zu benutzen.</P>
+<P>Nat&uuml;rlich ist der &quot;Nachteil&quot;, da&szlig; man immer ein Objekt braucht, und
+nicht nach Lust und Laune im Fenster herumzeichnen kann. F&uuml;r Gadgets
+und Anzeigen, die vom (weitl&auml;ufig gefa&szlig;ten) Standard abweichen, den MUI
+bietet, gibt es die M&ouml;glichkeit, eine eigene Klasse (Custom Class) zu
+schreiben, die sich aus einem anderen MUI-Objekt ableitet. (Zum Beispiel
+ein Slider mit Minuten:Sekunden-Anzeige).</P>
+<P>Davon mal abgesehen, erlaubt es MUI durch die Custom Classes, ganz
+elegant einen Editor zu schreiben, der mehrere Fenster gleichzeitig
+ge&ouml;ffnet haben kann. (Man tut das Editor-Programm sozusagen in eine
+Custom Class, die von der MUI-Windowklasse abgeleitet ist, und mu&szlig;
+sich dann nur mehrere Objekte seiner eigenen Klasse besorgen.)</P>
+<P>Ob solche Anwendungen durch MUI einfacher zu programmieren sind, mu&szlig;
+jeder selbst entscheiden.</P>
+<H3>Notifies</H3>
+<P>In der realen Anwendung mu&szlig; das eigentliche Programm nat&uuml;rlich auf die
+Eingaben des Benutzers reagieren k&ouml;nnen. Das wird &uuml;ber sogenannte
+Notifies erreicht.</P>
+<P>Ein Notify verbindet die Ver&auml;nderung eines Attributes (z.B. MUIA_Pressed
+bei einem normalen Druckknopf-Button) mit der Ausf&uuml;hrung einer Methode.
+In &auml;lteren MUI-Programmen gab es eine gro&szlig;e Hauptschleife, in der mit
+ULONG result = DoMethod( (Object *) app,MUIM_Application_Input,&amp;signal);
+alle Eingaben an die Applikation geholt wurden, die Notifies aller Gadgets
+riefen die Methode MUIM_Application_ReturnID des Applikations-Objekts mit
+einer speziellen ID als Parameter auf (siehe oben). Diese ID wurde als
+`result` bei obigem Aufruf zur&uuml;ckgegeben, so war bestimmt, welches Gadget
+sich &uuml;ber den Notify gemeldet hatte.</P>
+<P>Um beim Button zu bleiben: normalerweise tritt die Aktion erst ein, wenn
+man die Maustaste losl&auml;&szlig;t, w&auml;hrend der Pfeil noch &uuml;ber dem Button schwebt.
+MUI-m&auml;&szlig;ig hei&szlig;t das, da&szlig; man wartet. bis das Attribut MUIA_Pressed des
+Buttons wieder FALSE wird.</P>
+<P>Wenn das geschieht, soll die ID &quot;5&quot; an das Applikationsobjekt geschickt
+werden, damit das Programm auf die Eingabe reagieren kann. &Uuml;blicherweise
+verwendet man keine Zahl an sich, sondern eine Konstante.</P><LISTING>
+#define OKAY_GADGET 5
+</LISTING>Die benutzen wir jetzt beim Aufbau des Notifies:<LISTING>
+DoMethod( okay_gad,MUIM_Notify,MUIA_Pressed,FALSE,app,2,
+        MUIM_Application_ReturnID, OKAY_GADGET );
+</LISTING><P>Zu dem Aufruf dieser Methode gibt's viel zu sagen... erstmal unterst&uuml;tzt
+unser Button [unser okay_gad ist ein (Object *), es referiert den Button]
+die Methode MUIM_Notify, weil er die Methoden der der Notify-Klasse durch
+den MUI-Hierarchiebaum geerbt hat.</P><P>MUIM_Notify &uuml;bernimmt die Parameter, also alles, was folgt. Erstmal geht
+es um das zu &uuml;berwachende Attribut von okay_gad, n&auml;mlich MUIA_Pressed,
+und um den Wert, den dieses Attribut annehmen soll. In diesem Fall kann
+man konkret &quot;FALSE&quot; sagen, bei einem Slider will man sicher immer
+benachrichtigt werden, nicht nur, wenn gerade der Betrag &quot;42&quot;
+eingestellt ist.</P>
+<P>In diesem Fall &uuml;bergibt man MUIV_EveryTime als &quot;Triggervalue&quot; anstatt
+dem konkreten FALSE.</P><P>Ist die Notify-Ursache definiert, folgt eine Wirkung. Der Notify ist
+generell in der Lage, die Methode eines beliebigen Objekts mit bestimmten
+Parametern aufzurufen. Hier richtet sich der Notify an &quot;app&quot;, das ist der
+Zeiger auf das Application-Objekt.</P><P>Nun folgt die Anzahl der folgenden Parameter, kann sicher ins Auge gehen,
+wenn man mit verschiedenen Notifies experimentiert und dabei vergi&szlig;t,
+diesen Wert auf dem laufenden zu halten.</P><P>Direkt nach diesem Parameter erwartet Notify eine Methode der eben
+genannten Klasse, die bedient werden soll, in unserem Fall
+&quot;MUIM_Application_ReturnID&quot;, eine Methode von Application.
+Wer's nicht glaubt, darf nat&uuml;rlich in den Autodocs nachsehen. :o)</P>
+<P>Diese Methode erwartet ihrerseits nur einen Parameter, n&auml;mlich die
+ReturnID, die an die Applikation &uuml;bergeben werden soll. Notify nimmt
+bei Auftreten des Ereignisses die Methode und Paramter und macht damit
+ein eigenes DoMethod mit dem angegebenen Objekt (hier app).</P>
+<P>Okay, so soll es nicht gemacht werden, hat Stefan Stuntz entschieden,
+und damit hat er sicher Recht, denn gro&szlig;e Programme bekommen auf diese
+Weise eine ellenlange switch-Abfrage f&uuml;r die zur&uuml;ckgegebenen Return-IDs.</P>
+<P>Stattdessen wird bef&uuml;rwortet, bei einem Programm mit mehreren Fenstern
+die Abfrage der Gadgets f&uuml;r alle Fenster nicht in einer Hauptschleife
+mit case zu machen, sondern f&uuml;r jedes Fenster eine eigene Custom Class
+von der Klasse Window zu machen (auch, wenn man sich sicher ist, dieses
+Fenster nie mehr als einmal gleichzeitig auf den Schirm bringen zu wollen).</P>
+<P>Nat&uuml;rlich haben Custom Classes, wie die anderen MUI-Klassen,
+selbstdefinierte Methoden. Der Notify ruft dann eine Methode der
+eigenen Klasse auf, diese Funktion ist dann ausschlie&szlig;lich f&uuml;r den
+Fall da, da&szlig; jemand auf den Button dr&uuml;ckt, und handhabt das entsprechend.</P>
+<P>Eine weitere Programmiertechnik, die eine gro&szlig;e Hauptschleife &uuml;berfl&uuml;ssig
+macht, benutzt MUIM_CallHook (siehe Notify.mui). Diese Methode bewirkt den
+Aufruf einer Hook-Funktion, wenn ein bestimmtes Ereignis eintritt.</P>
+<P>Eine Hook-Funktion ist eine normale C-Funktion, die spezielle
+Anforderungen erf&uuml;llt (man schreibt &quot;SAVEDS ASM&quot; davor, damit der Compiler
+hier aufpa&szlig;t, Maxon generiert sowieso Hook-f&auml;higen Code, deshalb sind die
+&quot;SAVEDS ASM&quot;-Direktiven nicht n&ouml;tig) und mit Hilfe der Hook-Struktur (die
+einen Zeiger auf die Funktion erh&auml;lt) aufgerufen werden kann. Ein Beispiel,
+wie sowas aussehen kann, gibt u.a. in SaveLoad.c,</P>
+<B>Randbemerkung</B>:<P>Kennt jemand (noch) das Prinzip F-G-O? Funktionalit&auml;t, Geschwindigkeit,
+Oberfl&auml;che, in dieser Reihenfolge sollte der Programmierer sein Werk
+voranbringen.</P><P>Die Priorit&auml;ten haben sich da wohl ver&auml;ndert, und wer so weit gekommen
+ist, beim Druck auf einen Button ein &quot;Hallo!&quot; per printf() aus einer
+Methode der eigenen Custom Class zu bekommen, freut er sich bestimmt
+(zu Recht) wie ein Schneek&ouml;nig und wird vor lauter Ersch&ouml;pfung und
+aufgestauter Frustration (sicher ist das Programm vorher zwanzigmal
+abgest&uuml;rzt) den Rechner ausschalten. &Uuml;ber die Geschwindigkeit von MUI
+l&auml;&szlig;t sich streiten, und von der Funktionalit&auml;t an sich steht noch nicht
+eine Zeile.</P><H3>Ein Beispiel:</H3> (wird sicher Zeit)
+<P>Man nehme Examples/Pages.c. Erstens, weil es sich ganz simpel fast nur
+mit dem Aufbau eines MUI-Fensters besch&auml;ftigt, zweitens, weil ich dann
+kein eigenes erfinden mu&szlig; und drittens, weil das f&uuml;nfte Wort gleich
+&quot;<B>Sex</B>&quot; ist :-). Vielleicht wecken wir damit die bereits eingeschlafenen
+Leser wieder auf. :o)) Und rein ins Gew&uuml;hle:</P><LISTING>
+int main(int argc,char *argv[])
+{
+   APTR app,window;
+
+   init();
+</LISTING><P>Was will uns Stefan damit sagen? Init?</P><P>Ein blick in demo.h, dem einzigen Include dieses Files, wirkt Wunder. Man
+hat nur Platz gespart, der dicke Berg an Includes steht in demo.h, und
+ziemlich weit hinter fail(), als vorletzte Funktion, findet sich init().
+</P><P>Die macht netterweise etwas ganz Bekanntes, sie macht die Library auf.
+Schlie&szlig;lich ist MUI immer noch &quot;eine&quot; Shared Library...</P><P>Und schon geht's glashart los, kaum etwas erinnert hier noch an
+C-Quelltext:</P><LISTING>
+   app = ApplicationObject,
+           MUIA_Application_Title      , &quot;Pages-Demo&quot;,
+           MUIA_Application_Version    , &quot;$VER: Pages-Demo 17.6 (18.08.96)&quot;,
+           MUIA_Application_Copyright  , &quot;&#169;1992/93, Stefan Stuntz&quot;,
+           MUIA_Application_Author     , &quot;Stefan Stuntz&quot;,
+           MUIA_Application_Description, &quot;Show MUIs Page Groups&quot;,
+           MUIA_Application_Base       , &quot;PAGESDEMO&quot;,
+
+</LISTING>
+<P>Naja, ein wenig Infos... Infos zu diesen Dingen in der Application-Autodoc.</P>
+<LISTING>
+           SubWindow, window = WindowObject,
+</LISTING>
+<P>Spitze, die Applikation hat auch ein Fenster. Man erinnere sich an das,
+was ich weiter oben &uuml;ber den baumartigen Aufbau der Objekte gesagt habe.
+</P><LISTING>
+                   MUIA_Window_Title, &quot;Character Definition&quot;,
+                   MUIA_Window_ID   , MAKE_ID('P','A','G','E'),
+</LISTING>
+<P>ID, nur damit die Fenster intern unterschieden werden k&ouml;nnen, wenn MUI
+einen &quot;Snapshot&quot; der Fenstergr&ouml;&szlig;en und -Positionen macht.</P>
+<LISTING>
+                   WindowContents, VGroup,
+</LISTING><P>Es folgt der Inhalt des Fensters, eine vertikale Gruppe,</P><LISTING>
+                           Child, ColGroup(2),
+</LISTING>
+<P>die als Kind gleich eine ColumnGroup hat, sie erzeugt eine unsichtbare
+Tabelle mit (hier) zwei Spalten, in die alle folgenden Kinder (Childs)
+von links nach rechts, von oben nach unten eingef&uuml;gt werden.</P>
+<P>Wichtig: die Anzahl der Objekte einer Spaltengruppe mu&szlig; durch die Anzahl
+der Spalten teilbar sein, Reste mag MUI nicht. F&uuml;r Leerpl&auml;tze bietet MUI
+das HVSpace-Objekt, immer anwendbar. Es ist ein beliebig ausdehnbares,
+unsichtbares Objekt.</P><LISTING>
+                                   Child, Label2(&quot;Name:&quot;), Child, String(&quot;Frodo&quot;,32),
+                                   Child, Label1(&quot;Sex:&quot; ), Child, Cycle(Sex),
+</LISTING><P>Labels sind die Beschriftungen, warum Label2 und 1, verr&auml;t ein Blick in
+libraries/mui.h (es geht dabei um die spezielle Ausrichtung, ein String
+ist ja eigentlich doppelt umrahmt).</P><LISTING>
+                                   End,
+</LISTING><P>Die Gruppe ist zu Ende! Alle weiteren Childs beziehen sich auf die
+n&auml;chsth&ouml;here Gruppe, die VGroup.</P>
+
+<P>Bevor ich weiter in das Programm einsteige, schulde ich noch eine
+Erkl&auml;rung, was diese bizarren Definitionen in einem C-Quelltext sollen.</P>
+
+<P>Schlauerweise sind die ganzen Schl&uuml;sselw&ouml;rter C-Makros, aus End wird
+zum Beispiel &quot;TAG_DONE)&quot;. Wo die Klammer aufgeht? Zum Beispiel in
+VGroup-Makro. Ein Compilerfehler wegen unbalancierter Klammern deutet
+also meistens darauf hin, da&szlig; man ein &quot;End&quot; vergessen hat.</P>
+
+<P>Schmerzhaft ist auch das Vergessen von &quot;Child&quot; vor den Gruppenkindern.
+Mit dem Unterschied, da&szlig; der Compiler hier keinen Fehler meldet...</P>
+
+Weiter im Programm:
+<LISTING>
+                           Child, VSpace(2),
+</LISTING>
+<P>Das ist eine Leerstelle, die vertikal zwei Pixel hoch ist, aber beliebig
+breit werden kann (eher eine Leerzeile), sie dient der optischen
+Optimierung. :o)</P>
+<LISTING>
+                           Child, RegisterGroup(Pages),
+                                   MUIA_Register_Frame, TRUE,
+
+</LISTING>
+<P>Damit macht man so eine nette Registergruppe mit Reiterchen. In &quot;Pages&quot;
+finden sich die Titel der Reiter, wie auch die Stringeintr&auml;ge als Zeiger
+auf ein Feld von Zeigern auf Strings, mit einem Null-Zeiger abgeschlossen
+(siehe Anfang des Quelltextes).</P>
+
+<P>Initialisiert man MUIA_Register_Frame &uuml;brigens mit FALSE, wird der
+graphische Registerkram nicht sichtbar. Der Benutzer kann die Seiten
+nicht umschalten, wohl aber das Programm. Damit lassen sich einfach
+Effekte erzielen, bei denen einige Gadgets verschwinden und neue an
+&auml;hnlicher Stelle auftauchen.</P><LISTING>
+                                   Child, HCenter(Radio(NULL,Races)),
+</LISTING>Hoppla, jedes weitere Kind in dieser Ebene kommt auf eine eigene Seite!
+Hier das Radio-Gadget mit den Rassen durch HCenter horitontal (unter
+vertikal sowieso) zentriert.<LISTING>
+                                   Child, HCenter(Radio(NULL,Classes)),
+</LISTING>dito. Jetzt f&uuml;r Klassen. Meine G&uuml;te, Stefan geht wieder voll ran.<LISTING>
+                                   Child, HGroup,
+                                           Child, HSpace(0),
+                                           Child, ColGroup(2),
+                                                   Child, Label1(&quot;Cloak:&quot; ), Child, CheckMark(TRUE),
+                                                   Child, Label1(&quot;Shield:&quot;), Child, CheckMark(TRUE),
+                                                   Child, Label1(&quot;Gloves:&quot;), Child, CheckMark(TRUE),
+                                                   Child, Label1(&quot;Helmet:&quot;), Child, CheckMark(TRUE),
+                                                   End,
+                                           Child, HSpace(0),
+                                           End,
+</LISTING>So hat man sich das immer vorgestellt, oder? Im Prinzip ist das schon
+nichts Neues mehr, was CheckMark macht, d&uuml;rfte klar sein (TRUE ist der
+Default, also abgehakt.)
+<LISTING>
+                                   Child, ColGroup(2),
+                                           Child, Label(&quot;Experience:&quot;  ), Child, Slider(0,100, 3),
+                                           Child, Label(&quot;Strength:&quot;    ), Child, Slider(0,100,42),
+                                           Child, Label(&quot;Dexterity:&quot;   ), Child, Slider(0,100,24),
+                                           Child, Label(&quot;Condition:&quot;   ), Child, Slider(0,100,39),
+                                           Child, Label(&quot;Intelligence:&quot;), Child, Slider(0,100,74),
+                                           End,
+</LISTING>
+Mann, intelligent sind die auch noch...
+<LISTING>
+                                    End,
+                            End,
+                    End,
+            End;
+</LISTING>
+Der klassische Abgang. Man beachte das Semikolon.
+<P>Oben habe ich geschrieben, ein End macht jeweils eine Klammer zu.
+Konsequenz: alles eben gesehene ist ein einziger gro&szlig;er Funktionsaufruf
+(von MUI_NewObject()), der das Resultat weiterer Funktionsaufrufe als
+Parameter enth&auml;lt. Also kein Wunder, warum man f&uuml;r MUI-Programme 10-20kB
+Stack bereithalten sollte.</P>
+<P>Dabei sind auch Fehlersituationen elegant gel&ouml;st. Wenn MUI zwar noch die
+RegisterGroup holen kann, aber f&uuml;r den vorletzten CheckMark darin nun
+wirklich keinen Speicherplatz mehr finden kann, liefert CheckMark() NULL
+zur&uuml;ck.</P>
+<P>Die ColGroup, in der das Checkmark steht, sieht sich veranla&szlig;t, alle
+bereits bekommenen Kinder zu MUI_DisposeObject()'n, also freizugeben,
+und liefert ihrerseits NULL... bis schlie&szlig;lich app NULL ist. Und das
+sollte man schon testen.</P>
+<LISTING>
+        if (!app)
+                fail(app,&quot;Failed to create Application.&quot;);
+</LISTING>
+
+<P>Wie beruhigend, da&szlig; das auch im Beispiel passiert...</P>
+<LISTING>
+        DoMethod(window,MUIM_Notify,MUIA_Window_CloseRequest,TRUE,
+                app,2,MUIM_Application_ReturnID,MUIV_Application_ReturnID_Quit);
+</LISTING>
+<P>Toll, ein Notify. Schlie&szlig;lich soll sich das Programm beenden, wenn
+das Fenster geschlossen wird. MUIV_Application_ReturnID_Quit ist ein
+spezieller Wert (wie alle MUIV_#?), den wir unten genauso speziell
+abfragen werden. MUI liefert ihn auch, wenn man (bei einem Commodity)
+mittels Exchange ein Remove macht.</P>
+<LISTING>
+        set(window,MUIA_Window_Open,TRUE);
+</LISTING>
+<P>Ein Attribut wird gesetzt. Okay, es w&auml;re nat&uuml;rlich m&ouml;glich, eine Methode
+MUIM_Window_Open zu definieren, die man mit DoMethod aufruft, aber es ist
+eben so gel&ouml;st.</P>
+<P>Das Fenster wird &uuml;brigens erst jetzt ge&ouml;ffnet.</P>
+<LISTING>
+        {
+</LISTING>
+Ein eigener Scope wegen
+<LISTING>
+                ULONG sigs = 0;
+</LISTING>
+der Variablen? Naja, wer's mag.
+<LISTING>
+                while (DoMethod(app,MUIM_Application_NewInput,&amp;sigs) != MUIV_Application_ReturnID_Quit)
+                {
+</LISTING>
+<P>Und jetzt gleich so eine Hammerzeile. Wir holen uns damit die ReturnIDs.</P>
+<P>Eigentlich erwarten wir nur eine, und die wird der &Uuml;bersichtlichkeit
+halber gleich mit abgefragt. So spart man die result- und quit-Variable,
+die eine br&auml;uchte man zur Abfrage mehrerer IDs, die andere als
+Abbruchbedingung.</P>
+
+<LISTING>
+                        if (sigs)
+                        {
+                                sigs = Wait(sigs | SIGBREAKF_CTRL_C);
+                                if (sigs &amp; SIGBREAKF_CTRL_C) break;
+                        }
+</LISTING>
+
+<P>Einfach abschreiben. :o) Im Ernst, MUI soll ja nicht dauernd abgefragt
+werden, sondern nur, wenn was passiert, deshalb Wait.</P>
+<P>Weil das Beispiel konsequenterweise auf die Abfrage der Gadgets
+verzichtet, ist die Hauptschleife eher kurz.</P>
+<P>Ne Klasse gibt's sowieso nicht, da&szlig; Beispiel ist vom August 1996, wie
+uns der Header informiert. Da hab ich wohl nochmal Schwein gehabt, aber
+ich denke, f&uuml;r die n&auml;chste AmZeiger-Ausgabe erwartet mich wohl Schlimmes...
+</P>
+<LISTING>
+            }
+        }
+
+        set(window,MUIA_Window_Open,FALSE);</LISTING>
+
+Jupp, zumachen... wir sind fertig.
+
+/*
+** Shut down...
+*/
+
+        fail(app,NULL);
+}</LISTING>
+
+<P>Shut up! fail() ruft MUI_DisposeObject( app ) auf, und gibt somit den
+ganzen MUI-Stuff frei, au&szlig;erdem wird die Library wieder geschlossen.</P>
+<P>DisposeObject hat die Eigenschaft, auch alle verbundenen Objekte
+freizugeben, deshalb wird nicht nur das Application-Objekt entfernt,
+sondern die gesamte Applikation (mit den bekannten Fenstern etc.).</P>
+<P>Na, war das ein kleiner &Uuml;berblick? Wenn ich mich dazu aufraffen kann,
+werde ich in einem weiteren Kursteil auf Wunsch noch ein anderes
+MUI-Beispiel und die Sache mit den Klassen &quot;erkl&auml;ren&quot;.</P>
+<P>Dazu mu&szlig; ich sagen, da&szlig; ich selbst auch noch nicht lange so richtig
+durchblicke, f&uuml;r echt ausgeflippte Sachen mu&szlig; man sich immer extra
+einarbeiten und MUI im wahrsten Sinne des Wortes erforschen (auf
+welchem Weg st&uuml;rzt es nicht ab?). Ist vielleicht auch nur eine
+pers&ouml;nliche Erfahrung.</P>
+<P>Stefan, kriege ich jetzt ein Keyfile auf Lebenszeit? :-))</P>
+<P>Anyway, nachdem nun die wichtigsten Innereien auch nur kurz angeleuchtet
+sind, d&uuml;rfte jedem klar sein, da&szlig; MUI den Sharebetrag und jedes Upgrade
+wert ist.</P>
+<P>&Uuml;ber Meinungen und Feedback (Adresse s.oben) w&auml;re ich hocherfreut, naja,
+soviel Zeit habe ich eigentlich nicht und der Text hier ist in etwa vier
+Stunden entstanden, aber die M&uuml;he war es doch wert, oder?</P>
+<P>Viel Erfolg bei der tieferen Erkundung von MUI w&uuml;nscht,</P>
+<B>Carsten</B>
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT"><A HREF="9712basi.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz1297/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../kw/wb_tun3.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`97<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

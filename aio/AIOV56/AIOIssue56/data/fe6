@@ -1,0 +1,338 @@
+{backimage bg.iff}
+{center}
+{subhead}The AIO C Tutorial - Part 3, strings continued, for non-C programmers {def}{p}
+Article by Paul Harvey (paul@aioworld.com)
+{left}
+{pp}
+{bold}Introduction{nobold}
+{pp}
+These articles are intended to introduce the C language to non-C programmers 
+on the Amiga platform. As yet, there is no Amiga specific stuff, so if you're 
+already a seasoned C coder then you won't find this article, or the previous 
+ones, much use. On the other hand, if you wish to continue learning C after 
+reading the previous articles, read on!
+{pp}
+In Part 2, arrays were introduced. Toward the end, it was shown that character 
+strings - used for ASCII text - are actually normal arrays of the "char" 
+variable type. It was noted that C makes no discrimination between a string 
+array and any other type of array. Non-string related array functions, such as 
+calloc(), malloc(), memset(), etc. can be used on strings. 
+{pp}
+However, not much more than that was really said about strings in Part 2, so 
+the first part of this article will describe strings in more detail. It is 
+*very* important that you understood pointers from Part 2; if necessary, go 
+over the sections on pointers again before reading on. Pointers are perhaps the 
+single most important concept in C, and once you are entirely comfortable with 
+using them in all the different contexts, you should be able to call yourself a 
+C programmer.
+{pp}
+Due to lack of time, this article will only cover strings. Expect "Part B to 
+Part 3" next month. The aim is to accumulate small code snippets along the way, 
+building towards the final example at the end. The final example will show 
+examples of pointers being used for both strings and non-string arrays, it will 
+show structs being used, some string specific functions part of the standard C 
+library, and some work with ASCII files. It will also (hopefully) show an 
+example of a program with a not-so-elegant attempt at writing code with 
+error-trapping.
+{pp}
+To the best of my ability, I have endeavored to make the information in these 
+tutorials as accurate as possible. However, some of it may be slightly off 
+track, or completely wrong. If you disagree with something I've presented, 
+please tell me about it! I do not pretend I am a C guru, or even that I am 
+experienced enough to qualify teaching others - but here goes!
+{pp}
+3.0 - More about strings{p}
+3.1.1 - String termination{p}
+3.1.2 - memcpy() with strings{p}
+3.1.3 - Initialising Arrays, more about NULL terminators
+{pp}
+{bold}3.0 - More about strings{nobold}
+{pp}
+Strings are an array. Just like any other array. Since it takes just one byte 
+to store an ASCII character, an ASCII string is generally an array of the 
+"char" variable type. The only exception to this rule is in non-ASCII 
+environments, where the local language is not printable with ASCII characters, 
+like Japanese, Korean, or perhaps Russian. In these cases, it may be necessary 
+to use multi-byte elements for a character array, since some languages don't 
+fit all of their alphabet neatly into 255 spots, along with punctuation, 
+control codes, case, and numeration. There are modified string functions 
+available that cope with these multi-byte character arrays.
+{pp}
+{bold}3.1.1 - String termination{nobold}
+{pp}
+For now, we will assume plain ASCII. One very important thing wasn't mentioned 
+in Part 2: printf(), when printing strings, is passed a pointer, nothing more. 
+It's passed the address of the beginning of an array, an array that holds a 
+string of characters to be printed to screen. How does printf() know when the 
+string ends? What signifies the end of a string?
+{pp}
+Imagine you are designing printf(). It's assumed printing starts from the 
+address of the pointer. How can one control when printf() stops reading past 
+the end of a string inside an array, or even worse, past the end of the array? 
+One solution would be to tell printf() how many characters to print. That would 
+require two parameters to be passed to printf(): a pointer and some sort of 
+int. However, such an approach would mean having to be constantly calculating 
+and keeping track of the length of this string.
+{pp}
+As you've seen in previous examples, this is not the case. You may have 
+noticed in the examples that use strings, the strings are initialised with 
+memset(). memset() takes three parameters: a pointer, a char, and a length.
+{pp}
+void memset(<array pointer>, <char>, <length>)
+{pp}
+memset() writes <char> to <length> elements after <array pointer>. Normally, 
+the <char> value is zero (0) for initialisation, but you could easily use any 
+ASCII character. But why bother at all?
+{pp}
+The answer lies in how most string functions, and programmers themselves, 
+signify the end of a string. The end of a string in C is marked by an element 
+with value NULL. That is, decimal zero. So, consider an array pString which has 
+been created by the compiler like so:
+{pp}
+char * pString[100];
+{pp}
+It's an array of 100 chars. But it can only hold 99 characters, since the end 
+of the string MUST be marked with a NULL element. This element is called the 
+NULL TERMINATOR, and it must not be forgotten.
+{pp}
+Say pString is initialised with memset(), like so:
+{pp}
+memset(pString, 0, 100);
+{pp}
+All of pString is full of NULL. It doesn't matter if there is more than one 
+NULL terminator, since functions like printf() will stop reading from an array 
+at the first NULL it hits, so it's perfectly safe. What it does mean, is 
+convenience. Now that the programmer KNOWS all of pString is zeroed, text can 
+be safely copied into pString without worrying about manually appending the 
+NULL character, AS LONG AS NO MORE THAN 99 CHARACTERS ARE WRITTEN. If 100 
+characters were written, the NULL terminator would be overwritten and the 
+string would not be terminated. This can be disastrous. printf() and other 
+string functions will try and read past the array boundary that was allocated - 
+printf() will start reading from unknown territory, until it hits a NULL 
+somewhere. If there is no NULL character in your computer's memory for 1MB 
+after the end of pString, then printf() will blissfully try and print over a 
+million random bytes of memory to screen as ASCII.
+{pp}
+Not good.
+{pp}
+memset() is a usefull tool if pString only gets written to once. On the other 
+hand, if it's being modified many times in the program, the NULL terminator may 
+have to be updated. Consider the following string being copied to an 
+initialised pString as described above:
+{pp}
+"The quick, brown-looking fox-like creature."
+{pp}
+Obviously since it's only 43 characters, there are 57 NULLs after it so using 
+printf() with this array is safe. Now consider writing the following text over 
+the beginning of pString:
+{pp}
+"The quick brown fox."
+{pp}
+This is only 20 characters. It looks as if the 23 characters not overwritten, 
+from the old text, will still be displayed by printf() since the only NULLs in 
+the string are at the end of the old text. The following example seems to 
+illustrate this:
+{pp}
+[begin 3.1.1_memcpy.c]{p}
+{fixed}
+#include <stdio.h>
+#include <string.h>
+
+int main(void)
+{{
+  char * pString[100];
+
+  memset(pString, 0, 100);
+  memcpy(pString, "The quick, brown-looking fox-like creature.", 43);
+  printf("\npString: \"%s\"", pString);
+  memcpy(pString, "The quick brown fox.", 20);
+  printf("\npString: \"%s\"", pString);
+
+  return 0;
+}}
+{def}
+{pp}
+[end 3.1.1_memcpy.c]
+{pp}
+NOTE: To prevent confusion, read carefully: if the second memcpy() argument 
+was told to copy 21 rather than 20 chars, there wouldn't be the problem with 
+the old text appearing at the end of the final string with printf(). This is 
+explained in further detail in 3.1.3, Initialising arrays.
+{pp}
+{bold}3.1.2 - memcpy() with strings{nobold}
+{pp}
+Notice the use of the new function memcpy(). Obviously, it copies memory from 
+one array to another. It's actually in string.h, but it's name doesn't make 
+this obvious. Here's the syntax:
+{pp}
+void *memcpy(<destination pointer>, <source pointer>, <size>);
+{pp}
+Here's a breakdown of the types for the parameters:{p}
+<destination pointer> : a "void" pointer{p}
+<source pointer>      : another "void" pointer (can be "const"){p}
+<size>                : a type called "size_t"
+{pp}
+The void pointer business just means that the pointers can be pointers to any 
+type of array - be it int, float, struct, or in this case, char. So memcpy() is 
+a generic copy function that just happens to work with strings. Also, it should 
+be pointed out that the size_t type, whilst a type of int, is intended for use 
+with pointer arithmetic. If you need a variable to hold the difference between 
+two pointers, you should use a size_t variable.
+{pp}
+However, the example above doesn't use two pointers. The source pointer isn't 
+a pointer at all, instead, a literal string has been given for the source 
+parameter. This works because the standard C library says the parameter can be 
+a "const" - constant. Here's a more formal syntax description for memcpy():
+{pp}
+void *memcpy(void * restrict s1, const void * restrict s2, size_t n);
+{pp}
+For now, just accept that the "const void" business means we can hard-code a 
+string at compile time rather than supply a real pointer.
+{pp}
+This is all well and good, but we still haven't solved the problem with the 
+NULL terminator. Here's one solution, adding the NULL terminators yourself:
+{pp}
+[begin 3.1.2_memcpyterm.c]{p}
+{fixed}
+#include <stdio.h>
+#include <string.h>
+
+int main(void)
+{{
+  char * pString[100];
+  char * pAlias = pString;
+
+  memset(pString, 0, 100);
+  memcpy(pString, "The quick, brown-looking fox-like creature.\0", 44); /*
+Note the literal string is 45 chars, but the "\0" sequence is one char: NULL
+*/
+  printf("\npString: \"%s\"", pString);
+  memcpy(pString, "The quick brown fox.\0", 21); /* 20 chars of text, + 1 for
+the NULL ("\0") sequence */
+  printf("\npString: \"%s\"", pString);
+  pAlias += 21;
+  printf("\npString + 21 (pAlias):        \"%s\"", pAlias); /* printf() starts
+printing from 21 chars past pString (pAlias) */
+
+  return 0;
+}}
+{def}
+{p}
+[end 3.1.2_memcpyterm.c]
+{pp}
+Note the comment about the "\0" escape sequence evaluating to one char, not
+two: the NULL (zero value) character. As you can see, adding a null terminator
+manually is as simple as using the \0 escape sequence to get the NULL code.
+However, even this isn't necessary...
+{pp}
+{bold}3.1.3 - Initialising Arrays, more about NULL terminators{nobold}
+{pp}
+This section should really have been in Part 2. Let's back-track a bit. There
+is, in fact, a way of initialising arrays created by the compiler. You use the
+curly braces, { and }. These braces represent the contents of an array.
+Collectively, the braces and the content between them IS an array. Individual
+elements are separated by commas. Here's a few examples:
+{pp}
+int pIntArray[5] = {0, 1, 2, 3, 4}; /* Creates an array of 5 ints, called
+pIntArray, and assigns a number to each element. */
+int pIntArrayB[5] = {5, 3}; /* Creates an array of 5 ints, but only
+initialises the first two elements to desired values */
+int pBadArray[5] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; /* Will _NOT_ compile, or
+if it does, memory will be trashed. More initialiser elements than there are
+spaces for them in the array created. */
+{pp}
+Here are some examples in the following program:
+{pp}
+[begin 3.1.3_arrayinit.c]{p}
+{fixed}
+#include <stdio.h>
+
+int main(void)
+{{
+  int pIntArray[5] = {0, 1, 2, 3, 4};
+  char pStringArrayA[100] = {'H', 'e', 'l', 'l', 'o', '\0'};
+  char pStringArrayB[100] = {84, 104, 101, 114, 101, 0};
+  char pStringArrayC[100] = "Today.\0";
+  int i = 0;
+
+  printf("\npIntArray:\n");
+  for (i = 0; i < 5; i++) printf("\n%i: %i.", i, pIntArray[i]);
+  printf("\n\npStringArrayA: \"%s\"", pStringArrayA);
+  printf("\npStringArrayB: \"%s\"", pStringArrayB);
+  printf("\npStringArrayC: \"%s\"", pStringArrayC);
+
+  return 0;
+}}
+{def}
+{p}
+[end 3.1.3_arrayinit.c]
+{pp}
+Notice the single quotes around each letter for the initiliser in
+pStringArrayA. Double quotes cannot be used in the same manner, since double 
+quotes are for whole strings. Whole strings do not fit into a single element of
+an array, as each element of such an array is a single byte (char). A single 
+character, on the other hand, can be denoted using single quotes. Such a
+quotation is said to be a "character constant" and evaluates to the ASCII
+value. For obvious reasons, only one character, or an escape sequence that
+evaluates to a single character, can appear between single quotes. For
+instance:
+{pp}
+printf("%i, %i, %c, %c.", 'a', ' ', 65, '\n'); /* %c displays it's parameter 
+as an ASCII character */
+{pp}
+would output:
+{pp}
+97, 32, A, <new line>
+{pp}  .
+whereas:
+{pp}
+printf("%i.", "a");
+{pp}
+would output the "address" of the "string" passed to printf(). However:
+{pp}
+printf("%i.", *("a"));
+{pp}
+would output (correctly) the ASCII value for 'a':
+{pp}
+97.
+{pp}
+This is similar to dereferencing a normal array pointer to retrieve the value 
+of the first element of an array. However, to access any other elements, one
+must use an index ([]).
+{pp}
+So, if passing a "const" string to printf() using double quotes is the same as 
+passing a normal pointer to an array of char, why is there no NULL terminator
+necessary in the printf() string? Using double quotes seems to imply the NULL 
+terminator is automatically appended by the compiler, for at least some
+functions. As shown with 3.1.1_memcpy.c, text in double quotes does not 
+automatically append a NULL for memcpy().
+{pp}
+In actual fact, NULL terminators really ARE automatically appended by the
+compiler when using string literals. There is no need to manually append '\0' 
+in a string when using double quotes, because it's done for you. The reason it
+didn't work in 3.1.1_memcpy.c is because the NULL was truncated in the second 
+copy. If 21 rather than 20 characters were copied from the string "The quick
+brown fox.", the NULL for that string would have been copied with it and the
+printf() statement that followed would only have printed the new text, since
+there would have been a NULL between the new text and the old text. The
+printf() that uses pAlias, however, would still have given the same result.
+3.1.1_memcpyterm.c will work fine with the '\0's removed. This is the other
+reason why the following line is bad code:
+{pp}
+pString[4] = "b";
+{pp}
+since the double quotes append a NULL to the string, it would seem this code
+is trying to assign two bytes ('b' + NULL) to a single char element 4 in 
+pString.
+{pp}
+{bold}Conclusion{nobold}
+{pp}
+Part B of this article will show more ANSI string functions, and combine them
+with a small (perhaps verging on useful) program that will work with files and
+use structures - all very important (basic) programming concepts.
+{pp}
+Happy coding... any questions, ask paul@aioworld.com.
+{pp}
+{pp}
+Note:  Example sources can be found in "AIOIssue56/src/".
+{pp}

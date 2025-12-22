@@ -1,0 +1,101 @@
+{backimage bg.iff}
+{center}
+{subhead}MorphOS Full Features List{def}
+{left}
+{pp}
+v1.1  11/12/02 by the MorphOS team.
+{pp}
+* Core OS{p}
+* OS Components{p}
+* 3D Graphics Supportª
+* Applications / Utilities{p}
+* Miscellaneous{p}
+* Pegasos specific software{p}
+* Appendix
+{pp}
+{bold}Core OS{nobold}
+{p}
+Quark - State of the Art micro-kernel designed for:
+{p}
+High Super/Usermode switch speed{p}
+Low interrupt latency{p}
+IntThread and Int PCode abstraction{p}
+Memory protection{p}
+Symmetrical multi processing (SMP){p}
+Task/Thread and Clan/Chief model{p}
+Resource tracking{p}
+Asynchronous message system{p}
+Virtual memory (optional){p}
+Recursive Memory Management{p}
+Distributed computing{p}
+No access to Kernel structures{p}
+Clean design with an elegant API
+{pp}
+{bold}HAL - The Hardware Abstraction Layer{nobold}
+{pp}
+Makes MorphOS hardware independent, through the following points:
+{pp}
+Determines the CPU types, the number of CPUs and clock speed.{p}
+Scans the ABox Zorro I/O ports for Zorro-II and Zorro-III cards and configures them.{p}
+Finds local hardware (CVisionPPC, SymbiosPPC, PCI bus){p}
+Creates a resource map for the Quark microkernel.{p}
+Starts the kernel resource.
+{pp}
+{bold}Q-Box{nobold}
+{pp}
+Exception Server{p}
+Master-Clan Server{p}
+Address Server{p}
+Config Server, using the resource map built by the HAL{p}
+CPUTime Server
+{pp}
+{bold}A-Box{nobold}
+{pp}
+ABox is a multithreaded application running as a Quark process with its own memory space.
+It contains a PowerPC native heavily extended reimplementation of the OS known from your
+Commodore A500, A1000, A1500, A2000, A3000, A3500, A3500T, A4000 and A4000T systems.
+{pp}
+A-BOX Components
+{pp}
+Static 680x0 emulator{p}
+It emulates 680x0 instructions. All 68881 and 68882 opcodes are supported too.
+The most used FPU instructions are replaced with emulation opcodes easier to
+decode.  Some unused features are not emulated.
+All in all, the emulator is twice as fast as one without these special methods.
+{pp}
+{bold}Trance - Just In Time 68k compiler (JIT){nobold}
+{pp}
+Trance translates 68k program code to native PPC code. Translated code is kept
+in memory, so when running same code again, translated code can be run
+directly.
+{pp}
+Several optimizations are performed during the translation. This allows to get
+incredible performances never achieved with other current JIT technology
+implementations. Multiple 68k instructions are combined to single PPC instruction,
+non needed parts of code are removed Etc.
+{pp}
+Typically, 68k applications running with JIT get least 50% of native PPC speed and up to 75%.{p}
+For example the native PPC rc5 decoder "dnetc_ppc -bench rc5" does 755kkeys/sec, and
+emulated 68k version  "dnetc_68k -bench rc5" does 542kkeys/sec. (csppc
+604e/233)
+{pp}
+Even the slowest BlizzardPPC/603e is able to run 68k applications faster than any existing 68060.
+{pp}
+Condition code flow analysis which allows us to remove expensive CCR calculations when not needed.
+{pp}
+"Transport-bound" and "compute-bound" tasks are handled differently:
+{pp}
+* Compute-bound tasks run in fully translated mode. Trance is called from the
+task context to translate next sequence of code, then execution jumps to that translated code.
+{pp}
+* Transport-bound tasks spend most of their time waiting for user input or some other signal.
+It's important that when signal a arrives, code execution starts immediately, without
+having to wait for code to get translated first. So, if translated code is not available, the
+code is run using normal "static" emulation. These emulated functions are profiled to see
+which are used most often, then those functions are translated later when the system is idle.
+{pp}
+* The main point of this arrangement is not to add any delays or latency to the system.
+{pp}
+{pp}
+{link nws10-2}next page{end}
+{pp}

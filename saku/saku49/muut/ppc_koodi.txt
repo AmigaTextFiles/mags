@@ -1,0 +1,25 @@
+void ppc_koodi(void)
+{
+	Delay(50);
+}
+
+void launch(APTR port)
+{
+	struct Message msg;
+	APTR proc;
+	msg.mn_ReplyPort = port;
+	proc = CreateNewProcTags(
+NP_Entry, &ppc_koodi,
+NP_CodeType, CODETYPE_PPC,
+NP_PPCStackSize, 32768,
+NP_StartupMsg, &msg,
+	TAG_DONE);
+
+	if (proc)
+	{
+		PutStr(“Odotetaan uuden prosessin loppumista\n”);
+		WaitPort(port);
+		PutStr(“Prosessi loppui… tyhjennetään viestiportti\n”);
+		GetMsg(port);
+	}
+}

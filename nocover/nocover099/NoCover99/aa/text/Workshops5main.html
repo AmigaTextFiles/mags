@@ -1,0 +1,77 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+5. Kurzanleitung: FFS-Festplatte unter Suse Linux 7.1 (von Andreas Kiefl)
+
+Ich habe heute einen Kernel f&uuml;r Suse 7.1 kompiliert, mit dem ich auf dem PC 
+auf eine Amiga-formatierte Platte zugreifen kann. Wer es selbst probieren 
+will, hier kurz die Vorgehensweise:
+
+Zuerst m&uuml;ssen die Kernelsourcen installiert sein. Wenn nicht schon 
+geschehen, sollte man das jetzt mit Yast2 nachholen. Dann als root eine 
+Shell (z.B. xterm) &ouml;ffnen und ins Verzeichnis "/usr/src/linux" wechseln. In 
+dieser Shell (z.B. xterm) "make xconfig" eingeben. Dann kommt eine 
+graphische Oberfl&auml;che, bei der man alles N&ouml;tige aktivieren kann. Hier muss 
+vor allem bei "filesystems" affs-Support aktiviert werden. Beim Restlichen 
+kann das Vorgegebene unver&auml;ndert &uuml;bernommen oder auch nach Bedarf ge&auml;ndert 
+werden. Anschlie&szlig;end das Ergebnis abspeichern und xconfig beenden.
+
+Jetzt sollte eine Sicherheitskopie des derzeitigen Kernels /boot/vmlinuz 
+unter anderem Namen (eventuell vmlinuz_old) erstellt werden. Anschlie&szlig;end 
+nacheinander folgende Befehle abarbeiten (ohne " "). Dazu muss man wieder 
+im Verzeichnis /usr/src/linux sein.
+
+"make dep"                       &uuml;berpr&uuml;ft Abh&auml;ngigkeiten
+"make clean"                     r&auml;umt den Festplattenbereich auf
+"make zlilo"                     &uuml;bersetzt und installiert den Kernel
+"make modules"                   &uuml;bersetzt die Module
+"make modules_install"           installiert sie.
+
+Zwischen den einzelnen Befehlen abwarten, bis der Computer den jeweils 
+letzten Befehl abgearbeitet hat. Das kann unter Umst&auml;nden einige Zeit 
+dauern.
+
+Nach Ende dieser Prozedur ist jetzt im Verzeichnis /usr/src/linux die eben
+entstandene Datei "vmlinux" zu sehen; diese ins Verzeichnis /boot unter dem
+Namen "vmlinuz" kopieren.
+
+Wer Schwierigkeiten mit dem Kopieren unter Linux hat, kann es auch mit mc
+(Norton-Commander-Clone) oder mit tkdesk versuchen, damit geht es ganz 
+einfach.
+
+Jetzt den Computer runterfahren, ausschalten und die Amiga-Platte einbauen. 
+Anschlie&szlig;end neu starten. Es startet dann schon der neue Kernel. Nun muss 
+ein neues Verzeichnis "/amiga" angelegt und der Datei "/etc/fstab" die 
+Amiga-Platte hinzugef&uuml;gt werden.
+
+Beispiel:
+
+/dev/hdc1 /amiga affs noauto, user 0 0
+
+&Auml;hnlich wie die dort schon stehenden Windows-Partitionen, nur muss statt 
+"vfat" oder "msdos" "affs" eingetragen werden. Dabei "hdc1" durch die 
+Position der Amiga-Platte ersetzen. Wenn sie die erste am zweiten IDE-Port 
+ist, kann man "hdc1" so stehen lassen.
+
+Nun noch in einer Shell (xterm) den Befehl "mount /dev/hdc1" (oder "hdc2", 
+"hda2", etc., je nachdem, wo die Amiga-Platte ist) eingeben. Anschlie&szlig;end 
+m&uuml;sste die Amiga-Platte unter "/amiga" zu &ouml;ffnen sein.
+
+Falls wider Erwarten Probleme auftauchen, kann der neuen Kernel wieder 
+durch den alten ersetzt werden. Das gilt auch, wenn bestimmte Dinge nicht 
+mehr wie erwartet funktionieren sollten. Eventuell reicht es ja auch, den 
+neuen Kernel als "vmlinuz_ami" zu sichern und nur bei Bedarf, d.h. wenn 
+Daten von Amiga-formatierten Platten auf den PC kopiert werden sollen, zum 
+Starten zu verwenden.
+
+Andreas Kiefl &lt;kieflrunding@web.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

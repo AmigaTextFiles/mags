@@ -1,0 +1,1033 @@
+<html>
+ <head>
+  <title>MorphOS 1.3</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#113333" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Labo : MorphOS 1.3 </font>par&nbsp;<a href="mailto:niffo@free.fr">Nicolas&nbsp;Gressard</a></div></font><br><br><br>
+
+
+<font size="+1" color="#ccbb33">Introduction</font><br><br>
+
+Dans l'article précédent (Obligement n°37) je vous parlais essentiellement du hard (partie matérielle) du
+Pegasos. Nous allons aujourd'hui essayer de nous concentrer sur le soft (partie logicielle) donc MorphOS
+qui en est actuellement à sa version 1.3.<br><br>
+
+<font size="+1" color="#ccbb33">1. Installation from scratch "full SFS"</font><br><br>
+
+Contrairement à l'article d'Obligement 37 dans lequel j'avais très sommairement listé les étapes d'une
+installation de MorphOS sur une partition FFS, je vais ici vous décrire de façon précise les étapes de
+l'installation de MorphOS sur une partition SFS&nbsp;: système de fichiers beaucoup plus performant.<br><br>
+
+MorphOS a, en effet, le bon goût de supporter le système de fichiers SFS directement au sein de son noyau
+(boot.img) or l'actuelle version du SmartFirmware ne connaît que les partitions au format FFS (le support
+de SFS, AFS et PFS se fera prochainement). Il va donc falloir placer
+le noyau de MorphOS sur une partition FFS minimale afin qu'il soit accessible par le firmware et ensuite lui
+faire comprendre qu'il faut aller chercher le système sur une autre partition, elle, au format SFS.<br><br>
+
+La première chose à faire est de booter sur le cédé contenant la version de MorphOS à installer. Nous allons
+donc "entrer" dans le firmware en appuyant sur "ESC" au boot de la machine (si votre carte mère n'a jamais
+été configurée, vous entrerez automatiquement dans le firmware au boot).<br><br>
+
+Pour booter sur le cédé, il convient d'entrer la commande "boot /pci/cd boot.img".<br><br>
+
+Vous allez vous retrouver sur un joli "Workbench like" appelé Ambient qui constitue l'interface graphique de
+MorphOS. Si votre disque dur n'est pas vierge et contient des données que vous ne souhaitez pas effacer,
+arrêtez-vous là et n'allez pas plus loin, car la suite des opérations va avoir pour conséquence de supprimer
+tout ce qu'il contient. Si votre disque dur provient d'un PC et contient un MBR (master boot record), vous devez
+le supprimer car le firmware y est plutôt allergique. La seule méthode sûre pour le supprimer à partir du
+Pegasos est d'ouvrir un shell et de lancer l'utilitaire Hdwrite situé dans le répertoire "sys:tools/debug" avec
+comme ligne de commande&nbsp;: "hdwrite ide.device 0 mossys:c/reboot 0". Nous allons maintenant devoir partitionner
+notre disque. L'utilitaire de préparation et de partitionnement de MorphOS se nomme SCSIConfig et se trouve
+dans le répertoire Tools.<br><br>
+
+<div align="center">
+<img src="../gfx/scsiconfig.gif" border="0" width="521" height="264" alt="Scsi Config 1"><br><br>
+</div>
+
+Sélectionnez votre disque dans la colonne de gauche et cliquez sur "Partition".<br><br>
+
+<div align="center">
+<img src="../gfx/scsiconfig2.gif" border="0" width="521" height="264" alt="Scsi Config 2"><br><br>
+</div>
+
+Vous devriez normalement ne rien avoir dans la liste "MBR partition list". Nous allons maintenant créer la
+partition FFS minimum pour le noyau&nbsp;:<br><br>
+
+Cliquez sur "Add" sous la liste de gauche.<br><br>
+
+<div align="center">
+<img src="../gfx/scsiconfig3.gif" border="0" width="521" height="264" alt="Scsi Config 3"><br><br>
+</div>
+
+Dans le champ "Mbytes", entrez "5" puis appuyez sur "Entrée". Vous pouvez prévoir plus de place si vous le
+souhaitez. Le noyau actuel fait 1,4 Mo.<br><br>
+
+Dans le champ "Mask", entrez "0xfffffffe" puis appuyez sur "Entrer".<br>
+Cliquez sur "OK" (ignorez le message d'alerte)&nbsp;: c'est tout pour cette partition. Que ceux qui disent encore
+que SCSIConfig est compliqué se désignent&nbsp;!<br><br>
+
+Créons la partition SFS qui contiendra le système&nbsp;:<br>
+Cliquez sur "Add" sous la liste de gauche.<br><br>
+
+<div align="center">
+<img src="../gfx/scsiconfig4.gif" border="0" width="521" height="264" alt="Scsi Config 4"><br><br>
+</div>
+
+Dans le champ "Mbytes", entrez ce que vous voulez (contrairement à FFS, vous n'êtes pas limité à 2 Go) puis
+appuyez sur "Entrer".<br>
+Dans le champ "Mask", entrez "0xfffffffe" puis appuyez sur "Entrer".<br>
+Dans le champ "FileSystem", sélectionnez "SFS".<br>
+Cliquez sur "OK" (ignorez le message d'alerte)&nbsp;: c'est tout pour cette seconde partition.<br><br>
+
+Cliquez sur "OK" puis sur "Save Changes", quittez SCSIConfig et rebootez comme il vous l'est demandé.<br>
+Lors du reboot, entrez à nouveau dans le firmware à l'aide de la touche "ESC" et bootez à nouveau sur le
+cédé de MorphOS avec "boot /pci/cd boot.img".<br>
+Allez dans le menu "Utilities" de Ambient option "Format Disk".<br><br>
+
+<div align="center">
+<img src="../gfx/formatdisk.gif" border="0" width="372" height="289" alt="Format Disk"><br><br>
+</div>
+
+Donnez un nom et formatez vos partitions DH0 et DH1.<br><br>
+
+Ouvrez un shell à partir du menu "Ambient/NewShell".<br>
+Copiez l'ensemble du cédé sur la partition système avec la commande "copy cd0: dh1: all".<br>
+Copiez le fichier boot.img sur la partition de boot DH0 avec la commande "copy boot.img dh0:".<br>
+Redémarrez votre Pegasos et entrez dans le firmware pour la dernière fois.<br>
+Pour ceux qui possèdent un vieux Pegasos (antérieure au Pegasos I avec April2), nous allons devoir initialiser les
+variables internes du firmware de façon à ce qu'il lance 
+automatique MorphOS au boot. Nous avons besoin pour cela d'initialiser 4 variables.
+Avec cette première variable, nous allons indiquer au firmware le fichier à exécuter ainsi que les
+paramètres à lui passer&nbsp;:<br><br>
+
+"setenv boot-file boot.img ramdebug bootdevice dh1"<br>
+"Ramdebug" permet de ne pas envoyer les informations de débug de MorphOS sur le port série, ce qui ralenti
+quelque peu la machine. "bootdevice dh1" permet de spécifier au noyau que la partition système n'est pas la
+même que celle sur laquelle il se trouve.<br><br>
+
+Les trois variables suivantes permettent d'activer le boot automatique, de fixer son délai d'attente et de
+spécifier la partition de boot&nbsp;:<br>
+"setenv boot-device /pci/ide/disk@0,0:0"
+"setenv auto-boot? true"
+"setenv auto-boot-timeout 3000" (correspond à une attente de 3 secondes avant le boot permettant d'avoir le
+temps "d'entrer" dans le firmware à l'aide de la touche "ESC".
+Vous devriez maintenant pouvoir lancer le boot à l'aide de la commande "boot", ou encore en appuyant sur le
+bouton "reset" de votre Pegasos ;)<br><br>
+
+Nous venons ici de paramétrer le boot par défaut du firmware, mais rien ne nous empêche de booter sur une autre
+partition ou sous un autre système d'exploitation en entrant dans le firmware et en tapant "boot /pci/disk@x,x:x".<br>
+
+Des fonctionnalités non documentées permettant de mettre en place un menu de boot dans le firmware existent,
+mais leur emploi est fortement déconseillé pour l'instant par les développeurs du Pegasos.<br><br>
+
+Il est à noter que dans la prochaine version du noyau, le support de l'USB sera intégré et permettra de démarrer
+MorphOS sur des périphériques comme des clé USB.<br><br>
+
+Voilà, la partie sur la configuration bas niveau de MorphOS est terminée, mais sachez que si vous achetez un Pegasos
+chez un revendeur, toute cette configuration sera faite et vous n'aurez qu'à appuyer sur le bouton "Power" de
+votre machine pour démarrer.<br><br>
+
+<font size="+1" color="#ccbb33">2. MorphOS 1.3 dans le détail</font><br><br>
+
+<font size="+1" color="#ccbb33">2.1 Premier boot&nbsp;: la partie visible de MorphOS</font><br><br>
+
+Lorsque vous démarrez votre Pegasos sous MorphOS pour la première fois, la chose qui saute tout de suite aux
+yeux est le nombre de couleurs des icônes. En effet celles-ci sont en couleurs 32 bits (au format PNG) et cela
+se remarque immédiatement car on ne peut pas dire que ce soit très courant. Pour l'instant, elles ne peuvent
+pas être animées, un effet (paramétrable) est appliqué lorsque l'on clique dessus pouvant être une combinaison
+de changement de couleur, bluring ou transparence. MorphOS supporte également les icônes originales de l'AmigaOS
+ainsi que les NewIcons et les GlowIcons.<br><br>
+
+Voici les logiciels et outils que vous avez directement à votre disposition après l'installation&nbsp;:<br><br>
+
+<b>Tiroir "Apps"</b><br>
+- Apdf&nbsp;: un lecteur PDF supportant le format 1.4 et les langues asiatiques.<br>
+- Voyager&nbsp;: un navigateur web avec support du Flash mais dans une version bridée toutefois (pas de recherche, pas
+de sauvegarde HTML, pas d'impression, etc.) et sans pile IP pour l'utiliser.<br>
+- Morphtris&nbsp;: un pauvre tetris destiné certainement au même usage que le démineur sous Windows&nbsp;:)<br><br>
+
+<b>Tiroir "Utilities"</b><br>
+- FTmanager&nbsp;: un gestionnaire de font FreeType.<br>
+- Multiview&nbsp;: on ne le présente plus ;)<br>
+- Mysticview&nbsp;: un visualisateur d'images (formats selon les datatypes).<br><br>
+
+Si vous avez d'autres besoin, il faudra pour l'instant vous débrouiller par vous même.<br><br>
+
+Le <b>tiroir "Docs"</b> contient des documentations au format PDF sur les spécifications techniques du Pegasos, le
+développement sous MorphOS, le smartfirmware,... mais pas encore sur le système lui-même.<br><br>
+
+Dans les <b>menus d'Ambient</b>, vous trouverez la possibilité de&nbsp;:<br>
+- Executer une commande.<br>
+- Lancer un shell.<br>
+- Redémarrer la machine.<br>
+- Lancer Exchange (gestionnaire de commodités).<br>
+- Lancer l'outil de formatage (vu ci-avant).<br>
+- Accéder aux préférences générales.<br>
+- Accéder aux préférences systèmes.<br>
+- Accéder aux préférences MUI.<br><br>
+
+En effet, contrairement à vos habitudes sur AmigaOS, vous ne trouverez plus les préférences du système dans le
+tiroir "Prefs", mais dans une interface MUI du plus bel effet.<br><br>
+
+<div align="center">
+<img src="../gfx/settings.jpg" border="0" width="554" height="350" alt="Settings"><br><br>
+</div>
+
+- AHI&nbsp;: reprend exactement l'écran de préférences que l'on connaît sur Amiga Classic.<br><br>
+- Fonts&nbsp;: permet de sélectionner les polices utilisées par le système. Des polices vectorielles FreeType qui
+seront anti-aliasées à l'affichage sont fournies avec le système.<br><br>
+- Icontrol&nbsp;: permet de gérer le comportement des fenêtres et, nouveauté, de programmer des raccourcis clavier
+pour les actions courantes.<br><br>
+- Input&nbsp;: reprend ce que nous connaissions déjà dans l'AmigaOS, à savoir le paramétrage de la souris, du
+clavier et le choix de la KeyMap (disposition du clavier).<br><br>
+- Locale&nbsp;: la localisation fonctionne sous MOS 1.3 mais semble se comporter quelque peu différemment en
+fonction de l'utilisateur. Le problème sera réglé sous MOS 1.4. Vous pouvez sélectionner ici votre pays,
+vos langues préférées et votre fuseau horaire.<br><br>
+- ScreenMode&nbsp;: permet de sélectionner la résolution ainsi que le nombre de couleurs utilisées pour
+l'affichage du bureau. Le programme ModeEdit de CyberGraphX est quant à lui resté dans le tiroir "Prefs" et
+vous permet de programmer des modes d'écran personnalisés. Il sera inclu dans le menu Prefs dans les prochaines
+versions.<br><br>
+- Serial&nbsp;: permet de paramétrer la vitesse et le protocole par défaut du port série.<br><br>
+- Sound&nbsp;: permet d'associer un son (qui peut être un son digitalisé) au "beep système".<br><br>
+- Time&nbsp;: permet de régler l'heure système.<br><br>
+
+Une autre interface de configuration appelée "Ambient Settings" permet de faire quelques réglages propres à
+Ambient. Vous pourrez grâce à elle essentiellement modifier l'image de fond du bureau et des fenêtres,
+choisir l'effet appliqué sur les icônes PNG lors de leur sélection, choisir l'effet utilisé lors du
+"drag&drop", etc.<br><br>
+
+<div align="center">
+<img src="../gfx/ambientprefs.jpg" border="0" width="383" height="272" alt="Ambient Prefs"><br><br>
+</div>
+
+La prochaine version d'Ambient devrait également intégrer d'autres
+préférences telles que la gestion du pointeur de la souris, des imprimantes et de l'USB.<br><br>
+
+Pour terminer avec les préférences, vous retrouverez également l'interface de paramétrage MUI. Cette dernière
+permet de paramétrer tout ce qui est possible et imaginable en ce qui concerne l'apparence des applications
+MUI et ce classe par classe.<br><br>
+
+<div align="center">
+<img src="../gfx/muimorphos.jpg" border="0" width="408" height="300" alt="Mui MorphOS"><br><br>
+</div>
+
+Un serveur FTP est à la disposition des possesseurs de Pegasos sur lequel on peut trouver&nbsp;:<br><br>
+
+- Le jeu Birdie Shoot de la société Epic Interactive. Un très joli petit jeu à l'intérêt quelque peu limité cependant.<br>
+- Le compilateur GCC.<br>
+- Linux Debian.<br>
+- OpenPCI permettant d'utiliser par exemple une carte TV du type BT8x8 ou l'interface CatWeasel.<br>
+- Quelques skins pour Ambient.<br>
+- L'émulateur PC Bochs.<br>
+- La dernière version de MorphOS.<br><br>
+
+<font size="+1" color="#ccbb33">2.2 Mais où sont passés...</font><br><br>
+
+Ceux qui ont lu la "Features list" de Genesi vont se demander&nbsp;: mais où sont passés Frogger, AmiTCP V5,
+TurboPrint, le compilateur JIT, les outils pour FFS et SFS, la localisation d'Ambient, InstallerNG,
+MagicASL, Rave3D (3D), Goa (Emulation Warp3D), Jungl (OpenGL), l'USB, etc...<br><br>
+
+Voici quelques éléments de réponse&nbsp;:<br>
+En ce qui concerne Frogger, il semble qu'il ne fera finalement pas partie de MorphOS, l'auteur ayant changé
+d'avis (!). On s'autorise à penser dans les milieux autorisés qu'un portage de MPlayer remplacera ce dernier.
+Le compilateur JIT ne semble pas être encore tout à fait au point puisqu'il a été dans les mains des
+betatesteurs, puis a été retiré des distributions. Dans la même lignée, Rave3D (l'API 3D), GOA (émulation
+Warp3D) et l'émulation PowerUP ont été retirés de la version 1.3 alors qu'ils figuraient dans la version 1.2.
+Les fichiers "catalog" des logiciels localisés fonctionnent sous MorphOS 1.3, mais MorphOS lui-même n'est
+pas encore traduit. N'est-ce cependant pas prématuré alors que son contenu change tous les jours&nbsp;? Pour les 
+autres fonctionnalités, elle ne sont tout simplement pas encore prêtes. Un pilote ainsi qu'une licence pour 
+la pile USB "Poseidon" sont inclus dans MorphOS. Il faut cependant, pour l'instant, télécharger et installer
+soi-même la pile sur le site <a href="http://www.platon42.de/poseidon.html" target="_blank">www.platon42.de/poseidon.html</a>
+si l'on veut pouvoir l'exploiter. Vraisemblablement, bon nombre de souris, ainsi que les périphériques respectant
+le standard "MassStorage" (clés USB, appareils photos, lecteurs ZIP,...) sont correctement gérés.<br><br>
+
+<font size="+1" color="#ccbb33">2.3 Les entrailles de MorphOS</font><br><br>
+
+Côté système on retrouve donc en standard&nbsp;:<br><br>
+
+- CyberGraphX 4.4 pour la gestion de l'affichage.<br>
+- MUI 3.9 pour la gestion des fenêtres.<br>
+- AHI 5 (version 6 disponible en béta) pour la gestion du son.<br>
+- Poseidon 2.0 pour la gestion de l'USB.<br><br>
+
+Voici en gros l'arborescence du système MorphOS&nbsp;:<br><br>
+
+<pre><font size="-1">Apps
+C
+Classes
+Devs
+Docs
+Fonts
+L
+Libs
+Locale
+morphos ------ Ambient
+|           |- C
+|           |- Classes
+|           |- Devs
+|           |- Fonts
+|           |- L
+|           |- Libs
+|           |- Locale
+|           |- MUI
+|           |- Prefs
+|           |- S
+|
+Prefs -------- env-archive
+|           |- presets
+S
+Tools
+Utilities
+WBStartup</font></pre>
+<br><br>
+
+A l'installation de MorphOS, le premier niveau de l'arborescence est pour ainsi dire vide. Tout le système
+d'exploitation est en fait contenu dans la sous-arborescence "morphos". Ceci à l'énorme avantage de ne pas
+mélanger système et applications. Ainsi, lorsque vous installerez des applications externes ou des morceaux
+de système n'appartenant pas à MorphOS, leurs fichiers viendront se placer dans les répertoires du premier
+niveau de l'arborescence et ne viendront pas polluer le système. MorphOS étant de plus capable d'exécuter
+du code 68K, il est très utile de ne pas mélanger des fichiers 68K et PPC. Par convention, les fichiers PPC
+portent souvent l'extension ".elf", mais ce n'est pas systématique. Depuis peu, ce système pour nommer
+les fichiers PPC en .elf a été abandonné, l'extension est à présent facultative.<br><br>
+
+Dans le répertoire "morphos:C", on retrouve les commandes classiques de l'AmigaOS telles que Avail, Copy, Delete,
+Dir, Format, Protect, Relabel, Type, Version, AddBuffers, Assign, Break, Execute, Info, List, MakeDir, Mount,
+Rename, Status, Wait,...<br><br>
+
+La skin utilisée par Ambient se trouve dans le répertoire "prefs/presets/morphos" et il est très facile de la
+modifier ou d'en créer d'autres. Les skins sont constituées d'un fichier de configuration au format texte et
+d'images au format PNG. On peut y modifier par exemple les couleurs des textes, leur ombre,
+les gadgets des fenêtres, paramétrer la transparence des menus, l'épaisseur de la barre de titre, etc.<br><br>
+
+<font size="+1" color="#ccbb33">2.4 Principales gênes dans l'utilisation de tous les jours</font><br><br>
+
+Lorsque l'on utilise MorphOS tous les jours (ou presque ;), les manques suivants se font vite ressentir&nbsp;:<br><br>
+
+- Manque de datatypes&nbsp;: amigaguide, ascii, sound,...<br>
+- Arexx est incomplet et l'on doit encore utiliser des fichier de l'AmigaOS (mais c'est déjà très fort de pouvoir le
+faire&nbsp;!).<br>
+- Pas de reconnaissance MIME&nbsp;: il n'y a pas de système de reconnaissance des types de fichier comme par exemple
+DefIcon. On ne peut donc pas cliquer sur un fichier non exécutable pour l'ouvrir à moins qu'il n'ait une icône
+avec le nom de l'application associée.<br>
+- Sous Ambient, il n'est pas possible d'utiliser le clavier pour se déplacer dans les icônes et lancer une application.
+La possibilité d'utiliser un "lasso" pour sélectionner plusieurs icônes n'existe pas. Le type d'affichage des
+répertoires n'est pas mémorisé. Les listers ne sont pas terminés.<br>
+- Nombre de logiciels n'existent pas ou ne sont pas à la hauteur de ce qu'exige quelqu'un venant d'une autre
+plate-forme, essentiellement dans le domaine de la bureautique et de la navigation web.<br><br>
+
+<font size="+1" color="#ccbb33">2.5 Principaux attraits</font><br><br>
+
+Lorsque vous venez d'installer votre système, la vitesse de boot est invraisemblable et il est facile de gagner
+de nombreux paris auprès des utilisateurs d'autres plate-formes en leur disant que la machine boote en 3
+secondes&nbsp;! Bien sûr, après installation d'une pile IP, d'une pile USB et d'autres personnalisations dans la
+"user-startup", les choses ne vont plus tout à fait aussi vite, mais vous dépasserez difficilement 15-20
+secondes, ce qui reste honorable ;).<br>
+En deuxième lieu, vous serez surpris par la réactivité du système qui est mort de rire quand il voit le
+processeur et la quantité de mémoire qu'on lui met à disposition. Effectivement, MorphOS n'est quasiment pas 
+plus lourd que l'AmigaOS (pas de cache disque, pas de mémoire virtuelle, pas de protection mémoire) en tout
+cas en ce qui concerne l'ABox, la "boite" d'émulation Amiga. Une autre partie du système&nbsp;: la Qbox (qui a dit
+X-Box&nbsp;!) devrait voir le jour... un jour, et permettre de faire tourner les programmes dans un environnement
+plus sécurisé mais au détriment de la compatibilité avec les applications Amiga. Résultat des courses, les
+fenêtres s'ouvrent avant que l'on clique dessus, les arrières-plans se rafraîchissent avant même d'avoir été
+recouverts... en tout cas c'est l'impression que l'on a lorsque l'on a pris l'habitude d'utiliser d'autres
+plates-formes quelles qu'elles soient&nbsp;!<br>
+Pour le reste, vous retrouverez tous les avantages de l'architecture simple d'AmigaOS par rapport à un système
+lourd comme Windows, MacOS ou Linux.<br><br>
+
+<font size="+1" color="#ccbb33">Conclusion</font><br><br>
+
+MorphOS est pour l'instant un système d'exploitation passionnant pour les passionnés, c'est à dire vous et moi.
+A l'heure actuelle, il se contente en fait d'adapter l'OS Amiga à une architecture PowerPC et d'assurer une 
+compatibilité ascendante. La cure de jouvence donnée par un hard moderne (ou presque) permet de faire des choses
+jamais vues sur un Amiga comme la lecture fluide d'un DivX, l'encodage dans des délais respectable d'un MP3,
+utiliser la dernière version de Mame ou encore jouer à des jeux 3D dans de bonnes conditions. Cependant, il
+ne faut pas se voiler la face ce système n'est pas terminé et ceux qui en possèdent un sont des betatesteurs donc
+voyez-le comme tel. A l'heure ou vous lisez ces lignes, la version 1.4 du système est sur le point ou vient
+tout juste de sortir. Cette version devrait corriger beaucoup de problèmes de MorphOS 1.3, ajouter quelques-uns
+des manques et aussi réintégrer l'émulation Warp3D et PowerUP.<br><br>
+
+<font size="+1" color="#ccbb33">Annexe 1&nbsp;: Liens</font><br><br>
+
+<a href="http://www.genesi.lu" target="_blank">Genesi</a> (distributeur du Pegasos et de MorphOS)<br>
+<a href="http://www.morphos.de" target="_blank">MorphOS</a> (la page officielle de MorphOS)<br>
+<a href="http://www.bplan-gmbh.de" target="_blank">bPlan</a> (le constructeur du Pegasos)<br> 
+<a href="http://www.pegasos-France.com" target="_blank">Pegasos-France.com</a> (distributeur Pegasos en France)<br>
+<a href="http://www.pegasosppc.fr" target="_blank">PegasosPPC.fr</a> (distributeur Pegasos en France)<br>
+<a href="http://www.pegasos-suisse.com" target="_blank">Pegasos-Suisse.com</a> (distributeur Pegasos en Suisse)<br>
+<a href="http://www.morphos-news.de" target="_blank">Morphos-News.de</a> (actualité sur le monde MorphOS)<br>
+<a href="http://www.morphzone.org" target="_blank">MorphZone</a> (forum multilangues sur MorphOS)<br>
+<a href="http://www.vapor.com" target="_blank">Vaporware</a> (développeurs d'applications MorphOS)<br>
+<a href="http://www.titan-computer.com" target="_blank">Titan Computer</a> (développeurs d'applications MorphOS)<br>
+<a href="http://www.epic-interactive.com" target="_blank">Epic Interactive</a> (développeurs de jeux MorphOS)<br>
+<a href="http://obligement.free.fr" target="_blank">Obligement</a> (magazine AmigaOS et MorphOS)<br>
+<a href="http://www.morphos-news.de/beta2help" target="_blank">Install Guide Beta2</a> (guide d'installation de Morphos sur Pegasos)<br>
+<a href="http://www.morphos-news.de/help.php?lg=en&id=inst" target="_blank">Install Guide MOS 0.4</a> (guide d'installation de MorphOS 0.4 sur carte PPC)<br><br>
+
+<font size="+1" color="#ccbb33">Annexe 2&nbsp;: Liste de compatibilité logicielle</font><br><br>
+
+Voici une liste de jeux et logiciels tournants sur Pegasos/MorphOS 1.3. Certains sont natifs MorphOS et d'autres
+fonctionnent en mode émulation.<br><br>
+
+<table border="1" align="center" width="100%">
+ <tr>
+  <td nowrap align="left"><font color="#ccbb33"><b>Nom</b></font></td>
+  <td width="30" align="left"><font color="#ccbb33"><b>Genre</b></font></td>
+  <td align="left"><font color="#ccbb33"><b>Observations</b></font></td>
+ </tr>
+ <tr>
+  <td nowrap>Wordworth 7</td>
+  <td width="30" align="left">Traitement de texte</td>
+  <td>Problème pour la couleur de fonte noire.</td>
+ </tr>
+ <tr>
+  <td nowrap>Final Writer 97</td>
+  <td width="30" align="left">Traitement de texte</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Amiga Writer 2</td>
+  <td width="30" align="left">Traitement de texte</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>PageStream 4.1.5.5</td>
+  <td width="30" align="left">PAO</td>
+  <td>Il faut enlever les charsets Windows. Quelques bogues demeurent.</td>
+ </tr>
+ <tr>
+  <td nowrap>Turbo Calc 5</td>
+  <td width="30" align="left">Tableur</td>
+  <td>Copier le fichiers TurboCalc.STD à la racine du logiciel. Le logiciel n'est qu'en Anglais.</td>
+ </tr>
+ <tr>
+  <td nowrap>Final Calc</td>
+  <td width="30" align="left">Tableur</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>TurboPrint 7</td>
+  <td width="30" align="left">Gestionnaire d'imprimante</td>
+  <td>L'impression avec le spooler est lentissime.</td>
+ </tr>
+ <tr>
+  <td nowrap>FxPaint 2</td>
+  <td width="30" align="left">Traitement d'image</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>FxScan 4</td>
+  <td width="30" align="left">Gestionnaire de scanner</td>
+  <td>Ne pas utiliser la version 4.04 (blocage au lancement).</td>
+ </tr>
+ <tr>
+  <td nowrap>Zone Explorer</td>
+  <td width="30" align="left">Générateur de fractals</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Art Effect 4</td>
+  <td width="30" align="left">Traitement d'images</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>ImageFX 4.5</td>
+  <td width="30" align="left">Traitement d'images</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Photogenics 5</td>
+  <td width="30" align="left">Traitement d'images</td>
+  <td>Quelques petits problèmes.</td>
+ </tr>
+ <tr>
+  <td nowrap>Personnal Paint 7</td>
+  <td width="30" align="left">Traitement d'images</td>
+  <td>Quelques petits problèmes.</td>
+ </tr>
+ <tr>
+  <td nowrap>TV Paint 3.6</td>
+  <td width="30" align="left">Traitement d'images</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Fantastic Dreams</td>
+  <td width="30" align="left">Morphing</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>DrawStudio</td>
+  <td width="30" align="left">Dessin vectoriel</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Cinema 4D</td>
+  <td width="30" align="left">Graphisme 3D</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>WildFire 7</td>
+  <td width="30" align="left">Animation</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>ShowPPC</td>
+  <td width="30" align="left">Visualisateur d'images</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Mystic View</td>
+  <td width="30" align="left">Visualisateur d'images</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>PhotoAlbum</td>
+  <td width="30" align="left">Catalogeur d'images</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>FroggerNG</td>
+  <td width="30" align="left">Lecteur multimedia</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>SoftCinema</td>
+  <td width="30" align="left">Lecteur multimedia</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>MakeCD</td>
+  <td width="30" align="left">Gravage</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>BurnIT</td>
+  <td width="30" align="left">Gravage</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>VHI Studio 6</td>
+  <td width="30" align="left">Gestionnaire VHI</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Directory Opus 4.x</td>
+  <td width="30" align="left">Gestionnaire de fichiers</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Directory Opus Magellan (5.x)</td>
+  <td width="30" align="left">Gestionnaire de fichiers</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>PixLoad 4.0</td>
+  <td width="30" align="left">Lancer de taches</td>
+  <td> Remplacer les fichiers Arexx de MorphOS par ceux de l'AmigaOS 3.x </td>
+ </tr>
+ <tr>
+  <td nowrap>PolyNet NG</td>
+  <td width="30" align="left">Lancer de taches</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>SGrabPPC</td>
+  <td width="30" align="left">Capture d'écran</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>GoldED 6.x/AIX</td>
+  <td width="30" align="left">Editeur de texte</td>
+  <td> Remplacer les fichiers Arexx de MorphOS par ceux de l'AmigaOS 3.x </td>
+ </tr>
+ <tr>
+  <td nowrap>CygnusED 4.21</td>
+  <td width="30" align="left">Editeur de texte</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>SimpleFind 3</td>
+  <td width="30" align="left">Recherche de fichiers</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Apache 1.3.20</td>
+  <td width="30" align="left">Serveur web</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Miami/MiamiDX</td>
+  <td width="30" align="left">Pile TCP/IP</td>
+  <td> Enregistrement impossible </td>
+ </tr>
+ <tr>
+  <td nowrap>Genesis</td>
+  <td width="30" align="left">Pile TCP/IP</td>
+  <td>Sauf appp.device.</td>
+ </tr>
+ <tr>
+  <td nowrap>IBrowse 2.x</td>
+  <td width="30" align="left">Navigateur web</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Voyager 3.x</td>
+  <td width="30" align="left">Navigateur web</td>
+  <td> VFlash plante parfois </td>
+ </tr>
+ <tr>
+  <td nowrap>AWeb 3.x</td>
+  <td width="30" align="left">Navigateur web</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>AmiTradeCenter</td>
+  <td width="30" align="left">Client FTP</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>JabberWocky</td>
+  <td width="30" align="left">Client Jabber/AIM/ICQ</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>AmigaAIM</td>
+  <td width="30" align="left">Client AIM</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>StrICQ 2.x</td>
+  <td width="30" align="left">Client ICQ</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>YAM 2.x</td>
+  <td width="30" align="left">Mailer</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>SimpleMail</td>
+  <td width="30" align="left">Mailer</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>NewsRog</td>
+  <td width="30" align="left">Lecteur de Newsgroups</td>
+  <td>Nécessite un patch&nbsp;: <a href="http://www.morphos.net" target="_blank">www.morphos.net</a>.</td>
+ </tr>
+ <tr>
+  <td nowrap>NewsCoaster</td>
+  <td width="30" align="left">Client Newsgroup</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>AmIRC 2.x</td>
+  <td width="30" align="left">Client IRC</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>AmTelnet</td>
+  <td width="30" align="left">Telnet</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>AmigaAMP 2.9</td>
+  <td width="30" align="left">Lecteur WAV/MP3...</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Amplifier 2.33</td>
+  <td width="30" align="left">Lecteur AIFF/MAUD/MP3...</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>AmiNetRadio</td>
+  <td width="30" align="left">Lecteur Shootcast/MP3...</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>SongPlayer</td>
+  <td width="30" align="left">Lecteur CDDA/MP3...</td>
+  <td>Quelques problèmes.</td>
+ </tr>
+ <tr>
+  <td nowrap>ProStation Audio</td>
+  <td width="30" align="left">Edition sonore</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>SoundFX 4</td>
+  <td width="30" align="left">Edition sonore</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Samplitude Opus</td>
+  <td width="30" align="left">Edition sonore</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>MCDPlayer</td>
+  <td width="30" align="left">Lecteur CDDA</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>OptyCDPlayer</td>
+  <td width="30" align="left">Lecteur CDDA</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Timidity</td>
+  <td width="30" align="left">Lecteur de modules</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>UADE</td>
+  <td width="30" align="left">Lecteur de modules</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Lame</td>
+  <td width="30" align="left">Encodeur MP3</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>NCodeR</td>
+  <td width="30" align="left">Encodeur MP3</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>The MPEGEncGUI</td>
+  <td width="30" align="left">Interface pour outils MP3</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Homebank</td>
+  <td width="30" align="left">Banquier</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>AmiBlitz2</td>
+  <td width="30" align="left">Compilateur Blitz Basic</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>VBCC</td>
+  <td width="30" align="left">Compilateur C/C++</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>SAS C</td>
+  <td width="30" align="left">Compilateur C/C++</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>GCC</td>
+  <td width="30" align="left">Compilateur C/C++</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Storm C</td>
+  <td width="30" align="left">Compilateur C/C++</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Rebol</td>
+  <td width="30" align="left">Compilateur Rebol</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Samba 2.0</td>
+  <td width="30" align="left">Réseau</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Scout</td>
+  <td width="30" align="left">Système monitor</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>SnoopDos</td>
+  <td width="30" align="left">Système monitor</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>UAE</td>
+  <td width="30" align="left">Emulateur Amiga Classic</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>MAME 0.67</td>
+  <td width="30" align="left">Emulateur bornes d'arcade</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>ScummVM</td>
+  <td width="30" align="left">Emulateur de jeux Scumm</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Nostalgia 2.1</td>
+  <td width="30" align="left">Interface pour émulateur</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>DarcNes</td>
+  <td width="30" align="left">Emulateur NES, PCEngine,...</td>
+  <td>Trop rapide&nbsp;:)</td>
+ </tr>
+ <tr>
+  <td nowrap>GBE</td>
+  <td width="30" align="left">Emulateur GameBoy</td>
+  <td>Trop rapide&nbsp;:)</td>
+ </tr>
+ <tr>
+  <td nowrap>WarpSNES</td>
+  <td width="30" align="left">Emulateur SuperNES</td>
+  <td>Trop rapide&nbsp;:)</td>
+ </tr>
+ <tr>
+  <td nowrap>Bochs</td>
+  <td width="30" align="left">Emulateur PC</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Alcuin</td>
+  <td width="30" align="left">Emulateur calculatrice HP48</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>WarpNeoMAME</td>
+  <td width="30" align="left">Emulateur de NeoGeo</td>
+  <td>Quelques problèmes de compatibilité.</td>
+ </tr>
+ <tr>
+  <td nowrap>AmiGenerator</td>
+  <td width="30" align="left">Emulateur Megadrive</td>
+  <td>Trop rapide&nbsp;:)</td>
+ </tr>
+ <tr>
+  <td nowrap>Diavolo Backup</td>
+  <td width="30" align="left">Système de sauvegarde</td>
+  <td>Hit enforcer sans gravité.</td>
+ </tr>
+ <tr>
+  <td nowrap>Spitfire 2</td>
+  <td width="30" align="left">Gestion PalmPilot</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>JMiner</td>
+  <td width="30" align="left">Photogrammetrie</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>AmiAtlas</td>
+  <td width="30" align="left">Atlas routier</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap>Lha, Lzx, Zip, BZip2, TAR, GZip,...</td>
+  <td width="30" align="left">Archiveurs</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Birdie Shoot</td>
+  <td nowrap align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Knights And Merchants</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Software Tycoon</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Nécessite le patch pour MorphOS corrigeant les mauvaises couleurs en mode 16 bits.</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Feeble Files</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Heretic 2</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Shogo</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Nécessite obligatoirement Rave3D et Goa. Le launcher se bloque sinon.</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Quake</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Quake 2</td>
+  <td width="30" align="left">Jeu</td>
+  <td>L'installation de la version d'Hyperion pose quelques difficultés. Le jeu tourne bien avec cette version et encore plus vite avec la version native MorphOS.</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Nightlong</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Bogue de couleur autour du personnage (comme sous Amithlon).</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Simon The Sorceror 2</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Wolfenstein 3D</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Descent Freespace</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Descent</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">WipEout 2097</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Nécessite Rave3D et Goa.</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Puzzle Bobs</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Problème de l'audio.device qui sera résolu très prochainement.</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Tales Of Tamar</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Nécessite la dernière version. Plusieurs locations bloquent le jeu. Quitter le jeu fait apparaitre un écran noir.</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Gloom (et dérivés)</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Problème de l'audio.device qui sera résolu très prochainement.</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Foundation</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Chargement long, animation lente. Avec Trance, le panneau principal n'est pas visible.</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Fields Of Battle</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Crossfire 2</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Abuse</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Myst</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Version 1.1</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Earth 2140</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Une version AHI existe chez les auteurs...</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Payback</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Problème de l'audio.device qui sera résolu très prochainement (version 68k seulement).</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Hexen</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Différents résultats suivants les ports. Fonctionne sans le son.</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Heretic</td>
+  <td width="30" align="left">Jeu</td>
+  <td>Différents résultats suivants les ports. Fonctionne sans le son.</td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Aqua</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Dynamite</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Eat The Whistle</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Virtual Ball Fighter</td>
+  <td width="30" align="left">Jeu</td>
+  <td> - </td>
+ </tr>
+ <tr>
+  <td nowrap width="180">Aminet/game/wb</td>
+  <td width="30" align="left">Jeu</td>
+  <td>La plupart de ces jeux fonctionnent, par exemple&nbsp;: SameGame, MahjonggTiles, MUI Mine, Boom, Soliton, Swapper, Connect 4, ColorLines, Hexagons, VChess, FreeCell,...</td>
+ </tr>
+</table>
+
+
+<br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+{center}
+{subhead}The Tech Guy: Changing to SFS- Part 1{def}{p}
+Article by Paul Harvey  (gLorTzP/csirac)
+{left}
+{p} {p}
+{bold}Background{nobold}
+{p} {p}
+Smart File System is a replacement file system for the Amiga that has been around for a few 
+years. Although its last update was more than a year ago, its current form in version v1.56 by 
+John Hendrix is a very stable and functional file system that is in many ways superior to the old 
+FFS that has been part of the Amiga OS since release 2.x. Best of all, its free, and it is readily 
+available on Aminet.
+{p} {p}
+The official URL for SFS is at: {link http://www.xs4all.nl/~hjohn/SFS}http://www.xs4all.nl/~hjohn/SFS{end}
+{p} {p}
+{bold}Why change to SFS?{nobold}
+{p} {p}
+FFS is fine for the average Amiga user. However, if you are a developer or an adventurous user 
+that does scary things like experimenting with various hacks and patches, you might find yourself 
+waiting for over half an hour while your system is re-validating a hard disk partition that was 
+being written to when you suddenly met the guru. In the days when FFS was invented, a big 
+hard disk was around 100MB. Revalidating a 100MB partition only takes a few minutes, but 
+multi-gigabyte partitions take ages. FFS also has a tendency to corrupt itself sometimes (in my 
+experience with OS 3.0) and in a worst case scenario, I have twice (in six months) been in the 
+situation where I can't possibly mount the corrupted hard disk because the machine insists on 
+rebooting while validating a sick partition.
+{p} {p}
+Even though FFS is probably useable by most, I have found that the OS 3.0 implementation is 
+rather buggy, and overall, inconvenient. Whilst the new FFS that comes with OS3.5 is a bug fixed, 
+64 bit FS that breaks the 4GB barrier, it still has most of the old limitations. This means you will 
+still find yourself explaining to your PC friends why your oh-so-amazing Amiga is taking longer to 
+boot than is generally required to re-install Windows 98, just because you hit Ctrl-A-A when 
+Voyager decided to flush it's cache. FFS is still slow, lacks a decent undelete ability, and is limited 
+to 30 character file names, among other things.
+{p} {p}
+An SFS partition, on the other hand, never has to revalidate. When writing to the hard disk, SFS 
+does not directly overwrite any structure data until the write operation has finished, and the 
+'proposed' changes are written to disk. When this is done, SFS then enables this change with 
+minimal write operations - reducing the chance of interrupting a critical write operation that 
+would leave your partition in an invalid state. In the event that this final write operation to 
+enable the changes is interrupted, SFS will either undo the failed changes or complete the 
+pending ones if possible the next time the partition is mounted when you reboot. For 
+performance reasons, this algorithm only applies to the file system objects and structures 
+themselves, not the actual data (so your data may be corrupted, but it wont be necessary to 
+rebuild anything).
+{p} {p}
+{bold}Other benefits:{nobold}
+{p} {p}
+- SFS has a fully configureable built in read-ahead cacheing system, unlike FFS's inefficient and     
+  memory hungry buffers.{p}
+- FFS is slow when working with large files, such as when editing large graphics files. SFS is
+  supposed to be faster in this respect.{p}
+- FFS's directory cache improves the speed of reading directories, but decreases speed in             
+  operations such as deleting, renaming etc. SFS has a different approach which is actually faster   
+  than FFS, even though it uses a seemingly more laborious 'safe-write' algorithm.{p}
+- Tools such as DiskSalv and ReOrg do not support the new FFS on > 4GB drives.{p}
+- SFS supports drives up to 2TB (2 terabytes, or 2000GB) and already has defrag and salv utils{p}
+- SFS supports long file names, but to keep system friendly and avoid problems with dos.library,   
+  file names are capped at 100 characters, as opposed to FFS's 30 characters.{p}
+- Files can apparently be up to 4GB in size, but again to avoid any troubles with dos.library, 2GB  
+  is the maximum size of a file{p}
+- An SFS partition can be formatted to be case sensitive, but is by default case insensitive like FFS{p}
+- By default a directory called .recycled is created which holds the last 20 files that have been
+  deleted. Files in this directory can be deleted again (permanently removed) or the .recycled
+  directory can be disabled all together when formatting for the first time.{p}
+{p} {p}
+As you can see, SFS is a complete, modern FS solution that can completely supersede FFS. PFS has
+similar features to SFS, but is generally faster (as it should be, being a commercial product and
+costing almost as much as AmigaOS 3.5), however you should note that both file systems are far
+better than FFS.
+{p} {p}
+{bold}Installing SFS{nobold}
+{p} {p}
+Installing SFS is not a minor operation. You will have to install the file system into the RDB (Rigid
+Disk Block) of your hard drive, and you will have to repartition and reformat. This exercise is
+recommended only to those who are able to backup their *entire* hard disk, or to anyone who is
+considering a full re-install of their system for spring cleaning. The easiest way to back up your 
+HD is either with CD-R (if you have access to one; make sure the CDs you burn aren't frisbees 
+though!) or with another hard disk. In fact, if you have a spare hard disk and you just want to try 
+out SFS, just use that hard disk for testing.
+{p} {p}
+  Note: My A1200's CSA 12 gauge's csascsi.device doesn't like SFS. In fact, it doesn't like OS3.1
+  either, all it does is refuses to boot... so SFS is not compatible with all scsi controllers. It is
+  definitely worth testing SFS first to see if it works on your system!
+{p} {p}
+Theoretically, if you have a 'junk' partition or a partition with little data on it that can be
+copied elsewhere, you should be able to change this partition to SFS with no problems, just for
+testing. For a long time I had FFS and SFS living on the same HD very happily, but keep in mind, 
+there is a possibility you could screw up.
+{p} {p}
+OK, I will assume you have a blank HD that has never been in your machine before. If you know 
+what you are doing or you just want to format one partition as an SFS one, skip the first few
+instructions. 
+{p} {p}
+{bold}1: Getting ready{nobold}
+{p} {p}
+Get a blank floppy disk and make it bootable using DOpus or with the CLI like this:
+{p} {p}
+1> install df0:
+{p} {p}
+Then type:{p}
+1> makedir df0:c
+{p} {p}
+Copy all your essential commands for the c: directory (like dir, assign, copy, ed etc.) to the
+c/ directory on the floppy. Also copy HDToolbox from your SYS:Tools/ directory or off your WB 
+Install disks.
+{p} {p}
+1> copy c:assign df0:c/{p}
+1> copy c:ed df0:c/{p}
+1> copy c:dir df0:c/{p}
+1> copy c:makedir df0:c/{p}
+1> copy c:copy df0:c/{p}
+1> copy sys:tools/hdtoolbox df0:
+{p} {p}
+Now you need to copy the SmartFileSystem handler to L: from the SFS lha archive. If you 
+downloaded the archive SFS184.lha, you would type:
+{p} {p}
+1> cd <volume:path/, eg. Work:Downloads/>{p}
+1> lha x SFS184.lha{p}
+LhA Freeware Version 2.1{p}
+Copyright © 1991-94 by Stefan Boberg.{p}
+Copyright © 1998,1999 by Jim Cooper and David Tritscher.
+{p} {p}
+Extracting from archive 'SFS184.lha':{p}
+ Extracting: (    8667/    8667)  SmartFilesystem/changes.txt{p}
+ Extracting: (     485/     485)  SmartFilesystem/Developers.txt{p}
+ Extracting: (   10160/   10160)  SmartFilesystem/DevInf{p}
+ Extracting: (   20332/   20332)  SmartFilesystem/Diskspeed{p}
+ Extracting: (    4509/    4509)  SmartFilesystem/Diskspeed.txt{p}
+ Extracting: (   60456/   60456)  SmartFilesystem/L/SmartFilesystem{p}
+ Extracting: (    2900/    2900)  SmartFilesystem/SetCache{p}
+ Extracting: (    1587/    1587)  SmartFilesystem/SetCache.txt{p}
+ Extracting: (   23604/   23604)  SmartFilesystem/SFScheck{p}
+ Extracting: (    3541/    3541)  SmartFilesystem/SFScheck.txt{p}
+ Extracting: (   12428/   12428)  SmartFilesystem/SFSdefragmentGUI{p}
+ Extracting: (    2600/    2600)  SmartFilesystem/SFSformat{p}
+ Extracting: (    1782/    1782)  SmartFilesystem/SFSformat.txt{p}
+ Extracting: (    9660/    9660)  SmartFilesystem/SFSquery{p}
+ Extracting: (    5504/    5504)  SmartFilesystem/Sources/bitfuncs.c{p}
+ Extracting: (     311/     311)  SmartFilesystem/Sources/bitfuncs_protos.h{p}
+ Extracting: (    4745/    4745)  SmartFilesystem/Sources/DevInf/DevInf.c{p}
+ Extracting: (   26417/   26417)  SmartFilesystem/Sources/Diskspeed/diskspeed.c{p}
+ Extracting: (     112/     112)  SmartFilesystem/Sources/Diskspeed/FVasm.o{p}
+ Extracting: (      92/      92)  SmartFilesystem/Sources/Diskspeed/SCOPTIONS{p}
+ Extracting: (      90/      90)  SmartFilesystem/Sources/Diskspeed/smakefile{p}
+ Extracting: (    1528/    1528)  SmartFilesystem/Sources/fs/adminspaces.h{p}
+ Extracting: (     919/     919)  SmartFilesystem/Sources/fs/bitmap.h{p}
+ Extracting: (    5103/    5103)  SmartFilesystem/Sources/fs/blockstructure.h{p}
+ Extracting: (     457/     457)  SmartFilesystem/Sources/fs/btreenodes.h{p}
+ Extracting: (    4992/    4992)  SmartFilesystem/Sources/fs/cachedio.o{p}
+ Extracting: (     868/     868)  SmartFilesystem/Sources/fs/cachedio_protos.h{p}
+ Extracting: (    1188/    1188)  SmartFilesystem/Sources/fs/deviceio.h{p}
+ Extracting: (    6564/    6564)  SmartFilesystem/Sources/fs/deviceio.o{p}
+ Extracting: (     604/     604)  SmartFilesystem/Sources/fs/deviceio_protos.h{p}
+ Extracting: (    2668/    2668)  SmartFilesystem/Sources/fs/fs.h{p}
+ Extracting: (     953/     953)  SmartFilesystem/Sources/fs/nodes.h{p}
+ Extracting: (    8929/    8929)  SmartFilesystem/Sources/fs/objects.h{p}
+ Extracting: (    6558/    6558)  SmartFilesystem/Sources/fs/packets.h{p}
+ Extracting: (    2469/    2469)  SmartFilesystem/Sources/fs/query.h{p}
+ Extracting: (     145/     145)  SmartFilesystem/Sources/fs/redblacktree.h{p}
+ Extracting: (    1525/    1525)  SmartFilesystem/Sources/fs/transactions.h{p}
+ Extracting: (    3317/    3317)  SmartFilesystem/Sources/SetCache/setcache.c{p}
+ Extracting: (     748/     748)  SmartFilesystem/Sources/SFScheck/asmsupport.o{p}
+ Extracting: (    5415/    5415)  SmartFilesystem/Sources/SFScheck/asmsupport.s{p}
+ Extracting: (     108/     108)  SmartFilesystem/Sources/SFScheck/SCOPTIONS{p}
+ Extracting: (   30359/   30359)  SmartFilesystem/Sources/SFScheck/SFScheck.c{p}
+ Extracting: (     176/     176)  SmartFilesystem/Sources/SFScheck/smakefile{p}
+ Extracting: (   15259/   15259)  SmartFilesystem/Sources/SFSdefragmentGUI/SFSdefragmentGUI.c{p}
+ Extracting: (    3274/    3274)  SmartFilesystem/Sources/SFSformat/SFSformat.c{p}
+ Extracting: (    4175/    4175)  SmartFilesystem/Sources/SFSquery/SFSquery.c{p}
+ Extracting: (     782/     782)  SmartFilesystem/Warning.txt{p}
+47 files extracted, all files OK.
+{p} {p}
+Operation successful.
+{p} {p}
+1> cd SmartFilesystem{p}
+1> cd l{p}
+1> makedir df0:L{p}
+1> copy SmartFilesystem df0:L/
+{p} {p}
+You may also want to copy some of the documentation as well for reference. There is a later, 
+beta version of SFS on the SFS web site, but to avoid any bugs I will use the latest official archive 
+off aminet. You should also copy the SFS utils to df0: (Mainly SFSFormat and SetCache is needed){p}
+1> cd <volume:path/SmartFileSystem/, eg. Work:Downloads/SmartFileSystem/>{p}
+1> copy #? df0:
+{p} {p}
+{bold}2: Starting HDToolBox{nobold}
+{p} {p}
+After installing your hard drive physically into the machine, boot off the floppy disk you just 
+made. You don't have to use a floppy disk if you are installing SFS to an added hard disk or a 
+blank partition (that is, you still have your original SYS: partition). Just boot without startup-
+sequence by clicking the appropriate button in the ECS menu you get when holding down both 
+mouse buttons during power up.
+{p} {p}
+For HDToolBox to work correctly, you must assign T: to a valid directory. I recommend RAM:. 
+You do that in the CLI like this:
+{p} {p}
+1> makedir ram:T{p}
+1> assign T: ram:T
+{p} {p}
+Now you can start HDToolBox. It is often handy to start a new shell session with the 'newcli' 
+command in case you want to check something out whilst using the HDToolBox program. 
+Alternatively, you could put 'run' before the HDToolBox command to launch the program 
+separately, Like this:{p}
+1> run HDToolBox
+{p} {p}
+If you have an IDE drive in an A1200 or A4000, or a scsi drive in a A3000, you can just type:
+{p} {p}
+1> df0:HDToolBox{p}
+or{p}
+1> df0:HDToolBox scsi.device
+{p} {p}
+as the hard disks on these machines with the right configuration will have the hard disks on
+scsi.device. If you have a scsi controller that has a different name, such as 2ndscsi.device or
+csascsi.device, then just type:
+{p} {p}
+1> df0:HDToolBox <device name ending in .device>
+{p} {p}
+{p} {p}
+{link fe5}On To Part 2{end}
+{p} {p}
+

@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+		<title>Sekalaiset</title>
+		<meta name="generator" content="Handmade in Finland">
+	</head>
+
+	<body bgcolor="white" link="navy" alink="red" vlink="navy">
+		<center>
+			<font size="1" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">[ <a href="hakemisto.html" target="_self">Sekalaiset</a> ] [ <a href="../sivukartta.html" target="_self">Sivukartta</a> ]</font>
+			<p>
+			<table border="0" cellpadding="4" cellspacing="1" width="80%" bgcolor="navy">
+				<tr>
+					<td width="100%" bgcolor="navy" align="center"><font color="yellow" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular"><b>Installerin ohjelmointi - Osa 1</b></font></td>
+				</tr>
+				<tr height="15">
+					<td width="100%" height="15" bgcolor="#d8ecfd" align="center"><font color="#000066" size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Ilkka Lehtoranta &lt;<a href="mailto:iti@solutions.fi">iti@solutions.fi</a>&gt;</font></td>
+				</tr>
+			</table>
+			</p>
+			<p>
+			<table border="0" cellpadding="4" cellspacing="1" width="80%" bgcolor="navy">
+				<tr>
+					<td width="50%" bgcolor="#d8ecfd">Joskus 80-luvulla oli hyvin tavallista, ettei ohjelman mukana tullut mink&auml;&auml;nlaista asennusohjelmaa, vaan k&auml;ytt&auml;j&auml;n piti asentaa kaikki itse. Jos ohjelman mukana sattui tulemaan asennusohjelma, oli se usein hyvin k&ouml;mpel&ouml; ja vaikeaselkoinen. Pahimmillaan asennusohjelma oli pelkk&auml; komentorivitiedosto, joka kopioi omat tiedostonsa jonnekin p&auml;in kiintolevy&auml; kysym&auml;tt&auml; k&auml;ytt&auml;j&auml;lt&auml; mit&auml;&auml;n. Joissakin saattoi ehk&auml; valita jopa mille osiolle ohjelman asentaa, muttei kohdehakemistoa. Niinp&auml; useimmat k&auml;ytt&auml;j&auml;t asensivatkin ohjelmat mieluummin itse kuin antoivat asennusohjelman sotkea kiintolevy&auml;.
+						<p>Onneksi joku edesmenneell&auml; Commodorella keksi tehd&auml; yleisk&auml;ytt&ouml;isen asennusohjelman, jonka avulla asennus k&auml;y vaivattomasti. Riitt&auml;&auml; ett&auml; ohjelmoija laatii pienehk&ouml;n tekstitiedoston ohjaamaan Installerin toimintaa. Seuraavassa esittelen pintapuolisesti laatimaani yksinkertaista asennusohjelmaa, jota voi k&auml;ytt&auml;&auml; paitsi levykelehden asentamiseen, my&ouml;s omien Installerien pohjana. L&ouml;yd&auml;t listauksen kokonaisuudessaan ikonin kera nimill&auml; <a href="Saku_Install">Saku_Install</a> ja <a href="Saku_Install.info">Saku_Install.info</a>.</p>
+						<p>Yksi t&auml;rkeimmist&auml; ohjelmointikielien ominaisuuksista ovat muuttujat. Installerissa muuttujia ei tarvitse esitell&auml; erikseen kuten esim. C:ss&auml;. Riitt&auml;&auml; vain ett&auml; asetetaan sille joku arvo set-lauseella. Seuraavassa on muutamia esimerkkej&auml; set-lauseen k&auml;yt&ouml;st&auml;:</p>
+						<p>(set #dirname @app-name)<br>
+						(set #copying &quot;Kopioin tiedostoja...&quot;)<br>
+						(set #destdir-prompt (cat &quot;Valitse hakemisto, jonne luon uuden hakemiston nimell&auml; '&quot; #dirname &quot;'.&quot;))<br>
+						<p>Ensimm&auml;isess&auml; muuttuja #dirname saa arvokseen muuttujan @app-name sis&auml;ll&ouml;n. @-alkuiset muuttujat ovat Installerin valmiiksi m&auml;&auml;rittelemi&auml; muuttujia, joita voi k&auml;ytt&auml;&auml; hy&ouml;dykseen. T&auml;ss&auml; tapauksessa @app-name on sama kuin asennusohjelman info-tiedostossa olevan APPNAME-tooltypen arvo. Niist&auml; lis&auml;&auml; my&ouml;hemmin. Joskus on tarpeen yhdist&auml;&auml; useita merkkijonoja yhdeksi, kuten kolmannessa tapauksessa on tehty. T&auml;m&auml; hoidetaan cat-funktiolla. Huomaa, ett&auml; Installerin muuttujat ovat tyypitt&ouml;mi&auml; eli muuttujat voivat saada arvokseen yht&auml; hyvin luvun kuin merkkijononkin. Sen lis&auml;ksi ne ovat kaikki globaaleja eli toisin sanoen paikallisia muuttujia ei ole. Yksi useimmin tarvittavista ominaisuuksista on kohdehakemiston kysyminen:</p>
+						<p>(set @default-dest<br>
+						(askdir<br>
+						(prompt #destdir-prompt)<br>
+						(help @askdir-help)<br>
+						(default @default-dest)<br>
+						)<br>
+						)<br>
+						<p>T&auml;ss&auml; asetetaan muuttujalle @default-dest uusi arvo askdir-funktion avulla, joka avaa ikkunaan hakemistolistauksen. Parametrilla 'prompt' asetetaan teksti, joka n&auml;kyy listauksen yl&auml;puolella. Pyri pit&auml;m&auml;&auml;n se mahdollisimman lyhyen&auml;, sill&auml; mit&auml; pidempi se on, sit&auml; v&auml;hemm&auml;n j&auml;&auml; tilaa itse hakemistolistaukselle. Parametri 'help' asettaa ohjetekstin (pakollinen), joka t&auml;ss&auml; tapauksessa on Installerin oma vakioteksti, mutta halutessasi voit laatia oman. 'default' m&auml;&auml;rittelee hakemiston, jota Installer ehdottaa k&auml;ytt&auml;j&auml;lle. T&auml;ss&auml; tapauksessa annamme Installerin itse p&auml;&auml;tt&auml;&auml; oletushakemistosta. Parametri 'newpath' on t&auml;ss&auml; tapauksessa hieman turha.</p>
+						<p>Koska hyvin usein annamme k&auml;ytt&auml;j&auml;n vain valita polun, jonne asennamme itse ohjelman, t&auml;ytyy meid&auml;n viel&auml; lis&auml;t&auml; @default-dest:iin ohjelman hakemiston nimi. Se tehd&auml;&auml;n k&auml;ytt&auml;en tackon-funktiota:</p>
+						<p>(set @default-dest (tackon @default-dest &quot;#dirname&quot;))</p>
+						<p>Miss&auml;&auml;n nimess&auml; ei pid&auml; k&auml;ytt&auml;&auml; cat-funktiota, koska seurauksena saattaisi olla virheellinen hakemistopolku.</p>
+						<p>Nyt kun olemme lopultakin saaneet m&auml;&auml;ritelty&auml; kohdehakemiston, voimme luoda sen:</p>
+						<p>(makedir @default-dest (infos))</p>
+						<p>Parametri 'infos' m&auml;&auml;r&auml;&auml;, ett&auml; hakemistolle luodaan kuvake. Jos haluat varmistuksen k&auml;ytt&auml;j&auml;lt&auml;, voit lis&auml;t&auml; parametrin 'confirm' jolloin kysyt&auml;&auml;n varmistus, mutta t&auml;ll&ouml;in my&ouml;s parametrit 'prompt' ja 'help' t&auml;ytyy m&auml;&auml;ritell&auml;.</p>
+						<p>Jos tarkoituksena on tehd&auml; jotain j&auml;nn&auml;&auml; pitk&auml;n aikaa, voit asettaa ikkunaan tekstin, joka n&auml;kyy kun Installer tekee jotakin. Koska aiomme kohta kopioida pitk&auml;n liudan levykelehden tiedostoja asetamme tekstin &quot;Kopioin tiedostoja...&quot;, jonka m&auml;&auml;rittelimme jo aiemmin:</p>
+						<p>(working #copying)</p>
+						<p>Mik&auml;li working-lausetta ei k&auml;ytet&auml;, n&auml;kyy ikkunassa &quot;Working on Installation&quot; tai vastaava suomeksi.</p>
+						<p>Nyt sitten alamme kopioida tiedostoja:</p>
+						<p>(copyfiles<br>
+						(source &quot;&quot;)<br>
+						(dest @default-dest)<br>
+						(pattern &quot;#?&quot;)<br>
+						)<br>
+						</p>
+						<p>'source' m&auml;&auml;rittelee l&auml;hdehakemiston, joka t&auml;ss&auml; tapauksessa on sama hakemisto, mist&auml; Installer k&auml;ynnistettiinkin. 'dest' on tietenkin kohdehakemisto. Parametrilla 'pattern' voimme valita kopioitavat tiedostot kuin hakemistotkin. Vaihtoehtoisesti voisimme k&auml;ytt&auml;&auml; my&ouml;s parametria 'all', joka kopioi kaikki tiedostot hakemistoja my&ouml;ten. Jos hakemistoja ei haluta kopioida, lis&auml;t&auml;&auml;n parametri 'files'. Muita hy&ouml;dyllisi&auml; parametreja ovat mm. 'nogauge' (ei edistysmittaria), 'confirm' ja 'choices', jolloin k&auml;ytt&auml;j&auml; voi itse valita kopioitavat tiedostot.</p>
+						<p>Jos aiot kopioida esim. uuden kirjaston tai ajurin, k&auml;yt&auml; 'copylib'-lausetta, joka osaa tarkistaa versionumeron ennen kopiointia. N&auml;in et kopioi vahingossa vanhaa versiota, paitsi jos k&auml;ytt&auml;j&auml; todellakin niin haluaa (mahdollista vain EXPERT-moodissa).</p>
+						<p>Koska kaikki ty&ouml; on tehty voimme vaikka vain huvin vuoksi laittaa ikkunan otsikkopalkissa n&auml;kyv&auml;n asennuksen edistymisest&auml; kertovat prosenttiluvun sataan:</p>
+						<p>(complete 100)</p>
+						<p>Jos asennus on v&auml;h&auml;nk&auml;&auml;n monimutkaisempi, kannattaa sinne t&auml;nne ripotella (complete xx) lauseita ilmoittamaan asennuksen edistymisest&auml;.</p>
+						<p>Rusinana pohjalla k&auml;ynnist&auml;mme levykelehden:</p>
+						<p>(run &quot;Saku&quot;<br>
+						(prompt &quot;\nLopuksi k&auml;ynnist&auml;n levykelehden...&quot;)<br>
+						(confirm)<br>
+						(help &quot;&quot;)<br>
+						)<br>
+						</p>
+						<p>Koska olemme laiskoja ihmisi&auml;, k&auml;ytt&auml;j&auml; saa ohjeeksi pelk&auml;n tyhj&auml;n ruudun. K&auml;ytt&auml;m&auml;ll&auml; 'confirm'-parametria k&auml;ytt&auml;j&auml;n ei ole heti pakko alkaa lukea levykelehte&auml;, vaan voi sen tehd&auml; my&ouml;s my&ouml;hemmin. T&auml;ss&auml; esimerkiss&auml; on my&ouml;s virhe, sill&auml; oikeaoppisesti Saku pit&auml;isi k&auml;ynnist&auml;&auml; siit&auml; hakemistosta mihin se on asennettukin. Voit varmasti kuvitella k&auml;ytt&auml;j&auml;n turhautumisen, kun levykelehti on ensin asennettu hitailta levykkeilt&auml; kiintolevylle ja lopuksi asennusohjelma k&auml;ynnist&auml;&auml; lehden levykkeelt&auml;, vaikka nopea kiintolevykin olisi tarjolla. :)</p>
+						<p>Ennen kuin k&auml;ytt&auml;j&auml; p&auml;&auml;see k&auml;ytt&auml;m&auml;&auml;n laatimaamme asennusohjelmaa, tarvitsee se viel&auml; ikonin sek&auml; tietysti ett&auml; siin&auml; on m&auml;&auml;ritelty muutama t&auml;rke&auml; tooltype. APPNAME kertoo asennettavan ohjelman nimen, esim. APPNAME=Saku, ja on pakollinen. MINUSER m&auml;&auml;rittelee helpoimman mahdollisen tason, jolla k&auml;ytt&auml;j&auml; voi operoida. Tasoja on kolme: NOVICE, AVERAGE ja EXPERT. Novice-tasolla Installer ei anna k&auml;ytt&auml;j&auml;n vaikuttaa asennukseen muuta kuin korkeintaan asennushakemiston suhteen. Average-tasolla k&auml;ytt&auml;j&auml; voi vaikuttaa asennukseen rajoitetusti, kun taas expert-tasolla k&auml;ytt&auml;j&auml; saa p&auml;&auml;tt&auml;&auml; l&auml;hes kaikesta itse. Jos asetat MINUSER=EXPERT, ei Installer kysy lainkaan k&auml;ytt&auml;j&auml;n kokemustasoa. Jos taas MINUSER=AVERAGE, k&auml;ytt&auml;j&auml; ei voi valita NOVICE-modea lainkaan. Jos annat k&auml;ytt&auml;j&auml;n operoida muullakin kuin expert-tasolla, on t&auml;rke&auml;&auml; ett&auml; eri tasoilla todellakin on jotain eroa.</td>
+				</tr>
+			</table>
+			</p>
+			<p><font size="1" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">[ <a href="hakemisto.html" target="_self">Sekalaiset</a> ] [ <a href="../sivukartta.html" target="_self">Sivukartta</a> ]</font></center>
+	</body>
+
+</html>

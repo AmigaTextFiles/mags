@@ -1,0 +1,363 @@
+<HTML>
+<HEAD>
+<TITLE>PPC Kurs</TITLE>
+</HEAD>
+<BODY BACKGROUND="funrelif3.gif">
+<TABLE WIDTH="100%" ALIGN="center">
+<TR>
+<TD BGCOLOR="#FF6A69">
+<FONT COLOR="#FFFFFF">
+<H1 Align="Center"><B>PPC Kurs - Teil 1</B></H1>
+<H3 Align="center">von Steffen Haeuser</H3>
+</TD>
+</TR>
+</TABLE><FONT COLOR="#000000"><p><PRE>
+     In  dieser  und  den naechsten Ausgaben werde ich einen kleinen PPC
+     Programmierkurs abhalten.  Im Grunde genommen wird es eher ein Kurs
+     in  sauberer  ANSI-Programmierung  sein,  weil  die  Verwendung von
+     100%igem  ANSI-Code eigentlich das wichtigste ist.  Der eigentliche
+     Wechsel  von  68k->PPC  bedingt nur ganz minimale Aenderungen.  Ich
+     werde  bei  diesem  Kurs  die  Kenntnis  der  Programmiersprache  C
+     voraussetzen.   Zu meiner Person:  Ich bin (u.a.) der Programmierer
+     von ZhaDoom und rtgmaster.
+
+     Mein  Kurs  wird  sich  spezifisch  der Programmierung unter WarpUP
+     widmen.   ppc.library  Fans  koennen  jetzt eigentlich aufhoeren zu
+     lesen.  Die ganze Sache ist nur unter WarpUP so einfach.  Mein Kurs
+     setzt  sich momentan mit StormC auseinander, ich hoffe jedoch, dass
+     bald auch der Public-Domain Compiler fuer WarpUP verfuegbar ist.
+ 
+     Einteilung der PPC Entwicklung in 5 Phasen:
+
+     1. Allen 68k Assembler Code nach C oder PPC Assembler umschreiben
+     2. Allen Source an ANSI/StormC anpassen
+     3. Allen Source an PPC anpassen
+     4. Kontextswitch-Optimierungen
+     5. Weitere Anpassungen
+     
+     Viele  Programmierer  - selbst bei komerziellen Firmen - denken, 3)
+     sei das Aufwendigste.  Ganz im Gegenteil.  3) ist geradezu minimal.
+     2) ist die eigentliche Arbeit, und kann sogar durchgefuehrt werden,
+     ohne  einen  PPC oder auch StormC zu besitzen.  Besitzern von SAS/C
+     wird  empfohlen,  mal  mit STRICT ANSI zu compilieren, das verhaelt
+     sich  dann  ziemlich  aehnlich wie StormC.  Der StormC ist naemlich
+     IMMER   STRICT  ANSI.   Ich  empfehle,  bereits  waehrend  der  68k
+     Entwicklung  eine  PPC-Anpassung parallel durchzufuehren.  Spart ne
+     Menge  Arbeit.   Auch  wenn  mir  viele "komerzielle" nicht glauben
+     wollen  ("Wir  machen  erst  die  68k Version").  Das is eigentlich
+     Quatsch  so.  Man halst sich nur zusaetzliche Arbeit auf, indem man
+     Sachen,  die  am  Anfang  nebenher gehen, zu einer ARBEIT anwachsen
+     laesst.
+     
+     Ich   werde   auf   1)   nicht  naeher  eingehen.   Dies  ist  kein
+     Assembler-Kurs.
+     
+     Der   naechste   (und   ueberhaupt   wichtigste   Punkt)   ist  die
+     ANSI-Anpassung.   Eine  einfache  Methode  ist  es,  einfach mal zu
+     compilieren  (unter StormC einfach compilieren, unter SAS/C - falls
+     man  noch  kein  StormC  hat  -  unter  STRICT  ANSI  compilieren).
+     Natuerlich  muessen  sich  SAS/C  Leute "irgendwann am Ende" StormC
+     besorgen, oder aber ihren Source jemandem geben, der StormC hat, da
+     SAS/C  kein  WarpUP  unterstuetzt.   Oder  auf  den  Public  Domain
+     Compiler  fuer  WarpUP  warten.   Wobei  es da dann sicher minimale
+     Aenderungen  gibt, dieser Kurs setzt sich hauptsaechlich mit StormC
+     auseinander.
+     
+     Dann betrachtet man alle Fehlermeldungen und bearbeitet sie.  SAS/C
+     Leute  am Besten auch Warnings rausschmeissen, falls SAS/C wo nicht
+     100% ANSI-konform war.
+     
+     Folgende  Nicht-ANSI-konformen Funktionen stehen unter StormC nicht
+     zur Verfuegung (meist recht exotische...):
+<CODE>     
+     astcsma    isascii     iscsym      iscsymf     toascii     scdir       stcpm
+     stcpma     stcsma      stccpy      stpcpy      stcis       stcisn      stclen
+     stpbrk     stpchr      stpchrn     strcmpi     strnset
+     strset     stcarg      stpsym      stptok      stpblk      strbpl      strdup
+     strins     strmid      stcd_i      stcd_l      ecvt        fcvt        gcvt
+     stch_i     stch_l      stci_d      stci_h      stci_o      stcl_d      stcl_h
+     stcl_o     stco_i      stco_l      stcu_d      stcul_d     toascii     stpdate
+     stptime    __datecvt   __timecvt   utpack      utunpk      cot         iabs
+     max        min         pow2        __emit      getreg      putreg      geta
+     isatty     ovlyMgr     dqsort      fqsort      lqsort      sqsort      strsrt
+     tqsort     drand48     erand48     jrand8      lcong48     lrand48     mrand8
+     nrand48    seed48      srand48     __autoopenfail          chkabort    
+     Chk_Abort_CXBRK      __exit      onexit      _XCEXIT     forkl       forkv       onbreak
+     wait        waitm       bldmem      rstmem      sizmem      chkml       getmem
+     getml      halloc      lsbrk       sbrk        _MemCleanup rbrk        rlsmem
+     rlsml      memccpy     movmem      repmem      setmem      swmem       except
+     __matherr  poserr      datecmp     timer       __tzset     getch       
+     fgetchar
+     fputchar    _dread      _dwrite     read        write       clrerr      close
+     _dclose     fcloseall   creat       _dcreat     _dcreatx    fdopen      fileno
+     fmode       iomode      open        _dopen      flushall    mkstemp     mktemp
+     setnbf      _dseek      lseek       tell        access      chkufb      chmod
+     fstat       getfa       getft       stat        stcgfe      stcgfn      stcgfp
+     strmfe      strmfn      strmfp      strsfn      unlink      argopt      chgclk
+     dos_packet  getclk      getasn      getdfs      putenv      rawcon      
+     stackavail
+     stacksize   stackused   chdir       closedir    dfind       dnext       
+     findpath
+     getcd       getcwd      getfnl      getpath     mkdir       opendir     readdir
+     rmdir       seekdir     rewinddir   telldir     readlocale  scr_beep    scr_bs
+     scr_cdelete scr_cinsert scr_clear   scr_cr      scr_curs    scr_cursrt  
+     scr_cursup
+     scr_eol     scl_home    scr_ldelete scr_lf      scr_linsert scr_tab     _CXFERR
+     _CXOVF      _EPILOG     _PROLOG
+      
+     Die  bedeutsamsten  darunter sind die Unix-File-I/O Funktionen.  Es
+     sei darauf hingewiesen, dass es eine "Unixlib", die diese emuliert,
+     gibt  (derzeit  bin ich der Entwickler der Unixlib, habe aber lange
+     nix  mehr  dran  gemacht...  aber ich setze sie auch hin und wieder
+     ein, is ne Linkerlib).
+     
+     Es gibt noch einige andere Dinge zu beachten:
+     
+     1. "Strong Typing"
+     
+     char *zeugs=malloc(300);
+     
+     ist ein FEHLER. Korrekt ist nach ANSI:
+     
+     char *zeugs=(char *)malloc(300);
+     
+     2. "Feldgrenzen sind KONSTANT"
+     
+     int a=5;
+     int b[a];
+     
+     ist laut ANSI ein FEHLER.
+     
+     3. "Bitfields sind C++ Code"
+     
+     Bitfields existieren laut ANSI nicht in C, sondern nur in C++
+     
+     4. "fclose nur wenn Files, offen sind"
+     
+     Files, die niemals offen waren, duerfen auch nicht geschlossen werden.
+     
+     Also: 
+     
+     if (fil) fclose(fil);
+     
+     Nur zur Sicherheit...
+     
+     5. "__attribute__((packed)) considered harmful"
+     
+     Das  GNU  C  Feature  Attribute-Packed ist nicht nur nicht Teil von
+     ANSI  (also  ein Fehler), zudem wuerde es die Rechengeschwindigkeit
+     des  PPC  aufgrund von Nichteinhaltung von Alignment-Spielregeln in
+     die KNIE zwingen.  Nicht benutzen !!!
+     
+     6. "K&R Syntax => Trashcan"
+     
+     Jedes Auftreten der K&R Syntax wie
+     
+     void main(argc,argv)
+     int argc;
+     char **argv;
+     
+     muss durch normale Syntax wie
+     
+     void main(int argc, char **argv)
+     
+     ersetzt werden.
+     
+     7. "Die Textkonstanten"
+     
+     Eine Formulierung wie:
+     
+     char bla[]={"..."};
+     
+     mag StormC nicht. Bitte umformulieren in
+     
+     char *bla="..."; (ohne geschweifte Klammern)
+     
+     8. Spezialitaeten
+     
+     U.U. muss man einige Defines setzen:
+     
+     #define __stdargs
+     #define __regargs
+     #define __asm
+     #define __far FAR
+     #define __inline inline
+     #define __volatile volatile
+     
+     Es sei zudem erwaehnt, dass es nach ANSI nicht moeglich ist, inline
+     und  static  zu  kombinieren (man muss sich fuer eins entscheiden),
+     inline   static   ergibt   eh  keinen  Sinn  (aber  geuebte  GNU  C
+     Programmierer  setzen  es  hin und wieder ein, einfach static draus
+     machen...), auch heisst es
+     
+     volatile int i;
+     
+     und nicht
+     
+     int volatile i;
+     
+     __chip, __fast und __interrupt gibt es bei StormC nicht. Hier sei auf die 
+     entsprechenden Betriebssystemsroutinen verwiesen.
+     
+     9. TCP/IP
+     
+     Wer  StormC-kompatible  Includes hierzu braucht, bitte Mail an mich
+     schreiben     (MagicSN@Birdland.es.bawue.de),    ich    habe    die
+     AmiTCP-Includes angepasst (was nicht allzu schwer ist).
+     
+     10. "Ein heisser Tip zum Schluss"
+     
+     Wer     Probleme     mit     Typecasts     hat    (besonders    bei
+     Funktionspointern...), verwende folgendes Verfahren:
+     
+     1. Compilieren
+     2. Alles, was nach Pointer aussieht auf void * casten, alles Andere auf 
+        int, long, float oder double casten.
+     
+     Nun ist es fast geschafft.  Es fehlen nur noch die PPC-Anpassungen.
+     
+     1. Includes
+     
+     Normale 68k Compiler machen fuer OS-Includes:
+     
+      #include <clib/exec_protos.h> 
+      #include <pragmas/exec_pragmas.h>
+     
+      oder
+     
+      #include <clib/exec_protos.h>
+      #include <pragma/exec_lib.h>
+     
+      oder
+     
+      #include <clib/exec_protos.h>
+      #include <inline/exec.h>
+     
+      oder
+      
+      #include <proto/exec.h>
+     
+      Fuer PPC Code bitte:
+     
+      #include <clib/exec_protos.h>
+      
+      Fuer  Code,  der  sich  fuer  sowohl  PPC  als  auch 68k mit StormC
+      uebersetzen lassen soll:
+     
+      #include <clib/exec_protos.h>
+      #ifndef __PPC__
+      #include <pragma/exec_lib.h>
+      #endif   
+     
+      __PPC__ wird automatisch vom Compiler korrekt gesetzt. Man braucht also 
+      lediglich zwei Projektfiles. Ueberhaupt laesst sich der meiste halbwegs 
+      vernuenftig programmierte Source mit zwei Projektfiles und ein paar 
+      Aenderungen in den Includes bereits uebersetzen.
+     
+     2. Tasks
+     
+     PPC-Tasks   erschafft   man   mittels   CreateTaskPPC()   aus   der
+     powerpc.library,  nicht  Anders  !!!   Auch  andere Task-Funktionen
+     stehen  zur  Verfuegung.   Die  API  ist (nahezu) identisch wie bei
+     Exec.   Ich  verweise hier auf die Autodocs der powerpc.library (im
+     WarpUP Paket enthalten).
+     
+     3. Tags
+     
+     Es  sei  darauf  hingewiesen, dass aeltere Beta-Versionen scheinbar
+     Probleme mit der Schreibweise
+     
+      OpenWindowTags()
+     
+     hatten  (im  Gegensatz  zu  OpenWindowTagList()).  In der kaeuflich
+     erwerbbaren  Version  von  StormC PPC funktioniert das jedoch.  Ich
+     hab mir dennoch angewoehnt, immer ueber ...TagList() zu gehen.
+     
+     4. BeginIO()
+     
+     Anbei  Ersatz-Code fuer BeginIO (der auf dem PPC-Compiler nicht zur
+     Verfuegung steht):
+     
+      #include <libraries/powerpc.h>
+      #include <ppcamiga.h>
+     
+      void BeginIOAudioPPC(struct IORequest *arg1)
+      {
+              extern struct Library *AudioBase;
+              ULONG regs[16];
+              regs[9] = (ULONG) arg1;
+              __CallLibrary(AudioBase,-30,regs);
+      }
+      
+     Ein Beispiel, wie das eingesetzt wird:
+     
+        AudioBase = (struct Library *)audio_io->ioa_Request.io_Device;
+        c = &channel_info[cnum];
+        c->audio_io->ioa_Request.io_Command = CMD_WRITE;
+        c->audio_io->ioa_Request.io_Flags = ADIOF_PERVOL;
+        c->audio_io->ioa_Data = &chip_cache_info[cache_chip_data (id)].chip_data[8];
+        c->audio_io->ioa_Length = lengths[id] - 8;
+        c->audio_io->ioa_Period = period_table[pitch];
+        c->audio_io->ioa_Volume = vol << 2;
+        c->audio_io->ioa_Cycles = 1;
+      #ifdef __PPC__
+        BeginIOAudioPPC((struct IORequest *)c->audio_io);
+      #else
+        BeginIO ((struct IORequest *)c->audio_io);
+      #endif
+      
+     (Man muss die LibBase immer definieren !!!)
+     
+     Zum   Abschluss  meines  Kurses  kommen  wir  noch  auf  das  Thema
+     Kontextswitches  zu  sprechen.  Einige haben sich sicher gewundert,
+     wann das endlich kommt.  Die grosse Ueberraschung:  Bei WarpUP muss
+     man  das  (zumindest mit StormC) nicht selber machen.  Der Compiler
+     erledigt das von selbst !!!
+     
+     Es gibt zwei Arten von Kontextswitches:
+     
+     a) "Funktions-Kontextswitches"
+     
+     Sehen  bei  StormC  wie  normale Funktionsaufrufe aus.  Sind nur in
+     Mixed Binaries zu finden (siehe in einen spaetereen Kursteil).  Man
+     muss  sie  in  keinster  Weise  "vorbereiten", einfach die Funktion
+     aufrufen,  dass  die  nun  auf  einem anderen Prozessor ausgefuehrt
+     wird,  interessiert  ja  den  Programmierer  nicht,  das ist ja nur
+     Technik :)
+     
+     b) "Library-Kontextswitches"
+     
+     Sehen  aus wie normale Library-Aufrufe.  Dass die auf einem anderen
+     Prozessor ausgefuehrt werden, ist wiederum nur Technik.
+     
+     Eine  Kleinigkeit muss dennoch gesagt werden.  Es muss ein PPC-Stub
+     existieren.   Dieser  existiert  bereits  in ppcamiga.lib fuer alle
+     OS-Librareis  und  fuer  rtgmaster.library  (die 68k Funktionen von
+     rtgmaster,  die  PPC-Funktionen  brauchen ja keinen Kontextswitch).
+     Falls  dieser fuer eine exotische Library nicht existiert, kann man
+     ihn aus dem protos- und dem FD-File mittels
+     
+     genppcstub mylib_protos.h mylib.fd VERBOSE
+</CODE>     
+     generieren (is dann ein C-Source, den man dazulinkt, oder eine .lib
+     draus bastelt, mit dem StormLibrarian).
+     
+     Fuer Mixed Binaries gilt: Der erste Compiliervorgang muss mit 
+     DEBUGGINGINFORMATION durchgefuehrt werden (gilt nur fuers erste Compilieren). 
+     Naehere Infos foglen im Kursteil ueber Mixed Binaries.
+     
+     Nun  ist  der  Kontextswitch bei WarpUP ja sehr schnell (0.5 ms auf
+     ner  200 MHz Karte, waehrend er auf ppc.library etwa 1 ms braucht).
+     Dennoch sollte man auf "minimale Kontextswitches" optimieren, z.B.:
+     
+     - Files niemals mit fgetc/fputc bearbeiten, IMMER fread/fwrite nehmen, wenn
+       irgend moeglich (und dann auf einem Buffer im Fastram arbeiten)
+     - NIEMALS WritePixel nehmen, immer auf einem Buffer arbeiten, und den dann
+       mittels CopyRtgBlit oder WritePixelArray8 darstellen
+     
+     (Fortsetzung folgt:) )
+               
+<HR>
+<p align=center><A href="main.html">Zurück zum Inhalt</a>
+</BODY></HTML>
+

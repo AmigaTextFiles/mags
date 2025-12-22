@@ -1,0 +1,260 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+2. Softwaretest: Boingbag 3.9.2 f&uuml;r AmigaOS 3.9 (von Christian Aichinger)
+
+Was lange w&auml;hrt, wird endlich gut. Kurz vor Ostern machte Amiga, Inc. allen 
+Besitzern von OS 3.9 eine kleine Freude mit dem neuen und schon lange 
+erwarteten Systemupdate, das die Version des Amiga-Betriebssystem auf 
+nunmehr 3.9.2 anhebt. Die auf die drei LhA-Archive BB3.9-2, BB3.9-2-
+Contribution und BB3.9-2-Locale verteilte Distribution l&auml;&szlig;t sich auf der 
+Homepage von Haage & Partner [1] herunterladen und hat entpackt einen 
+Umfang von ca. 4.5 MB.
+
+Screenshot:
+<IMG SRC="../extra/boingbag1.png" ALT="Screenshot">
+
+Was bringt's:
+
+Die interessantesten Neuerungen sind vor allem eine gr&uuml;ndlich &uuml;berarbeitete 
+Shell - ViNCED liegt nun in der Version 3.91 (bzw. die AmigaShell in 
+Version 45) vor - und eine fehlerbereinigte und leicht beschleunigte 
+exec.library, die die Versionsnummer 45.20 tr&auml;gt.
+
+Die &uuml;berarbeitete Amiga-Shell verf&uuml;gt &uuml;ber drei neue und vier erweiterte 
+Befehle und bringt zudem neue, haupts&auml;chlich aus der Unix-Welt bekannte 
+Funktionen mit sich. Shell-Programme k&ouml;nnen z.B. neuerdings anstatt mit dem 
+Befehl "run" auch mit einem "&" dazu bewegt werden, die weitere Kommando-
+Eingabe &uuml;ber dieselbe Konsole zu erm&ouml;glichen. Das Kommando 
+"SYS:Utilities/MultiView &" macht also genau das gleiche wie "run 
+SYS:Utilities/MultiView". Auch die Ausgabe-Umleitung von Fehlermeldungen 
+von Shell-Programmen wird jetzt unterst&uuml;tzt, solange sich der Programmierer 
+an die Amiga-Programming-Styleguides gehalten hat.
+Interaktive Shell-Programme (z.B. der Befehl "Ask", der innerhalb von 
+Shell-Skripten Abfragen beim Anwender vornimmt) k&ouml;nnen nun auch mit 
+externen Skripten automatisiert werden. Und auch das nicht wirklich neue 
+Protection-Bit "h" feiert seit OS 3.9.2 sein Revival und erg&auml;nzt damit den 
+Befehl "Resident". Befehle, die &uuml;ber dieses Bit verf&uuml;gen, werden 
+automatisch beim ersten Aufruf resident im RAM-Speicher abgelegt. Das 
+"Backtick-Feature" der Shell - also die M&ouml;glichkeit, das Ergebnis eines 
+Befehls als Argument f&uuml;r einen anderen Befehl in derselben Kommandozeile zu 
+&uuml;bernehmen - wurde erweitert. So k&ouml;nnen jetzt in einer Kommandozeile 
+mehrere in Backticks eingeschlossene Kommandos hintereinander verwendet 
+werden. Oder einfacher erkl&auml;rt: Die Kommandozeile...
+
+echo "Dateiname: `requestfile`*nVerzeichnisname: `requestfile drawersonly`"
+
+...funktioniert erst mit OS 3.9.2. Leider liegt die Dokumentation der neuen 
+Shell-Features nur in englischer Sprache vor, und da diese Funktionen zum 
+Teil nun nicht gerade trivial sind, d&uuml;rfte der ein oder andere Anwender, 
+der nicht der englischen Sprache m&auml;chtig ist, so seine Probleme bekommen.
+
+Die neue Exec wurde ebenfalls aufger&auml;umt. Die Funktionen zur Verwaltung von 
+MemoryPools - einem System, mit dessen Hilfe die Fragmentierung des 
+Hauptspeichers des Amigas in ertr&auml;glichen Ma&szlig;en bleibt - wurde 
+general&uuml;berholt.
+Anwender von Mac-Emulationen k&ouml;nnen nun auf nervige PrepareEmul-, Rsrvcold- 
+oder Rsrvwarm-Aufrufe verzichten. Der Aufruf von Setpatch 3.9.2 (oder 
+besser gesagt 44.38) gen&uuml;gt, um die von der Mac-Emulation ben&ouml;tigten 
+Speicherbereiche f&uuml;r MacOS freizuhalten. Au&szlig;erdem wurden einige Bugs 
+entfernt. Laut den Release-Notes aus dem NDK 3.9 ([2]) wurde unter anderem 
+auch die Funktion ColdReboot() etwas ge&auml;ndert, um auf 68040 und 68060 "die 
+richtigen Dinge" zutun. Genaueres kann aber dem genannten Dokument 
+entnommen werden. Besitzer von &auml;lteren Distributionen des RTG-Systems 
+CyberGraphics m&uuml;ssen unbedingt darauf achten, da&szlig; die aktuelle Version auf 
+dem Rechner installiert ist. Es kann sonst nach der Installation des 
+Boingbag 3.9.2 zu den merkw&uuml;rdigsten Ph&auml;nomenen oder gar kompletter 
+Fehlfunktion des Treibersystems kommen. Auf meiner Konfiguration (siehe 
+[3]) konnte ich nach Installation des Boingbag 3.9.2 z.B. den Bildschirm 
+meiner Workbench nicht mehr &auml;ndern, da nur noch Nicht-CGFX-Bildschirme 
+angezeigt wurden. Diverse Anwender berichteten auch, da&szlig; ihre Workbench 
+nach dem Neustart nur noch 15KHz-Modies verwenden konnte. Dies liegt 
+allerdings nicht an einem Fehler der neuen Exec sondern vielmehr an einem 
+nicht systemkonformen Verhalten dieser &auml;lteren Cybergraphics-Ausgaben. 
+Anwender des Treibersystems Picasso96 sind davon jedoch nicht betroffen. 
+Anwender die Probleme mit ihrer Grafikkarte bekommen, k&ouml;nnen entweder die 
+Datei "Devs:AmigaOS ROM Update" l&ouml;schen oder mit etwas mehr Feingef&uuml;hl den 
+Setpatch-Eintrag in der Startup-Sequence auf folgende Art ab&auml;ndern:
+
+C:SetPatch QUIET SKIPROMUPDATES "exec.library"
+
+Da Setpatch resetfest beim ersten Systemstart installiert wird, mu&szlig; der 
+Rechner nach dieser Modifikation ausgeschaltet und danach neu gebootet 
+werden.
+
+Grafikkartenbesitzer, die nicht &uuml;ber einen 15KHz-f&auml;higen Monitor verf&uuml;gen, 
+k&ouml;nnen sich ebenfalls &uuml;ber das Boingbag 3.9.2 freuen, denn das Early 
+Startup Menu kann erstmals in einem VGA-freundlichen 31KHz-Grafikmodi 
+dargestellt werden. Ein eventuelles Umst&ouml;pseln an den Fernseher oder den 
+alten 15KHz-Monitor im Notfall entf&auml;llt (sofern man sich die 
+Tastenkombination f&uuml;r das Umschalten gemerkt oder zumindest aufgeschrieben 
+hat ;-) ). Anwender, die nur einen 15KHz-Monitor verwenden, sollten aber 
+unter allen Umst&auml;nden die Finger von dieser neuen M&ouml;glichkeit lassen. Der 
+Monitor kann dadurch zerst&ouml;rt werden (nein, kein Aprilscherz!!).
+
+Ferner bekamen auch viele weitere Utilities und Systembestandteile ihr Fett 
+weg. Das XAD-System, das zum Entpacken diverser Archiv-Formate wie ZIP, LhA 
+und LZX Verwendung findet, wird in der aktuellen und bisher nur als 
+Shareware erh&auml;ltlichen Version 10 mitgeliefert. F&uuml;r Anwender von Amiga-
+Emulationen ist dabei besonders die Unterst&uuml;tzung von ADF-Dateien 
+erw&auml;hnenswert. Das Tool Unarc behandelt ADF-Dateien (Amiga Disk File) nun 
+so, als w&auml;re es ein ZIP- oder LhA-Archiv. Solche Dateien k&ouml;nnen ohne Umwege 
+&uuml;ber die Floppy oder FMS extrahiert werden.
+
+Screenshot:
+<IMG SRC="../extra/boingbag2.png" ALT="Screenshot">
+
+Einige Bestandteile des Datatype-Systems wurden ebenfalls &uuml;berarbeitet. So 
+verf&uuml;gt der picture.datatype &uuml;ber ein neues Voreinstellerprogramm mit 
+dessen Hilfe beliebige Programme vor Verwendung des picture.datatype 
+ausgeschlossen bzw. deren Umgang mit Grafiken, die &uuml;ber das Datatype-System 
+geladen werden, konfiguriert werden kann. Auch der f&uuml;r die Tonausgabe 
+zust&auml;ndige sound.datatype kann nun Audiodaten via AHI &uuml;ber eine Soundkarte 
+ausgeben.
+
+ASyncWB wurde ebenfalls optimiert. Der "Befehl ausf&uuml;hren"-Requester 
+unterst&uuml;tzt nun Drag&Drop. Der Anwender kann also einfach ein Piktogramm 
+auf dem Texteingabefeld ablegen, und der komplette Pfad wird dort sofort 
+&uuml;bernommen. Auch eine Historyfunktion wurde integriert, damit mehrmals 
+ben&ouml;tigte Eingaben nicht st&auml;ndig erneut eingetippt werden m&uuml;ssen. Wenn 
+mehrere Piktogramme umbenannt werden sollen, wird jetzt nicht mehr f&uuml;r jede 
+einzelne Datei ein Requester ge&ouml;ffnet, sondern jede Datei kann nacheinander 
+entsprechend ge&auml;ndert werden. &Uuml;brigens kann der Dateiname nun auch direkt 
+mit dem Informations-Requester umbenannt werden. Ganz generell wurde die 
+Interaktion mit dem Anwender verbessert. Falls zum Beispiel ein Verzeichnis 
+angelegt werden soll, das schon existiert, macht ASyncWB den Anwender 
+darauf auch aufmerksam.
+
+Screenshot:
+<IMG SRC="../extra/boingbag3.png" ALT="Screenshot">
+
+Ebenfalls erfreulich ist die Aufnahme des OpenURL-Systems als Standard ins 
+AmigaOS (siehe auch "Kleine Helfer" in AMIGA aktuell 01/2001). Der Anwender 
+kann mit diesem System den pers&ouml;nlich favorisierten Webbrowser und E-Mail-
+Client festlegen. Es sollte damit ein f&uuml;r allemal unn&ouml;tig werden, 
+irgendwelche veralteten Demoversionen von nicht mehr weiterentwickelten 
+Webbrowsern zu installieren, nur damit die Heft-CD korrekt funktioniert. 
+Sch&ouml;n ist auch, dass OpenURL nicht so stiefm&uuml;tterlich wie so manch 
+bisheriger Standard im System integriert wurde. Zum Beispiel unterst&uuml;tzt 
+der "Befehl ausf&uuml;hren"-Requester auch das Aufrufen von URLs. Man tippt 
+einfach die URL ein, und der vorkonfigurierte Browser wird mit der 
+eingetippten URL gestartet.
+
+Screenshot:
+<IMG SRC="../extra/boingbag4.png" ALT="Screenshot">
+
+Kleinere &Auml;nderungen wurden an den Programmen MultiView, HDToolBox, 
+Calculator und Benchtrash vorgenommen. Multiview als auch HDToolbox 
+verf&uuml;gen nun &uuml;ber neue Tooltypes. Calculator und Benchtrash wurden an die 
+seit OS3.5 verf&uuml;gbare ReAction-GUI angepa&szlig;t. Der Audio-CD-Player PlayCD 
+unterst&uuml;tzt in der neuen Version die Internet-Datenbank CDDB.
+
+Screenshot:
+<IMG SRC="../extra/boingbag5.png" ALT="Screenshot">
+
+Wird eine Audio-CD eingelegt und ist der Rechner mit dem Internet 
+verbunden, wird die virtuelle CD-Klappe ge&ouml;ffnet und der Interpret sowie 
+der Name der CD angezeigt. Damit dies funktioniert, mu&szlig; zus&auml;tzlich die 
+cddb-lib installiert werden...doch dazu sp&auml;ter mehr.
+
+Die Suchfunktion der Workbench erhielt gleicherma&szlig;en eine Auffrischung. 
+Eine Datei kann nun nicht nur nach dem Dateinamen sondern auch nach dem 
+Inhalt durchsucht werden. Durch einen Doppelklick auf eines der 
+Suchergebnisse kommt DefIcons ins Spiel, denn der wirkt sich wie der Start 
+des Piktogramms (sei es nun das wirklich vorhandene oder ein Default-
+Piktogramm) von der Workbench aus, sprich: Sollte es sich um eine IFF- oder 
+PNG-Grafik handeln, wird der im Original- oder Default-Piktogramm 
+angegebene Viewer automatisch ausgef&uuml;hrt und die Grafik angezeigt. Schade 
+ist, da&szlig; man gefundene Dateien nicht direkt mit Find auf die 
+Workbenchoberfl&auml;che auslagern kann. Nun ja, man kann nicht alles haben.
+
+
+Installation:
+
+Bevor Boingbag 3.9.2 installiert wird, sollte als erstes die AmigaOS3.9-CD 
+oder die AmigaXL-CD eingelegt und unter AmigaOS angemeldet werden. Sollte 
+sich Boingbag 3.9.1 noch nicht auf dem System befinden, ist jetzt der beste 
+Augenblick gekommen, zun&auml;chst dieses Update zu installieren. Boingbag 3.9.2 
+ben&ouml;tigt ein korrekt eingerichtetes Boingbag 3.9.1. Unter WinUAE oder 
+Cloanto's Amiga Forever sollte ein entsprechendes Laufwerk konfiguriert 
+werden, das genau wie die AmigaOS3.9-CD hei&szlig;t (also "AmigaOS3.9"). Bei mir 
+hat auch die "Add PC Drives at Startup"-Option funktioniert, bei einem 
+Amiga-Forever-Anwender allerdings nicht.
+Nachdem alle Standard-Fragen beantwortet wurden, mu&szlig; der Anwender noch 
+angeben, ob das AmigaOS-ROM-Update installiert werden soll. Hier sollte 
+unbedingt die Hilfe-Funktion zu Rate gezogen werden, da dort einige 
+wichtige Hinweise zu finden sind. Nachdem auch dies erledigt wurde, startet 
+der AmigaOS-Updater in Form einer kleinen Fortschrittsanzeige, der das 
+Update und je nach Wahl des Anwenders auch das neue XAD-System installiert. 
+Danach sollte gleich das aktualisierte Locale-Archiv installiert werden, da 
+so ein unn&ouml;tiger Neustart entf&auml;llt. Als Abschlu&szlig; mu&szlig; der Rechner neu 
+gebootet werden, und wenn nach dem Neustart alles funktioniert, war's das 
+f&uuml;rs Erste.
+Denn leider scheint sich ein kleiner Fehler im OS3.9-Installskript 
+eingeschlichen zu haben. Die von PlayCD f&uuml;r den CDDB-Support ben&ouml;tigten 
+Dateien cdda.library und cdplay.library als auch ein Assign "CDDB:" werden 
+nicht automatisch vom OS3.9-Installer kopiert bzw. angelegt. Auch die im
+BB3.9-2-Contributions-Archiv enthaltene cddb-lib-Distribution verf&uuml;gt weder 
+&uuml;ber einen Installer noch eine Installationsanleitung. Auch das Skript zur 
+Installation des OpenURL-Systems meldet Fehler, da es die Datei 
+openurl.library nicht finden kann. Falls mittlerweile nicht schon ein 
+&uuml;berarbeitetes Contributions-Archiv auf der Homepage von Haage & Partner 
+zum Download bereitgestellt wurde, k&ouml;nnen aber beide Programmarchive auch 
+kostenlos aus dem Aminet geladen werden.
+
+
+Fazit:
+
+Ganz allgemein kann man zum Boingbag 3.9.2 sagen, da&szlig; fast alle mit OS 3.9 
+bzw. Boingbag 3.9.1 eingef&uuml;hrten Neuerungen zum Teil stark verbessert oder 
+zumindest fehlerbereinigt und beschleunigt wurden. Ich pers&ouml;nlich kann das 
+Update jedem Besitzer von OS 3.9 w&auml;rmstens empfehlen, da viele n&uuml;tzliche 
+und langersehnte Neuerungen endlich ihren Platz im AmigaOS gefunden haben. 
+Bevor allerdings mit der Installation begonnen wird, sollten unbedingt die 
+als AmigaGuide-Datei vorliegende Dokumentation gelesen werden. Dabei sollte 
+auch jeder Link (sofern m&ouml;glich) im Dokument einbezogen werden, da viele 
+wichtige Hinweise zur Problemvermeidung erst dort erw&auml;hnt werden. Zumindest 
+auf meinen Systemen und unter Beachtung aller in der Anleitung genannten 
+Hinweise verlief die Installation weitestgehend reibungslos.
+
+
+Easteregg:
+
+Ja und ein Easteregg (ein kleiner Witz der Programmierer des Updates) wurde 
+auch schon entdeckt. Wer die Systemuhr auf den 30. M&auml;rz stellt und das 
+Early Startup Menu aufruft (beide Maustasten beim Neustart dr&uuml;cken; vorher 
+mu&szlig; aber das neue AmigaOS ROM Update und das System-Modul "BootMenu" 
+installiert worden sein) bekommt einen Mauspfeil in Form von Nessi zu 
+sehen. Nessi ist &uuml;brigens das Maskotchen von Angela Schmidt (Co-Autorin der 
+Brenner-Software "MakeCD") die am 30.03. Geburtstag hat. Da dieses Datum 
+erst k&uuml;rzlich vorbei war, m&ouml;chte ich auch an dieser Stelle nachtr&auml;glich 
+gratulieren und alles Gute w&uuml;nschen :-). Es ist jedenfalls sch&ouml;n zu sehen, 
+da&szlig; das OS3.9-Team trotz aller N&ouml;rgeleien und Unkenrufe aus der Amiga-Szene 
+ihren Humor nicht verloren haben.
+
+
+[1] http://www.haage-partner.com
+
+[2] http://www.amiga.com/3.9/download/NDK3.9.lha
+Die Release-Notes sind im Verzeichnis "NDK_3.9/Documentation/Releasenotes/" 
+zu finden.
+
+[3] Boingbag 3.9.2 wurde testweise auf einem A1200 im Towerumbau (RBM 
+Onboard, Picasso II, Blizzard 1240 + SCSI-Kit, MultifaceCard III, 
+Silversurfer, VLab, SCSI-HD, SCSI-CD-ROM-Laufwerk, 64 MByte Fast-RAM, 
+CGFX3, MMULib + diverse MuTools), in einem A1200 Desktop (Blizzard 1230-IV, 
+16 MByte Fast-RAM, AGA, 2.5"-HD, externes 4x-IDE-CD-ROM-Laufwerk, ansonsten 
+keine Hacks oder Patches) und unter WinUAE 0.8.17R3 (Win98, Picasso96, 
+68020+FPU-JIT-Emulation, 64 MByte Fast-RAM, 4 MByte Chip-RAM) installiert.
+
+Christian Aichinger &lt;christian@aakt.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

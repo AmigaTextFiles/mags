@@ -1,0 +1,535 @@
+<HTML>
+<HEAD>
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.0//EN">
+<META NAME="author" CONTENT="Mario Nitschke / HTML-Konvertierung Marcel Hanson">
+<META NAME="description" CONTENT="AMIGA TIMES 01/97 - Deutsches AMIGA Games und Info Magazin">
+<META NAME="keywords" CONTENT="Amiga,Information,Spiele,deutsch,Tips">
+<!-- PROGRAM="WebPlug v1.21 © 1996-97 Esteve Boix" -->
+<TITLE>AMIGA TIMES 02/97 - Programmierkurs Assembler - Listing 3</TITLE>
+</HEAD>
+
+<BODY  BACKGROUND="../images/bg.gif" BGCOLOR="#A4A4E1" TEXT="#000000" LINK="#FF0000" ALINK="#F00000" VLINK="#AA0000">
+
+<DIV ALIGN=CENTER>
+<TABLE BORDER=0>
+<TR>
+<TD>
+<A HREF="edit.html"><IMG SRC="../images/edit.gif" ALT="Editorial" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD>
+<TD>
+<A HREF="inhalt.html"><IMG SRC="../images/inh.gif" ALT="Inhalt" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD>
+<TD>
+<A HREF="impressum.html"><IMG SRC="../images/impr.gif" ALT="Impressum" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD></TR></TABLE></DIV><HR>
+
+<PRE>
+;Datei       : listing4.asm
+;Beschreibung: Horizontale Copperanimation.
+;Autor       : Enrico Bauermeister
+;Datum       : 14.10.1997
+;Assembler   : TFA AsmOne v1.29
+;==========================================
+ 
+ 
+; graphics.library &ouml;ffnen
+;------------------------
+ lea      gfxname(pc),a1       ;Name der Library
+ moveq    #0,d0                ;Version der Library
+ move.l   4.w,a6               ;Basisadresse der exec.library
+ jsr      -552(a6)             ;OpenLibrary()
+ tst.l    d0                   ;Lib ge&ouml;ffnet ?
+ beq      ende                 ;nein -> ende
+ lea      _GfxBase(pc),a0      ;Basisadresse der graphics.library
+ move.l   d0,(a0)              ;in _GfxBase sichern
+ 
+ 
+; Interrupts verbieten (Mulitasking abschalten)
+;-----------------------------------------------
+ jsr      -120(a6)             ;Disable() - Wir schalten hier das
+                               ;Multitasking ab. Unser Programm hat
+                               ;nun den ganzen Amiga f&uuml;r sich alleine.
+ 
+ 
+; alte Copperliste speichern
+;---------------------------
+ move.l   _GfxBase(pc),a6
+ move.l   $26(a6),OldCop       ;Auf Adresse $26 zur Basisadresse
+                               ;der graphics.library liegt die Adresse
+                               ;der aktuellen Copperliste.
+ 
+ 
+; unsere eigende Copperliste starten
+;------------------------------------
+ move.l   #Copperliste,$dff080 ;Im Register COP1LC steht nun die Adresse
+                               ;unserer Copperliste.
+ move.w   d0,$dff088           ;Wir starten unsere Copperliste indem wir
+                               ;irgendeinen Wert ins Register COPJMP1
+                               ;reinschreiben, z.B. D0.
+ 
+ 
+; pruefen ob wir schon an Zeile 255 angekommen sind
+;---------------------------------------------------
+Pruefe:
+ cmpi.b   #$ff,$dff006         ;cmpi - compare immediate -
+                               ;Inhahlt von Register VHPOSR ($dff006)
+                               ;mit der Konstante $ff (255) vergleichen.
+ bne.s    Pruefe               ;Vergleich nicht wahr -> Pruefe
+ 
+ 
+; Das graue Stueck vom roten Balken bewegen
+;-------------------------------------------
+ bsr.s    BewegeRot            ;jede 1/50 Sekunde ausf&uuml;hren
+ 
+ 
+; Das graue Stueck vom gruenen Balken bewegen
+;---------------------------------------------
+ bsr.w    BewegeGruen          ;jede 1/50 Sekunde ausf&uuml;hren
+                       
+; pruefen on wir noch auf Zeile 255 sind, und auf Zeile 0 warten
+;----------------------------------------------------------------
+Warte:
+ cmpi.b   #$ff,$dff006         ;255 in VHPOSR ?
+ beq.s    Warte                ;nein -> Warte
+ 
+ 
+; linke Maustaste gedrueckt ?
+;-----------------------------
+ btst     #6,$bfe001           ;btst - test bit -
+                               ;Testen ob Bit 6 im Register PRA ($bfe001)
+                               ;gesetzt (also 1) ist.
+ bne.s    Pruefe               ;nein -> Pruefe
+ 
+ 
+; alte COPPERLIST wieder starten
+;--------------------------------
+ move.l  OldCop(pc),$dff080    ;In Register COP1LC steht nun wieder die
+                               ;Adresse der alten Copperliste
+ move.w  d0,$dff088            ;In COPJMP1 irgendeinen Wert -> alte
+                               ;Copperliste starten
+ 
+ 
+ move.l  4.w,a6                ;Basisadresse der exec.library
+ jsr     -126(a6)              ;Enable() - So, nun k&ouml;nnen wieder mehrere
+                               ;Programme den Amigs nutzen.
+ 
+ 
+; Interrupts wieder zulassen (Multitasking einschalten)
+;------------------------------------------------------
+ move.l  4.w,a6                ;Basisadresse der exec.library
+ jsr     -126(a6)              ;Enable() - So, nun k&ouml;nnen wieder mehrere
+                               ;Programme den Amigs nutzen.
+ 
+ 
+; graphics.library wieder schliessen
+;------------------------------------
+ move.l   _GfxBase(pc),a1      ;Basisadresse der graphics.library
+ jsr      -414(a6)             ;CloseLibrary()
+ 
+ 
+; Programm verlassen
+;--------------------
+ende
+ moveq    #0,d0                ;R&uuml;ckgabewert des Programmes
+ rts                           ;und tsch&uuml;&szlig; ...
+ 
+ 
+; Datenbereich
+;-------------- gfxname:  dc.b  'graphics.library',0
+          cnop  0,2
+_GfxBase: dc.l  0
+OldCop:   dc.l  0
+Links_r:  dc.w  0
+Rechts_r: dc.w  0
+Links_g:  dc.w  0
+Rechts_g: dc.w  0
+ 
+ 
+;Routine um das graue Stueck vom roten Balken zu bewegen
+;--------------------------------------------------------
+BewegeRot:
+ cmpi.w   #78,Rechts_r         ;Schon 78 Zyklen (1/50 Sekunde) nach rechts
+                               ;bewegt ?
+ bne.s    NachRechts_r         ;nein -> NachRechts_r
+ cmpi.w   #78,Links_r          ;Schon 78 Zyklen (1/50 Sekunde) nach links
+                               ;bewegt ?
+ bne.s    NachLinks_r          ;nein -> NachLinks_r
+ clr.w    Rechts_r             ;"Rechts_r" auf 0 setzen
+ clr.w    Links_r              ;"Links_r" auf 0 setzen
+ rts
+NachRechts_r:
+ lea      Wait_rot+1,a0        ;1 zur effektiven Adresse von Wait_rot
+                               ;addieren und nach A0 laden (ohne eine 1
+                               ;zu addieren w&uuml;rden wir die X-Position
+                               ;nach A0 laden, wir wollen aber die Y-Pos.)
+ move.w   #17,d0               ;17 nach D0 kopieren (Z&auml;hler f&uuml;r Schleife)
+loop_rot_rechts:
+ addq.b   #2,(a0)              ;2 zum linken WAIT des grauen St&uuml;cks add.
+ addq.b   #2,8(a0)             ;2 zum rechten WAIT des grauen St&uuml;cks add.
+ add.w    #24,a0
+ dbra     d0,loop_rot_rechts   ;Mit "dbra" k&ouml;nnen wir eine Z&auml;hlschleife in
+                               ;Assembler realisieren. Der Inhalt von D0
+                               ;bei jedem Durchlauf runtergez&auml;hlt. Ist -1
+                               ;in D0 wird die Schleife beendet. Hier geht
+                               ;die Schleife von "loop_rot_rechts" bis zum
+                               ;"dbra"-Befehl und wir 18 mal durchlaufen.
+                               ;18 mal deshalb, weil der rote Balken 18
+                               ;Zeilen hoch ist und wir die WAITs in jeder
+                               ;Zeile bewegen m&uuml;ssen.
+ add.w    #1,Rechts_r          ;1 zu "Rechts_r" addieren
+ rts
+NachLinks_r:
+ lea      Wait_rot+1,a0        ;Diese Routine funktioniert genauso wie
+ move.w   #17,d0               ;beim nach rechts bewegen, nur eben ein
+loop_rot_links:                ;"sub" statt ein "add" bei den WAITs.
+ subq.b   #2,(a0)              ;                 |  |
+ subq.b   #2,8(a0)             ;                 |  |
+ add.w    #24,a0               ;                 |  |
+ dbra     d0,loop_rot_links    ;                   /
+ add.w    #1,Links_r           ;                  /
+ rts
+ 
+ 
+;Routine um das graue Stueck vom roten Balken zu bewegen
+;--------------------------------------------------------
+BewegeGruen:
+ cmpi.w   #78,Links_g          ;Diese Routine funktioniert genauso wie
+ bne.s    NachLinks_g          ;die f&uuml;r den roten Balken.
+ cmpi.w   #78,Rechts_g         ;                 |  |
+ bne.s    NachRechts_g         ;                 |  |
+ clr.w    Links_g              ;                 |  |
+ clr.w    Rechts_g             ;                 |  |
+ rts                           ;                 |  |
+NachRechts_g:                  ;                 |  |
+ lea      Wait_gruen+1,a0      ;                 |  |
+ move.w   #17,d0               ;                 |  |
+loop_gruen_rechts:             ;                 |  |
+ addq.b   #2,(a0)              ;                 |  |
+ addq.b   #2,8(a0)             ;                 |  |
+ add.w    #24,a0               ;                 |  |
+ dbra     d0,loop_gruen_rechts ;                 |  |
+ add.w    #1,Rechts_g          ;                 |  |
+ rts                           ;                 |  |
+NachLinks_g:                   ;                 |  |
+ lea      Wait_gruen+1,a0      ;                 |  |
+ move.w   #17,d0               ;                 |  |
+loop_gruen_links:              ;                 |  |
+ subq.b   #2,(a0)              ;                 |  |
+ subq.b   #2,8(a0)             ;                 |  |
+ add.w    #24,a0               ;                 |  |
+ dbra     d0,loop_gruen_links  ;                   /
+ add.w    #1,Links_g           ;                  /
+ rts
+ 
+ 
+; Unsere eigene COPPERLIST definieren
+;-------------------------------------
+; Jeder Balken ist 18 Pixel hoch. Zwischen jeden Balken ist ein Zischenraum
+; von 50 Pixeln.
+;--------------------------------------------------------------------------
+; X-Koordinate von 59 ($3b) bis 223 ($df). Weil der COPPER beim Wait nur
+; einen ungeraden Wert fuer XX zulaesst !!!
+;--------------------------------------------------------------------------
+ SECTION Grafik,CODE_C
+Copperliste:
+  dc.w    $100,$200     ;Nur Hintergrund
+  dc.w    $180,$000     ;Color0 -> Schwarz
+; roter Balken (von Zeile 95 bis Zeile 113)
+;-------------------------------------------
+;erste Zeile
+  dc.w    $5f07,$fffe   ;Wait y -> 95
+  dc.w    $180,$300
+Wait_rot:
+  dc.w    $5f3b,$fffe   ;Wait y = 95  x = 59
+  dc.w    $180,$333
+  dc.w    $5f45,$fffe   ;Wait y = 95  x = 69
+  dc.w    $180,$300
+;zweite Zeile
+  dc.w    $6007,$fffe   ;Wait y -> 96
+  dc.w    $180,$300
+  dc.w    $603b,$fffe   ;Wait y = 96  x = 59
+  dc.w    $180,$333
+  dc.w    $6045,$fffe   ;Wait y = 96  x = 69
+  dc.w    $180,$300
+;dritte Zeile
+  dc.w    $6107,$fffe   ;Wait y -> Zeile 97
+  dc.w    $180,$600
+  dc.w    $613b,$fffe   ;Wait y = 97  x = 59
+  dc.w    $180,$666
+  dc.w    $6145,$fffe   ;Wait y = 97  x = 69
+  dc.w    $180,$600
+;vierte Zeile
+  dc.w    $6207,$fffe   ;Wait y -> Zeile 98
+  dc.w    $180,$600
+  dc.w    $623b,$fffe   ;Wait y = 98  x = 59
+  dc.w    $180,$666
+  dc.w    $6245,$fffe   ;Wait y = 98  x = 69
+  dc.w    $180,$600
+;fuenfte Zeile
+  dc.w    $6307,$fffe   ;Wait y -> Zeile 99
+  dc.w    $180,$900
+  dc.w    $633b,$fffe   ;Wait y = 99  x = 59
+  dc.w    $180,$999
+  dc.w    $6345,$fffe   ;Wait y = 99  x = 69
+  dc.w    $180,$900
+;sechste Zeile
+  dc.w    $6407,$fffe   ;Wait y -> Zeile 100
+  dc.w    $180,$900
+  dc.w    $643b,$fffe   ;Wait y = 100  x = 59
+  dc.w    $180,$999
+  dc.w    $6445,$fffe   ;Wait y = 100  x = 69
+  dc.w    $180,$900
+;siebente Zeile
+  dc.w    $6507,$fffe   ;Wait y -> Zeile 101
+  dc.w    $180,$c00
+  dc.w    $653b,$fffe   ;Wait y = 101  x = 59
+  dc.w    $180,$ccc
+  dc.w    $6545,$fffe   ;Wait y = 101  x = 69
+  dc.w    $180,$c00
+;achte Zeile
+  dc.w    $6607,$fffe   ;Wait y -> Zeile 102
+  dc.w    $180,$c00
+  dc.w    $663b,$fffe   ;Wait y = 102  x = 59
+  dc.w    $180,$ccc
+  dc.w    $6645,$fffe   ;Wait y = 102  x = 69
+  dc.w    $180,$c00
+;neunte Zeile
+  dc.w    $6707,$fffe   ;Wait y -> Zeile 103
+  dc.w    $180,$f00
+  dc.w    $673b,$fffe   ;Wait y = 103  x = 59
+  dc.w    $180,$fff
+  dc.w    $6745,$fffe   ;Wait y = 103  x = 69
+  dc.w    $180,$f00
+;zehnte Zeile
+  dc.w    $6807,$fffe   ;Wait y -> Zeile 104
+  dc.w    $180,$f00
+  dc.w    $683b,$fffe   ;Wait y = 104  x = 59
+  dc.w    $180,$fff
+  dc.w    $6845,$fffe   ;Wait y = 104  x = 69
+  dc.w    $180,$f00
+;elfte Zeile
+  dc.w    $6907,$fffe   ;Wait y -> Zeile 105
+  dc.w    $180,$c00
+  dc.w    $693b,$fffe   ;Wait y = 105  x = 59
+  dc.w    $180,$ccc
+  dc.w    $6945,$fffe   ;Wait y = 105  x = 69
+  dc.w    $180,$c00
+;zwoelfte Zeile
+  dc.w    $6a07,$fffe   ;Wait y -> Zeile 106
+  dc.w    $180,$c00
+  dc.w    $6a3b,$fffe   ;Wait y = 106  x = 59
+  dc.w    $180,$ccc
+  dc.w    $6a45,$fffe   ;Wait y = 106  x = 69
+  dc.w    $180,$c00
+;dreizehnte Zeile
+  dc.w    $6b07,$fffe   ;Wait y -> Zeile 107
+  dc.w    $180,$900
+  dc.w    $6b3b,$fffe   ;Wait y = 107  x = 59
+  dc.w    $180,$999
+  dc.w    $6b45,$fffe   ;Wait y = 107  x = 69
+  dc.w    $180,$900
+;vierzehnte Zeile
+  dc.w    $6c07,$fffe   ;Wait y -> Zeile 108
+  dc.w    $180,$900
+  dc.w    $6c3b,$fffe   ;Wait y = 108  x = 59
+  dc.w    $180,$999
+  dc.w    $6c45,$fffe   ;Wait y = 108  x = 69
+  dc.w    $180,$900
+;fuenfzehnte Zeile
+  dc.w    $6d07,$fffe   ;Wait y -> Zeile 109
+  dc.w    $180,$600
+  dc.w    $6d3b,$fffe   ;Wait y = 109  x = 59
+  dc.w    $180,$666
+  dc.w    $6d45,$fffe   ;Wait y = 109  x = 69
+  dc.w    $180,$600
+;sechszehnte Zeile
+  dc.w    $6e07,$fffe   ;Wait y -> Zeile 110
+  dc.w    $180,$600
+  dc.w    $6e3b,$fffe   ;Wait y = 110  x = 59
+  dc.w    $180,$666
+  dc.w    $6e45,$fffe   ;Wait y = 110  x = 69
+  dc.w    $180,$600
+;siebzehnte Zeile
+  dc.w    $6f07,$fffe   ;Wait y -> Zeile 111
+  dc.w    $180,$300
+  dc.w    $6f3b,$fffe   ;Wait y = 111  x = 59
+  dc.w    $180,$333
+  dc.w    $6f45,$fffe   ;Wait y = 111  x = 69
+  dc.w    $180,$300
+;achtzehnte Zeile
+  dc.w    $7007,$fffe   ;Wait y -> Zeile 112
+  dc.w    $180,$300
+  dc.w    $703b,$fffe   ;Wait y = 112  x = 59
+  dc.w    $180,$333
+  dc.w    $7045,$fffe   ;Wait y = 112  x = 69
+  dc.w    $180,$300
+  dc.w    $7107,$fffe   ;Wait y -> Zeile 113
+; Zwischenraum zwischen roten und gruenen Balken
+;------------------------------------------------
+  dc.w    $180,$000     ;Color0 -> Scwarz
+; gruener Balken (von Zeile 164 bis Zeile 182)
+;----------------------------------------------
+;erste Zeile
+  dc.w    $a407,$fffe   ;Wait y -> Zeile 164
+  dc.w    $180,$030
+Wait_gruen:
+  dc.w    $a4d3,$fffe   ;Wait y = 164  x = 211
+  dc.w    $180,$333
+  dc.w    $a4dd,$fffe   ;Wait y = 164  x = 221
+  dc.w    $180,$030
+;zweite Zeile
+  dc.w    $a507,$fffe   ;Wait y -> Zeile 165
+  dc.w    $180,$030
+  dc.w    $a5d3,$fffe   ;Wait y = 165  x = 211
+  dc.w    $180,$333
+  dc.w    $a5dd,$fffe   ;Wait y = 165  x = 221   dc.w    $180,$030
+;dritte Zeile
+  dc.w    $a607,$fffe   ;Wait y -> Zeile 166
+  dc.w    $180,$060
+  dc.w    $a6d3,$fffe   ;Wait y = 166  x = 211
+  dc.w    $180,$666
+  dc.w    $a6dd,$fffe   ;Wait y = 166  x = 221
+  dc.w    $180,$060
+;vierte Zeile
+  dc.w    $a707,$fffe   ;Wait y -> Zeile 167
+  dc.w    $180,$060
+  dc.w    $a7d3,$fffe   ;Wait y = 167  x = 211
+  dc.w    $180,$666
+  dc.w    $a7dd,$fffe   ;Wait y = 167  x = 221
+  dc.w    $180,$060
+;fuenfte Zeile
+  dc.w    $a807,$fffe   ;Wait y -> Zeile 168
+  dc.w    $180,$090
+  dc.w    $a8d3,$fffe   ;Wait y = 168  x = 211
+  dc.w    $180,$999
+  dc.w    $a8dd,$fffe   ;Wait y = 168  x = 221
+  dc.w    $180,$090
+;sechste Zeile
+  dc.w    $a907,$fffe   ;Wait y -> Zeile 169
+  dc.w    $180,$090
+  dc.w    $a9d3,$fffe   ;Wait y = 169  x = 211
+  dc.w    $180,$999
+  dc.w    $a9dd,$fffe   ;Wait y = 169  x = 221
+  dc.w    $180,$090
+;siebente Zeile
+  dc.w    $aa07,$fffe   ;Wait y -> Zeile 170
+  dc.w    $180,$0c0
+  dc.w    $aad3,$fffe   ;Wait y = 170  x = 211
+  dc.w    $180,$ccc
+  dc.w    $aadd,$fffe   ;Wait y = 170  y = 221
+  dc.w    $180,$0c0
+;achte Zeile
+  dc.w    $ab07,$fffe   ;Wait y -> Zeile 171
+  dc.w    $180,$0c0
+  dc.w    $abd3,$fffe   ;Wait y = 171  x = 211
+  dc.w    $180,$ccc
+  dc.w    $abdd,$fffe   ;Wait y = 171  y = 221
+  dc.w    $180,$0c0
+;neunte Zeile
+  dc.w    $ac07,$fffe   ;Wait y -> Zeile 172
+  dc.w    $180,$0f0
+  dc.w    $acd3,$fffe   ;Wait y = 172  x = 211
+  dc.w    $180,$fff
+  dc.w    $acdd,$fffe   ;Wait y = 172  x = 221
+  dc.w    $180,$0f0
+;zehnte Zeile
+  dc.w    $ad07,$fffe   ;Wait y -> Zeile 173
+  dc.w    $180,$0f0
+  dc.w    $add3,$fffe   ;Wait y = 173  x = 211
+  dc.w    $180,$fff
+  dc.w    $addd,$fffe   ;Wait y = 173  x = 221
+  dc.w    $180,$0f0
+;elfte Zeile
+  dc.w    $ae07,$fffe   ;Wait y -> Zeile 174
+  dc.w    $180,$0c0
+  dc.w    $aed3,$fffe   ;Wait y = 174  x = 211
+  dc.w    $180,$ccc
+  dc.w    $aedd,$fffe   ;Wait y = 174  x = 221
+  dc.w    $180,$0c0
+;zwoelfte Zeile
+  dc.w    $af07,$fffe   ;Wait y -> Zeile 175
+  dc.w    $180,$0c0
+  dc.w    $afd3,$fffe   ;Wait y = 175  x = 211
+  dc.w    $180,$ccc
+  dc.w    $afdd,$fffe   ;Wait y = 175  x = 221
+  dc.w    $180,$0c0
+;dreizehnte Zeile
+  dc.w    $b007,$fffe   ;Wait y -> Zeile 176
+  dc.w    $180,$090
+  dc.w    $b0d3,$fffe   ;Wait y = 176  x = 211
+  dc.w    $180,$999
+  dc.w    $b0dd,$fffe   ;Wait y = 176  x = 221
+  dc.w    $180,$090
+;vierzehnte Zeile
+  dc.w    $b107,$fffe   ;Wait y -> Zeile 177
+  dc.w    $180,$090
+  dc.w    $b1d3,$fffe   ;Wait y = 177  x = 211
+  dc.w    $180,$999
+  dc.w    $b1dd,$fffe   ;Wait y = 177  x = 221
+  dc.w    $180,$090
+;fuenfzehnte Zeile
+  dc.w    $b207,$fffe   ;Wait y -> Zeile 178
+  dc.w    $180,$060
+  dc.w    $b2d3,$fffe   ;Wait y = 178  x = 211
+  dc.w    $180,$666
+  dc.w    $b2dd,$fffe   ;Wait y = 178  x = 221
+  dc.w    $180,$060
+;sechszehnte Zeile
+  dc.w    $b307,$fffe   ;Wait y -> Zeile 179
+  dc.w    $180,$060
+  dc.w    $b3d3,$fffe   ;Wait y = 179  x = 211
+  dc.w    $180,$666
+  dc.w    $b3dd,$fffe   ;Wait y = 179  x = 221   dc.w    $180,$060
+;siebzehnte Zeile
+  dc.w    $b407,$fffe   ;Wait y -> Zeile 180
+  dc.w    $180,$030
+  dc.w    $b4d3,$fffe   ;Wait y = 180  x = 211
+  dc.w    $180,$333
+  dc.w    $b4dd,$fffe   ;Wait y = 180  x = 221
+  dc.w    $180,$030
+;achtzehnte Zeile
+  dc.w    $b507,$fffe   ;Wait y -> Zeile 181
+  dc.w    $180,$030
+  dc.w    $b5d3,$fffe   ;Wait y = 181  x = 211
+  dc.w    $180,$333
+  dc.w    $b5dd,$fffe   ;Wait y = 181  x = 221
+  dc.w    $180,$030
+  dc.w    $b607,$fffe   ;Wait y -> Zeile 182
+; Zwischenraum zwischen gruenen und blauen Balken
+;-------------------------------------------------
+   dc.w    $180,$000     ;Color0 -> Scwarz 
+  dc.w    $e907,$fffe   ;Wait y -> Zeile 233
+; blauer Balken (von Zeile 233 bis Zeile 251)
+;----------------------------------------------
+  dc.w    $180,$003
+  dc.w    $eb07,$fffe   ;Wait y -> Zeile 235
+  dc.w    $180,$006
+  dc.w    $ed07,$fffe   ;Wait y -> Zeile 237
+  dc.w    $180,$009
+  dc.w    $ef07,$fffe   ;Wait y -> Zeile 239
+  dc.w    $180,$00c
+  dc.w    $f107,$fffe   ;Wait y -> Zeile 241
+  dc.w    $180,$00f
+  dc.w    $f307,$fffe   ;Wait y -> Zeile 243
+  dc.w    $180,$00c
+  dc.w    $f507,$fffe   ;Wait y -> Zeile 245
+  dc.w    $180,$009
+  dc.w    $f707,$fffe   ;Wait y -> Zeile 247
+  dc.w    $180,$006
+  dc.w    $f907,$fffe   ;Wait y -> Zeile 249
+  dc.w    $180,$003
+  dc.w    $fb07,$fffe   ;Wait y -> Zeile 251
+; Zwischenraum zwischen blauen Balken und Bildschirmende
+;--------------------------------------------------------
+  dc.w    $180,$000     ;Color0 -> Scwarz
+  dc.w    $FFFF,$FFFE   ;Ende der Copperliste
+ 
+ END
+</PRE>
+
+<P ALIGN=CENTER>
+<A HREF="wshop.html#re4">Zur&uuml;ck zum Programmierkurs</A>
+
+</BODY>
+</HTML>
+

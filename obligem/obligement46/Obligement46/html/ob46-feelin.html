@@ -1,0 +1,189 @@
+<html>
+ <head>
+  <title>Feelin</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Labo&nbsp;: Feelin </font>par&nbsp;<a href="mailto:gofromiel@numericable.fr">Olivier&nbsp;Laviale</a></div><br><br><br>
+
+<font size="+1" color="#ccbb33">Qu'est-ce que Feelin&nbsp;?</font><br><br>
+
+Feelin est un nouveau système orienté objet pour l'AmigaOS. Il fournit deux choses&nbsp;: une petite bibliothèque partagée
+rapide et puissante (le coeur du système objet), qui offre tout ce qu'il faut pour créer un environnement objet complet&nbsp;;
+et un système extensible pour créer et gérer des interfaces graphiques. Pour le moment, Feelin est codé pour Amiga 68k
+mais il fonctionne apparemment sous OS4.<br><br>
+
+<font size="+1" color="#ccbb33">Un puissant système objet</font><br><br>
+
+Feelin a été créé parce qu'il n'y avait, et n'y a toujours pas d'ailleurs, de système objet performant, utile et utilisable sur
+AmigaOS. Le seul disponible est BOOPSI, et il est sérieusement limité (il est âgé faut dire&nbsp;:-). Les fonctionnalités GUI
+sont apparues par la suite&nbsp;; dans un premier temps comme test, ensuite comme un amusement personnel. Il faut dire qu'à part MUI,
+les systèmes graphiques sur Amiga ne sont pas très attractifs. Mais MUI n'est pas un système objet, et sans BOOPSI, pas de MUI.
+De plus, si on veut étendre MUI, il faut demander la permission à une sorte d'autorité pour avoir un numéro d'enregistrement,
+pour pouvoir l'utiliser comme base de sa nouvelle classe.<br><br>
+
+<font size="+1" color="#ccbb33">Evolution&nbsp;: attributs et méthodes dynamiques</font><br><br>
+
+Feelin propose un système libre (dans tous les sens du terme, pas seulement celui de licence), où chacun pourrait ajouter
+des fonctionnalités sans se dire "Faut pas que j'utilise les numéros entre 0xFF004444 et 0xFF00FFFF parce qu'il sont utilisés
+par Brenda pour sa classe page blanche". La gestion des classes de Feelin est bien plus puissante. L'utilisation d'IDs
+dynamiques a été un premier pas dans cette direction. Fini les numéros statiques pour identifier les attributs et les méthodes.
+Feelin utilise des chaînes de caractères formatées comme "FA_String_Contents".<br><br>
+
+Le système de gestion non centralisé des IDs est appelé dynamique (dynamic en Anglais&nbsp;:-). Ainsi, si la classe "String"
+définit l'attribut "Contents", cet attribut sera publiquement connu comme "FA_String_Contents". C'est une évolution majeure
+et un travail de longue halaine. Il n'utilise pas plus de mémoire et il est extrêmement rapide (vous ne verrez absolument
+pas la différence). Il existe évidement des fonctions pour résoudre des tables dynamiques, et des fonctions de remplacement
+pour NextTagItem(), FindTagItem() et GetTagData().<br><br>
+
+Pour des raisons stratégiques d'évolution, les classes sont très opaques. Aucune méthode ou structure magique n'est utilisée.
+Chaque classe peut-être réécrite par n'importe qui sans qu'il y ai le moindre problème (faut pas faire n'importe quoi non plus&nbsp;:-).
+Par exemple, la partie publique de FC_Area ne peut être obtenue qu'en utilisant l'attribut FA_AreaData, car la classe FC_Object
+(base de la plupart des classes) est totalement opaque.<br><br>
+
+<font size="+1" color="#ccbb33">Gestion mémoire</font><br><br>
+
+Feelin dispose aussi d'un système de gestion de mémoire à toute épreuve. Des piscines (pools) et des flaques (puddles) sont
+utilisées pour contenir de petits blocs. Les blocs de mémoire alloués sont alignés sur 32 bits. Là où la fonction FreePooled()
+de EXEC requiert le pointeur de la piscine dans laquelle un bloc à été alloué, le bloc et sa taille&nbsp;; Feelin ne requiert
+que le bloc&nbsp;: F_Dispose(bloc). Les blocs libérés sont remplis avec 0xABADFOOD (ce qui peut être utile pour un développeur).
+De plus, il est impossible de libérer un bloc qui n'existe pas. Dans tous les cas, si une erreur survient, un message
+sera envoyé sur le log.<br><br>
+
+Grâce à un sémaphore embarqué, les piscines de Feelin peuvent facilement être partagées entre plusieurs applications (ou tâches).
+Elles peuvent également être nommées, et comme Feelin trace chaque allocation de mémoire, vous pouvez savoir exactement
+la mémoire consommée par telle ou telle piscine. Des outils sont inclus pour le listage et le dump (la sauvegarde sur disque
+des blocs d'une piscine).<br><br>
+
+Malgré toutes ces charmantes fonctionnalités, le système de gestion mémoire de Feelin est encore plus rapide que celui d'EXEC
+(2 à 4 fois plus rapide sur un A1200/68030 à 29 MHz).<br><br>
+
+<font size="+1" color="#ccbb33">Sécurités</font><br><br>
+
+L'invocation de méthodes sur les objets est sans risques. Pour chaque invocation, Feelin vérifie que l'objet sur lequel est
+invoquée la méthode est bel et bien un objet. Si l'objet n'existe pas, un message est inscrit au journal pour informer
+le développeur. Par exemple l'invocation F_Do((FObject)(13),FM_Dispose)&nbsp;; ne plantera pas bêtement votre ordinateur, mais
+produira un message d'erreur. Ce système anti-crash est extrêmement rapide et très utile, parce qu'un système qui plante sans
+raison apparente est la chose la plus frustrante sur Terre (après les gens qui parlent au cinéma&nbsp;:-).<br><br>
+
+<font size="+1" color="#ccbb33">Rapport d'erreur</font><br><br>
+
+Comme mentionné plus haut, Feelin propose un système de rapport d'erreur. Feelin trace toutes les invocations et la
+fonction F_LogA(), utilisée pour inscrire les messages, ajoute des informations cruciales telles que la classe, l'objet
+et la méthode qui ont causé l'erreur. Par exemple&nbsp;: Text{101EA608} @ Area.Connect() - a bug&nbsp;??. Et puisque chaque message
+est accompagné d'un niveau d'erreur, l'utilisateur final peut choisir à quel niveau il désire être informé.<br><br>
+
+Le niveau d'erreur ainsi que la sortie d'erreur peuvent être modifiés très facilement par l'intermédiaire des variables
+système Feelin/LIB_ERRORLEVEL et Feelin/LIB_CONSOLE.<br><br>
+
+<font size="+1" color="#ccbb33">De nombreuses fonctions</font><br><br>
+
+La bibliothèque feelin.library offre également de nombreuses fonctions pour gérer des listes à double lien (différentes de
+celles d'EXEC)&nbsp;; des fonctions de Hachage&nbsp;; tout un appareil pour créer et gérer des serveurs et bien d'autres encore.<br><br>
+
+<font size="+1" color="#ccbb33">Une interface graphique évoluée</font><br><br>
+
+Reposant sur ce puissant système objet, Feelin propose une interface graphique orientée objet. Cette interface, bien que
+complète et puissante, n'est qu'une vitrine pour Feelin. L'application du système objet va au-delà de l'aspect graphique.
+Le système objet proposé par Feelin peut aussi bien être utilisé pour toute autre chose (des éléments système, gestion sonore).<br><br>
+
+<div align="center">
+<table cellpadding="1" cellspacing="1" border="0">
+ <tr>
+  <td>
+   <center><a href="../gfx/feelin1.jpg" target="_blank"><img src="../gfx/feelin1small.jpg" alt="Feelin" width="200" height="150" hspace="5" border="1"></a></center>
+  </td>
+  <td>
+   <center><a href="../gfx/feelin2.jpg" target="_blank"><img src="../gfx/feelin2small.jpg" alt="Feelin" width="200" height="150" hspace="5" border="1"></a></center>
+  </td>
+ </tr>
+</table>
+<br>
+</div>
+
+<font size="+1" color="#ccbb33">Un système de préférence indépendant</font><br><br>
+
+L'interface graphique de Feelin est extrêmement configurable. Chaque pixel de l'application peut être choisi par l'utilisateur
+(et pas le développeur). Comme Feelin utilise des IDs dynamiques, le système de préférence utilise lui aussi des chaînes
+de caractères au lieu de numéros pour référencer les items qu'il stocke. Un système de collision est utilisé pour gagner
+un maximum de place et augmenter les performances. Cette gestion, comme les IDs dynamiques est prête pour le futur.<br><br>
+
+<font size="+1" color="#ccbb33">Des classes évoluées</font><br><br>
+
+Les bordures de la fenêtre peuvent être configurées. On peut enfin se débarrasser du vieux look d'Intuition sans utiliser
+de patch. Pour l'instant un seul décorateur est disponible (Shade), mais d'autres peuvent être écrits très facilement
+en se basant sur le source de Shade.<br><br>
+
+Les balises HTML sont reconnues et peuvent être utilisées pour formater le texte. De nombreuses sont déjà supportées, et
+pas que les plus simples. Le texte peut être aligné à gauche, à droite, centré ou justifié grâce à la balise "align".
+Les styles gras, italique et souligné sont supportés. Différentes polices peuvent être utilisées pour différencier
+des portions de texte, leur taille et leur couleur est facilement définissable grâce à la balise "font". Des lignes
+horizontales très configurables peuvent également être utilisées pour séparer le texte (hr). Les lignes peuvent
+être différemment espacées par la balise "spacing". Des images peuvent être incorporées au texte (img).
+Quatre pinceaux configurables peuvent être utilisés pour produire de nombreux effets sur le texte, et
+bien d'autres encore.<br><br>
+
+<font size="+1" color="#ccbb33">De nombreux héritages</font><br><br>
+
+Chaque application, chaque fenêtre, chaque groupe, chaque bouton peut avoir sa propre palette. L'héritage dans l'interface
+graphique est très important. Vous pouvez par exemple obtenir des objets de plus en plus sombre (ou de plus en plus
+clair) en fonction de leur profondeur dans l'arbre de l'application très facilement. L'héritage s'applique aux polices,
+aux palettes ainsi qu'aux images de fonds. A noter que l'interface s'adapte d'elle-même en fonction des modifications.<br><br>
+
+<font size="+1" color="#ccbb33">De nombreuses possibilités</font><br><br>
+
+Avec plus de 40 frames, vous avez un grand choix pour configurer vos objets (la frame normale et la frame sélectionnée
+sont configurables indépendamment). La gestion abstraite des images vous laisse aussi un très grand choix. Vous pouvez
+même utiliser une fonction pour dessiner vos fonds.<br><br>
+
+<font size="+1" color="#ccbb33">Conclusion</font><br><br>
+
+Feelin est sans doute le système objet le plus évolué disponible sur AmigaOS. Il est encore jeune par rapport à MUI,
+il manque encore quelques classes, la classe FC_Liste n'est pas encore totalement satisfaisante. Feelin est le
+fruit d'un développement solitaire sur le tas. MUI est un standard très établit et même si Feelin est bien meilleur
+au niveau implémentation (ce serait ridicule de comparer BOOPSI et le système objet de Feelin), il aura du mal
+à s'imposer face à MUI, ou même cette horreur de Reaction. Les changements font peur aux gens, après tout 90%
+d'entre eux utilisent Windows et Internet Explorer, non ?<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>
+

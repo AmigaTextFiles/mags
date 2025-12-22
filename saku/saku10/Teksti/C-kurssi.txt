@@ -1,0 +1,1874 @@
+5
+1*
+
+{3                        C-ohjelmointikurssi - Osa 2
+{3                        ---------------------------
+
+                           Ville-Pertti Keinonen
+
+
+{3Loogiset operaattorit
+
+C-kielen loogiset operaattorit, joita k‰ytet‰‰n usein erityisesti vertailun
+yhteydess‰, k‰sittelev‰t vertailuoperaattoreiden tavoin arvoja vain kahden-
+tyyppisen‰: tosi ja ep‰tosi. Loogisia operaatioita ei pid‰  sotkea  vastaa-
+viin bin‰‰rioperaatioihin, jotka tekev‰t periaatteessa saman  asian  jokai-
+selle operandin/operandien bitille. N‰it‰ loogisia operaattoreita ovat: 
+
+ &&  looginen ja
+     : tosi vain, jos molemmat operandit ovat tosia.
+
+ ||  looginen tai
+     : tosi jos jompikumpi operandeista tai molemmat operandit ovat tosia.
+
+ !   looginen ei
+     : vain yksi operandi, operaatio on tosi, jos operandi ei ole tosi.
+
+Hieman esimerkkej‰ n‰ist‰: oletetaan kokonaislukumuuttuja a, jolla on jokin
+ennalta tuntematon arvo: 
+
+if (a > 10 || a < 0)
+  puts("muuttuja a on suurempi kuin 10 tai negatiivinen");
+
+if (a <= 5 && a >= 2)
+  puts("2 <= a <= 5");
+
+if (!(a == 1 || a == 10))
+  puts("a ei ole 1 eik‰ 10");
+
+Operaattoria '!' voidaan k‰ytt‰‰ korvikkeena vertailulle nollaan:
+
+if (!a)
+  puts("a on ep‰tosi, eli nolla");
+
+on sama kuin:
+
+if (a == 0)
+  puts("a on ep‰tosi, eli nolla");
+
+Aivan vastaavasti:
+
+if (a)
+  puts("a on tosi, eli ei nolla");
+
+on sama kuin:
+
+if (a != 0)
+  puts("a on tosi, eli ei nolla");
+
+samoin kuin:
+
+if (!(a == 0))
+  puts("a on tosi, eli ei nolla");
+
+Helppo tapa ajatella loogisia operaatioita on lukea ne  aivan  tavallisesti
+"‰‰neen", eli tulkita sanoiksi: 
+
+Ehto: (a == 10 || a == 15) "a on 10 tai a on 15"
+Ehto: (a < 0 && a > -10) "a on pienempi kuin 0 ja a on suurempi kuin -10"
+Ehto: (!(a > 10 || a <= 0)) "ai ei ole suurempi kuin 10 eik‰ pienempi tai
+      yht‰ suuri kuin 0"
+
+Erona tavalliseen ihmisen logiikkaan on ainoastaan  se,  ett‰  "tai"-ehtoon
+sis‰ltyy myˆs mahdollisuus, ett‰ molemmat ehdot ovat tosia.
+
+Vaikka kaikki yll‰olevat esimerkit k‰sittelev‰tkin ainoastaan yht‰  muuttu-
+jaa, voidaan toki verrata useampia muuttujia: 
+
+if (a > 10 || b == a || c < 0)
+  puts("joko a on suurempi kuin 10, b on yht‰ suuri kuin a tai c on 
+                                                    negatiivinen");
+
+Toistaiseksi mainitsen vain, ett‰ loogiset operaatiot (paitsi '!') suorite-
+taan vertailu- ja laskuoperaatioiden j‰lkeen, joten t‰ss‰k‰‰n ei  tarvinnut
+sulkeita. Myˆhemmin, kun on k‰sitelty  kaikki  operaattorit,  tulee  n‰iden
+suoritusj‰rjestyksest‰ taulukko.
+
+
+{3Operaattoreiden lyhenteit‰
+
+Laskennallisista operaatioista on olemassa  lyhennemuotoja,  joita  voidaan
+k‰ytt‰‰, kun asetettaisiin laskun ensimm‰isen‰ operandina  olevaan  muuttu-
+jaan laskun tulos. Yleisesti muoto on: 
+
+<muuttuja> <operaattori>= <lauseke>
+
+joka on sama kuin:
+
+<muuttuja> = <muuttuja> <operaattori> <lauseke>
+
+(<muuttuja> voi olla myˆs muu "modifiable lvalue" -ehdon t‰ytt‰v‰ lauseke)
+
+K‰yt‰nnˆss‰ lyhenteet n‰ytt‰v‰t esimerkiksi t‰llaisilta:
+
+Lyhyt muoto             "Normaali" muoto
+
+a += 10;                a = a + 10;
+a -= 10;                a = a - 10;
+a *= 10;                a = a * 10;
+jne...
+
+T‰llaisia lyhenneoperaattoreita ovat: +=, -=, *=, /=, %=, |=, &=,  ^=,  <<=
+ja >>=. Lyhenneoperaattori on itsess‰‰n kiinte‰ kielellinen elementti,  jo-
+ten sit‰ EI voida kirjoittaa esimerkiksi n‰in: 
+
+a + = 10;       /* t‰m‰ EI toimi, ei edes k‰‰nny */
+
+Ehk‰ viel‰ enemm‰n k‰ytettyj‰ lyhenteit‰  ovat  (post/pre)(increment/decre-
+ment)-muodot,   jotka   vastaavat   yhteen-   ja    v‰hennyslaskuja,    kun
+lis‰tt‰v‰/v‰hennett‰v‰ arvo on luku 1. N‰ill‰ on erikoiset merkitykset lau-
+sekkeen osana. Normaalilaskuja n‰m‰ vastaavat jokseenkin seuraavasti: 
+
+++a;    /* preincrement */
+  tai:
+a++;    /* postincrement */
+
+on sama a:lle, kuin:
+
+a = a + 1;
+  tai:
+a += 1;
+
+
+--a;    /* predecrement */
+  tai:
+a--;    /* postdecrement */
+
+on sama a:lle, kuin:
+
+a = a - 1;
+  tai:
+a -= 1;
+
+Erityisi‰ lausekkeen osina n‰m‰ ovat, koska muuttujan ja operaattorin  arvo
+lausekkeessa vaihtelee sen mukaan, kummalla puolella muuttujaa  operaattori
+on: 
+
+/* alussa a on 5 */
+b = a++;
+/* lopussa b on 5, a on 6 */
+
+kun taas:
+
+/* alussa a on 5 */
+b = ++a;
+/* lopussa b on 6, a on 6 */
+
+ja vastaavasti:
+
+/* alussa a on 5 */
+b = a--;
+/* lopussa b on 5, a on 4 */
+
+ja:
+
+/* alussa a on 5 */
+b = --a;
+/* lopussa b on 4, a on 4 */
+
+Silloin kun t‰llainen muoto ei ole lausekkeen osana, on  yhdentekev‰‰  kum-
+malla puolella operaattori on ja sen sijoitus on l‰hinn‰ "makuasia". (Poik-
+keuksena ovat tapaukset, jolloin operaattorin sijoitus vaikuttaa  merkityk-
+seen. Sellaiset tapaukset eiv‰t tosin  t‰h‰n  menness‰  k‰sitellyill‰  tyy-
+peill‰ ole mahdollisia.)
+
+
+{3Silmukat
+
+C-kieless‰ on kolme hieman toisistaan eroavaa silmukkarakennetyyppi‰: 
+
+  while (<lauseke>)
+    <lause>
+
+Suoritetaan lausetta toistuvasti niin kauan kuin lauseke on  tosi.  Lauseke
+testataan aina ennen lauseen suoritusta. Jos lauseke on  ep‰tosi  heti,  ei
+lausetta suoriteta ollenkaan. Esimerkkej‰: 
+
+a = 10;
+while (a++ < 100)
+  puts("iteraatio");
+
+T‰m‰ tulostaa tekstin "iteraatio" 90 kertaa.
+
+a = 10;
+while (++a < 100)
+  puts("iteraatio");
+
+T‰m‰ tulostaa tekstin "iteraatio" 89 kertaa. Hieman monimutkaisempi silmuk-
+ka voisi olla: 
+
+a = b + 10;
+while (a > b) {
+  if (b >= 5 || a == 9)
+    b -= ++a;
+  else
+    --a;
+  b += 10 - a;
+}
+
+Aika j‰rjetˆn esimerkki, koska se ei varsinaisesti tee  mit‰‰n.  Toistamis-
+kertojen m‰‰r‰ riippuu b:n l‰htˆarvosta. 
+
+  for (<lauseke1>; <lauseke2>; <lauseke3>)
+    <lause>
+
+Ensimm‰inen lauseke suoritetaan ennen silmukan aloittamista, toinen lauseke
+toimii silmukan ehtona ja kolmas lauseke suoritetaan aina  lauseen  j‰lkeen
+ennen ehtona olevan lausekkeen testaamista.
+
+Periaatteessa melkein mik‰ tahansa for-silmukka voidaan  kirjoittaa  while-
+silmukaksi muotoon: 
+
+<lauseke1>;
+while (<lauseke2>) {
+  <lause>
+  <lauseke3>;
+}
+
+Ainoa ero vastaavaan for-silmukkaan olisi continue:n toiminta  (jota  k‰si-
+tell‰‰n myˆhemmin).
+
+Kaikki lausekkeet for-silmukassa ovat vapaaehtoisia. Jos  j‰tet‰‰n  lausek-
+keet 1 ja 3 tyhjiksi, on toiminta t‰sm‰lleen kuten while-silmukan. Jos lau-
+seketta 2 ei ole, suoritetaan silmukkaa  loputtomasti  tai  break-komentoon
+(k‰sitell‰‰n myˆhemmin) asti. 
+
+Esimerkkej‰ for-silmukoista:
+
+for (a = 0; a < 10; ++a)
+  puts("iteraatio");
+
+T‰m‰ tulostaa tekstin "iteraatio" 10 kertaa. Monimutkaisempi ja ‰lyttˆm‰mpi
+esimerkki olisi taas: 
+
+for (b = a; a > 10 && b < 20;) {
+  if (a < b)
+    --b;
+  else
+    --a;
+  while (a == b || a < 10)
+    ++a;
+}
+
+
+  do
+    <lause>
+  while (<lauseke>);
+
+T‰llainen silmukka on muuten kuten while-silmukka, paitsi  ett‰  lauseketta
+ei testata ennen lauseen ensimm‰ist‰ suorituskertaa. Lause siis suoritetaan
+ainakin  kerran,  vaikka  lauseke  ei  koskaan   olisikaan   tosi.   Joskus
+k‰ytet‰‰nkin t‰llaista muotoa: 
+
+do {
+  puts("t‰m‰ tulostetaan kerran");
+} while (0);
+
+T‰st‰ on joskus hyˆty‰  makroissa  (k‰sitell‰‰n  myˆhemmin),  kun  halutaan
+m‰‰ritell‰ muuttujia makrossa, mutta halutaan sen n‰ytt‰v‰n  funktiokutsul-
+ta.  (Per‰‰n  laitettava  ';'-merkki   voisi   muuten   aiheuttaa   virheen
+k‰‰nnˆksess‰.) do while -silmukkaa k‰ytet‰‰n kuitenkin yleens‰  tavallisena
+silmukkana: 
+
+a = 0;
+do {
+  if (b > a)
+    a -= b;
+  else
+    a += --b;
+} while (a);
+
+Kaikilla silmukkarakenteilla  voidaan  toteuttaa  loputtomasti  toistettava
+silmukka: 
+
+while (1) { /* 1 tai mik‰ tahansa muu vakio, joka ei ole 0 */
+  /* toistetaan loputtomasti */
+}
+
+for (;;) {
+  /* toistetaan loputtomasti */
+}
+
+do {
+  /* toistetaan loputtomasti */
+} while (1); /* mik‰ tahansa tosi vakio */
+
+Loputtomasti toistuvastakin silmukasta voidaan poistua joillakin  tavoilla.
+N‰it‰ ovat return-komento (joka palaa funktiosta, jossa silmukka  on),  go-
+to-komento (jonka k‰yttˆ on eritt‰in huono tapa), funktion kutsuminen, joka
+poistuu koko ohjelmasta sek‰ break, joka keskeytt‰‰  silmukan  v‰littˆm‰sti
+ja jatkaa ohjelman suoritusta silmukan j‰lkeen tulevasta  lauseesta/lausek-
+keesta. Esimerkiksi: 
+
+for (;;) {
+  puts("arvomme lukuja...");
+  a = rand();
+  b = rand() + a - rand();
+  if (a == b)
+    break;
+}
+puts("nyt ilmeisesti a == b, koska silmukasta p‰‰stiin pois");
+
+rand() on standardi C-funktio. Se palauttaa ns. "satunnaisluvun",  joka  ei
+tietenk‰‰n ole t‰ysin satunnainen mutta jota  voidaan  k‰ytt‰‰  sellaisena.
+Esimerkkisilmukka jatkaisi luultavasti toimintaansa hyvin pitk‰‰n, riippuen
+l‰hinn‰ rand():n  palauttaman  arvon  maksimiarvosta  (joka  voi  vaihdella
+k‰‰nt‰j‰n mukaan) sek‰ muuttujien a ja b koosta.
+
+Tuossa esimerkiss‰ on lis‰ksi break varsin hyˆdytˆn, sill‰ saman saisi  ai-
+van hyvin aikaan do { ... } while (a != b); -muodossa.  Tietysti  break-ko-
+mentoa voidaan k‰ytt‰‰ muissakin kuin loputtomasti toistuvissa silmukoissa,
+ja se on niiss‰ usein hyˆdyllisempi: 
+
+for (a = 0; a < 100; ++a, ++b) {
+  if (a == 50) {
+    a -= b;
+    if (a >= 10 * b && b > 0)
+      break;
+  }
+  if (b == ++c || c == 4)
+    b -= ++a / c;
+}
+
+Jos on  useampia  sis‰kk‰isi‰  silmukoita,  poistuu  break  ainoastaan  si-
+simm‰st‰. Ohjelmassa break, joka ei ole silmukassa eik‰  switch-rakenteessa
+(k‰sitell‰‰n myˆhemmin), ei merkitse mit‰‰n ja tuottaa  k‰‰nnett‰ess‰  vir-
+heilmoituksen.
+
+Toinen silmukoissa k‰ytett‰v‰ poikkeus on continue,  joka  hypp‰‰  silmukan
+suorituksessa takaisin iterointiin  tai  jatkumisehtona  olevan  lausekkeen
+testaamiseen (for-silmukassa). T‰t‰ voidaan k‰ytt‰‰ esimerkiksi  seuraavas-
+ti: 
+
+for (a = 0; a < 10; ++a) {
+  if (a == 5)
+    continue;
+  printf("%d\n", a);
+}
+
+printf():n toiminnasta on tarkempaa tietoa myˆhemmin. T‰ss‰ esimerkiss‰  se
+tulostaa muuttujan a arvon sek‰ rivinvaihdon.  Yrit‰n  v‰ltt‰‰  k‰ytt‰m‰st‰
+muita muotoja ennen varsinaista selostusta toiminnasta. T‰m‰ esimerkki  tu-
+lostaisi siis: 
+
+0
+1
+2
+3
+4
+6
+7
+8
+9
+
+Eli kaikki luvut 0 - 9 paitsi 5.
+
+  
+{3Switch-rakenne
+
+Jos halutaan tehd‰ eri asioita riippuen jonkun muuttujan  arvosta,  voidaan
+se tehd‰ yksinkertaisesti if-rakenteilla: 
+
+if (a == 0) {
+  puts("nolla");
+} else if (a == 1) {
+  puts("yksi");
+} else if (a == 2) {
+  puts("kaksi");
+} else if (a == 3) {
+  puts("kolme");
+} else if (a == 4) {
+  puts("nelj‰");
+} else {
+  puts("jotain muuta kuin 0-4");
+}
+ 
+T‰llainen toimii, mutta ei ole kovin tehokasta (erityisesti jos eri verrat-
+tavia arvoja on paljon) eik‰ mukavaa  kirjoittaa  tai  lukea.  Saman  voisi
+tehd‰ switch-rakenteella seuraavasti: 
+
+switch (a) {
+  case 0:
+    puts("nolla");
+    break;
+  case 1:
+    puts("yksi");
+    break;
+  case 2:
+    puts("kaksi");
+    break;
+  case 3:
+    puts("kolme");
+    break;
+  case 4:
+    puts("nelj‰");
+    break;
+  default:
+    puts("jotain muuta kuin 0-4");
+    break;
+}
+
+Yleinen muoto switch-rakenteelle on siis:
+
+switch (<lauseke>) {
+  /*
+   * lauseita, joiden joukossa voi olla case-labeleita,
+   * breakeja ja default-label.
+   */
+}
+
+Toiminnallisesti switch() hypp‰‰ johonkin kohtaan sen j‰lkeen  tulevaa  oh-
+jelmalohkoa riippuen lausekkeen arvosta ja  suorittaa  ohjelmalohkoa  siit‰
+alkaen, kunnes vastaan tulee break tai jokin muu poikkeusohje. Jos  edelli-
+sest‰ esimerkist‰ j‰tett‰isiin break-komennot pois, tulostaisi  se  esimer-
+kiksi (jos a:n arvo olisi 2): 
+
+kaksi
+kolme
+nelj‰
+jotain muuta kuin 0-4
+
+Muodoltaan case-label on seuraavanlainen:
+
+case <lauseke>:
+
+Lausekkeen on oltava sellainen, ett‰ C-k‰‰nt‰j‰ voi yksinkertaistaa sen yk-
+sitt‰iseksi vakioksi. Esimerkiksi: 
+
+case 2 * 5:
+
+on sama kuin:
+
+case 10:
+
+Kahdella case-labelilla samassa switch-lauseessa ei saa olla  samaa  arvoa.
+Samoin default-labeleita voi olla vain yksi.
+
+Se kohta, mihin switchin alusta hyp‰t‰‰n, on joko se case-label, jossa ole-
+van lausekkeen arvo on sama kuin switch:n ehtona olevan lausekkeen tai  jos
+mik‰‰n case-label ei vastaa t‰t‰, default. Jos default-labelia eik‰  mit‰‰n
+lausekkeen arvoa vastaavaa case-labelia ole, ei suoriteta  mit‰‰n  switch:n
+ohjelmalohkosta, vaan hyp‰t‰‰n seuraavaan kohtaan koko switch:n j‰lkeen. 
+
+Monimutkaisempi esimerkki switch-rakenteesta:
+
+switch (a - 5) {
+  case 0:
+  case 1:
+    puts("(a - 5) on 0 tai 1");
+  case 2:
+    puts("0 <= (a - 5) <= 2");
+    break;
+  case 5:
+    puts("a == 0");
+  case 6:
+    puts("0 <= a <= 1");
+  case 7:
+    puts("0 <= a <= 2");
+    break; /* switch:n lopussa oleva break on vain muodollisuus */
+}
+
+T‰m‰ voi tulostaa yhden tai useamman v‰itt‰m‰n, riippuen a:n arvosta. Kaik-
+ki ne ovat tosia. Mit‰‰n ei tulosteta, jos lausekkeen a - 5 arvo ei ole  0,
+1, 2, 5, 6 tai 7.
+
+Yleisesti hyv‰ tapa on j‰rjest‰‰ switch:n case-labelit numeroj‰rjestykseen,
+kuten esimerkeiss‰ on ollut, jos se on mahdollista.
+
+
+{3Enemm‰n tietoa tyypeist‰
+
+Toistaiseksi k‰sitellyt muuttujien tyypit ovat olleet yksinkertaisia  koko-
+naislukuja. N‰m‰ riitt‰v‰t hyvin yksinkertaisiin, laskennallisiin  ohjelman
+osioihin mutta k‰yv‰t hyvin hankaliksi, jos k‰sitelt‰v‰‰ tietoa  on  paljon
+tai jos halutaan hyˆdynt‰‰ C-kielen tai  k‰yttˆj‰rjestelm‰n  kehittyneempi‰
+toimintoja.
+
+Osoittimet (englanniksi "pointers")
+
+Yleisesti osoitin tarkoittaa sellaista lukua, jonka arvolla ei katsota ole-
+van numeerista merkityst‰, vaan arvon merkitys on sen kuvaama muistiosoite.
+Motorolan  680x0-prosessoreissa  muistiosoitteet  ovat  32-bittisi‰  (tosin
+kaikki n‰m‰ prosessorit eiv‰t huomioi koko 32-bittist‰ lukua) eli 4:n tavun
+mittaisia lukuja. Luvun arvo kuvaa vain, monesko  tavu  muistin  alkuosoit-
+teesta laskien on kyseess‰.
+
+Periaatteessa voitaisiin siis C-kielell‰ kuvata  Amigassa  muistiosoitteita
+long (tai unsigned long) -tyyppisill‰ muuttujilla. T‰m‰ toimisi mutta olisi
+hyˆdytˆnt‰, koska osoittimet  eiv‰t  merkitse  niiden  esitt‰mi‰  numeroita
+eiv‰tk‰ normaalit matemaattiset toiminnot tekisi mit‰‰n j‰rkev‰‰ niille.
+
+Vaikka osoitin sin‰ns‰ on vain osoitin, eik‰ sit‰ voi sen tarkemmin  m‰‰ri-
+tell‰, m‰‰ritell‰‰n C-kieless‰ osoittimille jokin tyyppi, johon  se  osoit-
+taa. T‰m‰ m‰‰r‰‰ osoittimen tarkemman k‰ytˆksen eri operaatioiden  suhteen.
+Muuttuja, joka on osoitin, on siis aina osoitin johonkin tyyppiin.  T‰llai-
+nen muuttuja m‰‰ritell‰‰n kuin m‰‰ritelt‰isiin sen olevan sit‰ tyyppi‰, mi-
+hin se osoittaa, paitsi ett‰ muuttujan nimen  eteen  laitetaan  '*'-merkki.
+Esimerkkej‰: 
+
+char *c;
+unsigned short *s;
+long *l;
+
+N‰m‰ kaikki m‰‰rittelev‰t siis muuttujan, joka osoittaa johonkin  kokonais-
+lukutyyppiin. Kaikki n‰m‰ muuttujat (c, s ja l)  ovat  osoittimia  ja  ovat
+siis kooltaan 4 tavua, vaikka ne ovat osoittimia eri  tyyppeihin.  (Huomaa,
+ett‰ '*'-merkki ei kuulu muuttujan nimeen.)
+
+Mit‰ osoittimella voidaan siis tehd‰? Normaalisti ei ole mit‰‰n j‰rke‰  an-
+taa osoittimelle suoraan numeerista arvoa, koska arvolla ei osoitteena oli-
+si v‰ltt‰m‰tt‰ mit‰‰n merkityst‰.  Osoitin  asetetaankin  siis  osoittamaan
+esimerkiksi johonkin  muuttujaan.  Muuttujan  osoite  saadaan  '&'-merkill‰
+muuttujan nimen edess‰ ("unary"-operaattorina on '&':n merkitys  aivan  eri
+kuin tavallisena). Voimme esimerkiksi tehd‰ seuraavan: 
+
+int c;
+int *ptr;
+
+ptr = &c;
+
+T‰m‰n seurauksena muuttuja "ptr" sis‰lt‰‰ sen muistiosoitteen, jossa  muut-
+tuja "c" sijaitsee. (Huomaa, ett‰ muuttujan osoitteen  ottaminen  rajoittaa
+C-k‰‰nt‰j‰n optimointimahdollisuuksia, koska se pakottaa k‰‰nt‰j‰n  sijoit-
+tamaan  muuttujan  johonkin  todelliseen  muistis‰ilytykseen   -   useimmat
+k‰‰nt‰j‰t pyrkiv‰t sijoittamaan paikallisia muuttujia prosessorin  rekiste-
+reihin niin paljon kuin mahdollista.)
+
+T‰m‰k‰‰n ei viel‰ ole kovinkaan hyˆdyllist‰, joten tullaankin  osoittimille
+hyvin oleelliseen operaatioon eli ep‰suoraan osoitukseen. T‰m‰n pit‰isi ol-
+la ainakin assemblerohjelmoijille tuttu k‰site. Ep‰suora osoitus on  osoit-
+teen ottamisen vastakkainen operaatio. Siin‰ k‰ytet‰‰n  '*'-merkki‰  unary-
+operaattorina. (T‰t‰ pit‰‰ taas varoa sekoittamasta kertolaskuun tai osoit-
+timen tyyppim‰‰rittelyyn.) Ep‰suora  osoitus  merkitsee  sit‰,  ett‰  k‰si-
+tell‰‰n itse osoitinmuuttujan sijasta sit‰ kohtaa muistista, jonka muistio-
+soite osoittimessa on. T‰t‰ k‰sitell‰‰n sentyyppisen‰, mihin tyyppiin osoi-
+tin osoittaa. Eli voisimme jatkaa edellist‰ esimerkki‰ seuraavasti: 
+
+/*
+ * ennen:
+ * ptr osoittaa muuttujaan c
+ * muuttujalla c ei m‰‰ritelty‰ arvoa
+ */
+
+*ptr = 10;
+
+/*
+ * j‰lkeen:
+ * ptr ei ole muuttunut
+ * muuttuja c sai arvon 10
+ */
+
+Ep‰suora osoitus voi siis t‰ytt‰‰ ehdon "modifiable lvalue", josta  aiemmin
+oli pari mainintaa. Kun ep‰suoran osoituksen kautta asetetaan jollekin  ar-
+vo, laitetaan se arvo muistiin  siihen  kohtaan,  mihin  osoitin  osoittaa.
+T‰m‰n takia on osoittimien kanssa oltava huolellinen - ep‰suorat osoitukset
+sellaisen osoittimen kautta, joka ei osoita mihink‰‰n j‰rkev‰‰n paikkaan on
+yksi yleisimmist‰ bugien aiheuttajista.
+
+Assembleria osaaville: Jos oletetaan, ett‰ ptr olisi vaikka rekisteriss‰ a0
+(jos se ei ole rekisteriss‰, se tietysti laitetaan v‰liaikaisesti  johonkin
+rekisteriin ep‰suoraa osoitusta varten), olisi yll‰olevan assemblervastine:
+
+        move.l  #10,(a0)
+
+Useimmat k‰‰nt‰j‰t tosin osaisivat k‰‰nt‰‰ tuon  hieman  paremmin,  eli  se
+olisi k‰yt‰nnˆss‰: 
+
+        moveq   #10,d0
+        move.l  d0,(a0)
+
+J‰lkimm‰inen tapa vie 2 tavua v‰hemm‰n tilaa ja toimii nopeammin. Joka  ta-
+pauksessa move-komennon koko (t‰ss‰ .l) m‰‰r‰ytyy sen mukaan,  mihin  tyyp-
+piin osoittimen on m‰‰ritelty osoittavan. T‰ss‰  tapauksessa  oli  kyseess‰
+int, joka on normaalisti 32-bittinen. Jos k‰‰nt‰j‰ss‰  on  short-int  optio
+k‰ytˆss‰ (int 16-bittinen), niin vastaava kohta olisikin: 
+
+        move.w  #10,(a0)
+
+Osoitin voi myˆs osoittaa osoittimeen tai vaikka osoittimeen, joka osoittaa
+osoittimeen jne. On vain laitettava riitt‰v‰ m‰‰r‰  '*'-merkkej‰  muuttujan
+m‰‰rittelyss‰. Vastaavasti on moninkertainen ep‰suora osoitus  mahdollista.
+Esimerkiksi: 
+
+short var, *ptr1, **ptr2;
+
+ptr2 = &ptr1;   /* ptr2 osoittaa ptr1:een */
+*ptr2 = &var;   /* nyt ptr1 osoittaa var:iin (asetettu ptr2:n kautta
+                   ep‰suorasti) */
+*ptr1 = 5;      /* nyt var saa arvon 5 */
+**ptr2 += 2;    /* var saa arvon 7 (siihen lis‰t‰‰n 2) */
+
+Osoittimet eiv‰t toimi matemaattisten operaatioiden  kanssa  aivan  samalla
+tavalla kuin kokonaisluvut. Osoittimille ovat sallittuja ainoastaan  jotkut
+operaatiot. N‰it‰ k‰sitell‰‰n seuraavan tyypin yhteydess‰.
+
+Osoittimiin l‰heisesti liittyv‰ tyyppi on taulukko  (englanniksi  "array").
+Taulukko on periaatteessa vain useampi "muuttuja", jotka sijaitsevat  muis-
+tissa per‰kk‰isiss‰ osoitteissa (muuttujan tyypin koon v‰lein). Voimme esi-
+merkiksi m‰‰ritell‰ taulukon t‰ll‰ tavalla: 
+
+short arr[10];
+
+T‰m‰ m‰‰rittelee 10 per‰kk‰isen "short":n sarjan taulukkoon arr (lyhennetty
+"array":sta). Koska taulukossa on 10 kpl shorteja, jotka ovat 2  tavun  ko-
+koisia, on taulukon koko muistissa 20 tavua. T‰ss‰ arr  toimii  muuttujani-
+mekkeen‰, jonka avulla taulukkoa k‰sitell‰‰n. Taulukon muuttujanimeke  toi-
+mii kuin se  olisi  osoitin  taulukon  ensimm‰iseen  kohtaan.  Voimme  siis
+ep‰suoralla osoituksella laittaa taulukon ensimm‰iseen kohtaan luvun 0: 
+
+*arr = 0;
+
+Aivan n‰in yksinkertaista ei  ole  taulukon  muiden  kohtien  osoittaminen.
+Niit‰ varten t‰ytyy tehd‰ ep‰suora  osoitus  muuhun  kohtaan  kuin  suoraan
+muuttujanimekkeen suhteen. Laitamme taulukon toiseen kohtaan luvun 1: 
+
+*(arr + 1) = 1;
+
+T‰ss‰ teemme ep‰suoran osoituksen kohdasta arr + 1. Koska arr toimii  t‰ss‰
+kuten osoitin, p‰tev‰t  siihen  osoittimen  laskus‰‰nnˆt.  Kun  osoittimeen
+lis‰t‰‰n tai siit‰ v‰hennet‰‰n jokin kokonaisluku (vakio tai muuttuja),  on
+tuloksen tyyppi sama kuin osoittimen, ja tulos osoittaa muistissa kokonais-
+luvun verran osoittimen tyypin ilmaisemia paikkoja eteen-  tai  taaksep‰in.
+Yll‰olevassa arr + 1 osoittaa siis kaksi  tavua  myˆhemp‰‰  muistiosoitetta
+kuin arr, eli se osoittaa taulukon toista kohtaa, jolloin ep‰suora  osoitus
+arr + 1:st‰ k‰sittelee t‰t‰ kohtaa.
+
+Osoittimen yhteenlaskulle ja ep‰suoralle osoitukselle  on  myˆs  lyhennetty
+muoto, indeksiosoitus, joka on varsinaisesti taulukkoon osoittamista varten
+tarkoitettu. Yll‰olevan voisi kirjoittaa siis seuraavasti: 
+
+arr[1] = 1;
+
+Taas on hyv‰ huomata ero []-merkkien k‰ytˆst‰  muuttujan  m‰‰rittelyss‰  ja
+sen osoittamisessa. Yleisesti voimme m‰‰ritell‰ indeksin siten, ett‰ jos on
+mik‰ tahansa todelliseen tyyppiin (eli ei void:iin - k‰sitell‰‰n myˆhemmin)
+osoittava osoitin (tai taulukon muuttujanimeke) p ja mik‰ tahansa kokonais-
+luku c (joko muuttuja tai vakio), niin p[c] on aina  t‰sm‰lleen  sama  asia
+kuin *(p + c). Vastaavasti &p[c] on sama asia kuin p + c, mutta ehk‰ hieman
+ep‰siistimpi tapa merkit‰ t‰m‰. Yleens‰ lyhennetty‰ muotoa  k‰ytet‰‰n  tau-
+lukkoa osoitettaessa, vaikka olisi kyseess‰ taulukon ensimm‰inen kohta, eli
+esimerkiksi *arr periaatteessa yleens‰ kirjoitettaisiin arr[0].
+
+Taulukossamme arr on siis 10 kohtaa, joiden numerot n‰it‰ osoittaessa  ovat
+0-9. Taulukkoa k‰sitelt‰ess‰ on aina muistettava  olla  huolellinen,  koska
+jos esimerkiksi laittaa jotakin kohtaan arr[10], niin se luultavasti  menee
+jonkun toisen muuttujan p‰‰lle, koska arr[9] on taulukon  viimeinen  kohta.
+Samaten arr[-1]:een ei olisi turvallista laittaa  mit‰‰n,  koska  sekin  on
+k‰‰nt‰j‰n taulukolle varaaman alueen ulkopuolella. C-k‰‰nt‰j‰  ei  tarkista
+osoitusten olevan taulukon sis‰ll‰.
+
+Jos haluaisimme laittaa esimerkiksi arvon 5 esimerkkitaulukkomme  jokaiseen
+10:een kohtaan, voisi sen tietysti (erityisesti n‰in  pienen  taulukon  ta-
+pauksessa) tehd‰ yksinkertaisesti n‰in: 
+
+arr[0] = 5;
+arr[1] = 5;
+arr[2] = 5;
+arr[3] = 5;
+arr[4] = 5;
+arr[5] = 5;
+arr[6] = 5;
+arr[7] = 5;
+arr[8] = 5;
+arr[9] = 5;
+
+T‰m‰ on kuitenkin aika "tyhm‰" tapa tehd‰  asia.  Yleens‰  t‰m‰  teht‰isiin
+jollakin yksinkertaisella silmukalla: 
+
+int i;
+
+for (i = 0; i < 10; ++i)
+  arr[i] = 5;
+
+Jos k‰ytt‰‰ jotakin yksinkertaista C-k‰‰nt‰j‰‰ (tai v‰hemm‰n yksinkertaista
+ilman ett‰ optimointi on p‰‰ll‰), ei t‰llainen kuitenkaan ole  nopein  mah-
+dollinen tapa, koska joudutaan tekem‰‰n silmukan joka iteraatiolla uusi in-
+deksoitu osoitus. Voimme periaatteessa tehd‰ saman myˆs  v‰liaikaisen  apu-
+muuttujan avulla: 
+
+int i;
+short *ptr;
+
+i = 9;
+ptr = arr;
+do {
+  *ptr++ = 5;
+} while (i--);
+
+T‰ss‰ k‰yd‰‰n silmukka l‰pi 10 kertaa, kuten aiemminkin.  Alussa  on  i:ll‰
+arvo 9 ja ptr osoittaa taulukon  alkuun.  Osoitus  *ptr++  tekee  ep‰suoran
+osoituksen ptr:n kautta ja siirt‰‰ ptr:n seuraavaan  kohtaan.  Laskurina  i
+toimii tehokkaasti takaperin, koska i:t‰  tarvitsee  vain  verrata  nollaan
+(joka k‰y 680x0-prosessoreissa tst-komennolla) eik‰ sen yl‰rajaan.  Lis‰ksi
+do { } while -muotoisen silmukan ansiosta selvit‰‰n  yhdell‰  v‰hemm‰n  i:n
+testauksella.
+
+Taulukot voivat myˆs sis‰lt‰‰ useampia kuin yhden  "ulottuvuuden".  Voidaan
+esimerkiksi m‰‰ritell‰: 
+
+long matrix[4][4];
+
+T‰ss‰ m‰‰ritell‰‰n matrix 4x4 taulukoksi (jota voi hyvin k‰ytt‰‰  matriisi-
+na) longeja (4 tavua/kpl, eli taulukko vie 4 * 4 * 4 = 64  tavua  muistia).
+T‰m‰ taulukko on muistissa j‰rjestynyt siten, ett‰ j‰lkimm‰inen indeksikoh-
+ta on v‰hemm‰n merkitsev‰ muistiosoitteen kannalta, eli kohdat  ovat  muis-
+tissa  j‰rjestyksess‰  matrix[0][0],   matrix[0][1],   matrix[0][2],   mat-
+rix[0][3], matrix[1][0] jne. J‰lleen muuttujanimeke on k‰ytˆkselt‰‰n osoit-
+timen kaltainen, mutta t‰ll‰ kertaa se  on  kuin  oltaisiin  m‰‰ritelty  se
+"long **matrix;":ksi. Jos k‰yt‰mme ainoastaan yht‰ indeksi‰, t‰m‰ on eniten
+merkitsev‰ indeksi, eli esimerkiksi matrix[1] on osoitin matriisin  kohtaan
+matrix[1][0], eli vastaava kuin &matrix[1][0], tyypilt‰‰n se on "long *".
+
+Muuttujan tyypin taulukointi on aina toiminnallisesti "uloin" looginen  osa
+tyyppi‰, eli: 
+
+int *ptrarr[32];
+
+T‰m‰ m‰‰rittelee taulukon, jossa on 32  kpl  osoittimia,  jotka  osoittavat
+tyyppiin "int".
+
+Taulukolla "char":eja taas on aivan erityinen merkitys, koska char voi olla
+ASCII-merkki.  T‰llaisessa  taulukossa  voidaan  siis  s‰ilytt‰‰   teksti‰.
+Yleens‰  teksti‰  s‰ilytet‰‰n  siten,  ett‰   itse   tekstin   sis‰ltˆ   on
+per‰kk‰isiss‰ tavuissa ja per‰ss‰ on nollatavu. T‰llaista teksti‰  kuvaavaa
+per‰kk‰isten tavujen sarjaa sanotaan usein merkkijonoksi.
+
+Merkkijonojen k‰sittely‰ varten  lˆytyy  useita  standardeja  C-funktioita.
+Lis‰ksi suuri osa standardeja funktioita k‰ytt‰‰ parametreissaan  merkkijo-
+noja. Esimerkiksi puts(), jota esimerkeiss‰ olemme k‰ytt‰neet, ottaa  para-
+metrikseen merkkijonon. Toiminnaltaan puts()  tulostaa  (normaalisti  shel-
+liin) parametriksi saamansa merkkijonon ja  rivinvaihdon.  Esimerkeiss‰  on
+ollut k‰ytettyn‰ p‰‰asiassa merkkijonovakioita.
+
+Merkkijonovakio merkit‰‰n siten, ett‰ kahden '"'-merkin v‰liin kirjoitetaan
+haluttu teksti. Teksti voi sis‰lt‰‰ melkein mit‰ tahansa merkkej‰  joitakin
+poikkeuksia lukuunottamatta: '"' (koska se p‰‰tt‰isi merkkijonovakion), '\'
+(koska se toimii poikkeustunnuksena) ja rivinvaihto (t‰m‰n tarkempi  k‰ytˆs
+voi vaihdella k‰‰nt‰j‰n mukaan, mutta ANSIn mukaan rivinvaihdot merkkijono-
+vakiossa eiv‰t ole sallittuja). N‰m‰ sek‰ useat muut merkit voidaan korvata
+erilaisilla poikkeuskoodeilla, jotka kaikki alkavat '\'-merkill‰. N‰it‰  on
+k‰ytett‰viss‰ seuraavia (^<kirjain> tarkoittaa ett‰  vastaavan  koodin  saa
+aikaan painamalla <kirjain>ta ctrl-n‰pp‰imen ollessa painettuna): 
+
+        \"      '"'-merkki
+        \\      '\'-merkki
+        \a      piippaus (^G, ASCII 7, BEL)
+        \b      poispyyhint‰ takaperin (^H, ASCII 8, BS (backspace))
+        \f      sivunvaihto (^L, ASCII 12, FF (form feed))
+        \n      rivinvaihto (^J, ASCII 10, LF (line feed))
+        \r      (suomeksi?) (^M, ASCII 13, CR (carriage return))
+        \t      vaakatabulaattori (^I, ASCII 9, HT (horizontal tab))
+        \v      pystytabulaattori (^K, ASCII 11, VT (vertical tab))
+
+Useat n‰ist‰ merkeist‰ voidaan kirjoittaa normaalissakin muodossa, mutta ne
+ovat k‰tev‰mpi‰ tuossa muodossa, jotta voitaisiin helpommin  n‰hd‰  suoraan
+l‰hdekoodista mit‰ merkit ovat. Lis‰ksi voidaan mik‰  tahansa  merkki  kir-
+joittaa antamalla sen ASCII-arvo oktaalina tai heksadesimaalina  '\'-merkin
+j‰lkeen. Esimerkiksi '\033' tai '\0x1b' olisi  ESC-koodi  (^[,  ASCII  27),
+jonka k‰yttˆ t‰llaisessa muodossa on eritt‰in suositeltavaa. Poikkeukselli-
+sesti '\'-merkin j‰lkeen ei ole pakko laittaa nollaa alkavan  oktaali-  tai
+heksadesimaaliluvun tunnukseksi kuten normaalisti.
+
+Merkkijonovakioita voi liitt‰‰ yhteen  yksinkertaisesti  kirjoittamalla  ne
+per‰kk‰in, eli "merkki" "jono" on sama kuin "merkkijono".
+
+Merkkijonovakio on toiminnallisesti tyypilt‰‰n "char *", eli ohjelmassa  se
+tuottaa siihen kohtaan, johon se on ohjelmassa sijoitettu,  osoittimen  ky-
+seisen merkkijonon alkuun (poikkeustapauksia esiintyy  muuttujien  alustuk-
+sessa, jota k‰sitell‰‰n myˆhemmin). Merkkijonovakio sijoitetaan yleens‰ oh-
+jelman koodihunkkiin (eli samaan osaan ohjelmaa, jossa ohjelman varsinainen
+ajettava koodi on), jota ei saa muuttaa, joten merkkijonovakion sis‰ltˆ‰ ei
+saa muuttaa, vaikka se on helposti mahdollista. Sen sijaan jos haluaa  sel-
+laisen merkkijonon, jota voi  muutella,  kannattaa  m‰‰ritell‰  esimerkiksi
+taulukko ja kopioida merkkijono sinne vakiosta  esimerkiksi  standardifunk-
+tiolla strcpy(): 
+
+char str[100];
+
+strcpy(str, "merkkijono");
+
+strcpy() ottaa kaksi parametri‰, molemmat ovat  osoittimia  tyyppiin  char.
+Toiminnaltaan se kopioi toisena parametrin‰ olevan merkkijonon sinne, minne
+ensimm‰inen parametri osoittaa (palautusarvo on sama kuin ensimm‰inen para-
+metri). Yll‰olevassa esimerkiss‰ on taulukon str koko oltava v‰hint‰‰n  11,
+muuten kopiointi ylitt‰‰ sen ja sotkee jotakin muuta. (Kopioinnissa kopioi-
+daan merkkijono "merkkijono",  10  kirjainta,  sek‰  0-tavu,  joka  on  sen
+per‰ss‰.) Kun merkkijono on kopioitu  taulukkoon  (t‰ss‰  tapauksessa  sit‰
+k‰ytet‰‰n puskurina), voidaan sit‰ muuttaa. Voisimme jatkaa esimerkki‰: 
+
+str[7] = 'a';
+
+T‰ss‰ 'a' on merkkivakio. Merkkivakio on merkinn‰lt‰‰n samankaltainen  kuin
+merkkijonovakio, paitsi ett‰  k‰ytet‰‰n  '-merkkej‰  '"'-merkkien  sijasta,
+eik‰ merkkej‰ voida m‰‰ritell‰ useampia kuin yksi. Merkkivakion arvo on sen
+numeerinen arvo. Yll‰oleva on siis sama kuin tekisi 
+
+str[7] = 97;
+
+koska 97 on a-kirjaimen ASCII-arvo. (Joillakin  k‰‰nt‰jill‰  toimivat  myˆs
+sellaiset merkkivakiot, joissa on useampia merkkej‰ (enint‰‰n nelj‰), jois-
+ta muodostuva luku muodostetaan kuin ne  olisivat  per‰kk‰in  muistissa  ja
+luettaisiin sielt‰ kuin ne olisivat  jokin  suurempi  kokonaislukumuuttuja.
+ANSI on kuitenkin kielt‰nyt t‰llaisen muodon.)
+
+T‰m‰n muutoksen j‰lkeen sis‰lt‰‰ taulukko str merkkijonon "merkkijano". Jos
+nyt suoritaisimme puts()-funktion 
+
+puts(str);
+
+se tulostaisi:
+
+merkkijano
+
+Koska taulukko str on huomattavasti suurempi kuin siin‰ nyt oleva merkkijo-
+no, voidaan siin‰ olevaa teksti‰ myˆs pident‰‰. T‰h‰n voidaan k‰ytt‰‰  esi-
+merkiksi funktiota strcat(), joka liitt‰‰ merkkijonon per‰‰n lis‰‰ teksti‰,
+esimerkiksi: 
+
+strcat(str, " on vakava ongelma.");
+
+T‰m‰n j‰lkeen sis‰lt‰‰ str merkkijonon  "merkkijano  on  vakava  ongelma.".
+Merkkijonojen k‰sittely on varsin t‰rke‰  hallita,  joten  t‰st‰  voimmekin
+tehd‰ kokonaisen esimerkkiohjelman: 
+
+/*
+ * merkkijono.c
+ */
+
+#include <stdio.h>
+#include <string.h>
+
+int main(int ac, char **av)
+{{
+  /*
+   * seuraavaksi m‰‰ritell‰‰n taulukko str paikalliseksi muuttujaksi
+   * funktiossa main()
+   *
+   * taulukoita, erityisesti suurikokoisia, ei kannata m‰‰ritell‰
+   * paikallisiksi muuttujiksi Amigalla suurempia ohjelmia tehdess‰,
+   * erityisesti jos funktiosta kutsutaan useita muita ohjelman
+   * suuria osia, koska t‰m‰ kuluttaa pinomuistia (stack), jota Amigassa
+   * on rajoitetusti k‰ytett‰viss‰
+   */
+  char str[100];
+
+  /*
+   * kopioidaan puskuriin teksti‰
+   */
+
+  strcpy(str, "merkkijono");
+
+  /*
+   * tulostetaan
+   */
+
+  puts(str);
+
+  /*
+   * muutetaan yksi kirjain keskelt‰ merkkijonoa
+   * tulostetaan tuloksena oleva puskurin sis‰ltˆ
+   */
+
+  str[7] = 'a';
+  puts(str); 
+
+  /*
+   * lis‰t‰‰n merkkijonon loppuun lis‰‰ teksti‰
+   * ja taas tulostetaan mit‰ puskurissa operaation j‰lkeen on
+   */
+
+  strcat(str, " on vakava ongelma.");
+  puts(str);
+
+  /*
+   * t‰ss‰ voidaan demonstroida myˆs osoittimen ja kokonaisluvun
+   * yhteenlaskua
+   */
+
+  puts(str + 6);
+
+  return 0;
+}
+
+Ohjelman pit‰isi k‰‰nty‰ helposti ja tulostaa ajettaessa:
+
+merkkijono
+merkkijano
+merkkijano on vakava ongelma.
+jano on vakava ongelma.
+
+Seuraavaksi tulemmekin hieman monimutkaisempiin struct- ja union-tyyppeihin
+(mit‰ lienev‰tk‰‰n varsinaisilta suomenkielisilt‰ nimekkeilt‰‰n). Molempien
+m‰‰rittely n‰ytt‰‰ miltei samanlaiselta, mutta niiden merkitykset ovat toi-
+siinsa n‰hden aivan erilaiset.
+
+Tietoa k‰sitelt‰ess‰ on usein hyˆdyllist‰  voida  k‰sitell‰  tietoa  hieman
+suuremmissa yksikˆiss‰ kuin yksitt‰isiss‰ muuttujissa tai taulukoissa.  Jos
+useat eri tiedot liittyv‰t kiinte‰sti yhteen, voi olla hyv‰  m‰‰ritell‰  ne
+"structure":ksi. T‰llainen structure sis‰lt‰‰ kentti‰,  jotka  m‰‰ritell‰‰n
+kuin ne olisivat muuttujam‰‰ritelmi‰ "struct"-avainsanan  j‰lkeen  tulevien
+aaltosulkeiden v‰liss‰. Jos esimerkiksi haluamme s‰ilytt‰‰ jonkun tiedoston
+nime‰ ja pituutta yhdess‰, niin voimme m‰‰ritell‰: 
+
+struct {
+  char name[32];
+  long length;
+} file;
+
+T‰llˆin meill‰ on muuttuja "file", joka sis‰lt‰‰ tilaa sek‰  tiedoston  ni-
+melle (enint‰‰n 31 merkki‰ pitk‰, Amigalla FFS huomioi enint‰‰n 30 merkki‰,
+joten t‰m‰ riitt‰‰)  ett‰  pituudelle,  niille  on  kullekin  omat  nimetyt
+kentt‰ns‰, "name" ja "length". (Eri  structureissa  voi  olla  samannimisi‰
+kentti‰. Samoin voidaan k‰ytt‰‰ muuttujia, joilla on sama nimi kuin  jonkun
+structuren kent‰ll‰.) Itse muuttuja on kooltaan 36 tavua (32 kpl yhden  ta-
+vun kokoisia char:eja ja yksi 4 tavun  mittainen  long).  Kenttiin  voidaan
+laittaa tietoa seuraavalla tavalla: 
+
+strcpy(file.name, "ksrc10.tar.gz");
+file.length = 4706422;
+
+T‰ll‰ tavalla m‰‰ritelty muuttuja on kuitenkin harvoin  hyˆdyllinen,  koska
+se on ainoa t‰t‰ tyyppi‰ oleva muuttuja. Siksi yleens‰ structureita  m‰‰ri-
+telt‰ess‰ annetaan structurelle nimeke ja m‰‰ritell‰‰n muuttuja sen avulla.
+Nimekkeell‰ voidaan m‰‰ritell‰ useampia muuttujia eri paikoissa, eik‰  tar-
+vitse m‰‰ritell‰ kaikkia muuttujia varsinaisen structurem‰‰rittelyn  yhtey-
+dess‰. T‰llˆin yll‰oleva muuttuja m‰‰ritelt‰isiin  esimerkiksi  seuraavalla
+tavalla: 
+
+struct filedata {
+  char name[32];
+  long length;
+};
+
+struct filedata file;
+
+Ensimm‰inen struct m‰‰rittelee structuren ja antaa sille nimekkeeksi "file-
+data", jolloin voidaan k‰ytt‰‰ muotoa "struct filedata" kuvaamaan koko  ky-
+seist‰ tyyppi‰ (vaikka se olisi paljon  monimutkaisempikin).  T‰m‰n  avulla
+annetaankin se sitten tyypiksi muuttujalle "file". Nimike saa olla samanni-
+minen kuin mik‰ tahansa muuttujan nimi tai structuren kentt‰.
+
+Muuttuja tai useita muuttujia voidaan toki m‰‰ritell‰ myˆs  structuren  al-
+kum‰‰rittelyn yhteydess‰. Lis‰ksi voidaan m‰‰ritell‰ osoittimia structurei-
+hin, taulukoita jotka sis‰lt‰v‰t structureita jne., esimerkiksi: 
+
+struct filedata {
+  char name[32];
+  long length;
+} file, file2, *ptr, files[10], *ptrs[20];
+
+struct filedata moredata[100], *anotherptr;
+
+Aiemmin n‰htiin, ett‰ muuttujassa olevia kentti‰ osoitetaan muodossa  muut-
+tuja '.' kent‰n nimi. Kentti‰ voidaan  k‰sitell‰  myˆs  suoraan  osoittimen
+kautta, esimerkiksi jos nollaamme yll‰ m‰‰ritellyn ptr:n  avulla  muuttujan
+"file" length-kent‰n: 
+
+ptr = &file;
+ptr->length = 0;
+
+Osoitus tapahtuu siis muodossa <osoitin> -> <kent‰n nimi>.
+
+Yksinkertaisemmissa  ohjelmissa  harvemmin  hyˆdyllinen  "union"-tyyppi  on
+m‰‰rittelylt‰‰n muuten saman n‰kˆinen kuin  structuren  m‰‰rittely,  paitsi
+ett‰ sanan "struct" tilalla on "union". Kent‰t  ja  nimikkeet  m‰‰ritell‰‰n
+siis samalla tavalla. Varsinaisena erona structureen onkin se, ett‰ kentti‰
+ei s‰ilytet‰ per‰kk‰in vaan p‰‰llek‰in, ts. sit‰ aluetta  muistissa,  jossa
+union-muuttuja on, voidaan  k‰sitell‰  useampana  eri  tyyppin‰.  Muuttujan
+kooksi tulee sen suurimman kent‰n koko. T‰m‰ntyyppist‰ muuttujaa voitaisiin
+k‰ytt‰‰  esimerkiksi  er‰‰n  ANSI-s‰‰nnˆksen  kiert‰miseen.  (ANSIn  mukaan
+cast:ia (k‰sitell‰‰n myˆhemmin) ei voida tehd‰ osoittimen ja  kokonaisluku-
+tyypin v‰lill‰, vaikka ne olisivat saman kokoisia (se voi vaihdella  koneen
+mukaan). T‰m‰ on ihan hyˆdyllist‰ portattavuutta varten, joten sit‰ ei kan-
+nata tehd‰k‰‰n, mutta  jollekin  tietylle  koneelle  ohjelmoidessa  voidaan
+t‰llaista kuitenkin k‰ytt‰‰.) Voimme s‰ilytt‰‰ osoitinta  kokonaislukumuut-
+tujassa (tai p‰in vastoin): 
+
+union majorhack {
+  long l;
+  long *ptr;
+} hackvar;
+
+Itse operaatiota varten voitaisiin k‰ytt‰‰ funktiota:
+
+long lptr2long(long *src)
+{{
+  hackvar.ptr = src;
+  return hackvar.l;
+}
+
+Eli jos haluamme muuttujaan "num", tyyppi‰ long, sen  oman  osoitteen,  sen
+voi tehd‰ kutsumalla yll‰olevaa funktiota: 
+
+num = lptr2long(&num);
+
+Yksi tapaus, jossa structurelle ei ole v‰ltt‰m‰tt‰  hyˆdyllist‰  m‰‰ritell‰
+nimekett‰, on unionin sis‰ll‰. (Unioneja ja structureita voi olla kesken‰‰n
+sis‰kk‰in rajatta.) Voimme esimerkiksi m‰‰ritell‰ unionin, joka  k‰ytt‰ytyy
+numeroarvoiltaan kuten 680x0:n (tai yleens‰ 32-bittisten big-endian proses-
+soreiden) rekisterit, jos sit‰ osoittaa eri tyypeill‰: 
+
+union be_reg {
+  struct {
+    long val;
+  } l;  
+  struct {
+    unsigned long val;
+  } ul;
+  struct {
+    short pad;
+    short val;
+  } w;
+  struct {
+    short pad;
+    unsigned short val;
+  } uw;
+  struct {
+    char pad[3];
+    char val;
+  } b;
+  struct {
+    char pad[3];
+    unsigned char val;
+  } ub;
+};
+
+/*
+ * l- ja ul-kenttien ei tarvitsisi v‰ltt‰m‰tt‰ olla structureita, mutta
+ * niiden osoitusten on hyv‰ olla samankaltainen toisten kenttien
+ * osoituksen kanssa ihan siisteyden vuoksi
+ */
+
+Assemblerohjelmoijat varmaan ainakin ymm‰rt‰v‰t, mist‰ on  kyse.  T‰llainen
+tyyppi k‰ytt‰ytyisi esimerkiksi seuraavasti (jos kaikki toimii oikein): 
+
+union be_reg reg;
+
+reg.l.val = -1;
+
+/*
+ * tuloksena:
+ *
+ * muuttujan "reg" bitit: 11111111111111111111111111111111
+ *
+ * merkitt‰vien kenttien arvot:
+ *
+ * l.val        -1
+ * ul.val       0xffffffff (4294967295)
+ * w.val        -1
+ * uw.val       0xffff (65535)
+ * b.val        -1
+ * ub.val       0xff (255)
+ */
+
+reg.b.val = 0;
+
+/*
+ * tuloksena:
+ *
+ * muuttujan "reg" bitit: 11111111111111111111111100000000
+ *
+ * merkitt‰vien kenttien arvot:
+ *
+ * l.val        -256
+ * ul.val       0xffffff00 (4294967040)
+ * w.val        -256
+ * uw.val       0xff00 (65280)
+ * b.val        0
+ * ub.val       0
+ */
+
+Useimmiten unioneiden k‰ytˆkseen ei kuitenkaan pid‰  luottaa  eri  tyyppien
+osalta. K‰yt‰nnˆss‰ unioneita yleens‰ k‰ytet‰‰n siten, ett‰ aina tunnetaan,
+mink‰tyyppisen‰ sen arvo on j‰rkev‰. (Union voi olla esimerkiksi osana  st-
+ructurea, jossa on myˆs vaikka kentt‰, jonka arvo  ilmaisee  mink‰tyyppinen
+arvo unionissa on.)
+
+Erityisesti structure/union-tyyppien kanssa on  usein  hyˆdyllist‰  k‰ytt‰‰
+"sizeof"-ilmausta, joka k‰‰ntyy tyypin kooksi  tavuissa.  sizeof:in  per‰‰n
+voidaan laittaa sulkeissa oleva tyyppinimike, jonka koko  halutaan  tiet‰‰.
+Esimerkiksi: 
+
+printf("%d\n", sizeof(long));
+
+T‰m‰n pit‰isi Amigalla olla 4. Eli yll‰oleva tulostaisi "4". Samoin:
+
+printf("%d\n", sizeof(char *));
+
+T‰m‰kin olisi 4. Huomaa, ett‰ tyyppinimeke on muuten samanlainen kuin muut-
+tujan m‰‰ritelyss‰, paitsi ett‰ tunnusosa on "n‰kym‰tˆn". (Myˆhemmin saman-
+lainen muoto esiintyy cast:eissa ja prototyypeiss‰.) 
+
+printf("%d\n", sizeof(struct filedata));
+
+T‰m‰ tulostaisi 36, oletettuna ett‰ struct  filedata  on  m‰‰ritelty  kuten
+aiemmissa esimerkeiss‰.
+
+Toinen tapa k‰ytt‰‰ sizeof:ia on siten, ett‰ kirjoittaa sen per‰‰n  lausek-
+keen, jolloin se palauttaa lausekkeen koon. Jos meill‰ on vaikka muuttuja 
+
+struct filedata *f;
+
+niin:
+
+printf("%d\n", sizeof f);
+/*
+ * tulostaa 4, sama kuin sizeof(struct filedata *)
+ */
+printf("%d\n", sizeof *f);
+/*
+ * tulostaa 36, sama kuin sizeof(struct filedata)
+ */
+printf("%d\n", sizeof f->name);
+/*
+ * tulostaa 32, sama kuin sizeof(char [32])
+ */
+printf("%d\n", sizeof f->name[0]);
+/*
+ * tulostaa 1, sama kuin sizeof(char)
+ */
+
+Taulukon sis‰lt‰mien elementtien m‰‰r‰ voidaan myˆs selvitt‰‰ t‰m‰n  avulla
+(vain jos se on m‰‰ritelty!). Jos meill‰ on  mik‰  tahansa  taulukko  a[n],
+niin (sizeof a) / (sizeof a[0]) antaa tulokseksi n.
+
+Yleisin sizeof:in k‰yttˆ lienee muistin varaamisen yhteydess‰.  T‰t‰  k‰si-
+tell‰‰n kuitenkin vasta myˆhemmin.
+
+T‰ss‰ vaiheessa lienee syyt‰ esitell‰ poikkeava osoitintyyppi. Jo aiemmassa
+vaiheessa on funktioiden parametrim‰‰rittelyjen yhteydess‰  k‰ytetty  pseu-
+do-tyyppi‰  "void".  Muuttujia  voidaan  m‰‰ritell‰  osoittimeksi  tyyppiin
+"void", jolloin kyseess‰ on yleisk‰yttˆinen osoitin, joka voi osoittaa  mi-
+hin tahansa. T‰llaisen osoittimen kautta ei voida tehd‰ ep‰suoria  osoituk-
+sia, mutta arvon siirt‰minen toiseen osoittimeen tapahtuu ilman virheit‰: 
+
+void *ptr;
+long l;
+char *cptr;
+
+ptr = &l;
+cptr = ptr;
+
+/*
+ * jos tekisimme suoraan
+ *
+ * cptr = &l;
+ *
+ * aiheuttaisi se k‰‰nnˆsvaiheessa varoituksen
+ */
+ 
+Useimmiten t‰llaiseen teht‰v‰‰n k‰ytet‰‰n kuitenkin cast-operaattoria, joka
+kertoo C-k‰‰nt‰j‰lle, mit‰ tyyppi‰ jokin  on  esitt‰vin‰‰n,  eli  yll‰oleva
+toimisi varoituksetta ilman v‰liosoitinta, jos sen tekisi n‰in:
+
+cptr = (char *)&l;
+
+Cast on siis yksinkertaisesti tyyppim‰‰ritelm‰ sulkeissa. T‰llaisen  avulla
+voidaan myˆs k‰sitell‰ jotakin muuttujaa kuin se olisi eri tyyppi‰: 
+
+struct mystruct {
+  long vals[4];
+  char name[20];
+};
+
+struct mystruct ms;
+void *mp;
+
+void func(void)
+{{
+  mp = &ms;
+  /*
+   * void-osoittimen kautta ei voida normaalisti k‰sitell‰ mit‰‰n,
+   * mutta cast auttaa t‰h‰n, kerrotaan k‰‰nt‰j‰lle ett‰ mp osoittaa
+   * struct mystruct:iin:
+   */
+  ((struct mystruct *)mp)->vals[2] = 10;
+  strcpy(((struct mystruct *)mp)->name, "text");
+}
+
+Tilanteesta riippuen voi cast myˆs muuttaa jotakin arvoa, jos  muunnettavan
+koko muuttuu ja/tai muunnetaan kokonaisluvun ja liukuluvun v‰lill‰.
+
+Tyyppinimekkeit‰ voidaan myˆs itse m‰‰ritell‰. Muoto on muuten  samanlainen
+kuin muuttujan m‰‰rittelyn yhteydess‰, paitsi ett‰ eteen tulee sana  "type-
+def". Voimme esimerkiksi m‰‰ritell‰  lyhyemm‰t  vastineet  etumerkittˆmille
+kokonaislukutyypeille: 
+
+typedef unsigned int u_int;
+typedef unsigned char u_char;
+typedef unsigned short u_short;
+typedef unsigned long u_long;
+
+/*
+ * n‰m‰ ovat yleisi‰ m‰‰ritelmi‰ ja lˆytyv‰t include-filest‰
+ * sys/types.h, joten niit‰ ei normaalisti kannata itse m‰‰ritell‰
+ */
+
+Nyt jos m‰‰rittelemme vaikka:
+
+u_long value;
+
+T‰m‰ on sama kuin tekisimme:
+
+unsigned long value;
+
+Loppukurssin ajan oletamme yll‰olevat  tyyppim‰‰ritelm‰t  olemassaoleviksi.
+Valitettavasti useimmat  Amiga-ohjelmoijat  k‰ytt‰v‰t  Commodoren  exec/ty-
+pes.h:sta lˆytyvi‰ vastaavia m‰‰ritelmi‰, joita en suosittele  kenellek‰‰n,
+koska CAPITALISOIDUT tyyppinimekkeet ovat sek‰ eritt‰in rumia (mielipideky-
+symys, toim. huom.) ett‰ eritt‰in  ep‰standardeja.  Includeista  ja  muusta
+esik‰sittelyyn liittyv‰st‰ on tarkempaa tietoa myˆhemmin.
+
+Koska muoto on sama kuin muuttujia m‰‰ritelt‰ess‰, voidaan useampia tyyppi-
+nimekkeit‰ m‰‰ritell‰ kerralla:
+
+typedef unsigned short u_short, u_word, ushort, uword;
+
+Myˆs structureille/unioneille voi  antaa  t‰ll‰  tavalla  tyyppinimekkeit‰,
+esimerkiksi: 
+
+typedef struct {
+  long no;
+  u_char name[36];
+  u_char streetaddr[40];
+  u_char postcode[16];
+  u_char city[16];
+  u_char country[16];
+  u_char phone[32];
+} account;
+
+ 
+T‰llˆin sizeof(account) olisi 160, ja voisimme kyseisenlaisen tyypin m‰‰ri-
+tell‰ aivan yksinkertaisesti: 
+
+account act;
+
+Toki voidaan samalla m‰‰ritell‰ myˆs structure-tag (kuten muuttujien  kans-
+sa): 
+
+typedef struct account {
+  ... (sama kuin aiemmin, yrit‰n s‰‰st‰‰ hieman tilaa)
+} account;
+
+Tai voidaan m‰‰ritell‰ typedef vasta j‰lkeenp‰in:
+
+struct account {
+  ...
+};
+
+typedef struct account account;
+
+(Tag-nimen ja tyyppinimekkeen ei ole pakko  olla  sama.  T‰ss‰  tapauksessa
+laitoin saman osoittaakseni sit‰, ettei n‰iss‰ tapahdu konfliktia.)
+
+On er‰s kummallinen  poikkeustapaus,  jossa  k‰ytet‰‰n  standardissa  type-
+def:iss‰ capitalisoitua nimekett‰, FILE. (Luultavasti t‰m‰ on ollut alunpe-
+rin #define:atun makron muodossa.)
+
+Muuttujia m‰‰ritelt‰ess‰ voidaan myˆs antaa  tiettyj‰  lis‰m‰‰reit‰,  jotka
+sijoitetaan (typedef:in tavoin) ennen tyyppinimekett‰. N‰it‰ ovat: 
+
+  auto
+  const
+  extern
+  register
+  static
+  volatile
+
+"auto" on vanhentunut, eik‰ sit‰ n‰e k‰ytett‰v‰n.
+
+"const" m‰‰rittelee muuttujan vakioksi, jonka arvo ei saa muuttua.  T‰llˆin
+voidaan muuttuja sijoittaa ohjelman koodihunkkiin. (T‰m‰ on kuitenkin tois-
+taiseksi hieman hyˆdytˆnt‰, koska viel‰ ei ole k‰sitelty muuttujien initia-
+lisointia.) Jos kyseess‰ on osoitin, niin itse osoitin ei ole  vakio,  vaan
+se osoittaa johonkin muuttumattomaan. Esimerkiksi: 
+
+const char *str;
+
+T‰llainen osoitin voitaisiin esimerkiksi asettaa osoittamaan  merkkijonova-
+kioon tekem‰tt‰ mit‰‰n v‰‰r‰‰: 
+
+str = "this is a string constant and must not be modified";
+
+(Periaatteessa merkkijonovakion tyyppi on const char *, tosin se  vaihtelee
+k‰‰nt‰j‰n mukaan, millaisena se sen tulkitsee.)
+
+Jos muuttuja on m‰‰ritelty osoittimeksi johonkin const:iin, voidaan osoitin
+laittaa osoittamaan myˆs ei-vakioihin tekem‰tt‰ virhett‰. Jos taas  tehd‰‰n
+toisin p‰in, eli esimerkiksi meill‰ on: 
+
+char *sptr;
+
+Ja edelleen aiempi m‰‰riteltyn‰, niin:
+
+sptr = str;
+
+T‰m‰ on virhe, josta k‰‰nt‰j‰ varoittaa.  Varoituksen  v‰ltt‰miseksi  olisi
+joko myˆs sptr m‰‰ritelt‰v‰ const:iksi tai k‰ytett‰v‰ cast:ia: 
+
+sptr = (char *)str;
+
+Kuitenkaan cast:in k‰ytt‰minen t‰llaisessa ei ole hyv‰ idea,  koska  sptr:n
+kautta voitaisiin ep‰suoralla osoituksella muuttaa vakion sis‰ltˆ‰, mik‰ ei
+ole sallittua ja mit‰ k‰‰nt‰j‰ ei havaitse.
+
+"extern" m‰‰rittelee muuttujan tyypin,  mutta  ei  s‰ilytyst‰  muuttujalle.
+(Assyohjelmoijille: externattu muuttuja xrefataan  sen  sijaan  ett‰  sille
+m‰‰ritelt‰isiin tilaa.) T‰t‰ k‰ytett‰ess‰ kannattaa olla aina  varma,  ett‰
+m‰‰ritellyn niminen muuttuja on olemassa (yleens‰ se  on  jossain  toisessa
+sorsassa) ja ett‰ se on sit‰ tyyppi‰, joksi sen m‰‰rittelee. Siit‰  ei  ole
+haittaa, jos externaa muuttujan useampaan kertaan  tai  sek‰  externaa  sen
+ett‰ m‰‰rittelee tavallisesti samassa sorsassa.
+
+"register"  toimii  vain  paikallisten  muuttujien  yhteydess‰.  Se  kertoo
+k‰‰nt‰j‰lle, ett‰ kyseinen muuttuja pit‰isi yritt‰‰ laittaa johonkin  CPU:n
+rekisteriin muistin sijasta. Useimmiten t‰m‰  on  turhaa,  koska  k‰‰nt‰j‰t
+osaavat muutenkin valita varsin hyvin, mitk‰  muuttujat  kannattaa  laittaa
+rekistereihin, jolloin register-lis‰m‰‰re saatetaan  j‰tt‰‰  kokonaan  huo-
+miotta tai ottaa huomioon vain viitteellisen‰ suosituksena.
+
+"static":n merkitys vaihtelee sen mukaan,  onko  kyseess‰  paikallinen  vai
+globaali muuttuja. Jos kyseess‰ on paikallinen muuttuja, niin se k‰ytt‰ytyy
+poikkeavasti siin‰ mieless‰, ett‰ se s‰ilytt‰‰ arvonsa,  vaikka  funktiosta
+poistuttaisiin tai jos funktiota kutsutaan sen  itsens‰  sis‰lt‰.  Sit‰  ei
+siis sijoiteta pinoon kuten normaalisti, vaan s‰ilytys on samanlainen  kuin
+globaaleille muuttujille, erona vain se, ett‰  muuttujaa  voidaan  osoittaa
+vain funktion sis‰lt‰. Esimerkiksi (vaihteen vuoksi toimiva kokonaisuus): 
+
+/*
+ * recursive.c
+ */
+
+#include <stdio.h>
+
+void func(void)
+{{
+  static int n;
+
+  printf("%d\n", n);
+  if (++n < 10)
+    func();
+}
+
+int main(int ac, char **av)
+{{
+  func();
+  return 0;
+}
+
+Ajettaessa ohjelman pit‰isi tulostaa:
+
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+Globaaleilla muuttujilla static tarkoittaa sit‰, ettei muuttujaa voida  ex-
+ternata muihin sorsiin. (Assyohjelmoijille: static-muuttujaa ei xdefata.)
+
+"volatile" tarkoittaa, ettei muuttujaa voida s‰ilytt‰‰ rekisteriss‰.  Opti-
+moivilla k‰‰nt‰jill‰ se merkitsee myˆs sit‰, ett‰ jos muuttujan arvoa  muu-
+tetaan, se on myˆs teht‰v‰, vaikka muuttujaa ei k‰ytett‰isik‰‰n mihink‰‰n.
+
+Useimmat k‰‰nt‰j‰t osaavat lis‰ksi useita ep‰standardeja tai  puolistandar-
+deja lis‰m‰‰reit‰. ANSIn mukaan k‰‰nt‰j‰n omien lis‰m‰‰reiden  tulee  alkaa
+kahdella  '_'-merkill‰.  Amigalla  useimmista  k‰‰nt‰jist‰  lˆytyy  ainakin
+"__aligned", joka pakottaa muuttujan (tai structuren kent‰n) nelj‰ll‰ jaol-
+liseen osoitteeseen.
+
+
+{3Funktioiden prototyypit
+
+Yksi merkitt‰vimpi‰ uudistuksia ANSI C -standardin myˆt‰ on ollut se,  ett‰
+funktiolle voidaan antaa prototyypit eli m‰‰ritell‰ etuk‰teen, mink‰tyyppi-
+set parametrit ja palautusarvo sill‰ on. Yleens‰ on  hyv‰  tapa  m‰‰ritell‰
+funktiolle prototyyppi ennen sen kutsumista, ainakin jos funktiota  itse‰‰n
+ei olla m‰‰ritelty.
+
+Alunperin C-kieless‰ voitiin funktiolle m‰‰ritell‰ etuk‰teen vain  palautu-
+sarvo. Esimerkiksi: 
+
+extern char *strcpy();  /* vanha tyyli */
+ 
+Jos jotain funktiota ei t‰ll‰ tavalla externaa etuk‰teen, oletetaan sen pa-
+lauttavan tyypin int.
+
+T‰ll‰ tavalla tai ei ollenkaan merkityille funktioille voi  antaa  paramet-
+reiksi mit‰ tahansa. T‰m‰ on kuitenkin pahasti optimointia rajoittavaa,  ja
+niin ANSIn mukaan funktioille on annettava prototyyppi, jossa  m‰‰ritell‰‰n
+sek‰ palautettava  tyyppi  ett‰  parametrien  tyypit.  Parametrim‰‰rittelyt
+n‰ytt‰v‰t muuten samoilta kuin itse funktion  m‰‰rittelyss‰,  paitsi  ettei
+niille tarvitse  antaa  nimekkeit‰.  strcpy():n  prototyyppi  on  seuraavan
+n‰kˆinen: 
+
+extern char *strcpy(char *, const char *);
+
+Toisena parametrin‰ olevaa merkkijonoa ei muuteta, joten se  on  m‰‰ritelty
+const:iksi. T‰llaiset on hyv‰ merkit‰, jotta k‰‰nt‰j‰ ei aiheuta turhia va-
+roituksia. Commodoren ohjelmoijat eiv‰t ole kuitenkaan t‰t‰ ‰lynneet, joten
+clib/-hakemiston prototyypeist‰ puuttuu n‰m‰ ja varoituksia tulee  runsaas-
+ti, ellei v‰lt‰ const:eja tai k‰yt‰ cast:eja.
+
+Prototyypin yhteydess‰ ei ole pakko k‰ytt‰‰ extern:i‰, joten strcpy()n pro-
+totyypin voi antaa myˆs muodossa: 
+
+char *strcpy(char *, const char *);
+
+  
+{3Esik‰sittelyn ohjaaminen
+
+Ensimm‰inen asia, joka C-sorsalle tehd‰‰n  k‰‰nnett‰ess‰,  on  esik‰sittely
+(preprocessing). T‰m‰n vaiheen erillisyys on hyv‰ huomioida, koska sen "so-
+keus" itse ohjelman sis‰llˆlle vaikuttaa usein sen tuottamiin tuloksiin.
+
+Esik‰sittelyvaiheelle voi antaa tietynlaisia "komentoja",  joille  tunnuso-
+maista on se, ett‰ ne ovat aina kokonaisen rivin mittaisia (tai voivat olla
+useammankin, jos k‰ytet‰‰n '\'-merkkej‰ tai kummallisia kommentteja) ja al-
+kavat '#'-merkill‰.
+
+Yht‰ t‰llaista on jo esimerkeiss‰ k‰ytetty, koska se on varsin v‰ltt‰m‰tˆn.
+#include lukee ns. include-tiedoston ja tulkitsee sen kuin se olisi osa oh-
+jelmaa. C:n include-tiedostoilla on yleens‰ p‰‰te  ".h".  K‰‰nt‰j‰n  mukana
+tulee joukko vakio-includeja, joita esimerkeiss‰kin  on  k‰ytetty.  Yleens‰
+includet sis‰lt‰v‰t p‰‰asiassa structureiden m‰‰ritelmi‰, funktioiden  pro-
+totyyppej‰ ja makroja. #include-komennolle on kaksi muotoa,  esim.  #inclu-
+de:aamme vakio-includen "stdlib.h". 
+
+#include <stdlib.h>
+
+T‰m‰ etsii tiedoston stdlib.h vakio-include-hakemistoista.  Tiedoston  nimi
+voi sis‰lt‰‰ myˆskin hakemistopolun, kuten: 
+
+#include <sys/types.h>
+ 
+Polku voi olla myˆs absoluuttinen tai takaperin relatiivinen, mutta t‰llai-
+nen ei sovi portattavaksi tarkoitettujen ohjelmien yhteydess‰. 
+
+Toinen muoto olisi esimerkiksi:
+
+#include "program.h"
+ 
+joka etsii tiedoston program.h t‰m‰nhetkisest‰ hakemistosta. T‰m‰ muoto voi
+myˆs sis‰lt‰‰ polun.
+
+Include-tiedostojen liitt‰misen lis‰ksi esik‰sittely  tekee  mm.  seuraavat
+asiat: 
+
+ - poistaa kommentit
+ - avaa makrot
+ - liitt‰‰ yhteen rivej‰, jos on k‰ytetty '\'-merkki‰ rivin lopussa
+ - tulkitsee ehdollisia prosessointikomentoja
+
+Makrot m‰‰ritell‰‰n C-kieless‰ #define-komennolla. Yksinkertaisemmassa muo-
+dossaan makrot ainoastaan korvaavat jonkun p‰tk‰n jollakin  toisella.  Esi-
+merkiksi seuraava makro on standardi ja yleens‰ m‰‰ritelty, jos on  #inclu-
+de:annut mit‰‰n standardeja includeja: 
+
+#define NULL 0
+
+T‰m‰ siis periaatteessa korvaa ohjelmassa esiintyv‰t "NULL":t "0":lla. NULL
+on standardi merkint‰, joka tarkoittaa NULL-osoitinta eli  osoitinta,  joka
+ei osoita mihink‰‰n. Usein t‰m‰ saattaa olla myˆs muodossa: 
+
+#define NULL 0L
+
+jossa L 0:n per‰ss‰ tarkoittaa, ett‰  kyseess‰  on  long-vakio,  eik‰  int.
+T‰ll‰ tosin ei ole merkityst‰, jos k‰‰nt‰j‰ll‰ on int saman  kokoinen  kuin
+long. Joskus saattaa esiinty‰ myˆs muoto: 
+
+#define NULL ((void *)0)
+
+T‰ss‰ korostetaan sit‰, ett‰ NULL on tyypilt‰‰n osoitin. T‰llaiset vakioita
+korvaavat nimekkeet ovat yleens‰ capitalisoituja.
+
+T‰ss‰ erityisesti on merkityst‰ sill‰, ett‰ korvaaminen tehd‰‰n riippumatta
+siit‰, miss‰ yhteydess‰ jokin esiintyy. (Poikkeuksena ovat l‰hinn‰  merkki-
+jonovakiot, jotka esik‰sittely  j‰tt‰‰  kokonaan  rauhaan,  eli  ne  voivat
+sis‰lt‰‰ vaikka /*-merkkej‰ yms. sellaista, joka normaalisti merkitsisi jo-
+tain erityist‰ k‰‰nt‰j‰lle.) Eli jos vaikka teht‰isiin: 
+
+#define if fubar
+
+ 
+niin kaikki "if":t korvattaisiin  "fubar":illa,  eik‰  ohjelma  luultavasti
+en‰‰ k‰‰ntyisi (yleens‰ ohjelmassa on "if":ej‰).
+
+Makron nimess‰  (kuten  muuttujankin)  voi  olla  kirjaimia,  numeroita  ja
+'_'-merkkej‰, eik‰ makron nimi voi alkaa numerolla (kuten ei voi muuttujan-
+kaan).
+
+Makron sis‰ltˆ‰ sorsaan korvatessa etsit‰‰n edelleen makroja, joten voidaan
+myˆs m‰‰ritell‰ makro suhteessa toiseen. Lis‰ksi pit‰‰ ottaa huomioon, ett‰
+makrot korvaavat vain kokonaisen sanan. Ohjelmasta t‰ytyy siis lˆyty‰  mak-
+ron nimi siten, ett‰ sit‰ ennen on jokin merkki, joka ei voi olla osa nime‰
+ja sen j‰lkeen on merkki, joka ei voi olla osa nime‰. Demonstroidaan  edel-
+lisi‰: 
+
+#define ONE 1
+#define TWO 2
+#define THREE (ONE + TWO)
+
+void func(void)
+{{
+  int a, b, c, d;
+
+  a = ONE;      /* antaa a:lle arvon 1 */
+  b = TWO;      /* b:lle 2... */
+  c = THREE;    /* c:lle 3... */
+  d = ONETWO;   /* ei toimi... */
+}
+
+Esik‰sittelyn j‰lkeen funktio n‰ytt‰isi suunnilleen seuraavalta:
+
+void func(void)
+{{
+  int a, b, c, d;
+
+  a = 1;
+  b = 2;
+  c = (1 + 2);
+  d = ONETWO;
+}
+
+Tulos olisi ollut sama, vaikka #define:jen j‰rjestyst‰ olisi muutettu,  eli
+ONE ja TWO korvataan THREE:n sis‰llˆst‰ vasta siin‰  vaiheessa,  kun  THREE
+sijoitetaan itse ohjelman joukkoon.
+
+Rivi, jolla on "d = ONETWO;" aiheuttaa virheen, jos tuota  yritt‰‰  k‰‰nt‰‰
+pitemm‰lle.
+
+Koska siit‰ ei olisi mit‰‰n hyˆty‰  (pikemminkin  haittaa,  sill‰  k‰‰nt‰j‰
+j‰isi jumiin), ei samaa makroa etsit‰ itsens‰ sis‰lt‰, vaan esimerkiksi: 
+
+#define num (num + 1)
+
+T‰m‰  ainoastaan  korvaisi  kaikki  num:it  (num  +  1):ll‰,  eik‰  turhaan
+yritt‰isi rekursiivisesti laajentaa tuota muistin loppumiseen asti.
+
+Myˆsk‰‰n kahdella toisensa sis‰lt‰v‰ll‰ makrolla ei voi  huijata  k‰‰nt‰j‰‰
+j‰‰m‰‰n jumiin, vaan esimerkiksi: 
+
+#define mac1 ((mac2) * 2)
+#define mac2 ((mac1) - 10)
+
+Ohjelmassa oleva mac1 korvattaisiin ((((mac1) - 10)) * 2):lla,  vastaavasti
+mac2 korvattaisiin ((((mac2) * 2)) - 10):lla.
+
+Useimmissa  k‰‰nt‰jiss‰  pit‰isi  olla  joitakin  makroja   tai   vastaavia
+sis‰isesti valmiiksi m‰‰riteltyn‰. __STDC__ pit‰isi ANSI C:t‰  ymm‰rt‰viss‰
+k‰‰nt‰jiss‰ ainakin olla m‰‰riteltyn‰, tosin sill‰ ei ole mit‰‰n  m‰‰r‰tty‰
+arvoa,  koska  se  on  tarkoitettu  #ifdef:in  (hieman  myˆhemmin)   kanssa
+k‰ytett‰v‰ksi. Lis‰ksi vastaavasti on yleens‰ m‰‰ritelty jotakin muita vas-
+taavia, joiden pohjalta voidaan tunnistaa k‰ytˆss‰ oleva  C-k‰‰nt‰j‰,  kone
+yms. N‰ist‰ yleens‰ lˆytyy luettelo C-k‰‰nt‰j‰n mukana.
+
+Joitakin makroissa hyˆdyllisi‰ standardeja m‰‰ritelmi‰,  jotka  vaihtelevat
+kohdan mukaan:
+
+__LINE__ korvataan kokonaisluvulla, joka on sen rivin numero, jolla se sor-
+sassa esiintyy.
+
+__FILE__ korvataan merkkijonolla, joka on l‰hdekooditiedoston  nimi,  jossa
+se esiintyy.
+
+__DATE__ korvataan merkkijonolla, joka on senhetkinen p‰iv‰m‰‰r‰.
+
+__TIME__ korvataan merkkijonolla, joka on senhetkinen kellonaika.
+
+__BASE_FILE__ korvataan merkkijonolla, joka on sen l‰hdekooditiedoston  ni-
+mi, jota varsinaisesti k‰‰nnet‰‰n. Muuten kuten __FILE__, mutta jos  esiin-
+tyy esimerkiksi include-tiedostossa, niin ei korvaudu sen nimell‰, vaan al-
+kuper‰isen l‰hdekoodin.
+
+Hieman monimutkaisemmat makrot ovat sellaisia, joille voidaan  antaa  para-
+metreja. N‰m‰ ovat hieman funktion n‰kˆisi‰. Esimerkiksi: 
+
+#define sum(a,b) ((a) + (b))
+ 
+Makrossa esiintyv‰t sen  "parametreiksi"  m‰‰ritellyt  nimekkeet  korvataan
+makron sis‰lt‰ makron k‰ytˆss‰ annetuilla  parametreilla.  T‰m‰  on  varsin
+hyˆdytˆn esimerkki, joka vain laskee kahden luvun summan. Sulkeet ovat  a:n
+ja b:n ymp‰rill‰ sit‰ varten, ett‰ laskuj‰rjestys menee oikein vaikka para-
+metrit  olisivat  monimutkaisempiakin.  K‰yt‰nnˆss‰  t‰m‰n  makron   k‰yttˆ
+n‰ytt‰isi esimerkiksi t‰lt‰: 
+
+int calcsomething(int a)
+{{
+  return sum(10 / a, 2 + a);
+}
+
+T‰st‰ tulisi k‰yt‰nnˆss‰:
+
+int calcsomething(int a)
+{{
+  return ((10 / a) + (2 + a));
+}
+
+Jotkut k‰ytt‰v‰t capitalisoituja nimi‰ myˆs t‰m‰ntyyppisille makroille.
+
+Erityinen merkitys makron sis‰ll‰ on #- ja ##-merkinnˆill‰. # muuttaa  sit‰
+seuraavan kohdan merkkijonoksi. T‰llˆin kyseiselle  kohdalle  ei  suoriteta
+mit‰‰n makrojenetsint‰‰. Esimerkiksi: 
+
+#define clrvar(var) var = 0; \
+                    puts(__FILE__ ":" # __LINE__ ": variable " # var \
+                         " cleared")
+
+T‰ss‰ tuli demonstroitua  samalla  makron  jatkamista  seuraavalle  riville
+'\'-merkill‰ rivin lopussa. Toiminnaltaan yll‰oleva makro laajennetaan sel-
+laiseksi, ett‰ se laittaa parametriksi annettuun makroon arvon 0 ja  tulos-
+taa ilmoituksen t‰st‰ ilmoittaen myˆs l‰hdekooditiedoston nimen ja  rivinu-
+meron, jolla t‰m‰ tehtiin. Makron  k‰yttˆ  n‰ytt‰‰  funktiokutsulta,  mutta
+kannattaa huomioida, miten t‰m‰ toimii miss‰kin tilanteessa. Esimerkiksi: 
+
+void func(int p)
+{{
+  int a, b, c;
+
+  clrvar(a);
+  b = 10;
+  c = p + b;
+  if (p == 10)
+    clrvar(b);
+}
+
+Oletetaan, ett‰ funktio alkaa vaikka rivilt‰ 50 (jotainhan sit‰ ennenkin on
+t‰ytynyt olla, kun tuo makrokin on olevinaan m‰‰ritelty)  l‰hdekooditiedos-
+tossa prog.c. Toiminnaltaan se ensin nollaa a:n  ja  ilmoittaa  "prog.c:54:
+variable a cleared". T‰m‰n j‰lkeen laitetaan muuttujaan b arvo 10 ja laske-
+taan muuttujaan c muuttujien p ja b summa. Verrataan p:t‰ kymmeneen ja  jos
+se on kymmenen, niin nollataan muuttuja b. Mutta teksti "prog.c:58: variab-
+le b cleared" tulostetaan riippumatta siit‰, nollattiinko  b  oikeasti  eli
+oliko p:n arvo 10, koska vain makron ensimm‰inen lause j‰‰ if:n  ehdollisen
+koodin alueelle. T‰m‰n voisi korjata k‰ytt‰m‰ll‰ aaltosulkeita, eli: 
+
+  if (p == 10) {
+    clrvar(b);
+  }
+
+Tuo ei kuitenkaan ole paras mahdollinen ratkaisu, erityisesti koska  makron
+k‰yttˆ muistuttaa funktiokutsua, on helppo unohtaa  ett‰  tuollainen  olisi
+tarpeellista. T‰m‰n takia on hyv‰ sis‰llytt‰‰ makroon itseens‰ jotain, joka
+tekee siit‰ yhten‰isen. Pelkk‰ lohko ei riit‰, koska t‰llˆin  olisi  makron
+k‰ytˆn per‰ss‰ tuleva ';' j‰tett‰v‰ pois, mik‰ saattaisi  n‰ytt‰‰  oudolta.
+Aiemmin mainittu do ... while (0) on t‰h‰n sopiva, voimme kirjoittaa makron
+muotoon 
+
+#define clrvar(var) do { \
+                      var = 0; \
+                      puts(__FILE__ ":" # __LINE__ ": variable " # var \
+                           " cleared"); \
+                    } while (0)
+
+jolloin sen pit‰isi toimia hyvin kaikissa mahdollisissa tilanteissa.
+
+Toinen mainittu merkint‰, ##, "liimaa yhteen" sen  molemmin  puolin  olevat
+osat, eli j‰tt‰‰ v‰lit pois. T‰m‰n avulla voidaan  makrossa  k‰ytt‰‰  useia
+erilaisia parametreist‰ johdettuja nimikkeit‰. Voisimme  esimerkiksi  tehd‰
+makron, joka ottaa parametriksi taulukon kohdan numeron  ja  siirt‰‰  siit‰
+tiedon vastaavaan muuttujaan, joka on nimetty val_<numero>, jossa  <numero>
+on taulukon kohdan numero: 
+
+#define arr2var(n) val_ ## n = arr[n]
+
+Eli jos meill‰ on vaikka:
+
+long arr[10], val_1, val_2, val_3;
+
+void func(void)
+{{
+  arr2var(1);
+  arr2var(2);
+  arr2var(3);
+}
+
+T‰st‰ funktio-osa k‰sitell‰‰n seuraavan n‰kˆiseksi:
+
+void func(void)
+{{
+  val_1 = arr[1];
+  val_2 = arr[2];
+  val_3 = arr[3];
+}
+
+T‰m‰ ei ole kovin hyˆdyllinen esimerkki, mutta monia  tilanteita  kuitenkin
+voi synty‰, joissa ## tulee tarpeeseen, joten sekin on hyv‰ tiet‰‰. 
+
+Makron m‰‰rityksen voi poistaa komennolla #undef. Esimerkiksi:
+
+void func(void)
+{{
+  int c;
+
+#define VALUE 10
+  c = VALUE;
+#undef VALUE
+  c = VALUE;
+}
+
+Esik‰sittelyn j‰lkeen t‰m‰ on:
+
+void func(void)
+{{
+  int c;
+
+
+  c = 10;
+
+  c = VALUE;
+}
+
+Muista esik‰sittelij‰n komennoista lienev‰t t‰rkeimpi‰ ehdolliseen k‰sitte-
+lyyn liittyv‰t komennot. N‰ist‰ perustoimintoja ovat: 
+
+  #ifdef
+  #ifndef
+  #if
+  #else
+  #endif
+
+Yleisesti ottaen ehdollinen k‰sittely toimii siten, ett‰ on ensin jokin eh-
+don m‰‰rittely (#if, #ifdef, #ifndef), sitten koodi, joka halutaan  mukaan,
+jos ehto on tosi. T‰m‰n j‰lkeen mahdollisesti #else ja  se,  mit‰  halutaan
+sis‰llytt‰‰ k‰‰nnˆkseen, jos ehto on ep‰tosi. Lopuksi #endif, josta  alkaen
+otetaan kaikki normaalisti mukaan. 
+
+Eri ehtoja ovat:
+
+  #ifdef <makro>
+
+jossa <makro> on makron nimi. Jos kyseinen makro on m‰‰ritelty, on ehto to-
+si.  Jos  halutaan  esimerkiksi  m‰‰ritell‰  prototyyppi  main():lle,   jos
+k‰‰nt‰j‰ on m‰‰ritellyt __STDC__:n, voidaan tehd‰: 
+
+#ifdef __STDC__
+extern int main(int, char **);
+#endif
+
+Mik‰li haluaisimme t‰lle vaihtoehtoisen m‰‰ritelm‰n, jos onkin kyseess‰ jo-
+kin vanhanaikaisempi k‰‰nt‰j‰, voidaan laittaa: 
+
+#ifdef __STDC__
+extern int main(int, char **);
+#else
+extern int main();
+#endif
+
+  #ifndef <makro>
+
+T‰m‰ on vain k‰‰nteinen toiminto #ifdef:lle, eli se ottaa  ehtoa  seuraavan
+osan mukaan, jos <makro> ei ole m‰‰ritelty. Usein NULL on m‰‰ritelty useam-
+missa eri include-tiedostoissa, jolloin usein sen m‰‰rittelyn n‰kee muodos-
+sa: 
+
+#ifndef NULL
+#define NULL 0
+#endif
+
+Eli se m‰‰ritell‰‰n vain, jos sit‰ ei ennest‰‰n olla m‰‰ritelty. Samoin ko-
+ko includelle on  yleens‰  m‰‰ritelty  jokin  tunnus,  jolla  estet‰‰n  sen
+sis‰lt‰m‰n tiedon sis‰llytt‰minen ohjelmaan  useampaan  kertaan.  Includeja
+kannattaa muutenkin tutkia, niist‰ n‰kee paljon hyˆdyllisi‰ asioita.
+
+#if on monimutkaisin ehto. Sen per‰ss‰ voidaan antaa periaatteessa tavalli-
+nen C-kielen lauseke, joka voi sis‰lt‰‰ normaaleita  operaattoreita,  jotka
+toimivat samalla tavalla kuin yleens‰kin. Numeroita  voidaan  k‰ytt‰‰  suo-
+raan, ja m‰‰ritellyt makrot toimivat niiden sis‰llˆn numeerisen arvon edus-
+tajina. Lis‰ksi voidaan k‰ytt‰‰ merkint‰‰ defined(), joka on tosi jos sille
+annettu makro on m‰‰ritelty. Ehtoja voidaan myˆs m‰‰ritell‰ sis‰kk‰in.  Jos
+haluamme esimerkiksi tutkia, mill‰ ohjelmamme on k‰‰nnetty: 
+
+int main(int ac, char **av)
+{{
+#ifdef __GNUC__
+#if __GNUC__ >= 2
+  puts("Compiled using GCC 2.x.x or higher");
+#else
+  puts("Compiled using an ancient version of GCC");
+#endif
+#else
+#ifdef _DCC
+  puts("Compiled using DICE");
+#else
+#ifdef LATTICE
+  puts("Compiled using SAS/C");
+#else
+  puts("Compiled using an unknown compiler");
+#endif
+#endif
+#endif
+  return 0;
+}
+
+T‰m‰ on j‰lleen huono esimerkki, koska tuon voisi tehd‰ paljon paremminkin,
+mutta...
+
+Yksi yleinen k‰yttˆ n‰ille on, jos halutaan  j‰tt‰‰  ohjelmasta  jokin  osa
+pois. Ohjelman osa saatettaisiin myˆs kommentoida pois /* */ -merkkien  v‰-
+liin, mutta jos kyseisess‰ osassa on muutenkin jo kommentteja, ei t‰m‰ toi-
+misi (sis‰kk‰iset kommentit eiv‰t toimi). Eli helppo tapa j‰tt‰‰ jokin  osa
+ohjelmaa pois on laittaa sit‰ ennen #if 0 ja sen j‰lkeen #endif.
+
+T‰ss‰ on j‰lleen hyv‰ huomioida esik‰sittelyvaiheen erillisyys.  Jos  ehdon
+ansiosta jotakin ei sis‰llytet‰ ohjelmaan, sen sis‰llˆll‰ ei  ole  lainkaan
+merkityst‰. Se voi sis‰lt‰‰ sellaistakin, joka ei k‰‰ntyisi  kunnolla,  jos
+se olisi osa ohjelmaa. Ohjelma k‰‰ntyisi aivan kiltisti (jos se  on  muuten
+oikein), vaikka sen keskell‰ olisi: 
+
+#if 0
+
+Trying to compile this text would be impossible,
+since a C-compiler doesn't understand english.
+
+It might also get even more messed up due to
+some extra }} characters.
+
+#endif
+ 
+Ainoa, jota ohjelmasta pois j‰tetyst‰ osasta katsotaan, ovat toiset  ehdol-
+liset komennot, jotta voidaan laskea, montako #endif:i‰ ja/tai #else:‰ tar-
+vitaan normaalitilaan palaamiseen.
+
+On olemassa pari muutakin esik‰sittelij‰komentoa, jotka voivat olla hyˆdyl-
+lisi‰, mutta niit‰ harvemmin joutuu k‰ytt‰m‰‰n:
+
+#line esiintyy usein koneen generoimassa koodissa, jos C-kielinen l‰hdekoo-
+di on generoitu jonkun  toisentyyppisen  l‰hteen  pohjalta.  N‰m‰  kertovat
+k‰‰nt‰j‰lle, miss‰ kohtaa mit‰ tiedostoa nyt ollaan, jotta  ne  voivat  il-
+moittaa virheen l‰hdetiedoston rivin‰ generoidun C-sorsan kohdan sijasta.
+
+#pragma on ANSIn mukaan yleiseen laajentamiseen tarkoitettu. Amigalla  sit‰
+useimmiten   k‰ytet‰‰n   systeemikutsujen   m‰‰rittelemiseen.   N‰m‰   ovat
+k‰‰nt‰j‰st‰ riippuvaisia, ja jos k‰‰nt‰j‰ tukee  n‰it‰,  sen  mukana  tulee
+yleens‰ valmiina  m‰‰ritelm‰t  systeemikirjastoja  varten  (includeina)  ja
+apuohjelma, jolla voi generoida niit‰ muiden kirjastojen k‰yttˆ‰ varten.
+
+Olisi varmaan aiheellista mainita t‰ss‰ yhteydess‰ myˆs  trigraphit,  koska
+ne liittyv‰t esik‰sittelyyn. (Tuossa tulikin jo annettua liikaa tietoa, kun
+piti ainoastaan mainita...)
+
+
+{3main():in parametrit
+
+Kuten aikaisemmin on todettu, funktio main()  saa  kaksi  parametria,  tyy-
+peilt‰‰n "int" ja "char **". N‰iden perinteiset nimekkeet ovat argc ja argv
+(itse k‰yt‰n lyhyempi‰ nimi‰, ac ja av), jotka tulevat luultavasti sanoista
+"argument count" ja "argument vectors". N‰m‰ liittyv‰t ohjelman k‰ynnistyk-
+sess‰ shelliin annettuihin komentoriviparametreihin.
+
+argc ilmoittaa, montako parametria komentorivill‰ annettiin.  T‰h‰n  laske-
+taan mukaan myˆs itse ohjelman nimi, joten argc:n arvo on v‰hint‰‰n 1.
+
+argv on taulukko osoittimia merkkijonoihin,  jotka  sis‰lt‰v‰t  varsinaiset
+komentoriviparametrit. Viimeinen olemassaoleva parametri on  aina  kohdassa
+argv[argc - 1]. argv:n voi m‰‰ritell‰ myˆs "char *argv[]":ksi, se  tarkoit-
+taa t‰ss‰ yhteydess‰ samaa. argv[argc] on aina NULL ja sen  j‰lkeen  kaikki
+ovat m‰‰rittelem‰ttˆmi‰.
+
+Jatkoa seuraavassa osassa. 

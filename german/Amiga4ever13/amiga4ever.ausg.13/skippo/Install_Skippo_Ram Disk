@@ -1,0 +1,84 @@
+; SKIPPO-INSTALLER V1 (my first real install-script :-)
+
+(set datdest "sys:s/")
+
+(set destination
+ (askdir
+  (prompt "Wo soll Skippo V2.3 installiert werden?\n"
+          "Ein Verzeichnis namens `SKIPPO' wird angelegt!\n")
+  (Help "Bitte wählen sie ein Verzeichniss aus, indas Skippo\n"
+        "installiert werden soll. In diesem Verzeichniss wird\n"
+        "eine Schublade namens SKIPPO vorher angelegt!"
+        "\n"
+        "Bestehende Skippo Einträge werden NICHT gelöscht, bzw.\n"
+        "überschrieben! \n"
+        "Falls in dem Zielverzeichniss schon eine alte Schublade\n"
+        "Namens SKIPPO exestiert, sollten sie diese VOR der\n"
+        "Installation löschen!")
+  (default "ram:")
+ )
+)
+
+(complete 10)
+
+(set destdir (tackon destination "skippo"))
+(makedir destdir)
+
+(complete 30)
+
+(copyfiles
+ (prompt "Kopiere Files...")
+ (help "")
+ (source "")
+ (dest destdir)
+ (choices
+  "!QSL-WARE.txt" "!QSL-WARE.txt.info" "Garfield.guide"
+  "Garfield.guide.info" "Lies_mich!-aenderungen"
+  "Lies_mich!-aenderungen.info" "skippo.dok"
+  "skippo.dok.info" "skippo2_3" "skippo2_3.info")
+
+)
+
+(complete 50)
+
+(if
+ (= (exists "sys:s/skippo.dat") 0)
+ (copyfiles
+  (prompt "Kopieren Datenfiles...")
+  (help "")
+  (source "")
+  (dest datdest)
+  (choices
+   "s/skippo.dat" "s/skippocodes.dat")
+ )
+)
+
+(complete 70)
+
+(copyfiles
+ (prompt "Kopiere Icon...")
+ (help "")
+ (source "")
+ (dest destination)
+ (choices "skippo.infoo")
+)
+
+(complete 90)
+
+(rename (tackon destination "Skippo.infoo")
+        (tackon destination "Skippo.info") )
+
+
+(complete 100)
+
+
+(exit "SkippoV2.3 ist nun installiert. Sie können es ohne Ihren\n"
+      "Rechner neu hochzufahren sofort starten.\n"
+      "Übrigens: Die benötigten Datenfiles haben Ihren Platz\n"
+      "gefunden, Sie können das Skippo-Verzeichniss jetzt jeder-\n"
+      "zeit selbst an einen anderen Platz verschieben!\n"
+      " \n"
+      "Und vergessen Sie bitte nicht eine QSL- oder Postkarte\n"
+      "für Ihre KOSTENLOSE Registrierung zu schicken. Mehr hierzu \n"
+      "in der Datei `QSL-WARE.txt'.")
+

@@ -1,0 +1,214 @@
+BG fontbg.iff
+COLUMN 1
+LIMIT 10 5 635 200
+FONT topaz.font 8
+
+§TEXT
+§SHCOL 0
+§FONT 3 §CENTER §CR §SH+ §COL 15
+§I+ Operációs rendszer programozása §I- §PG
+§FONT 1
+§PG §SPACES 2 §FILL §SH-
+  Ezzel a rovattal szeretném mindenkinek megmutatni, milyen jó dolgokat
+lehet csinálni az Amiga operációs rendszerének a programozásával. Most
+lehet, sokan azt mondják, hogy léteznek ám olyan dolgok, amelyeket csak a
+hardver piszkálásával lehet megcsinálni. Ez igaz is, de ilyen dolgokra
+nagyon ritkán van szükség, ha egyáltalán. Manapság már a játékok egy része
+is az OS-t használja, és régen is voltak erre példák (Dune2, a Sierra Online
+összes kalandjátéka, Lucas Arts kalandjátékai, és újabban sok Doom klón is).
+Manapság a legtöbb demo-t is meg lehetne írni úgy, hogy egy sima OS
+képernyõn fusson, mivel szinte már nem is használják a különbözõ Copper
+trükköket, hanem inkább a textúrázáson van a hangsúly. Hát ennyit
+bevezetõnek.
+§SL 1 §SPACES 2
+  Most elõször megemlíteném a legfontosabb dokumentációkat, amelyekre egy
+amigás programozónak szüksége lehet. A ROM Kernel Reference Manual
+sorozatban megjelent Libraries és Devices szépen lépésrõl lépésre leírja,
+hogy milyen funkciókat, milyen paraméterekkel kell használni, hogy bizonyos
+dolgokat megcsináljunk. Létezik még a Hardware Reference Manual is, amely
+ugyanezt teszi, csak a hardverre vonatkozóan, de nem érdemes használni, mert
+a hardver egészen biztosan nagy mértékben meg fog változni a jövõben, ha
+lesz jövõje az Amigának. Persze, ha valaki mégis a hardver programozása
+mellett döntene, akkor mindenféleképpen tartsa magát az abban a könyvben
+leírtakhoz. Az Autodocs nevû leírások, az egyes library-k, device-ok,
+resource-ok és datatype-ok minden egyes funkciójának teljes leírását
+tartalmazzák, de nem olyan átfogó formában, mint a RKRM-ek. Itt tehát az
+egyes funkciók egymástól szinte teljesen függetlenül vannak felsorolva, így
+hát ebbõl nem lehet megtudni, hogy nagyobb dolgokat, miként kell
+megcsinálni. Nagy segítséget nyújtanak az Include-ok is, amelyek az OS
+összes struktúrájának és állandóinak a definicióját és ezekhez tanulságos
+kommentárokat is tartalmaznak. Ha tehát valakinek ezek a leírások meg
+vannak, akkor már semmi sem áll az útjában a profi programozáshoz.
+§SL 1 §SPACES 2
+  Tehát kezdjünk bele az akcióba. Most néhány olyan dolgot mondok el, amit
+egy assembler-t használó egyénnek tudnia kell. Bármilyen OS funkció
+hívásakor az A6 regiszterben kell lennie a library báziscímének. A D0, D1,
+A0, A1 regiszterek tartalmát az OS nem menti el a funkciók hívásakor, tehát
+ezek tartalma elvész, a többié viszont garantáltan nem. Vannak kivételek is,
+amelyek az Autodocs-ban külön meg vannak említve. A Graphics/WaitBlit
+például minden regiszter tartalmát elmenti, még a D0, D1, A0, A1
+regiszterekét is. A funkciók, ha adnak vissza valamilyen eredményt, akkor
+azt mindig a D0 regiszterben teszik. Szóval ezt a pár dolgot kell betartani.
+§SL 1 §SPACES 2
+  Az egyes struktúrák felépítését most nem fogom ecsetelni, mert akkor
+másról sem írnék, hanem majd mindig utalok rá, hogy melyik include fájlban
+található meg és ott majd meg lehet nézni a leírását. A funkciók leírását és
+paraméterezését az Autodocs-ban lehet megtalálni.
+§SL 1 §SPACES 2
+  Ahhoz, hogy használjuk a library-kat elõször meg kell nyitni õket az
+Exec/OpenLibrary nevû funkcióval. Ehhez viszont meg kellene elõször nyitni
+az exec.library-t, amit úgy teszünk, hogy kiolvassuk a 4-es címen található
+longword-öt, ami pontosan az exec.library báziscímét tartalmazza. Ez az
+egyetlen fix cím az Amiga memóriájában, ami biztos, hogy mindig ott lesz.
+Mostmár, hogy meg van az exec bázisa, az OpenLibrary segitségével bármely
+másik library bázisát megkaphatjuk és használhatjuk a funkcióit.
+§SL 1 §SPACES 2
+  Hát ennyi lenne az alap, amire szükség van. Ha valaki ezt tudja, akkor egy
+jó angol tudással (ami szükséges a dokumentáció megértéséhez) mindenre képes
+lesz az operációs rendszerrel. A kurzusunk ezután úgy fog kinézni, hogy e
+rovat hasábjain írok egy felhasználói programot, amelynek minden egyes
+részét részletesen megmagyarázom. Bármilyen kérdéssel lehet közvetlen hozzám
+fordulni a következõ címen:
+§SL 1 §SPACES 2
+E-Mail:  §FONT 0 zavacki@dragon.klte.hu §FONT 1
+§PG §SPACES 2
+Levél:
+§PG §SPACES 3 Zavacki Ferenc
+§PG §SPACES 3 Debrecen
+§PG §SPACES 3 Perem utca 7.
+§PG §SPACES 3 4225
+§SL 1 §SPACES 2
+Telefon: (52) 409 325
+§SL 1 §SPACES 2
+  Aki sima levelet ír és választ is szeretne, az küldjön egy magára címzett,
+felbélyegzett válaszborítékot is. Mellesleg az e-mail-t jobban szeretem.
+Akinek kell valamilyen dokumentáció is, az elegendõ lemezt is küldjön. Az
+Autodocs, Include-ok és fejlesztõi programok három lemezt igényelnek, míg a
+RKRM, HRM és példa források megint hármat. Tehát akinek minden kell, az hat
+lemezt küldjön és tegyen elegendõ bélyeget is a válaszborítékra.
+§SL 1 §SPACES 2
+  A programozást most úgy kezdjük, hogy leírom itt minden program egyik
+legfontosabb részét, a startup rutint. Ez intézi, hogy a Workbench-rõl is
+rendesen elinduljanak a programok, ne pedig a GURU jelenjen meg az ikonos
+indítás után. (A forrást megtalálod a §I+ NézzMeg! §I- alkönyvtárban!)
+§SL 1
+A CLI vagy Shell-bõl indított programok A0-ban kapnak egy mutatót a
+paraméter string-re, amely egy 10-es értékû byte-al van lezárva. D0-ban a
+string hossza található. A paraméterek kiértékelésére viszont ajánlatosabb
+a Dos/ReadArgs rutint használni és ezt a két regisztert béken hagyni. Én
+itt mindenesetre elmentem õket, hogy megmaradjon a tartalmuk, ha esetleg
+késõbb szükség lenne rájuk.
+§PG
+§FONT 0 §COL 14 §SPACES 2 Start §SPACES 2 MOVEM.L D0/A0,-(SP)
+§PG §FONT 1 §COL 15
+Az exec.library báziscímének kiolvasása, mivel Exec rutinokat fogunk
+használni.
+§PG §FONT 0 §COL 14
+§SPACES 2 MOVE.L  (4).W,A6
+§PG §FONT 1 §COL 15
+Megkeressük a mutatót a Task struktúránkra, amely valójában egy Process
+struktúra.
+§FONT 0 §COL 14
+§PG §SPACES 2 SUB.L   A1,A1
+§PG §SPACES 2 JSR     (_LVOFindTask,A6)
+§PG §SPACES 2 MOVE.L  D0,A5
+§PG §FONT 1 §COL 15
+Itt nézzük meg, hogy a programunk a CLI-bõl vagy a Workbench-rõl lett-e
+indítva. Ha pr_CLI nulla, akkor ikonnal indultunk, másképpen a CLI-bõl.
+§FONT 0 §COL 14
+§PG §SPACES 2 TST.L   (pr_CLI,A5)
+§PG §SPACES 2 BNE     .1
+§PG §FONT 1 §COL 15
+Várunk, míg megérkezik a WBStartup nevû message a process-ünk port-jára.
+§FONT 0 §COL 14
+§PG §SPACES 2 LEA     (pr_MsgPort,A5),A0
+§PG §SPACES 2 JSR     (_LVOWaitPort,A6)
+§PG §FONT 1 §COL 15
+Megjött a WBStartup message és eltávolítjuk a port-ról. Ebbõl lehet
+megtudni, hogy milyen más ikonok voltak kiválasztva a miénkkel együtt és
+ennek a segítségével kaphatjuk meg az ikonok tooltype-jait is.
+§FONT 0 §COL 14
+§PG §SPACES 2 LEA     (pr_MsgPort,A5),A0
+§PG §SPACES 2 JSR     (_LVOGetMsg,A6)
+§PG §SPACES 2 MOVE.L  D0,(WBStartupAddress)
+§PG §FONT 1 §COL 15
+A paraméter regiszterek eredeti tartalmának helyreállítása, hogy a
+fõprogramban esetleg ki lehessen értékelni õket.
+§FONT 0 §COL 14
+§PG §SPACES 2 .1 §SPACES 2  MOVEM.L (SP)+,D0/A0
+§PG §FONT 1 §COL 15
+Itt hívjuk meg a fõprogramot, amely ha szükséges, akkor a WBStartupAddress
+kiolvasásával megtudhatja, hogy CLI-bõl vagy Workbench-rõl indult-e.
+§FONT 0 §COL 14
+§PG §SPACES 2 BSR     Main
+§PG §FONT 1 §COL 15
+A CLI-s programok a D0-ás regiszterben szoktak egy hibakódot visszaadni,
+amelyet most gyorsan elmentünk. Ez a szám általában 0, 5, 10 vagy 20
+szokott lenni, a hiba súlyosságától függõen. A 0 azt jelenti, hogy nem
+történt semmi hiba.
+§FONT 0 §COL 14
+§PG §SPACES 2 MOVEM.L D0,-(SP)
+§PG §FONT 1 §COL 15
+Megnézzük, hogy a program eredetileg a CLI-bõl vagy a Workbench-rõl lett-e
+indítva.
+§FONT 0 §COL 14
+§PG §SPACES 2 MOVE.L  (WBStartupAddress,PC),D0
+§PG §SPACES 2 BEQ     .2
+§PG §FONT 1 §COL 15
+A multitasking-ot le kell tiltani, mielõtt válaszolunk a WBStartup
+message-re, mert ahogy a Workbench megkapja a választ, rögtön
+felszabadítja a programunk által foglalt memóriát. Mi ekkor akár felül
+is íródhatunk egy másik program által, amely azonnal lefoglalja és
+feltölti adatokkal a valaha saját memóriánkat.
+§FONT 0 §COL 14
+§PG §SPACES 2 JSR     (_LVOForbid,A6)
+§PG §FONT 1 §COL 15
+A WBStarup message visszaküldése a Workbench-hez. Mindig a program
+legvégén kell végrehajtani, természetesen egy Forbid után.
+§FONT 0 §COL 14
+§PG §SPACES 2 MOVE.L  (WBStartupAddress,PC),A1
+§PG §SPACES 2 JSR     (_LVOReplyMsg,A6)
+§PG §FONT 1 §COL 15
+A CLI-hez küldendõ hibakód visszahozása.
+§FONT 0 §COL 14
+§PG §SPACES 2 .2 §SPACES 2 MOVEM.L (SP)+,D0
+§PG §FONT 1 §COL 15
+Sajnos itt vége is van a rutinnak.
+§FONT 0 §COL 14
+§PG §SPACES 2 RTS
+§PG §FONT 1 §COL 15
+Itt található a WBStartup message címe, ha a Workbench-rõl indultunk,
+amúgy meg nulla.
+§FONT 0 §COL 14
+§PG §SPACES 2 WBStartupAddress §SPACES 2 DC.L    0
+§SL 1 §FONT 1 §COL 15 §SPACES 2
+  Ha valaki csodálkozik, hogy egy kicsit érdekesen használom a zárójeleket a
+címzésmódoknál, akkor elárulom, hogy ez az új Motorola szintakszis, amelyet
+a 68020-as processzorral vezettek be. Ajánlom mindenkinek, hogy ezt
+használja az áttekinhetõség és logika kedvéért. Viszont nem ajánlom az
+AsmOne vagy valamelyik klónjának a használatát, mert tele vannak hibákkal,
+nem ismernek minden utasítást és egy csomó más baj is van velük. Mondjuk
+kisebb programok írására még én is használom, de a nagyobbakat a GoldED és a
+PhxAss segítségével készítem. A GoldED 3.1.4-es verziója regisztrálva
+freeware-ként fent van az Aminet-en a text/edit/ged314r.lha fájlban. Aki nem
+ismeri, annak elárulom, hogy ez a legjobban konfigurálható szöveg szerkesztõ
+az Amigára. A PhxAss és a hozzátartozó PhxLnk is megtalálhatóak az Aminet-en
+a dev/asm directory-ban. A PhxAss csak fordító, tehát nem tartalmaz
+szerkesztõt vagy debugger-t, viszont ismeri az összes CPU, FPU és MMU
+parancsot, címzésmódot és regisztert, ami az Amigánál található.
+Optimalizálni is tud egy csomó féle módon, nem csak olyan bénául, mint az
+AsmOne. Tehát ha valaki jogtiszta programokkal szeretne dolgozni, akkor
+ezeket tudom neki ajánlani, nálam eddig nagyon jól mûködnek.
+§SL 1 §SPACES 2
+  Ha van valamilyen speciális kívánságotok, hogy milyen témájú legyen az itt
+készülõ program, akkor nyugodtan írjatok vagy nekem vagy az újságnak.
+Írjátok meg, hogy az operációs rendszer mely része érdekelne titeket jobban,
+mert akkor olyan programot fogok itt leközölni, amelyben az megtalálható. Ha
+senki sem ír, akkor egy egyszerûbb kis public screen manager-t fogok írni és
+elmagyarázni, amely használni fogja az intuition.library, gadtools.library
+és talán a commodities.library rutinjait.
+§SL 1 §SPACES 2
+  Hát akkor jó programozást kívánok mindenkinek és nyugodtan írjatok, ha
+felvetõdik valamilyen kérdés vagy kívánság. Bye.
+§SL 1 §RIGHT 
+§I+ Zavacki Ferenc §I- 

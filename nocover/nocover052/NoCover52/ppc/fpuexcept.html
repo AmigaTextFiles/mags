@@ -1,0 +1,54 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="denorm.html">PREV</a> | <a href="fpuconvex.html">NEXT</a>
+<hr>
+<pre>
+
+<b> FPU: Exceptions </b>
+
+FPU Exceptions are a difficult matter on the PPC, and the normal coder does not have
+to know all about it. So i only will discuss the basics here, and won't discuss the
+stuff only interesting for OS designers. If you need further information, have a look
+at the Motorola documentation.
+
+You should first read the chapter about <a href="fpscr.html">FPSCR and XER</a>.
+
+Important Bits of the FPSCR:
+
+FX:    If an *exception* bit of the FPSCR was set from 0 to 1, this one is set.
+       If this Bit is set, the Exception handler of WarpOS is invoked.
+FEX:   Some Exceptions can be enabled/disabled. This bit shows you which of them
+       this would be. If such an exception is disabled, a default result is given.
+VX/VE: Control the Invalid Operation Exception
+OX/OE: Control the Overflow Exception
+UX/UE: Control the Underflow Exception
+ZX/ZE: Control the Division by Zero Exception
+XX/XE: Controls the FPU Inexact Exception. If XE is set and XX happens, and
+       FI is changed from 0 to 1, the exception happens
+VXSNAN:Operation used a Signalling &quot;Not-A-Number&quot; Result (if you do a unordered
+       compare, this would only be a Quiet &quot;Not a Number&quot;, which is valid).
+VXISI/VXIDI/VXIDI/VXIMZ: Exceptions dealing with arithmetics with Infinity
+VXVC: Invalid Compare Exception
+FR: Indicates that rounding happened (does not cause an exception)
+FI: Indicates that the result is inexact (only causes an exception, if a
+    XX exception happens, and if XE is set)
+VXSQRT: Exception concerning SQRT
+VXCVI: Exception concerning Conversion
+
+The other Bits should not bother you.
+
+You normally should not change these bits. If you for some reason want to do this,
+use the provided functions of powerpc.library.
+
+In your place i would not bother too much with the FPSCR. If you don't change the
+FPSCR Bits (might be useful for Debugging) no Exception will happen. The FPU
+Exceptions are turned off in WarpOS as default.
+
+</pre>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE> Webseiten-Erstellung mit XSLT... </TITLE>
+</HEAD>
+<BODY BACKGROUND="bilder/hintergrund11.gif" TEXT="#000000" LINK="#3CA0AA" VLINK="#FFB005" ALINK="#FFB005">
+<FONT SIZE="7" COLOR="#Af2322">
+Webseiten-Erstellung mit XSLT...
+</FONT><BR>
+<HR>
+<P ALIGN="left">
+<A HREF="macliste.htm"><IMG WIDTH=23 HEIGHT=23 SRC="bilder/l.gif" BORDER=1 ALT="Zurück"></A>
+<A HREF="main.htm"><IMG WIDTH=23 HEIGHT=23 SRC="bilder/h.gif" BORDER=1 ALT="Inhalt"></A>
+<A HREF="stopmenu.htm"><IMG WIDTH=23 HEIGHT=23 SRC="bilder/r.gif" BORDER=1 ALT="Weiter"></A>
+<BASEFONT SIZE="4">
+<BR>
+<BR>
+Dieser Artikel zeigt einen Weg zur Erstellung von Webseiten, insbesondere
+vieler Seiten größerer Sites mit einheitlicher CI, mit 
+Hilfe der Programmiersprache XSLT - Extensible Stylesheet Language Transformations.<br>
+<BR>
+<BR>
+<u>Was ist XSLT?</u><BR>
+<BR>
+XSLT ist eine deklarative, funktional-applikative Programmiersprache in XML-Syntax.
+Im Gegensatz zu den meisten auf XML-Syntax basierenden Computersprachen wie XHTML, SVG, SMIL, DocBook, MathML etc. ist
+XSLT dabei wirklich eine Programmiersprache, besitzt es doch alles notwendige zur
+Formulierung von Algorithmen: Funktionsdeklarationen, genannt Templates, 
+Parameter bzw. Argumente, Bedingungen, Schleifen und Variablen.<BR>
+<BR>
+<BR>
+<u>MOM und POP</u><BR>
+<BR>
+XSLT 
+dient dazu, sogenannte Transformationen zu programmieren. Ausgangslage
+ist XML. Nur weil zwei Systeme XML verstehen, heisst das noch lange nicht, dass
+sie miteinander kommunizieren können. Vergleicht man einfach die Dokumentsprache
+bzw. das Dateiformat mit Sprache, ergibt sich folgende Analogie.
+GIF, JPEG, MS-Word sind die Sprachen von Katzen, Hunden und Elefanten. XML ist wie
+menschliche Sprache: es gibt Konsonanten, Vokale etc..<br>
+XML definiert aber nicht den Wortschatz und die Struktur einer Sprache, ebensowenig die Semantik
+(Bedeutung). Das alles geschieht erst durch einen bestimmten Dokumenttyp wie z.B.
+XHTML ("Englisch"), SVG ("Französisch") etc..<BR>
+<BR>
+Eine Transformation ist eine Übersetzung von einem XML-Dokumenttyp, z.B. DocBook, in einen anderen
+Dokumenttyp, z.B. XHTML. Das Format des Zieldokumentes ist dabei üblicherweise ebenfalls
+XML-basiert, aber auch andere Ausgabeformate sind möglich und mit PNG, LaTeX, RTF oder PDF sogar sehr
+gebräuchlich.<BR>
+<BR>
+<BR>
+<u>MOM und POP</u><BR>
+<BR>
+Die beiden 
+Hauptanwendungsgebiete von Transformationen sind Message Oriented Middleware
+(MOM) und Presentation Oriented Publishing (POP). MOM bedeutet, die Transformation
+zwischen zwei Systemen einzusetzen, welche Daten austauschen, z.B. zwischen den
+Warenwirtschaftssystemen eines Getränke-Großhandels und eines Getränke-Einzelhandels.
+POP bedeutet, die Transformation einzusetzen, um Daten in verschiedenen
+Ausgabeformaten zu präsentieren, z.B. HTML, PDF und SVG.<BR>
+<BR>
+<BR>
+<u>XSLT als Bestandteil von XSL</u><BR>
+<BR>
+Ursprünglich war XSLT nur als Bestandteil der Sprache XSL gedacht. XSL 
+besteht aus drei Teilen: XPath zur Adressierung von strukturellen Bestandteilen
+eines XML-Dokuments (sogenannte Nodes im XML-Document-Tree), XSLT Transformation
+und Formatting Objects zur formatierten Ausgabe. Die Formatting 
+Objects lassen sich aber problemlos durch fast jedes andere Ausgabeformat, in jedem
+Fall durch jedes XML-basierte und fast jedes Text-basierte Ausgabeformat ersetzen.<BR>
+<BR>
+<BR>
+<u>XPath</u><BR>
+<BR>
+XPath ist eine Sprache zur Beschreibung von Pfaden zur Adressierung von Nodes
+in XML-Dokumenten. XPath bildet nicht nur die Grundlage für die XSLT Patterns,
+sondern auch für XPointer und damit XLink.<BR>
+<BR>
+<BR>
+<b>Ein kleines aber knackiges Beispiel</b><BR>
+<BR>
+Es wäre doch schön, wenn Hyperreferences aus einem HTML-Dokument ("Links")
+sagen würden, in welcher Sprache das Zieldokument ist, wenn es in einer anderen
+Sprache als die des Quelldokuments geschrieben wurde.<br>
+HTML sieht für die Angabe von Sprachen für ein Dokument zwei Möglichkeiten vor.
+Das html-Element soll ein xml:lang-Attribut mit dem Sprachkürzel tragen, ältere
+HTML-Versionen verwenden dafür ein lang-Attribut. Eine zusätzliche Möglichkeit
+ist die Angabe eines hreflang-Attributs beim Quellanker (a-Element) zur Angabe
+der Sprache des Zieldokuments.<BR>
+<BR>
+In das Dokument soll im Link ein Bild eingefügt werden, das über die Sprache
+des referenzierten Dokuments Auskunft gibt, sofern 
+das Zieldokument in einer anderen Sprache ist. Außerdem soll das alt-Attribut
+des Bildes in Klammern die Sprache angeben, und zwar einmal in der Sprache des
+Quelldokuments und einmal in der Sprache des Zieldokuments. Ansonsten soll das
+Dokument nicht verändert werden (aus XML-Sicht).<BR>
+<BR>
+<BR>
+<u>Vorbereitung</u><BR>
+<BR>
+Wir brauchen ein Zieldokument, das vernünftig über das xml:lang-Attribut
+verfügt. Außerdem brauchen wir zwei Quelldokumente, eines ohne hreflang-Attribut
+zum Testen des Auslesens von xml:lang im Zieldokument und eines mit hreflang-Attribut für
+Zieldokumente ohne xml:lang-Attribut. Diese Dokumente sind Listings 1, 2 und 3.
+<BR>
+<BR>
+Außerdem brauchen wir natürlich die Texte für die Sprachen. Damit man sie
+möglichst gut wiederverwenden kann, legen wir sie in einem separaten Dokument
+ab. In diesem Dokument stehen die Sprachen mit ihren Namen in allen verwendeten
+Sprachen und dazu ein Verweis auf das Bild. Dieses Dokument ist Listing 4.<BR>
+<BR>
+<BR>
+<U>Vorgehensweise</U>
+<BR>
+<BR>
+Zuerst wird das Grundgerüst des Stylesheets entwickelt. Anschließend wird eine 
+Template entwickelt, die einfach nur kopiert. Das ist eine Template, die auf
+alles wesentliche passt, also Elemente (*), Attribute (@*), Kommentare
+(comment()) und Processing-Instructions (processing-instruction()). Sie kopiert
+die aktuelle Node und ruft die Templates für die Attribute und den Rest auf.
+Das ist im Falle unseres Stylesheets immer rekursiv diese Template mit Ausnahme
+für &lt;a&gt;-Elemente.<BR>
+<BR>
+Und nun kommt die Template für &lt;a&gt;-Elemente. Natürlich wird zuerst der Anker
+kopiert, mitsamt Attributen und Inhalt. Anschließend wird eine 
+Variable mit Namen lc angelegt. Sie wird den Sprachcode für das Zieldokument
+enthalten. Für die Variable wird geprüft, ob die Sprache des Zieldokuments beim
+Anker steht (hreflang-Attribut) oder im Zieldokument zu finden ist (xml:lang-Attribut
+oder lang-Attribut am html-Element des Zieldokuments). Wird keine Sprache gefunden,
+bleibt die Variable leer.<BR>
+<BR>
+Anschließend wird geprüft, ob die Zielsprache gefunden wurde und unterschiedlich ist als die Sprache des
+Quelldokuments. Falls ja, wird, mit einem Leerzeichen getrennt, das Bild mit
+der in Listing 4 angegebenen Quelle eingefügt. Zusätzlich erhält das Bild ein
+alt-Attribut mit den Namen der Sprache in der Quell- und  in der Zielsprache in
+Klammern.<BR>
+<BR>
+<BR>
+<u>Was ist sonst noch möglich?</u><BR>
+<BR>
+Mit XSLT lassen sich viele Aufgaben für Webseiten realisieren. Das Einfügen einer
+Grafik, welche die Sprache angibt, ist nur ein kleines Beispiel. Hier ein paar weitere
+praktische Anwendungen:<BR>
+<br>
+<ul>
+<LI> Einfügen einer Grafik, falls der Link zu einer fremden Site geht.</LI><BR>
+<LI> Erstellen von Inhaltsverzeichnissen und Kapitelnummerierungen</LI><BR>
+<LI> Lesen von Daten und Ausgabe als HTML, SVG, SMIL und PNG (aus SVG (konvertiert))</LI><BR>
+<LI> Lesen von Dokumenten und Ausgabe als HTML, PDF, RTF, LaTeX und DocBook.</LI><BR>
+</ul>
+<BR>
+<BR>
+<BR>
+<B>Christian Wolfgang Hujer</B> ist geschäftsführender Gesellschafter der ITCQIS GmbH und entwickelt
+Schulungskonzepte für Enterprise-Trainings zu New Technologies Themen wie XML, Java, EJB,
+Application Server, Unix und Security.<BR>
+<BR>
+Listing 1: Quelldokument 
+<u>Variante 1</u><BR>
+<BR>
+&lt;html xml:lang="de"&gt;<BR>
+        &lt;head&gt;<BR>
+                &lt;title&gt;Ein deutsches 
+Dokument&lt;/title&gt;<BR>
+        &lt;/head&gt;<BR>
+        &lt;body&gt;<BR>
+                &lt;h1&gt;Ein deutsches 
+Dokument&lt;/h1&gt;<BR>
+                &lt;p&gt;Ein anderes &lt;a href="dest.html"&gt;Dokument&lt;/a&gt;&lt;/p&gt;<BR>
+        
+&lt;/body&gt;<BR>
+&lt;/html&gt;<BR>
+<BR>
+<BR>
+Listing 2: Quelldokument Variante 2<BR>
+<BR>
+&lt;html xml:lang="de"&gt;<BR>
+        &lt;head&gt;<BR>
+     
+           &lt;title&gt;Ein deutsches Dokument&lt;/title&gt;<BR>
+        &lt;/head&gt;<BR>
+        &lt;body&gt;<BR>
+           
+     &lt;h1&gt;Ein deutsches Dokument&lt;/h1&gt;<BR>
+                &lt;p&gt;Ein anderes &lt;a href="dest.html" 
+<BR>
+hreflang="en"&gt;Dokument&lt;/a&gt;&lt;/p&gt;<BR>
+        &lt;/body&gt;<BR>
+&lt;/html&gt;<BR>
+<BR>
+<BR>
+Listing 3: Zieldokument<BR>
+<BR>
+&lt;html 
+xml:lang="en"&gt;<BR>
+        &lt;head&gt;<BR>
+                &lt;title&gt;An English document&lt;/title&gt;<BR>
+        
+&lt;/head&gt;<BR>
+        &lt;body&gt;<BR>
+                &lt;h1&gt;An English document&lt;/h1&gt;<BR>
+                
+&lt;p&gt;This document is written in English&lt;/p&gt;<BR>
+        &lt;/body&gt;<BR>
+&lt;/html&gt;<BR>
+<BR>
+<BR>
+Listing 4: Die 
+Sprachbeschreibungen<BR>
+<BR>
+&lt;languages&gt;<BR>
+        &lt;language code="de"&gt;<BR>
+                &lt;name 
+xml:lang="de"&gt;Deutsch&lt;/name&gt;<BR>
+                &lt;name xml:lang="en"&gt;German&lt;/name&gt;<BR>
+          
+      &lt;name xml:lang="pl"&gt;Niemiecki&lt;/name&gt;<BR>
+                &lt;img src="/gfx/de.gif" /
+&gt;<BR>
+        &lt;/language&gt;<BR>
+        &lt;language code="en"&gt;<BR>
+                &lt;name 
+xml:lang="de"&gt;Englisch&lt;/name&gt;<BR>
+                &lt;name xml:lang="en"&gt;English&lt;/name&gt;<BR>
+        
+        &lt;name xml:lang="pl"&gt;Angielski&lt;/name&gt;<BR>
+                &lt;img src="/gfx/en.gif" 
+/&gt;<BR>
+        &lt;/language&gt;<BR>
+        &lt;language code="pl"&gt;<BR>
+                &lt;name 
+xml:lang="de"&gt;Polnisch&lt;/name&gt;<BR>
+                &lt;name xml:lang="en"&gt;Polish&lt;/name&gt;<BR>
+         
+       &lt;name xml:lang="pl"&gt;Polski&lt;/name&gt;<BR>
+                &lt;img src="/gfx/pl.gif" /&gt;<BR>
+     
+   &lt;/language&gt;<BR>
+&lt;/languages&gt;<BR>
+<BR>
+<BR>
+Listing 5: Die Transformation<BR>
+<BR>
+&lt;xsl:transform<BR>
+        
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform"<BR>
+        version="1.0"<BR>
+&gt;<BR>
+        
+&lt;xsl:output<BR>
+                method="xml"<BR>
+        /&gt;<BR>
+<BR>
+        &lt;!-- Anker --&gt;<BR>
+        
+&lt;xsl:template match="a"&gt;<BR>
+                &lt;!-- kopieren --&gt;<BR>
+                &lt;xsl:copy
+&gt;<BR>
+                        &lt;!-- Inhalt kopieren --&gt;<BR>
+                        
+&lt;xsl:apply-templates select="@*|node()"/&gt;<BR>
+                        &lt;!-- Ist es ein 
+Quellanker? --&gt;<BR>
+                        &lt;xsl:if test="@href"&gt;&lt;!-- Quellanker --&gt;<BR>
+      
+                          &lt;!-- Zielsprache feststellen und in $lc <BR>
+speichern --
+&gt;<BR>
+                                &lt;xsl:variable name="lc"&gt;<BR>
+                          
+              &lt;xsl:choose&gt;<BR>
+                                                
+&lt;xsl:when test="@hreflang"&gt;<BR>
+                                                       
+ &lt;xsl:value-of <BR>
+select="@hreflang"/&gt;<BR>
+                                               
+ &lt;/xsl:when&gt;<BR>
+                                                &lt;xsl:when <BR>
+test="document(@href)/html/@xml:lang"
+&gt;<BR>
+                                                        &lt;xsl:value-of <BR>
+select="document(@href)/html/@xml:lang"/
+&gt;<BR>
+                                                &lt;/xsl:when&gt;<BR>
+                       
+                         &lt;xsl:when <BR>
+test="document(@href)/html/@lang"&gt;<BR>
+             
+                                           &lt;xsl:value-of <BR>
+select="document(@href)/html/@lang"/
+&gt;<BR>
+                                                &lt;/xsl:when&gt;<BR>
+                       
+                 &lt;/xsl:choose&gt;<BR>
+                                &lt;/xsl:variable&gt;<BR>
+       
+                         &lt;!-- Konnte die Zielsprache ermittelt werden <BR>
+und ist 
+sie unterschiedlich als die Quellsprache? --&gt;<BR>
+                                
+&lt;xsl:if test="$lc and <BR>
+($lc!=/html/@xml:lang)"&gt;<BR>
+                                    
+    &lt;!-- Leerzeichen einfügen --&gt;<BR>
+                                        
+&lt;xsl:text&gt; &lt;/xsl:text&gt;<BR>
+                                        &lt;!-- Bild einfügen --
+&gt;<BR>
+                                        &lt;img&gt;<BR>
+                                     
+           &lt;xsl:copy-of <BR>
+select="document('languages.xml')//language[@code=$lc]/img/@src"/
+&gt;<BR>
+                                                &lt;!-- Passenden Text im <BR>
+alt-Attribut 
+einfügen --&gt;<BR>
+                                                &lt;xsl:attribute 
+name="alt"&gt;<BR>
+                                                        <BR>
+&lt;xsl:text&gt;(&lt;/xsl:text
+&gt;<BR>
+                                                        &lt;xsl:value-of <BR>
+select="document('languages.xml')//language[@code=$lc]/name[@xml:lang=current()/ancestor-or-self::*[@xml:lang]/@xml:lang]/text()"/
+&gt;<BR>
+                                                        <BR>
+&lt;xsl:text&gt;/&lt;/xsl:text&gt;<BR>
+      
+                                                  &lt;xsl:value-of <BR>
+select="document('languages.xml')//language[@code=$lc]/name[@xml:lang=$lc]/text()"/
+&gt;<BR>
+                                                        <BR>
+&lt;xsl:text&gt;)&lt;/xsl:text&gt;<BR>
+      
+                                          &lt;/xsl:attribute&gt;<BR>
+                        
+                &lt;/img&gt;<BR>
+                                &lt;/xsl:if&gt;<BR>
+                     
+   &lt;/xsl:if&gt;&lt;!-- Quellanker --&gt;<BR>
+                &lt;/xsl:copy&gt;<BR>
+        &lt;/xsl:template&gt;<BR>
+<BR>
+       
+ &lt;!-- Die Kopier-Template für den Rest --&gt;<BR>
+        &lt;xsl:template 
+match="*|@*|comment()|processing-instruction()"&gt;<BR>
+                &lt;xsl:copy&gt;<BR>
+         
+               &lt;xsl:apply-templates select="@*|node()"/&gt;<BR>
+                
+&lt;/xsl:copy&gt;<BR>
+        &lt;/xsl:template&gt;<BR>
+&lt;/xsl:transform&gt;<BR>
+<p>
+<P ALIGN="right">
+<A HREF="macliste.htm"><IMG WIDTH=23 HEIGHT=23 SRC="bilder/l.gif" BORDER=1 ALT="Zurück"></A>
+<A HREF="main.htm"><IMG WIDTH=23 HEIGHT=23 SRC="bilder/h.gif" BORDER=1 ALT="Inhalt"></A>
+<A HREF="stopmenu.htm"><IMG WIDTH=23 HEIGHT=23 SRC="bilder/r.gif" BORDER=1 ALT="Weiter"></A>
+<HR>
+</P>
+</BODY>
+</HTML>
+

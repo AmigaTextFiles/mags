@@ -1,0 +1,430 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/98 - MUI Kurs Teil 2</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Private Custom Classes in MUI</H1>von<BR><A HREF="mailto:C.Jahn@gmx.de">Carsten Jahn</A></DIV>
+
+In der letzten Coder's Corner habe ich eine &Uuml;bersicht zur Programmierung
+von MUI gegeben. Wir haben da einiges Prinzipielles besprochen, das
+reicht eigentlich aus, um ein Programm mit MUI-Oberfl&auml;che zu schreiben.
+</P><P>
+Trotzdem will Stefan Stuntz noch mehr von uns. :-) Wir sollen in den
+Programmen das Konzept der Custom Classes nutzen. Indem wir die Funktion
+unserer Software in objektorientierte Dingsdas (der Profi sagt nicht
+Dingsda, sondern &quot;Objekt&quot;) quetschen, erh&auml;lt die MUI-GUI noch ihren
+besonderen Kick. F&uuml;r uns wird dabei so einiges &uuml;bersichtlicher, kann
+aber auch daneben gehen, je nachdem, wie man sich halt anstellt. Wie
+immer im Leben.</P><P>
+Was soll das &quot;Private&quot; in der &Uuml;berschrift? Private Klassen befinden
+sich direkt im Quelltext des Programms, &ouml;ffentliche Klassen sind als
+Library verf&uuml;gbar (#?.mcc) und haben evtl. einen Prefs-Editor (#?.mcp)
+dabei. Sie k&ouml;nnen von mehreren Applikationen benutzt werden.
+</P><P>
+Ich will mich erstmal an private Klassen wagen, Public Classes habe ich
+selbst noch nie programmiert.
+</P>
+<H3>1. Die Idee</H3>
+Dem Beispiel des ersten Kursteils folgend, kann man ein Fenster aus dem
+normalen Programmtext heraus (z.B. in der main()-Funktion) erzeugen,
+darunter den Elementen des Fensters per Notify ein Leben einhauchen und
+danach die Notify-Signale in einer Hauptschleife abfragen.
+</P><P>
+Jetzt ist alles zentral gesteuert. Die GUI-Elemente selbst empfangen
+Anweisungen (&quot;Disable Dich! &auml;hm: Disabel dich!&quot;) und geben Ereignisse
+weiter. Das Fenster, das man ge&ouml;ffnet hat, fungiert nur als Rahmen f&uuml;r
+die Objekte, die es beinhaltet. Alle Intelligenz geht vom Hauptprogramm
+aus, m&ouml;glichst noch alles in die Hauptschleife gequetscht, in der die
+Notifies abgefragt werden.
+</P><P>
+Bei gr&ouml;&szlig;eren Projekten mit mehreren Fenstern wird die Verwaltung der
+Ereignisse in einer Hauptschleife nicht nur un&uuml;bersichtlich, teilweise
+auch unm&ouml;glich.
+</P><P>
+Man stelle sich ein Programm vor, das seine Funktionsfenster mehrmals
+gleichzeitig &ouml;ffnen kann. Zum Beispiel die Lister oder Knopfb&auml;nke von
+DirOpus. Alle einzelnen Lister (die Instanzen des Lister-Objekts) in
+der gleichen Schleife abzufragen, w&auml;re nur m&ouml;glich, wenn man sich
+Ekeligkeiten zur Definition der &quot;Ereignisnummern&quot; &uuml;berlegt, die mit
+MUIM_Application_ReturnID an die Hauptschleife &uuml;bergeben werden.
+</P><P>
+Wesentlich eleganter w&auml;re es, wenn die Objekte sich autark verwalten
+w&uuml;rden. Wenn jeder Lister eine Abfrage f&uuml;r sich h&auml;tte, in der er sein
+Listview und die Buttons kontrolliert.
+</P><P>
+Daf&uuml;r erzeugt man eine Sub-Klasse, eine Ableitung der Klasse &quot;Window&quot;
+von MUI. Die eigene Window - Custom Class kann alles, was das MUI-Window
+auch kann. Es kann aber beim Initialisieren gleich die Gadgets anlegen
+und bei Notifies sich selbst aufrufen. Es empf&auml;ngt dann die
+Benutzereingaben, die in ihm passieren, und kann seine GUI-Elemente selbst
+modifizieren und Aktionen im eigentlichen Programm ausl&ouml;sen.
+</P><P>
+Dazu ist es n&ouml;tig, da&szlig; wir Funktionen in C definieren, die nicht das
+C-Programm selbst direkt aufruft, sondern die von MUI indirekt aufgerufen
+werden. Wir &uuml;bergeben MUI einen Zeiger auf unsere Funktion, das ist in
+vielen Hochsprachen m&ouml;glich. N&auml;heres dazu sp&auml;ter. Ein halbwegs brauchbarer
+(aber wegen der L&auml;nge verschriener) Beispielquelltext f&uuml;r MUI ist der
+psi.c, der &quot;Public Screen Investigator&quot; hat ja auch Editorfenster, die
+sich mehrmals &ouml;ffnen lassen. Ich werde darauf in einem folgenden Kursteil
+noch zur&uuml;ckkommen.
+</P><P>
+Nat&uuml;rlich kann man nicht nur von &quot;Window&quot; Custom Classes erzeugen. Alle
+anderen Objekte sind auch m&ouml;glich. Zum Beispiel ein Textfeld, das den
+anzuzeigenden Text nicht aus dem restlichen Programm bekommt, sondern
+selbst&auml;ndig den freien Speicher anzeigt, oder &auml;hnliches. Oder ein Slider,
+der ein L&auml;ngenma&szlig; einstellt, und dabei selbst&auml;ndig zwischen Zentimetern,
+Zoll und Lichtsekunden umrechnet. Oder eine Gruppe, die ihren Inhalt
+selbst&auml;ndig anhand einer HTML-Datei erstellt. :-)
+</P><P>
+Grenzen sind eigentlich nicht gesetzt. Eine h&uuml;bsche Anwendung ist auch
+Drag&Drop. Aus dem normalen Farbeinsteller-Popup machen wir ein Popup,
+das sich ziehen und auf ein anderes Popup fallenlassen l&auml;&szlig;t. Letzteres
+liest die Farbwerte des gezogenen Popups aus und tr&auml;gt sie bei sich ein.
+Der MUI-Einsteller macht das auch f&uuml;r Rahmen und Oberfl&auml;chen vor.
+<H3>2. Nomenklatur</H3>
+<P>Die MUI-Autodocs verwenden sinnvollerweise Begriffe der objektorientierten
+Programmierung. Ohne da jetzt allzu tief in Definitions- und Beispielorgien
+(&quot;Lampe (mit Stromkabeln), Stehlampe (schlie&szlig;t Lampe ein, zus&auml;tzlich mit
+Schalter)...&quot;) zu verfallen, will ich schnell die wichtigsten Begriffe
+klarstellen:
+</P><P>
+Eine <B>Klasse</B> ist ein abstraktes Dings, das <B>Daten</B> und <B>Methoden</B>, also
+klassische Funktionen beinhaltet.
+</P><P>
+Eine <B>Instanz</B> einer Klasse ist ein <B>Objekt</B>. Analog kann man sich das f&uuml;r
+Standard-C so vorstellen: man definiert eine Struktur und deklariert
+dann Variablen mit Hilfe dieser Struktur. Wenn ich &quot;struct Screen scr;&quot;
+schreibe, ist scr eine Instanz der Klasse Screen. scr ist ein Objekt.
+</P><P>
+Das <B>Ableiten</B> einer Klasse "Auto" bedeutet, einer neuen Klasse &quot;Opel&quot; neben
+ihren eigenen Features auch die Funktionen / Datenstruktur der Klasse
+&quot;Auto&quot; zu geben.
+</P><P>
+&quot;Opel&quot; hat sozusagen einen Teil seiner Funktionalit&auml;t von &quot;Auto&quot; <B>geerbt</B>.
+
+&quot;Opel&quot; ist eine <B>Subklasse</B> von &quot;Auto&quot;, &quot;Auto&quot; ist die <B>Superklasse</B> von
+&quot;Opel&quot;. (Ein Objekt kann auch mehrere Superklassen haben, aber soweit
+ich wei&szlig; gibt es sowas in MUI bzw. BOOPSI nicht.)
+</P><P>
+<B>3. Wie sieht eine Klasse aus, was wird von ihr erwartet?<BR>
+3.1  Subklassen von Gadgets<BR>
+3.1.1  Subklasse erzeugen, MUI_CreateCustomClass()</B>
+</P><P>
+Eine Klasse l&auml;&szlig;t sich eigentlich erschreckend einfach erzeugen:
+<B>MUI_CreateCustomClass()</B>.
+</P><P>
+Diese MUI-Funktion liefert bei Erfolg einen Zeiger (MUI_CustomClass *)
+auf die erzeugte Klasse. Damit man auch ein Objekt der Klasse erzeugen
+kann, sonst w&auml;re ja alles umsonst gewesen, mu&szlig; man NewObject() aufrufen.
+</P><P>
+<B>NewObject()</B> ist eine Funktion von Intuition und erwartet einen Zeiger
+auf eine IClass. Dieser ist in der erhaltenen MUI_CustomClass-Strukur
+enthalten. Weiter unten folgt dieser Ablauf nochmal als Programmtext.
+</P><P>
+MUI_CreateCustomClass() erwartet nat&uuml;rlich einige Argumente.
+Anhand einer selbstgeschriebenen Klasse will ich nun den Zusammenhang
+verdeutlichen. Die Klasse ist von MUIC_Slider abgeleitet, die Objekte
+sind Slider, die ihren Wert aber im &quot;Minuten:Sekunden&quot;-Format darstellen.
+Die Klasse hei&szlig;t <B>TimeClass</B> (was vielleicht ungl&uuml;cklich gew&auml;hlt ist,
+&quot;TimeSliderClass&quot; w&auml;re sicher besser).
+</P><P>
+Wo ich gerade bei MUI_CreateCustomClass() war: der Aufruf sieht hier so
+aus:
+<PRE>
+        // als globale Variable
+        struct MUI_CustomClass *CL_Time;
+
+        // z.B. in main(), jedenfalls bevor die MUI-Applikation aufgebaut
+        // wird und nachdem die muimaster.library ge&ouml;ffnet wurde, nat&uuml;rlich
+        CL_Time = MUI_CreateCustomClass(NULL,MUIC_Slider,NULL,
+                  sizeof(struct TimeData),TimeDispatcher);
+</PRE> <BR>
+Ein Blick in die Autodoc der muimaster.library kann nicht schaden...
+Trotzdem hier zu den Argumenten: die erste NULL steht da, weil es
+sich um keine public class handelt.
+</P><P>
+MUIC_Slider ist ein #define f&uuml;r &quot;Slider.mui&quot;, hier wird die sog.
+Superclass festgelegt, also die Klasse, von der unsere TimeClass
+abgeleitet wird.
+</P><P>
+Die TimeClass erbt damit die Eigenschaften und M&ouml;glichkeiten von
+Slider.mui, also werden wir in der eigenen Klasse keinen Slider
+zeichnen m&uuml;ssen, nur weil die Angabe des Werts nach unseren W&uuml;nschen
+geschehen soll.
+</P><P>
+Schon wieder eine NULL. Dieses Argument wird ben&ouml;tigt, wenn die
+Superklasse keine eingebaute MUI-Klasse (wie Slider.mui), sondern
+selbst eine Custom Class ist. (Sozusagen f&uuml;r den Fall, da&szlig; wir
+TimeClass ableiten wollten.)
+</P><P>
+<B>sizeof(struct TimeData)</B>: langsam geht's ans Eingemachte.
+</P><P>
+Ein Objekt hat es evtl. n&ouml;tig, Daten f&uuml;r die Dauer seiner Existenz
+zwischenzuspeichern. Der Speicherplatz, der von unserem Klassen-Code
+bearbeitet wird, mu&szlig; von MUI f&uuml;r jedes Objekt der Klasse neu
+angelegt werden, damit sich die Objekte nicht in die Quere kommen.
+</P><P>
+Man denke an die Editor-Klasse. In jedem Editor-Fenster (in den
+Editor-Objekten) soll ja ein eigener Text zu editieren sein. Hier
+wird die Gr&ouml;&szlig;e der Daten &uuml;bergeben, &uuml;ber die jede TimeClass verf&uuml;gen
+mu&szlig;, praktischerweise macht man sich eine Struktur daf&uuml;r. Der Zweck
+und Inhalt der Struktur ist dem Programmierer &uuml;berlassen. Wie die
+&quot;struct TimeData&quot; im Beispiel aussieht, folgt bei Gelegenheit.
+</P><P>
+TimeDispatcher: das Herzst&uuml;ck der Klasse.
+</P><P>
+<B>3.1.2  Der Dispatcher</B>
+</P><P>
+<B>TimeDispatcher</B> ist der Name einer Funktion im Quelltext, die von MUI
+zu verschiedenen Anl&auml;ssen aufgerufen wird. Was hier &uuml;bergeben wird, ist
+ein Zeiger auf die Funktion.
+</P><P>
+Im Beipiel sieht die Funktion so aus:
+<PRE>
+        ULONG TimeDispatcher(REG(a0) struct IClass *cl,REG(a2) Object *obj,REG(a1) Msg msg)
+        {
+                if (msg->MethodID==MUIM_Numeric_Stringify)
+                {
+                        struct TimeData *data = (TimeData *) INST_DATA(cl,obj);
+                        struct MUIP_Numeric_Stringify *m = (MUIP_Numeric_Stringify *) msg;
+
+                        sprintf( data->buf, "%ld:%02ld", m->value / 60, m->value % 60 );
+
+                        return((ULONG)data->buf);
+                }
+                return(DoSuperMethodA(cl,obj,msg));
+        }
+</PRE><BR>
+Uff, das war viel auf einmal. Um es gleich vorwegzunehmen, normalerweise
+sind die Dispatcher gr&ouml;&szlig;er oder rufen Dutzende von anderen Funktionen auf.
+Die TimeClass &quot;&auml;ndert&quot; aber nur eine Methode ihrer Superklasse, deshalb
+ist sie auch so klein.
+</P><P>
+Aber der Reihe nach:
+</P><P>
+<B>        ULONG TimeDispatcher(REG(a0) struct IClass *cl,REG(a2) Object *obj,REG(a1) Msg msg)</B>
+</P><P>
+Der Funktionskopf ist standardisiert. MUI &uuml;bergibt verschiedene Daten an
+den Dispatcher, sie sind in vordefinierten Prozessorregistern vorhanden.
+</P><P>
+Nun ist C ja eine Hochsprache, aber dem Compiler kann man vorschreiben,
+da&szlig; er die Parameter aus Registern holen soll. Das passiert hier mit
+REG().
+</P><P>
+<B>REG()</B> ist blo&szlig; ein Makro, f&uuml;r MaxonC++ ist es wie folgt definiert:
+</P><P>
+<B>        #define REG(x) register __ ## x</B>
+</P><P>
+Aus &quot;REG(a0)&quot; wird also &quot;register __a0&quot;. &Uuml;bergeben wird ein Zeiger auf die
+Klasse des Objekts, ein Zeiger auf das Objekt selbst, sowie ein Zeiger auf
+eine &quot;BOOPSI&quot;-Message. (Hier steht kein *, Msg ist aber per typedef schon
+Zeiger, siehe intuition/classusr.h)
+                      </P><P>
+Diese Message beginnt immer mit einer MethodID, einer Zahl die festlegt,
+welche Methode der Klasse aufgerufen werden soll. Die Aufgabe des
+Dispatchers ist es, zu entscheiden, ob diese Methode von der Klasse
+selbst gestellt wird, dann ruft er eine eigene Funktion auf (im Beispiel
+hab ich mir die extra Funktion gekniffen), oder nicht. Dann gibt er die
+MethodID zusammen mit den erhaltenen Funktionen an die Superklasse
+weiter.
+</P><P>
+Bestimmte Methoden sind allgemeing&uuml;ltig definiert. Dar&uuml;ber hinaus kann
+eine Klasse eigene Methoden haben. Allgemein gibt es beispielsweise:
+</P><P>
+<B>OM_NEW: Anlegen des Objekts (Konstruktor),
+OM_GET: Ein Attribut auslesen, </B>
+</P><P>
+und einige weitere. Eine Methode der Sliderklasse ist
+<B>MUIM_Numeric_Stringify</B>, und diese will die TimeClass &auml;ndern.
+</P><P>
+(MUIM_Numeric_Stringify wandelt eine Zahl in einen darstellbaren String
+um. Der String wird im Slider bzw. daneben ausgegeben)
+      </P><P>
+Also wird die Msg gepr&uuml;ft:
+</P><PRE>
+                if (msg->MethodID==MUIM_Numeric_Stringify)
+                {
+</PRE><P>
+wenn ja, macht der Dispatcher jetzt sein eigenes Ding, d.h. ein
+Slidertext nach eigenem Format kommt heraus. Im Folgenden wird dann
+ein Text erstellt, der dem &quot;Minuten:Sekunden&quot;-Format entspricht.
+<PRE>
+                        ...return...;
+                }
+                return(DoSuperMethodA(cl,obj,msg));
+</PRE><BR>
+Wenn nicht, wird die Superklasse bem&uuml;ht. Die wird schon was mit der
+Methode anfangen k&ouml;nnen. (Z.B.: OM_NEW.)
+</P><P>
+Aber halt, eben habe ich unterstellt, da&szlig; MUIM_Numeric_Stringify eine
+Methode von Slider.mui ist. Wie kann das denn sein, da steht doch
+eindeutig "Numeric"? Ein Blick in das Include mui.h wirkt wieder
+Wunder:
+</P>
++--Numeric              (base class for slider gadgets)
+<P>
+Slider ist also von Numeric abgeleitet, hat die Eigenschaft, eine
+Zahl in einen String zu wandeln, selbst von Numeric geerbt. Das ist
+auch gut so, schlie&szlig;lich sind Slider nicht die einzige M&ouml;glichkeit,
+um Zahlwerte einzugeben.
+</P><P>
+Leider wird aus dem Hierarchiebaum in mui.h nicht sofort ersichtlich,
+da&szlig; Slider von Numeric abgeleitet ist.
+</P><P>
+Nun habe ich die grobe Struktur der Custom Class im Beispiel erkl&auml;rt.
+Eine Custom Class erh&auml;lt Aufrufe von Methoden und kann sie selbst
+bearbeiten (mu&szlig; sie auch, wenn es sich um neue, eigene Methoden
+handelt) oder gibt sie an ihre Superklasse weiter.
+</P><P>
+Was die eigene Methode, die MUIM_Numeric_Stringify &uuml;berdecken soll,
+nun eigentlich macht, folgt jetzt:
+<BR><BR>
+struct TimeData *data = (TimeData *) INST_DATA(cl,obj);
+<BR><BR>
+Hier erh&auml;lt das Objekt einen Zeiger auf seine Daten. Diese struct
+TimeData sieht folgenderma&szlig;en aus:
+</P><P>
+<PRE>        struct TimeData
+        {
+                char buf[32];
+        };
+</PRE><BR>
+Der <B>buf[]</B> wird weiter unten benutzt.
+<PRE>
+            struct MUIP_Numeric_Stringify *m = (MUIP_Numeric_Stringify *) msg;
+</PRE><BR>
+Auf diese Weise erh&auml;lt das Objekt die Argumente, die beim DoMethod-Aufruf
+&uuml;bergeben werden. Die Aufgabe der BOOPSI-Msg ist es nicht nur, die Methode
+selbst zu nennen, die das Objekt ausf&uuml;hren soll, sondern auch Argumente
+zu &uuml;bergeben. Im Fall von MUIP_Numeric_Stringify sind es (gefunden in
+libraries/mui.h):
+</P><PRE>
+        struct  MUIP_Numeric_Stringify              { ULONG MethodID; LONG value; };
+</PRE><BR><P>
+Mit der MethodID fangen alle MUIP_#?-Strukturen an, die f&uuml;r die
+Parameter&uuml;bergabe n&ouml;tig sind (daher das `P'). Danach folgen beliebig
+viele Parameter, die beim DoMethod-Aufruf zu &uuml;bergeben sind.
+</P><P>
+Bei MUIM_Numeric_Stringify. das ja den Zahlenwert eines numerischen
+Gadgets in einen Ausgabestring umwandelt, wird logischerweise der
+Zahlenwert erwartet. (Wenn man eigene MUIP_-Strukturen f&uuml;r eigene
+Methoden entwirft, sollte man aber nur Datenfelder in der Struktur
+haben, die vier Bytes gro&szlig; sind [ULONG x, LONG x, APTR x, und alle
+denkbaren Pointer auf irgendwas, z.B. char *x]. Ich habe diese
+Information zwar nirgendwo gefunden, aber es erscheint logisch.)
+</P><PRE>
+                        sprintf( data->buf, "%ld:%02ld", m->value / 60, m->value % 60 );
+</PRE><BR>
+Jetzt wird aus dem Zahlenwert (der bei der TimeClass eine Zeit in Sekunden
+darstellt) ein String erstellt, der Sekunden in ein Minuten:Sekunden-Format
+umwandelt. Wer sowas noch nicht benutzt hat; der %-Operator in C bedeutet
+Modulo, also der Rest einer Division mit ganzzahligem Ergebnis, wie in
+der Grundschule...
+</P><P>
+Wichtig ist noch, da&szlig; hier das Datenfeld des Objekts angesprochen wird.
+Allerdings ist der Zweck hier nur, beim
+<PRE>
+                        return((ULONG)data->buf);
+</PRE><P>
+einen Zeiger zu erhalten, der auch nach dem Ende der Dispatcher-Funktion
+noch g&uuml;ltig ist. Eine globale Variable (oder eine lokale, die als "static"
+deklariert wurde) h&auml;tte f&uuml;r diesen Zweck auch gen&uuml;gt, aber wenn man die
+TimeClass als &ouml;ffentliche Klasse (als .mcc) implementiert w&auml;re, st&uuml;nde
+sie in einer Library, und dann kann man nicht ausschlie&szlig;en, das es zu
+Konflikten kommen k&ouml;nnte. Generell ist man auf der sicheren Seite, wenn
+man das Objekt nur an seine eigene Datenstruktur heranl&auml;&szlig;t, da diese f&uuml;r
+jedes Objekt getrennt vorliegt.
+</P>
+Nochmal die TimeClass als zusammenh&auml;ngender Quelltext:
+
+<PRE>
+        struct MUI_CustomClass *CL_Time;
+
+        struct TimeData
+        {
+                char buf[32];
+        };
+
+        ULONG TimeDispatcher(REG(a0) struct IClass *cl,REG(a2) Object *obj,REG(a1) Msg msg)
+        {
+                if (msg->MethodID==MUIM_Numeric_Stringify)
+                {
+                        struct TimeData *data = (TimeData *) INST_DATA(cl,obj);
+                        struct MUIP_Numeric_Stringify *m = (MUIP_Numeric_Stringify *) msg;
+
+                        sprintf( data->buf, "%ld:%02ld", m->value / 60, m->value % 60 );
+
+                        return((ULONG)data->buf);
+                }
+                return(DoSuperMethodA(cl,obj,msg));
+        }
+
+        void InitTimeClass()
+        {
+                CL_Time = MUI_CreateCustomClass(NULL,MUIC_Slider,NULL,sizeof(struct TimeData),TimeDispatcher);
+        }
+</PRE><BR>
+Jetzt soll die Klasse vom Programm benutzt werden.
+<P>
+Dazu ruft man nach dem &Ouml;ffnen der muimaster.library und vor dem Erstellen
+des Application-Objekts, das ja bereits die TimeClass irgendwo als Child
+enthalten soll, die oben gezeigte Funktion InitTimeClass() auf.
+</P><P>
+CL_Time mu&szlig; auf NULL getestet werden, dann hat das Programm abzubrechen.
+</P><P>
+Jetzt folgt der Aufbau des App-Objekts. Irgendwo darin:
+</P><P>
+<PRE>
+                    Child, MS_Time = NewObject(CL_Time->mcc_Class,0,
+                                        MUIA_Numeric_Min  , 10,
+                                        MUIA_Numeric_Max  , 600,
+                                        MUIA_Numeric_Value, 100,
+                                        MUIA_ControlChar  , 't',
+                                        TAG_DONE),
+</PRE><BR>
+Weil unsere TimeClass keine eigenen Attribute bereitstellt, hat sie
+auch die OM_NEW-, OM_SET- und OM_GET-Methoden nicht (um Werte zu
+initialisieren, zu setzen und auszulesen). Also werden die ganzen Daten,
+die hier &uuml;ber MUIA_... &uuml;bergeben werden, an die Superklasse Numeric
+weitergereicht. Numeric selbst reicht MUIA_ControlChar an &uuml;bergeordnete
+Klassen (wird wohl auf Area hinauslaufen) weiter, weil es das Attribut
+nicht kennt.</P><P>
+Das MS_Time l&auml;&szlig;t sich jetzt wie jedes andere Slider-Objekt benutzen,
+Werte setzen und auslesen geht also ganz normal. Nat&uuml;rlich kann man
+sich noch eigene MethodIDs mit eigener MUIP_Time_xy-Struktur ausdenken,
+die die Klasse unterst&uuml;tzt. In der Dispatcher-Funktion werden sie dann
+abgefragt, und die TimeClass reagiert entsprechend (speichert z.B. den
+Wert in eine &uuml;bergebene Preferences-Datei o.&auml;...).
+</P><P>
+Wer das NewObject aus dem Quelltext verbannen m&ouml;chte, kann nat&uuml;rlich ein
+#define anlegen, wie es MUI auch f&uuml;r seine Objekte macht. &quot;TAG_DONE)&quot;
+wird immer durch &quot;End&quot; ersetzt.
+</P><P>
+<B>Jau</B>, das war's schon. Mit der vorgestellten Methode ist schon eine Menge
+zu erreichen, z.B. auch Gadgets, die gleichzeitig eine feine Einstellung
+f&uuml;r kleine Zahlen und eine grobe Einstellung f&uuml;r gro&szlig;e Zahlen erm&ouml;glichen.
+</P><P>
+Eigene Fensterklassen und bestimmte Finessen m&ouml;chte ich im n&auml;chsten
+Kursteil besprechen, da jetzt die Grundlagen dazu aufgebaut sind. Wer
+Lust hat, kann sich ja jetzt schon mal den psi.c ansehen, aus dem
+MUI-Developerarchiv. Obwohl sich der folgende Kursteil nicht zu stark
+am PSI orientieren wird.
+</P>
+Wie man wirklich Gadgets selbst malt, kommt dann im n&auml;chsten oder (je
+nach Umfang, mal sehen) im &uuml;bern&auml;chsten Kursteil.
+           
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9803max.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0398/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9803pool.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

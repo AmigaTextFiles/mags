@@ -1,0 +1,214 @@
+
+{center}
+{subhead} PFS2{def}{p}
+Review by Neil Williams
+{left}
+{p} {p}
+
+PFS2 is a replacement file system for your hard disks or floppy disks. It's
+the follow up to AFS, renamed since 4th Level Developments (now gone) own
+that name. And since AFS was based on a file system named PFS by the same
+author, he's chosen to go back to it. Therefore, PFS2.
+{p} {p}
+To manage their hard disks and floppy disks, most people will be using
+FastFileSystem (FFS), the file system created by Commodore-Amiga for OS 1.2
+to replace the original file system (dubbed OFS) used in earlier versions.
+This made it to the KickStart ROM for OS 2.0. The file system is created
+when the disk is formatted and is absolutely necessary for any work to be
+done on the computer.
+{p} {p}
+With the general increase in hard disk size since FFS was introduced, a
+number of flaws are becoming more noticeable:
+{p} {p}
+ · Revalidation - This happens when the directory information kept by FFS
+no longer matches what is actually on the disk, like when a program
+crashes just as you are writing something to the disk. You can sit around
+for quite a while waiting for a full 2GB partition to revalidate.
+{p} {p}
+ · Speed - FFS is fairly slow reading directories and seeking (scanning)
+though files.  You can improve this in OS 3.1 by increasing the block
+size (the minimum size in bytes that one file can occupy), but it isn't
+perfect and this causes more waste; similar to how Windows95 users found
+their 1GB disks have upto 300MB of wasted space due to 32KB blocks.
+{p} {p}
+ · 4GB limit - while you *can* have hard disks bigger than 4GB, FFS starts
+reporting incorrect values for free and used disk space on /partitions/
+that are 4GB or bigger.  This, along with stupidly long revalidation
+times makes large partitions unfeasible.
+{p} {p}
+The aim of PFS2 is to address these issues.  It introduces:
+{p} {p}
+ · `Atomic Commit' - this is PFS2's way of ensuring you never have to wait
+for your hard disk to revalidate. File changes are registered in a single
+disk access - the single write is undividable (hence `Atomic') so the
+changes to a file are either saved, or in the event of a crash they
+/might/ not be.  With FFS, a crash will corrupt the file you are writing
+to, but with PFS2 you are left with the older version after the crash.
+{p} {p}
+ · Caching - amongst other features, PFS2 makes use of proper file caches of
+data to increase speed when reading on the disk. FFS uses the disk's
+buffers, but these store only file header information, not the actual
+data in the file.  PFS2 claims upto 500% better performance, and it's
+believable. Something else PFS2 takes care of is parallel file access.
+When you load up two files at the same time (which is very common on a
+fully multitasking OS such as AmigaOS) file systems like FFS start
+jumping quickly between each file trying to read both at the same time
+but only getting a few blocks of each at a time. This is very slow as the
+disk has to physically move itself between the locations of each file.
+PFS2 can detect this, and reduce the head movement of the disk to ensure
+optimum performance. It works, and it's stunning! Well, I think so
+anyway.
+{p} {p}
+ · As for the 4GB limit, PFS2 handles over 200GB so no problems there. And
+with no revalidation times in case of a crash, you can easily create
+large partitions.
+{p} {p}
+PFS2 also includes some extra features to make life easier:
+{p} {p}
+ · A deleted files directory - at the root of every PFS2 partition is a
+hidden directory named ".deldir". Change to this directory and the last
+31 files which have been deleted can be recovered. Very useful, but it's
+not something to rely on to keep files, of course. The files in this
+directory will disappear as soon as something else wants the space
+they're taking up.
+{p} {p}
+ · `Problem detection' - PFS2 will check for physical disk errors, damage
+caused by a virus or something similar, and will also ensure that any
+configuration options you set will work on your machine. PFS2 won't
+actually *do* anything about these problems other than to tell you and  
+make the disk read only so they can't become any worse.
+{p} {p}
+ · Disk repair tools - since programs like DiskSalv and QuarterBack Tools
+won't work with PFS2, a program to do repairs is provided.
+{p} {p}
+ · Defragmenting - although PFS2 won't defragment (or reorganise) a whole
+disk on demand, it will try to make sure files aren't split up over the
+disk when they are first written. A sort of manual defragmenting is
+suggested in the manual, where you copy the file back over itself -
+forcing PFS2 to rethink how to save it - which will work if some more
+disk space is available.
+{p} {p}
+ · Rollover files - something which will be appreciated by all the SysOps
+and users of comms software: using one of the PFS2 tools, you can make a
+file stay fixed at a specific size. As more new data is added to it, old
+data is removed. What is this useful for? Well, if you run some software
+which keeps a log of what it does, you want to keep enough of the log
+behind to see what it's done recently, but you don't want it to take over
+your hard disk. The Rollover feature looks after this for you.
+{p} {p}
+By way of features, overall PFS2 is a very complete replacement for FFS and
+is fully compatible too.
+{p} {p}
+PFS2 comes on a single CD, which also contains a free copy of the game
+KangFu. There is no printed manual except for a small bit on controlling
+KangFu inside the CD case sleeve. All the other documentation is in
+AmigaGuide format on the disk in German, English and French. Clicking the
+Install icon brings up a standard Installer window in which you enter your
+name, the serial number on the CD case, and which versions of PFS2 you want
+to install. A MultiUser version of PFS2 is included, and a patch for MUFS'
+multiuser.library, and there are versions optimised for most CPU's. A
+PowerPC version is planned but not yet available. So far, so good.
+{p} {p}
+The installer can't complete the installation itself, so from here on it's
+up to you. The manual describes how to install with HDToolBox, but any prep
+tool will work. An important thing to note here is that as PFS2 is a
+completely new file system, you will lose any information on the partitions
+you install it on - the exception being any AFS partitions since PFS2 is
+backwardly compatible with it. You *must* use backup and restore on any FFS
+partitions.
+{p} {p}
+I'd also recommend you find a program called RDBArc and ensure you have it,
+and the information from your hard disk it gets, saved on a floppy disk.
+{p} {p}
+After formatting the PFS2 partition on my Amiga my boot partition was
+corrupted. This was easily fixed with QuarterBack Tools, but also after
+checking with HDToolBox I found that my RDB (the area of the hard disk which
+hold partitioning information) was damaged. I could see the partitions, but
+not edit them. I'm not going to blame PFS2 for this, although perhaps I
+should, since it happened again after PFS2 had been removed for week, and
+did *not* happen when I installed it on another test machine. Whatever
+happened (did I mention it did it twice?) it hasn't happened since and I
+have PFS2 partitions working here fine now.
+{p} {p}
+PFS2 has improved some software here very noticeably. Any software which
+maintains large files and needs to seek though them quickly will show
+immediate improvements. The FidoNet message editor MailManager, for example,
+can manage 20MB of HOLYSMOKE echo mail as easily as an echo which holds just
+a few kilobytes. Under FFS, it could spend a fair few seconds Seek()ing over
+the file just to update messages flags. In this case, there certainly is
+that promised "upto 500%" speed increase.
+{p} {p}
+Something PFS2 won't help with is the speed you can actually read data from
+your hard disk. Actually, that's a bit of a lie since I measured a
+significant increase with SysSpeed. In fact, it would seem PFS2 has so
+little overhead that SysSpeed measures just a 4% drop in speed compared to
+bypassing the file system!
+{p} {p}
+But, of course, the speed is mostly limited by the physical speed of your
+hard disk, interface and CPU, so don't expect PFS2 to work magic with
+substandard kit. (The new enhanced IDE interfaces, such as the PowerFlyer,
+let your modern hard disks run at their full speed on an A1200 -
+recommended).
+{p} {p}
+For those interested, here's some comparisons made with SysSpeed. Don't put
+too much confidence in these stats, but they're a reasonable guide anyway.
+{p} {p}
+{bold}Machine used:{nobold}
+  Amiga 1200, 68030 50MHz, 32bit Fast RAM available, Seagate 4.3GB hard disk
+on the internal (unmodified) IDE bus. Both partitions used were clean and
+unfragmented.
+{p} {p}
++-------------+---------+---------+{p}
+|   Test      |   FFS   |   PFS   |{p}
++-------------+---------+---------+{p}
+|  Drive        Results in Op/s   |{p}
++-------------+---------+---------+{p}
+| Create      |  39     |  260    |{p}
++-------------+---------+---------+{p}
+| Open        |  63     |  333    |{p}
++-------------+---------+---------+{p}
+| DirScan     |  432    |  1671   |{p}
++-------------+---------+---------+{p}
+| Delete      |  282    |  390    |{p}
++-------------+---------+---------+{p}
+| Seek/Read   |  561    |  830    |{p}
++-------------+---------+---------+{p}
+|  Drive        Results in MB/s   |{p}
++-------------+---------+---------+{p}
+| CreateFile  |  1.11   |  1.89   |{p}
++-------------+---------+---------+{p}
+| WriteFile   |  0.90   |  2.01   |{p}
++-------------+---------+---------+{p}
+| ReadFile    |  1.33   |  2.33   |{p}
++-------------+---------+---------+{p}
+| RawRead     |  2.40   |  2.43   |{p}
++-------------+---------+---------+
+{p} {p}
+Does this sound like a glowing review? It should, anyway. Apart from the
+problem I had when I first installed -- perhaps because at the time I was
+using scsi.device 39 with PFS2 installed on a partition past the 4GB mark,
+together with 2 other file systems (FFS, SFS)? -- there have been no
+problems as all. I've been saved from a lot of time scanning disks with
+DiskSalv or QuarterBack thanks to the .deldir, I've certainly had my hard
+disk running much faster and as a result cut minutes off the time needed to
+import mail on my BBS. PFS2 has lived up to it's claims of stability too - I
+haven't had to put up with revalidation or had to spend literally hours with
+DiskSalv rescuing partitions. A feature perhaps overlooked by some is the
+MultiUser support, since this means PFS2 can be used in a network server
+environment properly - and network servers need all the hard disk
+performance they can get!
+{p} {p}
+This is certainly a product I can recommend. Perhaps, if you have a fast
+hard disk, it's a necessity.
+{p} {p}
+{bold}Alternatives:{nobold} FastFileSystem -- provided with AmigaOS.{p}
+              MultiUserFileSystem -- modified FFS, on AmiNet.{p}
+              SmartFileSystem -- modern file system, beta release on AmiNet.
+{p} {p}
+{bold}Available from:{nobold}
+{p} {p}
+Ramjam Consultants Ltd, 28 Queensway, Caversham, Reading, RG4 6SQ, England.{p}
+Tel : +44 (0)118 946 5940{p}
+Email : support@ramjam.u-net.com{p}
+{p} {p}
+Overall: 93% {bold}** AIO GOLD **{nobold}

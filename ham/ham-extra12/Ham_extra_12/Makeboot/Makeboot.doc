@@ -1,0 +1,168 @@
+
+
+    MakeBoot_____________________________________________________________
+
+
+    aktuelle Version    :   0.50    (09.03.95)
+
+    © 1995 by Andreas Neumann, alle Rechte vorbehalten
+
+
+
+    I. Kurzbeschreibung _________________________________________________
+
+    MakeBoot dient dem Zweck, Programme in den Bootblock einer
+    Diskette zu schreiben. Es fügt automatisch den vom AmigaDOS
+    benötigten Header hinzu und berechnet die Checksumme. Außerdem
+    kann man sowohl Disketten im FastFile- als auch im OldFile-System
+    mit eigenen Bootblöcken versehen.
+
+    Es entstand durch eine Anfrage des IHC-Vorsitzenden Nico Hauke.
+
+
+    II. Bedienung _______________________________________________________
+
+    MakeBoot ist zur Zeit nur vom CLI aus zu bedienen. Der Aufruf sieht
+    folgendermaßen aus :
+
+    MakeBoot [Optionen] Programmname to dfx:
+
+    Dabei sind die möglichen Optionen :
+
+    -?/-h       zeigen kurze Informationen zum Programm an
+    -f=X/-fX    Bestimmung der Filesystemkennung, für das FFS ist X='F',
+                für das OFS ist X 'O', bestimmt man diese Option nicht
+                gesondert, wird voreingestellt für das alte Filesystem
+                installiert.
+
+                ACHTUNG : installiert man einen Bootblock für FFS-Disketten
+                mit OFS-Kennung oder umgekehrt, kann AmigaDOS die
+                Diskette nicht mehr korrekt lesen ! Hier ist Vorsicht
+                angebracht !
+
+    Der Programmname ist der komplette Pfad des assemblierten Programmes,
+    das in den Bootblock geschrieben werden soll und für das gelten muß,
+    daß es
+
+    1. nur aus einem Hunk bestehen darf
+    2. vollständig PC-realtiv programmiert sein muß
+    3. nicht länger als 1024 Byte sein darf (genaugenommen nicht länger als
+       1008 Byte, da der Header hinzugefügt werden muß)
+    4. mit der für DOS notwendigen Initialisierungsroutine enden muß. Die
+       einfachste Version davon sieht - in einer Version für den A68k -
+       folgendermaßen aus :
+
+            move.l  $4,a6
+            lea     doslibrary(pc),a1
+            jsr     -96(a6)
+            tst.l   d0
+            beq     nodos
+            move.l  d0,a0
+            move.l  22(a0),a0
+            moveq   #0,d0
+
+       end:
+            rts
+
+       nodos:
+            move.w  #$ff,d0
+            bra     end
+
+       doslibrary:
+            dc.b    "dos.library",0
+            even
+
+            end
+
+    "To" ist lediglich ein Füllwort, das ignoriert wird. MakeBoot erkennt
+    automatisch, wann das Laufwerk gemeint ist (keine VOLUME-Namen sind
+    erlaubt !), so daß demnach auch ein völlig umgestalteter Programmaufruf
+    möglich ist. Für Sprachfanatiker gibt es ein weiteres Füllwort : "from",
+    das damit auch diesen Aufruf völlig legitim macht :
+
+    MakeBoot dfx: from Programmname [Optionen]
+
+    "dfx:" ist hier ebenfalls das Laufwerk, also "df0:"-"df1:".
+
+
+    III. Vertriebsbestimmungen __________________________________________
+
+    MakeBoot ist freely distributable, d.h. für Privatleute frei
+    kopierbar und benutzbar, unter der Bedingung der Einhaltung dieser
+    Bestimmungen.
+
+    Der Urheber von MakeBoot ist der Autor (Anschrift s.u.), alle Rechte
+    sind vorbehalten. Der Autor haftet für keine Hard-, Software- oder
+    sonstige Schäden, die durch den Gebrauch von MakeBoot entstehen sollten.
+
+    MakeBoot darf auf FD-Serien erscheinen, die keinem gesonderten
+    preislichen Minimum unterliegen, also z.B. nur für 5.- DM kopiert
+    werden dürften. Bedingung ist lediglich, daß dem Autor ein
+    Belegexemplar der FD-Diskette zugesandt wird.
+
+    MakeBoot darf auf CD-ROMs erscheinen, die Sammlungen von FD-Soft
+    darstellen. Ein Belegexemplar wäre nett, ist jedoch keine Voraussetzung.
+
+    MakeBoot darf in nicht-kommerzielle Datennetze geladen werden, also
+    z.B. AmiNet, Z-Netz oder ähnliches.
+
+    MakeBoot darf nur zusammen mit dieser Anleitung verbreitet werden.
+
+    Für weitere Fragen, Kritik, Anregungen, Verbesserungsvorschläge und
+    ähnliches gilt als Kontaktadresse die Anschrift des Programmierers :
+
+                                Andreas Neumann
+                                Espenhausen 3
+                                35091 Cölbe
+
+
+    IV. Sonstiges _______________________________________________________
+
+    Grüße gehen an alle Pascal-Programmierer, u.a. an Bernd "Diesel" Künnen,
+    Falk "Pacman" Zühlsdorff, Jan Stötzer, Jens Tröger, Michael Klein, Björn
+    Schotte, Andreas Tetzl, Jürgen Mattern und die vielen anderen aktiven
+    und passiven Purity-Mitglieder.
+    Außerdem dürfen sich gegrüßt fühlen :
+    Daniel Rädel, Jürgen Träger, Sascha Iwanow, Mario Emmenegger, Nils
+    Kassube, HannsHolger Rutz, Gerd Frank, Bruno Jansen, Christian Kettner,
+    Nico Hauke, Michael Bachmann, Gaby und Udo Drüke, Andreas Magerl,
+    Stefan Wunner, Daniel Hogrefe, Sebastian Alfers, Matthias Blumenthal,
+    Thomas Randig, Alain Declercq, André Voget, Peter Händel, H.W.Schmitt,
+    Michael Petrikowski, Stefan Grad, Andreas Mauß, Roland Jesse, Roland
+    Fulde, Hans-Christof Tuchen und alle anderen begeisterten
+    Amiga-FD-Freaks.
+
+    Es folgt der Hinweis auf das Diskettenmagazin "AmigaGadget", das seit
+    1990 erscheint, Berichte nicht nur aber auch aus der Welt der
+    Computer - und dabei keineswegs bloß amigaspezifisch - bringt,
+    Lifestyle-News und -Tips parat hält, politische Themen behandelt,
+    Grundlagen vermittelt und viele große und kleine Storys veröffentlicht.
+    Das ganze ist FD und gegen Leerdisk oder FD-Disk und Rückporto bei oben
+    angegebener Anschrift zu erhalten.
+
+
+    V. Literaturhinweise/Quellennachweise _______________________________
+
+
+    Zur Programmierung von MakeBoot wurde folgende Literatur hinzugezogen :
+
+    "Assembler-Kurs, Teil 6" von Manfred Leidorf in AmigaSpecial 7/8 '90
+
+    "Der Bootblock" von Uwe Thaden in AmigaSpecial 9 '89
+
+    "Die Assembler-Programmierung, Teil 2" von Thomas Lopatic in
+    Amiga-Magazin 1 '90
+
+    "MC 68000 intern" von Michael Göckel in Amiga-Magazin 11 '88
+
+    "Programme im Bootblock - gut gestartet" von Jochen Wickel in
+    Amiga-Magazin 3 '91
+
+
+    VI. Programmgeschichte ______________________________________________
+
+    07.03.1995  Version 0.01    beschreibt Bootblock und bietet keinerlei
+                                Optionen
+
+    09.03.1995  Version 0.50    erste veröffentlichte Version mit Optionen
+                                "-f" und "-h"

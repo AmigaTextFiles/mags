@@ -1,0 +1,47 @@
+<HTML><H2><B>3D Tutorial</B></H2>
+
+<P>This is a tutorial on how to achieve the more traditional 'polygon' style 3D effects. As with last issue, I'm using AMOS to 
+make it easier, but you would use Assembly if you wanted speed.
+
+<P>The source code is saved as '3DPolygons.AMOS' in the 'Mag5/' drawer, and it is provided in compiled format under '3DPolygons'. 
+Load and run either of these - obviously the compiled one is faster.
+
+<P>You should see a robot figure on screen, which you can move with the joystick (look at that 2 frame walking animation!)
+
+<P>So how does it work? Even in this simple example are lots of techniques essential to 3D programming. But the first thing is to 
+get a 3D point onto a 2D display. And firstly you need to know about 3D coordinates. Basically, you've got 3 axes, the x, y and z which are at right angles to each other, and any point is defined by 3 associated numbers. To begin with, we assume that the viewpoint is at the origin (0,0,0), and looking in the direction of the X axis. This means that anything lying on the x axis that was in front of you would appear in the centre of the screen. Have a look at the _PTD[] procedure to see how it's done. 
+Just divide the y and z coordinates by the x coordinate, to get two new numbers which are the coordinates of the point which needs to be drawn onto the screen. Well, not quite - we need to scale it, and add some values so that they appear in the right place.
+
+<P>To be more flexible, we need to know how to view points when the viewpoint is elsewhere to the origin, and facing in any direction. In the program, the <TT>_OBJ(object,parameter)</TT> array stores information on 'objects' (more about them later), and object 0 is taken to be the viewpoint. The <TT>parameter</TT> 
+takes the following values:<UL>
+<LI>1 - Group that the object represents (see later - irrelevant to viewpoint)
+<LI>2,3,4 - Position in 3D space, ie, x,y,z coordinates
+<LI>5,6,7 - Rotations in 3D space about the x,y,z axes</UL>
+In my program, the rotations work like this. Imagine you are looking along the x axis. First, rotate around this axis as necessary (kind of like 'roll'), then about the y axis (which runs perpendicularly flat to you, so like 'pitch', and then about the z axis (which points upwards, so like 'heading').
+
+<P>To view a point when we (the viewpoint) is at any position at any angle, we must first temporarily modify the point's 3D coordinates. We subtract the viewpoint's x,y,z coords from the point's x,y,z coords. This is still done in _PTD, under <TT>'translations</TT>. Next, in the ROTATEGLOB subroutine, we rotate these new x,y,z coords about the x,y,z axis as indicated above. The angles to rotate by are the angles that the viewpoint is rotated by, <I>but we rotate in the opposite direction</I>. Think about why this is so: Remember, we want to assume that we are at the origin, and looking along the x axis. Subtracting the viewpoint's coords from the point makes it seem like we are now at the origin. But if, say, we were looking 25 degrees to the left, the point would now appear 25 degrees to the right. So we can instead simply rotate the point 25 degrees to the right (ie, opposite to the direction we are looking), and it is as if we are 
+looking along the x axis.
+<HR>
+In a way, this is all there is to the basics of 3D programming... 
+except this is also just the beginning. You could build up a 3D world with lots of points, join them up as polygons and fill them in, but there are things we can do to make the process easier.
+
+<P>The way my program works is it deals with shapes, groups and objects. Consider the robot; shapes are individual bits, like a leg, body or head. They are made up of several (or maybe just one) polygons - I will get to that later. A group is a whole group of these shapes, hence the name. The robot is one such group. The distinction between objects and groups is best explained by relating to Bobs. You have a bob image, which is a graphical image stored in memory - this is just like a group. But 
+to invoke a bob, you have to have a bob ID, which is like an object. Groups contain all the 3D data of, say, a robot figure, but it is objects which contain the information about where that robot is (and also which direction it is pointing). Objects just point to a particular group number. If you change this number to a different group, you have a very easy way of doing animation, as shown in the program. It would be much harder if all the points had to be individually moved!
+
+<P>So how is the data for shapes stored? There are 5 arrays. Firstly, _TX(), _TY(), TZ() contain all the 3D points. Consider a 
+cube - there would be 8 points. Next is <TT>_POLY(shapes,polygons,parameter)</TT> which defines how the polygons are drawn and filled in. The <TT>parameter</TT> stores the following information:<UL>
+<LI>1 - colour of polygon
+<LI>2 - number of vertices (ie, 3 for triangle, 4 for square)
+<LI>3-6 (or 3-5) - the points to be drawn (as defined in _TX, _TY, _TZ), given in clockwise order (see later).</UL>
+Lastly, <TT>_SHINFO()</TT> which gives some information about shapes which isn't really essential to know at the moment.
+
+<P>As for creating the shape data... Well there is Data which is Read in to form a Cube, Square Based Pyramid, a Hexagonal Based Prism and a flat Square polygon (don't worry about the cylinder - 
+that was something which didn't work out).
+
+<P>But these aren't directly used to build my robot. Consider them 'primitives', as I then use the _ADDNEWSHAPE procedure to form new shapes which are in the right proportions and positions for my robot.
+<HR>
+Well, there's still a lot more to explain, like drawing the polygons, sorting the drawing into the correct order, etc, so look out for an explanation in DC issue 6. I have also converted most of this code into C, so you might see some of that in the future too.
+
+<P><B>Mark</B>
+
+</HTML>

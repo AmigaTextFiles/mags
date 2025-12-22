@@ -1,0 +1,118 @@
+\T
+
+ --> HARDWARE : MODEM SPEEDTOUCH PRO par Olivier
+=================================================
+
+~   Cet article servira a r_pondre a 3 questions :
+
+- Comment faire pour transformer le modem Alcatel SpeedTouch Home en SpeedTouch
+Pro ?
+
+- Comment faire pour utiliser le modem ADSL Alcatel SpeedTouch Home en Routeur
+ind_pendant ?
+
+- Comment faire pour utiliser un Amiga sous ADSL sans pilotes pppoe ?
+
+   Bien sur, l'auteur rejette toute responsabilit_ sur ce qui peut arriver a votre
+modem, si jamais vous effectuez une quelconque modification, sachez quand m_me
+qu'il y a un bouton reset. Les soucis, avec ces modems apparaissent surtout lorsqu'on
+fait une mise a jour du logiciel interne. Ce qui n'est pas notre propos : Ici, en 
+effet, on ne change que des variables internes au modem. Malgr_ tout, aucune de ces
+manipulations n'est triviale, et la garantie de l'appareil serait difficilement 
+utilisable en cas d'avarie.
+Vous travaillez donc sans filet.
+
+~   Transformation d'un SpeedTouch Home en SpeedTouch Pro :
+   Cette op_ration peut s'effectuer que l'on ai ou non des pilotes pppoe
+(Amiga/AmiTCP-Genesis par exemple). Configurez la carte r_seau en IP=10.0.0.10,
+masque=255.0.0.0, passerelle=10.0.0.138, le modem ayant cette IP par d_faut.
+
+ö
+
+\T
+
+   ping 10.0.0.138 doit r_pondre.
+   telnet 10.0.0.138
+
+Donne en prompt user:, pr_c_d_ d'un titre tel que : SpeedTouch
+(00-XX-XX-XX-XX-XX) ou XX sont des couples de lettres et chiffres, vous notez
+cette suite.
+
+Puis, depuis l'endroit de votre choix, vous vous connectez a Internet et vous
+pointez en : Script Challenge (http://security.sdsc.edu/self-help/alcatel/challenge.cgi)
+
+Vous entrez, comme indiqu_, la suite not_e ci-dessus. Le script vous rend une s_rie
+de chiffres qui constituera a pr_sent votre mot de passe en mode EXPERT, l'utilisateur
+privil_gi_ du syst_me d'exploitation du modem.
+
+Vous vous reconnectez au modem :
+   telnet 10.0.0.138
+
+Au prompt user: vous tapez EXPERT
+Au mot de passe, vous tapez le nombre tir_ du script.
+Un ban en ASCII-Art (Alcatel) vous accueille.
+Attention : Vous retapez EXPERT, afin de basculer dans le mode de travail EXPERT.
+Le mot de passe (le nombre) vous est a nouveau demand_, tapez le.
+Un message vous annonce que vous _tes a pr_sent en mode EXPERT.
+Tapez rip
+Le prompt devient rip>
+   rip>drv-read 2 1 b
+
+ö
+
+\T
+
+Cette commande rend quelque chose comme 8704 (voire 8604 ou 8504) selon le modem.
+Il faut remplacer cette valeur par 8706 (8606 et 8506 respectivement), par la
+commande :
+   rip>drv-write 2 1 b 8606
+
+On quitte ensuite par :
+   rip>exit
+   system
+   system>reboot
+
+Le modem red_marre alors, il est a pr_sent en mode SpeedTouch Pro.
+
+~   Configuration du SpeedTouch Pro en routeur ind_pendant.
+   Il faut retenir que les fonctions avanc_es du modem (NAT, redirection IP) ne
+seront accessibles que par telnet, en effet, le serveur web ne s'actualise pas (je
+n'ai pas cherch_ a le faire), mais la configuration du partage de connexion se fait
+par le site web du modem. Donc dans un butineur quelconque, supportant les "frames",
+on se connecte en http://10.0.0.138
+
+La on d_truit toutes les connections "BR" de la section PhoneBook : La jaune, qui est
+celle activ_e par d_faut, est notre cible. Elle ne peut _tre d_truite qu'apr_s avoir
+ot_ les autres. Puis aller la d_truire, mais en section Bridge. Il n'y a plus alors 
+de connexion par d_faut. Sauvegardez tout.
+
+Retournez en rubrique Phonebook, cr_ez une entr_e dont le nom est MXS (par exemple),
+de VPI=8, de VCI=35, type ppp. Sauvegardez tout.
+
+ö
+
+\T
+
+Puis allez en rubrique ppp, cr_ez une connexion MXS (le nom est d_ja pr_sent dans
+l'onglet), d'encapsulation VC-MUX, configurez-la ensuite :
+A l'authentification donnez vos noms et mot de passe (pour wanadoo, l'utilisateur
+est fti/xxxxxxx@fti par exemple).
+
+Le routing est :
+Connexion sharing : everybody
+Destination networks : All networks
+Cochez "address translation"
+Renseignez les DNS primaires et secondaires de votre fournisseur d'acc_s (wanadoo :
+193.252.19.3/193.252.19.4) si vous les connaissez.
+Les options sont :
+   local ip : none, remote ip : none
+   Mode "always on"
+   LCP coch_
+   PAP non coch_
+   ACCOMP coch_
+
+Vous sauvegardez tout. Vous placez, dans la rubrique ppp, le status sur "on" si il
+n'y est pas encore ! Voila, une fois votre "state" sur "up", vous _tes connect_,
+sans pilotes, sans rien.
+
+ö

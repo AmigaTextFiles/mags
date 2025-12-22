@@ -1,0 +1,814 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+	<TITLE>AmigaScene 0x04 - WGet</TITLE>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="TEXT/HTML;CHARSET=iso8859-1">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#101010" LINK="#BF0000" VLINK="#101010" ALINK="#E04040">
+	<TABLE WIDTH="100%" CELLPADDING=3 CELLSPACING=0 BORDER=0>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP WIDTH="80%" HEIGHT=75>
+				<A NAME="00" HREF="welcome.html"><IMG SRC="../images/_amiga.gif" WIDTH=125 HEIGHT=48 ALT="[Amiga]" ALIGN=RIGHT BORDER=0></A><A HREF="#99"><IMG SRC="../images/_krumm_lo.gif" WIDTH=37 HEIGHT=29 ALT="[Down]" ALIGN=LEFT BORDER=0></A>
+				<BR CLEAR=ALL><BR>
+				<TABLE ALIGN=CENTER WIDTH=170 BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD ALIGN=CENTER>
+					<A HREF="../deutsch/0x0064.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" BORDER=1></A>
+				</TD></TR></TABLE>
+ 			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=RIGHT WIDTH=175>
+				<A HREF="welcome.html"><IMG SRC="../images/_scene.gif" WIDTH=110 HEIGHT=47 ALT="[Scene]" ALIGN=LEFT BORDER=0></A>
+				<A HREF="0x0063.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x0065.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=CENTER>
+				<CENTER>&nbsp;<BR>
+
+					<IMG WIDTH=155 HEIGHT=25 SRC="../images/_workshop_.gif" ALT="[Workshop]">&nbsp;<BR><BR>
+
+					<TABLE WIDTH="90%" BORDER=0>
+						<TR><TD ALIGN=CENTER><FONT SIZE="-1">
+
+| <A HREF="0x0063.html">Tunnel Anims</A> | <A HREF="0x0064.html">WGet</A> | <A HREF="0x0065.html">Programmieren</A> | <A HREF="0x0066.html">TCP/IP</A> |
+
+						</FONT></TD></TR>
+					</TABLE>&nbsp;<BR>
+				</CENTER>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER WIDTH=175 ROWSPAN=2>
+				<CENTER>&nbsp;<BR>
+					<IMG SRC="../images/__.gif" HEIGHT=1 WIDTH=175 ALT=" "><BR>
+					<A HREF="0x0059.html"><IMG WIDTH=77  HEIGHT=25 SRC="../images/_cover.gif"     ALT="[Cover]"     BORDER=0></A><BR>
+					<A HREF="0x005A.html"><IMG WIDTH=117 HEIGHT=25 SRC="../images/_editorial.gif" ALT="[Editorial]" BORDER=0></A><BR>
+					<A HREF="0x005B.html"><IMG WIDTH=85  HEIGHT=25 SRC="../images/_inhalt.gif"    ALT="[Inhalt]"    BORDER=0></A><BR>
+					<A HREF="0x005D.html"><IMG WIDTH=70  HEIGHT=25 SRC="../images/_news.gif"      ALT="[News]"      BORDER=0></A><BR>
+					<A HREF="0x005E.html"><IMG WIDTH=131 HEIGHT=25 SRC="../images/_hardware.gif"  ALT="[Hardware]"  BORDER=0></A><BR>
+					<A HREF="0x0060.html"><IMG WIDTH=121 HEIGHT=25 SRC="../images/_software.gif"  ALT="[Software]"  BORDER=0></A><BR>
+					<A HREF="0x0063.html"><IMG WIDTH=135 HEIGHT=25 SRC="../images/_workshop.gif"  ALT="[Workshop]"  BORDER=0></A><BR>
+					<A HREF="0x0067.html"><IMG WIDTH=73  HEIGHT=25 SRC="../images/_spiele.gif"    ALT="[Spiele]"    BORDER=0></A><BR>
+					<A HREF="0x0068.html"><IMG WIDTH=91  HEIGHT=25 SRC="../images/_special.gif"   ALT="[Special]"   BORDER=0></A><BR>
+					<A HREF="0x0069.html"><IMG WIDTH=112 HEIGHT=25 SRC="../images/_feedback.gif"  ALT="[Feedback]"  BORDER=0></A><BR>
+					<A HREF="0x006C.html"><IMG WIDTH=46  HEIGHT=25 SRC="../images/_etc.gif"       ALT="[Etc]"       BORDER=0></A><BR>
+				<BR></CENTER>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+
+<BR><H1 ALIGN=LEFT><FONT FACE="Arial"><B>Wget - Surfen einmal anders (Teil 2)</B></FONT></H1>&nbsp;
+
+<BR><H3><B>&Uuml;berblick</B></H3>&nbsp;
+
+<BR>Im ersten Teil dieses Workshops haben wir uns mit der f&uuml;r Amiganer
+seltsam anmutenden Installation und grunds&auml;tzlichen Bedienung
+besch&auml;ftigt. Zus&auml;tzlich wurden ein paar Features bez&uuml;glich
+instabiler Verbindungen und Besorgen von Daten auf FTP-Servern
+besprochen.<BR>
+
+<BR>Diesmal geht es um jene Funktion von Wget, die am meisten verwendet
+wird: dem Kopieren von Seiten im WWW.<BR>
+
+<BR>Dazu werden ein paar konkrete Anwendungen beschrieben, und die
+Optionen, die dazu n&ouml;tig sind. Die allgemeine Vorgehensweise dabei ist
+folgende: Anfangs werden so wenig Optionen wie m&ouml;glich verwendet, um
+das ganze &uuml;bersichtlicher zu gestalten. In der Regel zeigen sich dann
+aber einige Probleme oder Einschr&auml;nkungen, die mit Hilfe ein paar
+weiterer Optionen behoben werden.<BR>
+
+<BR>Daher sollte man einen Abschnitt zu Ende gelesen werden, bevor man
+einzelne Beispiele ausprobiert.<BR>
+
+<BR>Aus der reinen Anwendersicht wird diesmal folgendes besprochen:
+<A HREF="#einzelne-seiten">einzelne Seiten besorgen</A>,
+<A HREF="#seite-mit-bildern">eine Seite mit Bildern kopieren</A>,
+<A HREF="#probleme">Probleme rekursiven Saugens</A>
+und <A HREF="#ganz-viele">ganz viele Seiten saugen</A>.
+<BR>
+
+<BR><CENTER><A NAME="01" HREF="#00"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B><A NAME="einzelne-seiten">Einzelnen Seiten besorgen</A></B></H3>&nbsp;
+
+<BR>Will man nur ein paar einzelne Seiten oder Dateien haben, so kann man
+analog zum Aufruf f&uuml;r FTP einfach die URL als Parameter angeben. Zum
+Beispiel hat da ein netter Mensch ein Seite gemacht, die zu Dokumenten
+verweist, die Bildformate beschreiben. Um die ins aktuellen Verzeichnis des
+CLI zu kopieren reicht ein simples<BR>
+
+<BR><TT> wget http://www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html </TT><BR>
+
+<BR>Die neue Datei hat den Namen <TT>2d-hi.html</TT>, wie nicht anders zu
+erwarten. Gibt man eine URI an, die mit einem Schr&auml;gstrich endet, so
+entscheidet der Server am anderen Ende, wie das Dokument hei&szlig;t, das
+geschickt wird. &Uuml;blicherweise kriegt es den Namen <TT>index.html</TT>
+oder <TT>welcome.html</TT>. Im Zweifelsfalle werfe man einen Blick auf die
+Ausgabe von Wget.<BR>
+
+<BR><CENTER><A NAME="02" HREF="#01"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Man beachte, da&szlig; die URI diesmal mit <TT>http://</TT> beginnt,
+und nicht wie im letzten Teil, mit <TT>ftp://</TT>. Trotzdem ist das ganze
+nat&uuml;rlich nicht auf <TT>.html</TT> Dateien beschr&auml;nkt, man kann
+genau so Bilder, Archive und alles anderer saugen. Will man z.B. die das
+Archiv der ersten Ausgabe der AmigaScene haben, so so bietet sich folgender
+Aufruf dazu an:<BR>
+
+<BR><TT> wget http://www.amigascene.com/amigascene_01.lha </TT><BR>
+
+<BR>Es k&ouml;nnen auch mehrere Adressen gleichzeitig angegeben werden, um
+z.B die ersten beiden Ausgaben zu besorgen:<BR>
+
+<BR><TT> wget http://www.amigascene.com/amigascene_01.lha http://www.amigascene.com/amigascene_02.lha </TT><BR>
+
+<BR>&Uuml;brigens werden Text- und Bin&auml;rdateien nicht unterschiedlich
+behandelt. Das hei&szlig;t, es wird keine &Uuml;bersetzung von CR/LF in LF
+(oder gar umgekehrt) durchgef&uuml;hrt. Das ist angenehm wenn die
+MIME-Types des Servers falsch oder unvollst&auml;ndig konfiguriert sind,
+was bekanntlich h&auml;ufig vorkommt.<BR>
+
+<BR>Wer jetzt nur Bahnhof verstanden hat: Die praktische Auswirkung von
+obiger Tatsache ist, da&szlig; LHA-Archive beim Download nicht
+&quot;kaputtkonvertiert&quot; werden - im Gegensatz zu zahlreichen
+kommerziellen Browsern bzw. Servern.<BR>
+
+<BR><CENTER><A NAME="03" HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B><A NAME="seite-mit-bildern">Eine Seite mit Bildern kopieren</A></B></H3>&nbsp;
+
+<BR>Zuvor haben wir ein einzelnes Dokument kopiert. Das Original
+enth&auml;lt aber einige kleine Bilder, die zwar nicht den
+Informationsgehalt steigern, die Seite aber gef&auml;lliger aussehen
+lassen. Was tun, wenn in unserer Kopie die Bilder auch enthalten sein
+sollen?<BR>
+
+<BR>Zum Gl&uuml;ck kann Wget in einem Dokument enthaltene Verweise und
+Bilder &quot;weiterverfolgen&quot;. Prinzipiell reicht dazu folgender
+Aufruf:<BR>
+
+<BR><TT> wget --recursive --level=1 http://www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html </TT><BR>
+
+<BR>Das <B>--recursive</B> bewirkt, da&szlig; alle anderen Daten, auf die
+von dieser Seite aus verwiesen wird, auch geholt werden. Das gilt sowohl
+f&uuml;r HTML-Seiten, in der Seite enthaltene Bilder als auch f&uuml;r
+alles andere, was ein Link ist. Oft sieht man Verweise auf Animationen,
+Musikdaten oder einer druckbaren Version der Seite im Postscriptformat.
+H&auml;lt man Wget nicht davon ab, wird auch das alles geholt.<BR>
+
+<BR><CENTER><A NAME="04" HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Diese Option hat aber noch eine weitere Auswirkung, wenn eine Seite auf
+eine weitere HTML-Seiten verweist. Die neue Seite wird nicht nur kopiert,
+sondern wiederum nach weiteren Verweisen untersucht. Danach wird
+nat&uuml;rlich auch diese Material besorgt - und so weiter, und so
+weiter.<BR>
+
+<BR>In unserem Fall ist das nicht sinnvoll, weil wir nur die Sachen von
+genau dieser einen Seite haben wollen. Darum wird mit <B>--level=1</B>
+gesagt, da&szlig; nach einer Generation von HTML-Seiten abgebrochen werden
+soll. Das kommt dem, was wir wollen, schon ziemlich nahe.<BR>
+
+<BR><CENTER><A NAME="05" HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wer sich den Seite etwas genauer betrachtet wird aber merken, da&szlig;
+sie auf viele andere Seiten verweist, die uns jetzt gar nicht
+interessieren. Wir wollen ja nur die Einstiegsseite haben, was durchaus
+Sinn macht. Denn damit k&ouml;nnen wir &quot;zu Hause&quot; entscheiden, ob
+es sich lohnt, ins Netz zu gehen, wenn wir Dokumentation zu einem
+Bildformat brauchen.<BR>
+
+<BR>Also sagen wir Wget, da&szlig; es sich bei seinen Aktionen auf den
+Ausgangserver <TT>www.dcs.ed.ac.uk</TT> beschr&auml;nken soll. Genau das
+macht die Option <B>--domains</B>. Der verbesserte Aufruf lautet dann
+also:<BR>
+
+<BR><TT> wget --recursive --level=1 --domains=www.dcs.ed.ac.uk http://www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html </TT><BR>
+
+<BR>Nun kann es aber wie bereits weiter oben angedeutet durchaus sein,
+da&szlig; diese Seite auch auf lokale Daten verweist, die uns nicht
+interessieren. Wir wollen ja nur die Bilder haben. Dazu kann man Wget
+veranlassen, nur Dateien mit einer bestimmten Endung in Betracht zu ziehen.
+Die im WWW &uuml;blichen Bildformate sind ja bekanntlich PNG, JFIF/JPEG und
+GIF. Diese Namen ergeben meist auch die Endung des Dateinamens. Da JPEG zu
+viele Buchstaben f&uuml;r dumme Systeme enth&auml;lt, werden solche
+Dateien oft mit der Endung <TT>.jpg</TT> gespeichert.<BR>
+
+<BR><CENTER><A NAME="06" HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Man braucht Wget also nur die entsprechenden Endungen mit der Option
+<B>--accept</B> anzugeben, wobei sie durch Beistriche zu trennen sind.
+Leerzeichen sind nicht erlaubt, da sonst angenommen wird, da&szlig; es sich
+hier bereits um die n&auml;chste Option handelt. Alles, was eine Endung
+hat, die nicht im Argument zu <TT>--accept</TT> enthalten ist, wird
+unterdr&uuml;ckt. Der weiter verfeinerte Aufruf lautet also:<BR>
+
+<BR><TT> wget --recursive --level=1 --accept=png,jpg,jpeg,gif --domains=www.dcs.ed.ac.uk http://www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html </TT><BR>
+
+<BR>Gibt man dies im CLI ein, holt Wget wie gewollt die Seite und alle in
+ihr enthaltenen Bilder, sofern sie am selben Server liegen. Weil es sich
+diesmal nicht um eine einzelne Datei handelt, wird auch die
+Verzeichnisstruktur des Servers angelegt. Mehr sogar, es wird ein eigenes
+Verzeichnis f&uuml;r den Server <TT>www.dcs.ed.ac.uk</TT> angelegt - mit
+eben diesem Namen. Konkret erhalten wir also folgende Dateien:<BR>
+
+<BR><TT>www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html
+<BR>www.dcs.ed.ac.uk/home/mxr/gfx/img/back-marble.jpg
+<BR>www.dcs.ed.ac.uk/home/mxr/gfx/img/ball1.gif
+<BR>www.dcs.ed.ac.uk/home/mxr/gfx/img/ball2.gif
+<BR>www.dcs.ed.ac.uk/home/mxr/gfx/img/line-rainbow.gif
+<BR>www.dcs.ed.ac.uk/robots.txt
+</TT><BR>
+
+<BR>Nun k&ouml;nnen wir in unserem WWW-Browser die lokale Datei
+<TT>www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html</TT> im Verzeichnis, von dem
+aus Wget gestartet wurde, ansehen. Dazu gibt es in jedem WWW-Browser eine
+Funktion wie &quot;Lokale Datei &ouml;ffnen&quot;.<BR>
+
+<BR><CENTER><A NAME="07" HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B>Roboten gehn</B></H3>&nbsp;
+
+<BR>Wenn wir uns die Ausgabe von Wget bei dem obigen Aufruf genauer
+ansehen, sto&szlig;en wir auf folgenden Eintrag, der etwas verwirrt:<BR>
+
+<BR><TT>Loading robots.txt; please ignore errors.
+<BR>--11:22:24--  http://www.dcs.ed.ac.uk:80/robots.txt
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=> `www.dcs.ed.ac.uk/robots.txt'
+<BR>Connecting to www.dcs.ed.ac.uk:80... connected!
+<BR>HTTP request sent, fetching headers... done.
+<BR>Length: 1,733 [text/plain]
+</TT><BR>
+
+<BR>Huch, wer ist denn <B>robots.txt</B>? Den wollen wir doch gar nicht,
+wozu geben wir sonst unser einschr&auml;nkendes <TT>--accept</TT> an?<BR>
+
+<BR><CENTER><A NAME="08" HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wget ist offensichtlich kein WWW-Browser, da die Seiten damit nicht
+angezeigt und gelesen werden k&ouml;nnen. Wget ist ein sogenannter
+WWW-Robot, der automatisch Seiten durchst&ouml;bert, und, wie eben wir
+gesehen haben, davon ausgehend rekursiv weitere Daten anfordern kann.<BR>
+
+<BR>Ein anderes Beispiel f&uuml;r so einen Robot sind die Programme, die
+daf&uuml;r sorgen, da&szlig; Suchmaschinen wie Altavista halbwegs aktuell
+bleiben. Stark vereinfacht gesagt analysieren solche Robots den Text einer
+Seite, merken sich die gefundenen Stichw&ouml;rter und tragen diese in eine
+gro&szlig;en, dicken Datenbank ein.<BR>
+
+<BR>Robots tun zwar auf den ersten Blick das gleiche wie ein Browser,
+trotzdem unterscheiden sie sich in einige Dinge. Zum Beispiel
+&quot;lesen&quot; Robots Seiten viel schneller als Menschen, w&auml;hlen
+ihre Links daf&uuml;r aber auch &quot;un&uuml;berlegter&quot; aus.
+&Uuml;blicherweise lie&szlig;t ein Robot alles, was er findet. Das
+hei&szlig;t, da&szlig; Robots f&uuml;r einen Server eine gr&ouml;&szlig;ere
+Belastung sind und ein weitaus h&ouml;heres Datenaufkommen bewirken als
+menschliche Leser.<BR>
+
+<BR><CENTER><A NAME="09" HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#10"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Zus&auml;tzlich lesen Robots auch Daten, die sich st&auml;ndig
+&auml;ndern, die keine nennenswerte Information f&uuml;r sie enthalten
+(z.B. CGI-Scripts) oder nur in einer anderen Form bereits gelesene
+Information (z.B. eine Frames/NoFrames Version einer Seite).<BR>
+
+<BR>Manch ein Informationsanbieter m&ouml;chte daher gewi&szlig;e Robots
+von bestimmten Teilen seines Serves fernhalten. Und genau das kann er mit
+dem Anlegen eines <TT>robots.txt</TT> machen. Die Details dazu sind
+f&uuml;r uns nicht relevant, weil sich WGet ganz alleine darum
+k&uuml;mmert, und normalerweise nichts tut, was ihm <TT>robots.txt</TT>
+verbietet.<BR>
+
+<BR>In den vielen F&auml;llen existiert ein solches <TT>robots.txt</TT>
+aber gar nicht. Leider wird dies von Wget trotzdem mit einer f&uuml;r den
+Anwender mehr verwirrenden statt informativen Meldung gehandhabt. Auf einem
+anderen Server k&ouml;nnte sich z.B. folgendes in der Ausgabe zeigen:<BR>
+
+<BR><TT>Loading robots.txt; please ignore errors.
+<BR>--13:23:39--  http://www.adac-com.com:80/robots.txt
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=> `www.adac-com.com/robots.txt'
+<BR>Connecting to www.adac-com.com:80... connected!
+<BR>HTTP request sent, fetching headers... done.
+<BR>13:23:42 ERROR 404: Not Found.
+</TT><BR>
+
+<BR>Sinnvollerweise sollte in so einem Fall gar nichts ausgegeben werden.
+Um das ganze f&uuml;r den Anwender noch undurchsichtiger werden zu lassen,
+wird im &quot;non-verbose&quot; Modus mit <TT>-nv</TT> gar nur <TT>ERROR
+404: Not Found.</TT> ausgegeben, ohne ein Wort dar&uuml;ber zu
+verschwenden, da&szlig; es sich um <TT>robots.txt</TT> handelt.<BR>
+
+<BR><CENTER><A NAME="10" HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#11"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Das ist offensichtlich wieder eine jener Unix-Traditionen: ein Programm
+mu&szlig; so konzipiert sein, da&szlig; es nur ja keine vern&uuml;nftigen
+Fehlermeldungen ausgibt. Wenn &uuml;berhaupt, dann so, da&szlig; keiner
+wei&szlig;, was gemeint ist. Und nat&uuml;rlich ist die Programmstruktur
+auch konsequent so gehalten, da&szlig; sich eine besserer Fehlerbehandlung
+kaum nachr&uuml;sten l&auml;&szlig;t, ohne das ganze Programm umzukrempeln.
+Den Aufwand macht sich aber nie jemand, weil es einfacher ist, sich
+nachtr&auml;glich &quot;anzupassen&quot; anstatt gleich etwas
+vern&uuml;nftiges zu programmieren.<BR>
+
+<BR>Fassen wir also zusammen: Sobald <TT>--recursive</TT> gesetzt ist,
+versucht Wget auch das <TT>robots.txt</TT> zu lesen. F&uuml;r einzelne
+Dateien betrachtet sich Wget nicht als Robot, sondern als Browser, was auch
+durchaus Sinn macht.<BR>
+
+<BR>Die Sache mit <TT>robots.txt</TT> ist aber nicht so, da&szlig; es sich
+hier um eine tolle Verwaltung von Zugriffsrechten handelt. Das Ganze
+mu&szlig; vom Robot (hier eben Wget) unterst&uuml;tzt werden. Wie alles,
+was mit WWW zu tun hat, ist auch hier das Konzept eine grausliche
+Improvisiererei, und <TT>robots.txt</TT> kann nicht viel mehr sagen als
+&quot;Bitte nicht&quot;, ein &quot;Verboten!&quot; ist damit nicht
+m&ouml;glich.<BR>
+
+<BR>Mehr dazu gibt es auf der Homepage des Robots Exclusion Standards
+(RES).<BR>
+
+<BR><CENTER><A NAME="11" HREF="#10"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#12"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B>HTML verweigern?</B></H3>&nbsp;
+
+<BR>Eine weitere kleine Ungereimtheit von Wget im Zusammenhang von
+<TT>--accept</TT> ist das Verweigern von HTML-Dateien. Da wir zuvor ein
+<TT>--accept=png,jpg,jpeg,gif</TT> hatten, sollten alles das mit
+<TT>.html</TT> endet, verweigert werden.<BR>
+
+<BR>Das ist aber nicht notwendigerweise sinnvoll, vor allem wenn
+<TT>--level</TT> einen Wert gr&ouml;&szlig;er eins hat. HTML-Dateien werden
+also in jedem Fall geholt und nach weiteren Links untersucht, auch wenn man
+sie nicht in <TT>--accept</TT> angibt.<BR>
+
+<BR>Wenn wir uns aber die obige Liste der erhaltenen Dateien noch einmal
+ansehen, finden wir kein <TT>www.dcs.ed.ac.uk/home/mxr/gfx/3d-hi.html</TT>,
+obwohl von unserem <TT>2d-hi.html</TT> darauf verwiesen wird. Ein genaueres
+Betrachten der Ausgabe von Wget liefert aber die Kl&auml;rung der
+Angelegenheit:<BR>
+
+<BR><TT> Removing www.dcs.ed.ac.uk/home/mxr/gfx/3d-hi.html since it should be rejected. </TT><BR>
+
+<BR>Die Datei wurde also gesaugt, analysiert und danach wieder
+gel&ouml;scht. Mit <TT>--level=1</TT> macht das wirklich nicht viel Sinn,
+bei h&ouml;heren Werten aber durchaus. So k&ouml;nnte man leicht von einer
+tief verschachtelten Seitensammlung alle Bilder kopieren, ohne danach viele
+HTML-Dateien herumliegen zu haben, indem man einfach den Wert f&uuml;r
+<TT>--level</TT> entsprechend anpasst.<BR>
+
+<BR><CENTER><A NAME="12" HREF="#11"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#13"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B>Faulheit</B></H3>&nbsp;
+
+<BR>Nat&uuml;rlich sind wir Amiganer alle faule S&auml;cke, und wollen
+nicht ein jedesmal die ganze lange Wurst von oben angeben, wenn wir eine
+Seite zusammen mit ihren Bildern speichern wollen.<BR>
+
+<BR>Ein Unix-Mann w&uuml;rde uns jetzt sagen: &quot;Selber schuld, warum
+nehmt ihr auch die lange Version der CLI-Optionen&quot;, und statt<BR>
+
+<BR><TT> wget --recursive --level=1 --accept=png,jpg,jpeg,gif --domains=www.dcs.ed.ac.uk http://www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html </TT><BR>
+
+<BR>ein<BR>
+
+<BR><TT> wget -rl1 -Apng,jpg,jpeg,gif -Dwww.dcs.ed.ac.uk http://www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html </TT><BR>
+
+<BR>machen. Und nach drei Minuten wei&szlig; er selbst nicht mehr, was dieser
+Aufruf eigentlich macht. Wir sind nat&uuml;rlich schlauer, und schreiben
+ein kleines Rexx-Script, da&szlig; uns diese Arbeit abnimmt. Und sagen dann
+nur noch:<BR>
+
+<BR><TT> rx wget-page.rexx http://www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html </TT><BR>
+
+<BR>Dieses Script ist n&auml;mlich hinterh&auml;ltig genug, den Server
+<TT>www.dcs.ed.ac.uk</TT> auch gleich an die Option <TT>--domains</TT> zu
+&uuml;bergeben. Dem ARexx-Interessierten wird klar sein, da&szlig; es kein
+gro&szlig;es Problem darstellt, den Servernamen aus einer
+vollst&auml;ndigen URI herauszufiltern. Folgende Zeile macht genau das:<BR>
+
+<BR><TT>/* Extract the name of the WWW-server to be downloaded from */
+<BR>PARSE VAR options . 'http://' server '/' .
+</TT><BR>
+
+<BR><CENTER><A NAME="13" HREF="#12"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#14"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Alle anderen k&ouml;nnen das Script nat&uuml;rlich auch anwenden, ohne
+sich &uuml;ber derlei Dinge Gedanken machen zu m&uuml;ssen, k&ouml;nnten
+aber im Hinterkopf behalten, da&szlig; manche Dinge oft leichter zu
+automatisieren sind als man zuerst denkt.<BR>
+
+<BR>Und weil wir Amiganer nicht ganz stur sind und vom Unix-Mann durchaus
+was gelernt haben, kopieren wir das Script nach <TT>SYS:Rexx</TT> und
+verpassen der <TT>s:Shell-startup</TT> folgenden Eintrag:<BR>
+
+<BR><TT> alias wget-page rx SYS:Rexx/wget-page.rexx </TT><BR>
+
+<BR>Ab jetzt sagen nur mehr:<BR>
+
+<BR><TT> wget-page http://www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html </TT><BR>
+
+<BR>Nat&uuml;rlich k&ouml;nnen diesem Script zus&auml;tzlich alle anderen
+Optionen f&uuml;r Wget &uuml;bergeben werden. So k&ouml;nnte man z.B. das
+M&auml;rchenerz&auml;hlen wie im letzten Teil beschrieben mit <TT>-nv</TT>
+(non-verbose) unterbinden:<BR>
+
+<BR><TT> wget-page -nv http://www.dcs.ed.ac.uk/home/mxr/gfx/2d-hi.html </TT><BR>
+
+<BR><CENTER><A NAME="14" HREF="#13"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#15"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Der Unix-Mann h&auml;tte wahrscheinlich ein Perl-Script geschrieben,
+das das gleiche macht. Nur k&ouml;nnte er aufgrund der obskuren Perl-Syntax
+drei Minuten sp&auml;ter wieder nicht mehr sagen, was es macht, h&auml;tte
+nat&uuml;rlich unausprechlich <TT>wgpg.pl</TT> genannt, keine
+Fehlerbehandlung f&uuml;r den Fall eines vergessenen oder falschen Wertes
+f&uuml;r die URI programmiert und nicht daran gedacht, denn
+R&uuml;ckgabewert von Wget an die Au&szlig;enwelt zu liefern, falls jemand
+auf die Idee kommen k&ouml;nnte, sein Script aus einem anderen Script zu
+starten und wissen will, ob alles geklappt hat. Das alles, um der Tradition
+zu entsprechen.<BR>
+
+<BR>Ein Gl&uuml;ck, da&szlig; wir es besser wissen, obwohl wir genau so
+faul sind.<BR>
+
+<BR><CENTER><A NAME="15" HREF="#14"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#16"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B><A NAME="probleme">Probleme rekursiven Saugens</A></B></H3>&nbsp;
+
+<BR>Leute, die nicht viel nachdenken, k&ouml;nnten jetzt glauben, da&szlig;
+man dann nur folgendes einzutippen braucht:<BR>
+
+<BR><TT> wget --recursive --level=9999 http://www.yahoo.com/ </TT><BR>
+
+<BR>Tolle Sache, dann braucht man nur eine Festplatte mit einer
+Gr&ouml;&szlig;e von paar Terrabyte (AmigaOS kann mit sowas inzwischen ja
+umgehen) und ein paar Jahre Zeit, und schon hat man einen gro&szlig;en Teil
+des WWW bei sich zu Hause. Oder?<BR>
+
+<BR>Erstens ist das nicht der Fall, da Wget ein paar Mechanismen eingebaut
+hat, um das Datenaufkommen nicht ausarten zu lassen, und zweitens ist es
+nicht der Sinn der Sache, hemmungslos alles zu Saugen was ansatzweise
+interessant scheinen k&ouml;nnte.<BR>
+
+<BR>Gerade f&uuml;r Amiganer ist die Versuchung gro&szlig;, da viele unter
+dem Problem &quot;leiden&quot;, da&szlig; es heutzutage keine sinnvoll
+kleinen Festplatten mehr gibt. Und man pl&ouml;tzlich mit 2 GB dasteht,
+obwohl 500 MB locker gereicht h&auml;tten.<BR>
+
+<BR><CENTER><A NAME="16" HREF="#15"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#17"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Aus diesem Grund gibt es jetzt in der Tradition schlechter
+amerikanischer SitComs die moralischen zwei Minuten. Danach darf wieder
+gelacht werden.<BR>
+
+<BR>Oft ist es gar nicht notwendig, eine ganze Site rekursiv zu saugen.
+Einfach deshalb, weil Autoren ihre Information bereits in ein Archive
+gepackt haben und auf ihrer Seite bereitstellen.<BR>
+
+<BR>In einem solchen Fall wird in der Regel bereits auf der Einstiegsseite
+auf dieses Service hingewiesen. Mit ein bi&szlig;chen guten Willen ist so
+etwas normalerweise nicht zu &uuml;bersehen. Derlei Archive ben&ouml;tigen
+nur einen Verbindungsaufbau und sind durch die Kompression um einiges
+kleiner als alle Seiten einzeln - und schneller geht es au&szlig;erdem.<BR>
+
+<BR>Und wenn es einmal nicht LHA ist, so soll das nicht schrecken. Sowohl
+f&uuml;r ZIP und TGZ gibt es f&uuml;r Amiga entsprechende Utilities. Das
+Aminet oder die Download-Page des Amigascene sind bei der Beschaffung
+derselben sehr hilfreich.<BR>
+
+<BR><CENTER><A NAME="17" HREF="#16"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#18"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Ein weiteres Problem ist, da&szlig; viele Seiten ein Copyright haben,
+und man sie nicht so ohne weiteres kopieren darf, auch wenn es technische
+leicht m&ouml;gliche ist - wie wir ja in diesem Workshop sehen.<BR>
+
+<BR>Unabh&auml;ngig davon sind aus dem Web kopierte Daten in keinem Fall in
+&ouml;ffentlich zug&auml;nglichen Bereichen zu speichern ohne den Autor
+davon zu verst&auml;ndigen.<BR>
+
+<BR>Das Problem besteht darin, da&szlig; Leute unsere Kopie finden
+k&ouml;nnten, ohne zu wissen, wo das Original ist. Wenn die Kopie nun aber
+schon veraltert ist und Fehler enth&auml;lt, die im Original auf den Seiten
+des Autors schon l&auml;ngst behoben sind, dann ist das ziemlich schlecht.
+Sowohl f&uuml;r den Autor als auch den Benutzer.<BR>
+
+<BR>Daher: Mit Wget besorgte Daten nie auf Netzwerkplatten ablegen, sondern
+immer in einem nur f&uuml;r den Anwender selbst zug&auml;nglichen
+Bereich.<BR>
+
+<BR>Jetzt aber genug der Zeigefingerwachelei und wieder zur&uuml;ck zu WGet
+und seinen Optionen.<BR>
+
+<BR><CENTER><A NAME="18" HREF="#17"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#19"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B><A NAME="ganz-viele">Ganz viele Seiten saugen</A></B></H3>&nbsp;
+
+<BR>Im Beispiel zuvor haben wir zwei Mechanismen verwendet, um die
+Auswirkungen von <TT>--recursive</TT> einzuschr&auml;nken:
+<TT>--level=1</TT>, um nur eine kleine Rekursionstiefe zu haben, und dann
+auch <TT>--domains</TT>, um Verweise auf andere Server zu ignorieren.<BR>
+
+<BR>Was tun, wenn man eine ganze Verzeichnisstruktur kopieren will?<BR>
+
+<BR>Zuerst kann man nat&uuml;rlich <TT>--level</TT> auf einen h&ouml;heren
+Wert setzen. Dann funktioniert aber in der Regel die Sache mit
+<TT>--domains</TT> nicht mehr. Denn viele Seiten verweisen auf ganz andere
+Daten von anderen Leuten am selben Server, an denen wir meistens
+&uuml;berhaupt nicht interessiert sind.<BR>
+
+<BR>Wir wollen wieder von einem konkreten Beispiel ausgehen. So gibt es die
+beliebte Band &quot;Half Man Half Biscuit&quot; (HMHB), die vor allem
+f&uuml;r ihre Texte bekannt sind. In diesen wimmelt es in der Regel nur so
+von Anspielungen und Querverweisen, die kaum alle geistig erfa&szlig;bar
+sind. Aus diesem Grund gibt es eine HMHB Homepage, die versucht, diese
+Dinge aufzul&ouml;sen.<BR>
+
+<BR><CENTER><A NAME="19" HREF="#18"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#20"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>So findet sich zu der Textzeile &quot;Who's afraid of Virginia
+Wade&quot; aus dem Lied &quot;Outbreak of Vitas Gerulaitis&quot; vom Album
+&quot;McIntyre, Treadmore and Davitt&quot; folgender Eintrag:<BR>
+
+<BR><BLOCKQUOTE><I>Virginia Wade</I> Nasal voiced English tennis player,
+coincidental winner of Wimbledon ladies championship in 1977, year of
+the Silver Jubilee. Virginia Woolf was an abused-as-a-child lesbian
+novelist who wrote classic though rather dull books. <I>Who's Afraid
+of Virginia Woolf</I> is over-rated crap which I think starred Richard
+Burton and Elizabeth Taylor.</BLOCKQUOTE><BR>
+
+<BR><CENTER><A NAME="20" HREF="#19"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#21"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Weil HMHB viele Lieder und viele Alben gemacht haben, die alle
+&auml;hnlich anspruchsvoll sind, wollen wir jetzt das ganze Material von
+der Homepage bei uns daheim haben.<BR>
+
+<BR>Eine einfache und gleichzeitig leistungsf&auml;hige M&ouml;glichkeit,
+Wget einzuschr&auml;nken, ist die Option <B>--no-parent</B>. Diese bewirkt
+n&auml;mlich, da&szlig; Verzeichnisse &quot;oberhalb&quot; des
+Ausgangsverzeichnisses ignoriert werden. Also brauchen wir im Grunde nur zu
+sagen:<BR>
+
+<BR><TT> wget --recursive --no-parent http://www.btinternet.com/~hmhb/hmhb.htm </TT><BR>
+
+<BR>Das funktioniert auch schon ganz gut, und wir lehnen uns zur&uuml;ck
+und beobachten, was Wget so alles an Land zieht:<BR>
+
+<BR><TT>www.btinternet.com/%7Ehmhb/hmhb.htm
+<BR>www.btinternet.com/%7Ehmhb/../images/hmhb1.jpg
+<BR>www.btinternet.com/%7Ehmhb/../images/Q94s2.jpg
+<BR>www.btinternet.com/%7Ehmhb/News.htm
+<BR>&nbsp;&nbsp;&nbsp;:
+<BR><I>viele, viele Dateien</I>
+<BR>&nbsp;&nbsp;&nbsp;:
+</TT><BR>
+
+<BR><CENTER><A NAME="21" HREF="#20"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#22"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Zuerst f&auml;llt einmal auf, da&szlig; in Dateinamen unserer lokalen
+Kopie die Tilde (~) durch ein kryptisches <TT>%7E</TT> ersetzt wird. Wie
+nicht anders zu erwarten handelt es sich hier einmal mehr um eine
+Unix-Tradition, nur da&szlig; diesmal eine vollst&auml;ndige Erkl&auml;rung
+zu lange und belanglos f&uuml;r den Amiganer ist.<BR>
+
+<BR>Die Kurzversion ist, da&szlig; die Tilde in Unix ein gescheiterter
+Versuch ist, eine vergleichbare Funktionalit&auml;t wie die unserer Assigns
+zur Verf&uuml;gung zu stellen. Weil aber das Konzept der Unix-Tilde
+vollkommen krank ist, funktioniert es die meiste Zeit nicht und verwirrt
+erfolgreich viele Programme, wenn man sie trotzdem verwendet. Dennoch haben
+sich die Unixler eingebildet, da&szlig; die Tilde auch in URIs verwendet
+werden mu&szlig;, obwohl das die URI-Spezifikation nicht vorsieht. Wget
+macht mit einer Tilde daher das einzig Sinnvolle: es schmei&szlig;t sie
+raus bzw. ersetzt sie durch ihren ASCII-Code im Hexadezimalformat - wie es
+die URI-Spezifikation auch haben will. Das schaut zwar komisch aus,
+funktioniert daf&uuml;r aber sogar unter Unix.<BR>
+
+<BR><CENTER><A NAME="22" HREF="#21"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#23"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Jetzt ist es aber an der Zeit, wieder einen Blick auf unser
+fr&ouml;hlich dahinwerkendes Wget zu werden. Da&szlig; tut auch bitter Not,
+den nach einer Weile erscheinen eine Menge Daten, die uns zuvor beim
+durchbl&auml;ttern nicht aufgefallen sind und alle in einem Verzeichnis
+namens <TT>fallnet</TT> liegen:<BR>
+
+<BR><TT>www.btinternet.com/%7Ehmhb/fallnet/fallnet.htm
+<BR>www.btinternet.com/%7Ehmhb/fallnet/fallnet.gif
+<BR>www.btinternet.com/%7Ehmhb/fallnet/gez97/Tom_mes2.jpg
+<BR>www.btinternet.com/%7Ehmhb/fallnet/djohn/C2.jpg
+<BR>www.btinternet.com/%7Ehmhb/fallnet/djohn/C1.jpg
+</TT><BR>
+
+<BR>Offensichtlich sind das meiste davon Bilder, die eine unangenehme
+Eigenschaft haben: sie sind gro&szlig; und haben daher eine hohe
+Netzwerkbelastung. Wir sehen uns daher das entsprechende
+<TT>http://www.btinternet.com/~hmhb/fallnet/fallnet.htm</TT> in unserem
+Browser etwas genauer an.<BR>
+
+<BR>Nach kurzem Nachforschen stellt sich heraus, da&szlig; der Mann, der
+die HMHB-Seiten macht, auch einiges anderes Zeug hier herumliegen hat. Und
+zwar sind eben im Verzeichnis <TT>/~hmhb/fallnet</TT> jede Menge Bilder von
+betrunkenen Leuten bei verschiedenen Konzerten der beliebten Band &quot;The
+Fall&quot;, die bekanntlich auch schwierige Texte haben. Das ist aber eine
+anderer Geschichte, und vor allem interessieren uns jetzt die Fotos von
+Englands gr&ouml;&szlig;ten Alkoholikern wenig.<BR>
+
+<BR>Also brechen wir den Datentransfer ab. Wie im CLI &uuml;blich durch
+einen beherzten Druck auf <TT>Control-C</TT>.<BR>
+
+<BR><CENTER><A NAME="23" HREF="#22"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#24"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Offensichtlich m&uuml;ssen wir unsere Anfrage noch etwas genauer
+angeben. In diesem Zusammenhang erwei&szlig;t sich die Option
+<B>--exclude-directories</B> als n&uuml;tzlich. Damit k&ouml;nnen wir als
+Argument eine Liste von Verzeichnisnamen &uuml;bergeben, die ignoriert
+werden sollen. Wie bei <TT>--accept</TT> werden mehrer Eintr&auml;ge durch
+einen Beistrich getrennt.<BR>
+
+<BR>In unserem Fall reicht es aber, nur ein Verzeichnis anzugeben,
+also:<BR>
+
+<BR><TT> wget --recursive --no-parent --exclude-directories=/~hmhb/fallnet http://www.btinternet.com/~hmhb/hmhb.htm </TT><BR>
+
+<BR>Folgender Aufruf hat aber den Nachteil, da&szlig; alle Daten, die wir
+bereits erfolgreich gesaugt haben, noch einmal geholt werden. Bei FTP
+hatten wir im letzten Teil ein &auml;hnliches Problem, das wir mittels
+<TT>--continue-ftp</TT> gel&ouml;st haben. F&uuml;r HTTP gibt es die Option
+<B>--no-clobber</B>, die bewirkt, da&szlig; bei existierenden HTML-Datein
+diese nicht nocheinmal besorgt werden, sondern die lokale Kopie verwendet
+wird.<BR>
+
+<BR>Im Unterschied zu <TT>--continue-ftp</TT> wird aber eine halbfertige
+HTML-Datei nicht fortgesetzt, also aufpassen. Um ganz sicher zu gehen, kann
+man der Ausgabe von Wget die zuletzt bearbeitete Datei entnehmen, und diese
+mit der Hand l&ouml;schen, bevor man mit einem erneuten Aufruf von Wget
+fortsetzt.<BR>
+
+<BR>In unserem Fall bedeutet dies, da&szlig; wir nach einem<BR>
+
+<BR><TT> delete fallnet all </TT><BR>
+
+<BR>folgendes sagen:<BR>
+
+<BR><TT> wget --no-clobber --recursive --no-parent --exclude-directories=/~hmhb/fallnet http://www.btinternet.com/~hmhb/hmhb.htm </TT><BR>
+
+<BR>Wget best&auml;tigt uns, da&szlig; viele Dateien bereits vorhanden sind
+und nicht erneut geholt werden. Danach wird dort fortgesetzt, wo wir
+zuletzt abgebrochen haben, und die Welt ist wieder in Ordnung.<BR>
+
+<BR><CENTER><A NAME="24" HREF="#23"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#25"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Ein Problem das sich jedoch stellt ist, da&szlig; im Fall der HMHB
+Homepage die Rekursionstiefe zu gering ist. Gibt man nichts an, wird der
+Wert automatisch auf <TT>--level=5</TT> gesetzt. Man merkt beim Ansehen der
+lokalen Kopie, da&szlig; ein paar Bilder fehlen. Da wir inzwischen mit
+<TT>--no-clobber</TT> vertraut sind, ist das kein Problem mehr:<BR>
+
+<BR><TT> wget --no-clobber --level=9 --recursive --no-parent --exclude-directories=/~hmhb/fallnet http://www.btinternet.com/~hmhb/hmhb.htm </TT><BR>
+
+<BR>Damit scheint es, da&szlig; wir endlich alles haben, was wir wollten.
+Das ist aber nur bedingt richtig, den m&ouml;glicherweise haben wir sogar
+mehr.<BR>
+
+<BR><CENTER><A NAME="25" HREF="#24"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#26"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B>M&uuml;llvermeidung</B></H3>&nbsp;
+
+<BR>Fast stolze 200k macht n&auml;mlich ein Datei mit der Endung
+<TT>.wav</TT> aus. Auf der ganzen HMHB-Site gibt es zur Zeit der Entstehung
+dieses Artikels nur genau eine solche Datei, und eigentlich ist sie sogar
+interessant zu h&ouml;ren, weil es sich um einen Auszug aus einem
+b&ouml;sartigen Interview handelt.<BR>
+
+<BR>Trotzdem ist es oft sch&ouml;n, wenn gewi&szlig;e Dateien nicht kopiert
+werden. Das betrifft vor allem Musikdaten, Animationen, Postscript oder
+komprimierte Archive.<BR>
+
+<BR>Von zuvor kennen wir schon <TT>--accept</TT>. Diese Option hat einen
+Bruder namens <B>--reject</B>, der oft praktischer ist. Denn hat man viele
+verschiedene Dateitypen, wird es schnell langweilig, diese mit
+<TT>--accept</TT> anzugeben. Zumal wei&szlig; man oft nicht genau, was
+einem erwartet, aber man wei&szlig;, was man nicht will.<BR>
+
+<BR><CENTER><A NAME="26" HREF="#25"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#27"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Unsere urspr&uuml;ngliche Anweisung zum Kopieren der HMHB-Seite
+k&ouml;nnte also gelautet haben:<BR>
+
+<BR><TT> wget --recursive --level=9 --no-parent --reject=wav,au,aiff,aif --exclude-directories=/~hmhb/fallnet http://www.btinternet.com/~hmhb/hmhb.htm </TT><BR>
+
+<BR>Dies unterdr&uuml;ckt so ziemlich alle Arten von Tondaten.<BR>
+
+<BR>Fortgeschrittenen Anwendern sei die Originaldokumentation von Wget
+empfohlen, da sich <TT>--accept</TT> und <TT>--reject</TT> auch kombinieren
+lassen. Weiters kann man anstatt von Dateiendungen auch Muster angeben,
+womit sich dann einiger Unsinn anstellen l&auml;&szlig;t. Es hat aber
+vermutlich wenig Sinn, den Normalverbraucher damit zu konfrontieren.<BR>
+
+<BR>Der hier vorgestellte Ansatz, n&auml;mlich simples Verwenden von
+Endungen mit entweder <TT>--accept</TT> oder <TT>--reject</TT>, sollte
+leicht zu merken sein, und senkt das Datenaufkommen bereits erheblich.<BR>
+
+<BR><CENTER><A NAME="27" HREF="#26"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#28"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B>Faulheit, die zweite</B></H3>&nbsp;
+
+<BR>Weil wir in den letzten Abs&auml;tzen nicht viel flei&szlig;iger
+geworden sind, packen wir den ganzen Vorgang wieder in ein Rexx-Script und
+nennen es <TT>wget-site.rexx</TT>. Der zugeh&ouml;rige Eintrag in
+<TT>s:Shell-startup</TT> lautet logischerweise:<BR>
+
+<BR><TT> alias wget-site rx sys:rexx/wget-site.rexx </TT><BR>
+
+<BR>Ein kurze Betrachtung wert ist folgende Zeile gegen Anfang des
+Scripts:<BR>
+
+<BR><TT>/* File extensions indicating data we won't need */
+<BR>trash = 'mpg,mpeg,wav,au,aiff,aif,tgz,Z,gz,zip,lha,lzx,ps'
+</TT><BR>
+
+<BR>Hier werden einfach alle Dateiendungen angegeben, an denen wir
+&uuml;blicherweise nicht interessiert sind. Bei Bedarf kann diese Liste
+erweitert (oder gek&uuml;rzt) werden. Der Tippaufwand des schiefgegangenen
+ersten Versuchs zum Saugen von HMHB reduziert sich damit auf:
+
+<BR><TT> wget-site http://www.btinternet.com/~hmhb/hmhb.htm </TT><BR>
+
+<BR><CENTER><A NAME="28" HREF="#27"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#29"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Und das Fortsetzen mit Ausschlie&szlig;en des b&ouml;sen
+Alkoholikerverzeichnisses sieht so aus:<BR>
+
+<BR><TT> wget-site --no-clobber --exclude-directories=/~hmhb/fallnet http://www.btinternet.com/~hmhb/hmhb.htm </TT><BR>
+
+<BR>Diesmal sollten wir vielleicht doch auf den Unix-Mann h&ouml;ren, und
+uns die Kurzformen merken, da derlei F&auml;lle h&auml;ufig auftreten:<BR>
+
+<BR><TT> wget-site -nc -X /~hmhb/fallnet http://www.btinternet.com/~hmhb/hmhb.htm </TT><BR>
+
+<BR>Die letzten beiden Aufrufe haben somit dieselbe Wirkung. Dennoch sollte
+innerhalb es ARexx-Scripts oder CLI-Aliases immer die Langform verwendet
+werden, damit man sp&auml;ter, wenn etwas ge&auml;ndert werden soll, noch
+wei&szlig;, was hier geschieht.<BR>
+
+<BR><CENTER><A NAME="29" HREF="#28"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#99"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B>Wie es weitergeht</B></H3>&nbsp;
+
+<BR>Wir wissen jetzt, wie man ganze Verzeichnisse aus dem WWW kopieren
+kann. Und wir wissen auch, da&szlig; dabei einiges zu beachten ist. Es
+empfiehlt sich, Wget bei Rekursionen nicht unbeobachtet zu lassen, da immer
+es wieder passiert, da&szlig; Daten auftauchen, die man nicht erwartet
+h&auml;tte.<BR>
+
+<BR>Zum Gl&uuml;ck h&auml;lt sich sich der Aufwand in Grenzen, Wget
+abzubrechen und mit <TT>--no-clobber</TT> und paar Optionen zur
+Einschr&auml;nkung des Aktionsradius neu zu starten.<BR>
+
+<BR>Damit ist die eigentliche Leistungsf&auml;higkeit (und auch
+Problematik) von Wget zum Gro&szlig;teil er&ouml;rtert. Im n&auml;chsten
+Teil werden daher nur noch ein paar einzelne Optionen besprochen, die die
+Sache noch angenehmer machen k&ouml;nnen. Weiters wird die Funktion der
+Konfigurationsdatei <TT>.wgetrc</TT> behandelt. Als besonders Zuckerl
+werden die ARexx-Scripts so erweitert, da&szlig; sie sofort vom Browser aus
+benutzbar sind und wir uns vom CLI verabschieden k&ouml;nnen.<BR>
+
+			<BR>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+				<P ALIGN=RIGHT>
+
+					<A HREF="as-redax.html#agi">Thomas Aglassinger</A>
+					&nbsp;&nbsp;&nbsp;
+					<A HREF="../deutsch/0x0064.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" VSPACE=0 HSPACE=0 BORDER=1></A>
+					&nbsp;&nbsp;&nbsp;
+					<BR>
+
+				</P>
+				<BR><TABLE BORDER=0 CELLPADDING=8 CELLSPACING=0 ALIGN=CENTER WIDTH="90%">
+				<TR VALIGN=TOP ALIGN=LEFT><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_04/wget-page.rexx">wget-page.rexx</A> - ARexx-Script zum Saugen einer Seite mit ihren Bildern<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_04/wget-site.rexx">wget-site.rexx</A> - ARexx-Script zum Saugen einer ganzen Verzeichnisstruktur, mit Ausschlu&szlig; &quot;unn&uuml;tzer&quot; Daten<BR>
+
+				</TD><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x004C.html">Workshop Teil 1</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="http://info.webcrawler.com/mak/projects/robots/norobots.html">Robots Exclusion Standards</A> - Details zu <TT>robots.txt</TT><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="http://www.btinternet.com/~hmhb/hmhb.htm">Half Man Half Biscuit</A> - Die Homepage mit Interpretationshilfen der Liedtexte<BR>
+
+				</TD></TR>
+				</TABLE>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER> &nbsp; 
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=LEFT>
+				<A HREF="#00"><IMG SRC="../images/_krumm_hi.gif" WIDTH=37 HEIGHT=29 BORDER=0 ALT="[Up]"></A>
+				<A NAME="99"><FONT COLOR="#FFFFFF">&nbsp;</FONT></A>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=BOTTOM ALIGN=RIGHT>
+				<A HREF="0x0063.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x0065.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+	</TABLE>
+</BODY>
+</HTML>

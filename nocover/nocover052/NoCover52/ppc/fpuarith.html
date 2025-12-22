@@ -1,0 +1,67 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="overview.html">PREV</a> | <a href="fpucmp.html">NEXT</a>
+<hr>
+<pre>
+
+<b> FPU Arithmetic Commands </b>
+
+fadd   Fd,Fa,Fb
+fadds  Fd,Fa,Fb
+fsub   Fd,Fa,Fb
+fsubs  Fd,Fa,Fb
+fmul   Fd,Fa,Fb
+fmuls  Fd,Fa,Fb
+fdiv   Fd,Fa,Fb
+fdivs  Fd,Fa,Fb
+fsqrt  Fd,Fa
+fsqrts Fd,Fa
+
+These commands add, subtract, multiply, divide and calculate the square root of
+FPU numbers. The &quot;normal&quot; one is always the Double Precision Command, the one with
+the s at the end the Single Precision Command. The Substraction Commands do
+Fd=Fa-Fb, the Division Commands do Fd=Fa/Fb. No remainder is calculated.
+
+fres Fd,Fa
+
+This command calculates a single precision estimate of the reciprocal of the
+floating point operand in Fa. The estimate is correct to a precision of one part
+in 256 of the reciprocal of Fa. According to Sam Jordan this command produces
+an exact result, not an estimation, on the PPC 604e.
+
+frsqrte Fd,Fa
+
+This command calculates a double precision estimate of the reciprocal of the
+square root of the floating point operand in Fa. The estimate is correct to a
+precision of one part in 32 of the reciprocal of the square root of Fa. This
+command usually needs only 1 (One !!!) CPU Cycle.
+
+fsel Fd,Fa,Fc,Fb
+
+Fa is compared to 0.  If Fa&#062;=0, Fd is set to Fc. If it is &#060;0 or not a number,
+Fd is set to Fb. The comparision ignores the sign of 0. This commands is the
+same like in C: Fd=Fa?Fc:Fb; Combined with an fsub, fsel can for example be
+used for simple if-then-else, or to calculate the Minimum/Maximum.
+
+Examples:
+
+fsub f3,f2,f1
+fsel f4,f3,f1,f2 ; f4=min(f1,f2)
+
+fsub f3,f2,f1
+fsel f4,f3,f2,f1 ; f4=max(f1,f2)
+
+Note: These Examples give a wrong result, if one of f1,f2 is NaN (not a number).
+
+With the exception of fsel all FPU Arithmetic Commands support the . Notation
+like described in <a href="imp.html">Important things</a>. They don't support the o
+Notation.
+
+</pre>
+</body>
+</html>

@@ -1,0 +1,92 @@
+2
+1*
+
+{3                              A2000 & Delfina Lite
+{3                              --------------------
+ 
+                                  Esa Lyttinen
+ 
+ 
+Ostin noin vuosi sitten Delfina-‰‰nikortin A2000:een, jossa oli GVP:n  40  MHz:n
+68030-turbo. Ensimm‰isten k‰yttˆkertojen aikana huomasin,  etteiv‰t  Amigani  ja
+Delfina pystyneet tallentamaan ‰‰niraitaa kunnolla, vaan nyppyj‰ tuli joka kerta
+kiintolevyn valon vilkahtaessa, jopa pelk‰n soiton aikana. Nopea diagnoosi  oli,
+ettei Amigani kyennyt tarpeeksi nopeaan tallennukseen. Kuten tied‰tte, FFS tekee
+tallennuksen kahdessa osassa, eli HD-valo v‰l‰ht‰‰ kaksi kertaa  per‰kk‰in  sil-
+loin kun tallennetaan pitk‰‰ tiedostoa, luettaessa n‰in k‰y  vain  kerran.  T‰m‰
+kyseinen toinen kerta oli liikaa!
+ 
+Sakunetiss‰ Esa Heikkinen neuvoi k‰ytt‰m‰‰n levyll‰  isompaa  blokkikokoa  (4096
+tai suurempaa). T‰st‰ ei kuitenkaan ollut apua, tosin er‰‰t  levyoperaatiot  no-
+peutuivat tuntuvasti, esim. tiedostojen tuhoaminen on noin 1000x nopeampaa (eik‰
+IBrowsen cache jumita en‰‰). 600 Mt:n tiedosto katoaa  noin  sekunnissa,  muuten
+sen poistamiseen kuluu ikuisuus. Vaikutus alkaa 4096 blokeilla, ja 8192  on  pe-
+riaatteessa maksimiarvo, jonka j‰lkeen ei tavoiteta en‰‰  mit‰‰n  n‰kyv‰‰  etua.
+SCSI-levyll‰ nopeutta tullee paljon enemm‰n kuin IDE:ll‰.
+ 
+Addbuffers-komentoa tuli testattua useampaan kertaan. Er‰‰ss‰ v‰liss‰ Gentle Eye
+kehotti testaamaan v‰yl‰nopeuden A2000:n ja Delfinan v‰lill‰.  Testin  kommentti
+oli tyly: "pahin mahdolinen yhdistelm‰". T‰ss‰ vaiheessa uskoni  t‰m‰n  kaksikon
+yhdess‰oloon oli loppua. P‰‰tin kuitenkin viel‰ jatkaa kokeiluitani: etsin AFS:n
+demon vanhoilta levyilt‰ni ja k‰‰nsin kiintolevyn osiot  kyseiseen  formaattiin.
+Operaatiosta oli selv‰sti apua, mutta se ei kuitenkaan t‰ysin  poistanut  ongel-
+maa. T‰llˆin osaltaan homma ratkesi, kun ‰lysin lis‰t‰ viel‰ PowerCachen.
+ 
+Jonkin aikaa olin taas tyytyv‰inen, kunnes sain  todellista  hommaa  Delfinalle:
+piti heitt‰‰ er‰‰n b‰ndin keikkanauhat CD:lle. Koska kyseiset nauhat  heitettiin
+suoraan kiintolevylle, oli t‰m‰ vaativampi teht‰v‰ kuin satunnaisen yhden kappa-
+leen tallentaminen. T‰m‰n yhteydess‰ havaitsin PowerCachen lakkaavan  toimimasta
+noin 20 minuutin kuluttua startista (demoversio). Oli pakko taas alkaa etsi‰ uu-
+delleen ongelmaan ratkaisua. AFS sai myˆs l‰hte‰ er‰iden varsin v-m‰isten  levy-
+virheiden ym. takia. Olin kuitenkin varsin positiivisella mielell‰,  koska  olin
+jo kerran todennut systeemin toimivan, joten olin hyv‰ss‰ uskossa, ett‰ sen sai-
+si toimimaan myˆs FFS:n kanssa.
+ 
+Taas oli tuttua addbuffersin ja blokkikokojen kanssa nutaamista edess‰.  Muutama
+viikko turhauttavaa hommaa - toden totta - koska mik‰‰n ei tuntunut  vaikuttavan
+mihink‰‰n! Projektin hauduttua viikkojen ajan  lueskelin  er‰st‰  Amiga-aiheista
+kirjasta, jossa puhuttin HDToolsista (GVP:n kirja). Erityisesti  kiinnitin  huo-
+miota kohtaan "mask", joka tarkoittaa  k‰ytett‰v‰‰  muistialuetta  kiintolevyjen
+kanssa. T‰st‰ sain kimmokkeen hieman nuuskia kyseisen maskin tilannetta  A2000:n
+kiintolevylt‰ - jospa olisi k‰ynyt niin, ett‰ koneeni  k‰ytt‰isi  siirtoon  vain
+Chip-muistia, joka olisi huomattavasti hitaampaa kuin turbolta lˆytyv‰ 32-bitti-
+nen Fast.
+ 
+Intoni kuitenkin laantui nopeasti, koska Fast OLI k‰ytˆss‰. Kokeilumieless‰ kui-
+tenkin kokeilin Chip-asetusta. H‰mm‰stykseni oli suuri, koska t‰m‰n j‰lkeen sys-
+teemi toimi melkein kuten AFS ilman PowerCachea. Nopea vilkaisu  HDToolsilla  ja
+blokkikokoa suurentamaan 4096:sta 8192:een, ja homma oli pulkassa: Delfina  tal-
+lensi ja toisti puhtaasti 30 minuuttia yht‰ kyyti‰. Pitk‰n aikaa kortin ja  Ami-
+gani yhteiselo oli sopuisaa, kunnes taas...
+ 
+Olin muutamia viikkoja sitten ostanut turbooni 030/50 MHz prosessorin, johon mi-
+nulla ei viel‰ ollut kidett‰  hankittuna.  Jo  alikellotettuna  (40  MHz)  mutta
+MMU:lla varustettuna sain selv‰sti enemm‰n ryki‰ koneeseeni, koska k‰yttis  yms.
+lymyiliv‰t Fastissa MMU:lla suojattuna. Edellisess‰ prossassa ei  MMU:ta  ollut,
+joten Fastiin siirto ei siksi ollut kovinkaan onnistunutta.  Ajattelin  Delfinan
+k‰ytˆn olevan t‰ydellist‰ koneen lis‰tehon suhteen, mutta eip‰s vain  ollutkaan.
+P‰tkiminen oli entist‰ hirve‰mp‰‰, edes soitosta ei meinannut tulla mit‰‰n. Muu-
+tamien tuntien ‰herryksen tuloksena lˆysin ratkaisun: CpuControlilla MMU pois ja
+ROM pois Fast-muistista, niin taas toimi.
+ 
+Lopullinen lista teht‰vist‰ tˆist‰ on seuraavanlainen (A2000:n kanssa, soveltaen
+muihinkin malleihin): 
+
+Kiintolevyosiolla, jolla ‰‰nt‰ k‰sittelet, pit‰‰ olla seuraavat asiat:
+* FastFileSystem
+* blokkikoko 8192 (tai enemm‰n)
+* mask 0x7ffffffc (vain Chip)
+
+Amigasta:
+* MMU pois
+* ROM alkuper‰isen‰, ei Fastissa
+
+Ohjelmia:
+* CpuControl (prosessorin kontrollointiin)
+  Aminet (parikin ohjelmaa): http://ftp.sunet.se/aminetbin/find?cpucontrol
+* DelfInit (kuten DelfMEM mutta varmempi)
+  Aminet: http://ftp.sunet.se/pub/aminet/util/misc/DelfInit.lha (14 kt)
+* DelfAIFF (soittaa AIFF-tiedostot komeasti DSP:ll‰)
+  Aminet: http://ftp.sunet.se/pub/aminet/mus/play/DelfAIFF.lha (23 kt)
+* DelfMPEG (MP2:t soivat DSP:ll‰ 44,1 kHz stereona)
+  Aminet: http://ftp.sunet.se/pub/aminet/mus/play/DelfMPEG.lha (49 kt)

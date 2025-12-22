@@ -1,0 +1,205 @@
+<HTML>
+<HEAD>
+<TITLE>Bitmap remapping</TITLE>
+</HEAD>
+<BODY BGCOLOR=FFFFFF>
+<CENTER>
+<H1>Bitmap remapping</H1>
+<H3>by <A HREF="mailto:mamannev@abo.fi">Markus Mannevaara</A> and <A HREF="mailto:dagren@abo.fi">Dag &Aring;gren</A>.</H3>
+</CENTER>
+
+<H2>Introduction</H2>
+
+<P>This article is about bitmap remapping. You should already understand
+bitmaps, bitplanes, pens, and such before you read this,
+otherwise it might go over your head. More specifically, this article
+is  about controlled
+bitmap remapping, i.e. where you can remap a certain pen <STRONG>(*)</STRONG> in a
+bitmap to another pen in another bitmap. This comes in handy when you
+want to remap an image to certain pens on the screen, no matter
+what RGB-values these pens use. For example an image (e.g. for a gadget)
+that should use FILLPEN, SHINEPEN or SHADOWPEN. These colors are user
+definable, which means that they don't have the same RGB-values all the
+time, so you can't use datatype remapping. Also, the user can choose
+what pens they have, so you can't
+create a fixed bitmap that works for everybody. So, the only option you
+have is to remap the bitmap to certain (user defined) pens on the
+screen. This, naturally, is where this remapping method comes in.
+
+<P><A NAME="NOTE"><STRONG>(*)</STRONG> Note that with pens in this context we mean the index number of a
+color in a colormap. This normally ranges from 0 to 255, depending on
+the amount of planes in the colormap. This should not be confused with
+color, which refers to RGB values. Pen 1 is always pen 1, even if the
+color of pen 1 first was green, and then changed to red.
+
+<HR>
+
+<H2>Approaching the problem</H2>
+
+<P>Basically, there are (at least) two ways to do this. The first one being
+to individually read in the value of each pixel, (e.g. with ReadPixel())
+and then, depending on the result of this, paste in a new pixel into the
+bitmap that uses the correct pen. This method has many advantages;
+it doesn't take many lines to write, since you can use many ready
+functions, and it is easy to understand. But it is a very slow, stupid
+and non-fancy way to do it, plus that you have to use a rastport.
+
+<P>The other way is to manipulate the planes of the bitmap. The advantages
+of this method is that it is faster and it's quite fancy. The
+disadvantages are that it is harder to understand, and that you have to
+do it all by yourself, since there are no ready-made functions that do
+this.
+
+<P>So what we first have to figure out is how to manipulate the planes of
+the bitmap. You might think that it is as simple as just rearranging the
+planes, but this is not the case, since one plane affects all
+pens. So we have to, in some way, simply consider the area covered by a
+certain pen, in other words, we have to create masks for the different
+pens.
+
+<P><IMG SRC="remap_fig1.gif" ALT="WinX and his mask" ALIGN=RIGHT>When you create masks for objects that are put on screen, (e.g. for
+bobs.) you would normally use a bitwise OR of all planes to get a
+single plane (with a size the same as the object) with the bits are set
+at each pixel where the object is present, creating a silouhette of the
+object, fig. 1 illustrates this nicely. What we are going to do is
+basically the same, but a little more complex. We don't want the
+silouhette of the image, we want the silouhettes of the area each pen
+is drawn in. The first thing we should consider now is to leave out the
+planes not involved; If we have a four- plane bitmap, and want to change
+pen 3, (Bitwise: 0011) we should only use the two lower planes. Another
+thing we notice is that we can't use OR anymore, since this will give us
+areas where only either plane is included too. Instead, we have to use
+AND, which excludes pens where only one of the planes are involved. Fig.
+2 makes this more clear. We can call the result of this procedure Mask
+A.
+
+<P><IMG SRC="remap_fig2.gif" ALT="ORing vs. ANDing planes." ALIGN=RIGHT><STRONG>Fig.2:</STRONG> This figure illustrates the difference between ANDing
+two planes together, and ORing them together. We have our two planes A and B,
+which give bitmap AB. By ORing these, we get the whole area of the two planes,
+but by ANDing them, we get only the area which is covered by both.
+
+<P>But we are not through yet, we have now excluded all pens that contain
+only either of the planes, but we haven't excluded possible other pens
+that involve both planes. In our example this pen would be number 7,
+11, and 15. (Bitwise: 0111, 1011, and 1111 respectively; all of them
+include the two lower planes.) As said, we want to remove all areas
+covered by any of these planes, so we OR them together. This we call Mask B.
+Now we have two masks, Mask A, and our recently created Mask B. To
+exclude the area covered by Mask B, we NOT it, giving us a mask
+of everything except for what's covered by Mask B, and then we can AND this
+with Mask A, voilá, we have a mask for our pen.
+
+<P>Now we have to include this into the destination bitmap, this is much
+simpler than the creation of the mask. We only have to OR this mask into
+the planes included in the pen we want to remap to. For example, if we
+now want to turn our pen into pen number 11 in the destination colormap.
+We first create a (cleared) bitmap with a suitable number of planes,
+this can be different from the source bitmap, since we can remap several
+colors from the first bitmap into one color in our destination, but it
+is most logical to choose the same amount or more planes in the
+destination. We will choose 4 planes in the destination bitmap - the
+same as in the source bitmap. Now we go step by step through the
+destination bitmap, and insert our mask in all planes included in the
+color. For our example, we want to insert our mask into planes 0, 1, and
+3. (Decimal 11 = 1011 binary.)
+
+
+<P>Now we have to go through this for each pen in the source bitmap.
+We create a mask for the area of the pen, then we insert the mask into
+the appropriate planes of the destination bitmap.
+
+
+<H2>Making it more compact</H2>
+
+<P>Unfortunately, this method can be optimized, this means that it can be
+made even more complicated. The next section can be a little depressing,
+so if you like, you can skip it, and just accept the fact that the
+program works, somewhat alike the way described above. But if you wish
+to understand the code (even remotely), you should read this section.
+
+<P>Now it's time for some hardcore bitwise-logic manipulation.
+Let's say that we have the same 4-plane bitmap, let's call plane 0 'A',
+plane 1 'B' and so on, and the mask will be called 'M'. We want to process pen
+number 3 again (bits: 0011). Now we can express the mask-creation process
+mathematically like this:
+
+<P>(The binary operators are standard C-style.)
+
+<P><CODE>M = A & B & !(C | D)</CODE>
+
+<P>Now, using DeMorgan's law, this becomes:
+
+<P><CODE>M = A & B & (!C & !D)</CODE>
+
+<P>Which can be simplified into:
+
+<P><CODE>M = A & B & !C & !D</CODE>
+
+<P>If you didn't understand that, read it again, if you still didn't get
+it, ignore it, and try to understand the rest. Anyway, this means that
+we can use one single loop to create the mask, because we don't have any
+parenthesis involved, but we have to AND with a NOTted version of the planes
+not included in the pen we are treating (C and D in our case).
+
+<P>So what the loop has to do is the following; It should loop once for
+each plane, ANDing the mask with a normal version of each plane included
+in the pen, and a NOTted version for each plane not included.
+
+Having done that, we have the mask for the first pen, now we do the same thing
+for the next pen, and the next.
+
+<P>Take a minute to think about it.
+
+<P><STRONG>Note:</STRONG> This is basically the way the code works, but it creates a NOTted
+version of the whole bitmap in the beginning, from which it picks the
+NOTted planes if needed. This consumes a bit more memory, but it makes
+the main loop simpler.
+
+<HR>
+
+<H2>The source</H2>
+
+<P>The source is not ready-to-use per se, you will have to Cut and Paste the
+parts you need into your own source. Sorry to say this is the case, but that is
+the way it is.
+
+<H2>Outro</H2>
+
+<P>Yes, that's it, have fun! If you have questions concerning the code,
+direct them to: <ADDRESS><A HREF="mailto:dagren@abo.fi">Dag &Aring;gren (dagren@abo.fi)</A></ADDRESS>
+The latest version of the source package will always be put up
+on his homepage at `<A HREF="http://www.abo.fi/~dagren/">http://www.abo.fi/~dagren/</A>'. If you do something
+with the source, let us know, and let the world know - by mentioning
+where you got the source.
+
+<P>If you have any questions concerning the article, direct them to:
+<ADDRESS><A HREF="mailto:mamannev@abo.fi">Markus Mannevaara (mamannev@abo.fi)</A></ADDRESS>.
+
+<P>The source is written for SAS/C version 6.56, it should work on other
+compilers as well, but we can't be sure.
+
+<P>The archive contains this article, and the source (it's commented).
+
+<P>Download: <A HREF="remap.lha">Remap.lha</A>
+
+<H2>Jargon buster</H2>
+
+<DL>
+<DT>Bitwise OR
+<DD>combines all bits in two variables so that if
+either one of the variables has the bit set, the resulting bit will be
+set, only if both variables have the bit cleared, the resulting bit will
+be cleared.
+<DT>Bitwise AND
+<DD>works like bitwise or, only that both bits
+must be set for the resulting bit to be set.
+<DT>Bitwise NOT
+<DD>Just flips the set and unset bits. (Ex: 1001 becomes 0110.)
+</DL>
+
+<HR>
+<CENTER>Markus Mannevaara, 9.11.1996</CENTER>
+<hr>
+<a href="default.html">Table Of Contents</a>
+</BODY>
+</HTML>

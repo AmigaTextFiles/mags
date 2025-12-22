@@ -1,0 +1,74 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="sushi.html">PREV</a> | <a href="macros.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Calling PPC Shared Libraries from PPC Code </b>
+
+Of course you do not need a contextswitch for this. It is completely PPC
+Native to call a PPC Shared Library function from PPC Code. Currently,
+there are not many PPC Shared Libraries available. There is powerpc.library,
+of course, which contains some important functions like Memory Allocation
+functions for PPC Native programs. I recommend STRONGLY that you read the
+Autodocs of the powerpc.library, when your program needs some exec- or
+utility-style functionality (Taglists, lists and messageports are for example
+available PPC Native, also memory-protection on PPC-Side).
+
+Then there is rtgmaster.library PPC version. Well, it is not yet released
+to the public, but it soon will be. Asides from these two libs, there is
+no PPC Shared Library yet released, as far as i know. But hopefully soon
+there will be more. Maybe even one day the OS functions of the Amiga !!!
+
+To call a PPC function you have to do the following:
+
+- XREF the symbol _PowerPCBase
+- create a valid stackframe, like described in <a href="sub.html">Coding Subroutines</a>
+- include powerpc_lib.i (which will also include ppcmacros.i)
+- use CALLPOWERPC of powerpc_lib.i to call the function.
+
+Note: At least on my version of StormPowerASM, which appearently was quite
+an early version (I got it on the Computer '97 directly from H&amp;P) there is
+a bit a chaos as to the includes on the CD. Some ASM-includes are in
+stormc:asm-include and some in stormc:asm-includes. I simply copied those
+in stormc:asm-include to stormc:asm-includes.
+
+Example (from the StormPowerASM Docs, after some include path fixes)
+
+    incdir &quot;stormc:asm-includes&quot;
+    include exec/memory.i
+    include &quot;stormc:asm-includes/LVOs/powerpc_lib.i&quot;
+
+    XREF    _PowerPCBase
+
+    executable
+    version 7
+
+start
+    prolog                          ;build stackframe
+    li      r4,4096                 ;4096 bytes to allocated
+    liw     r5,MEMF_PUBLIC!MEMF_CLEAR ;memory flags
+    li      r6,0                    ;no alignment restrictions
+    CALLPOWERPC     AllocVecPPC     ;allocated memory
+    tstw    r3                      ;test result
+    beq     .exit                   ;if 0 then error
+    mr      r4,r3                   ;move to r4
+    CALLPOWERPC     FreeVecPPC      ;free allocated memory
+.exit
+    epilog                          ;remove stackframe
+
+Note: The command &quot;version 7&quot; simply ensures, that at least powerpc.library V7
+will be tried to be opened. As you see, you do not have to open powerpc.library
+manually, the system will do this for you. Other PPC Shared Libraries will be
+opened manually, of course. As OpenLibrary() is a 68k function, you would do
+this in the 68k Part of your code, of course (For example, if you want to use
+rtgmaster.library PPC version...).
+
+</pre>
+</body>
+</html>

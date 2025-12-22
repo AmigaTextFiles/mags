@@ -1,0 +1,1 @@
+document.write ('</div></div></div></div></div></div><br class="clear" /><div id="footer">Designed by  <a href="mailto:team.dogma@gmail.com" title="team Dogma">team Dogma</a> | Powered by  <a href="http://www.amiga.com/" target="_blank">Amiga</a><br>Copyright © 2002-2014 | All Rights Reserved.</div>')

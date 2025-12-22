@@ -1,0 +1,302 @@
+2
+1*
+
+{3                              MultiUserFileSystem
+{3                              -------------------
+
+                               Janne Pikkarainen
+
+
+Kotonasi nököttävä Amiga on koko perheen käytössä jatkuvasti. Sinua vaivaa  jat-
+kuvasti ajatus siitä, että joku löytää kiintolevyn piilohakemistosta  ne  kaikki
+rakkauskirjeesi ja räävittömät kuvat, jotka sinusta otettiin viime  pippaloissa.
+Samaan aikaan pelkäät, että rävelö siskosi tulee ja alustaa vahingossa kiintole-
+vyn. Kaiken ei tarvitse olla näin tulenarkaa, asenna MultiUserFileSystem!
+
+MultiUserFileSystem (tästä eteenpäin MUFS) tuo koneeseesi Unix-maailmasta  tutut
+käyttäjäkohtaiset tunnukset ja oikeustasot. Muihin vastaaviin Amiga-porttauksiin
+nähden MUFS on pomminvarma, sillä se asennetaan kiinteästi osaksi Amigan tiedos-
+tojärjestelmää, eikä sen suojauksia pysty kiertämään  esim.  boottaamalla  ilman
+startup-sequencea. Voit siis viimeinkin olla oman koneesi herra: siskosi ei enää
+pääse käyttämään delete- tai format-komentoa eikä kukaan pääse  salaisiin  hake-
+mistoihisi. Myös muut perheenjäsenet  saavat  itselleen  ikioman  kotihakemiston
+(tai vaikka useita) ja eri ohjelmien käyttöoikeuksia voi muutella mielinmäärin.
+
+Kuulostaa hienolta, mutta miten se asennetaan? Tai miten sitä  käytetään?  Jatka
+lukemista. Ensin alkuun pakollinen disclaimer.
+
+Jos olet yhtään perillä Amigan perustoiminnasta, HDToolBoxin käytöstä, Shellistä
+ja mieluusti myös Unixin (sekä sen käyttäjäoikeussysteemeiden) perusteista, MUF-
+Sin asentaminen on melko helppoa puuhaa eikä sen takia tarvitse  tuhota  levyllä
+olevia tietoja. Sen asentaminen vaatii kuitenkin HDToolBoxin ja FFS:n  muuttele-
+mista, joten ole tarkkana! Allekirjoittanut ei ota mitään vastuuta  MUFSin  mah-
+dollisesti tuottamista vahingoista. Itse asensin sen aikoinaan  ilman  ongelmia,
+mutta herra Murphyllä on joskus paha tapa tunkea  sormensa  peliin.  Tee  kaikki
+vaihe vaiheelta huolella, älä sähellä äläkä koeta keksiä omia oikoteitä  asenta-
+miselle, niin kaiken pitäisi sujua.
+
+
+{3Asentaminen
+{3-----------
+
+1) Pura paketti.
+
+2)  Kopioi  paketin  Libs-hakemistosta  löytyvä  multiuser.library  kiintolevysi
+Libs:-hakemistoon ja paketin C-hakemiston tiedostot kiintolevysi C:-hakemistoon.
+
+3) Kopioi paketin Locale-hakemiston sisältö Locale:-hakemistoon.
+
+4) Tarkista L:-hakemistosta löytyvän FastFileSystem-tiedoston versio  komennolla
+Version L:FastFileSystem. (Huomautus: Minulla ei ole mitään tietoa siitä, kuinka
+MUFS reagoi uuden FFS64:n betaversioihin! Mukana toimitetaan patchit  vain  van-
+hemmille versioille. Kokeile omalla vastuulla.)
+
+5)  Luo  MUFS:  Patch/spatch  -oL:MultiUserFileSystem  -pPatch/MultiUserFileSys-
+tem_xxx.pch L:FastFileSystem (xxx = 2.04,  2.05,  2.1,  3.0  tai  3.1,  riippuen
+käyttöjärjestelmästäsi. Mikäli saat eteesi ilmoituksen "Incorrect version of the
+original file", käytit väärää versiota)
+
+6) Valitse osiot, jotka tahdot suojata MUFSilla ja kopioi  paketin  Config-hake-
+miston sisältö esimerkiksi hakemistoon SYS:MultiUser/.
+
+7) Varmista, että äskeisessä Config-hakemistossa on passwd-tiedosto,  jossa  ns.
+root-oikeuksilla   varustettu   tunnus.   Rivillä   täytyy   lukea   esimerkiksi
+root||65535|65535|Saku Maintenance Staff|SYS:Homes/Root|cli
+
+8) Varmista, että  äskeisessä  hakemistossa  on  myös  Multiuser.group-tiedosto.
+Siellä olisi syytä lukea esimerkiksi seuraavanlainen rivi: root|65535|65535|Saku
+Staff
+
+9) Lisää s:User-Startup -tiedostoon seuraava rivi: Logout GUI GLOBAL
+
+10) Valitse tietokoneellesi nimi. Eli esimerkiksi seuraava rivi  kastaa  koneesi
+Saku Sammakoksi: Echo "Saku Sammakko" >ENVARC:HostName
+
+11) Oletetaan, että haluat suojata osion SYS:. Komenna seuraavasti: MakeKeyfiles
+SYS:MultiUser SYS:
+
+12) Käynnistä HDToolBox ja valitse suojattava kiintolevy.
+
+13) Valitse "Partition Drive" ja aktivoi "Advanced Options". Paina tämän jälkeen
+"Add/Update".
+
+14) Eteesi pitäisi tulla lista tällä hetkellä käytössä olevista  tiedostojärjes-
+telmistä. Jos päivität MUFSia  uuteen  versioon,  listassa  näkyy  jo  ennestään
+0x6d754653. Paina tällöin "Update File System". Muussa tapauksessa valitse  "Add
+New File System".
+
+15) Mikäli valitsit "Add New File System", eteesi tulee uusi  ikkuna.  Naputtele
+"L:MultiUserFileSystem" ja Identifier-riville 0x6d754653.  Jos  HDToolBox  kysyy
+versionumeroa, naputtele 39.
+
+16) Paina "OK" ja mene takaisin osiovalikkoon. Valitse osio, jonka haluat suoja-
+ta. Paina tämän jälkeen "Change File System".
+
+17) Edessäsi on jälleen uusi ikkuna. Valitse "Custom File System"  ja  naputtele
+Identifier-riville 0x6d754653.
+
+18) Paina OK. Jos tahdot suojata lisää osioita, toista kohta 17 kaikille suojat-
+taville partitioille. Muussa tapauksessa jatka lukemista.
+
+19) Palaa takaisin HDToolBoxin alkuvalikkoon ja paina "Save Changes  To  Drive".
+HDToolBox todennäköisesti herjaa, että levyltä  katoavat  kaikki  tiedot  -  älä
+välitä ilmoituksesta, vaan paina OK. Mitään ei katoa ainakaan  MUFSin  dokument-
+tien ja omien kokemuksien perusteella. HUOMAA, ETTÄ TEET TÄMÄN OMALLA VASTUULLA-
+SI.
+
+20) Paina vielä Exit. Mikäli kaikki meni hyvin, HDToolBox tahtoo  resetoida  ko-
+neesi. Tottele ja koneesi resetoituu automaattisesti.  Jos  kaikki  on  edelleen
+kunnossa, kone myöskin käynnistyy automaattisesti uudelleen.
+
+21) Käynnistämisen jälkeen näet edessäsi sisäänkirjoittautumisikkunan.  Kirjoita
+nimeksi root ja bootin pitäisi jatkua.
+
+22) Ensimmäinen asia, jota sinun tulisi tehdä,  olisi  asettaa  oma  salasanasi.
+Kirjoita shellissä "Passwd GUI". Sinulta kysytään nyt vanhaa salasanaa. Sitä  ei
+vielä ole, joten paina Enter. Kirjoita uusi salasanasi ja varmista, että muistat
+sen vielä tunninkin päästä. MUFSin hakkeroiminen ei suju kovin  helposti,  joten
+ÄLÄ unohda salasanaasi!
+
+23) Seuraavaksi suojaamme muutamia tärkeitä tiedostoja poropeukaloiden  varalta.
+Esimerkissä suojaamme partition SYS: tärkeät tiedostot - muuta tarvittaessa esi-
+merkkirivien osion nimi omiasi vastaavaksi.
+SetOwner SYS:.MultiUser.keyfile root
+MProtect SYS:.MultiUser.keyfile R
+On suositeltavaa, että suojaat myös seuraavat tiedostot:
+SetOwner SYS:MultiUser/passwd root
+MProtect SYS:MultiUser/passwd RWD
+SetOwner SYS:MultiUser/MultiUser.config root
+MProtect SYS:MultiUser/MultiUser.config RWD
+SetOwner SYS:MultiUser/MultiUser.group root
+MProtect SYS:MultiUser/MultiUser.group RWD
+SetOwner SYS:MultiUser/.profile root
+MProtect SYS:MultiUser/.profile SRWED GROUP R OTHER R
+SetOwner S:Startup-Sequence root
+MProtect S:Startup-Sequence SRWED GROUP R OTHER R
+SetOwner S:User-Startup root
+MProtect S:User-Startup SRWED GROUP R OTHER R
+SetOwner SYS:Tools/HDToolBox root
+MProtect SYS:Tools/HDToolBox RWED
+
+24) Muista ottaa varmuuskopiot kaikista .keyfile -tiedostoista!  Eli  tässä  ta-
+pauksessa SYS:.MultiUser.keyfile visusti talteen!
+
+
+{3Käyttäminen
+{3-----------
+
+Äskeisen esimerkin jälkeen löydät SYS:MultiUser-hakemistosta  kasan  kryptiseltä
+tuntuvia tiedostoja. Käymme läpi niiden merkityksen.
+
+
+
+{3passwd
+{3------
+
+Tiedoston passwd merkitys on yksinkertainen: Se sisältää kaikki  käyttäjätunnuk-
+set, niiden oikeustasot, salasanat ja tunnusluvut. Komennon pohja on seuraava:
+
+<userid>'|'<passwd>'|'<uid>'|'<gid>'|'<name>'|'<home>'|'<port>
+
+<userid> = Käyttäjän tunnus
+
+<passwd> = Salasana. Jos teet uusia tunnuksia, jätä tämä kenttä  tyhjäksi.  MUFS
+luo siihen itse oman kryptatun versionsa, kunhan käyttäjä on soheltanut  passwd-
+komennon kanssa.
+
+<uid> = Käyttäjän tunnusnumero, luku  väliltä  1-65535.  Muistathan,  että  luku
+65535 on varattu systeemin ylläpitäjälle ja että jokaisen käyttäjän  tunnusnume-
+ron tulisi olla eri!
+
+<gid>  =   Käyttäjän   ryhmä,   luku   väliltä   1-65535.   65535   on   varattu
+ylläpitäjälle/ylläpitäjille. Samaan ryhmään voi kuulua miten monta käyttäjää ta-
+hansa. Samassa ryhmässä olevat käyttäjät saavat käyttöoikeuden samoihin  tiedos-
+toihin ja hakemistoihin.
+
+<name> = Käyttäjän oikea nimi. Tällä hetkellä nimen  pituus  on  rajoitettu  219
+merkkiin, mutta se tuskin haittaa ketään. :-)
+
+<home> = Käyttäjän kotihakemisto, vaikkapa SYS:Homes/Sakumies/
+
+<port>  =  Commodoren  AS225  TCP/IP-ohjelmiston  käyttämä  kenttä.  Jätä   tämä
+tyhjäksi, jos et omista ohjelmistoa.
+Mikäli teet passwd-tiedostoon kirjoitusvirheitä, se ei ole  kovinkaan  tappavaa.
+MUFS huomauttaa sinua väärästä rivistä ruutuun ilmestyvällä huomautuksella, joka
+katoaa kymmenen sekunnin päästä ja jättää rivin huomiotta.
+
+
+{3MultiUser.config
+{3----------------
+
+Tiedosto sisältää MUFSin perusasetukset. Tässä niiden merkitykset:
+
+LIMITDOSSETPROTECTION = dos.library/SetProtection() -kutsu ei enää  voi  vaihtaa
+GROUP- ja OTHER-tiedostolippuja.
+
+PROFILE = Käyttäjien kotihakemistoon voi sijoittaa tiedoston  nimeltä  .profile.
+Tämän tiedoston sisältö näytetään käyttäjälle  joka  kerta,  kun  hän  kirjautuu
+sisään koneelle.
+
+LASTLOGINREQ = Näyttää edellisen kirjautumisen ajankohdan.
+
+LOGSTARTUP = Tallentaa jokaisen uudelleenkäynnistämisen lokitiedostoon.
+
+LOGLOGIN = Tallentaa jokaisen kirjautumisen lokitiedostoon.
+
+LOGLOGINFAIL = Tallentaa jokaisen epäonnistuneen kirjautumisen lokitiedostoon.
+
+LOGPASSWD = Tallentaa jokaisen salasananvaihdoksen lokitiedostoon.
+
+LOGPASSWDFAIL = Tallentaa jokaisen epäonnistuneen  salasananvaihdoksen  lokitie-
+dostoon.
+
+LOGCHECKPASSWDFAIL = Tallentaa jokaisen epäonnistuneen  salasanantarkistuskutsun
+lokitiedostoon.
+
+PASSWDUIDLEVEL = Käyttäjät, joiden käyttäjätunnus on suurempi tai yhtäsuuri kuin
+tässä  annettu  luku,  voivat  vaihtaa  salasanaansa.  Muussa  tapauksessa  vain
+ylläpitäjä tai muut korkea-arvoisemmat voivat tehdä muutoksen.
+
+PASSWDGIDLEVEL = Käyttäjät, joiden käyttäjäryhmä on suurempi tai yhtäsuuri  kuin
+tässä  annettu  luku,  voivat  vaihtaa  salasanaansa.  Muussa  tapauksessa  vain
+ylläpitäjä tai muut korkea-arvoisemmat voivat tehdä muutoksen.
+
+
+{3MultiUser.group
+{3---------------
+
+Tiedosto sisältää käyttäjäryhmäkohtaiset tiedot. Pohja on seuraava:
+
+<GroupID>|<gid>|<MgrUid>|<GroupName>
+
+<GroupID> = Ryhmän nimen lyhyt versio, nimen maksimipituus 31 merkkiä. Nimi  voi
+olla vaikkapa Saku tai amigistit.
+
+<gid> = Käyttäjäryhmän tunnusnumero, luku  väliltä  1-65535.  Muista  että  luku
+65535 on varattu ylläpitäjille!
+
+<MgrUid> = Ryhmänjohtajan tunnusnumero, luku väliltä 1-65535. Katso passwd-seli-
+tyksen kohtaa <uid>.
+
+<GroupName> = Ryhmän nimen pitkä versio, nimen maksimipituus 219 merkkiä.
+
+{3C-hakemiston uudet komennot
+{3---------------------------
+
+Freeze = Pysäyttää yksittäisen käynnissä olevan taskin. Et  voi  pysäyttää  omaa
+tunnustasi etkä multiuser.serveriä. Katso myös komennot Unfreeze ja Kill.
+
+Kill = Koettaa poistaa yksittäisen taskin koneesta. Et voi tappaa omaa tunnusta-
+si etkä multiuser.serveriä. Muistathan, ettei AmigaOSissa ole  muistinsuojausta,
+joten taskien poisteleminen on melko riskialtista ja koneen kaatumista aiheutta-
+vaa puuhaa. Freeze on paljon  turvallisempi  vaihtoehto  villiintyneen  ohjelman
+hyydyttämiseen.
+
+LimitDOSSetProtection = Määrittelee, saako käyttöjärjestelmän  dos.library/SetP-
+rotection()-kutsu vaihtaa tiedostojen suojauslippuja.
+
+Login = Kirjaa sisään uuden käyttäjän jättäen edellisen/edelliset sisälle.
+Logout = Heivaa edellisen  käyttäjän  pihalle  ja  kirjaa  tämän  jälkeen  uuden
+käyttäjän.
+
+MakeKeyfiles = Mikäli päätät myöhemmin suojata lisää osioita, tämä  komento  luo
+uudet .keyfile -tiedostot.
+
+MAssign = Assign-komennon vastine. Erona alkuperäiseen  on  se,  että  MAssignin
+määritelmät tutkitaan joka kerta. Esimerkiksi komento Run >NIL: MAssign HOME: %h
+VOLUME tekee mahdolliseksi sen, että jokainen käyttäjä voi hiipiä omaan  kotiha-
+kemistoonsa kirjoittamalla HOME:
+
+MList = Dir-komennon vastine, joka tunnistaa myös MUFSin tiedostoliput.
+
+MProtect = Protect-komennon vastine, joka osaa vaihtaa myös MUFSin asetuksia.
+Passwd = Vaihtaa salasanaasi.
+
+RunCommand = Ajelee ohjelmia siten, että myös MUFSin UID-lippu huomioidaan.
+
+SetDefProtect = Määrittelee tiedostojen vakiosuojaukset.
+
+SetOwner = Asettaa yksittäisen tiedoston käyttäjäoikeudet.
+
+Tasks = Listaa parhaillaan konetta käyttävän henkilön käytössä olevat taskit.
+
+Unfreeze = Jatkaa Freeze-komennolla jäädytetyn ohjelman suoritusta.
+
+UserInfo = Näyttää tietoja käyttäjästä  x.  Listaa  käyttäjän  nimen,  aliaksen,
+käyttäjäryhmän &  tunnusnumeron  sekä  mahdollisesti  kotihakemistosta  löytyvän
+.plan -tiedoston. (.plan sisältää mitä tahansa tekstiselostusta käyttäjästä.)
+
+Who = Näyttää koneeseen parhaillaan kirjautuneet käyttäjät.
+
+Tässä MUFSin asentaminen ja perusteet. Jos kohtaat käytössä ongelmia tai et  on-
+nistu asentamisessa, ota yhteys allekirjoittaneeseen.  Todellisissa  hätätapauk-
+sissa soita (09) 805 5903 / Janne tai 040-568 2558!
+
+Peruspaketit: 
+
+{Aftp://ftp.sunet.se/pub/aminet/util/misc/MultiUser18api.lha (14 kt)
+{Aftp://ftp.sunet.se/pub/aminet/util/misc/MultiUser18bin.lha (127 kt)
+{Aftp://ftp.sunet.se/pub/aminet/util/misc/MultiUser18ext.lha (204 kt)
+{Aftp://ftp.sunet.se/pub/aminet/util/misc/MultiUser18src.lha (109 kt)
+{Aftp://ftp.sunet.se/pub/aminet/util/misc/MultiUserFix.lha (12 kt)
+{Aftp://ftp.sunet.se/pub/aminet/util/misc/MultiUserFix_S.lha (142 kt)

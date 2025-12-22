@@ -1,0 +1,100 @@
+WBStartup
+WbToScreen 3
+Use Screen 3
+
+LoadFont 2,"topaz.font",8
+Use IntuiFont 2
+
+chiffre_un.b=0
+chiffre_deux.b=0
+resultat.l=0
+
+GTButton 0,1,10,0,40,15,"+",$10
+GTButton 0,2,10,20,40,15,"-",$10
+GTButton 0,3,10,40,40,15,"*",$10
+GTButton 0,4,10,60,40,15,"/",$10
+GTString 0,5,80,20,40,15,"",$10,1
+GTString 0,6,80,40,40,15,"",$10,1
+
+Window 0,0,14,320,120,$140e,"Un peu d'ASM 68k avec le Blitz",-1,-1
+DefaultOutput
+
+AttachGTList 0,0
+
+Use Window 0
+
+
+;Boucle principale du programme
+While ev.l<>$200
+
+    ;On recupere les evenements qui se produisent dans la fenetre du logiciel
+    ev.l=Event
+
+    WindowOutput 0
+
+    ;Si on clique sur un bouton
+    ;et qu'on a bien saisi deux chiffres
+    If (GTGetString(0,5)<>"") AND (GTGetString(0,6)<>"") AND (Len(GTGetString(0,5))<2) AND (Len(GTGetString(0,6))<2)
+      If ev.l=64
+        ;Si on clique sur le bouton +
+        If GadgetHit=1
+          chiffre_un.b=Val(GTGetString(0,5))
+          chiffre_deux.b=Val(GTGetString(0,6))
+          CLR.l d0
+          CLR.l d1
+          GetReg d0,chiffre_un.b
+          GetReg d1,chiffre_deux.b
+          ADD.b d0,d1
+          PutReg d1,resultat.l
+          WLocate 10,100
+          Print Str$(chiffre_un.b)+" + "+Str$(chiffre_deux.b)+" = "+Str$(resultat.l)+"      "
+        EndIf
+        ;Si on clique sur le bouton -
+        If GadgetHit=2
+          chiffre_un.b=Val(GTGetString(0,5))
+          chiffre_deux.b=Val(GTGetString(0,6))
+          CLR.l d0
+          CLR.l d1
+          GetReg d0,chiffre_un.b
+          GetReg d1,chiffre_deux.b
+          SUB.b d1,d0
+          PutReg d0,resultat.l
+          WLocate 10,100
+          Print Str$(chiffre_un.b)+" - "+Str$(chiffre_deux.b)+" = "+Str$(resultat.l)+"      "
+        EndIf
+        ;Si on clique sur le bouton *
+        If GadgetHit=3
+          chiffre_un.b=Val(GTGetString(0,5))
+          chiffre_deux.b=Val(GTGetString(0,6))
+          CLR.l d0
+          CLR.l d1
+          GetReg d0,chiffre_un.b
+          GetReg d1,chiffre_deux.b
+          MULU.b d0,d1
+          PutReg d1,resultat.l
+          WLocate 10,100
+          Print Str$(chiffre_un.b)+" * "+Str$(chiffre_deux.b)+" = "+Str$(resultat.l)+"      "
+        EndIf
+        ;Si on clique sur le bouton /
+        If GadgetHit=4
+          chiffre_un.b=Val(GTGetString(0,5))
+          chiffre_deux.b=Val(GTGetString(0,6))
+          CLR.l d0
+          CLR.l d1
+          GetReg d0,chiffre_un.b
+          GetReg d1,chiffre_deux.b
+          DIVU.l d1,d0
+          PutReg d0,resultat.l
+          WLocate 10,100
+          Print Str$(chiffre_un.b)+" / "+Str$(chiffre_deux.b)+" = "+Str$(resultat.l)+"      "
+        EndIf
+      EndIf
+    EndIf
+
+Wend
+
+DetachGTList 0
+Free Window 0
+
+End
+

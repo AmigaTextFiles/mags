@@ -1,0 +1,308 @@
+<html>
+ <head>
+  <title>ARexx et RxMUI</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Programmation&nbsp;: ARexx et RxMUI </font>par&nbsp;<a href="mailto:Pixel-Art@wanadoo.fr">Jean-Yves&nbsp;Auger</a></div><br><br><br>
+
+<font size="+1" color="#ccbb33">Rappel</font><br><br>
+
+L'ARexx est un langage génial qui a été implanté dans l'AmigaOS pour permettre à divers programmes de dialoguer entre eux.
+Concrètement, vous venez de faire un joli dessin mais il vous manque une fonction dans votre logiciel préféré, or vous
+savez qu'un autre logiciel (une daube malheureusement) a cette fonction.
+La première solution est de sauver votre dessin, de le recharger dans l'autre logiciel, d'y appliquer l'effet désiré,
+le resauver et enfin de continuer dans votre logiciel favori&nbsp;: ça fait beaucoup de manipulations pour si peu.<br><br>
+
+Ces deux logiciels sont ARexx&nbsp;: c'est à dire qu'ils ont l'équivalent en langage ARexx de la plupart des actions que
+vous faites avec la souris. Exemple&nbsp;: charge une image = LOADFILE...<br><br>
+
+L'idée est de créer un programme ARexx (c'est très simple) qui va&nbsp;:<br>
+
+<ul>
+<li>Charger le logiciel de dessin qui va appliquer l'effet (dans l'exemple, la daube).
+<li>Charger le dessin.
+<li>Appliquer l'effet.
+<li>Sauver le dessin ainsi modifié.
+<li>Faire apparaître votre logiciel favori.
+<li>Recharger le dessin modifié.
+</ul>
+<br>
+
+Si vous comprenez ce principe, vous avez tout compris du principe de l'ARexx&nbsp;: c'est en fait un chef d'orchestre qui va
+faire exécuter des tâches à des logiciels et rien d'autre car l'ARexxX sait à peine faire autre chose qu'une addition&nbsp;!<br><br>
+
+<font size="+1" color="#ccbb33">Le langage</font><br><br>
+
+C'est un langage interprété (pas de compilation), toutes les commandes sont lues une à une et exécutées tout doucement.
+Comme la plupart des programmes ARexx sont courts, la faible vitesse n'est pas un handicap. Le programme se tape dans
+un éditeur de texte et se lance par la commande&nbsp;: RX nom_du_programme_AREXX.<br><br>
+
+Ce langage est donc un ensemble de commandes issues des logiciels "ARexx" ainsi, dans tel logiciel, charger un fichier
+se dira&nbsp;: LOADFILE, dans un autre, LOAD, etc. ce qui va compliquer un peu la tâche avec toutes ses commandes qui se
+ressemblent un peu trop.<br><br>
+
+Il va se structurer ainsi&nbsp;:<br><br>
+
+/******** ligne obligatoire pour tous les programmes ARexx *********/<br><br>
+
+- Nom du port ARexx du programme appelé&nbsp;: généralement c'est le nom du programme avec ".1".<br>
+Pour Miami, ce sera par exemple&nbsp;: MIAMI.1.<br><br>
+
+- Commandes ARexx du programme cité au-dessus.<br>
+Exemple avec Miami&nbsp;: GETONLINE, ISCONNECT, etc.<br><br>
+
+C'est tout...<br><br>
+
+Si un deuxième programme doit être utilisé, c'est le même principe, on ajoute juste en dessous de ces premières lignes
+le nom du programme (port ARexx) et ses commandes ARexx ainsi chacun a ses commandes et rien ne se mélange&nbsp;!<br><br>
+
+<b>Voici un exemple très concret&nbsp;:</b><br><br>
+
+Les ingrédients&nbsp;:<br>
+
+<ul>
+<li>Le logiciel de scanner d'ADPro.
+<li>Le logiciel Personal Paint.
+<li>Le logiciel ADPro.
+</ul>
+
+Le but ici est de numériser une image, la passer en 256 couleurs pour la transformer dans Personal Paint.
+La raison de cet exemple est que le logiciel de scanner n'est pas ARexx et Personal Paint est très lent à convertir
+une image issus de scanner (en 24 bits), ADPRO est meilleur et plus rapide.<br><br>
+
+Les étapes&nbsp;:<br><br> 
+
+1) Le langage ARexx permet de lancer n'importe quoi, même si ce n'est pas ARexx.
+c'est la raison pour laquelle le programme du scanner sera lancé et son fichier sera sauvé en RAM: sous un nom quelconque.<br>
+2) Appel d'ADPro (lancement en fait) et chargement en ARexx du fichier en RAM:.<br>
+3) En ARexx, on passe le fichier en 256 couleurs avec tramage, etc. et on le sauve en RAM:.<br>
+4) Appel de Personal Paint et chargement en ARexx du fichier transformé et sauvé par ADPro.<br>
+5) C'est fini&nbsp;!<br><br>
+
+Ce qui donne&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+
+/**********  ligne obligatoire **********************/<br><br>
+
+OPTIONS RESULTS <---- cette ligne est souvent à mettre en début de programme mais pas obligatoire<br><br>
+
+if ~ show('L', "rexxsupport.libray") then do<br>
+     addlib('rexxsupport.library',0,-30,0)  <------- truc à vérifier<br>
+end<br>
+if ~show('L','rexxmathlib.library') then do<br>
+    addlib('rexxmathlib.library',0,-30,0)   <-------- truc à vérifier<br>
+ end<br>
+pragma('directory','Ram:')<br>
+ram = showdir('Ram:','f')   <-------- on mettra le fichier en RAM:<br><br>
+
+LES LIGNES AU DESSUS NE SONT PAS INDISPENSABLES<br>
+-----------------------------------------------<br><br>
+
+address command 'hd1:arts/adpro-2/Epson_To_Disk'  <------ lancement du scanner<br>
+ram2 = showdir('Ram:','f')<br>
+fichier = delstr(ram2,length(ram2)-length(ram))<br><br>
+
+fichier = insert('Ram:',fichier)   <-------  on met le tout en RAM:<br><br>
+
+address command 'Assign FREDSCRIPTS: hd1:arts/adpro-2/Fredscripts >nil:'<br>
+address command 'Assign ADPROSCRIPTS: hd1:arts/adpro-2/commands2 >nil:'<br>
+address command 'Assign ADP_FRED: hd1:arts/adpro-2 >nil: '<br>
+address command 'Assign ADPRO: hd1:arts/adpro-2 >nil:'<br><br>
+
+ADDRESS COMMAND 'Run >NIL: hd1:arts/adpro-2/adpro minimized behind'  <-- on lance ADPro<br>
+IF ~SHOW('PORTS',ADPro) then ADDRESS COMMAND 'Wait >NIL: 1 SEC'<br><br>
+
+ADDRESS 'ADPro' <----------- on appel ADPro<br><br>
+
+LFORMAT 'IFF'<br><br>
+
+Load fichier  <-------- on charge le dessin depuis la RAM:<br><br>
+
+DITHER 1<br>
+RENDER_TYPE 256  <--------- transformation en 256 couleurs<br>
+SCREEN_TYPE 7<br>
+EXECUTE<br><br>
+
+SFORMAT 'IFF'<br><br>
+
+Save fichier image   <------ on sauve le fichier modifié en 256 couleurs<br><br>
+
+Adpro_Exit<br><br>
+
+ADDRESS 'PPAINT'  <-------- appel de personal paint<br><br>
+
+LoadImage '"'fichier'" FORCE ' <------- on charge le fichier issu d'ADPro<br><br>
+
+ADDress command 'delete >NIL: 'fichier<br><br>
+
+EXIT  <--------- c'est fini !<br><br>
+
+/**************************************/</font><br>
+
+</td></tr></table>
+<br>
+
+Tout ceci parait un peu tordu et compliqué mais heureusement il y a de la documentation à tous les niveaux&nbsp;:<br>
+
+<ul>
+<li>Le livre ARexx (de Commodore) donné avec les A4000 de l'époque&nbsp;: il y a toutes les commandes ARexx du langage de base,
+presque rien en fait mais la syntaxe est tellement spéciale que cet ouvrage est recommandé.
+<li>La documentation du/des logiciels que vous appelez (ADPro, Finalwriter, Tvpaint, Miami, etc.) soit en Guide ou sur papier
+(une bonne raison de ne pas pirater les logiciels pour avoir la doc).
+<li>Les logiciels du DP qui sont pour la plupart ARexx aussi.
+<li>Les multiples exemples que l'on trouve dans ces mêmes logiciels (ADPro en a beaucoup).
+</ul>
+<br>
+
+Mélangez tout ça et vous avez la plus formidable collection d'outils jamais vue&nbsp;!
+Mais ce langage n'existe en fait qu'avec la présence des autres logiciels qu'il commande aussi,
+il a été ajouté des modules liés à MUI pour lui donner un autre aspect (une interface graphique) et
+beaucoup plus de possibilités&nbsp;: c'est RXMui.<br><br>
+
+<font size="+1" color="#ccbb33">RXMui</font><br><br>
+
+Là, ça devient un peu plus complexe car c'est de l'ARexx avec du MUI et la notion d'objet.<br><br>
+
+- L'<b>ARexx</b> ne change pas dans son principe, il donne des ordres à exécuter.<br>
+- <b>MUI</b> est une vaste collection d'objet que l'on manipule.<br>
+- Un <b>objet</b> est en fait un outil avec des caractéristiques que l'on appelle.
+Exemple&nbsp;: pour afficher un dessin, j'appelle un objet de type DTPIC et j'utilise la caractéristique FILE
+de ce type d'objet pour lui dire&nbsp;: je prends le dessin "DH0:Images/dessin.iff" que je mets dans la
+caractéristique FILE du type d'objet DTPIC.<br><br>
+
+Ça s'écrit&nbsp;:<br>
+exemple.0.CLASS="DTPIC"<br>
+exemple.0.FILE="DH0:Images/dessin.iff" (le chiffre 0 exprime le premier objet&nbsp;!)<br><br>
+
+Afin d'être plus simple à comprendre, voici un exemple&nbsp;:<br><br>
+
+Notre but ici est de faire apparaître une fenêtre sur le Workbench avec un bouton et si l'on clique sur ce bouton, cela
+affiche un mot.<br><br>
+
+Nous allons déclarer tous les objets (outils) nécessaires (une grande fenêtre et un bouton)
+et mettre en place tout ça mais des exemples aident à placer la structure de base.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+
+/******** ligne obligatoire car c'est de l'ARexx *********/<br><br>
+
+l="rmh.library"<br>
+if ~show("L",l) then<br>
+   if ~addlib(l,0,-30) then exit<br>
+if AddLibrary("rxmui.library")~=0 then exit<br><br>
+
+call CreateApp<br>
+call HandleApp<br>
+/* never reached */<br><br>
+
+/*********************/<br>
+HandleApp: procedure<br><br>
+
+    ctrl_c=2**12<br>
+    do forever<br>
+ call NewHandle("app","h",ctrl_c)<br>
+ if and(h.signals,ctrl_c)>0 then exit<br>
+ select<br>
+     when h.event="QUIT" then exit<br>
+     otherwise interpret h.event<br>
+ end<br>
+    end<br>
+    /* never reached */<br><br>
+
+/********* Toutes les lignes ci-dessus sont obligatoires ************/<br><br>
+
+CreateApp: procedure<br><br>
+
+ app.SubWindow="WIN" <------------ ma grande fenêtre s'appellera : WIN<br>
+    WIN.class="bwin"  <----- c'est un objet (un outil de type BWIN pour afficher une fenêtre)<br>
+    WIN.contents="GROS_BOUTON" <------- on crée un gros bouton dans la fenêtre de type BWIN<br><br>
+
+    GROS_BOUTON.CLASS"DTPIC"   <--- c'est un objet (un outil de type DTPIC, pour afficher une image)<br>
+    GROS_BOUTON.transparent=1<br>
+    GROS_BOUTON.inputmode="relverify" <------- c'est le bouton (mon objet devient un bouton)<br>
+    GROS_BOUTON.FILE="DH0:Images/dessin.iff" <---- l'image dans le bouton<br><br>
+
+    if NewObj("Application","app")>0 then exit<br><br>
+
+    call Notify("GROS_BOUTON.0","pressed",1,"app","Return","call AFFICHER") <---- appuyer sur le bouton = exécute AFFICHER<br>
+    call Notify("win","CloseRequest",1,"app","ReturnID","quit") <--------- si je ferme la fenêtre<br>
+    call set("WIN","open",1) <-------- ça ouvre la grande fenêtre WIN<br><br>
+
+Return<br>
+/************************/<br>
+AFFICHER: procedure<br>
+
+    say "CA MARCHE"   <--------- ça affiche le mot "CA MARCHE"<br><br>
+
+    return<br>
+/************************/<br>
+
+</td></tr></table>
+<br>
+
+Pour tester, on tape rxs ou rx nom_du_programme_AREXX, car c'est vraiment de l'ARexx mais avec MUI&nbsp;!<br><br>
+
+C'est pas si compliqué en fait, car c'est toujours la même structure&nbsp;:<br>
+
+<ul>
+<li>Les librairies à vérifier.
+<li>Le truc en dessous qui boucle en permanence.
+<li>La déclaration des objets en commençant par 0 (c'est ça que vous changez).
+<li>Les actions si on appuie sur un bouton (ça aussi, c'est vous qui le faites).
+</ul>
+<br>
+
+Pixload 4.2 a été fait comme ça, je n'ai pas changé le début de la structure, j'ai juste ajouté des boutons et
+défini les actions si on appuie sur les boutons.<br><br>
+
+Etant donné que c'est de l'ARexx, les actions sont infinies car en reprenant l'exemple plus haut il suffit d'appeler
+un programme pour lui faire faire une action et encore un autre logiciel ARexx lui aussi au lieu de lui faire afficher
+un mot.<br><br>
+
+Pour ceux qui veulent s'y mettre, il faut&nbsp;: MUI 3.8, Rxmui 40 (<a href="http://digilander.libero.it/asoft/" target="_blank">digilander.libero.it/asoft/</a>)
+et de la patience mais pas trop, on fait vite son petit programme sans trop de mal.<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

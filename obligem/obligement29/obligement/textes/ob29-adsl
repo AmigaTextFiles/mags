@@ -1,0 +1,239 @@
+\T
+
+ --> EN PRATIQUE : ADSL SUR AMIGA par Fabien
+============================================
+
+   La technologie ADSL (Asymetric Digital Suscriber Line) est un moyen d'acc_s a
+internet relativement r_cent en France, qui permet d'obtenir des d_bits plus
+qu'appr_ciables. Typiquement 512 ko/s en descente (64ko/s) et 128kb/s en mont_e
+(16ko/s). Et cerise sur le gateau, l'ADSL et l'Amiga, c'est possible.
+
+~ \ Abonnement ADSL requis
+
+   Un pack ethernet (Modem alcatel ou ECI).
+
+   Si vous disposez d'un modem USB, vous devrez utiliser un PC ou un Mac ou ce
+que vous voulez qui poss_de des ports USB et un pilote pour le modem USB, puis
+il suffira de relier l'Amiga en r_seau TCP/IP sur cette machine.
+
+~ \ Configuration mat_rielle requise
+
+   Un Amiga _quip_ d'un 68020 (je conseille fortement un 68060 car le protocole
+PPPoE est assez gourmand). Une carte r_seau. Beaucoup de place sur le disque dur 
+pour t_l_charger les donn_es ;-)
+
+~ \ Configuration logicielle requise
+
+MiamiDX 1.0c
+(ou AmiTCP bientot)
+
+ö
+
+\T
+
+
+~ \ Configuration de MiamiDX
+
+} ^ Interface Hardware :
+
+   Il s'agit tout d'abord de d_finir une interface mat_rielle pour communiquer avec
+la carte r_seau : Pour cela, il suffit d'aller dans la rubrique "Hardware" et de
+cr_er une nouvelle entr_e de type ethernet. Nommez la comme vous voulez, mais
+autant que cela soit significatif, puis s_lectionnez le pilote appropri_. Vous
+pouvez choisir entre un device SANA-II (ariadne-ii.device par exemple, unit_ 0)
+ou alors un pilote MNI (pilote interne optimis_ de Miami), si votre carte r_seau
+est support_e. Les cartes g_r_es sont donn_es dans la documentation de Miami, dans
+la rubrique MNI. Cliquez ensuite sur "SANA-II parameters" et faites "query device".
+Si vous avez choisi un driver MNI, faites "find board" et choisissez la carte
+d_tect_e puis "MNI parameters" et configurez automatiquement les param_tres. Notez 
+que le driver MNI de la carte Ariadne2 ne fonctionne pas correctement sous MorphOS.
+Une fois ceci fait, votre interface mat_rielle ethernet est active, ce qui permet
+au modem et a l'Amiga de communiquer.
+
+   Ensuite nous devons cr_er une entr_e qui correspond au protocole ADSL utilis_.
+Nous cr_ons donc une interface mat_rielle de type Serial. Le type du device est
+"serial device driver". Ensuite, selon que le protocole que vous utilisez pour
+l'ADSL est PPPoE ou PPTP, choisissez le device appropri_ (dans miami:devs/) :
+si vous _tes en PPTP, choisissez miamipptp.device et si vous _tes en PPPoE,
+s_lectionnez miamipppoe.device en vous assurant que la version est sup_rieure 
+ou _gale a 1.7 (sinon faites un tour sur www.nordicglobal.com).
+
+ö
+
+\T
+
+
+Les autres param_tres doivent _tre r_gl_s comme ceci :
+
+Unit : 0
+Speed : 460800
+Use CD : coch_
+Flow Control : RTS/CTS
+EOF mode : auto
+MTU : 1492 (diminuez la valeur si vous rencontrez des probl_mes par la suite)
+Serial mode : 8n1
+
+- Modem settings :
+
+DTR mode : hangup
+Dial prefix : ATD
+Dial suffix : /r
+Escape char : +
+
+Laissez le reste vide.
+
+} ^ Rubrique Dialer :
+
+   Le protocole utilis_ pour l'ADSL est semblable au PPP dans une certaine mesure,
+aussi vous devez cr_ez une entr_e dans cette rubrique. Il suffit juste de cr_er une
+entr_e et de lui donner un nom.
+
+ö
+
+\T
+
+} ^ Rubrique Interface :
+
+}   Interface ethernet :
+   Pour communiquer avec le modem nous devons cr_er une interface ethernet de type
+LAN. Eth0 est un nom couramment utilis_. Choississez ensuite l'interface mat_rielle
+ethernet cr__e pr_c_demment.
+
+Si vous poss_dez un modem alcatel speed touch home :
+
+IP type : static 
+IP address : 10.0.0.10
+Netmask Type : static
+Netmask : 255.0.0.0
+Gateway etc,  r_glez la priorit_ a 0.
+Multicasts : Send as broadcasts
+Multicast pri : 0
+
+Si vous poss_dez un modem ECI Hi-Focus :
+
+IP type : static
+IP address : 192.168.0.1
+Netmask Type : static
+Netmask : 255.0.0.0
+Gateway etc,  r_glez la priorit_ a 0.
+Multicasts : Send as broadcasts
+Multicast pri : 0
+
+ö
+
+\T
+
+- TCP/IP settings :
+
+Get Dynamic host name, priority : 0
+Get Dynamic DNS servers : ignore
+DHCP enable : d_sactiv_.
+
+}   Interface PPP :
+   Enfin, il s'agit de cr_er une interface PPP Dial-out internet pour _tablir la
+connexion avec le provider ADSL. Choisissez le Dialer et le Hardware que vous avez
+cr__s pr_c_demment.
+
+IP Type : dynamic
+Gataway type : dynamic
+Multicasts : disabled
+Gui default : activ_
+
+- PPP Settings :
+
+Allow MS-CHAP : activ_
+User name : le login que votre FAI vous a fourni (fti/xxxxx@fti pour wanadoo)
+Password :  votre mot de passe.
+Laissez les autres champs comme ils sont.
+
+- TCP/IP settings :
+
+Get Dynamic host name priority : 1
+Get dynamic DNS servers : verify and add
+DHCP, comme vous voulez, a vous de tester.
+
+ö
+
+\T
+
+- Logging :
+
+   Je vous conseille de garder une trace des connexions PPP et DIAL, ce qui permet
+de mieux analyser les probl_mes _ventuels que vous pourriez rencontrer.
+
+} ^ Rubrique Database :
+
+DNS servers :
+Vous pouvez mettre les serveurs DNS de votre FAI ici, bien qu'ils sont en th_orie
+ajout_s automatiquement d'apr_s les r_glages pr_c_dents.
+
+Une fois tous ces r_glages effectu_s, n'oubliez pas de sauver.
+Je passe sur les autres rubriques qui ne sont pas essentielles pour la connexion
+ADSL, mais n'oubliez pas de lire la documentation, il existe beaucoup
+d'options/r_glages int_ressants.
+
+~ \ Ben ca marche pas !!
+
+   Pour vous connecter, il suffit de presser online, simple non ? Une fen_tre de DIAL
+doit apparaitre, et si tout se passe bien vous verrez ensuite une fen_tre LCP, puis
+NCP.
+
+Quelques probl_mes courants :
+
+}1/ La fen_tre de dial tourne en boucle, en affichant NO CARRIER.
+
+   Soit vous avez mal choisi le device PPPOE ou PPTP, soit vous n'avez pas bien cr__
+
+ö
+
+\T
+
+votre interface mat_rielle ethernet. Il est aussi a noter qu'apr_s un reboot sauvage,
+ce genre de probl_me peut arriver. Il faut alors attendre entre 2 et 5 minutes
+environ. Cela est du au fait que Miami ne r_initialise pas correctement la session
+PPPOE. En PPTP ce genre de probl_me ne doit pas arriver trop souvent.
+
+}2/ La phase de DIAL r_ussit, mais ca s'arr_te a LCP
+
+   Il semblerait que votre compte ne soit pas reconnu. Pour en _tre sur lisez le
+fichier log que vous avez sp_cifi_ dans PPP log. Si vous voyez un "Authentification
+failed" ou encore "operation timed out", soit votre compte n'est pas encore actif,
+soit votre FAI a jou_ au foot avec son serveur d'identification (Wanadoo est assez
+r_put_ pour ce genre d'exploits).
+   La phase NCP se d_roule en principe correctement, si vous bloquez sur "finding host
+name" ou "findig addresses", ce n'est pas tr_s grave, il suffit de d_sactiver les
+options dans Interface -> interface PPP -> TCP/IP settings Get dynamic host name et
+DNS servers.
+
+}3/ Quand je plante, j'ai du mal a me reconnecter
+   Cf 1/
+
+}4/ Mon ordinateur se traine d_s que je t_l_charge quelque chose
+   Le protocole PPPoE est assez intensif pour nos pauvres 68k. Un 68060 est plutot
+recommand_ pour l'ADSL. En effet un t_lechargement a 64ko/s prend environ 25 %
+des ressources du 68060. Vous imaginez ce que cela peut donner sur un 68040 ou un
+68030.
+
+ö
+
+\T
+
+}5/ Je suis d_connect_ tous les 24h
+   Normal, l'IP doit _tre renouvell_e chaque jour (oui c'est idiot).
+
+}6/ Pourquoi je tombe sur des abrutis quand je t_l_phone chez France T_l_com ?
+   Bonne question, il semblerait que les employ_s ne sont pas affect_s aux bonnes
+taches, d'ou une certaine icomp_tence chronique ;-)
+
+~ \ Remarque finale
+
+   Si vous disposez d'un modem Alcatel Speedtouch, il est possible de le configurer,
+puisqu'il dispose d'un serveur Telnet, FTP et web. Tapez dans un navigateur
+http://10.0.0.138 et vous arriverez sur la page de configuration du modem. Il
+est ainsi possible de passer du mode PPTP au mode PPPOE (reste a savoir si votre
+DSLAM g_re les deux protocoles).
+   Via Telnet il est m_me possible de passer le modem en mode pro, mais je ne
+detaillerai pas la manipulation ici car elle peut se r_veler dangereuse pour le
+modem.
+
+ö

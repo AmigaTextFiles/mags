@@ -1,0 +1,75 @@
+Author: Frank Zündorff
+EMail : F.Zuendorff@ernie.mi.uni-koeln.de
+
+
+
+Break the barrier
+-----------------
+
+It's no mystic anymore, the SCSI version of iomegas ZIP-Drive is running fine
+with Amiga computers equiped with a SCSI-hostadapter. But a new aspect for a
+ZIP-Drive is the feature to exchange Data on PC-formatted medias. What
+advantages brings it for you?
+
+Now you can swap a large amount of data (like mods, pics, 3d-objects etc.)
+without carrying a large container of floppy disks or moving your baby to the
+next PC.
+
+How does it works?
+
+Quite simple. You habe to create a working mountfile using Cross-Dos. This
+mountfile is listed below and the only thing you have to do, is to fix it for
+your hostadapter. Okay here comes the file:
+
+----- 8< ------------------------------------------------------------------------
+
+/* Mountfile for MS-DOS formatted ZIP-Media
+ *
+ * Creation-Date: 21-Nov-95 22:52:21
+ */
+
+/* Device driver parameters.*/
+  Device = <name of your device-driver>
+  Unit   = <5 or 6 - changeable via switch on the backside of the drive>
+  Flags  = 0x00000000
+
+/* Disk size parameters.*/
+  Surfaces       = 1
+  BlocksPerTrack = 1
+  Lowcyl         = 0
+  Highcyl        = 196607
+  BufMemType     = 0
+  Blocksize      = 512
+
+/* File system parameters.*/
+  Mask        = 0x7FFFFFFC
+  Maxtransfer = 0x0001FE00
+  Reserved    = 6
+  Filesystem  = L:CrossDOSFileSystem
+  Stacksize   = 2000
+  Priority    = 5
+  Bootpri     = -20
+  Globvec     = -1
+  Buffers     = 128
+  Dostype     = 0x4d534800
+  Mount       = 1
+#
+
+----------------------------------------------------------------------- >8 -----
+
+A copy of this file can be found in the ZIP-directory included with this report.
+The only thing you have to do, is to drag the "PCZIP"-icon and put it into the
+"storage/dosdrivers" directory of your boot-partition. Now load your favourite
+editor and perform the fixes I'm discribing now. First move the cursor into the
+line starting with "device =". Exchange the following text with the name of your
+hostadapters device-driver name. It you don't know exactly the name, please
+check it out in the hostadapters manual. For example a A2091-user has to change
+the line in "device = scsi.device".
+
+The second step is to choose the right unit-number. Please move the cursor one
+line down starting with "unit =". You can find the unit-switch on the back-side
+of the drive. If the switch is pointing to number five for example, you have to
+put in the following line "unit = 5". Now save the mountfile. That's all.
+
+After mounting the file, you can put in a PC-formatted media und handle it like
+any other device.

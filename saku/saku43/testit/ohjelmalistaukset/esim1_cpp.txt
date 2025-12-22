@@ -1,0 +1,58 @@
+// esim1.cpp
+// Syöte- ja tulostusvirrat
+#include <iostream>
+#include <string>
+
+// Määrittele std-nimiavaruus käyttöön.
+// Näin ei tarvitse esimerkiksi käyttää std::cout tai std::endl -muotoja koodissa
+using namespace std;
+
+class Example1 {
+
+public:
+
+    // Muodostin, jolle välitetään merkkijono parametrina
+    Example1(string name) {
+        cout << "Terve, " << name << endl;
+    }
+
+    ~Example1() {
+        cout << endl << "...Heippa, ja kiitos kaloista!" << endl;
+    }
+
+    // Luokan ainoa "normaali" funktio
+    void doSomething() {
+        for (int counter = 10; counter > 0; counter-- ) {
+            cout << counter << "...";
+        }
+    }
+
+};
+
+
+// Pääohjelma, joka luo Example1-tyyppisen olion
+int main(void) {
+
+    string param;
+
+    cout << "Kerro nimesi >";
+    cin >> param;
+
+    // Luo olio dynaamisesti ja ota osoitin talteen
+    Example1 *pMyFirstObject = new Example1( param );
+
+    // Jos luonti onnistui, niin...
+    if (pMyFirstObject)
+    {
+        // Kutsu olion jäsenfunktiota
+        pMyFirstObject->doSomething();
+
+        // Tuhoa olio sen osoittimen avulla
+        delete pMyFirstObject;
+
+        // Siivoa osoitin
+        pMyFirstObject = NULL;
+    }
+
+    return (0);
+}

@@ -1,0 +1,204 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+6. Softwaretest: Systemtool FACTS (von Gernod Schomberg)
+
+FACTS - "Finest Amiga Clock Time Synchroniser"
+
+Vorab: Das Programm "FACTS" ist im Aminet als "facts.lha" in "comm/tcp" als
+Archiv von ca. 90 KB Gr&ouml;&szlig;e zu finden. Der Entwickler ist Chris Young,
+&lt;chrisdpy@bigfoot.com&gt;. Aktuell ist Version 4.6.
+
+
+Eine Uhr ist aus einem modernen Computer nicht mehr wegzudenken. Nicht nur,
+dass jede Datei beim Speichern eine Datums- und Zeitmarke erh&auml;lt, h&auml;ufig
+braucht man auch einen automatischen Eintrag des Datums, z.B. bei Briefen
+oder bei E-Mails - hier ist auch die Zeitangabe wichtig -, oft laufen im
+Hintergrund Erinnerungsprogramme, die auf Wunsch sekundengenaue Meldungen
+ausgeben. Und nicht zuletzt verl&auml;sst man sich gern auf die Zeit- und
+Datumsanzeige auf dem Bildschirm. Die Uhr muss also genau gehen.
+
+F&uuml;r den Amiga gab es Hilfsmittel, um die Abweichungen der Uhr klein zu
+halten, aber seit dem es das Internet gibt, sind dar&uuml;ber auch Zeitgeber-
+Stationen zu erreichen, die mit h&ouml;chster Genauigkeit Zeit und Datum
+liefern.
+
+Es ist also einfach, z.B. beim Herstellen eines Netzzugangs automatisch die
+genaue Systemzeit abzurufen. Das kann aber auch zu Nachteilen f&uuml;hren, wie
+Holger Kruse, der Entwickler von "Miami", vor Jahren in der MiamiML
+aufzeigte. Chris Young beschreibt dieses im FACTS.Guide, der leider nur in
+Englisch vorliegt (vielleicht gibt es f&uuml;r die n&auml;chste Version schon einen
+deutschen Guide), ausf&uuml;hrlich. W&auml;hrend alle Programme eine Systemzeit-
+Erh&ouml;hung ohne Weiteres verarbeiten, denn das ist ja der normale Ablauf,
+gibt es einige, bei denen ein Zur&uuml;ckstellen der Systemuhr, wie es bei einer
+zu schnell laufenden Uhr n&ouml;tig ist, zu Fehler f&uuml;hren k&ouml;nnen. FACTS l&auml;sst
+sich so einstellen, dass die korrigierte Zeit nur in der Batterieuhr
+gespeichert wird, die Systemuhr erh&auml;lt die Zeit erst beim n&auml;chsten Reset.
+
+
+Systemanforderungen
+
+Workbench 2.04 oder h&ouml;her, ARexx sollte aktiv sein. Ein AmiTCP-4-
+kompatibler TCP/IP-Stack wird sehr empfohlen, wenn man nicht vor hat, FACTS
+nur zur &Uuml;berwachung und automatischen Umstellung der Sommerzeit (DST) zu
+verwenden.
+
+Alte socket.library-Stacks werden nicht unterst&uuml;tzt!
+
+
+Installation
+
+Zur Installation l&auml;sst man am einfachsten den vorhandenen Installer-Script
+laufen. FACTS wird dadurch so eingerichtet, dass es sofort lauff&auml;hig ist.
+Allerdings muss kontrolliert werden, ob die Zeitzonen-Variable "ENV:TZ"
+richtig gesetzt ist. Zonen &ouml;stlich von Greenwich haben positiven Eintrag,
+westliche m&uuml;ssen mit negativem Vorzeichen versehen sein. Von Miami wird
+"TZ" ben&ouml;tigt, also wird sie bei den meisten Anwendern korrekt vorhanden
+sein.
+
+Zum Schluss &ouml;ffnet sich das FACTS-Einstellfenster (GUI), &uuml;ber das Men&uuml;
+sollte man noch einige Anpassungen vornehmen, z.B.:
+
+Screenshot:
+<IMG SRC="../extra/facts1.png" ALT="Screenshot">
+
+- Soll die Uhrzeit in der System- und/oder Batterieuhr gespeichert werden?
+  Bei Speicherung nur in der Systemuhr ist die neue Zeit beim Ausschalten
+  des Rechners verloren.
+- Soll FACTS Beginn und Ende der Sommerzeit automatisch umstellen?
+- Was ist im Fall eines nicht erreichbaren Servers zu tun?
+- Ist meine Zeitzone gegen&uuml;ber GMT um zus&auml;tzlich eine halbe Stunde
+  versetzt?
+- Soll ein Eintrag in das "Hilfsmittel"-Men&uuml; erfolgen?
+
+Bei Men&uuml;punkt "Einstellungen/Kontrolle" muss "SNTP" markiert sein, bei
+"/Kompatibilit&auml;t" darf keine Markierung stehen, wenn das Jahr 2015 noch
+nicht erreicht ist!
+
+Dann speichert man diese Einstellung ab.
+
+Als Test sollte man jetzt online gehen und auf "Pr&uuml;fen" (oder im Men&uuml;
+"Hilfsmittel" auf "Setze Zeit") klicken. Ist alles richtig eingestellt,
+wird die korrekte Zeit abgeholt und angezeigt.
+
+Screenshot:
+<IMG SRC="../extra/facts2.jpg" ALT="Screenshot">
+
+Das Hilfsprogramm "SLEFF" (Server List Editor For Facts) verwaltet die
+SNTP-Server, die von FACTS aufgerufen werden k&ouml;nnen. Nach der Installation
+ist "tick.usno.navy.mil" als Zeitserver eingestellt. Der ist in Washington,
+DC, USA. Sicher eine gute Wahl, ich hatte ihn Jahre lang eingestellt,
+nachdem ich mit einem deutschen Server h&auml;ufig keine Verbindung bekam.
+Inzwischen bin ich zum Max-Planck-Institut in Braunschweig umgestiegen und
+habe f&uuml;r den Fehlerfall "tick.usno..." als zweiten Server eingestellt, der
+tats&auml;chlich gelegentlich aufgerufen wird. Im Guide ist eine kleine Liste
+von Zeit-Servern, die wenigstens f&uuml;r den Anfang ausreichen sollte (hier ist
+das MPI f&auml;lschlich in Berlin angesiedelt). Eine komplette Liste kann von
+
+http://www.eecis.udel.edu/~mills/ntp/servers.htm
+
+abgerufen werden. Man kann sich einige Server heraussuchen und mit "SLEFF"
+f&uuml;r FACTS einrichten.
+
+
+Einige Eigenschaften
+
+Nach Aussage des Autors ist FACTS das erste Programm mit einem GUI zum
+Abgleich der Amiga-Uhr mit einem SNTP-Server (SNTP = Simple version of
+Network Time Protocol). Die Genauigkeit dieser Server liegt im Bereich
+einer Mikrosekunde, allerdings wird durch die &Uuml;bertragung und den
+Programmlauf nur eine Genauigkeit von etwa 20 Millisekunden erreicht. Die
+Batterieuhr des Amiga hat jedoch nur eine Genauigkeit von &#177;1 Sekunde.
+
+FACTS besitzt einen ARexx-Port ('FACTS'), &uuml;ber den Zeitabrufe automatisiert
+werden k&ouml;nnen. Von den beigelegten Skripts ist besonders das interessant,
+mit dem man bei jedem Netzzugang von Miami die Zeit abholen lassen kann.
+
+FACTS kann bei Lesefehlern beim Zeitserver eigenst&auml;ndig Routinen zur
+Korrektur durchf&uuml;hren. Je nach Einstellung wird der n&auml;chste Server gerufen
+("SLEFF"), mit Hilfe von "Aninc" (Warenzeichen von Unsatisfactory Software)
+wird, da h&auml;ufig mehrere Server unter fast gleichem Namen unter der gleichen
+Adresse zu erreichen sind, im lokalen Netz dieses Servers weitergesucht,
+oder im gleichen Server wird ein anderer Zeitgeber (anstatt "sntp" z.B.
+"time/udp") versucht. Im Normalfall merkt man &uuml;berhaupt nichts von dem
+Vorgang. Selbst bei ung&uuml;nstigster Einstellung macht FACTS h&ouml;chstens acht
+Versuche.
+
+Da die Uhren, von denen die Server ihre Zeit beziehen, inzwischen genauer
+gehen als die Erdrotation, werden von den internationalen Zeitstationen
+gelegentlich Schaltsekunden eingef&uuml;gt oder weggelassen. Auch diese
+Schaltsekunden (Leapseconds) kann man sich beim ihrem Einsatz gesondert
+&uuml;bertragen lassen, was aber wohl den Genauigkeitsanspruch der meisten
+Anwender weit &uuml;bersteigt, denn beim n&auml;chsten Zeitabruf wird diese Sekunde
+ohnehin ber&uuml;cksichtigt.
+
+FACTS kann automatisch auf Sommerzeit und Normalzeit umschalten. F&uuml;r
+zahlreiche L&auml;nder/Zonen sind die notwendigen Einstellungen im Men&uuml;
+enthalten, aber mit der Auswahl von "Custom" wird die Einstellung aus den
+Tooltypes gelesen. Diese Funktion arbeitet unabh&auml;ngig vom Netzzugang. FACTS
+pr&uuml;ft beim Programmstart und dann jede Stunde, ob die Einstellung stimmt,
+so dass auch bei einem st&auml;ndig eingeschalteten Rechner die Umschaltung
+richtig vorgenommen wird.
+
+Es ist m&ouml;glich, die Zeit in vorgegebenen Abst&auml;nden abrufen zu lassen. Dazu
+muss im Feld "Int" (Intervall) die Zahl der Sekunden eingetragen werden,
+nach der regelm&auml;&szlig;ig ein Zeit-Download erfolgt. Diese M&ouml;glichkeit ist sicher
+interessant, wenn der Rechner st&auml;ndig online ist.
+
+FACTS ist auf die Grenzen vorbereitet, die der richtigen Zeitanzeige auf
+dem Amiga nach Ablauf bestimmter Termine gesetzt sind. 2015 und 2078 sind
+Jahre, ab denen durch die nur zweistellige interne Jahreszahl-Darstellung
+der System- bzw. der Batterieuhr Falschanzeigen entstehen k&ouml;nnen, im Jahr
+2036 entsteht ein SNTP-&Uuml;berlauf am 6.Februar. Wohl dem, dessen Amiga diese
+Korrekturen n&ouml;tig haben wird :-)
+
+Wenn man online ist, kann man sich mit dem Men&uuml;punkt "Projekt/Server Info"
+n&auml;here Angaben &uuml;ber den Zeitserver herunter laden und anzeigen lassen. Der
+Men&uuml;punkt "Projekt/Version/MOTD" verbindet mit der Homepage von Chris
+Young, http://www.unsatisfactory.freeserve.co.uk und pr&uuml;ft dort, ob eine
+neuere Version von FACTS vorhanden ist und sendet auch die Nachricht des
+Tages (MOTD), wenn vorhanden, zur&uuml;ck. Chris best&auml;tigt im Guide
+ausdr&uuml;cklich, dass wirklich nur die unbedingt notwendigen Daten zur Abfrage
+&uuml;bersandt werden, es bestehen keine Sicherheits-Schlupfl&ouml;cher oder -
+Hintert&uuml;ren!
+
+Und dann gibt es noch im Men&uuml; "Spezial" den Punkt "Zeit totschlagen...".
+Wenn man die "als.library" in Libs: hat, &ouml;ffnet sich ein kleines gr&uuml;nes
+Fenster mit der Rasenm&auml;her-Simulation. Ich finde, es gibt besseren
+Zeitvertreib, aber bitte...
+
+
+Fazit:
+
+Ich habe seit Jahren bei mir FACTS im Hintergrund laufen, ich merke immer
+erst, dass es da ist, wenn sich die Sommerzeit-Einstellung ge&auml;ndert hat
+oder wenn ich meine Uhr stellen muss. Ich lasse das nicht automatisch
+machen, sondern erst, wenn ich merke, dass sie ein paar Sekunden falsch
+geht (die Kirchenuhr schl&auml;gt fr&uuml;her oder sp&auml;ter als die WBClock). Auch,
+dass ich erst jetzt beim Schreiben dieser Zeilen merkte, wie oft ich im
+Guide nachschauen musste, spricht daf&uuml;r, wie unkompliziert dieses Programm
+seinen Dienst tut.
+
+Meine Einsch&auml;tzung: Rundherum empfehlenswert.
+
+
+Auf einen Fehler, der mir auch jetzt erst auffiel, m&ouml;chte ich aufmerksam
+machen: Im der Katalog-Beschreibung (fact.cd) sind offenbar Eintr&auml;ge an
+falschen Positionen (ich habe Chris Young darauf hingewiesen). Deshalb
+taucht im deutschen facts.catalog versehentlich die &Uuml;bersetzung f&uuml;r "Obey
+Leap Seconds" im Men&uuml; "Einstellungen" als "Extra Sekunde!" als letzter
+Punkt im Untermen&uuml; "Autom. Sommerzeit (SZ)" auf. Dort steht im Originaltext
+aber "Long TZ Format", was mit "Ausf&uuml;hrl. TZ-Eintrag" &uuml;bersetzt werden
+k&ouml;nnte.
+
+Gernod Schomberg &lt;g.schomberg@t-online.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

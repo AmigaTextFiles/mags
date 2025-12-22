@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 12/98 - Installer-Kurs 4/6</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Installer-Kurs 4/6</H1>von<BR><A HREF="mailto:A.Wyrwa@gmx.de">Andr&#233; Wyrwa</A></DIV>
+ <br>
+
+Hier eine &Uuml;bersicht &uuml;ber die Inhalte der einzelnen Kursteile:
+<B>
+<OL>
+<LI>Einf&uuml;hrung, &Uuml;berblick, Grundlagen</LI>
+<LI>Kommunikation mit dem User, grundlegende Kommandos</LI>
+<LI>Dateioperationen</LI>
+<LI>weiterf&uuml;hrende Funktionen und Statements</LI>
+<LI>Scriptoptimierung, Lokalisierung</LI>
+<LI>Tricks f&uuml;r Fortgeschrittene, Tools</LI>
+</OL></B>
+
+<B>Teil 4:</B><br><br>
+
+Bis zu diesem Zeitpunkt k&ouml;nnen Sie, sofern sie diesem Kurs gefolgt sind,
+bereits Eingaben vom User entgegennehmen und entsprechend dieser Dateien
+auf seinem Rechner manipulieren. Nun macht das aber recht wenig Sinn, wenn
+Sie einfach wild ins Blaue schreiben, oder aber es k&ouml;nnte den User schnell
+nerven, wenn Sie ihn von Ihrem Script erst einmal gr&uuml;ndlich &uuml;ber seinen
+Rechner und die Datenstruktur auf diesem ausfragen w&uuml;rden, was durchaus
+oft erforderlich wird, beispielsweise, wenn es darum geht, f&uuml;r
+verschiedene Prozessoren optimierte Versionen ihrer Software zu
+installieren.
+
+<P>Der Installer schafft nat&uuml;rlich auch hier Abhilfe, indem er es Ihrem
+Script erm&ouml;glicht, den &quot;Zielrechner&quot; erst einmal ein wenig unter die
+Lupe zu nehmen. Die daf&uuml;r bereitgestellten Befehle seien kurz listenartig
+aufgez&auml;hlt:</P>
+
+<OL>
+<LI><A HREF="9812in2.htm#Getsize">(GETSIZE )</A> ..... Erfragen der Gr&ouml;ﬂe einer Datei</LI>
+<LI><A HREF="9812in2.htm#Getdevice">(GETDEVICE )</a> ...... Liefert das Device zu einem log. Datentr&auml;ger</LI>
+<LI><A HREF="9812in2.htm#Getdiskspace">(GETDISKSPACE )</A> ... Liefert den freien Platz eines Datentr&auml;gers</LI>
+<LI><A HREF="9812in2.htm#Setsum">(GETSUM )</A> ......... Ermitteln der Checksumme einer Datei</LI>
+<LI><A HREF="9812in2.htm#Getversion">(GETVERSION )</A> ..... Ermitteln der Versionsnummer einer Datei</LI>
+<LI><A HREF="9812in2.htm#Getenv">(GETENV )</A> ......... Auslesen einer ENV-Variable </LI>
+<LI><A HREF="9812in2.htm#Getassign">(GETASSIGN )</A> ...... Liefert den vollst&auml;ndigen Pfad zu einem Assign</LI>
+<LI><A HREF="9812in2.htm#Iconinfo">(ICONINFO )</A> ....... Informationen aus einer .info-Datei auslesen </LI>
+<LI><A HREF="9812in2.htm#Database">(DATABASE )</A> ....... Informationen &uuml;ber das System besorgen  </LI>
+</OL>
+
+<P>Die genauere Funktionsweise dieser Befehle sehen Sie sich bitte unter
+den <A HREF="9812in2.htm">Befehlsbeschreibungen</A> an. Untersch&auml;tzen Sie nicht Ihre Funktionalit&auml;t,
+einige von Ihnen lassen sich auﬂer zu ihrem prim&auml;ren Zweck auch zu
+sekund&auml;ren einsetzen, die daf&uuml;r umso n&uuml;tzlicher sein k&ouml;nnen. Mittels
+(GETASSIGN ) kann man z.B. dank n&uuml;tzlicher Parameter pr&uuml;fen, ob es sich
+bei einer Laufwerksangabe um ein Assign, ein physisches Laufwerk oder
+einen Datentr&auml;ger handelt.</P>
+
+<P>Sie sollten auf sich auf jeden Fall jede Beschreibung einmal angesehen
+haben, um in etwa einen &Uuml;berblick zu haben, was alles machbar ist.</P>
+
+<P>Dar&uuml;ber hinaus besch&auml;ftigen wir uns in diesem Teil noch mit einigen
+anderen Kommandos, die sich in solche teilen lassen, mittels derer sich
+der Ablauf des Scripts optisch noch etwas gestalten l&auml;ﬂt, andererseits
+solche, die die Funktionalit&auml;t des Installers noch einmal erheblich
+steigern.</P>
+
+<P>Zu ersteren geh&ouml;rt das Kommando (COMPLETE ). Der Installer pr&auml;sentiert
+im Dragbar seines Fensters einen Prozentwert, der angibt, wie weit die
+Installation bereits fortgeschritten ist. Mittels (COMPLETE ) l&auml;ﬂt sich
+dieser Wert im Ablauf des Scripts setzen. Dies ist nicht unbedingt eine
+rein &auml;sthetische Spielerei, sondern sollte bei umfangreichen
+Installationen auch benutzt werden, um dem User anzuzeigen, ob er
+noch eine Tasse Kaffee trinken kann, bis die Installation beendet ist.</P>
+
+<P>Einen &auml;hnlich gelagerten Sinn erf&uuml;llt das Statement (WORKING ), das eine
+blanke Seite pr&auml;sentiert, auf der ein frei definierbarer Text angezeigt
+wird, w&auml;hrend die Installation fortgesetzt wird. Diese Seite wird solange
+angezeigt, bis eine Funktion wieder das Installer-Fenster in Anspruch
+nimmt.</P>
+
+<P>Dieser Befehl sollte genutzt werden, um bei l&auml;ngeren Operationen, die
+ohne Fortschrittsanzeige oder sonstige Ausgabe ablaufen, den User &uuml;ber
+die T&auml;tigkeiten des Installers zu informieren, und ihn somit nicht in
+der Luft h&auml;ngenzulassen. Es kann schon schnell verd&auml;chtig werden, wenn
+der Installer ewig auf der Platte herumschraubt, ohne sich dazu zu &auml;uﬂern.</P>
+
+<P>Zur zweiten Kategorie z&auml;hlen zun&auml;chst einmal die Befehle (EXECUTE ),
+(RUN ) und (REXX ). Diese dienen dem Ausf&uuml;hren einer AmigaDOS-Script-
+Datei, einer beliebigen Amiga-DOS-Befehlszeile bzw. eines ARexx-Scripts
+und k&ouml;nnen somit unter Umst&auml;nden Aufgaben extern l&ouml;sen, f&uuml;r welche die
+Funktionalit&auml;t des Installers unzureichend ist. In der Praxis kommt
+so etwas nicht selten vor und kann teilweise auch zu recht gewitzten
+Probleml&ouml;sungen f&uuml;hren. Man sollte sich jedoch als Maxime stellen, so
+viel wie m&ouml;glich durch die internen Kommandos zu erreichen, und sollte
+man doch einmal auf externe L&ouml;sungen zur&uuml;ckgreifen, so ist es wichtig,
+die L&ouml;sung so flexibel zu gestalten, daﬂ sie der Verschiedenheit der
+Umgebungen, in denen das Script letztlich ausgef&uuml;hrt wird, gerecht wird.</P>
+
+<P>Beispielsweise sollten Amiga-DOS-Kommandos, von denen nicht sicher ist,
+ob sie jeder User hat, mit dem Installerscript mitgeliefert werden,
+ebenso ist bei Ausf&uuml;hrung eines ARexx-Scripts ratsam, zu pr&uuml;fen, ob
+RexxMast l&auml;uft bzw. dieser ggf. vorher zu starten.</P>
+
+<P>Auﬂerdem m&ouml;chte ich mich in diesem Kursteil noch den Befehlen
+(SYMBOLSET ) und (SYMBOLVAL ) widmen, deren Anwendung ebenso verwirrend
+wie n&uuml;tzlich sein kann. Sie er&ouml;ffnen n&auml;mlich einen Weg, nicht nur
+Variableninhalte, sondern die Variablen selbst zu manipulieren, sprich
+ihre Bezeichner (Namen) zu &auml;ndern. In echten Programmiersprachen werden
+Probleme, die auf solche Aufgaben hinauslaufen, mit Hilfe von Pointern
+gel&ouml;st, die in bestimmte Bereiche des Speichers verweisen, an denen dann
+z.B. eben Variablennamen abgelegt sind, und die dann selbst wie Variablen
+behandelt werden k&ouml;nnen. Die Verwendung von Pointern w&auml;re aber viel zu
+kompliziert und aufwendig f&uuml;r die (relativ) sp&auml;rlichen Anspr&uuml;che, die an
+ein Installerscript gestellt werden, weshalb man hier beginnend mit
+Version 42.9 eine einfache L&ouml;sung eingef&uuml;hrt hat.</P>
+
+<P>Die Verwendung der Befehle wird im Beispiel (P_ASKDIR-SIZE ) deutlich
+(s. Bin-Verzeichnis).</P>
+
+<P>Ich m&ouml;chte an dieser Stelle noch zwei weitere Befehle einf&uuml;hren, die ich
+bei der Planung des Kurses bisher vergessen hatte. Es handelt sich um die
+Funktionen (STRLEN ) und (SUBSTR ). Erstere dient dazu, die L&auml;nge eines
+Strings zu ermitteln, letztere dazu, ein Teilst&uuml;ck desselben zu
+extrahieren. Genauere Ausf&uuml;hrungen finden Sie wie immer in der
+Befehls&uuml;bersicht.</P>
+
+<P>Abschlieﬂend f&uuml;hren wir noch die <B>Prozeduren</B> ein. Sie sind ein wichtiges
+Strukturmerkmal, das jemandem, der schonmal programmiert hat, nicht
+unbekannt sein sollte. Sie k&ouml;nnen einerseits dazu benutzt werden, das
+Script in &uuml;bersichtliche Abschnitte einzuteilen, andererseits braucht
+mit ihrer Hilfe sich mehrfach wiederholender Code nur einmal geschrieben
+zu werden. Eine Prozedur ist letztlich nichts anderes, als ein Teil des
+Scripts, in dem eine Folge von Kommandos zusammengefaﬂt sind, und der
+innerhalb des Scripts jederzeit aufrufbar ist. Die Prozedur ersetzt
+also eine ganze Befehlsfolge durch einen einzigen Aufruf, der im Namen
+der Prozedur besteht.</P>
+
+<P>Um das ganze etwas flexibler zu gestalten und ihm damit erst wirklich
+Bedeutung zu verleihen, k&ouml;nnen der Prozedur auch Parameter &uuml;bergeben
+werden, wie bei einem richtigen Befehlsaufruf. Im Gegensatz zu anderen
+Sprachen verf&uuml;gen Installer-Prozeduren nur &uuml;ber Input-, nicht &uuml;ber
+Output-Parameter. Da aber sowieso alle Variablen immer globale sind,
+also innerhalb des gesamten Scriptes verf&uuml;gbar sind, l&auml;ﬂt sich die
+R&uuml;ckgabe von Werten aus der Prozedur durch das einfach Schreiben in
+Variablen l&ouml;sen. Soll nur ein Wert zur&uuml;ckgegeben werden, so kann dies
+allerdings direkt geschehen, die Prozedur funktioniert dann wie eine
+Funktion, kann also direkt anstelle einer Variablen eingesetzt werden.</P>
+
+<P>Definiert werden Prozeduren durch den Befehl <A HREF="9812in2.htm#Procedure">(PROCEDURE )</A>>, aufgerufen
+werden sie durch ihren damit festgelegten Namen. Sehen Sie sich dazu bitte
+die Befehlsbeschreibung an.</P>
+
+<P>Ein weiteres Anwendungsgebiet f&uuml;r Prozeduren stellt die Weitergabe von
+Programmteilen dar, da diese dann sehr leicht in andere Scripts zu
+integrieren sind. Beispiele daf&uuml;r liegen diesem Kurs in Form der
+Prozeduren <A HREF="9812in2.htm#ASKDIR">(P_ASKDIR-SIZE )</A> und <A HREF="9812in2.htm#CONV">(P_CONVERSION )</A> bei.</P>
+<P>
+Ein umfassendes Beispielscript, das die Funktionsweise der in diesem
+Kurs behandelten Kommandos umfaﬂt, kann ich diesmal nicht bieten, aber
+Sie k&ouml;nnen sich selbst mit ihnen vertraut machen, indem Sie z.B. das
+FixRamIcon-Script vom letzten Teil um die M&ouml;glichkeit erweitern, die
+Koordinaten des Ram-Icons erst auszulesen und diese dann als Default-
+Werte f&uuml;r die `Von Hand`-Eingabe einzuf&uuml;gen. Eine einfache Basis zum
+Experimentieren kann auch ein Script bilden, das einfach ein paar
+Systemdaten ausliest und diese im Installerfenster ausgibt.
+Experimentieren Sie einfach ein wenig.</P>
+
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="../cc/9812bb.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz1298/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9812in2.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; `98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

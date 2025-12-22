@@ -1,0 +1,387 @@
+<HTML>
+<HEAD>
+<TITLE>Interview</TITLE>
+</HEAD>
+<BODY BACKGROUND="funrelif3.gif">
+<TABLE WIDTH="80%" ALIGN="center">
+<TR>
+<TD BGCOLOR="#FF6A69">
+<FONT COLOR="#FFFFFF">
+<H1 Align="Center"><B>Interview mit Sam Jordan (WarpOS)</B></H1>
+<H3 Align="center">von der Zukunft und Gegenwart</H3>
+</TD>
+</TR>
+</TABLE><FONT COLOR="#000000"><p><PRE>
+
+           Seit  schon  fast  einem  Jahr  haben  wir endlich das worauf wir
+           solange   gewartet   haben.    Nichts   schien   für  den  Amiga
+           interessenter  zu  sein  als  eine  PPC  Karte.  Leider blieb der
+           Ansturm von entsprechender Software für den PPC Prozessor aus.
+     
+           Wir  haben nun ein Interview mit dem WarpOS Entwickler Sam Jordan
+           geführt  und  wollten  nun  mehr  über  WarpOS  und  die  Zukunft
+           erfahren.
+     
+           Für  alle WarpOS Gegner:  Natürlich wollten wir schon viel früher
+           ein Interview mit irgendjemanden von phase5 führen, leider ist es
+           uns  nicht gelungen nur eine Antwort zu bekommen.  An uns soll es
+           also nicht liegen, wir sind für alles offen.
+     
+     
+<TABLE WIDTH="70%" ALIGN="center">
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:   Hi Sam, erzähl uns mal wie es zu der Idee kam noch ein
+PPC  System  wie  WarpOS zu entwickeln, welche Schwierigkeiten es
+gab und wer überhaupt daran beteiligt war?
+</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+Das   ist   natuerlich   eine   recht  lange  Geschichte.   Meine
+PPC-Karriere  begann  im  Fruehling  1996,  als ich damit begann,
+einen  PPC-Assembler  zu  schreiben.  Damals hatte ich natuerlich
+noch  keine  PPC-Hardware, dafuer war ich mit vielen Fachbuechern
+ausgestattet,  welche es mir erlaubten, auch ohne Hardware zuegig
+weiterzuarbeiten.   Dann  aber  kam  der  Punkt, wo ich unbedingt
+wissen  musste,  wie  denn  die  Objekt-Dateien und ausfuehrbaren
+Programme   fuer   den   PPC   auszusehen  haben.   Nach  einigen
+erfolglosen   Anfragen  bei  Phase5  (es  hiess,  es  gaebe  noch
+keinerlei  Informationen)  fragte  ich bei HAAGE&PARTNER an.  Ich
+wurde  praktisch mit offenen Armen empfangen.  Kurze Zeit spaeter
+gabs das erste Treffen und schon bald bekam ich ein PPC-Board zur
+Verfuegung gestellt.  Das war im November 1996.
+
+Als  ich  das Board bekommen hatte, hatte ich bereits mein erstes
+PPC-Programm  erfolgreich  mit  meinem  Assembler  uebersetzt und
+brannte foermlich darauf, zu sehen, was der PowerPC so drauf hat.
+Dann  kam  der  grosse  Moment:   ich  startete  das  'cybermand'
+(Mandelbrot-Programm) und das Ergebnis hatte mich schockiert.  Es
+lief  um mehrere Faktoren langsamer als der 68060-Prozessor.  Die
+Ursache  des  Problems  war schnell gefunden:  die Kontextwechsel
+(Wechsel  des  Programmablaufs  von  einer CPU zur anderen) waren
+einfach unglaublich langsam, was wiederum an der ppc.library lag,
+welche die Schnittstelle zum PPC darstellte.
+
+Auch  meine  Kollegen hatten massive Probleme mit der ppc.library
+und  so  entstand schnell der Wunsch nach einer besseren Loesung.
+Kurze  Zeit  darauf  habe  ich  die  erste  Version  einer  neuen
+Hardware-Schnittstelle  zum  PPC  fertig.   Das Resultat war sehr
+beeindruckend,  das  Mandelbrot-Programm war wirklich unglaublich
+schnell  geworden.   Diese  powerpc.library  V1 ist sozusagen der
+Urahn des heutigen WarpOS.
+
+Da  sich  am  Zustand  der  ppc.library  nichts  gebessert hatte,
+arbeiteten  wir  weiterhin  mit  der powerpc.library, welche dann
+immer  mehr  verbessert  wurde.   Bereits zum Jahreswechsel waren
+Features  wie  MMU-Support,  Crash-Requester  implementiert.  Das
+erlaubte  es  H&P, sehr effizient weiterzuarbeiten, was sich dann
+auch  darin  aeusserte, dass H&P praktisch als einzige schon sehr
+bald  beeindruckende Software zeigen konnte, wie zum Beispiel das
+Voxelspace- Demo, welches schon anfangs 1997 lief.
+
+Ende  Maerz  1997  kam  dann  ein  Tiefschlag.   Bisher  war  die
+powerpc.library  beim  Hochfahren  auf die ppc.library angewiesen
+aber  auf  einmal erschien eine ppc.library, welche es unmoeglich
+machte,  die powerpc.library V6 weiterzuverwenden.  Das traf mich
+ganz  unvorbereitet und jetzt stellte sich die Frage, wie es denn
+weitergehen sollte.
+
+Dann   fassten   wir   den  Beschluss,  eine  powerpc.library  zu
+entwickeln,  welche  auf der ppc.library basieren sollte, die V7.
+Die  war  in  kurzer  Zeit  erstellt  und  die Software lief dann
+wieder.   Nur  war  die  Performance  immer  noch  grausig und es
+fehlten  auch  viele  Features,  so dass die meisten Features der
+alten V6 nicht mehr eingebaut werden konnten.  Also versuchte H&P
+zunaechst,  Phase5  dazu  zu  bringen,  unsere  Wuensche  bei der
+Weiterentwicklung  der  ppc.library  zu beruecksichtigen.  Leider
+blieb  das  voellig  erfolglos,  die  Wuensche  wurden  praktisch
+ignoriert.   Jedenfalls  waren  wir schnell der Meinung, dass man
+auch mit dieser Loesung nicht vernuenftig arbeiten konnte.
+
+Als  Folge davon entstand die powerpc.library V8, das WarpOS.  Es
+wurde  in Rekordzeit fertiggestellt, da jederzeit mit dem Release
+der  Boards  gerechnet  werden  musste  (im Fruehling/Sommer 1997
+wurden   ja   die   Ankuendigungen   im   2-Wochen-Takt   jeweils
+verschoben).   Die Kontextwechsel waren damals etwa um den Faktor
+100  schneller  als  mit  der  ppc.library.  Zudem bot das WarpOS
+alles, was wir uns so wuenschten.  Seither hat sich das WarpOS zu
+einem  aeusserst  leistungsfaehigen  und  zuverlaessigen  OS-Kern
+entwickelt.   Die  neueste Version ist die V14, welche vor kurzem
+veroeffentlicht wurde.</TD></TR>
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:   Die  Anzahl  der PPC Programme die zur Zeit erscheinen
+ist  noch  relativ  klein, meistens handelt es sich dabei noch um
+kleine   Tools   die   relativ  wenig  von  einem  PPC  Prozessor
+profitieren.   Die  Zahl  der WarpOS Programme ist verglichen mit
+den  Programmen  für die ppc.library noch kleiner.  Profesionelle
+Anwendungen  von  anderen Firmen außer jetzt Haage&Partner wurden
+kaum  für  WarpOS angekündigt.  Wie kommt das, wo es doch mit dem
+StormC++  Entwicklungspaket  relativ  einfach  sein  sollte  auch
+größere Projekte für PPC umzusetzen?</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+Es  herrscht  zur Zeit immer noch eine grosse Verunsicherung, die
+auch  durch  diese  Auseinandersetzung beim ersten WarpOS-Release
+verursacht  wurde.   Deswegen  haben  wohl viele Entwickler immer
+noch etwas Angst davor, sich auf ein System festzulegen.
+
+Das StormC++ Entwicklungspaket erleichtert zwar das Erstellen von
+PPC-Software  ungemein,  nur  darf sich niemand einfach erhoffen,
+simples   Neucompilieren   von   existierender   Software  wuerde
+ausreichen,  um  effiziente  PPC-Software  zu  erstellen.   Diese
+Dual-Prozessor-Hardware   stellt   die   Entwickler   vor  enorme
+Probleme,  was  wohl  mit  ein  Grund  ist, warum noch sehr wenig
+effiziente PPC-Software vorhanden ist.</TD></TR>
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:   Die relativ kleine Anzahl an PPC Programmen für WarpOS
+läßt  sich  damit  auch  erklären  das  es  außer StormC++ keinen
+anderen   Compiler  gibt  welcher  WarpOS  unterstützen  würde.
+StormC++  ist  mit  Sicherheit  keine schlechte Software aber bei
+weitem  noch  nicht  für  alle  Programmierer bezahlbar.  Wird es
+vielleicht eine andere Lösung außer StormC++ geben?</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+Ein  Freeware-Compiler  fuer WarpOS ist zur Zeit in Arbeit, erste
+Beta-  Versionen  laufen  bereits.   Damit  sollten auch fuer die
+Leute  mit  knappem  Geldbeutel  jegliche Hindernisse aus dem Weg
+geraeumt werden.</TD></TR>
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:   Immer  wieder heißt hört man von vielen Programmierern
+das  es sehr schwer ist Programme für PowerUp umzusetzen.  Kannst
+Du  uns  mal  in  einigen  kurzen  Sätzen erklären wo die größten
+Schwierigkeiten  liegen  und  wieso  wir  noch  Heute auf soviele
+Programme warten müssen?</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+Man  fragt sich natuerlich, warum das beim AMIGA nicht so klappen
+will,   wie   z.B.    beim  PowerMac.   Der  Hauptgrund  ist  die
+Dual-Prozessor-Architektur,  welche  unserer Meinung nach absolut
+keine  Zukunft  hat und schnell verschwinden muss.  Ich werde mal
+kurz skizzieren, womit die Entwickler heute zu kaempfen haben.
+
+Das  Hauptproblem  ist das, dass das gesamte AMIGA-Betriebssystem
+komplett  auf  dem  68K-Prozessor  basiert.   Das  AMIGA-OS weiss
+absolut  gar  nichts ueber den PPC, also profitiert es auch nicht
+vom schnelleren Prozessor.  Die Applikationen muessen den PowerPC
+speziell  unterstuetzen, was mit Hilfe der vorliegenden Loesungen
+(WarpOS,  ppc.library)  gemacht wird.  Schlussendlich heisst das,
+dass der PPC nicht mehr ist als ein sehr schneller Koprozessor.
+
+Viele  Applikationen  fuer  den  AMIGA  arbeiten intensiv mit dem
+AMIGA-OS,  indem  sie  Systemfunktionen aufrufen.  Wenn jetzt ein
+solcher  Aufruf in einer PPC-Funktion geschieht, muss ein Wechsel
+des  Programmablaufs  von  einer  CPU  zur  anderen durchgefuehrt
+werden.    Diese   Wechsel   dauern  beim  WarpOS  zur  Zeit  0.5
+Millisekunden   (hin   und  zurueck).   Das  heisst  jetzt,  dass
+PPC-Software,  welche  intensiv  das  AMIGA-Betriebssystem  nutzt
+stark  gebremst  wird  und  damit  ist auch schon erklaert, warum
+viele PPC-Software fuer den AMIGA nur sehr ineffizient laeuft.
+
+Diese  langen  Kontextwechsel kommen auch daher, dass dauernd die
+Prozessor-  Caches  geflusht  werden,  was  mich  auf  das zweite
+Problem  bringt.   Wenn  eine  CPU  einen  Wert  in  den Speicher
+schreibt,  dann  landet  der  Wert  meistens  noch  gar  nicht im
+Speicher  sondern  nur im Cache.  Wenn jetzt der andere Prozessor
+diesen  Wert  vom  Speicher lesen will, bekommt er einen falschen
+Wert.    Der   68K   und   der   PPC  sind  nicht  in  der  Lage,
+hardwaremaessig  dafuer  zu  sorgen,  dass die Inhalte der Caches
+abgeglichen  werden.   Wenn  man jetzt existierende Programme vom
+68K  her uebernimmt und die zu portieren versucht, kann man dabei
+eine  boese  Ueberraschung erleben.  Was auf dem 68K so wunderbar
+funktioniert klappt auf einmal nicht mehr.
+
+Das dritte Problem haengt mit dem zweiten zusammen.  Wenn der PPC
+auf  Speicher  direkt  zugreift,  welche direkt von EXEC (auf der
+68K-Seite)  alloziert  wurde, so besteht eine grosse Gefahr, dass
+sich  beide  Prozessoren  im Randgebiet des allozierten Speichers
+gegenseitig  die  Daten  kaputtmachen.   Das  ist  in der Tat ein
+Problem,  dass  von  sehr  vielen Entwicklern total unterschaetzt
+oder  sogar  ignoriert wird.  Ich bin mir fast sicher, dass viele
+der   existierenden   PPC-Software   einfach   System-Calls   auf
+Funktionen wie 'AllocMem' und 'AllocVec' machen, was dazu fuehrt,
+dass  diese  Software  potentiell  instabil  laeuft.   Falls  die
+Entwickler  das  nicht  merken,  muss  man  befuerchten, dass die
+Instabilitaeten immer mehr zunehmen werden.
+
+All  diese  Probleme bedeuten fuer viele Entwickler einen enormen
+Mehraufwand  und  damit  auch erhoehte Entwicklungskosten.  Zudem
+ist  die Aussicht auf Erfolg auch nicht immer grad rosig, wenn es
+sich um Software handelt, welche extrem AMIGA-OS-lastig ist.</TD></TR>
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:   Phase5  ist  für  viele Amiga User sowas wie ein Gott.
+Schließlich  hat  kein  anderer  Hardware  Hersteller  wie phase5
+soviel  für  den  Amiga  getan.   Was wird bei Haage&Partner denn
+unternommen   damit   sich  die  WarpOS  Lösung  gegenüber  der
+ppc.library durchsetzt?</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+Erste  Grundregel:   Wir wollen unsere Loesung durchsetzen, indem
+wir  hohe  Qualitaet  und Innovation bringen.  Das WarpOS hat mit
+der   Zeit   auesserst   interessante   Features   bekommen   wie
+fakultativer  Speicherschutz  oder dynamisches Multitasking.  Das
+sind wichtige Features, welche auf alternativen Plattformen schon
+laengst Standard sind.
+
+Wir  moechten  auch  zeigen,  dass  das  WarpOS  als  ein  erster
+Vorlaeufer  des  zukuenftigen  EXEC  betrachtet werden kann.  Das
+ganze   WarpOS  wurde  stark  auf  die  Kompatibilitaet  zu  EXEC
+getrimmt,  so  dass  WarpUp-Software  spaeter  problemlos mit dem
+neuen portierten EXEC laufen wird.</TD></TR>
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:   Mit dem erscheinen der BlizzardPPC Karten kam auch das
+erste  große Problem wo es einfach unmöglich war Programme welche
+WarpOS  unterstützen zum Laufen zu bewegen.  Zum glück ist es Dir
+gelungen  dieses Problem zu beheben.  Ähnliche Probleme werden in
+Zukunft  mit Sicherheit nicht selten auftreten, glaubst Du das es
+Dir immer gelingen wird diese dann zu lösen?  Was müßte es Deiner
+Meinung  nach  passieren  um  phase5  zu einer Zusammenarbeit mit
+Haage&Partner in der PPC Sache zu bewegen?</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+Kompromissbereitschaft  von beiden Seiten.  H&P hat immer betont,
+dass eine zusaetzliche Unterstuetzung des ELF-Formats durchaus im
+Bereich  des  Moeglichen  liegen koennte.  Das bedingt aber, dass
+auch   P5   einen   Schritt  in  unsere  Richtung  macht  und  zu
+Zugestaendnissen bereit ist.  Wie man bei der BlizzardPPC gesehen
+hat, war das Gegenteil der Fall.
+
+Ich  rechne ganz fest mit weiteren Problemen, bin aber auch davon
+ueberzeugt,  dass  sich  alle Probleme loesen lassen.  Jedenfalls
+kann  es  uns  nicht wieder passieren, dass uns das unvorbereitet
+trifft.</TD></TR>
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:   Wenn  man  sich  mal  mit  Leuten  im Z-Netz oder auch
+anderen  Netzen  über  das Thema WarpOS und ppc.library unterhält
+dann merkt man sehr schnell, das viele gegen WarpOS schon alleine
+deshalb  sind  nur  weil  es phase5 nicht in den Kram passt.  Wir
+findest  Du  es  das man einfach etwas kritisiert ohne sich damit
+überhaupt auseinander gesetzt zu haben?</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+Gegen Kritik habe ich gar nichts, aber sie muss auf etwas beruhen
+und  sie  muss  sachlich  und hoeflich formuliert sein.  Ich habe
+hier schon sehr Positives und auch sehr Negatives erlebt.
+
+Wenn  Leute  WarpOS  deswegen  als  schlecht ansehen, weil es von
+Phase5 nicht unterstuetzt ist, so ist das einfach nicht objektiv.
+Man sollte seine Meinung anhand von eigenen Erfahrungen bilden.</TD></TR>
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:   Bevor wir zu einem anderem interessantem Thema kommen,
+hier  noch  die  letzte  WarpOS Frage.  Wieso soll WarpOS für den
+Anwender  und  auch Programmierer Deiner Meinung nach besser sein
+als die ppc.library?</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+WarpOS bot seit jeher eine sehr hohe Zuverlaessigkeit, welche von
+der  ppc.library  selbst heute noch nicht erreicht wird, was fuer
+den  Andwender  als  auch  fuer  den Entwickler bestimmt ein sehr
+wichtiges  Argument ist.  Zudem darf sowohl der Anwender als auch
+der  Entwickler  auf  den  bestmoeglichen  Support  zaehlen, z.B.
+beantworte  ich  nahezu  immer alle ankommenden Mails sofort, was
+schon  viele  Leute  dankbar zur Kenntnis genommen haben, nachdem
+sie  vom  Phase5-Support enttaeuscht wurden.  Die WarpUp-Releases
+bringen   auch   dem   Anwender   eine  einfache  Handhabung  und
+Installation,   dem   Entwickler  umfangreiche  und  detaillierte
+Dokumentation.
+
+Das  WarpOS  wird  staendig  weiterentwickelt und ich scheue mich
+auch   nicht  davon,  umfangreiche  Arbeiten  durchzufuehren,  um
+hochklassige  Features zu unterstuetzen (der dynamische Scheduler
+hat mich mehrere Wochen gekostet).  Hier darf man in Zukunft noch
+ganz heisse Sachen erwarten :)
+
+WarpOS     bietet    auch    maechtige    Funktionen    an,    um
+Lowlevel-Applikationen zu realisieren.  Man darf nicht vergessen,
+unter  dem WarpOS liegt der WarpUp-HAL, der wiederum mit ueber 50
+Funktionen    alles   bietet,   was   ein   Programmierer   einer
+LowLevel-Applikation  (z.B.   Emulatoren)  sich so wuenscht.  Ich
+moechte   hier   auch   noch  hinzufuegen,  dass  der  WarpUp-HAL
+problemlos  auch  fuer  ein  PPC-EXEC  verwendet  werden koennte.
+Damit  koennten sich die Entwickler des PPC-EXEC eine ganze Menge
+Zeit einsparen.
+
+Last  but not least:  WarpUp ist ein offenes System, seit der V14
+ist  das  durch  die  Hardware-Treiber  offensichtlich  geworden.
+Hersteller    von   alternativer   PPC-Hardware   koennen   sogar
+selbststaendig  einen  Treiber  fuer das WarpOS erstellen, wonach
+das  WarpOS sofort auf jeglicher PPC-AMIGA-Plattform laufen wird.
+Wir  sind  davon  ueberzeugt,  dass  es bald alternative Hardware
+geben wird.</TD></TR>
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:    Themawechsel:   Seit  kurzem  bist  Du  auch  an  der
+Portierung der MesaGL/OpenGL Library beteiligt.  Schon jetzt soll
+MesaGL  vollständig  Kompatibel zu OpenGL sein.  Das alles klingt
+natürlich  wieder  sehr  toll,  doch  leider  nützt  uns das ohne
+passender  Hardware recht wenig.  Selbst ein PPC Prozessor hat da
+gewisse  Schwierigkeiten.   Auf dem Amiga Markt sieht es zur Zeit
+mit  der passender Hardware sehr schlecht aus, wie soll sich dann
+Deiner Meinung so ein interessantes Produkt durchsetzen?</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+Es  ist  halt  ein  Teufelskreis:  solange keine Software da ist,
+welche  3D-Hardware  unterstuetzt, will niemand 3D-Hardware bauen
+(denn  es  wuerde  ja  niemand  damit  was  anfangen koennen) und
+solange keine 3D-Hardware da ist, will niemand Software dafuer zu
+entwickeln.   Es gilt, jetzt aus diesem Teufelskreis auszubrechen
+und das Storm-MESA ist der erste Schritt in die Richtung.
+
+OpenGL  ohne  3D-Hardware  ist natuerlich unbrauchbar, da die CPU
+einfach  mit  der  Komplexitaet  ueberfordert ist.  Deswegen kann
+sich  OpenGL  erst  durchsetzen,  sobald  eine  GL-Implementation
+3D-Hardware unterstuetzt.  Und genau das ist zur Zeit geplant und
+es  wird  nicht  mehr  lange  dauern,  bis das verwirklicht wird.
+Damit  kann  der  AMIGA einen gewaltigen Sprung in die 3D-Zukunft
+unternehmen, denn dann ist es praktisch ein Kinderspiel, jegliche
+OpenGL-unterstuetzte   Applikationen   (man   denke   an  gewisse
+PC-Spiele) auf den AMIGA umzusetzen.
+
+Wir   wollen   mit   dem   MESA  auch  ein  Zeichen  in  Richtung
+Grafikkarten- Hersteller setzen.  Wir wollen zeigen, dass es sich
+lohnt,  3D-Hardware auf Grafikkarten einzusetzen und dass es sich
+lohnt, leistungsfaehige Chips einzusetzen.</TD></TR>
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:  Mit OpenGL wäre es auch fast schon ein Kinderspiel eine
+große Anzahl der PC 3D Spiele für den Amiga zu portieren.  Leider
+wird   es   dazu,  das  wohl  durch  die  magere  Anzahl  an  gut
+ausgestatteten  Amigas  und  der  Verbohrheit  einiger Firmen nie
+kommen.   Denkst  Du  nicht  das  alle Amiga Firmen langsam ihren
+eigenen  Weg  gehen und so den technischen Fortschritt des Amigas
+hindern?</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+Ich  denke,  dass  keine  AMIGA-Spiele-Firma  an Portierungen von
+PC-Games  vorbeikommt.   Es  gibt  zwar viele Talente beim AMIGA,
+welche  in  der  Lage  waeren, hochklassige Spiele zu entwickeln,
+aber  das  reicht  natuerlich nicht, um die Spiele-Welt des AMIGA
+wieder in Schwung zu bringen.
+
+Ich hoffe hier etwas auf die Signalwirkung von den Firmen, welche
+jetzt  Portierungen  von  PC-Games  fuer  den AMIGA bringen.  Das
+koennte dazu fuehren, dass andere Firmen auf den Zug aufspringen.
+</TD></TR>
+<TR>
+<TD BGCOLOR="#30A1BC"><pre>
+FunTime:   Wir  möchten Dich natürlich bei Deiner Arbeit an neuen
+Sache  nicht  hindern  deshalb  folgt hier unsere letzte Standart
+Frage.  Was machst Du sonst noch außer programmieren?</TR></TD>
+<TR>
+<TD BGCOLOR="#9E9692"><pre>
+Ich  studiere  Telekommunikation  an  der  Fachhochschule in Chur
+(Schweiz).   Zur  Zeit  im  6.   Semester (von 6).  Sind ueber 30
+Lektionen  die  Woche,  und  sobald  ich  heimkomme, bin ich fast
+pausenlos  mit dem AMIGA beschaeftigt.  Da bleibt praktisch keine
+Zeit mehr fuer anderes.</TD></TR>
+</TABLE>
+
+<HR>
+<p align=center><A href="main.html">Zurück zum Inhalt</a>
+</BODY></HTML>

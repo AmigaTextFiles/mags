@@ -1,0 +1,401 @@
+\T
+
+ --> HARDWARE : BUG DE RESET DU PORT PCMCIA DE L'AMIGA 1200 par Niffo
+=======================================================================
+
+~   Pr_sentation du probl_me a r_soudre
+   Si vous utilisez ou pr_voyez d'utiliser une carte r_seau PCMCIA sur votre 
+Amiga 1200, vous devez savoir que celui-ci comporte un bug concernant le reset 
+du port qui pose probl_me avec ce type de p_riph_rique. En effet, la broche
+"CC RESET" de la puce nomm_e Gayle de l'Amiga 1200 charg_e entre autre de g_rer 
+le port PCMCIA, ne fonctionne pas correctement. Le seul moyen donc d'initialiser
+correctement la carte PCMCIA est de l'ins_rer a chaud (ordinateur allum_), ce 
+qui n'est pas tr_s joyeux surtout si votre Amiga est mont_ en tour ;) Il est a 
+noter que ce probl_me n'existe pas sur l'Amiga 600.
+   Je vais dans cet article vous d_crire comment j'ai r_solu le probl_me sur ma 
+configuration, je d_cline _videmment toute responsabilit_ concernant la 
+r_alisation de cette bidouille relativement simple cependant.
+
+~   Principe
+   Le montage que je vous propose n'est ni plus ni moins que celui pr_conis_ par 
+l'auteur du driver CNET que l'on trouve sur le matou femelle. Il s'agit en fait 
+de mettre la broche "CC RESET" de Gayle au niveau logique haut (+5v) a chaque 
+fois qu'un reset est d_tect_ sur le bus, c'est a dire a la mise sous tension ou 
+au reset de la machine. En clair, il s'agit de faire le boulot que Gayle ne fait pas.
+
+~   Mise en oeuvre
+   J'ai personnellement r_alis_ le montage directement sur le support venant 
+s'enficher sur Gayle de mon interface Fast-ATA. Je vous encourage vivement d'en
+
+ö
+
+\I bugphoto1
+\X 65
+\Y 20
+\T
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+~                                            Photo 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ö
+
+\T
+
+faire de m_me si vous avez la chance d'avoir cette interface, cela facilite 
+grandement la tache. Dans le cas contraire je ne saurais trop vous recommander 
+de vous procurer un support pour circuit int_gr_ que vous enficherez a l'envers 
+sur Gayle et que vous pourrez utiliser comme base pour le montage. D'aucun vous 
+diront peut _tre (IRC, Usenet, ...) qu'il est tr_s facile/faisable de souder 
+directement sur la puce, mais je vous d_conseille tr_s fortement de vous lancer 
+dans cette aventure ! En effet, Gayle comporte des broches tr_s serr_es et 
+il est quasiment in_vitable de souder deux pattes entre elles. Il vous sera alors 
+certainement impossible de les d_solidariser si vous ne poss_dez pas une bonne 
+pompe a dessouder.
+
+Pour r_aliser ce montage, vous aurez besoin de :
+
+- Une r_sistance de 10 Kohm
+- Une r_sistance de 22 Kohm
+- Un transistor PNP BC327, 2N2907 ou _quivalent.
+- Un support pour Gayle
+
+   Le plus compliqu_ dans cette r_alisation est certainement le rep_rage des broche 
+dont on a besoin, mais les photos suivantes devraient vous aider.
+
+   En premier lieu, il faut rep_rer la broche No 1 de Gayle. Si vous prenez la carte
+m_re comme sur la photo 1, cette derni_re est situ_e au milieu du cot_ inf_rieur du
+CI Gayle et rep_r_e par un petit point. Les broches sont num_rot_es a partir de la 
+broche 1 dans le sens contraire des aiguilles d'une montre _galement appel_ sens 
+trigonom_trique.
+
+ö
+
+\I bugphoto2
+\X 100
+\Y 28
+\T
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+~                                          Schema
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ö
+
+\I bugphoto3
+\X 100
+\Y 18
+\T
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+~                                            Photo 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ö
+
+\T
+
+   C'est ainsi que vous trouverez la broche 5 (CC Reset) sur le m_me cot_ que la No 1,
+la broche 20 (+5V) sur le cot_ droit et la broche 40 (Reset) sur le haut du circuit 
+int_gr_. Il n'y a pas de difficult_ particuli_re a la r_alisation du montage, il faut 
+simplement savoir que les r_sistances ne sont pas polaris_es (pas de sens particulier)
+et que vous risquez de rencontrer deux types de transistors :
+
+- boitier m_tallique (argent_) : la broche e (_metteur) est signal_e par une petite 
+languette sur le boitier, la broche b (base) est celle du milieu
+- boitier plastique (noir) : lorsque vous tenez le composant pattes en bas et m_plat
+du boitier vers vous, l'ordre des pattes est c-b-e.
+
+~   Alternatives
+   On trouve _galement un montage avec juste un condensateur, mais sachez que ce 
+dernier n'est pas fiable du tout et fonctionne de facon al_atoire. Sachez _galement
+qu'il existe une solution soft, un petit ex_cutable que l'on met dans la startup
+sequence, qui semble _galement r_soudre le probl_me. J'ai personnellement du mal 
+a concevoir que ce probl_me puisse _tre r_solu par logiciel, mais il parait que 
+cela marche vraiment, alors si quelqu'un peut m'expliquer... Vous trouverez mon 
+adresse e-mail en fin d'article. A mon avis ce petit programme ne dois pas corriger 
+r_ellement le probl_me, mais l'outre-passer...
+
+~   Deux mots sur l'utilisation de cartes r_seau PCMCIA
+   Toutes les cartes r_seau PCMCIA ne sont pas compatibles avec l'Amiga 600 ou 1200.
+L'incompatibilit_ peut _tre mat_rielle (machine bloqu_e en g_n_ral) ou logicielle
+car il n'existe en effet qu'un seul driver appel_ CNET. Ce driver a la norme 
+SANA2 est freeware :) et disponible sur votre pote-r_seau... euh Ami-NET. Les
+
+ö
+
+\T
+
+cartes support_es sont en g_n_ral les cartes 16 bits 10BT compatibles NE2000.
+Malheureusement, les cartes les plus r_pandues sur PC, 3Com Etherlink, ne sont 
+pas support_es par ce pilote. Une liste de compatibilit_ est fournie dans l'archive
+du pilote, une autre peut _tre consult_e ici : http://www.g-mb.de/pcmcia.html
+
+~   Conclusion
+   N'est-il pas merveilleux de devoir plonger son fer a souder dans sa machine 
+pr_f_r_e pour la faire fonctionner alors qu'elle n'est victime d'aucune panne ? 
+C'est cela l'esprit Amiga ;)
+   Plus s_rieusement, je serai toujours _tonn_ de voir mon Amiga en r_seau avec
+mes autres machines par l'interm_diaire d'un port, aujourd'hui banalis_, mais 
+dont la technologie venait de sortir a l'_poque du 1200 et pour lequel il 
+n'existait certainement pas encore de cartes ethernet.
+
+   N'h_sitez pas a me contacter si vous avez des questions ou si vous d_sirez des
+photos haute r_solution sur niffo@free.fr
+
+
+}Cet article est _galement pr_sent sur le site http://amigaenreseau.free.fr

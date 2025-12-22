@@ -1,0 +1,44 @@
+Date: Sun, 24 Aug 1997 04:32:18 -0600
+From: "Jim Drew" <msdei@ctaz.com>
+Subject: QuikPak problem discovered!
+Newsgroups: comp.sys.amiga.emulations
+Message-ID: <872414779.16907@dejanews.com>
+Organization: Deja News Posting Service
+X-Article-Creation-Date: Sun Aug 24 09:26:19 1997 GMT
+X-Originating-IP-Addr: 207.254.27.59 (ctaz-ts05-59.ctaz.com)
+X-Http-User-Agent: Mozilla/3.02Gold (Macintosh; U; 68K)
+X-Authenticated-Sender: Jim Drew <msdei@ctaz.com>
+Lines: 31
+Path: 195.95.96.10!news.unisource.be!News.Amsterdam.UnisourceCS!ubnnews.unisource.ch!news-zh.switch.ch!news-hh.maz.net!newsfeed.nacamar.de!cpk-news-hub1.bbnplanet.com!news.bbnplanet.com!news-peer.sprintlink.net!news-pull.sprintlink.net!news-in-east.sprintlink.net!news.sprintlink.net!Sprint!204.238.120.130!jump.net!grunt.dejanews.com!not-for-mail
+
+After much frustration by our customers who own QuikPak 060 systems, we
+finally managed to get ahold of the software used with the QuikPak 060
+accelerator.
+
+After spending an hour disassembling and documenting everything that their
+68040.library emulation does, we have finally solved the mystery behind
+why the QuikPak 060 has problems with various Amiga programs.
+
+ANYTHING that attempts to use the FPU is going to have a problem.
+
+The problem lies in the task switching code.  There are two floating point
+registers (FPSR and FPCR) that are NOT saved or restored on a task switch.
+This means that if a task switch occurs right before a conditional branch,
+the branch may not be taken properly.  Apparently, the programmer knew
+there was something wrong because there is a subroutine that actually
+adjusts the frame for each task that gets launched.  We patch out the
+multitasking with our own code (we don't change the exception handlers),
+and we do save the and restore ALL of the floating point registers, so the
+first time a floating point instruction is executed (trapped out), the
+machine will crash when the frame adjustment occurs.  The MAC uses
+floating point for everthing... including calculating window border
+positions!
+
+The problem we have now is the inability to contact QuikPak (the email
+address on their website is invalid).  So, please, if you want this
+problem corrected, forward this message to QuikPak and/or QuikPak's
+programmer.  I think we have done our part to resolve this problem... the
+ball is now in their court.
+
+-------------------==== Posted via Deja News ====-----------------------
+      http://www.dejanews.com/     Search, Read, Post to Usenet

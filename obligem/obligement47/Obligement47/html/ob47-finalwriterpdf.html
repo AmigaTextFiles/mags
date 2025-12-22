@@ -1,0 +1,168 @@
+<html>
+ <head>
+  <title>En pratique&nbsp;: Final Writer - création d'un fichier PDF</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique&nbsp;: Final Writer - création d'un fichier PDF</font>par&nbsp;<a href="mailto:Pixel-Art@wanadoo.fr">Jean-Yves&nbsp;Auger</a></div><br><br><br>
+
+Comment faire un fichier PDF avec un Amiga&nbsp;? Final Writer sait justement comment faire.<br><br>
+
+
+<font size="+1" color="#ccbb33">Les ingrédients</font><br>
+
+<ul>
+<li>un Amiga rapide (car ça peut vraiment prendre beaucoup de temps).
+<li>Le logiciel Finalwriter 97 (pour générer le fichier Postscript ou EPS).
+<li>L'ensemble Ghostscript (pour générer le PDF) qui se trouve sur Aminet.
+<li>Le fichier ARexx Convert to PDF pour FinalWriter qui se trouve aussi sur Aminet.
+</ul>
+
+Cuisson&nbsp;: ça dépend.<br>
+Sel et poivre&nbsp;: pas du tout.<br>
+Servir chaud sur un PC ou Mac pour vérifier, mais c'est facultatif.<br><br>
+
+
+<font size="+1" color="#ccbb33">Préparation</font><br><br>
+
+Pour faire un fichier PDF, il faut&nbsp;:<br><br>
+
+<b>Première partie :</b><br><br>
+
+Générer un fichier Postscript (EPS) or FinalWriter 97 sait nativement imprimer et/ou
+générer directement en Postscript avec surtout l'inclusion de toutes les polices et photos
+utilisées, dans le fichier Postscript. Ceci garantira à votre destinataire, la parfaite lecture de
+votre document.<br><br>
+
+Attention, c'est un logiciel américain, donc il faut bien ajouter une précision et c'est la seule à faire&nbsp;:
+mettre dans le format A4 en portrait ou paysage.<br><br>
+
+<div align="center">
+<img src="../gfx/finalwriterpdf1.jpg" width="486" height="231" border="0" alt="Réglages FinalWriter"><br><br>
+<img src="../gfx/finalwriterpdf2.jpg" width="535" height="235" border="0" alt="Réglaes FinalWriter"><br><br>
+</div>
+
+L'écriture du fichier EPS est relativement rapide, il ne reste alors qu'à demander à Ghostscript de
+reprendre ce même fichier pour en faire un fichier PDF.<br><br>
+
+<b>Deuxième partie :</b><br><br>
+
+Générer le fichier PDF via Ghostscript n'est pas simple en soi car il faut tout faire "à la main".
+Heureusement, il existe sur Aminet un fichier "Convert To PDF" en ARexx, qui depuis Finalwriter,
+lance Ghostscript et traduit en PDF. Mais il est conçu pour les Etats-Unis, donc il prend par défaut la
+taille de page USLetter.<br><br>
+
+Il faut alors modifier ce programme ARexx (c'est très simple) comme suit&nbsp;:<br><br>
+
+Avant&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+* FinalWriter AREXX macro */
+/* Convert to PDF uses GHOSTSCRIPT ® to convert the */
+/* current document to PDF format. A GHOSTSCRIPT: assign is needed */
+/* $VER: Convert to PDF 1.0ß */
+
+Options Results
+
+PostscriptFile 'T:OK.ps'
+PrintSetup PRINTTO psfile
+PSPrintPrefs SHADE color PAGESIZE A4
+Print
+
+ADDRESS COMMAND
+'Wait'
+'Delete' 'T:OK.ps.info'
+'RequestFile' '>ENV:File' 'Title="Where to save the PDF file?"'
+'echo >T:Tmp' '"Stack 40000"'
+'echo >>T:Tmp' '"Ghostscript:GS -dNOPAUSE -sDEVICE=pdfwrite
+-dBATCH -sOutputFile=T:KO.pdf T:OK.ps"'
+'Execute' 'T:Tmp'
+'Delete' 'T:OK.ps'
+'Copy' 'T:KO.PDF' '$file'
+'Delete' 'T:KO.pdf'
+'Delete' 'T:Tmp'
+</pre>
+</font></td></tr></table>
+<br>
+
+
+Après&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+/* FinalWriter AREXX macro */
+/* Convert to PDF uses GHOSTSCRIPT ® to convert the */
+/* current document to PDF format. A GHOSTSCRIPT: assign is needed */
+/* $VER: Convert to PDF 1.0ß */
+
+Options Results
+
+ADDRESS COMMAND
+
+'RequestFile' '>ENV:File' 'Title="Où est le fichier Postscript ?"'
+'echo >T:Tmp' '"Stack 40000"'
+'echo >>T:Tmp' '"Ghostscript:GS -dNOPAUSE -sDEVICE=pdfwrite
+-sPAPERSIZE=a4 -dBATCH -sOutputFile=ram:Fichier.pdf"' '$file'
+'Execute' 'T:Tmp'
+'Delete' '$file'
+'Delete' 'T:Tmp'
+*
+</pre>
+</font></td></tr></table>
+<br>
+
+De cette façon, les commandes sont beaucoup plus simples&nbsp;: il suffit d'appeler ce programme depuis
+Finalwriter qui vous demandera où se trouve le fichier EPS pour créer le fichier PDF en RAM:<br><br>
+
+<b>Troisième partie :</b><br><br>
+
+Et ça marche vraiment bien car j'ai tout vérifié avec Acrobat Reader 4 sur Mac&nbsp;: le document est
+intégralement repris avec les polices, photos, marges etc. tout est à l'identique de l'Amiga.<br><br>
+
+De cette façon , vous pouvez tout concevoir sur Amiga et donner les fichiers PDF à votre imprimeur, par exemple,
+pour un tirage.<br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>
+

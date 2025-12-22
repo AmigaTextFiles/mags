@@ -1,0 +1,176 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+3. Softwaretest: FTP-Daemon »OrangeFTPd« (von Uwe Pannecke)
+
+Ein Daemon in Orange
+
+OrangeFTPd von Mark Olsen
+
+
+1. Im Netzwerk verfangen
+
+Glaubt man den Meldungen in allen m&ouml;glichen Medien gerade jetzt zur CeBIT-
+Zeit, ist wohl die ganze (menschliche) Welt bald in einem Netzwerk 
+gefangen. Ohne Vernetzung geht, wenn diese apokalyptischen Visionen wahr 
+werden, nichts mehr, nicht einmal die Ersatzbeschaffung f&uuml;r aufgebrauchtes 
+Toilettenpapier.
+Da kommt einem die profane Kopplung mehrerer Rechner zum Zwecke des 
+Filetransfers schon recht altbacken vor. Dennoch soll in diesem Bericht 
+genau von solch einem Datenaustausch, oder besser den programmtechnischen 
+Voraussetzungen die Rede sein.
+Sind die Rechner erst einmal aneinander gekettet und prinzipiell in der 
+Lage, Informationen auszutauschen, steht die Frage im Raum, wie denn dieser 
+Datenwechsel vonstatten gehen soll. Ein in Ehren ergraute und nicht ohne 
+Grund von Sicherheitsfanatikern in der Welt des Internets heute oft 
+argw&ouml;hnisch be&auml;ugte M&ouml;glichkeit steckt im FTP, dem File Transfer Protokoll.
+Was f&uuml;r das Internet gilt, muss so noch lange nicht f&uuml;r heimische 
+Rechnernetzwerke zutreffen. Hier spielt der Sicherheitsaspekt oft keine 
+vordergr&uuml;ndige Rolle oder ist mit vergleichsweise einfachen Mitteln zu 
+garantieren. Daf&uuml;r &uuml;berzeugt um so mehr die elegante Art des FTP-
+Datentransfers.
+Ein neuer Stern am Amiga-Himmel der FTP-Daemonen fiel mir letzt beim 
+St&ouml;bern im Aminet auf: der OrangeFTPd [1] des D&auml;nen Mark Olsen (vielleicht 
+ein Nachfahre des legend&auml;ren Egon Olsen, vielen &Auml;lteren als Denkergr&ouml;&szlig;e und 
+Kopf der Olsen-Bande bekannt...) in der ersten allgemein zug&auml;nglichen 
+Release. Der Programmierer ver&ouml;ffentliche seinen FTP-Daemonen als Freeware, 
+sp&auml;ter soll OrangeFTPd unter die GPL gestellt werden. Mark Olsen schrieb 
+nach eigenen Angaben sein Programm, weil er schon lange Zeit einen 
+schnellen, guten und freien FTP-D&auml;monen suchte, aber nie fand. Nun, wollen 
+wir doch einmal sehen, ob OrangeFTPd diesen Anspr&uuml;chen gen&uuml;gt.
+
+
+2. Voraussetzungen
+
+Neben einem Amiga f&uuml;hrt der Autor lediglich das Vorhandensein eines TCP/IP-
+Stacks wie etwa Miami, AmiTCP oder Genesis an. Also sehr bescheidene 
+Anspr&uuml;che. 
+
+
+3. Installation
+ 
+Diese Bescheidenheit setzt sich auch in der Installation fort, welche sich 
+lediglich auf das verschieben des entpackten OrangeFTPd-Ordners an einen 
+gew&uuml;nschten Ort auf einer Amiga-Festplatte beschr&auml;nkt.
+
+Screenshot:
+<IMG SRC="../extra/oFTPd_Dir.png" ALT="Screenshot">
+
+In meinen Fall wanderte OrangeFTPd ins Miami-Verzeichnis. Wer 
+erwartungsfroh ob umfangreicher Beschreibungen auf das Dokumentations-Icon 
+klickt, wird wohl etwas entt&auml;uscht sein von der &uuml;beraus schlanken 
+Anleitung. In extremer Kurzform bringt Mark Olsen die Integration des 
+Programmes in den TCP/IP-Stack auf den Punkt. Er braucht daf&uuml;r genau drei 
+kurze S&auml;tze. Da erscheint der Disclaimer-Abschnitt schon fast &uuml;ppig, in dem 
+er eindringlich darauf hinweist, das OrangeFTPd Eure Festplatte l&ouml;schen, 
+den Monitor zerst&ouml;ren und Eure Katze t&ouml;ten wird, Euren Job werdet Ihr los 
+und Euer Leben wird ruiniert sein. Ihr seid also gewarnt! :)
+
+
+4. Integration in Miami
+
+Nun, da die beigelegte Dokumentation vielleicht doch den einen oder anderen 
+FTP-Willigen abschrecken k&ouml;nnte, soll an dieser Stelle exemplarisch die 
+Einbindung in Miami erl&auml;utert werden. Voraussetzung ist nat&uuml;rlich eine 
+funktionierende TCP/IP-Verbindung zwischen den Rechnern, beschrieben z.B. 
+in [2] und [3].
+
+
+Berechtigte User
+
+&Ouml;ffnet also das Miami-Konfigurationsfenster und w&auml;hlt unter "Datenbank" den 
+Abschnitt "Anwender", tragt nun &uuml;ber Klick auf "Neu" den gew&uuml;nschten User 
+mit seinem Namen, Passwort, User- und Gruppen-ID und dem ihm zugewiesenen 
+Heimatverzeichnis ein.
+
+Screenshot:
+<IMG SRC="../extra/oFTPd_MiaUser.png" ALT="Screenshot">
+
+Der hier verwendet User soll "uwep" hei&szlig;en, bekommt die User-ID "101" 
+(wobei diese ID unkritisch ist), soll der Gruppen-ID "98" (der Grupppe ftp, 
+die sp&auml;ter noch generiert wird) zugeordnet werden und erh&auml;lt als sein 
+Heimatverzeichnis "Work2:" zugewiesen. Und nur in diesem Verzeichnis kann 
+er sich sp&auml;ter nach erfolgreichem Einloggen bewegen.
+
+
+FTP-Gruppe
+
+Nun w&auml;hlt Ihr immer noch im Bereich "Datenbank" den Abschnitt "Grupppen" 
+und sorgt dort f&uuml;r den passenden Eintrag, indem Ihr wiederum &uuml;ber "Neu" die 
+Gruppe "ftp" mit der Gruppen-ID "98" (hier k&ouml;nnt Ihr auch bei Bedarf eigene 
+Werte, die sich aber nicht mit bereits vergenenen Gruppen-IDs &uuml;berschneiden 
+sollten, vergeben) und dem zugeh&ouml;rigen Anwender, in unserem Fall "uwep" 
+erstellt.
+
+Screenshot:
+<IMG SRC="../extra/oFTPd_MiaGroup.png" ALT="Screenshot">
+
+Nat&uuml;rlich k&ouml;nnen an dieser Stelle auch mehrere zugangsberechtigte User, 
+getrennt durch Kommata, eingetragen werden.
+
+
+Autostart OrangeFTPd
+
+Um bei jeder Online-Sitzung einen automatischen Start des OrangeFTPd zu 
+erreichen, k&ouml;nnt Ihr im Abschnitt "Ereignisse" unter "Online" mit der 
+Vorgabe "Shell" OrangeFTPd mit seinem kompletten Pfad und gegebenenfalls 
+der Option "-nogui" (dies verhindert ein &Ouml;ffnen der OrangeFTPd-GUI beim 
+Hochfahren) eintragen
+
+Screenshot:
+<IMG SRC="../extra/oFTPd_MiaEvents.png" ALT="Screenshot">
+
+und speichert anschlie&szlig;end die modifizierte Miami-Konfiguration unter einem 
+aussagekr&auml;ftigen Namen ab.
+
+
+5. Einsatz
+
+Miami ist konfiguriert, nun ist es an der Zeit, der Pflicht die K&uuml;r folgen 
+zu lassen: OrangeFTPd soll zeigen, wie mit Daten per FTP jongliert werden 
+kann. Schickt Miami online und startet auf dem Partner-Rechner Eurem 
+Lieblings-FTP-Clienten. Unter Windows9.x w&auml;re ein brauchbarer Vertreter 
+etwa WS_FTP, der auf vielen Heft-CDs diverser PC-Magazine oder bei [4] zu 
+finden ist. An dieser Stelle soll als Beispiel ein linuxbasierter FTP-
+Client, n&auml;mlich IglooFTP [5] herhalten. 
+
+Screenshot:
+<IMG SRC="../extra/oFTPd_Lin.png" ALT="Screenshot">
+
+Im jeweiligen FTP-Clienten sind f&uuml;r eine erfolgreich Verbindung und 
+anschlie&szlig;enden Datenaustausch neben der IP-ID des Servers, also der TCP/IP-
+Adresse des OrangeFTPd beherbergenden Amiga (hier "amiga.xwing.de") der 
+verbindungswillige User (hier "uwep" und sein Passwort (hier &auml;hm, sag ich 
+nicht) und der Port (&uuml;blicherweise "21") anzugeben. Und schon kann das 
+fr&ouml;hliche Datenschaufeln beginnen.
+
+
+6. Fazit
+
+In der gegenw&auml;rtigen Version lie&szlig; sich OrangeFTPd nicht &uuml;ber InetD starten, 
+so das ein externer Start &uuml;ber "Ereignisse" notwendig ist. Will mann Miami 
+beenden, ist erst explizit OrangeFTPd zu beenden. Aber Mark Olsen hat f&uuml;r 
+die Zukunft die Einbindung &uuml;ber InetD in Aussicht gestellt.
+OrangeFTPd arbeitete im Testzeitraum zuverl&auml;ssig und sehr z&uuml;gig. Wer bisher 
+auf der Suche nach einem FTP-Daemonen auf dem Amiga noch nicht f&uuml;ndig 
+wurde, sollte sich OrangeFTPd einmal n&auml;her anschauen. Ein interessantes 
+St&uuml;ck freie Software.
+
+
+[1] im Aminet unter /comm/tcp/OrangeFTPd.lha
+[2] U.P., TCP/IP zwischen Amiga und Windows9x-PCAmiga, Aktuell, 07/2000, 
+[3] U.P., TCP/IP zwischen Amiga und Linux, AmigaPlus, 12/2000, S. 44ff
+[4] http/www.com-online.de
+[5] http://www.littleigloo.org
+
+Uwe Pannecke &lt;Uwe.Pannecke@t-online.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

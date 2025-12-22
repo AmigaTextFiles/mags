@@ -1,0 +1,269 @@
+<html>
+ <head>
+  <title>Listing du mois&nbsp;: calculette rudimentaire en Blitz Basic + ASM (2e partie)</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Le listing du mois&nbsp;: calculette rudimentaire en Blitz Basic + ASM (2e partie)</font>par&nbsp;<a href="mailto:tme@mail.com">Sylvain&nbsp;Terret</a></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">Une calculette un peu moins rudimentaire</font><br><br>
+
+Le programme de ce mois-ci est une évolution de celui du mois dernier. Nous obtenons cette fois une calculette capable
+d'additionner, soustraire, multiplier ou diviser deux entiers positifs compris entre 0 et 99. Et, fin du fin, elle
+sait gérer correctement les résultats de soustraction négatifs. La classe.<br><br>
+
+Je vous propose sans plus attendre de lire le listing et de consulter les explications que j'y ai adjointes pour
+bien comprendre ce qu'il se passe.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+<pre>====== DEBUT SOURCE
+
+WBStartup
+WbToScreen 3
+Use Screen 3
+
+LoadFont 2,"topaz.font",8
+Use IntuiFont 2
+
+;On déclare nos variables...
+;...codées sur un mot en prévision d'évolutions futures (word ; 16 bits)
+chiffre_un.w=0
+chiffre_deux.w=0
+;...codées sur 32 bits (long)
+resultat.l=0
+
+;Voici (re)venir la GadgetList numéro 0
+;On prépare les boutons +, -, * et /
+GTButton 0,1,10,0,40,15,"+",$10
+GTButton 0,2,10,20,40,15,"-",$10
+GTButton 0,3,10,40,40,15,"*",$10
+GTButton 0,4,10,60,40,15,"/",$10
+
+;On prépare les deux zones de saisie qui acceptent désormais 2 chiffres
+GTString 0,5,80,20,40,15,"",$10,2
+GTString 0,6,80,40,40,15,"",$10,2
+
+;On ouvre le fenêtre numéro 0 et on en fait la sortie par défaut
+Window 0,0,14,320,120,$140e,"Un peu d'ASM 68k avec le Blitz",-1,-1
+DefaultOutput
+
+;On attache la GadgetList numéro 0 à la fenêtre numéro 0
+AttachGTList 0,0
+
+Use Window 0
+
+
+;Boucle principale du programme
+While ev.l<>$200
+
+ ;On récupère les évènements qui se produisent dans la fenêtre du logiciel
+ ev.l=Event
+
+ WindowOutput 0
+
+ ;Si on clique sur un bouton
+ ;et que l'on a bien saisi deux chiffres
+ If (GTGetString(0,5)<>"") AND (GTGetString(0,6)<>"")
+ AND (Len(GTGetString(0,5))<3) AND (Len(GTGetString(0,6))<3)
+  If ev.l=64
+   ;Si on clique sur le bouton +
+   If GadgetHit=1
+    ;Nos zones de saisie contenant de la chaîne de caractères
+    ;on doit les transformer en chiffres avec la fonction VAL()
+    chiffre_un.w=Val(GTGetString(0,5))
+    chiffre_deux.w=Val(GTGetString(0,6))
+    ;On met tout le registre processeur D0 à 0
+    CLR.l d0
+    ;On met le contenu de la variable entière codée sur
+    ;un word nommé CHIFFRE_UN dans le registre de données D0 du 68000 
+    GetReg d0,chiffre_un.w
+    ;Même traitement pour D1, il ne faut pas qu'il reste de cochonneries dedans
+    CLR.l d1
+    GetReg d1,chiffre_deux.w
+    ;On ajoute les 16 bits de poids faible de la valeur contenue dans le registre
+    ;D0 à celle contenue dans D1 et on stocke le résultat dans D1
+    ADD.w d0,d1
+    ;On transfère le contenu de D1 dans la variable entière codée sur 32 bits
+    ;nommée RESULTAT
+    PutReg d1,resultat.l
+    ;On positionne le curseur de texte dans la fenêtre
+    WLocate 10,100
+    Print Str$(chiffre_un.w)+" + "+Str$(chiffre_deux.w)+" = "+Str$(resultat.l)+"      "
+   EndIf
+   ;Si on clique sur le bouton -
+   If GadgetHit=2
+    chiffre_un.w=Val(GTGetString(0,5))
+    chiffre_deux.w=Val(GTGetString(0,6))
+    CLR.l d0
+    GetReg d0,chiffre_un.w
+    CLR.l d1
+    GetReg d1,chiffre_deux.w
+    SUB.w d1,d0
+    ;C'est à partir d'ici que les choses changent
+    ;On teste l'état du bit numéro 15 (le 16e bit donc ; ils sont numérotés de
+    ;droite (0) à gauche (15)) du registre de données D0 du 68000
+    BTST #15,d0
+    ;Si le 16e bit (aussi appelé "bit de poids fort", car c'est lui qui a la plus
+    ;forte influence sur la valeur décimale codée) est égal à zéro
+    ;cela signifie que le nombre placé dans D0 est positif (les nombres négatifs
+    :sont codifiés en utilisant la méthode du complément à deux ; voir le cours
+    ;de Krabob à ce sujet)
+    ;sachez juste que je procède de cette manière, car en complément à deux, les
+    ;nombres négatifs commencent toujours par un 1.
+    ;L'instruction 68000 BNE signifie Branch if Not Equal. Ici, on saute au label
+    ;NEGATIF si le résultat de BTST est différent de 0 (donc 1)
+    BNE NEGATIF:
+    ;L'instruction 68000 BEQ signifie Branch if Equal. Ici, on saute au label
+    ;POSITIF si le résultat de BTST est 0
+    BEQ POSITIF:
+    NEGATIF:
+    ;Si on a affaire à un nombre négatif, on inverse la procédure de codage en
+    ;complément à deux
+    ;On inverse donc les 16 premiers bits du registre D0 (les bits de poids faible,
+    ;ceux qui sont le plus à droite)
+    NOT.w d0
+    ;On ajoute 1 à D0 pour achever la manipulation
+    ;On se retrouve donc avec le chiffre réel en positif
+    ADD.w #1,d0
+    PutReg d0,resultat.l
+    WLocate 10,100
+    Print Str$(chiffre_un.w)+" - "+Str$(chiffre_deux.w)+" = -"+Str$(resultat.l)+"      "
+    ;Si mes souvenirs sont bons, l'instruction BRA n'est pas à proprement parler une
+    ;instruction native 68000, il s'agit plus d'une macro
+    ;BRA = Branch Anyway
+    ;Donc quoi qu'il arrive, on saute au label FIN
+    BRA FIN:
+    POSITIF:
+    PutReg d0,resultat.l
+    WLocate 10,100
+    Print Str$(chiffre_un.w)+" - "+Str$(chiffre_deux.w)+" = "+Str$(resultat.l)+"      "
+    FIN:
+   EndIf
+   ;Si on clique sur le bouton *
+   If GadgetHit=3
+    chiffre_un.w=Val(GTGetString(0,5))
+    chiffre_deux.w=Val(GTGetString(0,6))
+    CLR.l d0
+    GetReg d0,chiffre_un.w
+    CLR.l d1
+    GetReg d1,chiffre_deux.w
+    MULU.w d0,d1
+    PutReg d1,resultat.l
+    WLocate 10,100
+    Print Str$(chiffre_un.w)+" * "+Str$(chiffre_deux.w)+" = "+Str$(resultat.l)+"      "
+   EndIf
+   ;Si on clique sur le bouton /
+   If GadgetHit=4
+    chiffre_un.w=Val(GTGetString(0,5))
+    chiffre_deux.w=Val(GTGetString(0,6))
+    CLR.l d0
+    GetReg d0,chiffre_un.w
+    CLR.l d1
+    GetReg d1,chiffre_deux.w
+    DIVU.l d1,d0
+    PutReg d0,resultat.l
+    WLocate 10,100
+    Print Str$(chiffre_un.w)+" / "+Str$(chiffre_deux.w)+" = "+Str$(resultat.l)+"      "
+   EndIf
+  EndIf
+ EndIf
+
+Wend
+
+DetachGTList 0
+Free Window 0
+
+End
+
+====== FIN SOURCE
+</pre></font>
+</td></tr></table>
+<br>
+
+Bien que le source soit déjà pas mal commenté, je vais détailler la méthode utilisée pour détecter les
+résultats de soustraction négatifs&nbsp;:<br><br>
+
+<b>1/ SUB.w d1,d0</b> -> je soustrais D1 à D0 et stocke le résultat dans D0.<br>
+<b>2/ BTST #15,d0</b> -> on teste l'état du bit numéro 15 du registre D0 dans lequel a été enregistré le résultat de la soustraction.<br>
+<b>3/ BNE NEGATIF:</b> -> si le 16e bit (souvenez-vous qu'ils sont numérotés de 0 à 15) est égal à 1, alors le résultat est négatif.<br>
+<b>4/ BEQ POSITIF:</b> -> si le 16e bit est égal à 0, alors le résultat est positif.<br><br>
+
+Voici le traitement du résultat négatif&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+<pre>NEGATIF:
+     NOT.w d0
+     ADD.w #1,d0
+     PutReg d0,resultat.l
+     WLocate 10,100
+     Print Str$(chiffre_un.w)+" - "+Str$(chiffre_deux.w)+" = -"+Str$(resultat.l)+"      "
+     BRA FIN:
+</pre></font>
+</td></tr></table>
+<br>
+
+Vous vous demandez peut-être pourquoi je fais tout ce tintouin, alors j'explique&nbsp;: les nombres négatifs sont codifiés
+en utilisant la méthode dite du "complément à deux", ce qui fait que D0 ne contient pas un résultat directement
+utilisable comme cela est le cas pour un nombre positif. Il faut d'abord le décoder afin d'obtenir quelque chose
+de cohérent pour l'utilisateur de la calculatrice. Par exemple, sans traitement, le résultat de l'opération 5-10
+donnerait 65531 (65536-5), c'est pas franchement ce qu'on attend comme résultat, non&nbsp;? Alors il faut le mouliner.<br><br>
+
+En faisant un NOT sur un WORD, j'inverse les 16 bits de poids faible de D0. Admettons que D0 contienne 1001000011001100,
+il deviendra 1001000000110011. Après, on lui ajoute 1 pour achever le décodage du complément à deux et on obtient un
+chiffre positif correspondant au résultat humainement logique de notre soustraction.<br><br>
+
+J'aimerais revenir sur la question du poids des bits. Tout tient dans la manière dont on numérise les chiffres.
+En base 2, sur 8 bits, 5 se code comme suit&nbsp;: 0000 0101. Le bit le plus à droite vaut 1, son voisin, 2, puis 4,
+8, 16, 32, 64 et enfin 128 pour celui qui est le plus à gauche. Il apparaît clairement qu'une modification de
+ce bit aura une plus grande incidence sur le résultat qu'une altération du bit de droite&nbsp;: ajouter 128 à un
+nombre provoque un changement plus conséquent que si on lui ajoute seulement 1. C'est de là que viennent les
+expresions "bit de poids le plus fort/faible".<br><br>
+
+Voilà pour cette fois. Vous vous rendez sans doute compte que, bien que le listing n'a pas beaucoup changé, il y
+a quand même des notions importantes qui montrent le bout de leur nez. L'assembleur ou l'art de transformer
+un pet de mouche en explosion nucléaire. Bon, OK, j'abuse.<br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

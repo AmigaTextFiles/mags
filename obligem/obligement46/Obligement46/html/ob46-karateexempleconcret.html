@@ -1,0 +1,495 @@
+<html>
+ <head>
+  <title>Karate - exemple concret</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique&nbsp;: Karate -  premier exemple concret </font>par&nbsp;<a href="mailto:l.stephanoni@free.fr">Laurent&nbsp;Stephanoni</a></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">Le premier effet Karate</font><br><br>
+
+On va commencer sagement. Faites quelques assouplissements... Ok. On y va.
+On va se placer dans le répertoire de Karate pour créer un fichier texte.
+On tape dans un shell "cd chemin:vers/karate/" puis "ced helloworld.k" afin de créer
+le fichier helloworld.k.<br><br>
+
+Notre premier effet va se contenter de charger deux images, d'en afficher une
+en fond d'écran, et l'autre va venir lui dire bonjour (d'où le hello world&nbsp;:).<br><br>
+
+Pour cette exemple, on va piocher dans les données fournies dans les
+exemples officiels de Karate. Ces données se trouvent dans le répertoire
+data/ à la racine de Karate.<br><br>
+
+<font size="+1" color="#ccbb33">Le fond d'écran</font><br><br>
+
+L'image s'appelle realeyez.iff. On va la charger sous le nom "fond", soit la ligne&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KIMG&gt; fond | data/realeyez.iff &lt;/KIMG&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Comment poser une image&nbsp;? C'est le rôle de l'effet SpritePlain.
+Un petit tour dans les commandes de Karate vous apprend&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+&lt;FX&gt;
+ &lt;PA&gt; SpritePlain &lt;/PA&gt;<br>
+ &lt;PA&gt; (rectangle) Le Rectangle où dessiner &lt;/PA&gt;<br>
+ &lt;PA&gt; (image) L'image à afficher &lt;/PA&gt;<br>
+ &lt;PA&gt; (fixedfloat) L'abscisse du coin supérieur gauche de l'image dans le rectangle indiqué &lt;/PA&gt;<br>
+ &lt;PA&gt; (fixedfloat) L'ordonnée du coin supérieur gauche de l'image dans le rectangle indiqué &lt;/PA&gt;<br>
+ &lt;PA&gt; (fixedfloat) L'abscisse du coin inférieur droit de l'image dans le rectangle indiqué &lt;/PA&gt;<br>
+ &lt;PA&gt; (fixedfloat) L'ordonnée du coin inférieur droit de l'image dans le rectangle indiqué &lt;/PA&gt;<br>
+&lt;/FX&gt;<br>
+</font></td></tr></table>
+<br>
+
+Ou, pour résumer, SpritePlain pose une image dans un rectangle aux
+coordonnées fournies.<br><br>
+
+Dans notre cas, on va utiliser le rectangle par défaut (l'écran complet),
+et on va couvrir tout l'écran. Pour cela, il faut savoir que Karate a une
+gestion de l'écran complètement indépendante du mode écran, donc des
+pixels. Ainsi, le coin en haut de l'écran est le point (0,0), et le coin en
+bas à droite est le point (1,1).<br><br>
+
+Donc, écrivons notre première KPart.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KPART&gt;
+ &lt;ID&gt; premiere &lt;/ID&gt;
+
+ &lt;FX&gt;
+  &lt;PA&gt; SpritePlain &lt;/PA&gt;
+  &lt;PA&gt; &lt;/PA&gt; Rectangle par défaut
+  &lt;PA&gt; fond &lt;/PA&gt;
+  &lt;PA&gt; CTE | 0 &lt;/PA&gt; X du coin supérieur gauche de notre image de fond
+  &lt;PA&gt; CTE | 0 &lt;/PA&gt; Y du coin supérieur gauche de notre image de fond
+  &lt;PA&gt; CTE | 1 &lt;/PA&gt; X du coin inférieur droit de notre image de fond
+  &lt;PA&gt; CTE | 1 &lt;/PA&gt; Y du coin inférieur droit de notre image de fond
+ &lt;/FX&gt;
+&lt;/KPART&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+La commande "&lt;PA&gt; CTE | x &lt;/PA&gt;" permet de remplir un paramètre avec un
+"fixedfloat" constant de valeur x. Il ne faut pas oublier le CTE, sinon
+Karate nous dira que le type de données n'a pas été initialisé.<br><br>
+
+Enfin, pour pouvoir lancer cette première présentation, on va poser un
+KScript et un Main.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KSCRIPT&gt;
+ &lt;ID&gt; script &lt;/ID&gt;
+ &lt;PLAY&gt; premiere | 9999 | 0 | 1 &lt;/PLAY&gt;
+
+&lt;/KSCRIPT&gt;
+
+&lt;MAIN&gt; script | 0 | 1 &lt;/ID&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Et lancez votre premier script Karate.<br><br>
+
+Le résultat n'est pas top. C'est parce que l'on a "oublié" de choisir une
+palette. On va indiquer à Karate d'utiliser la palette de l'image de fond.<br><br>
+
+Pour cela, il faut ajouter l'effet SetPalette dans la KPart.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+ &lt;FX&gt;
+  &lt;PA&gt; SetPalette &lt;/PA&gt;
+  &lt;PA&gt; fond &lt;/PA&gt;
+ &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Voilà, le résultat est meilleur&nbsp;:-).<br><br>
+
+<b>Règle numéro 1&nbsp;:</b> ne pas oublier d'indiquer la palette à utiliser.<br>
+Corollaire&nbsp;: il ne faut indiquer qu'une seule fois la palette à utiliser par
+partie.<br><br>
+
+
+<font size="+1" color="#ccbb33">Le sprite, n'écoute que lui</font><br><br>
+
+On va ensuite charger une autre image, un fantôme de Pacman, version
+Karate. C'est l'image ghost1.iff.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KIMG&gt; fantome | data/ghost1.iff &lt;/KIMG&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Cette fois-ci les X de l'image vont bouger.
+On va choisir la fonction bounce.<br><br>
+
+La doc de Karate nous dit&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+&lt;PA&gt; BOUNCE | 'float' t0 | 'float' t1 | 'float' t2 | 'float' val1 | 'float' val2 &lt;/PA&gt;
+</font></td></tr></table>
+<br>
+
+Bounce permet de remplir un paramètre de type "fixedfloat". Ce paramètre aura
+pour valeur val1 à t=t0, puis "sautera" à val2 à t=t1, puis redescendra à
+val1 quand t=t2. Les deux sauts sont en fait des moitiés de parabole, ce
+qui donnera un mouvement non uniforme du meilleur effet.<br><br>
+
+Dans notre cas, on va choisir de le faire aller de x=-0.3 à x=0.15 et
+on va dire que notre sprite va faire 0.2 de large par 0.26 de haut.<br><br>
+
+On va ajouter dans notre KPart le code suivant, après l'effet SpritePlain
+(sinon, l'effet SpritePlain va écrire sur notre nouveau Sprite, ce qui
+serait dommage).<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+ &lt;FX&gt;
+  &lt;PA&gt; Sprite &lt;/PA&gt;
+  &lt;PA&gt; &lt;/PA&gt; Rectangle par défaut
+  &lt;PA&gt; fantome &lt;/PA&gt;
+  &lt;PA&gt; BOUNCE | 0 | 200 | 500 | -0.3 | 0.15 &lt;/PA&gt; X1
+  &lt;PA&gt; CTE | 0 &lt;/PA&gt; Y1
+  &lt;PA&gt; BOUNCE | 0 | 200 | 500 | -0.1 | 0.35 &lt;/PA&gt; X1 + 0.2
+  &lt;PA&gt; CTE | 0.26 &lt;/PA&gt; Y1 + 0.26
+ &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Pour voir la différence entre Sprite et SpritePlain, remplacer le Sprite
+que vous venez d'écrire par un SpritePlain. Le SpritePlain n'a pas de
+couleur 0 transparente, mais par contre il prend moins de temps à écrire
+sur l'écran, donc il est très utile pour poser des gros fonds d'écran.<br><br>
+
+A l'opposé, si vous pensez que tout va bien, vous avez tout faux. En effet,
+pour vous en rendre compte, changer la deuxième ligne de SetPalette par...<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+  &lt;PA&gt; fantome &lt;/PA&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Ça ne vous choque pas&nbsp;? Si&nbsp;! Le petit fantôme n'apparaissait pas
+avec toutes ses couleurs. On arrive à la deuxième règle de base de Karate.
+Une fois que l'on connaît avec précision les différentes images qui
+apparaîtront dans une KPart, il faut les charger sous votre éditeur de
+dessin préféré, et mixer leur palette, de façon à ce qu'elles aient une
+palette commune.<br><br>
+
+Sous PPaint, cela se fait très bien. Il suffit de passer dans un mode écran
+en 256 couleurs et de charger les images que vous sauhaitez utiliser comme
+des brosses. Faites ensuite "Couleur/Fusionner" et sélectionnez toutes vos
+brosses. PPaint va travailler et vous rendre toutes vos brosses dans une
+palette commune. Plus qu'à sauver tout ça et à relancer votre présentation
+Karate. Magique, non&nbsp;?<br><br>
+
+<b>Règle numéro 2&nbsp;:</b> utiliser une palette commune pour toutes les images d'une
+KPart.<br>
+Corollaire&nbsp;: bien connaître vos KPart avant de coder peut vous faire gagner
+un temps considérable.<br><br>
+
+On peut très bien s'en passer, mais ça peut aboutir facilement à des
+couleurs freshy funky staïle...<br><br>
+
+Bon, assez jouer avec des Sprites, on va passer aux textures et aux effets
+de déformation&nbsp;!<br><br>
+
+
+<font size="+1" color="#ccbb33">Deuxième partie</font><br><br>
+
+On va déjà modifier notre KScript pour qu'il ne joue la première partie que
+pendant 1000 frames.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+ &lt;PLAY&gt; premiere | 1000 | 0 | 1 &lt;/PLAY&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+On va tout d'abord charger une texture. Cette dernière est tout simplement
+une KIMG de 256 pixels de haut sur 256 pixels de large. Pourquoi une taille
+aussi fixe&nbsp;? Tout simplement parce que cela permet d'avoir des calculs très
+optimisés.<br><br>
+
+Attention&nbsp;: si votre texture ne fait pas 256x256, l'effet ne sera pas
+affiché. Cela vous fera peur la première fois, mais c'est normal.<br><br>
+
+Notre texture s'appelle texture1.iff. on va la charger avec...<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KIMG&gt; texture | data/texture1.iff &lt;/KIMG&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Notre effet sera un joli twirl, une déformation radiale de l'image. Pour
+d'autres effets de textures, regarder dans la documentation de Karate tout ce qui se
+trouve dans le module (plugin) Caster.Fx. c'est-à-dire les effets Warper,
+Ground, Tunnel et MapRect.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;FX&gt;
+ &lt;PA&gt; Twirl &lt;/PA&gt;
+ &lt;PA&gt; (rectangle) Le Rectangle où dessiner &lt;/PA&gt;
+ &lt;PA&gt; (image) La texture en 256 x 256 &lt;/PA&gt;
+ &lt;PA&gt; (fixedfloat) Le décalage en X de la texture&lt;/PA&gt;
+ &lt;PA&gt; (fixedfloat) Le décalage en Y &lt;/PA&gt;
+ &lt;PA&gt; (fixedfloat) Valeur du centre de rotation &lt;/PA&gt;
+ &lt;PA&gt; (fixedfloat) Amplitude de la rotation &lt;/PA&gt;
+ &lt;PA&gt; (fixedfloat) Fréquency de la rotation &lt;/PA&gt;
+ &lt;PA&gt; (fixedfloat) Valeur du centre du zoom &lt;/PA&gt;
+ &lt;PA&gt; (fixedfloat) Amplitude du zoom &lt;/PA&gt;
+ &lt;PA&gt; (fixedfloat) Fréquence du zoom &lt;/PA&gt;
+ &lt;PA&gt; (fixedfloat) Type de texturage &lt;/PA&gt;
+&lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Les deux premiers "fixedfloat" déterminent le décalage de la texture en X et
+Y, on peut ainsi se déplacer sur la texture. Les 3 suivants contrôlent la rotation.
+Les 3 suivants contrôlent le zoom. Le dernier paramètre peut prendre deux valeurs,
+à l'heure actuelle. 0 signifie "texturage complet", et 1 signifie "texturage avec couleur 0 transparente".<br><br>
+
+Pour cet effet, on va utiliser des paramètres sinusoïdaux.
+Alors, un sinus, ça se remplit avec...<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;PA&gt; SIN | aa | bb | cc &lt;/PA&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Et cela rendra un "fixedfloat" qui vaudra aa + sin (bb x temps) x cc
+On oscille donc entre aa + cc et aa - cc avec une fréquence de bb.<br><br>
+
+Et pour le cosinus, c'est pareil, mais avec COS.<br><br>
+
+On ne va jouer dans notre effet de twirl que sur le décalage de la texture
+et sur la distance (libre à vous d'expérimenter ensuite&nbsp;:).<br><br>
+
+On va coder notre deuxième KPart&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KPART&gt;
+ &lt;ID&gt; deuxieme &lt;/ID&gt;
+
+ &lt;FX&gt;
+  &lt;PA&gt; SetPalette &lt;/PA&gt;
+  &lt;PA&gt; texture &lt;/PA&gt;
+ &lt;/FX&gt;
+
+ &lt;FX&gt;
+  &lt;PA&gt; Twirl &lt;/PA&gt;
+  &lt;PA&gt; &lt;/PA&gt;
+  &lt;PA&gt; texture &lt;/PA&gt;
+
+  &lt;PA&gt; SIN | 0 | 1 | 0.25 &lt;/PA&gt; Décalage en X
+  &lt;PA&gt; COS | 0 | 1 | 0.25 &lt;/PA&gt;  Décalage en Y
+
+  &lt;PA&gt; CTE | 0 &lt;/PA&gt; start angle
+  &lt;PA&gt; CTE | 0 &lt;/PA&gt; amp. angle
+  &lt;PA&gt; CTE | 0 &lt;/PA&gt; freq angle
+
+  &lt;PA&gt; SIN | 0 | 0.1 | 0.2 &lt;/PA&gt; start dist.
+  &lt;PA&gt; CTE | 0.4 &lt;/PA&gt; amp.dist
+  &lt;PA&gt; CTE | 16 &lt;/PA&gt; freq dist
+
+  &lt;PA&gt; CTE | 0 &lt;/PA&gt; mapping type
+ &lt;/FX&gt;
+&lt;/KPART&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Et on n'oublie pas d'y ajouter dans le KScript...<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+ &lt;PLAY&gt; deuxieme | 1000 | 0 | 1 &lt;/PLAY&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+C'est un peu tristounet ça. On va ajouter un sprite qui saute aléatoirement
+partout au centre de l'écran, juste après le twirl.<br><br>
+
+On va choisir la fonction RND (pour random).<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+ &lt;PA&gt; RND | aa | bb &lt;/PA&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Cette fonction retourne à chaque frame un "fixedfloat" entre aa et bb,
+aléatoirement.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;FX&gt;
+  &lt;PA&gt; Sprite &lt;/PA&gt;
+  &lt;PA&gt; &lt;/PA&gt;
+  &lt;PA&gt; fantome &lt;/PA&gt;
+  &lt;PA&gt; RND | 0.395 | 0.405 &lt;/PA&gt; 0.5 - 0.2/2 +/- 0.005
+  &lt;PA&gt; RND | 0.365 | 0.375 &lt;/PA&gt; 0.5 - 0.26/2 +/- 0.005
+  &lt;PA&gt; RND | 0.595 | 0.605 &lt;/PA&gt; 0.5 + 0.2/2 +/- 0.005
+  &lt;PA&gt; RND | 0.625 | 0.635 &lt;/PA&gt; 0.5 + 0.26/2 +/- 0.005
+ &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Ah, c'est un peu mieux. Mais ça serait encore mieux avec de la musique, non&nbsp;?<br><br>
+
+
+<font size="+1" color="#ccbb33">Musique maestro</font><br><br>
+
+On va faire jouer un petit module Digibooster sympathique. Tout d'abord,
+vérifiez bien que la dbplayer.library est correctement installée chez vous,
+ainsi que AHI. Si tout plante avec une erreur 8000 000B, c'est qu'il y a
+un problème avec AHI.<br><br>
+
+Attention&nbsp;: sur certaines configuration (PPC et Pegasos notamment), l'utilisation
+de module Digibooster peut s'avérer un peu méchante envers la stabilité du
+système. Pensez à prendre vos précautions.<br><br>
+
+Ensuite, on va pouvoir charger notre DBM.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KDBM&gt; module | data/chiptune.dbm &lt;/KDBM&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Puis, il nous suffit d'ajouter l'effet PlayDBM dans notre première
+partie.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+ &lt;FX&gt;
+  &lt;PA&gt; PlayDBM &lt;/PA&gt;
+  &lt;PA&gt; module &lt;/PA&gt;
+ &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Maintenant, pour faire les choses bien, on
+a plus qu'à faire un effet de fade sur la musique à la fin de notre
+première démo. Le volume d'un module allant aussi de 0 à 1, on va utiliser
+une KTable qui va avoir pour valeur 1 sur les 900 premières frames de la
+dernière KPart, et qui va descendre vers 0 ensuite.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KTABLE&gt; fadeout | 0,1 | 899,1 | 999,0 &lt;/KTABLE&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Enfin, il ne nous reste plus qu'à utiliser cette KTable comme paramètre de
+l'effet DBMVol. On va se servir de la fonction SPL qui créer une spline
+depuis notre KTable.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+ &lt;FX&gt;
+  &lt;PA&gt; DBMVol &lt;/PA&gt;
+  &lt;PA&gt; spl | fadeout | 0 | 0 &lt;/PA&gt;
+ &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Et hop, voilà, une démo presque complète&nbsp;! Il ne manque plus qu'un scroll-text
+de fin, des effets 3D, du motion blur, etc. Mais on va verra cela
+dans de prochains articles.<br><br>
+
+
+<font size="+1" color="#ccbb33">Conclusion</font><br><br>
+
+Si on récapitule, maintenant, vous savez&nbsp;:<br>
+
+<ul>
+<li>Charger et afficher des images de fond et des sprites,
+<li>Utiliser des textures,
+<li>Mettre de la musique,
+<li>Lire la doc Karate,
+<li>Remplir les effets avec quelques paramètres,
+<li>Créer votre propre fonction mathématique avec une KTable,
+<li>Lancer une démo Karate.
+</ul>
+
+Enfin, dernier conseil&nbsp;: allez voir les tutoriaux officiels Karate, même s'ils
+sont en Anglais, les paramètres donnés en exemple sont toujours très
+bons, et devraient vous permettre de comprendre comment marche certains
+effets. N'oubliez pas non plus de regarder dans les commandes de Karate.<br><br>
+
+La prochaine fois, je vous emmène faire un tour dans le pays des
+ColorTables et des effets de fou sur les palettes (entre autres).<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

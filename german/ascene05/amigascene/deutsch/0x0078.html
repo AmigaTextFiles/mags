@@ -1,0 +1,997 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+	<TITLE>AmigaScene 0x05 - WGet</TITLE>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="TEXT/HTML;CHARSET=iso8859-1">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#101010" LINK="#BF0000" VLINK="#101010" ALINK="#E04040">
+	<TABLE WIDTH="100%" CELLPADDING=3 CELLSPACING=0 BORDER=0>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP WIDTH="80%" HEIGHT=75>
+				<A NAME="00" HREF="welcome.html"><IMG SRC="../images/_amiga.gif" WIDTH=125 HEIGHT=48 ALT="[Amiga]" ALIGN=RIGHT BORDER=0></A><A HREF="#99"><IMG SRC="../images/_krumm_lo.gif" WIDTH=37 HEIGHT=29 ALT="[Down]" ALIGN=LEFT BORDER=0></A>
+				<BR CLEAR=ALL><BR>
+				<TABLE ALIGN=CENTER WIDTH=170 BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD ALIGN=CENTER>
+					<A HREF="../deutsch/0x0078.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" BORDER=1></A>
+				</TD></TR></TABLE>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=RIGHT WIDTH=175>
+				<A HREF="welcome.html"><IMG SRC="../images/_scene.gif" WIDTH=110 HEIGHT=47 ALT="[Scene]" ALIGN=LEFT BORDER=0></A>
+				<A HREF="0x0077.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x0079.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=CENTER>
+				<CENTER>&nbsp;<BR>
+
+					<IMG WIDTH=155 HEIGHT=25 SRC="../images/_workshop_.gif" ALT="[Workshop]">&nbsp;<BR><BR>
+
+					<TABLE WIDTH="90%" BORDER=0>
+						<TR><TD ALIGN=CENTER><FONT SIZE="-1">
+
+| <A HREF="0x0078.html">WGet</A> | <A HREF="0x0079.html">Programmieren</A> | <A HREF="0x007A.html">TCP/IP: AmiTCP</A> | <A HREF="0x007B.html">TCP/IP: I-Net 225</A> | <A HREF="0x007C.html">Tunnel-Anims</A> |
+
+						</FONT></TD></TR>
+					</TABLE>&nbsp;<BR>
+				</CENTER>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER WIDTH=175 ROWSPAN=2>
+				<CENTER>&nbsp;<BR>
+					<IMG SRC="../images/__.gif" HEIGHT=1 WIDTH=175 ALT=" "><BR> 
+					<A HREF="0x006F.html"><IMG WIDTH=77	 HEIGHT=25 SRC="../images/_cover.gif"	  ALT="[Cover]"		BORDER=0></A><BR>
+					<A HREF="0x0070.html"><IMG WIDTH=117 HEIGHT=25 SRC="../images/_editorial.gif" ALT="[Editorial]" BORDER=0></A><BR>
+					<A HREF="0x0071.html"><IMG WIDTH=85	 HEIGHT=25 SRC="../images/_inhalt.gif"	  ALT="[Inhalt]"	BORDER=0></A><BR>
+					<A HREF="0x0072.html"><IMG WIDTH=70	 HEIGHT=25 SRC="../images/_news.gif"	  ALT="[News]"		BORDER=0></A><BR>
+					<A HREF="0x0073.html"><IMG WIDTH=131 HEIGHT=25 SRC="../images/_hardware.gif"  ALT="[Hardware]"	BORDER=0></A><BR>
+					<A HREF="0x0074.html"><IMG WIDTH=121 HEIGHT=25 SRC="../images/_software.gif"  ALT="[Software]"	BORDER=0></A><BR>
+					<A HREF="0x0078.html"><IMG WIDTH=135 HEIGHT=25 SRC="../images/_workshop.gif"  ALT="[Workshop]"	BORDER=0></A><BR>
+					<A HREF="0x007D.html"><IMG WIDTH=73	 HEIGHT=25 SRC="../images/_spiele.gif"	  ALT="[Spiele]"	BORDER=0></A><BR>
+					<A HREF="0x007E.html"><IMG WIDTH=91	 HEIGHT=25 SRC="../images/_special.gif"	  ALT="[Special]"	BORDER=0></A><BR>
+					<A HREF="0x007F.html"><IMG WIDTH=112 HEIGHT=25 SRC="../images/_feedback.gif"  ALT="[Feedback]"	BORDER=0></A><BR>
+					<A HREF="0x0080.html"><IMG WIDTH=46	 HEIGHT=25 SRC="../images/_etc.gif"		  ALT="[Etc]"		BORDER=0></A><BR>
+				<BR></CENTER>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+
+<BR><H1 ALIGN=LEFT><FONT FACE="Arial"><B>Wget - Surfen einmal anders</B></FONT></H1>&nbsp;
+
+<BR><FONT SIZE="+1">Im dritten und letzten Teil besch&auml;tigen wir uns noch mit ein paar
+Optionen, die das rekursive Saugen noch angenehmer machen k&ouml;nnen.
+Dabei besprechen wir u.a <A HREF="#timestamping">Timestamping</A>, das
+<A HREF="#konvertieren">Konvertieren von Verweisen</A> und ein paar
+<A HREF="#weitere-optionen">weitere Optionen</A>, die oft n&uuml;tzlich
+sind. Weiters wird die Funktion der
+<A HREF="#konfigurationsdatei">Konfigurationsdatei</A> &quot;.wgetrc&quot;
+beschrieben. Anschlie&szlig;end gibt es noch ein paar Anmerkungen, wann
+Wget <A HREF="#grenzen">nicht so richtig hinhaut</A>. Und zum Schlu&szlig;
+<A HREF="#integrieren">integrieren</A> wir das gute St&uuml;ck mit ein
+bi&szlig;chen ARexx in unseren Browser.</FONT><BR>
+
+<BR><CENTER><A NAME="01" HREF="#00"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B><A NAME="timestamping">Timestamping</A></B></H3>&nbsp;
+
+<BR>Pfui, ein englischer Begriff in der &Uuml;berschrift, und das auch noch
+am Anfang des Artikels! Gnagnagna, keiner scheint zu wissen, wie man das
+sinnvoll &uuml;bersetzen kann, und bevor hier ein kaputtes Computerdeutsch
+regiert, bleiben wir doch lieber beim englischen Begriff.<BR>
+
+<BR>Die Idee des Timestamping ist, da&szlig; Wget sich merkt, wann eine
+Datei zuletzt ge&auml;ndert wurde. Das hei&szlig;t, beim Saugen erh&auml;lt
+die lokale Kopie nicht Datum und Zeit des Abspeicherns am eigenen Rechner,
+sondern jenes der letzten &Auml;nderung am Original vom Server.<BR>
+
+<BR>Das ist eine feine Sache, denn dadurch ist es sp&auml;ter ein Leichtes,
+herauszufinden, welche Dateien am selben Server neu sind seit dem letzten
+Saugen.<BR>
+
+<BR>In der Praxis sieht das so aus: Wir erinnern uns, da&szlig; wir vor
+einiger Zeit die Homepage der beliebten Band &quot;Half Man Half Biscuit&quot;
+kopiert haben. Dazu haben wir prinzipiell folgenden Aufruf verwendet:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>wget --recursive --no-parent --exclude-directories=/~hmhb/fallnet http://www.btinternet.com/~hmhb/hmhb.htm
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Angenommen, die Truppe hat ein neues Album herausgebracht, und die
+Homepage wurde entsprechend erweitert im Sinne von
+Verst&auml;ndnishinweisen zu neuen Texten und allerlei Querverweisen von/zu
+bereits vorhandenem Material. Viele Dateien w&auml;ren aber nach wie vor
+unver&auml;ndert, sollen also nicht noch einmal geholt werden.<BR>
+
+<BR>Die bereits bekannte Option <TT>--no-clobber</TT> ist hier nicht
+hilfreich, da <TT>--no-clobber</TT> nie eine Datei holt, wenn sie bereits
+als lokale Kopie existiert. Selbst wenn das Original am Server bereits
+neuer ist.<BR>
+
+<BR>Stattdessen verwenden wir diesmal die Option
+<B><TT>--timestamping</TT></B>. Auf unser Beispiel angewendet hei&szlig;t
+das:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>wget --timestamping --recursive --no-parent --exclude-directories=/~hmhb/fallnet http://www.btinternet.com/~hmhb/hmhb.htm
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Im Falle, da&szlig; eine Datei auf <TT>www.btinternet.com</TT>
+ge&auml;ndert oder neu angelegt wurde, wird diese erneut kopiert.
+Unver&auml;nderte Dateien hingegen fertigt Wget mit einer Meldung wie folgt
+ab:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>Local file `www.btinternet.com/%7Ehmhb/hmhb.htm' is more recent, not retrieving.
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Timestamping stellt aber dennoch einige Anforderungen an das Netz, da
+f&uuml;r jede Datei eine Verbindung aufgebaut werden mu&szlig;, um das
+Datum des Originals am Server zu vergleichen. Im Unterschied dazu stellt
+<TT>--no-clobber</TT> nur dann eine Verbindung mit dem Server her, wenn
+eine Datei &uuml;berhaupt nicht existiert.<BR>
+
+<BR>Das einzige, was man sich mit <TT>--timestamping</TT> spart, ist das
+tats&auml;chliche Saugen der eigentlichen Daten. Sind dies viele kleine
+Dateien, so dauern die &Uuml;berpr&uuml;fungen dieser Option immer noch
+eine Weile, da zwischen Server und Wget einiges an Information ausgetauscht
+wird, auch wenn der Anwender davon nicht viel zu sehen bekommt.<BR>
+
+<BR>Timestamping macht also vor allem dann Sinn, wenn es alle paar Wochen
+einmal verwendet wird, und man zuvor mit einem &quot;klassischem&quot; Browser
+&uuml;berpr&uuml;ft hat, ob sich &uuml;berhaupt etwas ge&auml;ndert hat. Zu
+diesem Zwecke haben viele Websites eine &quot;What's new&quot; Seite, die schnell
+&uuml;berflogen ist.<BR>
+
+<BR><CENTER><A NAME="02" HREF="#01"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B><A NAME="konvertieren">Verweise konvertieren</A></B></H3>&nbsp;
+
+<BR>Ein Problem beim Kopieren von ganzen Verzeichnissen mittels Wget ist
+manchmal, da&szlig; der Webdesigner nicht &uuml;berall dort, wo es
+m&ouml;glich ist, lokale Verweise verwendet.<BR>
+
+<BR>Ein lokaler Verweis auf eine andere Datei ist, wenn in der URI kein
+Server angegeben ist, sondern nur ein anderer Dateiname. Ein Beispiel
+f&uuml;r einen lokalen Link aus den Seiten des AmigaScenes w&auml;re,
+da&szlig; alle Seiten auf die Hauptseite mittels <TT>welcome.html</TT>
+verweisen k&ouml;nnen. In HTML w&uuml;rde das so aussehen:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>&lt;a href=&quot;welcome.html&quot;&gt;Zur Hauptseite&lt;/a&gt;
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Den vorerst scheinbar gleichen Effekt kann man erzielen, wenn man die
+ganze Wurst mit Servername &amp; Co. angibt, also:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>&lt;a href=&quot;http://www.amigascene.com/welcome.html&quot;&gt;Zur Hauptseite&lt;/a&gt;
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Der gro&szlig;e Unterschied ist aber sofort erkennbar, wenn man einen
+solchen &quot;globalen&quot; Verweise in einer kopierten Datei auf der eigenen Platte
+hat: Der zuvor gezeigte lokale Link erwartet <TT>welcome.html</TT> nun auch
+auf der Festplatte, mit der globalen Variante will sie aber nach wie vor
+aus dem Netz geholt werden.<BR>
+
+<BR>F&uuml;r uns ist es nat&uuml;rlich am besten, wenn alle Verweise
+lokaler Natur sind, weil wir das Netz meiden wollen wie die Pest.
+Gl&uuml;cklicherweise gibt es in Wget die CLI-Option
+<B><TT>--convert-links</TT></B>. Diese macht eben nichts anderes, als alle
+HTML-Dateien nach &quot;b&ouml;sen&quot; globalen Verweisen zu durchsuchen, und dann
+automatisch in die f&uuml;r uns weitaus praktischeren lokalen Links zu
+konvertieren.<BR>
+
+<BR>Wissenswert zu dem Vorgang ist noch, da&szlig; er erst nach dem
+Kopieren durchgef&uuml;hrt wird. Wget konvertiert einen Link n&auml;mlich
+nur, wenn die entsprechende Datei auch lokal vorhanden ist. Und das kann
+nat&uuml;rlich erst mit Sicherheit gesagt werden, wenn keine neuen Dateien
+mehr zu erwarten sind.<BR>
+
+<BR>In der Ausgabe von Wget verdeutlicht sich <TT>--convert-links</TT>
+&uuml;blicherweise am Ende. Da rattert dann eine Liste von Meldungen
+wie<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>Converting www.amigascene/0x004C.html... done.
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>vor den Augen des zufrieden grinsenden Anwenders vorbei.<BR>
+
+<BR>Erw&auml;hnenswert dazu vielleicht auch noch, da&szlig; die Links im
+AmigaScene ohnehin schon lokaler Natur sind, und da&szlig; es sowieso eine
+<A HREF="as-dload.html">Download Seite</A> gibt, wo man sich die Ausgaben
+zum Offline-Lesen besorgen kann.<BR>
+
+<BR><CENTER><A NAME="03" HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B><A NAME="weitere-optionen">Weitere Optionen</A></B></H3>&nbsp;
+
+<BR>Die Unzahl der Optionen von Wget ist so gro&szlig;, da&szlig; dieser
+Workshop sie nat&uuml;rlich nicht alle besprechen kann. Allgemein kann man
+sagen: Wann immer einem etwas nicht pa&szlig;t, dann gibt es einen
+Parameter, um das zu &auml;ndern. Es sei auf die Originaldokumentation und
+deren Index hingewiesen.<BR>
+
+<BR>Hier werden nur noch ein paar zus&auml;tzliche Features besprochen, die
+sich oft als praktisch erweisen.<BR>
+
+<BR>Zuerst einmal gibt es da <B><TT>--directory-prefix</TT></B>. Damit kann
+man ein Zielverzeichnis angeben, in dem alle Dateien landen sollen.<BR>
+
+<BR>Da Wget die <TT>ixemul.library</TT> benutzt, m&uuml;ssen Pfade den
+Unix-Konventionen nach angegeben werden. Konkret bedeutet dies: das
+&uuml;bergeordnete Verzeichnis hei&szlig;t nicht mehr &quot;<TT>/</TT>&quot;, sondern
+&quot;<TT>../</TT>&quot;. Laufwerke und Assigns haben statt einem Doppelpunkt (:) am
+Ende einen Schr&auml;gstrich (/) am Anfang. Ein paar Beispiele:<BR>
+
+<BR><TABLE BORDER=4 BGCOLOR="#EEEEEE" CELLPADDING=3 CELLSPACING=0 ALIGN=CENTER>
+<TR VALIGN=MIDDLE>
+<TD><B>Amiga</B></TD>
+<TD><B>ixemul.library</B></TD>
+</TR>
+<TR VALIGN=MIDDLE>
+<TD>Work:</TD>
+<TD>/Work/</TD>
+</TR>
+<TR VALIGN=MIDDLE>
+<TD>/sepp/resi/</TD>
+<TD>../sepp/resi/</TD>
+</TR>
+<TR VALIGN=MIDDLE>
+<TD>Sys:libs/</TD>
+<TD>/Sys/libs/</TD>
+</TR>
+<TR VALIGN=MIDDLE>
+<TD>s:user-startup</TD>
+<TD>/s/user-startup</TD>
+</TR>
+</TABLE>&nbsp;
+
+<BR>(Die Profis k&ouml;nnten jetzt aufmucken, da&szlig; man die
+<TT>ixemul.library</TT> durch ein bi&szlig;chen gutes Zureden davon
+&uuml;berzeugen kann, auch Dinge wie <TT>--directory-prefix=ram:</TT> zu
+akzeptieren. Das ist zwar richtig, aber problematisch, weil viele
+Unix-Programme dem Doppelpunkt andere Bedeutungen zuordnen, und dieser
+Ansatz dann am Amiga nicht mehr funktioniert. Aber das w&uuml;rde den
+Nicht-Freak nur verwirren, und deshalb entf&auml;llt hier eine
+ersch&ouml;pfende Diskussion des Problems.)<BR>
+
+<BR>Die Option <B><TT>-x</TT></B> bewirkt, da&szlig; sogar dann von Wget
+die Verzeichnisstruktur des Servers erzeugt wird, wenn nur eine einzelne
+Datei geholt wird. Einmal mehr gibt es keine dokumentierte Langform dazu.
+Es sei auch wiederholt darauf hingewiesen, da&szlig; Wget bei der
+Gro&szlig;/Kleinschreibung unterscheidet, und <TT>-x</TT> und <TT>-X</TT>
+zwei verschiedene Sachen sind. Letzteres ist die Kurzform des aus Teil zwei
+bekannten <TT>--exclude-directories</TT>.<BR>
+
+<BR>Ein paar Beispiele:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>wget http://www.cucug.org/aminew.html
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>kopiert die Datei <TT>aminew.html</TT> ins aktuelle Verzeichnis,
+hingegen nach einem<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>wget -x http://www.cucug.org/aminew.html
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>liegt sie in <TT>www.cucug.org/aminew.html</TT>. Und ein<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>wget -x --directory-prefix=/ram/ http://www.cucug.org/aminew.html
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>bewirkt, da&szlig; sie in <TT>ram:www.cucug.org/aminew.html</TT>
+landet. Man beachte, da&szlig; als Zielverzeichnis <TT>/ram/</TT> angegeben
+wurde, um <TT>ram:</TT> zu erhalten.<BR>
+
+<BR><CENTER><A NAME="04" HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B><A NAME="konfigurationsdatei">Die Konfigurationsdatei</A></B></H3>&nbsp;
+
+<BR>Im ersten Teil wurde kurz Datei namens <TT>.wgetrc</TT> erw&auml;hnt.
+Au&szlig;er, da&szlig; sie an einen geeigneten Platz kopiert wurde, ist
+damit noch nicht viel gemacht worden. Also wozu ist das Ding eigentlich
+gut?<BR>
+
+<BR>Banal gesagt handelt es sich dabei um eine Datei, die von Wget
+automatisch gelesen wird, sobald es gestartet wurde. Das <TT>.wgetrc</TT>
+l&auml;&szlig;t sich mit einem beliebigen Texteditor (wie z.B.
+<TT>c:Ed</TT> oder <TT>sys:Tools/memacs</TT>) bearbeiten. Vereinfacht
+gesagt kann man in jede Zeile einen Ersatz f&uuml;r eine der zahlreichen
+CLI-Optionen eintragen, die dann automatisch immer gesetzt ist.<BR>
+
+<BR>Bevor auf die Details eingegangen wird, mag der verwunderte Leser
+fragen, wie ein Mensch auf so einen d&uuml;mmlichen Namen wie
+<TT>.wgetrc</TT> kommen mag. Die Antwort lautet, wie nicht anders zu
+erwarten, einmal mehr: Unix-Tradition.<BR>
+
+<BR>Eine der herausragenden Peinlichkeiten von Unix ist, da&szlig; es so
+gut wie keine vorgeschriebene Verzeichnisstruktur gibt. In der Folge
+wei&szlig; niemand, wohin mit Konfigurationsdateien, und deshalb werden die
+grunds&auml;tzlich ins Hauptverzeichnis des jeweiligen Anwenders geramscht.
+Nachdem man ein paar Applikationen installiert hat, liegen dort bald
+Dutzende solcher Dateien herum.<BR>
+
+<BR>Wohlgemerkt, das Chaos herrscht dann in dem Verzeichnis, wo man sich
+nach dem Einloggen &uuml;blicherweise befindet. Nat&uuml;rlich ist bei uns
+Amiganern das <TT>env:</TT> und <TT>envarc:</TT> auch ein irrsinniger
+Sauhaufen, nur geht man dort nie ohne guten Grund hin.<BR>
+
+<BR>Das ist nicht so angenehm, hat sich sogar der Unix-Mann gedacht, und
+prompt eine L&ouml;sung zu dem Problem erfunden: Wenn der Name einer Datei
+mit einem Punkt (.) beginnt, dann wird sie beim Auflisten eines
+Verzeichnisses (normalerweise) versteckt. Dank dieser wahrhaftig
+gro&szlig;artigen Idee konnte es vermieden werden, sich eine
+vern&uuml;nftige L&ouml;sung des eigentlich Problems einfallen zu
+lassen.<BR>
+
+<BR>Und weshalb &quot;<TT>rc</TT>&quot; am Ende von <TT>.wgetrc</TT>? Das ist die
+Abk&uuml;rzung f&uuml;r &quot;remote control&quot;, was etwa soviel hei&szlig;t wie
+&quot;Fernsteuerung&quot;. Viel steuern kann man damit aber nicht mehr, sobald das
+Programm einmal gestartet ist. Der Hauptzweck der Abk&uuml;rzung besteht
+eigentlich nur darin, den Namen vollkommen unaussprechlich zu machen, damit
+er dann auch schwieriger zu merken ist. Unix-Tradition eben.<BR>
+
+<BR><CENTER><A NAME="05" HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Sehen wir uns das Ding, das wir im ersten Teil des Workshops
+installiert haben, also einmal an. Dort finden sich z.B. folgende
+Zeilen:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>#
+<BR># Anzahl der erneuten Versuche, falls die Verbindung zusammenbricht.
+<BR>#
+<BR>tries = 20
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Es sollte nicht schwer sein, dies nachzuvollziehen: Eine Zeile, die mit
+einem Kasterl (#) beginnt, leitet ein Kommentar ein. Der Rest der Zeile
+wird dann also ignoriert.<BR>
+
+<BR>Die Zeile mit <TT>tries = 20</TT> hingegen hat die gleiche Wirkung, als
+ob man beim Aufruf von Wget ein <TT>--tries=20</TT> angegeben h&auml;tte.
+Folgendes <B>scheint</B> aufzufallen:<BR>
+
+<BR><TABLE BORDER=0 CELLPADDING=8 CELLSPACING=0 ALIGN=CENTER WIDTH="90%">
+<TR VALIGN=MIDDLE ALIGN=LEFT><TD>
+<IMG SRC="../images/_ball.gif" ALT="-"> In <TT>.wgetrc</TT> braucht man das d&auml;mliche Minus-Minus (<TT>--</TT>) nicht anzugegeben.<BR>
+<IMG SRC="../images/_ball.gif" ALT="-"> Man kann die selben Namen verwenden wie im CLI.<BR>
+</TD></TR></TABLE>&nbsp;
+
+<BR>Huch, das klingt ja fast praktisch, wie konnte das passieren? Hat sich
+der Programmierer am Ende etwas dabei gedacht, als er die Syntax f&uuml;r
+das <TT>.wgetrc</TT> erfand?<BR>
+
+<BR>Nat&uuml;rlich nicht. Das war gerade ein Zufallstreffer. Betrachten wir
+folgenden Eintrag:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>#
+<BR># Maximale Anzahl von Rekursionen f&uuml;r '--recursive'
+<BR>#
+<BR>reclevel = 5
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Mit einiger Phantasie kommt man darauf, da&szlig; es sich hier um die
+Entsprechung zur CLI-Option <TT>--level</TT> handelt, die nur in Kraft
+tritt, wenn auch <TT>--recursive</TT> angegeben wurde. Warum dann hier
+nicht <TT>level = 5</TT> steht wei&szlig; nur der Heilige Karl, der
+Schutzpatron der Unix-M&auml;nner und Bierzeltklatscher.<BR>
+
+<BR>Uneingeschr&auml;nkt wahr ist aber, da&szlig; hier das d&auml;mliche
+Minus-Minus wirklich nicht mehr notwendig ist.<BR>
+
+<BR>Der Wert <TT>5</TT> ist durchaus sinnvoll, und fungiert als
+&quot;Notbremse&quot;. Eine h&ouml;here Verschachtelungstiefe ist zwar selten
+gefragt, wie wir im zweiten Teil gesehen haben, manchmal aber doch. In so
+einem Fall kann man nach wie vor im CLI z.B. ein <TT>--level=9</TT>
+angeben. Der Wert aus der Konfigurationsdatei wird damit
+&quot;&uuml;berschrieben&quot;.<BR>
+
+<BR><CENTER><A NAME="06" HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Generell kann man also sagen: Es gibt zu den meisten CLI-Optionen ein
+Entsprechung f&uuml;r <TT>.wgetrc</TT>, die meistens den gleichen, manchmal
+einen &auml;hnlichen Namen hat. Wie diese jetzt konkret lauten, kann man
+der Dokumentation entnehmen.<BR>
+
+<BR>Wir wollen hier noch ein paar Optionen besprechen, die besser in der
+Konfigurationsdatei aufgehoben sind als im CLI. Da ist w&auml;re etwa der
+Eintrag<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR><B>quota</B> = 5M
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Diese Zeile beschreibt das Maximum an Daten, das Wget w&auml;hrend
+eines Aufrufs an Land zieht. <TT>5M</TT> steht klarerweise f&uuml;r 5
+Megabytes. Man k&ouml;nnte genausogut sagen <TT>quota = 5120K</TT> oder
+<TT>quota = 5242880</TT>.<BR>
+
+<BR>Wichtig dabei ist noch, da&szlig; Wget erst <B>nach</B> dem
+vollst&auml;ndigen Kopieren einer Datei &uuml;berpr&uuml;ft, ob diese
+Grenze &uuml;berschritten wurde. Wenn wir mit diesem Wert in
+<TT>.wgetrc</TT> nocheinmal versuchen, das 8 MB gro&szlig;e Archiv f&uuml;r
+NetBSD aus dem ersten Teil zu saugen, dann klappt das also noch immer, weil
+es sich nur um eine einzelne Datei handelt, und die Quota-Bremse erst
+nachher greift.<BR>
+
+<BR><CENTER><A NAME="07" HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Den Meisten, die sich einmal mit der Konfiguration eines Browsers
+auseinandergesetzt haben, werden auch folgende Zeilen schnell klar
+sein:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR><B>use_proxy</B> = on
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Wer seinen Proxy nicht &uuml;ber eine Umgebungsvariable bereits gesetzt
+hat, mu&szlig; ihn noch explizit angeben, damit er wirklich benutzt
+wird:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR><B>http_proxy</B> = http://wwwcache.tu-graz.ac.at:75/
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Ein Proxy ist eine Art WWW-Cache auf einem anderen Rechner. Prinzipiell
+ist das eine gute Sache. Leider ist dieses Proxy-Ding in technischer
+Hinsicht einmal mehr eine elendige Pfuscherei. Weiters sind die Leute, die
+den fernen Proxyrechner warten, mit der Konfiguration oft geistig
+&uuml;berfordert, soda&szlig; es f&uuml;r viele nur Scherereien bringt.
+Mancheiner zieht dann wohl eher folgenden Eintrag vor:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>use_proxy = off
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="08" HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Bandbreitenphilosphen m&uuml;ssen nach so einer Behauptung
+nat&uuml;rlich aufjaulen. Also noch einmal: Solltet ihr einen Proxy haben,
+und tut er aus unerfindlichen Gr&uuml;nde zuf&auml;llig funktionieren,
+tut's ihn auch verwenden, liebe Leute!<BR>
+
+<BR>Zur weiteren Bes&auml;nftigung der zuvor Genannten k&ouml;nnte
+folgender Eintrag dienen:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR><B>wait</B> = 1
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Dies bewirkt, da&szlig; Wget nach dem Saugen einer Datei ca. eine
+Sekunde lang wartet, bevor die n&auml;chste angefordert wird. Denn vor
+allem dann, wenn Wget &uuml;ber eine halbwegs flotte Ethernet-Leitung
+nuckelt, kann die Saugerei f&uuml;r den Server am anderen Ende eine
+ziemliche Belastung sein, da er andauernd Vollgas nachschaufelt.<BR>
+
+<BR>L&auml;&szlig;t man Wget aber zwischendurch immer wieder ein
+bi&szlig;chen warten, so kann der Server dazwischen kurz Luftholen, und in
+Ruhe Anfragen von anderen Browsern bearbeiten.<BR>
+
+<BR>Weiters ist es damit auch leichter zu beobachten, ob Wget noch immer
+sinnvolle Daten holt, oder ob es gerade begonnen hat, seine Aufmerksamkeit
+einer Datei mit der verd&auml;chtigen Endung <TT>.wav</TT> oder dergleichen
+zu widmen.<BR>
+
+<BR>Auf der anderen Seite ist es f&uuml;r die Modem-Wabbler daheim besser,
+wenn sie stattdessen ein<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>wait = 0
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>machen oder die Zeile ganz rausl&ouml;schen, was aufs gleiche
+rauskommt. Denn Verbindungen mit &Uuml;bertragunsraten unter 10 KB/s
+schaukelt jeder aufrechte Server mit dem kleinen Finger, ohne dabei
+au&szlig;er Atem zu kommen. Und selbst Volksch&uuml;ler im zweiten Jahr
+sollten die Ausgabe noch angenehm mitlesen k&ouml;nnen. Die Wartesekunden
+aber w&uuml;rden auf die Dauer einiges an Geld kosten.<BR>
+
+<BR><CENTER><A NAME="09" HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#10"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Jene, die sich ein bi&szlig;chen mit HTTP, dem d&uuml;mmlichen Leib-
+und Magenprotokoll des WWW besch&auml;ftigt haben, wissen, da&szlig; man
+beim Anfordern einer Datei allerlei Dinge im &quot;Kopf&quot; der Anweisung
+mitschicken kann. In <TT>.wgetrc</TT> gibt es daf&uuml;r
+<B><TT>header</TT></B>. Details &uuml;ber sinnvolle Werte und deren Effekt
+wei&szlig; die Spezifikation von HTTP. Hier werden ein paar konkrete Dinge
+beschrieben. Zum Beispiel kann man die bevorzugte Sprache angeben:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>header=Accept-Language: en
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>oder von wo man kommt:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>header=From: Mein Name &lt;ich@irgend.wo&gt;
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Nat&uuml;rlich ist hier der eigene Name einzutragen. Es bringt
+&uuml;brigens wenig, hier einen lustigen Phantasiewert zu verwenden und zu
+glauben, da&szlig; man dann anonym ist.<BR>
+
+<BR>Man kann <TT>header</TT> auch &ouml;fters in <TT>.wgetrc</TT>
+verwenden, um mehrere Sachen zu kombinieren.<BR>
+
+<BR>Das ungl&uuml;cklicherweise oft notwendige &quot;Spoofing&quot; geht damit aber
+leider nicht. Ein<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>header=User-agent: Mozilla/5.0 (AmigaOS/mc680x0)
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>bringt <B>nicht</B> den gew&uuml;nschten Erfolg, sollte sich ein
+schwachsinniger Web-Autor einbilden, da&szlig; man unbedingt einen
+bestimmten Browser braucht, um seine Seiten betrachten zu k&ouml;nnen.
+Offiziell kann man dagegen nichts machen, inoffiziell gibt es die in der
+Dokumentation unerw&auml;hnte CLI-Option <B><TT>--user-agent</TT></B>
+(kurz: <tt>-U</tt>):<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>wget --user-agent=Mozilla/5.0 ...
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Damit t&auml;uscht Wget vor, Netscape zu sein.<BR>
+
+<BR><CENTER><A NAME="10" HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#11"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B><A NAME="grenzen">Grenzen von Wget</A></B></H3>&nbsp;
+
+<BR>Nachdem dem wir jetzt wissen, was wir mit Wget alles machen
+k&ouml;nnen, fehlt noch der Teil, der sagt, was man damit <B>nicht</B>
+machen kann.<BR>
+
+<BR>Zuerst einmal kann Wget keine CGI-Scripts ausf&uuml;hren. Ohne
+gro&szlig; darauf einzugehen, was CGI ist, hier die praktischen
+Auswirkungen von dieser Tatsache: Die ohnehin sinnlosen Webcounter fehlen
+also in der lokalen Kopie. Und Formulare funktionieren auf der Festplatte
+in der Regel auch nicht mehr.<BR>
+
+<BR>Eine weitere Grenze liegt in der geistigen Beschr&auml;nkheit von
+Webdesignern. Manche halten es f&uuml;r notwenig, sich &uuml;ber die
+HTML-gegebenen Verweismechanismen hinwegzusetzen, und die Navigation
+&uuml;ber abstruse Javascript-Platit&uuml;den machen zu m&uuml;ssen. Wget
+ignoriert derlei Sachen nat&uuml;rlich, und verfolgt auch keine solcherart
+erzeugten Pseudolinks.<BR>
+
+<BR>Eine Erw&auml;hnung wert sind auch Seiten mit Frames. Weil das
+Framekonzept von intellektuell ziemlich minderbemittelten Menschen stammt,
+besteht eine Frameseite aus mehreren Dateien. Deshalb besorgt ein normaler
+Aufruf von Wget nur die Seite, die sagt, wo die eigentlichen Frameinhalte
+liegen. Ansehen kann man sich damit nat&uuml;rlich nicht viel. Dieses
+Problem l&auml;&szlig;t sich aber einfach l&ouml;sen, indem man die
+Optionen <TT>--recursive --level=1</TT> mit angibt (und eventuell
+<TT>--reject</TT> &amp; Co.).<BR>
+
+<BR><CENTER><A NAME="11" HREF="#10"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#12"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B><A NAME="integrieren">Wget vom Browser aus starten</A></B></H3>&nbsp;
+
+<BR>Jetzt wo wir wissen, wie Wget funktioniert, fragt sich der eine oder
+andere wahrscheinlich, ob er sich die 986432 CLI-Optionen wirklich merken
+soll. Die Antwort lautet schlicht und ergreifend: Nein. Sowas tun nur
+Unix-M&auml;nner.<BR>
+
+<BR>Bereits im zweiten Teil haben wir uns zuerst mit ein paar CLI-Aliasen
+und zwei einfachen ARexx-Scripts beholfen. Das war zwar schon recht
+praktisch, dennoch mu&szlig;te dazu noch immer der CLI offen bleiben.
+Eigentlich w&auml;re es angenehm, wenn man beim Betrachten einer
+interessanten Seite einmal mit der Maus klickt, und das gute St&uuml;ck ist
+auf der Platte.<BR>
+
+<BR>Mit ARexx und einem &quot;vern&uuml;nftigen&quot; Browser ist das auch
+tats&auml;chlich einfach zu bewerkstelligen. Vern&uuml;nftig in diesem
+Zusammenhang hei&szlig;t AWeb oder IBrowse, aber nicht Voyager. Letzterer
+hat zumindest in der derzeit aktuellen Version 2.95 einen zu
+beschr&auml;nkten Befehlssatz in seinem ARexx-Port.<BR>
+
+<BR>Das ARexx-Script, das eben dies bewerkstelligt heißt banal
+<tt>wget.rexx</tt>. Zu finden sind sie entweder am Ende des Artikels
+oder am Aminet unter <tt>comm/www/WgetRexx.lha</tt>.<BR>
+
+<BR>Im weiteren Verlauf des Workshops wird die Einbindung in IBrowse
+beschrieben, f&uuml;r AWeb verl&auml;uft der ganze Vorgang aber
+analog, au&szlig;er da&szlig; ein paar Dinge im Preferencesfenster
+etwas andere Namen haben.<br>
+
+<BR><CENTER><A NAME="12" HREF="#11"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#13"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Der Browser mu&szlig; laufen, und die Seite, die wir haben wollen,
+mu&szlig; gerade angezeigt werden. Weiters brauchen wir einen Assign namens
+<TT>Web:</TT>, wo unsere lokale Kopie der interessanten Teile des WWW
+liegen wird. Wem nichts besseres einf&auml;llt, der kann im CLI ein<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>makedir Work:Web
+<BR>assign Web: Work:web
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>machen, und den Assign auch in seiner <TT>s:user-startup</TT>
+aufnehmen. Das Script sorgt daf&uuml;r, da&szlig; alles, was es besorgt,
+automatisch dort landet.<BR>
+
+<BR>Das Script selbst kopieren wir am besten nach <tt>rexx:</tt>, da
+es nicht nur einen Browser unterstützt, sondern einfach mit dem
+kommuniziert, der gerade rennt. Das hat auch den Vorteil, daß der
+<tt>rx</tt> Befehl automatisch dort danach sucht, und wir keine langen
+Pfade angeben müssen.<br>
+
+<br>Weiters werden zum die beiden Libraries
+<tt>rexxreqtools.library</tt> und <tt>rexxdossupport.library</tt>
+benötigt. Wer die noch nicht hat kann sie sich aus dem Aminet
+besorgen, Details über die Archivnamen finden sich am Ende des
+Workshops.<br>
+
+<BR>F&uuml;r die ersten Gehversuche werden wir das Script vorerst einmal
+vom CLI aus starten, und wenn klar ist, wie die Sache abl&auml;uft, den
+Aufruf im ARexx-Macro Men&uuml; des Browsers ablegen.<BR>
+
+<BR>Also flux den Browser gestartet, und ihn eine interessante Seite
+anzeigen lassen. Aus Gr&uuml;nden der Konsistenz k&ouml;nnte das einmal die
+beliebten HMHB sein, also
+<TT>http://www.btinternet.com/~hmhb/hmhb.htm</TT>. Jetzt im CLI folgendes
+eingeben:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>rx wget.rexx
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Der Anfang der Ausgabe sollte wie folgt aussehen:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>Downloading &quot;http://www.btinternet.com/~hmhb/hmhb.htm&quot;
+<BR>to file://localhost/Web:www.btinternet.com/%7Ehmhb/hmhb.htm&quot;
+<BR>
+<BR>wget -x --directory-prefix=/Web/ http://www.btinternet.com/~hmhb/hmhb.htm
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Die ersten beiden Zeilen geben an, was wohin kopiert wird. Das
+<TT>file://localhost/Web:www.btinternet.com/%7Ehmhb/hmhb.htm</TT> ist dabei
+die URI der lokalen Kopie, die wir danach im Browser sehen werden. Das
+<TT>file://localhost/</TT> besagt nichts anderes, als da&szlig; es sich
+dabei um eine Daten auf unserem eigenen Rechner handelt. Demzufolge ist
+auch keinen Netzwerkzugriff erforderlich, um sie anzuzeigen..<BR>
+
+<BR>Die zweite Zeile gibt den tats&auml;chlich verwendeten Aufruf f&uuml;r
+Wget an. Wie wir sehen, f&uuml;gt das Skript immer die Optionen
+<TT>--directory-prefix</TT> und <TT>-x</TT> dazu. Das
+<TT>--directory-prefix=/Web/</TT> daf&uuml;r, da&szlig; alles in
+<TT>Web:</TT> landet, und wegen dem <TT>-x</TT> wird immer f&uuml;r jeden
+Server ein eigenes Verzeichnis erzeugt, auch wenn nur eine einzelne Datei
+gesaugt wird.<BR>
+
+<BR>Die URI <TT>http://www.btinternet.com/~hmhb/hmhb.htm</TT> wei&szlig;
+das Script, weil es den Browser &uuml;ber ARexx &quot;gefragt&quot; hat.<BR>
+
+<BR>Es sollte im weiteren Verlauf die normale Ausgabe von Wget folgen, und
+am Ende folgender Nachsatz stehen:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>Successfully downloaded data to local web.
+<BR>Viewing page in Browser.
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Wenn alles geklappt hat, flackert der Browser kurz auf, und zeigt
+wirklich die Datei
+<TT>file://localhost/Web:www.btinternet.com/%7Ehmhb/hmhb.htm</TT> an. In
+dem Fall handelt es sich um die Kopie der HMHB-Seite ohne Bilder.<BR>
+
+<BR><CENTER><A NAME="13" HREF="#12"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#14"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Man kann nun an das Script weitere Optionen &uuml;bergeben, die direkt
+an Wget weitergereicht werden. So l&auml;&szlig;t sich damit auch die ganze
+Site kopieren. Weil wir aus dem zweiten Teil bereits wissen, wie man HMHB
+ohne den Schrott in <TT>/fallnet</TT> saugt, k&ouml;nnte man genausogut
+folgendes machen:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>rx wget.rexx --recursive --no-parent --exclude-directories=/~hmhb/fallnet
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Sollte der Browser übrigens immer noch die lokale Kopie mit der
+URI <TT>file://localhost/Web:...</TT> anzeigen, so ist das Script
+schlau genug, davon ausgehend die ursprüngliche Adresse mit
+<tt>http://...</tt> berechnen.<br>
+
+<BR><CENTER><A NAME="14" HREF="#13"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#15"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B>Die ARexx-Scripts einbinden</B></H3>&nbsp;
+
+<BR>Das Einzige, was noch fehlt, ist, die Scripts direkt vom Browser aus
+aufzurufen. In IBrowse gibt es das praktische Men&uuml; &quot;Rexx&quot;, das man von
+Preferences/General/Rexx aus konfigurieren kann. Das Feld <i>Name</i> gibt
+dabei den Namen des Men&uuml;punkts an, unter dem das Macro danach im
+Rexx-Men&uuml; zu sehen sein wird, das Feld <i>Macro</i> den Aufruf selbst.
+F&uuml;r den Anfang w&auml;re folgende Konfiguration denkbar:<BR>
+
+<BR><TABLE WIDTH="90%" BORDER=4 BGCOLOR="#EEEEEE" CELLPADDING=3 CELLSPACING=0 ALIGN=CENTER>
+<TR VALIGN=TOP>
+<TD><B>Name</B></TD>
+<TD><B>Macro</B></TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>Wget single resource</TD>
+<TD>wget.rexx</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>Wget page with ../images</TD>
+<TD>wget.rexx --recursive --convert-links --level=1 --accept=png,jpg,jpeg,gif</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>Wget site</TD>
+<TD>wget.rexx --recursive --convert-links --no-parent
+--reject=mpg,mpeg,wav,au,aiff,aif,tgz,Z,gz,zip,lha,lzx,ps</TD>
+</TR>
+</TABLE>&nbsp;
+
+<BR>Das &quot;Wget single resource&quot; entspricht unserem ersten Beispiel, und
+kopiert eine einzelne Datei nach <TT>Web:</TT>. Dabei mu&szlig; es sich
+nicht unbedingt um ein HTML-Dokument handeln. Alles, was der Browser
+anzeigen kann, gilt, also auch Bilder.<BR>
+
+<BR>&quot;Wget page with ../images&quot; holt eine einzelne Seite mit all ihren
+Bildern.<BR>
+
+<BR>Und &quot;Wget site&quot; schlie&szlig;lich kopiert die ganze
+Verzeichnisstruktur, ausgehend vom aktuellen Verzeichnis am Server, wobei
+Daten-Ramsch wie Archive und Musikdaten weggelassen werden.<BR>
+
+<BR><CENTER><A NAME="15" HREF="#14"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#16"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>W&auml;hrend die ersten beiden Macros in der Regel unproblematisch
+sind, kommt es beim Spiegeln einer ganzen Site bekanntlich fast immer zu
+Problemen. Deshalb ist es meist notwendig, ein paar zus&auml;tzliche
+Optionen anzugeben. Nun will man aber nicht ein jedesmal die Preferences
+von IBrowse &auml;ndern wollen.<BR>
+
+<BR>Aus diesem Grund kann man dem Script ein paar "eigene" Optionen
+übergeben, die nicht an Wget weitergereicht werden. Die einzige für
+uns wichtige heißt <tt>Ask</tt> und läßt einen Requester erscheinen,
+in dem wir die Optionen für Wget angeben können. Damit k&ouml;nnen wir
+noch folgende Eintrag machen:<BR>
+
+<BR><TABLE WIDTH="90%" BORDER=4 BGCOLOR="#EEEEEE" CELLPADDING=3 CELLSPACING=0 ALIGN=CENTER>
+<TR VALIGN=TOP>
+<TD><B>Name</B></TD>
+<TD><B>Macro</B></TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>Wget site...</TD>
+<TD>wget.rexx Ask  --recursive --convert-links --no-parent
+--reject=mpg,mpeg,wav,au,aiff,aif,tgz,Z,gz,zip,lha,lzx,ps</TD>
+</TR>
+</TABLE>&nbsp;
+
+<BR>Wie leicht zu erkennen ist, sind die restlichen &uuml;bergebenen Optionen
+identisch zu &quot;Wget site&quot;. Vom Namen her unterscheidet er sich durch die
+drei Punkterl am Ende. Ein Men&uuml;eintrag, der mit Punkterl endet,
+bezeichnet ja bekanntlich eine Operation, die noch weitere Eingaben
+erfordert - und genau das ist bei hier ja der Fall.<BR>
+
+<BR><CENTER><A NAME="16" HREF="#15"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#17"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B>Ausgabe im Browser</B></H3>&nbsp;
+
+<BR>Hat man die Scripts wie oben eingebunden, und startet man sie vom
+Rexx-Men&uuml; des Browsers aus, so wird normalerweise automatisch ein CLI
+ge&ouml;ffnet, in dem Wget seine Ausgaben machen kann.<BR>
+
+<BR>Wie das konkret aussehen soll, entnimmt IBrowse aus
+<TT>Preferences/General/General/Output Window</TT>. Dort sollte ein Wert
+wie<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>CON:0/0/640/200/IBrowse Output/AUTO/WAIT/CLOSE/SCREEN%p
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>stehen. Wichtig ist das <TT>/WAIT/CLOSE</TT>, da dadurch das
+CLI-Fenster offen bleibt, auch wenn das Script beendet wurde, soda&szlig;
+man sich eventuelle Fehlermeldungen in Ruhe ansehen kann.<BR>
+
+<BR>In diesem Fenster kann man aber keine Befehle eingeben wie in
+einem normalen CLI, sondern nur auf das Close-Gadget klicken, wenn
+Wget fertig ist. Dennoch kann man auch weiterhin <TT>Control-C</TT>
+dr&uuml;cken, um das Script (und damit auch Wget) abzubrechen. (Im
+Falle von IBrowse hat das leider den Effekt, daß auch der ganze
+Browser beendet wird. AWeb zeigt in der Hinsicht wesentlich mehr
+Intelligenz.)<br>
+
+<br>AWeb Anwender hingegen müssen die entsprechende Console beim
+Aufruf des Macros direkt angeben. Ansonsten würde alles "verschluckt"
+werden, ohne daß man jemals etwas von Wget sieht - obwohl es läuft. Um
+dem entgegen zu wirken, könnte der erste Macro lauten:<BR>
+
+<BR><TABLE WIDTH="90%" BORDER=4 BGCOLOR="#EEEEEE" CELLPADDING=3 CELLSPACING=0 ALIGN=CENTER>
+<TR VALIGN=TOP>
+<TD><B>Name</B></TD>
+<TD><B>Macro</B></TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>Wget single resource</TD>
+<TD>wget.rexx &gt;CON://640/200/Wget.rexx/AUTO/CLOSE/WAIT</TD>
+</TR>
+</TABLE>&nbsp;
+
+<BR>Weiters soll darauf hingewiesen werden, da&szlig; man die Ausgabe
+immer anhalten kann. Im etwas patscherten Standard-CLI z.B. durch
+einen Druck auf die Leertaste. Fortsetzen geht dann mit der
+R&uuml;cktaste (Backspace). Erweiterte CLI's wie KingCON oder ViNCEd
+bieten meistens ausgefeiltere Mechasnismen f&uuml;r &quot;Halt &amp;
+Resume&quot;, es sei auf deren Dokumentation verwiesen.<BR>
+
+<BR>Das hei&szlig;t also: Das Starten von Wget ist jetzt wesentlich
+komfortabler, und man kann sich einfach f&uuml;r jede pers&ouml;nlich
+relevante Sammlung von Optionen einen Men&uuml;eintrag machen. Dennoch
+ist es auch weiterhin notwendig, Wget zu beobachten. Abbrechen kann
+man wie vorher, und Weitermachen mit mehr Optionen zur
+M&uuml;llvermeidung geschieht eben mit dem Eintrag, der auch die
+Option <tt>Ask</tt> setzt.<br>
+
+<BR>Zur Erinnerung: Praktisch jeder von uns hat einen Systempatch
+installiert, der es erm&ouml;glicht, den Inhalt eines String-Requesters
+durch Druck auf <TT>Amiga-C</TT> bzw. <TT>Amiga-V</TT> durch das Clipboard
+zu jagen, was vor allem bei wiederholtem Verfeinern der Wget-Optionen von
+<TT>wget-ask.ibrx</TT> n&uuml;tzlich ist.<BR>
+
+<BR><CENTER><A NAME="17" HREF="#16"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#18"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B>Wget automatisch starten</B></H3>&nbsp;
+
+<BR>Kurz hingewiesen werden soll auch auf die M&ouml;glichkeit, Wget
+automatisch zu starten. Das hat nat&uuml;rlich nur Sinn, wenn man genau
+wei&szlig;, was man kriegen wird.<BR>
+
+<BR>Manche FTP-Server sind unter Tags oft &uuml;berlastet, und lassen Wget
+erst gar nicht einloggen. Man k&ouml;nnte folgendes kleine Shell-Script
+verfassen und z.B. als <TT>t:wget-zeix</TT> abspeichern:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>wait until 23:30
+<BR>wget ftp://ftp.&uuml;berlastet.org/pub/zeix.lha
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="18" HREF="#17"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#19"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Startet man das Script im CLI mit<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>run execute t:wget-zeix
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>kann man gem&uuml;tlich ins Kino gehen, und eine halbe Stunde vor
+Mitternacht beginnt Wget zu saugen. Das geht nat&uuml;rlich auch mit
+anderen, CLI-basierten FTP-Clients.<BR>
+
+<BR>Als praktisch k&ouml;nnte es sich dabei erweisen, die Ausgabe von Wget
+in eine Datei umzulenken bzw. sich einer der beiden Optionen
+<B><TT>--output-file</TT></B> oder <B><TT>--append-output</TT></B> zu
+bedienen.<BR>
+
+<BR>Die echten Profis erledigen derlei Dinge mit Utilities wie <A HREF="http://ftp.uni-paderborn.de/pub/aminet/util/time/EZCron.lha">aminet:util/time/EZCron.lha</A>.<BR>
+
+<BR>Voraussetzung zu all dem ist nat&uuml;rlich, da&szlig; einem die
+Netzwerkverbindung nicht &quot;pro Minute&quot; kostet.<BR>
+
+<BR><CENTER><A NAME="19" HREF="#18"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#20"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><H3><B>Und aus</B></H3>&nbsp;
+
+<BR>Damit sind wir am Ende des Workshops angelangt. Fassen wir noch einmal
+zusammen:<BR>
+
+<BR>Wget ist ein leistungsf&auml;higes, aber kaum bedienbares Programm zum
+Kopieren von Daten aus dem WWW. Zum einen es es so konzipiert, da&szlig; es
+instabile Netzwerke und kurze Ausf&auml;lle nicht sonderlich beeindrucken.
+Zum anderen erm&ouml;glicht es, mit einem Aufruf ganze
+Verzeichnisstrukturen zu kopieren. Weil das etwas problematisch ist, sollte
+man es dabei nicht unbeobachtet lassen. Bei Bedarf gibt es etliche
+Optionen, um den Aktionsradius einzuschr&auml;nken.<BR>
+
+<BR>Um von der hinigen Technologie des Internets wegzukommen, haben wir
+unser eigenes <TT>Web:</TT> auf der lokalen Platte angelegt. Die
+selbstgef&auml;lligen Schulterklopfer rund um die Internet RFC's, die
+Hampelm&auml;nner des World Wide Web Consortiums und die f&uuml;r jede
+Online-Minute die Hand aufhaltenden Provider k&ouml;nnen uns damit bis zu
+einem gewi&szlig;en Grad den Buckel runterrutschen.<BR>
+
+<BR>Das mu&szlig; ja nicht unbedingt bedeuten, das wir mit der Idee einer
+vernetzten Welt ein grunds&auml;tzliches Problem haben und uns deshalb
+lieber einem hemmungslosen Festplatten-Biedermaier hingegeben. Es kann
+einfach hei&szlig;en, das wir mit einer in ihrem innersten verfaulten
+technologischen M&uuml;llhalde, wie es das Internet nun mal ist, so wenig
+wie m&ouml;glich zu tun haben wollen.<BR>
+
+<BR><CENTER><A NAME="20" HREF="#19"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#99"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Was die traditionelle Unbedienbarkeit der Programmen von
+Unix-M&auml;nner betrifft: an ein paar Dinge haben wir uns halt seufzend
+angepa&szlig;t, dabei aber im Hinterkopf behalten, da&szlig; man es besser
+machen kann. Die un&uuml;berschaubare Anzahl von CLI-Optionen haben wir in
+ein paar ARexx-Macros verpackt, die wir von unserem Browser aus per
+Mausklick starten. Und die paar oft ben&ouml;tigten Optionen, die man
+braucht, um Wget von bestimmten Daten abzuhalten, k&ouml;nnen wir dann
+leicht im Kopf behalten - und sie auch wirklich anwenden.<BR>
+
+<BR>Und alles was man dazu braucht ist ein Amiga und ein bisserl Hirn. Aber
+beides, wohlgemerkt.<BR>
+
+			<BR>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+				<P ALIGN=RIGHT>
+
+					<A HREF="as-redax.html#agi">Thomas Aglassinger</A>
+					&nbsp;&nbsp;&nbsp;
+					<A HREF="../deutsch/0x0078.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" VSPACE=0 HSPACE=0 BORDER=1></A>
+					&nbsp;&nbsp;&nbsp;
+					<BR>
+
+				</P>
+				<BR><TABLE BORDER=0 CELLPADDING=8 CELLSPACING=0 ALIGN=CENTER WIDTH="90%">
+				<TR VALIGN=TOP ALIGN=LEFT><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x004C.html">Workshop Teil 1</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_05/wget.rexx">wget.rexx</A> - ARexx-Script, um Wget vom Browser aus zu starten<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="http://ftp.uni-paderborn.de/pub/aminet/comm/www/WgetRexx.lha">aminet:comm/www/WgetRexx.lha</A> - Archiv mit dem ARexx-Script.<BR>
+
+				</TD><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x0064.html">Workshop Teil 2</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="http://ftp.uni-paderborn.de/pub/aminet/util/rexx/rexxdossupport.lha">aminet:util/rexx/rexxdossupport.lha</A> - Archiv mit ein den Libraries f&uuml;r zum Parsen der CLI-Argumente.<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="http://ftp.uni-paderborn.de/pub/aminet/util/libs/ReqToolsUsr.lha">aminet:util/libs/ReqToolsUsr.lha</A> - Archiv mit ein den Libraries f&uuml;r den Requester.<BR>
+
+				</TD></TR>
+				</TABLE>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER> &nbsp; 
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=LEFT>
+				<A HREF="#00"><IMG SRC="../images/_krumm_hi.gif" WIDTH=37 HEIGHT=29 BORDER=0 ALT="[Up]"></A>
+				<A NAME="99"><FONT COLOR="#FFFFFF">&nbsp;</FONT></A>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=BOTTOM ALIGN=RIGHT>
+				<A HREF="0x0077.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x0079.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+	</TABLE>
+</BODY>
+</HTML>

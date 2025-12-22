@@ -1,0 +1,83 @@
+NEWTYPE.screeninfo
+  id.l
+  width.l
+  height.l
+  _depth.w
+  overscan.w
+  autoscroll.w
+  bmapwidth.l
+  bmapheight.l
+End NEWTYPE
+
+NEWTYPE.WS
+  _screen.l
+End NEWTYPE
+
+NEWTYPE.pt
+  x.w
+  y.w
+End NEWTYPE
+
+Dim p.pt(20)
+
+WBenchToFront_
+
+
+WbToScreen 0
+
+FindScreen 0
+
+*sc.screeninfo=ASLScreenRequest(31)
+
+If *sc
+  Dim scrtags.TagItem(8)
+
+  col.w=-1
+
+  scrtags(0)\ti_Tag=#SA_Left,0
+  scrtags(1)\ti_Tag=#SA_Top,0
+  scrtags(2)\ti_Tag=#SA_Width,*sc\width
+  scrtags(3)\ti_Tag=#SA_Height,*sc\height
+  scrtags(4)\ti_Tag=#SA_Depth,*sc\_depth
+  scrtags(5)\ti_Tag=#SA_Overscan,*sc\overscan
+  scrtags(6)\ti_Tag=#SA_AutoScroll,*sc\autoscroll
+  scrtags(7)\ti_Tag=#SA_DisplayID,*sc\id
+  scrtags(8)\ti_Tag=#SA_Pens,&col
+
+  ScreenTags 0,"BB2-Kurs von Thomas Krippner",&scrtags(0)
+
+  Use Screen 0
+
+  *Scr.WS=Addr Screen (0)
+
+  Window
+  0,0,11,Peek.w(*Scr\_screen+12),Peek.w(*Scr\_screen+14)-11,$1000|$400|$8,"Grafik Beispiel",1,2
+
+
+  For q = 0 To 19
+
+	 p(q)\x=(InnerWidth/2)+Sin(2*q*Pi/20)*((InnerWidth/2)-1)
+	 p(q)\y=(InnerHeight/2)+Cos(2*q*Pi/20)*((InnerHeight/2)-1)
+
+  Next q
+
+
+  For q = 0 To 18
+
+	 For w = q+1 To 19
+
+	  WLine p(q)\x,p(q)\y,p(w)\x,p(w)\y,1
+
+	 Next w
+
+  Next q
+
+  Repeat
+
+	 ev.l=WaitEvent
+
+  Until ev = $200
+
+End If
+
+End

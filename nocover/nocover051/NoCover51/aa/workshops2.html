@@ -1,0 +1,381 @@
+<html>
+<head>
+  <title>Workshops / Hintergrundberichte</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="workshops.html">PREV</a> | <a href="test1.html">NEXT</a>
+<hr>
+<pre>
+
+2. Programmierung des PowerPC mit WarpOS (von Steffen H&auml;user)
+
+&raquo;Seit dem Erscheinen der PowerUP-Karten erschienen auf dem Aminet bereits 
+einige Programme, die den PPC unterst&uuml;tzen. Es gibt jedoch zahlreiche 
+Autoren, die ihre Programme noch nicht mit PPC-Support versehen, obwohl 
+dies durch die Verwendung von StormC und WarpOS eigentlich sehr einfach 
+ist. Dieser Artikel beschreibt, wie man ein Programm mit PPC-Support 
+versieht.
+
+Dabei w&auml;re es sogar durchaus denkbar, ein Programm jetzt f&uuml;r den 68k zu 
+entwickeln - da weder PPC-Karte noch PPC-Compiler verf&uuml;gbar -, jedoch mit 
+Blick auf eine leichte PPC-Portierbarkeit, und dann sp&auml;ter die wenigen noch 
+n&ouml;tigen Schritte, um eine PPC-Version zu generieren.
+Dieses Vorgehen d&uuml;rfte vor allem f&uuml;r Spiele-Entwickler interessant sein. Im 
+Zweifelsfall, falls ein Rechner gesucht wird, auf dem ein bereits 
+fertiggestelltes PPC-Programm compiliert werden kann, ohne gleich eine PPC-
+Karte kaufen zu m&uuml;ssen, stehe ich auch gerne zum Recompilieren zur 
+Verf&uuml;gung (obwohl es sicher praktikabler w&auml;re, einen eigenen Rechner hier 
+zu haben). Das Programmtesting kann im &Uuml;brigen prinzipiell auch mit der 
+68k-Version erfolgen, da eigentlich keine gr&ouml;&szlig;eren &Auml;nderungen erforderlich 
+sind.
+
+Prinzipiell erfolgt die Anpassung in folgenden Phasen (um die Entwicklung 
+zu vereinfachen, ist empfohlen, dies schon w&auml;hrend der Entwicklung der 68k- 
+Version durchzuf&uuml;hren):
+
+A) Umschreiben aller 68k-Assembler-Teile nach C oder C++ oder PPC-ASM
+B) ANSI/StormC-Anpassung
+C) PPC-Anpassung
+D) Kontextswitch-Optimierung
+E) Weitere Anpassung
+
+Im Gegensatz zu einer PPC-Anpassung auf ppc.library hat man bei WarpOS nach 
+Schritt A) eigentlich schon fast &quot;gewonnen&quot;, die letztlichen PPC-
+Anpassungen sind (zumindest bei Sourcen ohne Assembler-Optimierung) 
+minimal. Ich verzichte darauf, auf Teil A) einzugehen, wer unbedingt 
+Assembler-Projekte auf PPC portieren m&ouml;chte, sollte E-Mail-Kontakt mit mir 
+aufnehmen, da es evtl. ein besser geeignetes Verfahren der Portierung als 
+das hier beschriebene gibt (und zudem vor einer Riesenarbeit gepr&uuml;ft werden 
+sollte, ob es sich &uuml;berhaupt lohnt).
+
+Ich empfehle, zumindest Schritt B) bereits w&auml;hrend der Entwicklung der 68k- 
+Version vorzunehmen, um sp&auml;ter nicht mehr durch den ganzen Source
+durchgehen zu m&uuml;ssen.
+
+B. StormC - ein strenger ANSI-Compiler
+--------------------------------------
+
+Der wildeste Part bei der Anpassung eines PPC-Programms ist nicht etwa die 
+Anpassung von 68k auf PPC, sondern von SAS/C oder GNU C auf StormC.
+StormC ist ein strenger ANSI-Compiler, daher sind Standard-C-Funktionen, 
+die im ANSI-Standard nicht verf&uuml;gbar sind, nicht zul&auml;ssig. Einige der
+Funktionen k&ouml;nnen &uuml;ber die offiziell noch nicht releaste UnixLib emuliert
+werden.
+
+Die Liste der nicht erlaubten SAS/C-Funktionen w&auml;re (keine dieser 
+Funktionen ist im ANSI-Standard enthalten...):
+
+astcsma    isascii    iscsym     iscsymf    toascii    scdir      stcpm
+stcpma     stcsma     stccpy     stpcpy     stcis      stcisn     stclen
+stpbrk     stpchr     stpchrn    strcmpi    strnset
+strset     stcarg     stpsym     stptok     stpblk     strbpl     strdup
+strins     strmid     stcd_i     stcd_l     ecvt       fcvt       gcvt
+stch_i     stch_l     stci_d     stci_h     stci_o     stcl_d     stcl_h
+stcl_o     stco_i     stco_l     stcu_d     stcul_d    toascii    stpdate
+stptime    __datecvt  __timecvt  utpack     utunpk     cot        iabs
+max        min        pow2       __emit     getreg     putreg     geta
+isatty     ovlyMgr    dqsort     fqsort     lqsort     sqsort     strsrt
+tqsort     drand48    erand48    jrand8     lcong48    lrand48    mrand8
+nrand48    seed48     srand48    __autoopenfail        chkabort   Chk_Abort
+_CXBRK     __exit     onexit     _XCEXIT    forkl      forkv      onbreak
+wait       waitm      bldmem     rstmem     sizmem     chkml      getmem
+getml      halloc     lsbrk      sbrk       _MemCleanup rbrk      rlsmem
+rlsml      memccpy    movmem     repmem     setmem     swmem      except
+__matherr  poserr     datecmp    timer      __tzset    getch      fgetchar
+fputchar   _dread     _dwrite    read       write      clrerr     close
+_dclose    fcloseall  creat      _dcreat    _dcreatx   fdopen     fileno
+fmode      iomode     open       _dopen     flushall   mkstemp    mktemp
+setnbf     _dseek     lseek      tell       access     chkufb     chmod
+&#008;fstat      getfa      getft      stat       stcgfe     stcgfn     stcgfp
+strmfe     strmfn     strmfp     strsfn     unlink     argopt     chgclk
+dos_packet getclk     getasn     getdfs     putenv     rawcon    stackavail
+stacksize  stackused  chdir      closedir   dfind      dnext      findpath
+getcd      getcwd     getfnl     getpath    mkdir      opendir    readdir
+rmdir      seekdir    rewinddir  telldir    readlocale scr_beep   scr_bs
+scr_cdelete scr_cinsert scr_clear scr_cr   scr_curs  scr_cursrt  scr_cursup
+scr_eol    scl_home   scr_ldelete scr_lf    scr_linsert scr_tab   _CXFERR
+_CXOVF     _EPILOG    _PROLOG
+
+Die Liste sieht lang aus, aber man mu&szlig; bedenken, da&szlig; die meisten 
+aufgelisteten Funktionen &quot;extrem exotische Funktionen&quot; sind, die vermutlich 
+vielen Programmierern gar nicht bekannt sind. Im ANSI-Standard sind sie 
+jedenfalls nicht enthalten.
+
+Nach den Ersetzungen (die wichtigsten Ersetzungen laufen auf das Ersetzen 
+von open/close/read/write hinaus...) gibt es noch einen anderen Aspekt von 
+ANSI zu bedenken:
+
+Schreibweisen wie:
+
+char *string=malloc(300);
+
+die bei SAS/C nur eine WARNING produzieren, produzieren bei strengen ANSI-
+C-Compilern einen Fehler. Derartiger Code sollte so aussehen:
+
+char *string=(char *)malloc(300);
+
+ANSI C verlangt eine STRENGE TYPISIERUNG. Dies gilt &uuml;brigens auch f&uuml;r 
+Zeiger auf Funktionen. Ein guter &quot;Trick&quot;, um einen nicht ANSI-konformen 
+Source rasch zu konvertieren, ist:
+
+1. Einfach mal durchcompilieren und dabei auf die Warnings/Fehler achten.
+2. Alles, was nach Zeiger aussieht, und nicht streng typisiert ist, auf
+   void * casten. Alles, was nicht nach Zeiger aussieht, und falsch         
+   typisiert ist, je nach Anwendung auf int, long oder double casten.       
+   Zeiger auf Funktionen auf void * casten, z.B.:
+
+   void *funktion=(void *)meine_funktion;
+
+Programmierer, die keinen StormC besitzen, k&ouml;nnen das &quot;Test-Compilieren&quot; 
+auch mit SAS/C im &quot;STRICT_ANSI&quot;-Modus machen, der meines Wissens ziemlich 
+&auml;hnlich wie StormC reagiert.
+
+Zudem sollte man noch jedes Auftreten von K&amp;R-Syntax durch die normale C- 
+Syntax ersetzen, z.B.
+
+void main(argv,argc)
+int argv;
+char **argc;
+
+durch
+
+void main(int argv,char **argc);
+
+ersetzen, da der PPC-Compiler keine K&amp;R-Syntax mag.
+
+Falls ein Source - wie etwa der Doom-Source - relativ h&auml;ufig Funktionen aus 
+der Unix-Welt verwendet, so hat es sich als hilfreich erwiesen, eine auf 
+StormC umgeschriebene Version der AmiTCP/IP-Includes zu verwenden, so da&szlig; 
+Datentypen wie z.B. dev_t zur Verf&uuml;gung stehen. Ein Source, der von Anfang 
+an auf ANSI-Kompatibilit&auml;t getrimmt ist, sollte solche Typen jedoch nicht 
+n&ouml;tig haben. Wer dies dennoch n&ouml;tig hat, soll einfach mal bei mir mit Bitte
+um Hilfestellung anfragen (Kontaktadresse siehe unten).
+
+Ein letzter Aspekt der Compiler-Unterschiede w&auml;ren spezifische Unterschiede
+zwischen SAS/C und StormC. Ich habe mich hierbei auf die Beschreibung 
+&quot;normaler&quot; Sources beschr&auml;nkt, wer gerne PPC-Shared Libraries machen 
+m&ouml;chte, soll mich kontaktieren, und ich werde auch hier beschreiben, was 
+die Unterschiede zwischen SAS/C und StormC sind.
+
+Einige Schl&uuml;sselworte von SAS/C entfallen einfach, indem man sie auf &quot;leer&quot;
+definiert:
+
+#define __stdargs
+#define __regargs
+#define __asm
+
+__far sollte durch das Schl&uuml;sselwort FAR ersetzt werden, __inline durch 
+inline, in diesen Dingen orientiert sich StormC ebenfalls mehr an ANSI. 
+__chip, __fast und __interrupt funktionieren nicht so wie bei SAS/GNU, hier 
+mu&szlig; man den Weg &uuml;ber die entsprechenden OS-Funktionen gehen.
+
+Registerparameter funktionieren (bis auf das Weglassen des Schl&uuml;sselwortes 
+__asm) genau wie beim SAS/C, jedoch sollte man f&uuml;r eine PPC-Version darauf 
+verzichten, da der PPC ja z.B. kein Register d0 hat (das ist ein 68k-
+Register). Man kann nat&uuml;rlich
+
+register int a;
+
+schreiben, das funktioniert. Der PPC sucht dann selbst nach einem 
+geeigneten Register, bzw. der Compiler tut das.
+
+C. PPC-Anpassung
+----------------
+&#008;
+So, den wildesten Part haben wir nun, es folgen eigentlich nur noch 
+Kleinigkeiten.
+Da die eigentliche PPC-Anpassung ja noch gar nicht erfolgte (bis auf die 
+Kleinigkeit mit den Registern...), folgt, da&szlig; man mit WarpOS die 68k- und 
+die PPC-Version sehr leicht parallel entwickeln kann.
+
+Der erste wesentliche Unterschied betrifft die OS-Includes. Ein
+
+#include &#060;proto/exec.h&#062;
+
+oder
+
+#include &#060;clib/exec_protos.h&#062;
+#include &#060;pragma/exec_protos.h&#062;
+
+schreibt sich unter PPC als:
+
+#include &#060;clib/exec_protos.h&#062;
+
+Die Pragmas entfallen komplett, und man sollte auch keine Protos includen.
+
+F&uuml;r die Parallelentwicklung sieht das Ganze so aus:
+
+#include &#060;clib/exec_protos.h&#062;
+#ifndef __PPC__
+#include &#060;pragma/exec_lib.h&#062;
+#endif
+
+Der Define __PPC__ ist immer entsprechend der Compiler-Optionen gesetzt.
+
+Ein weiterer Unterschied f&auml;llt bei der Verwendung von Subtasks an. In 
+dieser einfachen Variante der PPC-Portierung verwenden wir ja keine Mixed 
+Binaries (&uuml;ber die Mixed Binary schreibe ich vielleicht sp&auml;ter noch einen 
+anderen Artikel), daher sind alle Tasks unseres Programms PPC-Native. 
+Sollte man nun einen PPC-Native-Subtask starten, so mu&szlig; dieser nat&uuml;rlich 
+mit CreateTaskPPC() der powerpc.library gestartet werden, nicht etwa mit 
+CreateTask(), weil das 68k-AmigaOS nat&uuml;rlich keine PPC-Tasks starten kann. 
+Der Aufruf entspricht jedoch bei praktisch allen &quot;Exec-&auml;hnlichen&quot; 
+Funktionen der powerpc.library 1:1 dem Vorgehen unter dem 68k-AmigaOS. Eine 
+Alternative w&auml;re nat&uuml;rlich die Verwendung eines Mixed Binary, aber das 
+sollte man vermeiden, da es die Performance senkt.
+
+Ein weiterer Unterschied betrifft noch die Tag-List-Schreibweisen mancher 
+OS-Funktionen. So beherrscht der PPC-Compiler zwar OpenScreenTagList, aber 
+nicht OpenScreenTags. Man mu&szlig; den Source also entsprechend anpassen.
+
+Ein weiterer Unterschied betrifft die Funktion BeginIO der alib_protos.h. 
+Diese Funktion ist unter PPC nur &uuml;ber ein (im Beispiel f&uuml;r das 
+audio.device)
+
+#include &#060;libraries/powerpc.h&#062;
+#include &#060;ppcamiga.h&#062;
+
+void BeginIOAudioPPC(struct IORequest *arg1)
+{
+        extern struct Library *AudioBase;
+        ULONG regs[16];
+        regs[9] = (ULONG) arg1;
+        __CallLibrary(AudioBase,-30,regs);
+}
+
+&#008;verf&uuml;gbar. Wie man sieht, mu&szlig; man unter PPC grunds&auml;tzlich die LibBase des 
+Devices auslesen. Ein Beispielaufruf k&ouml;nnte wie folgt aussehen (Code-
+Beispiel aus ZhaDoomPPC...):
+
+  AudioBase = (struct Library *)audio_io-&#062;ioa_Request.io_Device;
+  c = &amp;channel_info[cnum];
+  c-&#062;audio_io-&#062;ioa_Request.io_Command = CMD_WRITE;
+  c-&#062;audio_io-&#062;ioa_Request.io_Flags = ADIOF_PERVOL;
+  c-&#062;audio_io-&#062;ioa_Data = &amp;chip_cache_info[cache_chip_data 
+(id)].chip_data[8];
+  c-&#062;audio_io-&#062;ioa_Length = lengths[id] - 8;
+  c-&#062;audio_io-&#062;ioa_Period = period_table[pitch];
+  c-&#062;audio_io-&#062;ioa_Volume = vol &#060;&#060; 2;
+  c-&#062;audio_io-&#062;ioa_Cycles = 1;
+#ifdef PPC
+  BeginIOAudioPPC((struct IORequest *)c-&#062;audio_io);
+#else
+  BeginIO ((struct IORequest *)c-&#062;audio_io);
+#endif
+
+Einige Leser fragen sich vielleicht inzwischen, wo der ber&uuml;hmte 
+Kontextswitch bleibt. Ganz einfach: Er bleibt. StormC verf&uuml;gt n&auml;mlich &uuml;ber 
+das Feature des &quot;vollautomatischen Kontextswitches&quot;, was bedeutet, der User 
+mu&szlig; sich um nichts mehr k&uuml;mmern, da dies bereits der Compiler f&uuml;r ihn 
+&#008;erledigt. Es m&uuml;ssen lediglich Stub-Dateien oder Defines f&uuml;r die per 
+Kontextswitch aufzurufenden Funktionen vorliegen. Diese sind f&uuml;r alle 
+AmigaOS-Funktionen sowie f&uuml;r die 68k-Funktionen der rtgmaster.library (die 
+jedoch auch PPC-Native-Funktionen besitzt) bereits in die ppcamiga.lib 
+integriert. F&uuml;r Funktionen, die nicht integriert sind, generiert man die 
+Stubs mittels
+
+genppcstub mylib_protos.h mylib.fd VERBOSE
+
+wobei die Proto- und die FD-Datei vorliegen m&uuml;ssen. Das Ergebnis wird dann
+einfach ins Projekt integriert (es handelt sich um einen C-Source). Im 
+Falle eines &quot;Mixed Binary&quot; geht &uuml;brigens der Wechsel zwischen 68k und PPC 
+wieder automatisch, ohne da&szlig; etwas Zus&auml;tzliches gemacht werden mu&szlig;.
+
+D) Kontextswitch-Optimierung
+----------------------------
+
+Unter WarpOS braucht ein Kontextswitch etwa 0.5 Millisekunden (h&auml;ngt aber 
+auch von der verwendeten PPC-Karte ab, 0.5 Millisekunden braucht es bei 
+einer 200-MHz-Karte). Es sollte vermieden werde, &quot;viele Kontextswitches pro 
+Sekunde&quot; zu erzeugen.
+
+Beispiele, was zu vermeiden ist:
+
+- Byteweises Einladen von Files mit fgetc (statt dessen mit fread in einen
+  Fast-RAM-Buffer einladen, und dann nachbearbeiten)
+- Pixelweises Darstellen auf dem Bildschirm (statt dessen in einen Fast-    
+  RAM-Buffer zeichnen und den dann mit einem Befehl zeichnen)
+- In h&auml;ufig pro Sekunde aufgerufenen Schleifen viele OS-Calls
+
+
+Die Grafik kann auch mittels der PPC-Version der rtgmaster.library komplett
+PPC-Native abgearbeitet werden.
+
+Ein Beispiel der Effekte von Kontextswitches:
+
+ZhaDoomPPC auf einem 150-MHz-Rechner ohne Sound: 36 fps
+ZhaDoomPPC auf einem 150-MHz-Rechner mit Sound : 32 fps
+
+Der Sound bewirkt bei ZhaDoomPPC derzeit 9 Kontextswitches. Eine L&ouml;sung des
+Problems w&auml;re die Auslagerung der kompletten Sound-Funktion in einen 68k-
+Part, den man dann &uuml;ber einen manuellen Aufruf des Kontextswitchers (siehe 
+Dokumentation der powerpc.library) oder &uuml;ber ein Mixed Binary aufruft. 
+Damit w&uuml;rde der Mehraufwand auf einen Kontextswitch reduziert. Im Falle von 
+ZhaDoomPPC war das leider nicht so einfach machbar, da die Kontextswitches 
+in verschiedenen Funktionen lagen, und so genau habe ich mir das noch nicht 
+angeschaut.
+
+Es sind zudem noch Optimierungen durch Ausnutzung der BAT-Register des PPC 
+m&ouml;glich, hier m&ouml;chte ich jedoch einfach auf die Dokumentation von WarpOS 
+verweisen.
+
+E) Weitere Anpassung
+--------------------
+
+Es ist nat&uuml;rlich m&ouml;glich, Teile des Codes in PPC-Assembler zu &uuml;bersetzen, 
+aber im Normalfall ist das eigentlich gar nicht n&ouml;tig. Der PPC ist 
+eigentlich schnell genug, um (fast) alles in C oder C++ zu machen 
+(rtgmaster PPC hat trotzdem einige Assembler-Parts, da dies bei einem 
+Grafiktreiber Sinn macht).
+
+In einigen Newsgruppen wurde diskutiert, Programmteile parallel auf dem 68k 
+und dem PPC laufen zu lassen. Dies w&uuml;rde man mittels des Message-Systems 
+von WarpOS implementieren (Stichwort AllocXMsg in der powerpc.library- 
+Dokumentation), man sollte es jedoch aus zwei Gr&uuml;nden vermeiden:
+
+1) Ein solches Programm w&uuml;rde bei (zuk&uuml;nftigen) PPC-only Maschinen nicht in
+idealster Weise profitieren, da Teile immer noch als 68k-Code abgearbeitet
+w&uuml;rden. Und ich denke, auf lange Sicht werden solche Maschinen kommen.
+
+2) Die Hardware ist schlichtweg nicht f&uuml;r den Multiprozessor-Betrieb 
+geeignet, ganz gleich, wie man die Software anstellt. Ich werde hierauf 
+nicht n&auml;her eingehen, ist in den Newsgruppen genug zu Tode diskutiert 
+worden.
+
+Solange die Tasks nicht miteinander kommunizieren, d&uuml;rfte es 
+unproblematisch sein, aber dann machen sie auch vermutlich nicht viel Sinn. 
+Dies ist ein prinzipielles Problem der Hardware.
+
+Aus oben genannten Gr&uuml;nden kann ich nur empfehlen, &quot;synchron&quot; zu bleiben. 
+Wobei zuk&uuml;nftige Kompatibilit&auml;t bei optimaler Geschwindigkeit da wohl 
+beinahe das Wichtigere ist.
+
+Kontaktadresse bei R&uuml;ckfragen:
+------------------------------
+
+Steffen H&auml;user
+Limburgstr. 127
+73265 Dettingen/Teck
+Tel. 07021-51787
+email: <a href="mailto:MagicSN@Birdland.es.bawue.de">MagicSN@Birdland.es.bawue.de</a>
+
+Informationen zur Person:
+
+&#008;Informatik-Student.
+
+Haupt-Aktivit&auml;ten im Amiga-Bereich:
+
+- rtgmaster.library
+- ZhaDoomPPC (Ein PPC-Doom-Port unter WarpOS)
+- WarpView (Ein Image-Viewer f&uuml;r PPC unter WarpOS und 68k)
+- WarpAMP (ein Port des AMP-MPEG-3-Players f&uuml;r WarpOS)
+- Crystal3D (ein Port einer Spiele-artigen 3D-Engine)
+- Seit kurzem Coder bei der Demo-Gruppe &quot;Giants&quot;
+- ehemals Autor der &quot;Amiga Texturemapping FAQ&quot;
+- &quot;Berater&quot; in Grafikkarten/PPC-Fragen bei einigen Amiga-Spiele-Firmen
+- ppctut.guide (Einf&uuml;hrung in PPC-Assembler-Programmierung)&laquo;
+</pre>
+</body>
+</html>

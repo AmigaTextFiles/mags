@@ -1,0 +1,441 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Workshops2.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops4.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Workshops
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="Inhalt"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H2>3. Workshop: Notizbuch in PHP mit mySQL (von Michael Christoph)</H2>
+<P>
+Hat jetzt blo&szlig; keiner meinen Workshop zu PHP in der letzten AMIGA aktuell
+gelesen oder hat sich jeder darauf verlassen, dass schon irgendjemand auf
+den Aufruf antwortet? Fakt ist, dass keine einzige Reaktion erfolgte! Somit
+ist es nat&uuml;rlich f&uuml;r mich, wie auch die anderen Artikelschreiber, schwierig
+zu erfahren, wor&uuml;ber man schreiben soll, damit es euch interessiert.
+</P>
+<H3>* ALSO WEITER MIT mySQL</H3>
+<P>
+Da jedoch mySQL recht popul&auml;r ist und auch als Portierung f&uuml;r den Amiga
+vorliegt, wird es wohl den einen oder anderen doch interessieren.
+</P>
+<P>
+ <A HREF="img/mysql_logo.png"><IMG SRC="thumb/mysql_logo.jpg" WIDTH="120" HEIGHT="49" ALT="mySQL-Logo"  BORDER="0"></A>
+</P>
+<P>
+Also gibt es diesmal als Fortsetzung zum Kalender eine Notizfunktion.
+Die komplette Datenverwaltung &uuml;berlassen wir dabei der mySQL-Datenbank.
+</P>
+<H3>* DIE UMGEBUNG KOMMT ZUERST</H3>
+<P>
+Diesmal vorweg ein paar einf&uuml;hrende Worte &uuml;ber den Aufbau und die
+Funktionsweise. Als &quot;notizbuch.html&quot; ist eine Einstiegsseite definiert, die
+Frames benutzt. Dadurch muss nicht immer die komplette Seite neu aufgebaut
+werden, sondern es kann ein Teil ausgetauscht werden (bei uns die Notizen
+rechts). Der linke Frame enth&auml;lt ein leicht erweitertes PHP-Skript des
+Kalenders, genannt &quot;notizkalender.php&quot;. Jede einzelne Monatszahl ist jetzt
+ein Link in der Form:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  &lt;a href="notizeintrag.php?tag=$tag&monat=$monat&jahr=$jahr" target=''&gt; [hier steht die Monatszahl] &lt;/A&gt;
+</PRE></TD></TR></TABLE>
+<P>
+Beim Anklicken der Zahl wird also der Link geladen beziehungsweise unser
+neues Skript &quot;notizeintrag.php&quot; aufgerufen. &Uuml;bergeben werden in URL-
+Notation die einzelnen Parameter: Tag, Monat und Jahr. Mittels 'target'
+wird der Frame definiert, in dem das Ergebnis angezeigt werden soll (also
+die rechte Fensterh&auml;lfte).
+</P>
+<P>
+Zus&auml;tzlich wurde der Kalender noch so abge&auml;ndert, dass der Vorg&auml;ngermonat
+&uuml;ber dem Kalender und der Nachfolgemonat unter dem Kalender platziert wird,
+und nicht mehr links/rechts davon. Eine Erweiterungsm&ouml;glichkeit w&auml;re zum
+Beispiel, mehrere Monate im Voraus auszugeben (einfach mittels for-
+Schleife).
+</P>
+<H3>* DAS IST NEU</H3>
+<P>
+Wenden wir uns jetzt der neuen Datei &quot;notizeintrag.php&quot; zu. Es handelt sich
+wieder um PHP-Code, wie die Endung bereits verr&auml;t. Neu ist vor allem die
+Benutzung der mySQL-Funktionen.
+</P>
+<H3>* MEHR ZU mySQL GIBT'S DORT</H3>
+<P>
+Auch hierf&uuml;r m&ouml;chte ich Interessierte wieder auf das Amiga Magazin 08/2001
+beziehungsweise online <A HREF="http://www.meicky-soft.de/amiga-magazin/mysql.html" TARGET="_top">http://www.meicky-soft.de/amiga-magazin/mysql.html</A>
+verweisen. Dort habe ich ausf&uuml;hrlich die Installation von mySQL am Amiga
+beschrieben. Auch Datenbankdesign und SQL sind dort Themen des zweiten
+Kursteiles.
+</P>
+<H3>* EINE DATENBANK MUSS HER</H3>
+<P>
+Bevor die Notizdatenbank benutzt werden kann, muss sie erst einmal
+definiert werden. Da in der Amiga-Portierung das &quot;CREATE DATABASE&quot; Kommando
+nicht korrekt funktioniert, ist mittels &quot;makedir <datenbankname>&quot; ein
+Verzeichnis f&uuml;r die neue Datenbank anzulegen. Standardm&auml;&szlig;ig hat dies im
+Verzeichnis &quot;mysql:data/&quot; zu erfolgen (wenn nicht anders in my.cnf
+definiert).
+</P>
+<P>
+Als n&auml;chstes muss noch die eigentliche Tabelle (die umgangssprachlich auch
+gern als Datenbank bezeichnet wird) angelegt werden. Zum Beispiel
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  CREATE TABLE notizbuch (id INT NOT NULL AUTO_INCREMENT,
+                          datum DATE,
+                          uhrzeit TIME,
+                          text CHAR(100),
+                          PRIMARY KEY(id)
+                         );
+</PRE></TD></TR></TABLE>
+<P>
+M&ouml;gliche Datentypen sind (unter anderem) INT f&uuml;r Zahlen, REAL f&uuml;r
+Flie&szlig;kommazahlen, DATE f&uuml;r Datumswerte, TIME f&uuml;r Zeitwerte, CHAR f&uuml;r eine
+definierte Anzahl an Zeichen. VARCHAR kann dynamisch bis zu 4096 Zeichen
+aufnehmen.
+</P>
+<P>
+Jeder Satz erh&auml;lt bei uns eine eindeutige Nummer (id). Damit wird er f&uuml;r
+&Auml;nderungen oder zum L&ouml;schen gefunden. Die Nummer wird automatisch von mySQL
+vergeben (der letzte Tabelleneintrag wird um eins erh&ouml;ht). F&uuml;r schnelleren
+Zugriff erkl&auml;ren wir dieses Feld auch als Indexfeld. PRIMARY legt au&szlig;erdem
+fest, dass jede 'id' nur einmal benutzt werden kann, also nicht zwei S&auml;tze
+mit identischer 'id' vorhanden sein k&ouml;nnen.
+</P>
+<H3>* EINE VERBINDUNG ZUR DATENBANK MUSS HERGESTELLT WERDEN</H3>
+<P>
+Mittels mysql_connect() wird eine Verbindung zum Datenbankserver
+hergestellt. Alternativ gibt es das mysql_pconnect()-Kommando, das eine
+persistente Verbindung herstellt. Das hei&szlig;t, wenn mehrmals auf die
+Datenbank zugegriffen werden soll, bleibt die Verbindung bestehen und wird
+nicht immer neu aufgebaut.
+</P>
+<P>
+Beide Funktionen erwarten den Namen des Hosts, einen Benutzernamen und
+dessen Passwort. Da alle diese Werte im Klartext &uuml;bergeben werden m&uuml;ssen,
+sollten sie nicht direkt im PHP-Skript abgelegt werden, sondern per
+include-Anweiung eingebunden werden. Die separate Datei mit diesen Werten
+muss au&szlig;erdem au&szlig;erhalb des normalen Webspaces liegen (in der Regel htdocs-
+Verzeichnis). Nur so ist sichergestellt, dass niemand von au&szlig;en per HTTP
+oder FTP auf die Datei zugreifen und deren Inhalt lesen kann.
+</P>
+<P>
+Wenn die Verbindung hergestellt werden konnte, liefert die Funktion einen
+positiven Wert. Dann muss nur noch die Datenbank ausgew&auml;hlt werden, mit der
+gearbeitet werden soll. Im Fehlerfall wird lediglich ein entsprechender
+Hinweis ausgegeben und das PHP-Skript abgebrochen.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  $connID = @mysql_pconnect($mysqlhost, $mysqluser, $mysqlpasswd);
+
+  if($connID)
+  {
+    mysql_select_db($mysqldatabase);  /* Datenbank connectieren */
+    return( $connID );
+  }
+  else
+  {
+    echo &quot;&lt;BR&gt;&lt;font color='red'&gt;Keine Verbindung zur Datenbank m&ouml;glich !&lt;/font&gt;&lt;BR&gt;\n&quot;;
+    echo &quot;Fehlerursache: &quot; . mysql_error() . &quot;&lt;BR&gt;\n&quot;;
+    exit();                        /* Skript abbrechen */
+  }
+</PRE></TD></TR></TABLE>
+<H3>* UND SCHON KANN DER TABELLENINHALT ANGEZEIGT WERDEN</H3>
+<P>
+Mittels SELECT wird in mySQL nach Datens&auml;tzen gesucht. Dabei k&ouml;nnen auch
+sehr komplexe Suchbedingungen und Gruppierungsanweisungen verwendet werden.
+Zus&auml;tzlich k&ouml;nnen auch noch Verkn&uuml;pfungen mit anderen Tabellen ins Spiel
+kommen (JOIN). Wir beschr&auml;nken uns jedoch auf eine ganz einfache Syntax:
+Alle Eintr&auml;ge zu einem Datum sollen angezeigt werden. Die zugeh&ouml;rigen Daten
+liefert der Aufruf von
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  SELECT * FROM notizbuch WHERE datum = '$suchdatum' ORDER BY uhrzeit;
+</PRE></TD></TR></TABLE>
+<P>
+wobei die gefundenen Treffer nach der Uhrzeit sortiert ausgegeben werden
+sollen. Im PHP-Code muss das ganze noch in eine mysql_query() gepackt
+werden.
+</P>
+<P><B>Weitere ben&ouml;tigte Funktionen sind</B></P>
+<UL>
+<LI> mysql_num_rows : liefert die Anzahl an Treffern (Zeilen)
+</LI>
+<BR><LI> mysql_fetch_object : liefert einen kompletten Datensatz
+</LI>
+</UL>
+<P>
+Jetzt muss nur noch eine Tabelle im HTML-Code ausgespuckt werden, damit
+eine saubere Formatierung im Browser m&ouml;glich ist. Dabei werden die
+gefundenen Daten als Formular aufbereitet, so dass jederzeit einfach
+&Auml;nderungen an den Eintr&auml;gen m&ouml;glich sind.
+</P>
+<P>
+Zuerst kommt jetzt der PHP-Code f&uuml;r die ganze Datenbankabfrage:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  /* ab hier Anzeige des Tabelleninhalts (der Notizen) */
+  if(isset($jahr))
+  {
+    $suchdatum = date(&quot;Y-m-d&quot;,mktime(0,0,0,$monat,$tag,$jahr));
+                           /* formatieren als jahr-monat-tag */
+
+    echo &quot;Eintragungen f&uuml;r\n&lt;H1&gt;$tag. $monatstr[$monat] $jahr&lt;/H1&gt;&lt;BR&gt;&lt;BR&gt;\n&quot;;
+
+    echo &quot;&lt;table border=0&gt;\n&quot;;
+    echo &quot;  &lt;tr&gt;&lt;th&gt;Uhrzeit&lt;/th&gt;&lt;th&gt;Eintragung&lt;/th&gt;&lt;th&gt;Aktionen&lt;/th&gt;&lt;/tr&gt;\n&quot;;
+
+    /* Datenbankabfrage starten */
+    $result = mysql_query(&quot;SELECT * FROM notizbuch WHERE datum = '$suchdatum' ORDER BY uhrzeit&quot;);
+    if($result)
+    {
+      /* Anzahl Zeilen ermitteln */
+      $rows = mysql_num_rows($result);
+      if($rows &gt; 0)
+      {
+        /* Tabellen-Inhalt ausgeben */
+        while($dbentry = mysql_fetch_object($result))
+        {
+          eintrag_zeigen($dbentry-&gt;id,
+                         $dbentry-&gt;datum,
+                         substr($dbentry-&gt;uhrzeit,0,5),  /* Sekunden weg */
+                         $dbentry-&gt;text);
+        }
+      }
+      else
+      {
+        echo &quot;&lt;tr&gt;&lt;td colspan=3&gt;&lt;i&gt;keine Eintragungen vorhanden&lt;/i&gt;&lt;/td&gt;&lt;/tr&gt;\n&quot;;      }
+    }
+    //else: Datenbank existiert nicht oder SQL-Fehler
+
+    /* entfernt die Ergebnisdaten aus dem Speicher */
+    mysql_free_result($result);
+</PRE></TD></TR></TABLE>
+<P>
+Fehlt uns noch die Funktion eintrag_zeigen(), die einen einzelnen
+gefundenen Datensatz als Formular aufbereitet erzeugt:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  function eintrag_zeigen($dbid,$dbdatum,$dbuhrzeit,$dbtext)
+  {
+    echo &quot;&lt;tr&gt;\n&quot;;
+    echo &quot;&lt;form name='notizbuch_$dbid' action='notizeintrag.php' method='post'&gt;\n&quot;;
+    echo &quot;  &lt;td&gt;&lt;input type=text   name='uhrzeit'       value='$dbuhrzeit' maxlength=5&gt;&lt;/td&gt;\n&quot;;
+    echo &quot;  &lt;td&gt;&lt;input type=text   name='text'          value='$dbtext'    maxlength=100&gt;&lt;/td&gt;\n&quot;;
+    echo &quot;  &lt;td&gt;&lt;input type=hidden name='datum'         value='$dbdatum'&gt;\n&quot;;
+    echo &quot;      &lt;input type=hidden name='id'            value='$dbid'&gt;\n&quot;;
+    echo &quot;      &lt;input type=submit name='form_loeschen' value='löschen'&gt;\n&quot;;
+    echo &quot;      &lt;input type=submit name='form_aendern'  value='ändern'&gt;\n&quot;;
+    echo &quot;  &lt;/td&gt;\n&quot;;
+    echo &quot;&lt;/form&gt;\n&quot;;
+    echo &quot;&lt;/tr&gt;\n&quot;;
+  }
+</PRE></TD></TR></TABLE>
+<P>
+Die beiden 'hidden'-Felder werden nicht im Browser angezeigt, sondern
+dienen uns lediglich als Merkfeld. Zum einen f&uuml;r die Datensatznummer und
+zum anderen f&uuml;r das Tagesdatum. Ein Eintrag kann also nur innerhalb des
+aktuellen Tages durch &Auml;nderung der Uhrzeit verschoben werden, nicht aber
+auf einen anderen Tag. Die beiden 'submit'-Eintr&auml;ge erzeugen einen Button
+im Browser, mit dem die &Auml;nderungen in die Tabelle zur&uuml;ckgeschrieben werden
+k&ouml;nnen oder ganz aus der Tabelle gel&ouml;scht werden.
+</P>
+<P>
+Fehlt uns also nur noch die M&ouml;glichkeit, auch Daten in die Tabelle hinein
+zu bekommen. Dazu wird ganz einfach am Ende ein leeres Formular erzeugt und
+mit einem passenden Button versehen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  echo &quot;&lt;tr&gt;\n&quot;;
+  echo &quot;&lt;form name='notizbuch_0' action='notizeintrag.php' method='post'&gt;\n&quot;;
+  echo &quot;  &lt;td&gt;&lt;input type=text name='uhrzeit' value='' maxlength=5&gt;&lt;/td&gt;\n&quot;;
+  echo &quot;  &lt;td&gt;&lt;input type=text name='text'    value='' maxlength=100&gt;&lt;/td&gt;\n&quot;;
+  echo &quot;  &lt;td&gt;&lt;input type=hidden name='datum' value='$suchdatum'&gt;\n&quot;;
+  echo &quot;      &lt;input type=hidden name='id'    value='0'&gt;\n&quot;;
+  echo &quot;      &lt;input type=submit name='form_neu' value='neu erfassen'&gt;\n&quot;;
+  echo &quot;  &lt;/td&gt;\n&quot;;
+  echo &quot;&lt;/form&gt;\n&quot;;
+  echo &quot;&lt;/tr&gt;\n&quot;;
+</PRE></TD></TR></TABLE>
+<H3>* DIE BUTTONS BRAUCHEN EINEN VERTEILER</H3>
+<P>
+Wenn einer der Buttons angeklickt wird, wird das Formular an uns selbst
+geschickt (bewirkt der Teil action='notizeintrag.php'). Man k&ouml;nnte hier
+zwar auch eine andere Datei verwenden, da aber auch bei
+&Auml;nderungen/L&ouml;schungen die Notizeintr&auml;ge wieder am Bildschirm angezeigt
+werden sollen, bietet es sich geradezu an, alles in einer Datei
+zusammenzufassen.
+</P>
+<P>
+Allerdings wird ein Unterscheidungsmerkmal ben&ouml;tigt, mit dem wir
+feststellen k&ouml;nnen, ob wir durch Anklicken eines Datums oder Buttons
+aufgerufen wurden. Eine ganz einfache M&ouml;glichkeit stellt hierbei das 'id'-
+Feld dar. Bei den Aktionen Neu, Bearbeiten und L&ouml;schen ist dieses immer
+vorhanden, w&auml;hrend es bei der Auswahl des Tagesdatums nicht da ist.
+In einer zweiten Abfrage kann dann unterschieden werden, welche Aktion
+genau zu erfolgen hat.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  /* wurde ein Formular &uuml;bergeben? */
+  if(isset($id))
+  {
+    if(isset($form_neu))      eintrag_neu($datum,$uhrzeit,$text);
+    if(isset($form_aendern))  eintrag_aendern($id,$datum,$uhrzeit,$text);
+    if(isset($form_loeschen)) eintrag_loeschen($id);
+
+    /* zur anzeige unten wird das Datum wieder zerlegt erwartet */
+    /* mit substr() wird der String zerlegt und */
+    /* mit sprintf() evtl. f&uuml;hrende Nullen entfernt */
+    $jahr  = sprintf(&quot;%d&quot;,substr($datum,0,4));
+    $monat = sprintf(&quot;%d&quot;,substr($datum,5,2));
+    $tag   = sprintf(&quot;%d&quot;,substr($datum,8,2));
+  }
+</PRE></TD></TR></TABLE>
+<P>
+Nach jeder dieser Aktionen soll auch wieder der aktuelle Tabelleninhalt
+angezeigt werden. Problematisch dabei ist jedoch, dass die Felder tag,
+monat und jahr nicht mehr existieren - sie werden nur vom Kalender
+mitgeliefert.
+</P>
+<P>
+Eine M&ouml;glichkeit w&auml;re nun, diese drei Felder in weiteren hidden-Eintr&auml;gen
+der Formulare unterzubringen. Da wir aber sowieso das aktuelle Datum haben,
+k&ouml;nnen wir auch einfach dieses zerlegen. Zu beachten ist lediglich, dass es
+in amerikanischer Notation vorliegt. Also zuerst das Jahr, dann Monat und
+ganz rechts der Tag. Da das Datum mit f&uuml;hrenden Nullen erzeugt wird, m&uuml;ssen
+wir noch zu einem Trick greifen, um diese wieder zu entfernen. Denn
+ansonsten, wird ein &quot;09&quot; als Oktalzahl 9 = nicht m&ouml;glich/ung&uuml;ltig
+betrachtet.
+</P>
+<P>
+Also wird der Teilstring mittels sprintf() in eine Zahl umgewandelt
+(%d = Dezimal). Dabei verschwinden dann die Nullen. Alternativ k&ouml;nnte auch
+abgefragt werden, ob das erste Zeichen eine Null ist und dann der String
+direkt manipuliert werden.
+</P>
+<P>
+Nach diesem Ausflug fehlen uns nur noch die oben aufgef&uuml;hrten drei
+Funktionen, um neue Eintr&auml;ge in die Tabelle zu schreiben, vorhandene
+Tabelleneintr&auml;ge zu ver&auml;ndern oder Tabelleneintr&auml;ge zu l&ouml;schen.
+</P>
+<H3>* EINEN NEUEN EINTRAG ERZEUGEN</H3>
+<P>
+Um einen neuen Tabelleneintrag zu erzeugen, werden das Datum, die Uhrzeit
+und der Text erwartet. Die 'id' wird von mySQL selbst&auml;ndig hochgez&auml;hlt. Es
+hat keine Bedeutung, was als erstes Value &uuml;bergeben wird. Optional k&ouml;nnte
+auch jedes einzelne Feld mittels 'SET <feldname> = <wert>' belegt werden.
+Dabei spielt die Reihenfolge keine Rolle, und es m&uuml;ssen auch nicht alle
+Felder angegeben werden.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  function eintrag_neu($dbdatum,$dbuhrzeit,$dbtext)
+  {
+    $result = mysql_query(&quot;INSERT INTO notizbuch VALUES(0,'$dbdatum','$dbuhrzeit','$dbtext');&quot;);
+    if($result)
+    {
+      /* liefert die Satz-Id, interessiert uns aber nicht weiter */
+      $newid = mysql_insert_id($result);
+    }
+    else
+    {
+      echo &quot;&lt;BR&gt;&lt;font color='red'&gt;EINF&Uuml;GEN WAR NICHT M&Ouml;GLICH!&lt;/font&gt;&lt;BR&gt;\n&quot;;
+      echo &quot;Fehlerursache: &quot; . mysql_error() . &quot;&lt;BR&gt;\n&quot;;
+    }
+  }
+</PRE></TD></TR></TABLE>
+<H3>* EINTRAG BEARBEITEN</H3>
+<P>
+Wenn ein Eintrag bereits in der Liste war, muss dieser mit REPLACE oder
+UPDATE bearbeitet werden. Anhand der 'id' erkennt mySQL automatisch den
+Satz, der ge&auml;ndert werden muss. &Uuml;bergeben werden in diesem Fall alle
+Inhalte, wobei sich aber das Datum niemals &auml;ndern kann, da der Benutzer nur
+die Uhrzeit und den Text im Browser bearbeiten kann.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  function eintrag_aendern($dbid,$dbdatum,$dbuhrzeit,$dbtext)
+  {
+    $result = mysql_query(&quot;REPLACE INTO notizbuch VALUES($dbid,'$dbdatum','$dbuhrzeit','$dbtext');&quot;);
+    if($result)
+    {
+    }
+    else
+    {
+      echo &quot;&lt;BR&gt;&lt;font color='red'&gt;&Auml;NDERN WAR NICHT M&Ouml;GLICH!&lt;/font&gt;&lt;BR&gt;\n&quot;;
+      echo &quot;Fehlerursache: &quot; . mysql_error() . &quot;&lt;BR&gt;\n&quot;;
+    }
+  }
+</PRE></TD></TR></TABLE>
+<H3>* EINTRAG L&Ouml;SCHEN</H3>
+<P>
+Das L&ouml;schen eines Satzes gestaltet sich recht einfach. Es wird nur ein
+eindeutiger Schl&uuml;ssel ben&ouml;tigt. In unserem Fall ist dies wieder die 'id'.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  function eintrag_loeschen($dbid)
+  {
+    $result = mysql_query(&quot;DELETE FROM notizbuch WHERE id = $dbid;&quot;);
+    if($result)
+    {
+    }
+    else
+    {
+      echo &quot;&lt;BR&gt;&lt;font color='red'&gt;L&Ouml;SCHEN WAR NICHT M&Ouml;GLICH!&lt;/font&gt;&lt;BR&gt;\n&quot;;
+      echo &quot;Fehlerursache: &quot; . mysql_error() . &quot;&lt;BR&gt;\n&quot;;
+    }
+  }
+</PRE></TD></TR></TABLE>
+<P>
+In allen drei Funktionen wird im Fehlerfall ein kurzer Hinweis im Browser
+ausgegeben und die Fehlerursache mittels mysql_error() von mySQL abgefragt.
+</P>
+<P>
+Damit w&auml;re die komplette Funktionalit&auml;t beschrieben.
+</P>
+<P>
+<A HREF="notizbuch.html"TARGET="_top">Diese Datei ist im Browser anzugeben</A><BR>
+<A HREF="notizkalender.php"TARGET="_top">Hiermit wird der linke Kalender erzeugt</A><BR>
+<A HREF="notizeintrag.php"TARGET="_top">Hiermit werden die rechten Eintragungen verarbeitet</A><BR>
+<A HREF="notizconnect.php"TARGET="_top">Die ausgelagerte Connect-Funktion</A>
+</P>
+<H3>* NOCH EIN PAAR GRAFIKEN</H3>
+<P>
+Abschlie&szlig;end noch Grafiken der drei verschiedenen Amiga-Browser (Voyager
+3.3 konnte ich nicht zum Offline-Betrieb &uuml;berreden).
+</P>
+<P>
+ <A HREF="img/aweb3_3.png"><IMG SRC="thumb/aweb3_3.jpg" WIDTH="120" HEIGHT="67" ALT="AWebII 3.3"  BORDER="0"></A>
+ <A HREF="img/ibrowse1_12.png"><IMG SRC="thumb/ibrowse1_12.jpg" WIDTH="120" HEIGHT="59" ALT="IBrowse-Demo 1.12" BORDER="0"></A>
+ <A HREF="img/voyager2_95.png"><IMG SRC="thumb/voyager2_95.jpg" WIDTH="120" HEIGHT="67" ALT="Voyager-Demo 2.95" BORDER="0"></A>
+</P>
+<P>
+Beim Testen ist noch zu beachten, dass der Browser nicht auf seinen Cache
+zur&uuml;ckgreift, sondern die Dateien immer frisch vom Server anfordert. Bei
+AWeb ist unter Einstellungen/Netzwerkeinstellungen auf der Seite &quot;Puffer&quot;
+der Eintrag &quot;&uuml;berpr&uuml;fe Pufferkopie&quot; auf &quot;immer&quot; zu setzen. Zwar ist in
+jedem Header <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> gesetzt, doch
+beachtet kein einziger Amiga-Browser diesen Meta-Tag.
+</P>
+<H3>* UND WAS KOMMT DANN?</H3>
+<P>
+Das h&auml;ngt auch von euch, den Lesern ab. &Uuml;ber Zuschriften aller Art freue
+ich mich genauso wie Carsten.
+</P>
+<P><B>Michael Christoph &lt;<A HREF="mailto:michael@meicky-soft.de">michael@meicky-soft.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops2.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops4.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

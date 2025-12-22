@@ -1,0 +1,504 @@
+		<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 3.0//EN">
+		<!-- This document follows the HTML 3.0 standard -->
+
+<html>
+  <head>
+    <title>AmigaE course</title>
+  </head>
+  <body>
+
+    <h1 align="left">AmigaE course</h1> 
+    <h3 align="right">Sebastian Rittau 
+      &lt;Jolly_Roger@H-Raiser.Berlinet.de&gt;</h3>
+
+    <hr>
+    
+    <h2>Introduction</H2>
+
+    <p>
+      Some of you might know AmigaE. It is a programming language for
+      the Amiga.  It is a mix between C, Pascal and has features from
+      other programming languages like LISP. It has also an inline
+      assembler which gives E additional power. But E is easy to
+      understand and that's why it is the ideal language for beginners
+      and advanced programmers. AmigaE is best at system programming.
+    </p>
+    
+    <p>
+      This course should help beginners to learn E and also gives some
+      hints for advanced programmers. You need at least AmigaE 2.1b
+      (the last freeware version) and for the later parts AmigaE 3.1a
+      (registered) for this course.  Both versions should be available
+      at the AmiNet (dev/e). Additionally you need at least Kickstart
+      and Workbench 2.04 (V37).
+    </p>
+
+    <p>
+      >From AmigaE 3.0 on, a tutorial to E is included in the
+      archive. It is another good source to learn E. But this course
+      is more system programming oriented, that means, it will show
+      you how to program a GUI (Graphical User Interface) and how to
+      program a good system-conform program.
+    </p>
+
+    <h2>Installing</h2>
+
+    <p>
+      After dearchiving the archive in the directory of your choice,
+      you should make a special Shell for AmigaE:
+    </p>
+
+    <ul>
+      <li>start your favourite text-editor (Ed, MEmacs, GoldEd, CED,
+	...)  (if you use a wordprocessor you have to save the files
+	as ASCII!) </li> 
+      <li>load <code>"S:Shell-Startup"</code></li> 
+      <li>add the following lines (replace <code>&lt;e-dir&gt;</code> with the
+	directory you installed E in):<br>
+	<code>
+	  cd &lt;e-dir&gt;<br>
+	  path bin add;<br>
+	  assign EModules: Modules;<br>
+	</code>
+      </li> 
+      <li>save the file as <code>S:E-Startup</code> (not <code>S:Shell-Startup</code>!)</li> 
+      <li>copy the file <code>SYS:System/Shell.info</code> to any directory and
+	rename it to <code>E-Shell.info</code> </li>
+      <li>click on the new icon and choose Icons/Information... from
+	the menu</li> 
+      <li>search for the tooltype <code>FROM=xyz</code> and change it <code>FROM=S:E-Startup</code>
+	if you can't find it, click on add and type in <code>FROM=S:E-Startup</code> and press return</li>
+      <li>click on save</li>
+    </ul>
+    
+    <p>Now you can start the e-shell by double-clicking on the new
+      icon.</p>
+    
+    <p>Okay now make a directory for the course: type in<br>
+      <code>
+	makedir course<br>
+	cd course<br>
+      </code>
+      in the e-shell.</p>
+
+    <h2>Compiling programs</h2>
+
+    <p>
+      To make a program you have to write it in a easy readable form
+      in any ASCII-Editor. All commands have a name which explains
+      their function:
+    </p>
+
+    <dl>
+      <dt><code>PROC</code> <dd>short for Procedure
+      <dt><code>IF</code> <dd>if something is true
+      <dt><code>THEN</code> <dd>then do something
+      <dt><code>WriteF</code> <dd>Write a sentence
+      <dd>and so on...
+    </dl>
+
+    <p>
+      But these form is not readable for the computer. (Try to load any program
+      into a textviewer. You don't see PROCs and that stuff, you only see cryptic
+      characters) That's why we must translate the easy readable text (called the
+      sourcecode or only source) into a form which is easy readable for the
+      computer (the program). We use the program ec which is in the bin
+      sub-directory of the e-dir to "compile" (translate) the sourcecode into the
+      program. Because ec "compiles" the program it is called "compiler".
+    </p>
+
+    <p>
+      All sourcecodes (the files which contains the for you readable sentences)
+      must have the ending .e to let ec know that it is a source. To compile the
+      program you have to type<br>
+      <code>
+	ec &lt;filename of the sourcecode&gt;<br>
+      </code>
+      in the e-shell. The ready-to-run program will have the name of the sourcecode
+      without the ending .e (i.e. myprog.e will become myprog and so on...)
+    <p>
+      
+      <h2>Comments</h2>
+    
+    <p>
+      Okay, before beginning with out first program, I want to explain you what
+      comments are and what they are user for.
+    </p>
+    
+    <p>
+      You can use comments in your sourcecode to explain the function of a
+      program-part or to give additional information about the program. Comments
+      are ignored by the compiler. You should use comments often to explain your
+      program. After a few weeks you don't write on a program, you can easily
+      forget which function did what. The same problem appears on big programs
+      ("What was this $%"&§$" proc good for?").
+    </p>
+    
+    <p>
+      Another purpose of comments is debugging (i.e. finding and deleting
+      errors). You can easily declare the parts of the program you don't need as
+      comments.
+    </p>
+    
+    <p>
+      There are to ways to make a comment:
+    </p>
+    
+    <p>
+      One way is to mark the beginning of the comment with <code>/*</code> and the end with <code>*/</code>:</p>
+      
+<pre>
+  /* This is a comment - it is ignored by the compiler */
+</pre>
+  
+    <p>
+      These comments are nested, that means, that for every <code>/*</code> you write there must
+      be a matching <code>*/</code>:</p>
+
+<pre>
+  /* This is a /* nested */ comment */
+</pre>
+    
+    but:
+      
+<pre>
+  /* This would give an /* error because there are too many /*s */
+</pre>
+
+    and:
+
+<pre>
+  /* Here are too many */s */
+</pre>
+
+    <p>
+      These comments can have more than one line:</p>
+
+<pre>
+  /* This comment
+     is longer
+     than one line */
+</pre>
+
+    <p>
+      The second way to make comments need AmigaE 3.0 or above. You can declare the
+      rest of a line as comment by using <code>-&gt;</code> :
+    </p>
+
+<pre>
+  -&gt; This is a comment
+
+  INC x  -&gt; This too, but INC x is a command
+</pre>
+
+    <h2>PROCs</h2>
+
+    <p>
+      E-Programs are built of so-called procedures. Each procedure is a little
+      program which does a special job: a procedure could do output on the screen,
+      square a number, make a GUI, play a sound-routine, free all memory that was
+      allocated by another procedure and so on. Every procedure can call another
+      procedures.
+    </p>
+    
+    <p>
+      To declare a procedure:
+    </p>
+
+<pre>
+  PROC nameofproc()
+  /* Here are your commands */
+  ENDPROC
+</pre>
+    
+    <p>
+      It is called like <code>nameofproc()</code>
+    </p>
+      
+    <dl>
+      <dt><code>PROC</code> <dd>declares that here a new procedure begins. PROC must be uppercase,
+	because it is an keyword
+      <dt><code>nameofproc</code> <dd>you must give every procedure an unique name. The first
+	character must be lowercase!<br>
+	valid names: <code>myProc</code>, <code>tHiSmYoWnPrOc</code><br>
+	not allowed: <code>MyProc</code>, <code>ThIsMyOwNpRoC</code>
+      <dt><code>()</code> <dd>Every procedure can have parameters. These parameters must be enclosed
+	by parantheses behind the name. (Parameters will be explained later) If a
+	procedure has no parameters, the room between the parantheses remains empty
+      <dt><code>ENDPROC</code> <dd>ends a procedure. For every PROC there must be a matching ENDPROC
+      <dt><code>nameofproc</code> <dd>to call a procedure just type its name, followed by
+      <dt><code>()</code> <dd>Again the parameters must be enclosed by parantheses behind the name
+    </dl>
+
+    <h2>PROC main()</h2>
+
+    <p>
+      The most important procedure is called main. Every program must have a
+      procedure with this name. The procedure main is called automatically when
+      the program is started. If the ENDPROC of the proc main is hit, the program
+      quits.
+    </p>
+    
+    <p>
+      Okay, let's write our first program:
+
+    <ul>
+      <li>open your favourite editor
+      <li>type in the following program:
+<pre>
+  /* My first E-program */
+  PROC main()
+  ENDPROC
+</pre>
+      <li>save it as <code>&lt;e-dir&gt;/course/firstprog.e</code>
+      <li>change to the e-shell and type <code>ec firstprog</code>
+	to compile the program. If ec reports an error, check your code
+      <li>if you now type <code>dir</code>
+	there should be the following output:
+<pre>
+  firstprog                           firstprog.e
+</pre>
+      <li>start firstprog. It is the ready-to-run-program
+    </ul>
+    
+    <p>
+      Whats that? Nothing happens? Oh, well, we have a proc but we have no command
+      in this proc. So read in the next chapter about a command which writes
+      something on the Shell.
+    </p>
+      
+    <h2>WriteF()</h2>
+
+    <p>
+      With the command WriteF() you can write a string on the current shell. (For
+      advanced users to the stdout). If no current Shell is defined, WriteF()
+      opens a new Shell. A string is a sentence that is stored somewhere in the
+      memory.
+    </p>
+
+    <p>
+      Simple usage: <code>WriteF(string)</code>
+    </p>
+      
+    <dl>
+      <dt><code>Write</code>F <dd>the command
+      <dt><code>(...)</code> <dd>the parantheses close in the arguments for this command
+      <dt><code>string</code> <dd>at the moment, we only use one argument. It is the string we want to
+         write to the Shell
+    </dl>
+
+    <p>
+      Strings must be closed in by apostrophes: <code>'This is a string'</code>
+    </p>
+
+    <p>
+      If you forget the apostrophes, the compiler will report an error.
+    </p>
+    
+    <p>
+      Example: <code>WriteF('Hello World!')</code><br>
+      The sentence "Hello World!" would written on the Shell.
+    </p>
+    
+    <p>
+      Okay, let's add a WriteF() to our little program: add the line
+    </p>
+
+<pre>
+  WriteF('Hello World!')
+</pre>
+
+    <p>
+      to our program. Where do you have to put the line? Well, try it out, compile
+      the program and if the compiler returns no errors, start it.
+    </p>
+    
+    <p>
+      If you really don't know what to do, the program should now look
+      like:</p>
+
+<pre>
+  /* My first E-program */
+
+  PROC main()
+    WriteF('Hello World!')
+  ENDPROC
+</pre>
+    
+    <p>
+      The indentation before the line WriteF(...) has not to be written. It is
+      only there to make clear, what belongs to the proc main. You should use
+      these indentations to make clear, which command-pairs belong together.
+    </p>
+    
+    <p>
+      Examples: <code>PROC-ENDPROC</code>; <code>WHILE-ENDWHILE</code>; <code>IF-ELSE-ELSEIF-ENDIF</code> and so on.
+    </p>
+    
+    <p>
+      If you have done it right, on the Shell there should be something like
+    </p>
+
+<pre>
+  Hello World!5.Work:AmigaE/Course&gt;
+</pre>
+
+    <p>
+      Hmmmmmm, the prompt follows immediatly after "Hello World!". That means that
+      we have to include a linefeed (i.e. a character which begins a new line)
+      after "Hello World!". But because a linefeed is an unprintable character, we
+      have to use a controlcode. Controlcodes begin with a backslash ("\") followed
+      by a character. The character "n" is used for a "newline" (i.e. a linefeed).
+      That means that you must add "\n" at the end of the string: <code>WriteF('Hello World!\n')</code>
+    </p>
+
+    <p>
+      Save, compile and start the changed version.
+      Well, now it should be correct...
+      Wow, that is your first real program in E.
+    </p>
+
+    <h2>Again PROCs (Boring theory again :( )</h2>
+    
+    <p>
+      Okay, let's write a program which uses different procs (You don't have to
+      take over all comments to your own program, but you should take over the
+      comments which explain the program):
+    </p>
+
+<pre>
+  /* Not longer my first program
+     This one should show you how to use different procs */
+
+  /* Let's begin with the main-procedure
+     Some people write the main-proc at the end of their programs, but I
+     write them at the beginning */
+  PROC main()
+    WriteF('Before the first proc\n') /* Don't forget the newline (\n) */
+    /* Let's call another procedure. The program goes on with firstproc */
+    firstproc()
+    WriteF('After the first and before the second proc\n')
+    /* Now let's call the last proc */
+    secondproc()
+    WriteF('After the second proc\n')
+  ENDPROC
+
+  PROC firstproc()
+    WriteF('Now the program is in the first proc\n')
+  ENDPROC /* The program returns to the command it called */
+
+  PROC secondproc() IS WriteF('Now the program is in the second proc\n')
+</pre>
+
+    <p>
+      Save, compile and run it.
+      </p>
+    <p>
+      The output should be:
+    </p>
+
+<pre>
+  Before the first proc
+  Now the program is in the first proc
+  After the first and before the second proc
+  Now the program is in the second proc
+  After the second proc
+</pre>
+
+    <p>
+      Maybe you have noticed the line
+    </p>
+    
+<pre>
+  PROC secondproc() IS WriteF('Now the program is in the second proc\n')
+</pre>
+
+    <p>
+      Well, this is a oneline-procedure. You can use these procs if you only use
+      one command. You don't have to write ENDPROC.
+    </p>
+
+    <dl>
+      <dt><code>PROC</code><dd> define that a proc begins
+      <dt><code>secondproc()</code><dd> name and arguments
+      <dt><code>IS</code><dd> keyword that this is a oneline-proc
+      <dt><code>WriteF(...)</code><dd> The command
+    </dl>
+
+    <p>
+      Okay, what does our program do?
+    </p>
+    
+    <ul>
+      <li>First it writes a sentence (Before the first proc)
+      <li>Then it jumps into the procedure "firstproc"
+      <li>There it writes another sentence
+      <li>Now it returns to the commands after firstproc()
+      <li>There it writes the third sentence
+      <li>It jumps in another proc "secondproc"
+      <li>The fourth sentence
+      <li>An it returns again, now to WriteF('After the second proc')
+      <li>There it writes the last sentence
+      <li>At last, it quits
+    </ul>
+
+    <p>
+      Now delete the line
+    </p>
+
+<pre>
+  secondproc()
+</pre>
+
+    <p>
+      What should happen? Just try the program to know whether you guess was right.
+    </p>
+    
+    <p>
+      Well, now let's give you another example of procs:
+    </p>
+
+<pre>
+  /* Another proc-example */
+
+  PROC main()
+    firstproc()
+    secondproc()
+  ENDPROC
+
+  PROC firstproc()
+    secondproc()
+  ENDPROC
+
+  PROC secondproc()
+    WriteF('This sentence should appear twice!\nIt is only written in the second proc')
+  ENDPROC
+</pre>
+
+    <p>
+      Next chapter it becomes really interesting. We learn about variables. They
+      are very powerfull. Every program needs them!
+    </p>
+
+    <hr>
+    
+    <h3>About the author</h3>
+    <p>
+      Well, I'm a student, which biggest hobby is my Amiga :). I bought my first
+      Computer (an A500) about 6 years ago and was facinated. After a short time I
+      began to write my first small programs in AmigaBasic (Microsoft-Crap). When I
+      bought a modem, last year, I discovered AmigaE (V2.1b) and began to learn it.
+      It was my first real programming-language and thatswhy I had big problems with
+      the libraries and all that OS-stuff (I never had any book to programming on
+      the Amiga). Well, actually I try to wriggle through Assembly.
+    </p>
+
+    <p>
+      On the computer, I mainly program and visit bbs'es, but I am also interested in
+      much other things (like creating HTML-pages, though I have no WWW-Access). My
+      other hobby is  learning for the school (not a real hobby, but the only thing,
+      I have time for).
+    </p>
+
+  </body>
+</html>

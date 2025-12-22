@@ -1,0 +1,325 @@
+<HTML>
+<HEAD>
+<TITLE>Amiga-Aktuell 01/98 - Intern</TITLE>
+</HEAD>
+
+<BODY BACKGROUND="../gfx/newbg.gif" BGCOLOR="#75BAFF" TEXT="#000000" LINK="#0000FF" VLINK="#000088">
+
+
+<TABLE>
+<TR>
+<TD VALIGN=TOP COLSPAN=2 WIDTH=100><IMG WIDTH=491 HEIGHT=86 SRC="../gfx/amint.gif" ALT="Amiga-Aktuell 10/97 - Intern" BORDER=0></TD>
+<TD WIDTH=100 VALIGN=TOP>
+</TD>
+</TR>
+<TR>
+<TD VALIGN=TOP><IMG WIDTH=51 HEIGHT=351 SRC="../gfx/akt.gif" ALT="Logo">
+<CENTER><BR><BR>
+<IMG WIDTH=100 HEIGHT=1 SRC="../gfx/spc.gif" BORDER=0 ALT="">
+<BR><BR>Powered by <BR><A HREF="http://www.clearlight.com/~dietmar">GoldED</A>
+</CENTER>
+</TD>
+<TD WIDTH=391 VALIGN=Top>
+<A NAME="Top"></A>
+<BR>
+<H2 ALIGN=CENTER>10. AMIGA-PC Netzwerk per Ethernet (von Volker Riehl)</H2>
+&#187;Vorwort:<BR>
+Dieser Text ist eine &Uuml;bersetzung aus dem Englischen. Er wurde von mir
+&uuml;berarbeitet und gek&uuml;rzt. Das Original stammt von John Crookshank. Es wird
+beschrieben, wie man Amiga und PC mit Hilfe von AmiTCP+Samba und
+Win95/NT+NFS-Server verbindet. Der Originaltext beschreibt zus&auml;tzlich die
+Verwendung von INET225+NFSd anstelle von AmiTCP+Samba, und geht zus&auml;tzlich
+noch auf den Screamernet-Programmteil von Lightwave ein.<P>
+Voraussetzungen:<P>
+-PC mit Win95/NT<BR>
+-PC-Ethernet-Karte<BR>
+-NFS-Server und/oder NFS-Client Software f&uuml;r PC<BR>
+-Amiga mit OS2.1 oder h&ouml;her<BR>
+-Amiga-Ethernet-Karte<BR>
+-AmiTCP und Samba(NFS-Server)<BR>
+-Ethernet-Kabel,Terminatoren etc<P>
+Die Bezugsquellen der Software finden Sie am Ende des Textes. Wir verwenden
+auf der PC-Seite Tropic-NFS als NFS-Server.<P>
+Wir werden folgende Einstellungen verwenden:<P>
+<PRE>
+PC: computer name:  pc1
+    IP Adresse: 200.0.0.1
+    Usename: john
+    password: Lightwave
+    Workgroup: workgroup
+
+Amiga:  computer name: amiga1
+        IP Adresse: 200.0.0.2
+        Username: john
+        password: Lightwave
+        Workgroup: workgroup
+
+</PRE>
+Man sollte bei den obigen Angaben keine Leerzeichen oder Satzzeichen (.,;:)
+verwenden.<BR>
+Au&szlig;erdem sollte man alles klein schreiben, bis auf das Passwort, da AmiTCP
+mindestens einen Gro&szlig;buchstaben verlangt. Nat&uuml;rlich kann man auch andere
+IP-Adressen etc. angeben, nur sollten auf PC und Amiga
+Username/password/Workgroup gleich sein. Die Beschreibung verwendet die
+obigen Angaben.<P>
+<B>Windows95:</B><P>
+Ich gehe einmal davon aus, da&szlig; Ihre Netzwerkkarte und die
+Win95-Netzwerksoftware (auf Win95-CD) bereits installiert sind. Unter
+Systemsteuerung/Netzwerk m&uuml;ssen folgende Netzwerkkomponenten installiert
+sein (zus&auml;tzlich zu Ihrer Netzwerkkarte):<P>
+-Client f&uuml;r Microsoft-Netzwerke<BR>
+-NetBEUI<BR>
+-TCP/IP<BR>
+-Datei und Druckerfreigabe f&uuml;r Microsoft-Netzwerke<P>
+Sollte das nicht der Fall sein, so erreichen Sie dies durch:<P>
+Hinzuf&uuml;gen-&gt;Microsoft-&gt;TCP/IP und Netbeui
+Sie werden bzw. wurden aufgefordert, Ihren Computer name,workgroup und
+Username einzugeben.<BR>
+Geben Sie hier die obigen Daten ein (pc1,workgroup,john). Sie k&ouml;nnen diese
+jederzeit unter Systemsteuerung/Netzwerk/Identifikation &auml;ndern. W&auml;hlen Sie
+nun den Eintrag "TCP/IP-&gt;Ethernetkarte" an. Klicken Sie auf Eigenschaften
+um TCP/IP zu konfigurieren. Unter "IP-Adresse" geben sie die IP-Adresse des
+PC ein (200.0.0.1), unter "Subnet Mask" geben Sie 255.255.255.0 ein. Unter
+"Bindungen" aktivieren Sie: "Client f&uuml;r Microsoft-Netzwerke" und "Datei und
+Druckerfreigabe f&uuml;r Microsoft-Netzwerke". Alles andere bleibt unver&auml;ndert.
+OK-Taste dr&uuml;cken. Unter der Taste "Datei und Druckerfreigabe" aktivieren
+Sie: "Andere Benutzer sollen auf meine Daten..." und "Andere Benutzer
+sollen auf meinem Drucker...". OK-Taste dr&uuml;cken und nochmal OK-Taste
+dr&uuml;cken. Rechner neu starten.
+Damit w&auml;re die Konfiguration der Win95-Netzwerk-Software abgeschlossen.<P>
+<B>Nun zu Tropic-NFS</B>.
+Nachdem Sie Tropic-NFS auf Ihrem PC installiert haben, m&uuml;ssen Sie die Datei
+"Exports" im Tropic-NFS-Verzeichnis anlegen bzw. eine evtl. vorhandene
+editieren. Dies ist mit einem gew&ouml;hnlichen Texteditor m&ouml;glich.
+F&uuml;gen Sie am Ende der Datei folgendes ein:<P>
+d:/200.0.0.2<BR>
+e:/200.0.0.2<P>
+Hiermit machen Sie die Laufwerke D: und E: ihres PCs f&uuml;r den Amiga
+zug&auml;nglich. Beachten Sie, da&szlig; Sie ein "/" und nicht ein "" verwenden. Auf
+dieselbe Weise k&ouml;nnen Sie auch C: exportieren.
+Speichern Sie die Datei.
+Damit w&auml;ren wir vorerst mit dem PC fertig.<P>
+<B>WinNT:</B><BR>
+Die Einstellungen sind die gleichen wie bei Win95. In der Liste der
+Netzwerkkomponenten sollten folgende Eintr&auml;ge vorhanden sein:<P>
+-Netbeui<BR>
+-Netbios-Interface<BR>
+-Server<BR>
+-TCP/IP -Protokol und verwandte Komponenten<BR>
+Da ich kein WinNT benutze, kann ich nicht sagen, ob das Netzwerk damit
+l&auml;uft.<P><BR>
+<B>Amiga:</B><P>
+Ich gehe auch hier davon aus, da&szlig; Sie Ihre Netzwerkkarte installiert haben.<P>
+<B>AmiTCP:</B><BR>
+Installieren Sie AmiTCP mit dem vorhandenen Installer-Skript. W&auml;hlen Sie
+eine Ethernet-Verbindung und Ihre Ethernetkarte aus.<P>
+"Enter the default User name"  -&gt; john<BR>
+"Enter the login Name"         -&gt; john<BR>
+"Enter the User ID"  -&gt; 100<BR>
+"Enter the primary group ID" -&gt; 100<BR>
+"Enter the real name"  -&gt; john<BR>
+"Give the home directory" -&gt; AmiTCP: ( den Doppelpunkt nicht vergessen,<BR>
+ wenn Sie "AmiTCP:" eingeben, wird wahrscheinlich "work:AmiTCP/" oder etwas<BR>
+ &auml;hnliches erscheinen, aber das ist so in Ordnung.)<BR>
+"Enter the name of command intepreter" -&gt; shell<BR>
+"Is your network connection dynamic" -&gt; no<BR>
+"Enter the host name of your computer" -&gt; amiga1<BR>
+"Enter the domain part of your host name" -&gt; system<BR>
+"Give aliases to your computer "amiga1.system"" -&gt; amiga1<BR>
+"Select the network interface type"  -&gt; ethernet<BR>
+"Select the network interface to be used" -&gt; z.B. Village Tronics Ariadne<BR>
+"IP-address for the interface"   -&gt; 200.0.0.2<BR>
+"give netmask of the..."   -&gt; &uuml;berspringen (proceed)<BR>
+"Enter the IP-address of the default gateway" -&gt; &uuml;berspringen<BR>
+"Enter the IP-address of the name server.." -&gt; &uuml;berspringen<BR>
+"Give domain names..."    -&gt; &uuml;berspringen<BR>
+"Do you want the AmiTCP/IP... system startup?" -&gt; yes<BR>
+"Do you want Installer...script?"  -&gt; yes<BR>
+"Do you want the Inetd to be started...?" -&gt; yes<BR>
+Sie werden aufgefordert ihr Password(Lightwave) einzugeben, tun Sie das.<BR>
+Starten Sie den Amiga neu.<P>
+<B>Samba:</B><BR>
+Erstellen Sie ein Verzeichnis "Samba" im AmiTCP-Verzeichnis, entpacken Sie
+Samba in dieses Verzeichnis.<BR>
+Lesen Sie die "Amiga Installation notes" und f&uuml;hren Sie die Anweisungen
+aus. Es m&uuml;ssen einige Dateien (.addon) aus dem Samba-Verzeichnis an Dateien
+aus dem AmiTCP/db-Verzeichnis angeh&auml;ngt werden. Ver&auml;ndern Sie diese jedoch
+noch nicht, die &Auml;nderungen werden im folgenden erl&auml;utert. Verwenden Sie
+unbedingt die neueste Version der IXemul.library (momentan Version 45.1)
+und die f&uuml;r Ihre CPU passende.<BR>
+Nachdem Sie IXemul.library und ixnet.library in Ihr Sys:libs-Verzeichnis
+kopiert haben, beginnen wir mit den &Auml;nderungen.
+Rufen Sie mit einem Texteditor die Datei AmiTCP:Samba/lib/smb.conf auf.
+In dieser Datei wird festgelegt, welche Amiga-Laufwerke exportiert
+werden. Scrollen Sie den Text, bis Sie zur folgenden Stelle kommen:<P>
+<PRE>
+[SYS]
+comment = System boot volume
+valid users = pcguest
+path = /SYS/
+read only = yes
+public = yes
+browsable = yes ;diese Zeile noch einf&uuml;gen
+</PRE>
+Mit diesen Zeilen exportieren Sie Ihr System-LW. In der Zeile "comment =
+..." k&ouml;nnen Sie schreiben, was Sie wollen. Der PC hat allerdings nur Lese-
+Zugriff. Um auch noch DH1: zu exportieren, geben Sie folgendes ein:<P>
+<PRE>
+[DH1]
+comment = DH1
+valid users = pcguest
+path = /DH1/
+read only = no
+public = yes
+browsable = yes
+</PRE>
+"read only = no" erm&ouml;glicht den Schreib-Zugriff. Beachten Sie, da&szlig; Sie beim
+Pfadnamen keinen ":" angeben. Wollen Sie nur ein bestimmtes Verzeichnis
+freigeben, so geben Sie "path = /DH1/Verzeichnis/" ein. An Stelle von
+"Verzeichnis" mu&szlig; man nat&uuml;rlich den Namen des Verzeichnisses eingeben.<P>
+Tragen Sie nun noch folgende Zeilen ein:<P>
+<PRE>
+;Identification
+workgroup = workgroup
+server string = amiga1
+</PRE><BR>
+Die Datei speichern.<BR>
+Rufen Sie nun die Datei AmiTCP:db/inetd.conf auf (mit Texteditor).
+Nachdem Sie ja den Text aus "inetd.conf.addon" angeh&auml;ngt haben, m&uuml;ssten Sie
+folgende Zeilen vorfinden:<P>
+<PRE>
+# This is for Samba
+# You should modify the arguments for nmbd to suit
+your setup and network. netbios-ssn stream tcp nowait
+root AmiTCP:samba/bin/smbd smbd netbios-ns dgram udp
+wait root AmiTCP:samba/bin/nmbd nmbd -n k4315 -G
+Kampsax -C "Amiga 4000/030 p&aring; v&aelig;relse
+4315 (rask@kampsax.dtu.dk)"
+</PRE><BR>
+Diese Zeilen &auml;ndern wir in:<P>
+<PRE>
+# This is for Samba
+# You should modify the arguments for nmbd to suit
+your setup and network. netbios-ssn stream tcp nowait
+root AmiTCP:samba/bin/smbd smbd netbios-ns dgram udp
+wait root AmiTCP:samba/bin/nmbd nmbd -n amiga1 -G
+workgroup -C "Amiga"
+</PRE><BR>
+Datei speichern.<P>
+Rufen Sie die Datei AmiTCP:db/ch_nfstab auf.<BR>
+Gehen Sie ans Ende der Datei und tragen Sie folgendes ein:<P>
+<PRE>
+pc1:/d N:
+pc1:/e M:
+</PRE>
+Diese Zeilen bewirken, da&szlig; die PC-Laufwerke d: und e: (siehe
+"Exports"-Datei bei Tropic-NFS) als N: und M: auf dem Amiga erscheinen.<P>
+Speichern Sie die Datei.<P>
+Rufen Sie die Datei AmiTCP:db/hosts auf.<BR>
+Tragen Sie nach der Zeile "120.0.0.1 localhost" die folgende Zeile ein:<BR>
+<PRE>
+200.0.0.1 pc1
+</PRE><BR>
+Speichern Sie die Datei.<P>
+Rufen Sie die Datei AmiTCP:bin/startnet auf.<BR>
+Da in der Datei "startnet.addon" ein Fehler ist, m&uuml;ssen wir hier noch<BR>
+&Auml;nderungen vornehmen.<BR>
+Die richtige einzuf&uuml;gende Zeile lautet:<BR>
+Run &lt;&gt;NIL: AmiTCP:Samba/bin/nmbd &lt;&gt;NIL: nmbd -D -n amiga1 -G workgroup<P>
+Jetzt mu&szlig; noch die User-Startup modifiziert werden.<BR>
+Also rufen Sie s/user-startup auf.<BR>
+Folgende Zeilen m&uuml;ssen vor "AmiTCP:bin/startnet" stehen:<P>
+<PRE>
+assign etc: amitcp:db
+assign tmp: t:
+assign proc: nil: path
+</PRE><BR>
+Datei speichern.<P>
+Starten Sie den Amiga neu.<P>
+AmiTCP und Samba starten nun automatisch.<BR>
+&Ouml;ffnen Sie eine Shell und geben Sie folgendes ein:<P>
+ch_nfsmount N:<P>
+Nach wenigen Sekunden m&uuml;&szlig;te ein Piktogram erscheinen. Nat&uuml;rlich m&uuml;ssen Sie
+vorher auf dem PC Tropic-NFS gestartet haben. Sollten Sie eine
+Fehlermeldung bekommen, so liegt es meist an der Datei "ch_nfstab" oder an
+"Exports" im Tropic-NFS Verzeichnis.
+Sie k&ouml;nnen "ch_nfsmount N:" auch in die User-Startup eintragen, allerdings
+nach "AmiTCP:bin/startnet".
+Klicken Sie nun auf das erschienene Piktogramm, dann "Fenster-&gt;Inhalt
+anzeigen-&gt;alle Dateien".
+Sie m&uuml;&szlig;ten nun die Ordner des PC-Laufwerkes erkennen. Sie haben zwar
+Zugriff auf alle Ordner, es werden aber seltsamerweise nicht alle angezeigt
+(bei mir ist das zumindest der Fall), man mu&szlig; dann eben den Pfad wissen und
+in manuell eingeben, wenn man von einem Programm aus auf den PC zugreifen
+m&ouml;chte.<P>
+<B>Zur&uuml;ck zum PC:</B><BR>
+Auf dem Desktop finden Sie "Netzwerkumgebung", Doppelklick. Es m&uuml;&szlig;te
+erscheinen: PC1,Amiga1.<BR>
+Ist dies nicht der Fall, so gehen Sie nach Start-&gt;Suchen-&gt;Computer und
+lassen Sie nach PC1 und amiga1 suchen. Unter "Netzwerkumgebung-&gt;Amiga1"
+m&uuml;&szlig;ten die von Ihnen freigegebenen Laufwerke erscheinen, diesen m&uuml;ssen noch
+Buchstaben zugewiesen werden. Mit der rechten Maustaste eines der Laufwerke
+anklicken und unter "Netzlaufwerk verbinden" einen Buchstaben w&auml;hlen und
+das K&auml;stchen "Verbindung beim Start wiederherstellen" aktivieren.
+Wiederholen Sie den Vorgang f&uuml;r die anderen Laufwerke.<P>
+Hinweise:<P>
+Oft h&auml;ngt das Funktionieren des Netzes von der Startreihenfolge ab. Meine
+Empfehlung ist, zuerst den Amiga zu starten und dann den PC.
+Wenn das Netz l&auml;uft, kann es sein, da&szlig; Sie auf dem PC manche Amiga-Ordner
+nicht &ouml;ffnen k&ouml;nnen.Um das zu vermeiden, m&uuml;ssen Sie den Windows-Explorer
+starten und die Ordner der Amiga-Laufwerke im linken Fenster anzeigen
+lassen, ist dies einmal geschehen, so funktioniert der Zugriff ohne
+Probleme. (Schon etwas eigenartig!)<BR>
+Man kann AmiTCP4.0-Demo verwenden, nehmen Sie aber bei Samba unbedingt die
+neueste Version. Ich hatte aufgrund einer etwas &auml;lteren Version gro&szlig;e
+Probleme, da einige Dateien fehlten.<BR>
+Wir haben hier ein sogenanntes peer-to-peer Netzwerk eingerichtet. Unser
+Netz ist folgenderma&szlig;en aufgebaut:<P>
+Samba ist der Server f&uuml;r die Windows95 Client-Software und erm&ouml;glicht dem
+PC den Zugriff auf den Amiga. Samba selbst hat keinen Zugriff auf den PC.<P>
+Tropic-NFS ist der Server f&uuml;r AmiTCP und erm&ouml;glicht dem Amiga den Zugriff
+auf den PC. Tropic-NFS hat keinen Zugriff auf den Amiga.<P>
+Infolge dieser Konstellation kann auch jeder Client-Server-Teil f&uuml;r sich
+funktionieren. Allerdings ist Samba ohne AmiTCP nicht lauff&auml;hig.<P>
+<B>Software-Quellen:</B><BR>
+AmiTCP: bei Software-H&auml;ndlern oder die Demo-Version(4.0) aus dem Aminet<BR>
+Samba: aminet:  /pub/aminet/comm/net/samba-1.9.15p8.lha<BR>
+ixemul: aminet:  /pub/aminet/dev/gcc/<BR>
+Tropic-NFS: <A HREF="http://www.webcit.com/br/tropic/">http://www.webcit.com/br/tropic/</A><BR>
+            <A HREF="http://www.shareware.com">http://www.shareware.com</A><BR><P>
+<B>Danksagung:</B><BR>
+Ich m&ouml;chte mich bei Gabriel Feiner und Markus Karklis f&uuml;r die tolle
+Zusammenarbeit beim Einrichten meines Netzwerkes bedanken.<P>
+Bei Problemen: <A HREF="mailto:VRiehl@t-online.de">VRiehl@t-online.de</A>&#171;
+
+
+<CENTER><BR><A HREF="0019.html"><IMG SRC="../gfx/prev.gif" BORDER=0 WIDTH=11 HEIGHT=21></A>
+&nbsp;
+<A HREF="#Top"><IMG WIDTH=20 HEIGHT=20 SRC="../gfx/top.gif" ALT="[TOP]" BORDER=0></A>
+&nbsp;
+<A HREF="0021.html"><IMG SRC="../gfx/nxt.gif" BORDER=0 WIDTH=11 HEIGHT=21></A><P></CENTER>
+</TD>
+<TD VALIGN=TOP>
+<A HREF="../index.htm"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/home0.gif" ALT="Homepage" BORDER=0></A><BR>
+<A HREF="../hot.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/letzm0.gif" ALT="letzte Meldung" BORDER=0></A><BR>
+<H3><B>Ausgabe 01/98</B></H3>
+<A HREF="0000.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/int1.gif" ALT="[Intern]" BORDER=0></A><BR>
+<A HREF="0100.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/test0.gif" ALT="Test" BORDER=0></A><BR>
+<A HREF="0200.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/games0.gif" ALT="Spiele" BORDER=0></A><BR>
+<A HREF="0300.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/anews0.gif" ALT="Amiga News" BORDER=0></A><BR>
+<A HREF="0400.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/powup0.gif" ALT="PowerUp-to-date" BORDER=0></A><BR>
+<A HREF="0600.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/prod0.gif" ALT="Produktvorstellungen" BORDER=0></A><BR>
+<A HREF="0700.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/div0.gif" ALT="diverse News" BORDER=0></A><BR>
+<A HREF="0800.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/nflash0.gif" ALT="Newsflash" BORDER=0></A><BR>
+<A HREF="0900.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/gerk0.gif" ALT="Ger&uuml;chtek&uuml;che" BORDER=0></A><BR>
+<A HREF="1000.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/abschl0.gif" ALT="Absclie&szlig;end" BORDER=0></A><BR>
+<BR><BR>
+<A HREF="../archiv.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/archiv0.gif" ALT="Archiv" BORDER=0></A><BR>
+<A HREF="../abo.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/abo0.gif" ALT="Abo" BORDER=0></A><BR>
+<A HREF="../kontakt.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/kont0.gif" ALT="Kontakt" BORDER=0></A><BR>
+</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>
+

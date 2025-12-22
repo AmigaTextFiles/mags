@@ -1,0 +1,364 @@
+@database PLANES-A2.html
+@remark Converted with HTML2Guide ©1997 Mark Harman
+@wordwrap
+
+@node MAIN "PLANES-A2.html"
+@{"b"}Planes@{"ub"} 
+ Whether you have just come from BASIC To C, Starting to learn more about the 
+ Amiga System or Whatever. Sooner or later you are going to want Bobs and/or 
+ Images in your Source Code (for such things as Icons, Graphics, etc) perhaps 
+ because loading a TITLE SCREEN (IFF) with your program each time is not 
+ pratical, etc. 
+ 
+ Some people manage to get Bobs/Images into their Source Code by `Cutting and 
+ Pasting' other peoples Source Code - Others prefer to Read the relevant Amiga 
+ Books. However, Regardless of the method, for those people who do manage to 
+ have Bobs/Images in their source code, some of them will only have limited 
+ use of those Bobs/Images simply because what they have programmed only covers 
+ the Basic functions/routines. Why? A couple of reasons are; 1) They simply 
+ `Cut and Pasted' the source code as mentioned above, thus, perhaps the source 
+ code did not have any Information attached to it and 2) The Amiga Books, etc 
+ they read were a bit too Technical/Jargonised, thus, they could not take 
+ advantage of all the Non-Basic functions. 
+ 
+ The Articles I shall be writing for `DoubleClick' over the next few Issues 
+ will try to explain, hopefully in an Easy To Understand way, some of the 
+ Amiga Functions/Routines and/or some Programming Routines/Ideas. 
+ 
+ Here are 3 examples of the kind of thing I will be trying to explain.... 
+ 
+ * Article 1 (Not released yet) - Bits and Bytes. 
+ 
+     Confused about ANDing, ORing, XORing or Binary, Hex, etc? 
+ 
+     This will explain the Basics of Bits and Bytes - I.e  What a Byte 
+     is. INT. Binary. Hex. etc. 
+ 
+ 
+ * Article 2 (You are looking at it!) - PLANES. 
+ 
+ 
+ * Article 3 (Not released yet) - Scrolling. 
+ 
+     Have you ever wondered `How do I write a Continuous Vertical Scroll'? 
+     If so, this Article is for you. 
+ 
+     This will explain one way of making a Continuous Horizontal Scroll and 
+     explain one way of making a Continuous Vertical Scroll. 
+ 
+ 
+ 
+                         PLANES - Of the Graphics kind. 
+                        -------------------------------- 
+ 
+                             Written By: John White. 
+                            ------------------------- 
+ 
+ Here is a definition of One PLANE, with a Width of 8 Pixels and an Height 
+ of 8 Pixels. It has Two Colours in it: 
+ 
+ 11110000 
+ 11110000 
+ 00001111 
+ 00001111 
+ 11110000 
+ 11110000 
+ 00001111 
+ 00001111 
+ 
+ How do we know the plane has only two colours in it? Simple. Each Pixel 
+ has a Binary Value. For example. In the above, each pixel with the binary 
+ number Zero represents the colour zero and thus has a binary value of zero. 
+ Each pixel with the binary number One represents the colour one and thus 
+ has a binary value of one. Because the binary numbering system only allows 
+ us to enter a zero or one binary number it means a plane can only have 
+ two colours in it. 
+ 
+ In the above, zero would represent the Background colour and one would be 
+ the Ink colour. Thus, the Image  []    would be drawn. 
+                                    [] 
+                                  [] 
+                                    [] 
+ 
+ 
+ ----------------- 
+  More Colours... 
+ ----------------- 
+ 
+ So if the binary numbering system only allows us to enter a zero or one, 
+ how do we go about getting More Colours into our Image? 
+ 
+ To get more colours we simply put one plane on top of the other, treating 
+ them as if they are Transparent, and then add up the binary numbers of a 
+ certain Pixel Position. 
+ 
+ Here is an example of 2 Planes, thus, making up 4 Colours... 
+ 
+ 00000000                        00000000 
+ 00000000                        00000000 
+ 00001111                        00000000 
+ 00001111                        00000000 
+ 00000000   <- Plane 1.          11110000   <- Plane 2. 
+ 00000000                        11110000 
+ 00001111                        00001111 
+ 00001111                        00001111 
+ 
+ ...If you look at the pixel in Top Left Corner of both planes and add up 
+ their binary numbers you will get 0 + 0 = Binary Value 00000000 
+ (Colour Zero). 
+ 
+ If you now look at the pixel in the 3rd Line Down/6th Across of both planes 
+ and add up their binary numbers you will get 1 + 0 = Binary Value 00000001 
+ (Colour One). 
+ 
+ You may of thought that the colour one above should of been calculated as 
+ 1 + 0 = 10 (Binary Value 00000010). The reason why it wasn't is because we 
+ had to follow 2 rules.  1) Binary Values go from Right-To-Left and not 
+ left-to-right.  2) Planes go in the order of plane 1 First, plane 2 Second, 
+ etc. Thus, colour one had to be added up as follows.... 
+ 
+        -------- Plane 1 - Its binary number was 1. If it was 0 it would still 
+        |                  have been put into this binary position simply 
+        |                  because, regardless of its binary number, it is 
+        |                  the First plane. 
+ 
+ 00000001  <- Binary Value. 
+ 
+       | 
+       | 
+       --------- Plane 2 - Its binary number was 0. If it was 1 it would still 
+                           have been put into this binary position simply 
+                           because, regardless of its binary number, it is 
+                           the Second plane. 
+ 
+ 
+ Colour Two can be found by looking at the pixel in the 5th Line/8 Across of 
+ both planes and then adding up their binary numbers. You will get 0 + 1 = 
+ Binary Value 00000010, which is 2. 
+ 
+ Colour Three can be found by looking at the pixel in the 8th Line/8 Across 
+ of both planes and then adding up their binary numbers. You will get 1 + 1 = 
+ Binary Value 00000011, which is 3. 
+ 
+ The whole Image will look like this.... 
+ 
+ 
+    Colour Zero on this line. 
+                                []    <- Colour One. 
+              Colour Two ->   [] 
+                                []    <- Colour Three. 
+ 
+ 
+ Note: In the above, the pixel positions mentioned to find the colours were 
+       there to guide you. There were other pixel positions I could of used. 
+       (I.e The Image has 8 pixels in colour one, two and three - not just 
+       the one pixel I mentioned for colour one, two and three). 
+ 
+ 
+ ------------------------ 
+  Even More Colours?!... 
+ ------------------------ 
+ 
+ Hopefully, the above has been clear enough for you to understand what has 
+ been explained? However, sometimes when learning we don't register what 
+ has been said/explained straight away - because we may need time to digest 
+ the information - and sometimes we need a few more examples just to make it 
+ absolutely clear to us what is being explained. Therefore, I shall give one 
+ last example (of 8 Colours). You should, after the following example, either 
+ understand the Basics of Planes or still be at a total loss!.... 
+ 
+ 00001111                  00000000                  00000000 
+ 00001111                  00000000                  00000000 
+ 00001111                  11111111                  00000000 
+ 00001111   <- Plane 1.    11111111   <- Plane 2.    00000000   <- Plane 3. 
+ 00001111                  00000000                  11111111 
+ 00001111                  00000000                  11111111 
+ 00001111                  11111111                  11111111 
+ 00001111                  11111111                  11111111 
+ 
+ Looking at the pixel in the 8th Line Down/6th Across of all three planes and 
+ then adding up their binary numbers you get 1 + 1 + 1 = Binary Value 00000111 
+ which is 7 (Colour Seven). 
+ 
+ Looking at the pixel in the 6th Line Down/6th Across of all three planes and 
+ then adding up their binary numbers you get 1 + 0 + 1 = Binary Value 00000101 
+ which is 5 (Colour Five). 
+ 
+ The Plane layout for Colour Five is as follows.... 
+ 
+        -------- Plane 1 - Its binary number was 1. If it was 0 it would still 
+        |                  have been put into this binary position simply 
+        |                  because, regardless of its binary number, it is 
+        |                  the First plane. 
+ 
+ 00000101  <- Binary Value. 
+ 
+      || 
+      || 
+      |--------- Plane 2 - Its binary number was 0. If it was 1 it would still 
+      |                    have been put into this binary position simply 
+      |                    because, regardless of its binary number, it is 
+      |                    the Second plane. 
+      | 
+      | 
+      ------ Plane 3 - Its binary number was 1. If it was 0 it would still 
+                       have been put into this binary position simply because, 
+                       regardless of its binary number, it is the Third plane. 
+ 
+ 
+ If we had 4 Planes, Colour 8 would be... 
+ 
+ Binary Value 00001000, which is 8. 
+ 
+                  |||| 
+                  ||||--- Plane 1. 
+                  ||| 
+                  |||---- Plane 2. 
+                  || 
+                  ||----- Plane 3. 
+                  | 
+                  |------ Plane 4. 
+ 
+ ...Colour 9 would be.... 
+ 
+ Binary Value 00001001, which is 9. 
+ 
+ 
+ ----------------- 
+  Using Planes... 
+ ----------------- 
+ 
+ Plane Data is mostly used for Graphics, although you could use it for other 
+ purposes. Our purpose for plane data is an Image.... 
+ 
+ Copy the Plane Data to Memory, using a Procedure... 
+ 
+      copyPlanesIntoChipMemory([%00000011111100000011111100000000, 
+                                %00000011111100000011111100000000, 
+                                %00000011111100000011111100000000, 
+                                %00000011111100000011111100000000, 
+ 
+                                %00000000000011111111111100000000, 
+                                %00000000000011111111111100000000, 
+                                %00000000000011111111111100000000, 
+                                %00000000000011111111111100000000]) 
+ 
+ ...Now set up the Image Object/Structure... 
+ 
+ 
+ myImage:=[X,       The X (Left) screen position. 
+ 
+           Y,       The Y (Top) screen position. 
+ 
+           WIDTH,   The WIDTH, in Bits (Pixels), of your Image. 
+ 
+                    The Maximum width is 24 Bits (Pixels). The last 8 Bits, 
+                    in each line of a PLANE, is reserved for the system - Thus, 
+                    making up a 32 Bit Line. 
+ 
+                    Note: This applies to Image Data only, as far as I am 
+                          aware. Bob Data can use the full 32 Bits per Line. 
+ 
+           HEIGHT,  The number of, 32 Bit, Lines in each PLANE. 
+ 
+           PLANES,  The number of Planes in an Image. 
+ 
+             DATA,  A Pointer to your Image Data (The PLANE Data). 
+ 
+        PlanePick,  See Below. 
+ 
+       PlaneOnOff,  See Below. 
+ 
+        NIL]:image  NIL is a Pointer to the Next Image object. For this 
+                    example and article it is (set to NIL) not pointing 
+                    to another Image. 
+ 
+ 
+ ...From here, you would simply use the - DrawImage() - command, when you 
+ needed to. 
+ 
+ 
+ ----------------------------- 
+  PlanePick and PlaneOnOff... 
+ ----------------------------- 
+ 
+ Lets pretend that I have just opened a Screen with 16 colours in it and I 
+ have a 2 Plane (4 colour) Image. To select which colours to use with my 
+ image I simply use the PlanePick and PlaneOnOff functions like so.... 
+ 
+ PlanePick   PlaneOnOff    Colours selected 
+ 
+   %0011       %0000          0  1  2  3 
+ 
+   %0011       %0100          4  5  6  7 
+ 
+   %0011       %1000         8  9  10  11 
+ 
+   %0101       %0000          0  1  4  5 
+ 
+   %0101       %0010          2  3  6  7 
+ 
+   %0110       %0000          0  2  4  6 
+ 
+   %0110       %0001          1  3  5  7 
+ 
+ With PlaneOnOff set to 0, PlanePick simply allows you to pick the Screen 
+ Planes you wish to use with your image. However, with a PlaneOnOff value 
+ other than 0, PlanePick and PlaneOnOff combined may allow your image much 
+ more flexibility with the colours. So, with example one above, you are 
+ simply saying pick Screen Plane 1 (which holds colours 0 and 1) and also 
+ pick Screen Plane 2 (which holds colours 2 and 3). Whereas example four is 
+ saying pick Screen Plane 1 (colours 0 and 1) and also pick Screen Plane 3 
+ (which holds colours 4 and 5). 
+ 
+ This is all well and good, but what happens when you want to use colours 2, 
+ 3, 6 and 7 for example? Well, as example 5 shows from example 4, you simply 
+ set PlaneOnOff to %0010 - which sets plane 2 to all ones, thus, giving you 
+ colours 2, 3, 6 and 7. 
+ 
+ The PlaneOnOff function simply sets any planes not receiving image data to 
+ either all Ones or all Zeros. Only those planes not set in PlanePick are 
+ used in PlaneOnOff. 
+ 
+ You may be wondering how we got to use colours 2, 3, 6 and 7 by setting 
+ PlaneOnOff above to %0010? Well, if we go back to example four we shall 
+ see why.... 
+ 
+ Example 4 PlanePick Combinations - %0000 = 0 
+ 
+                                    %0001 = 1 
+ 
+                                    %0100 = 4 
+ 
+                                    %0101 = 5 
+ 
+ With Example 5, because Plane 2 is set by PlaneOnOff (Which means we must 
+ include Plane 2 in all of our PlanePick Combinations), the combinations for 
+ Example 5 (from example 4) become... 
+ 
+ %0010 = 2 
+ 
+ %0011 = 3 
+ 
+ %0110 = 6 
+ 
+ %0111 = 7 
+ 
+ ...We could not get combinations for 0, 1, 4 or 5 because, as said above, 
+ PlaneOnOff means we had to include Plane 2 in our combinations, which has 
+ the value of 2 of course - Thus, 2 was the smallest number combination we 
+ could use. 
+ 
+ If you look at examples 6 and 7 you will see the same thing happens between 
+ them as what happened with examples 4 and 5. 
+ 
+ Basically, once you have set the PlanePick and PlaneOnOff functions the only 
+ reason for changing them would be in those cases where it would be easier 
+ changing them rather than physically changing your image data. 
+ 
+ I hope this Article has been of use to you - John White. 
+ 
+  
+ 
+@endnode
+

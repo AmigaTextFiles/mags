@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="Workshops1.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops3.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Workshops
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H2>2. Workshop: Samba und der Amiga - Teil 2 (von Werner Brennecke)</H2>
+<P>
+&raquo;Im letzten Teil haben wir daf&uuml;r gesorgt, dass Samba an sich l&auml;uft und
+Teile des eigenen Systems nach Bedarf freigegeben sind.
+</P>
+<P>
+Um nun auf dem Amiga Freigaben aderer Rechner sehen (nutzen) zu k&ouml;nnen,
+brauchen wir den SMB-Handler. Dieser setzt uns eine Freigabe (Share) in ein
+Laufwerk um.
+</P>
+<P>
+Der SMB-Handler (ich nutze die Version 0.12) ist als Beta gekennzeichnet,
+l&auml;uft aber hier ohne Probleme.
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Installiert wird der SMB-Handler sehr einfach. Die Datei &quot;smb-handler&quot; nach&nbsp;</TD></TR>
+</TABLE>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">&quot;l:&quot; und die&nbsp;</TD><TD VALIGN="TOP">&quot;Katalog-Datei&quot;&nbsp;</TD><TD VALIGN="TOP">nach &quot;locale:catalogs/<language>&quot; kopieren.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+That´s all :-)
+</P>
+<P>
+F&uuml;r jedes Laufwerk das wir nutzen wollen, wird eine Datei in
+DEVS:DOSDRIVERS angelegt.
+</P>
+<P>
+Ein Auszug aus eines meiner genutzen Laufwerke:
+</P>
+<PRE>
+---------  Snipp ---------
+Handler     = L:SMB-Handler
+Stacksize   = 40000
+Priority    = 5
+GlobVec     = -1
+Mount       = 1
+Startup     = &quot;C=\pagDATEN MH=a4000 W=Meine U=wb P=passwort GFX DN=Pag&quot;
+---------  Snipp ---------
+</PRE>
+<P>
+Die Zeile &quot;Handler&quot; verweist auf den passenden Handler. Wenn wir das
+kopieren vergessen haben, werden wir es sp&auml;testens hier merken. ;-)
+Die Stacksize 40000 habe ich aus dem Beispiel &uuml;bernommen. Mount = 1
+bedeutet, das das Laufwerk sofort gemountet wird. Bei Mount = 0 wird
+der eigentliche Mountvorgang bei ersten Zugriff auf das Laufwerk
+durchgef&uuml;hrt.
+</P>
+<P>
+Alle Daten die ich nutze laufen bei mir auf eine Linux Maschine zusammen
+die im Dauerberieb l&auml;uft, deswegen kann ich hier Mount = 1 nutzen.
+</P>
+<P>
+Startup ist hier die wichtigste Zeile, es werden die Parameter &uuml;bergeben.
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Die Parameter im einzelnen:&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">C&nbsp;</TD><TD VALIGN="TOP">Der zu verbindende Host (der Name des Servers)&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">MH&nbsp;</TD><TD VALIGN="TOP">Der verbundene Host (Ich selbst)&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">W&nbsp;</TD><TD VALIGN="TOP">Arbeitsgruppenname. Hier bitte auf Gross/Kleinschreibung&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">achten, sonst kann es zu Problemen kommen.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">U&nbsp;</TD><TD VALIGN="TOP">Benutzername&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">P&nbsp;</TD><TD VALIGN="TOP">Passwort&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">DN&nbsp;</TD><TD VALIGN="TOP">Laufwerksname, der dem Laufwerk zugewiesen wird.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">GFX&nbsp;</TD><TD VALIGN="TOP">Veranlasst, dass den Dateien kein eol/eof angef&uuml;gt wird.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">(Dateien gehen unver&auml;ndert &uuml;ber die Leitung)&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Nachdem die Parameter bekannt sind, ist die Zeile leicht zu lesen.
+</P>
+<P>
+Der Servername ist hier &quot;pag&quot;, die Freigabe &quot;DATEN&quot;. Gross/Kleinschreibung
+bitte unbedingt bei den Freigabenamen beachten!. Der Client h&ouml;rt auf den
+Namen &quot;A4000&quot;, die Arbeitsgruppe lautet &quot;Meine&quot;, Nutzer ist &quot;wb&quot;, Passwort
+lautet &quot;Passwort&quot;. (Ist nat&uuml;rlich nur ein Beispiel).
+</P>
+<P>
+Daten werden &quot;as is&quot; &uuml;bertragen, daf&uuml;r sorgt &quot;GFX&quot;. Das Laufwerk erscheint
+als &quot;PAG:&quot;
+</P>
+<P>
+Einfach oder?
+</P>
+<P>
+Zum Abschluss:
+Da sich jetzt sp&auml;testens mit OS 3.5 Miami als TCP-Stack durchgesetzt hat
+(IMHO), m&ouml;chte ich im n&auml;chsten Teil auf eine Samba-Installation unter Miami
+eingehen.
+</P>
+<P>
+bis die Tage
+</P>
+<P>
+Werner Brennecke &lt;<A HREF="mailto:wb@pag.mayn.de">wb@pag.mayn.de</A>&gt;&laquo;
+</P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops1.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+<A HREF="Workshops3.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

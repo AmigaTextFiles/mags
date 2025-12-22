@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 3.0//EN">
+<!-- This document follows the HTML 3.0 standard -->
+
+<html>
+  <head>
+    <title>BOOPSI Overview</title>
+  </head>
+  <body>
+
+    <h1 align="left">BOOPSI Overview - part 2</h1>
+    <h3 align="right">By Chris Aldi &lt;caldi@pcnet.com&gt;</h3>
+
+    <hr>
+
+    <p>This article is designed to provide the novice BOOPSI
+      programmer information to aid in writing a custom gadget class
+      for an application.  The reader is assumed to be familiar with
+      some basic BOOPSI and/or OOP concepts. I recommend reading the
+      BOOPSI chapter of the RKM:Libraries Manual, 3rd Edition, then
+      perhaps come back and read this overview again and it should
+      start to make more sence. Also, if you missed it the first part
+      of this article appeared in the premier issue of AR Tech.
+    </p>
+
+    <p>In part one, the generic BOOPSI object methods were discussed,
+      as well as the gadget methods specific to gadgetclass
+      writers. Now, we will take a quick look at some of the
+      imageclass methods, discuss some rendering optimizations which
+      you can apply to both gadget or image classes, and provide some
+      example source code which can be used as a basis for custom
+      class work.
+    </p>
+
+    <h2>Image objects</h2>
+
+    <p>Just as all gadgetclass objects are of the struct Gadget type,
+      image class objects are of the struct Image type. The superclass
+      will fill out a good portion of the Image or Gadget structures
+      at OM_NEW or OM_SET time based on the tag attributes passed via
+      SetAttrs(), SetGadgetAttrs() or NewObject() function calls.
+    </p>
+
+    <h2>Image methods</h2>
+
+    <p>Method spefic message structure definitions can be found in
+      intuition/imageclass.h, note the first ULONG of the message will
+      be the MethodID idenfier which your class dispatcher can use to
+      direct the message to the proper function in your image class.
+    </p>
+
+    <p>The follow methods are common for all classes of image objects:</p>
+
+    <h3>IM_HITTEST</h3>
+
+    <p>For rectangular images all you have to do is pass this method
+      to your superclass which will handle it. If you so choose to
+      handle this method yourself, you muse return TRUE if the point
+      is within your image structure's TopEdge, LeftEdge, Width,
+      Height fields.  The IM_HITTEST method uses a impHitTest message
+      structure.
+    </p>
+
+    <h3>IM_HITFRAME</h3>
+
+    <p>This method is very simular to IM_HITTEST, but is a special
+      version for images that support IM_DRAWFRAME. It is just like
+      IM_HITTEST except it tests if the point is would be within the
+      image if the image is clipped or scaled to some rectangular
+      bounds. It too uses a impHitTest structure. Take note,
+      imageclass treats IM_HITFRAME exactly like IM_HITTEST, thus
+      ignoring the restricting dimmensions.
+    </p>
+
+    <h3>IM_ERASE</h3>
+
+    <p>Intuition will send this method when an image object is erased
+      with the EraseImage() function. This method, like IM_HITTEST,
+      can be passed to the superclass. The imageclass will use
+      EraseRect() to erase the image using the values in the object's
+      image structure.  It uses a impErase message structure.
+    </p>
+
+    <p>There doesn't appear to be an IM_ERASEFRAME method, so if your
+      object supports IM_DRAWFRAME be sure that imageclass or your
+      class handles IM_ERASE appropriatly for your image object so not
+      to erase anything outside of the last rendered clipping/scaling
+      IM_DRAWFRAME dimmensions.
+    </p>
+
+    <h3>IM_DRAW</h3>
+
+    <p>This method is sent when an image object needs to
+      rendered. Typically the application or perhaps a gadgetclass
+      will use DrawImageState() to render an image. For boopsi images,
+      this will cause an IM_DRAW method to occur. This method uses the
+      impDraw message structure.  Contained in this structure is an
+      imp_State field which defines which state the image should be
+      rendered in. Some common states are IDS_NORMAL, IDS_SELECTED
+      (typically, you would reverse shine/shadow pens for bevels,
+      perhaps show some alternate image, etc), IDS_DISABLED (render
+      image with a ghosting pattern over it), etc.
+    </p>
+
+    <p>Generally you can get your pen settings from this structure as
+      well by looking at imp_DrInfo->dri_Pens but imp_DrInfo can be
+      NULL in some cases, so your advised to check for this and
+      optionally use some reasonable default pen settings.
+    </p>
+
+    <h3>IM_DRAWFRAME</h3>
+
+    <p>This method is much like IM_DRAW except it uses an extended
+      message structure which includes some bounds clipping
+      dimmensions. At your option, your image class should scale or
+      clip rendering to stay within this "frame" area.
+    </p>
+
+    <h2>RENDERING TIPS & SUGGESTIONS</h2>
+
+    <ol>
+      <li>
+	<p>For complex imagery with a great deal of rastport setting
+	  changes such as pen colors, fill modes, etc, use cloned
+	  rastports. This is simple enough to do and doesn't use all
+	  that much memory either.
+	</p>
+	<p>For example:</p>
+
+	<code>
+	  struct RastPort *rp;<br>
+	  struct RastPort clone_rp1;<br>
+	  struct RastPort clone_rp2;<br><br>
+
+	  clone_rp1 = *impDraw->imp_RPort;<br>
+	  clone_rp2 = *impDraw->imp_RPort;<br><br>
+
+	  SetAPen(&clone_rp1, impDraw->DrInfo->dri_Pens[FILLPEN]);<br>
+	  SetAPen(&clone_rp2, impDraw->DrInfo->dri_Pens[TEXTPEN]);<br>
+	</code>
+
+	<p>Now, you can render in TEXTPEN via clone_rp2, and in
+	  FILLPEN via clone_rp1.  Since SetAPen() and simular
+	  functions often involve some complex computations, there is
+	  something to be gained by pre-computing the rastport
+	  settings and using the appropreatly set rastport.  </p>
+      </li>
+      <li>
+	<p>Take care not to render in the same place twice. By this I
+	  mean when filling the area inside a button, do not over
+	  render the bevel box then re-render a surrounding
+	  bevel. This will cause unwanted flashing of the
+	  bevels. Also, do not assume the bevel boxes are of a fixed
+	  size unless they are your own. Bevels provided by
+	  frameiclass could change thickness in a future OS revision,
+	  as could something like ClassAct's bevel.image change its
+	  bevel size/style via revisions or use preferences
+	  programs. It is always best to query the beveling image for
+	  its bevel bar size, and account for that in any rendering
+	  operations you do.  </p>
+      </li>
+      <li>
+	<p>When rendering, do as little work as possible. When
+	  rendering gadget imagery, do not render imagery that has not
+	  changed. For example, a scroller gadget need only render the
+	  arrow button that was selected and again when deselected. It
+	  should never need to re-render any bevel around the
+	  proportional slider area, or render the other arrow button.
+	  When dragging the proportional slider, there is no reason to
+	  re-render the arrows at all. Since the gadget knows what
+	  element of the scroller made it active, you can set some
+	  flag variables or bitmask in GM_GOACTIVE, them evaluate them
+	  in GM_RENDER when the redraw method is GREDRAW_UPDATE. When
+	  the redraw method is GREDRAW_REDRAW a complete refresh is
+	  needed regardless of the flag settings. You can determin
+	  this by looking at the gpRender structure's gpr_Redraw field
+	  (see intuition/gadgetclass.h).
+	</p>
+      </li>
+    </ol>
+    <hr>
+    <p>Chris Aldi is the co-founder and president of Phantom
+      Development, and a co-author of the ClassAct BOOPSI toolkit. You
+      can reach him at <a
+	href="mailto:caldi@pcnet.com">caldi@pcnet.com</a>.</p> 
+  </body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META NAME="AUTHOR" CONTENT="Thomas Nawroth">
+<META NAME="DESCRIPTION" CONTENT="Ein Computer-Magazin von 1984">
+<TITLE>Happy Computer</TITLE>
+</HEAD>
+<BODY bgcolor="#fffff4" background="mm_hc08b.gif">
+<TABLE border="0" cellpadding="8">
+<TR>
+<TD>
+<font size=+1><A href="mm_mmx.html"><B>zur&uuml;ck mit Frame</B></A></font>
+<CENTER>
+<IMG SRC="mm_hc08a.gif" alt="Titel"><BR><I>Folge 8</I></CENTER><BR>
+<H1 ALIGN="CENTER">Wohnzimmer-Wimbledon</H1>
+
+<P>Dieses Pseudo-3D-Programm bietet auf der Mattscheibe ein interessantes Tennismatch mit 
+dem Spectrum.</P>
+<CENTER><IMG SRC="mm_HC08d.gif"></CENTER>
+<P>Nach dem Eintippen und Starten fragt das Programm, welcher Schwierigkeitsgrad (0-9) 
+gew&uuml;nscht wird. Nachdem dann die UDG`s in den Zeilen 9000-9100 definiert worden sind,
+sieht das Programm folgenderma&szlig;en aus:</P><BR>
+<TABLE border="0" cellpadding="1">
+<TR><TD ALIGN=RIGHT><U>Zeile</TD><TD><U>Funktion</TD></TR>
+<TR><TD ALIGN=RIGHT>5-7</TD><TD>Eingabe des Levels</TD></TR>
+<TR><TD ALIGN=RIGHT>10-41</TD><TD>Aufbau des Bildschirms</TD></TR>
+<TR><TD ALIGN=RIGHT>50-62</TD><TD>Definition der Variablen</TD></TR>
+<TR><TD ALIGN=RIGHT>100-114</TD><TD>Die Figuren und der Ball werden gezeichnet und
+            an der vorherigen Position gel&ouml;scht</TD></TR>
+<TR><TD ALIGN=RIGHT>115-116</TD><TD>Abfrage, ob der Ball im Aus ist</TD></TR>
+<TR><TD ALIGN=RIGHT>120</TD><TD>Lenkung des eigenen Spielers</TD></TR>
+<TR><TD ALIGN=RIGHT>130</TD><TD>Lenkung des Balles</TD></TR>
+<TR><TD ALIGN=RIGHT>140</TD><TD>Lenkung des Computerspielers</TD></TR>
+<TR><TD ALIGN=RIGHT>1000-1020</TD><TD>Der Ball ist oben aus dem Spielfeld, wird aber getroffen</TD></TR>
+<TR><TD ALIGN=RIGHT>1050-1052</TD><TD>Der Ball ist nicht getroffen</TD></TR>
+<TR><TD ALIGN=RIGHT>1100-1120</TD><TD>Der Ball ist unten aus dem Spielfeld, wird aber nicht getroffen</TD></TR>
+<TR><TD ALIGN=RIGHT>1150-1152</TD><TD>Der Ball ist nicht getroffen</TD></TR>
+<TR><TD ALIGN=RIGHT>2000-2040</TD><TD>Ende des Spiels</TD></TR></TABLE><BR>
+
+<P>Die Zeile 0 l&auml;&szlig;t sich so eingeben: "1 REM..." danach: "POKE 23756,0"
+Das Programm zeigt links oben die Punkte des Computers, darunter die eigenen an. Es l&auml;&szlig;t
+sich einfach mit SAVE "3D-Tennis" LINE1 abspeichern und mit LOAD"" laden. Mit RUN 
+l&auml;&szlig;t es sich nach einem BREAK wieder starten. Die Lenkung kann mit dem Kempston-
+Joystick erfolgen oder mit den Tasten 5 (=links) und 8 (=rechts).</P>
+
+(Gerd Huber/mk)<BR><BR>
+<CENTER><IMG SRC="mm_hc08c.gif"></CENTER><BR>
+Variablen:
+<TABLE border="0" cellpadding="1">
+<TR><TD ALIGN=RIGHT>a</TD><TD>= Spalte des Computerspielers</TD></TR>
+<TR><TD ALIGN=RIGHT>b</TD><TD>= Spalte des eigenen Spielers</TD></TR>
+<TR><TD ALIGN=RIGHT>aa</TD><TD>= Punkte des C.-Spielers</TD></TR>
+<TR><TD ALIGN=RIGHT>bb</TD><TD>= Punkte des eig. Spielers</TD></TR>
+<TR><TD ALIGN=RIGHT>sa</TD><TD>= Spiele des C.-Spielers</TD></TR>
+<TR><TD ALIGN=RIGHT>sb</TD><TD>= Spiele des eig. Spielers</TD></TR>
+<TR><TD ALIGN=RIGHT>b()</TD><TD>beinhaltet Punktverteilung</TD></TR>
+<TR><TD ALIGN=RIGHT>x</TD><TD>= Zeile Ball</TD></TR>
+<TR><TD ALIGN=RIGHT>y</TD><TD>= Spalte Ball</TD></TR>
+<TR><TD ALIGN=RIGHT>lev</TD><TD>= Level</TD></TR>
+<TR><TD ALIGN=RIGHT>xx &amp; yy</TD><TD>= Verschiebung Ball</TD></TR>
+<TR><TD ALIGN=RIGHT>x1 &amp; y1</TD><TD>= letzte Position Ball</TD></TR>
+<TR><TD ALIGN=RIGHT>a1 &amp; b1</TD><TD>= letzte Position Spieler</TD></TR>
+</TABLE>
+
+<PRE>
+   0>REM ****** 3D-Tennis ******
+   1 REM ***********************
+         *     COPYRIGHT       *
+         *       1984          *
+         *        by           *
+         *    Gerd Huber       *
+         *    Berliner Str.20  *
+         *    6834 Ketsch      *
+         ***********************
+   2 GO SUB 9000
+   5 INK 0: PAPER 7: BORDER 7: CLS : INPUT "Level ? (0-9) "; LINE a$
+   6 IF LEN a$<>1 OR a$>"9" OR a$<"0" THEN GO TO 5
+   7 LET lev=VAL a$
+   9
+  10 REM **Bildschirm aufbauen**
+  11
+  12 INK 7: PAPER 4: BORDER 4: CLS
+  20 PLOT 40,16: DRAW 175,0: DRAW -47,87: DRAW -81,0: DRAW -47,-87
+  25 PLOT 56,16: DRAW 39,87: PLOT 199,16: DRAW -39,87
+  26 PLOT 70,45: DRAW 115,0: PLOT 127,45: DRAW 0,25
+  27 PLOT 90,90: DRAW 75,0: PLOT 127,90: DRAW 0,-7
+  30 PLOT 70,70: DRAW 115,0: DRAW 0,15: DRAW -115,0 DRAW 0,-15
+  40 FOR f=75 TO 180 STEP 5: PLOT f,70: DRAW 0,15: NEXT f
+  41 FOR f=72 TO 84 STEP 2: PLOT 70,f: DRAW 115,0: NEXT f
+  45
+  46 REM *Variablen definieren**
+  47
+  50 LET a=15: LET b=15
+  51 LET a1=a: LET b1=b
+  52 LET x=18: LET y=a
+  53 LET x1=x: LET y1=y
+  54 LET xx=-1: LET yy=0
+  60 DIM b(4): LET b(1)=0: LET b(2)=15: LET b(3)=30: LET b(4)=40
+  62 LET aa=1: LET bb=1: LET sa=0: LET sb=0
+  70 PRINT AT 0,0; INK 2; PAPER 7;sa;"  "; BRIGHT 1;b(aa);AT 2,0 BRIGHT 0; 
+     INK 1;sb;"  "; BRIGHT 1;b(bb)
+  90 PRINT AT 8,a; INK 2; OVER 1;"A";AT 19,b; INK 1; OVER 1;"B";AT 20,b; 
+     INK  1; OVER 1;"C"
+  91 PRINT AT x,y; OVER 1;"D"
+  97
+  98 REM **Hauptprogramm**
+  99
+ 100 IF a=a1 AND b=b1 THEN GO TO111
+ 101 PRINT AT 8,a1; INK 2; OVER 1;"A";AT 19,b1; INT 7; OVER 1;"B";AT 20,b1; 
+     INK 7; OVER 1;"C"
+ 110 PRINT AT 8,INT a; INK 2; OVER 1;"A";AT 19,b; INK 1; OVER 1;"B";AT 
+     20,b; INK 1; OVER 1;"C"
+ 112 LET a1=INT a: LET b1=b
+ 113 PRINT AT INT x,INT y; OVER 1;"D": PRINT AT x1,y1; OVER 1; "D": LET 
+     x1=x: LET y1=y
+ 114 LET x1=INT x: LET y1=INT y
+ 115 IF INT x=8 THEN GO TO 1000
+ 116 IF INT x=19 THEN GO TO 1100
+ 120 LET b=b+((INKEY$="8" OR IN 31=1) AND b<26)-((INKEY$="5" OR IN 31=2) 
+     AND b>5)
+ 130 LET x=x+xx: LET y=y+yy
+ 140 LET a=a+(.3+.08*lev)*(INT a<INT y AND a<20)-(.3+.08*lev)*(a>11 AND INT 
+     a>INT y)
+ 200 GO TO 100
+ 900
+ 910 REM **Ball oben**
+ 920
+1000 IF INT y<>INT a THEN GO TO 1050
+1005 BEEP .05,0
+1010 LET x=x+1: LET xx=1: LET r=RND: LET yy=0
+1011 IF r>=.6 AND a<19 THEN LET yy=.5
+1012 IF r<.4 AND a>12 THEN LET yy=-.5
+1020 GO TO 100
+1040
+1045 REM **Ball obel aus**
+1047
+1050 BEEP .1,-20: LET bb=bb+1: IF bb>=5 THEN LET sb=sb+1: LET bb=1: LET 
+     aa=1: PRINT AT 0,3; BRIGHT 1; PAPER 7; INK 0;b(aa); BRIGHT 0; PAPER 4;"  ": 
+     IF sb>=6 THEN GO TO 2000
+1051 PRINT AT 2,0; INK 1; PAPER 7;sb"  ":PRINT AT 2,3; INK 1; PAPER 7; 
+     BRIGHT 1;b(bb); BRIGHT0; PAPER 4;"    "
+1052 PAUSE 50: LET y=a: GO TO 1005
+1090
+1091 REM **Ball unten**
+1092
+1100 IF INT y<>b THEN GO TO 1150
+1105 BEEP .05,20
+1110 LET x=x-1: LET xx=-1: LET yy=0
+1111 IF b<15 THEN LET yy=.5
+1112 IF b>17 THEN LET yy=-.5
+1120 GO TO 100
+1140
+1145 REM **Ball unten aus**
+1147
+1150 BEEP .1,-20: LET aa=aa+1: IF aa>=5 THEN LET sa=sa+1: LET aa=1: LET 
+     bb=1: PRINT AT 2,3; INK 0; PAPER 7; BRIGHT 1;0; PAPER 4; BRIGHT 0;"  ": IF 
+     sa>=6 THEN GO TO 2000
+1151 PRINT AT 0,0; INK 2; PAPER 7;sa;"  ": PRINT AT 0,3; INK 2; PAPER 7; 
+     BRIGHT 1;b(aa); PAPER 4; BRIGHT 0;"    "
+1152 PAUSE 50: LET y=b: GO TO 1105
+1900
+1910 REM ** Ende des Spiels**
+1911
+2000 PRINT AT 12,12; FLASH 1; INK 2; PAPER 6;"GAME OVER"
+2010 PRINT AT 14,0: INK 0: PAPER 7
+2011 IF sb=6 THEN PRINT "You`ve won the game.Score:";sa;":";sb: FOR f=0 TO 
+     20: BEEP .05,f: NEXT f
+2012 IF sa=6 THEN PRINT "You`ve lost the game.Score:";sa;":";sb: FOR f=-20 
+     TO 0: BEEP .05,-f: NEXT f
+2020 PRINT AT 16,10; FLASH 1;"Try it again"
+2030 IF INKEY$="" AND IN 31<>16 THEN GO TO 2030
+2040 RUN
+8000
+8010 REM **UDG`s definieren**
+8020
+9000 RESTORE 9100: FOR f=USR "a" TO USR "d"+7: READ a: POKE f,a: NEXT f
+9010 RETURN
+9100 DATA 3,27,25,62,88,24,36,66,3,3,63,61,61,1,127,127,188,188,60,60,102,102,231,0,6
+     0,126,126,126,126,60,0
+</PRE>
+<HR><BR>
+In der n&auml;chsten NoCover gibt es eine Erkl&auml;rung einiger Begriffe bez&uuml;glich Disketten.
+         </TD>
+        </TR>
+</TABLE>
+<BR><BR>
+<TABLE ALIGN="CENTER" border="3">
+<TR bgcolor="#ffffff">
+<TD><A HREF=mailto:"thomasnawroth@web.de">Thomas Nawroth</A></TD>
+</TR>
+</TABLE>
+<p><font size=+1><A href="mm_mmx.html"><B>zur&uuml;ck mit Frame</B></A></font></p>
+<br>
+</BODY>
+</HTML>

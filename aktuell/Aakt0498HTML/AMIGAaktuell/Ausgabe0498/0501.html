@@ -1,0 +1,192 @@
+<HTML>
+<HEAD><TITLE>Workshops / Hintergrundberichte</TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<CENTER>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR><TD COLSPAN=2 VALIGN=TOP ALIGN=LEFT>
+  <IMG SRC="../menu/title_amiga.gif" WIDTH=58 HEIGHT=20 BORDER=0>
+</TD></TR>
+<TR><TD VALIGN=TOP ALIGN=LEFT>
+  <IMG SRC="../menu/title_aktuell.gif" WIDTH=9 HEIGHT=60 BORDER=0>
+</TD><TD VALIGN=TOP ALIGN=CENTER>
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1 BGCOLOR="#000000"><TR>
+<TD ROWSPAN=3 VALIGN=TOP>
+<IMG SRC="../menu/empty.gif" BORDER=0 WIDTH=19 HEIGHT=15>
+</TD><TD ROWSPAN=3 VALIGN=TOP>
+<A HREF="../index.html"><IMG SRC="../menu/hauptseite.gif" BORDER=0 WIDTH=62 HEIGHT=15></A>
+</TD><TD ROWSPAN=3 VALIGN=TOP>
+<A HREF="0500.html"><IMG SRC="../menu/links.gif" BORDER=0 WIDTH=15 HEIGHT=15></A>
+</TD><TD ROWSPAN=3 VALIGN=TOP>
+<A HREF="0502.html"><IMG SRC="../menu/rechts.gif" BORDER=0 WIDTH=15 HEIGHT=15></A>
+</TD><TD ROWSPAN=3>
+<IMG SRC="../menu/empty.gif" BORDER=0 WIDTH=19 HEIGHT=15>
+</TD><TD>
+<A HREF="index.html"><IMG SRC="../menu/inhalt.gif" BORDER=0 WIDTH=37 HEIGHT=15></A>
+</TD><TD>
+<A HREF="0100.html"><IMG SRC="../menu/vorwort.gif" BORDER=0 WIDTH=47 HEIGHT=15></A>
+</TD><TD>
+<A HREF="0200.html"><IMG SRC="../menu/intern.gif" BORDER=0 WIDTH=37 HEIGHT=15></A>
+</TD><TD>
+<A HREF="0300.html"><IMG SRC="../menu/gewinnspiel.gif" BORDER=0 WIDTH=70 HEIGHT=15></A>
+</TD><TD>
+<A HREF="0400.html"><IMG SRC="../menu/forum.gif" BORDER=0 WIDTH=37 HEIGHT=15></A>
+</TD><TD ROWSPAN=3 VALIGN=TOP>
+<IMG SRC="../menu/empty.gif" BORDER=0 WIDTH=19 HEIGHT=15>
+</TD></TR>
+
+<TR><TD>
+<A HREF="0500.html"><IMG SRC="../menu/workshops.gif" BORDER=0 WIDTH=62 HEIGHT=15></A>
+</TD><TD>
+<A HREF="0600.html"><IMG SRC="../menu/testberichte.gif" BORDER=0 WIDTH=70 HEIGHT=15></A>
+</TD><TD>
+<A HREF="0700.html"><IMG SRC="../menu/spieleteil.gif" BORDER=0 WIDTH=55 HEIGHT=15></A>
+</TD><TD>
+<A HREF="0800.html"><IMG SRC="../menu/amigainc.gif" BORDER=0 WIDTH=87 HEIGHT=15></A>
+</TD><TD>
+<A HREF="0900.html"><IMG SRC="../menu/poweruptodate.gif" BORDER=0 WIDTH=90 HEIGHT=15></A>
+</TD>
+</TR><TR>
+<TD>
+<A HREF="1000.html"><IMG SRC="../menu/produktankuendigungen.gif" BORDER=0 WIDTH=125 HEIGHT=15></A>
+</TD><TD>
+<A HREF="1100.html"><IMG SRC="../menu/diverses.gif" BORDER=0 WIDTH=50 HEIGHT=15></A>
+</TD><TD>
+<A HREF="1200.html"><IMG SRC="../menu/kurzmeldungen.gif" BORDER=0 WIDTH=85 HEIGHT=15></A>
+</TD><TD>
+<A HREF="1300.html"><IMG SRC="../menu/geruechte.gif" BORDER=0 WIDTH=52 HEIGHT=15></A>
+</TD><TD>
+<A HREF="1400.html"><IMG SRC="../menu/abschliessend.gif" BORDER=0 WIDTH=75 HEIGHT=15></A>
+</TD></TR>
+<TR><TD BGCOLOR="#EEEEEE" COLSPAN=11>
+<H2 ALIGN=CENTER>Workshops / Hintergrundberichte</H2>
+</TD></TR>
+</TABLE>
+
+</TD></TR>
+</TABLE>
+</CENTER>
+
+<P>
+
+<H3>2. Nutzung des ZIP-Drives am AMIGA (von Marc Jochimsen)</H3>
+<P>
+»Falls jemand Probleme mit Iomegas ZIP-Laufwerk am Amiga hat, hier ein paar
+Tips: Einfach eine Mountdatei nach folgendem Schema erstellen und in das
+Verzeichnis Devs:Dosdrivers kopieren, damit das Laufwerk bei jedem
+Systemstart automatisch eingebunden wird:
+<P>
+Amiga FFS (wird als Wechselplatte gemountet, das hei&szlig;t, man kann die Medien
+wie gro&szlig;e Disketten behandeln):
+<P>
+<TABLE BORDER=0 BGCOLOR="#000000" CELLSPACING=1 CELLPADDING=4><TR><TD BGCOLOR="#EEEEEE">
+<PRE>Device = gvpscsi.device
+Unit = 5
+Flags = 1
+Surfaces = 2
+BlocksPerTrack = 32
+Reserved = 2
+Interleave = 0
+LowCyl = 2
+HighCyl = 3071
+Buffers = 32
+GlobVec = -1
+BufMemType = 1
+Mask = 0xFFFFFFFE
+MaxTransfer = 0x7FFFFFFF
+Mount = 1
+DosType = 0x444F5300
+StackSize = 4000
+#
+</PRE></TD></TR></TABLE>
+<P>
+Zum Datenaustausch mit MS-DOS-Systemen hat sich bei mir folgende Mountdatei
+bew&auml;hrt:
+<P>
+<TABLE BORDER=0 BGCOLOR="#000000" CELLSPACING=1 CELLPADDING=4><TR><TD BGCOLOR="#EEEEEE">
+<PRE>Device = gvpscsi.device
+Unit = 5
+Priority = 10
+Flags = 0
+Surfaces = 1
+BlocksPerTrack = 68
+Reserved = 0
+PreAlloc = 0
+Interleave = 0
+LowCyl = 0
+HighCyl = 2890
+Stacksize = 4096
+Buffers = 30
+BufMemType = 0
+MaxTransfer = 0xFFFFFF
+Mask = 0xFFFFFE
+GlobVec = -1
+BootPri = 0
+FileSystem = L:CrossDOSFileSystem
+DosType = 0x4D534800
+#
+</PRE></TD></TR></TABLE>
+<P>
+Das gleiche f&uuml;r den Macintosh:
+<P>
+<TABLE BORDER=0 BGCOLOR="#000000" CELLSPACING=1 CELLPADDING=4><TR><TD BGCOLOR="#EEEEEE">
+<PRE>Device = gvpscsi.device
+Unit = 5
+FileSystem      = L:CrossMacFileSystem
+Flags           = 0
+Surfaces        = 2
+BlocksPerTrack  = 64
+SectorsPerBlock = 1
+SectorSize      = 512
+Mask            = 0x7ffffffe
+MaxTransfer     = 0x100000
+Reserved        = 0
+Interleave      = 0
+LowCyl          = 0
+HighCyl         = 1535
+Buffers         = 50
+BufMemType      = 0
+StackSize       = 2000
+Priority        = 10
+GlobVec         = -1
+DosType         = 0x4d414300
+#
+</PRE></TD></TR></TABLE>
+<P>
+Bei Device und Unit sind nat&uuml;rlich die eigenen Werte einzutragen,
+alternativ kann man das auch per ToolType (Icon der MountDatei anklicken
+und Men&uuml;punkt "Piktogramm/Informationen" aufrufen)
+erledigen.
+<P>
+Alternativ kann man ein Medium auch mit HDToolBox oder der
+Partitionierungs-Software seines Hostadapters wie eine Festplatte
+behandeln. Dann lassen sich mehrere Partitionen einrichten und sogar
+mittels RDB bootf&auml;hig machen. Nur mu&szlig; man dann beim Wechseln der Medien
+vorsichtig sein, denn das AmigaOS rechnet nicht damit, da&szlig; w&auml;hrend des
+Betriebs eine Platte entfernt wird oder durch Einlegen einer neuen ZIP100-
+Diskette eine andere Gr&ouml;&szlig;e/Partitionierung etc. aufweist.
+<P>
+Ich benutze mein MS-DOS-formatiertes Medium zum Beispiel, wenn ich mir am
+PC gr&ouml;&szlig;ere Dateien (&gt;720 kB, wegen DD formatierten Disketten, die ich sonst
+zum Transfer benutze) aus dem AmiNet herunterlade. In diesem Zusammenhang
+w&uuml;rde ich gerne wissen, ob ein Leser schon Erfahrungen mit dem neuen ZIP+-
+Laufwerk gemacht hat, welches ja bekanntlich sowohl einen SCSI- als auch
+einen Parallelport-Anschlu&szlig; besitzt und selbst&auml;ndig erkennt, an welchem es
+angeschlossen ist. Bisher brauche ich n&auml;mlich immer einen PC mit SCSI-
+Hostadapter, wenn ich auf die Datenautobahn will, und die sind fast
+seltener als ein Amiga mit demselben.
+<P>
+Als Hilfsmittel zur Verwaltung und Sicherung der ZIP-Medien empfiehlt sich
+das Programm ZJTool von Oliver Hitz aus dem AmiNet. Damit lassen sich alle
+Operationen wie mit der Original-Iomega-Software ausf&uuml;hren, also z.B. Lese-
+oder Schreibschutz einrichten (mit oder ohne Pa&szlig;wort), Schreibschutz ganz
+oder tempor&auml;r aufheben, LowLevel-Formatieren, etc. &Uuml;brigens: Das
+Pa&szlig;wort des mitgelieferten Mediums lautet: APlaceForMyStuff oder
+APlaceForYourStuff.«
+<P>
+=&gt; &Uuml;brigens: Mit Hilfe einer einfachen Schaltung k&ouml;nnen am AMIGA auch ZIP-
+Laufwerke mit paralleler Schnittstelle angeschlossen werden.
+Eine Anleitung gibt es im Aminet (hard/hack/ppazip.lha).
+<P>
+
+</BODY>
+</HTML>

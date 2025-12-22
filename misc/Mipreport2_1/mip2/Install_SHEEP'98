@@ -1,0 +1,312 @@
+; $VER: Install_M.I.P.report'98 by Wincle/VRT v2.0 (3.5.98) Lame Code & Design
+
+(
+(procedure relabel2temp
+ ( (set diskname (getassign drajf))
+   (set commandstring ("relabel %s MIPtemp" drajf))
+   (run commandstring)
+  )
+)
+
+
+(procedure abortformat
+     (abort "\n\n\n\nMuzes formatovat jen diskety! (df0-df3)")
+)
+
+
+(procedure formatselectdrive
+		     (
+                      (set commandstring ("sys:system/format DRIVE %s: NAME MIPtemp FFS QUICK NOICONS" diskname))
+	    	      (run commandstring)
+                      )
+)
+
+
+
+(procedure clearoldversion
+            (
+	      (set @default-dest oldtarget)
+	      (copyfiles (source "icony/mwb_mip1.97.info") (dest @default-dest) (newname "MIP#1.info"))
+              (makedir (tackon @default-dest "MIP#1"))
+              (set @default-dest (tackon @default-dest "mip#1"))
+              (copyfiles (source "bonus/mip.exe")(dest @default-dest))
+	      (run "delete mip1:mip.exe")
+              (copyfiles (source "mip1:mip.ndx")(dest @default-dest))
+	      (run "delete mip1:mip.ndx")
+	      (copyfiles (source "mip1:readme")(dest @default-dest))
+	      (run "delete mip1:readme")
+	      (copyfiles (source "mip1:readme.info")(dest @default-dest))
+	      (run "delete mip1:readme.info")
+              (copyfiles (source "mip1:mipreport")(dest @default-dest))
+	      (run "delete mip1:mipreport")
+              (copyfiles (source "mip1:MIPreport.info")(dest @default-dest))
+	      (run "delete mip1:mipreport.info")
+              (copyfiles (source "mip1:mip1.dat")(dest @default-dest))
+	      (run "delete mip1:mip1.dat")
+              (copyfiles (source "mip1:mip2.dat")(dest @default-dest))
+	      (run "delete mip1:mip2.dat")
+	      (set @default-dest oldtarget)
+            )
+)
+
+(procedure checkoldversion
+  (
+    (set posledniverze
+       (askbool (prompt "\n\nMas naistalovanej MIP report #1 ?")
+	     (default 0)
+             (help "pokud mas nainstalovane a naassignovanej M.I.P. report, usporada adresar a nakopiruje tam dalsi cislo")
+             (choices "ano" "ne")
+       )
+    )
+
+   (if (= posledniverze 1)
+        (
+	  (set oldtarget (getassign "mip1"))
+          (if (= oldtarget "")
+            ( (set oldtarget (askdir (prompt "Select the directory to assign mip1:") (help @askdir-help) (default @default-dest) ))
+	      (set commandstring ("c:assign mip1: %s" oldtarget))
+	      (if (exists "c:assign") (run commandstring) )
+              (clearoldversion)
+            )
+	    (clearoldversion)
+          )
+        )
+   )
+ )
+)
+
+
+
+
+(procedure testcomp
+  (set procesor (database "cpu"))
+(set frek (database "vblank"))
+(set chip (database "graphics-mem"))
+(set total (database "total-mem"))
+)
+
+(procedure copymip1
+ (
+  (if (exists "c:ppanim")
+   (
+    (copyfiles (source "mip1.dat") (dest @default-dest))
+    (copyfiles (source "engine.dat") (dest @default-dest))
+    (copyfiles (source "mip.index") (dest @default-dest))
+    (copyfiles (source "mip") (dest @default-dest))
+    (copyfiles (source "mipreport") (dest @default-dest))
+    (copyfiles (source "readme!") (dest @default-dest))
+    (if (= vyber 0)
+     (
+       (copyfiles (source "preference") (dest @default-dest))
+       (copyfiles (source "bonus/mipprefs.script") (dest @default-dest) (newname "prefs"))
+       (copyfiles (source "icony/mwb_prefsPro.info") (dest @default-dest) (newname "Prefs.info"))
+     )
+    )
+    (if (= vyber 1)
+     (
+       (copyfiles (source "preference") (dest @default-dest)(newname "prefs"))
+       (copyfiles (source "icony/mwb_prefs.info") (dest @default-dest) (newname "Prefs.info"))
+     )
+    )
+    (copyfiles (source "mipfonts/") (dest (tackon @default-dest "fonts")) (ALL) )
+    (copyfiles (source "icony/mwb_mipreport.info") (dest @default-dest) (newname "MIPreport.info"))
+    (copyfiles (source "icony/mwb_readme.info") (dest @default-dest) (newname "ReadMe!.info"))
+    (copyfiles (source "icony/mwb_appicon.info") (dest (tackon @default-dest "app")) (newname "appicon.info"))
+   )
+  )
+ )
+
+)
+(procedure copymip2
+ (
+    (copyfiles (source "mip2.dat") (dest @default-dest))
+    (copyfiles (source "bonus/miptro.anim") (dest @default-dest) (newname "Intro.anim"))
+    (copyfiles (source "bonus/intro.script") (dest @default-dest) (newname "Intro"))
+    (copyfiles (source "icony/mwb_anim.info") (dest @default-dest) (newname "Intro.info"))
+ )
+)
+
+(procedure askmwb
+
+(getcurrentversion "intuition.library")
+(if (>= ver 40) (set text "OS 3.1 ...Hmmmm, ten mam taky ...Wincle") (if (< ver 39) (set text "OS 2.04 ?!?, co blbneÓ?") (set text "OS 3.0 ty uz si jak Lazy,no nic")) )
+    (testcomp)
+
+    (set MWB
+	(askchoice
+	    (prompt "\n" text "\n Procesor:  " procesor "        VBlank:   " frek "    \n Chip RAM:  " chip "     Fast RAM:  " (- total chip) "\n\nPouzivas Magic Workbench?\n")
+
+	    (help (cat "\n  no todle snad nejni ani pravda.\n  Co je to za cloveka!\n")
+            	  (cat "\n\na pro ty pomalejsi.\n")
+		  (cat "    ano .... pouzivam    MagicWorkbench\n")
+                  (cat "    ne ..... nepouzivam  MagicWorkbench\n")
+	    )
+            (choices "ano" "ne" "co?")
+	    (default 0)
+        )
+     )
+(if (= mwb 1)
+ (
+  (message "\n\nTo mas Smulu, ja jo! ;)")
+ )
+)
+(if (= mwb 2)
+ (
+  (message "\n\nVopatruj se Bobe")
+ )
+)
+)
+
+
+; formatuje disketu ,pokud je format
+
+
+(procedure formatdf0
+   (if (= (exists "sys:system/format" (noreq)) 1)
+	(
+	    (set formatovat
+		(askchoice
+		    (prompt "\nChces Formatovat disketu?\n")
+		    (help (cat "\nano .... naformatuje disk v df0:\n"))
+	            (choices "ne" "ano" "ne, ale HDD!")
+		    (default 0)
+		)
+	    )
+
+(if (= formatovat 0)
+                  (
+                   (message "\n\n\n\nVloz disk do drajvu (df0: df1: df2: df3:)")
+		   (set drajf 	(askdir (prompt "\n\nVyber Mechaniku!")
+					(help "naistaluje report na zvolenou disketu a prejmenuje ji na MIP2x")
+					(disk)
+					(default "")
+				)
+                   )
+		   (set diskname (getdevice drajf))
+		   (if (= diskname "DF0") (relabel2temp)
+		     (if (= diskname "DF1") (relabel2temp)
+                       (if (= diskname "DF2") (relabel2temp)
+                         (if (= diskname "DF3") (relabel2temp) (abort "\n\n\n\nMuzes istalovat jen na diskety! (df0-df3)")
+                         )
+                       )
+                     )
+                   )
+               )
+
+)
+
+
+	  (if (= formatovat 1)
+  		  (
+                   (message "\n\n\n\nVloz disk do drajvu (df0: df1: df2: df3:)")
+		   (set drajf 	(askdir (prompt "\n\nVyber Mechaniku!")
+					(help "shit")
+					(disk)
+					(default "")
+				)
+                   )
+		   (set diskname (getdevice drajf))
+		   (if (= diskname "DF0") (formatselectdrive)
+		     (if (= diskname "DF1") (formatselectdrive)
+                       (if (= diskname "DF2") (formatselectdrive)
+                         (if (= diskname "DF3") (formatselectdrive) (abortformat)
+                         )
+                       )
+                     )
+                   )
+                  )
+	  )
+
+	(if (= formatovat 2)
+	(abort "\n\n\nNejses padlej na hlavu?\n")
+        )
+
+       )
+    )
+)
+
+(procedure getcurrentversion name
+  ( (set vernum (getversion name (resident)))
+    (set ver (/ vernum 65536))
+    (set rev (- vernum (* ver 65536)))
+  )
+
+)
+
+
+(welcome "S.H.E.E.P. Installer\nSeven Huskys Elven Eleven Party\nSpecial X-mas edition\n\nM.I.P. report #2   © Vertical Syndicate '98")
+(if (= @user-level 0) (abort "\n\nLAMER MODE\n\n Jak sis asi fsim f tom minulym cisle,tak tudy cesta nevede :)")
+ (if (= @user-level 2) (abort "\n\nBoMb MODE\n\n Tak zase tak nemachruj a di raci zlatou stredni cestou"))
+)
+(set @app-name "S.H.E.E.P. alias M.I.P. #2")
+
+    (testcomp)
+    (askmwb)
+    (set vyber
+	(askchoice
+	    (prompt "\nChces instalovat na HDD nebo na diskety?:\n")
+	    (help
+		(cat "\n\n\n\n Nemam vÊbec nÁladu popisovat tady kazdou kravinu.\n"
+		)
+	    )
+	    (choices "HardDisk" "Diskety")
+	    (default 0)
+        )
+     )
+
+; HDD
+(if (= vyber 0)
+ (
+   (checkoldversion)
+ (if (= posledniverze 0)
+   (set @default-dest
+    (askdir (prompt "Select the directory to install MIPpreport #2")
+	    (help @askdir-help)
+	    (default @default-dest)
+    )
+ )
+
+ )
+
+
+    (makedir (tackon @default-dest "MIP#2"))
+
+    (copyfiles (source "icony/mwb_MIP1.98.info")(dest @default-dest) (newname "MIP#2.info"))
+
+    (set @default-dest (tackon @default-dest "mip#2"))
+    (copymip1)
+    (copymip2)
+ )
+)
+; Diskety
+
+(if (= vyber 1)
+ (
+   (formatdf0)
+   (set commandstring ("relabel miptemp: MIP2a"))
+   (run commandstring)
+   (set @default-dest "mip2a:")
+   (copymip1)
+   (copyfiles (source "s/") (dest (tackon @default-dest "s")) (ALL) )
+   (copyfiles (source "c:assign") (dest (tackon @default-dest "c")))
+   (if (exists "c:ppmore") ( (copyfiles (source "c:ppmore") (dest (tackon @default-dest "c"))) ))
+   (if (exists "libs:diskfont.library") ( (copyfiles (source "libs:diskfont.library") (dest (tackon @default-dest "libs"))) ))
+   (if (exists "c:install") (
+				(set diskname (getdevice "mip2a:"))
+   				(set commandstring ("install DRIVE %s: FFS" diskname ))
+				(run commandstring)
+
+
+			    )
+   )
+   (formatdf0)
+   (set commandstring ("relabel miptemp: MIP2b"))
+   (run commandstring)
+   (set @default-dest "mip2b:")
+   (copymip2)
+
+ )
+)
+
+
+); end install

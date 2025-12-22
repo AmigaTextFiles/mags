@@ -1,0 +1,205 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>AMIGA TIMES 01/98 - Workshops</title>
+<base target="main">
+</head>
+
+<body background="../images/bg.gif" bgcolor="#C0C0C0"
+text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000"
+bgproperties="fixed">
+
+<h1>Assemblerkurs - Teil 3</h1>
+
+<p>(c) 1998 by Enrico Bauermeister</p>
+
+<pre>;Programm    : listing12.asm
+;Beschreibung: Spiegeln eines Bildes.
+;Autor       : Enrico Bauermeister
+;Datum       : 25.01.1997
+;Assembler   : PhxAss v4.34
+;====================================
+
+; graphics.library öffnen (Version ist egal)
+;--------------------------------------------
+ lea      gfxname(pc),a1
+ clr.l    d0
+ move.l   4.w,a6
+ jsr      -552(a6)
+ tst.l    d0
+ beq.w    Abbruch
+ lea      _GfxBase(pc),a0
+ move.l   d0,(a0)
+
+; Interrupts verbieten (Mulitasking abschalten)
+;-----------------------------------------------
+ jsr      -120(a6)
+
+; alte COPPERLIST retten
+;------------------------
+ move.l   _GfxBase(pc),a6
+ move.l   $26(a6),OldCop
+
+; BPLPOINTER in unserer COPPERLIST auf unsere BITPLANES zeigen lassen
+;---------------------------------------------------------------------
+ move.l   #PIC,d0
+ lea      BPLPOINTERS,A1
+ moveq    #2,D1
+PointBitplanes:
+ move.w   d0,6(a1)
+ swap     d0
+ move.w   d0,2(a1)
+ swap     d0
+ add.l    #40*256,d0
+ addq.w   #8,a1
+ dbra     d1,PointBitplanes
+
+; Unsere eigende COPPERLIST starten
+;-----------------------------------
+ move.l   #Copperlist,$dff080
+ move.w   d0,$dff088
+
+; AGA deaktivieren (falls A1200/4000 vorhanden)
+;-----------------------------------------------
+ move.w   #0,$dff1fc
+ move.w   #$c00,$dff106
+
+; linke Maustaste gedrueckt ?
+;-----------------------------
+Maus:
+ btst     #6,$bfe001
+ bne.s    Maus
+
+; alte COPPERLIST wieder starten
+;--------------------------------
+ move.l   OldCop(pc),$dff080
+ move.w   d0,$dff088
+
+; Interrupts wieder zulassen (Multitasking einschalten)
+;------------------------------------------------------
+ move.l   4.w,a6
+ jsr      -126(a6)
+
+; graphics.library wieder schliessen
+;------------------------------------
+ move.l   _GfxBase(pc),a1
+ jsr      -414(a6)
+
+; Programm verlassen
+;--------------------
+Abbruch:
+ clr.l    d0
+ rts
+
+; Datenbereich
+;--------------
+gfxname:  dc.b  'graphics.library',0
+          cnop  0,2
+_GfxBase: dc.l  0
+OldCop:   dc.l  0  
+
+; Unsere eigene COPPERLIST definieren
+;-------------------------------------
+ SECTION Grafik,CODE_C
+Copperlist:
+; alle Spriteregister auf NULL setzen, sonst stören die nur
+;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ dc.w  $120,$0000,$122,$0000
+ dc.w  $124,$0000,$126,$0000
+ dc.w  $128,$0000,$12a,$0000
+ dc.w  $12c,$0000,$12e,$0000
+ dc.w  $130,$0000,$132,$0000
+ dc.w  $134,$0000,$136,$0000
+ dc.w  $138,$0000,$13a,$0000
+ dc.w  $13c,$0000,$13e,$0000
+; einige Register auf Standartwerte setzen
+;++++++++++++++++++++++++++++++++++++++++++
+ dc.w  $8e,$2c81 ;DiwStrt  
+ dc.w  $90,$2cc1 ;DiwStop
+ dc.w  $92,$0038 ;DdfStart
+ dc.w  $94,$00d0 ;DdfStop
+ dc.w  $102,0    ;BplCon1
+ dc.w  $104,0    ;BplCon2
+ dc.w  $108,0    ;Bpl1Mod
+ dc.w  $10a,0    ;Bpl2Mod
+; BPLCON0 ($dff100) für einen Bildschirm mit 3 Bitplanes einrichten
+;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ dc.w  $100,%0011001000000000  ;Bits 13 und 12 an!! (3 = %011)
+; Bitplanepointer
+;+++++++++++++++++
+BPLPOINTERS:
+ dc.w  $e0,$0000,$e2,$0000 ;erstes  Bitplane - BPL0PT
+ dc.w  $e4,$0000,$e6,$0000 ;zweites Bitplane - BPL1PT
+ dc.w  $e8,$0000,$ea,$0000 ;drittes Bitplane - BPL2PT
+; die 8 Farben des Bildes werden definiert
+;++++++++++++++++++++++++++++++++++++++++++
+ dc.w  $0180,$0000
+ dc.w  $0182,$0fed
+ dc.w  $0184,$0ff0
+ dc.w  $0186,$0fb0
+ dc.w  $0188,$0f90
+ dc.w  $018a,$0f40
+ dc.w  $018c,$0d20
+ dc.w  $018e,$0b10
+; Spiegel
+;+++++++++
+ dc.w  $ffdf,$fffe ;ab hier unter Zeile 255
+ dc.w  $0607,$fffe ;Zeile 6
+ dc.w  $0180,$0666
+ dc.w  $0807,$fffe ;Zeile 8
+ dc.w  $0180,$0777
+ dc.w  $0b07,$fffe ;Zeile 11
+ dc.w  $0180,$0888
+ dc.w  $0E07,$fffe ;Zeile 14
+ dc.w  $0180,$0999
+ dc.w  $1207,$fffe ;Zeile 18
+ dc.w  $0180,$0AAA
+ dc.w  $0108,-40*3
+ dc.w  $010a,-40*3
+ dc.w  $1607,$fffe ;Zeile 22
+ dc.w  $0180,$0BBB
+ dc.w  $1a07,$fffe ;Zeile 26
+ dc.w  $0180,$0CCC
+ dc.w  $1E07,$fffe ;Zeile 30
+ dc.w  $0180,$0DDD
+ dc.w  $2307,$fffe ;Zeile 35
+ dc.w  $0180,$0EEE
+ dc.w  $2807,$fffe ;Zeile 40
+ dc.w  $0180,$0FFF
+; COPPERLIST-Ende
+;+++++++++++++++++
+ dc.w  $FFFF,$FFFE
+
+; unser Bild laden
+;------------------
+PIC:
+  incbin &quot;<a href="../images/amiga.raw">amiga.raw</a>&quot;
+
+ END
+
+Dies ist noch ein alter Quelltext von mir. Er ist speziell auf das Bild
+&quot;amiga.raw&quot; zurechtgeschnitten. Das Bild selber enthält nur den AMIGA-
+Schriftzug. Das Spiegelbild wird mit dem Copper erstellt. Damit es noch
+realistischer aussieht, wird es noch halbiert (Modulowert -120). Der
+&quot;Spiegel&quot; selber (das Graue) wird mit dem Copper dargestellt.</pre>
+
+<p align="right"><em>-eb-</em></p>
+
+<table border="0" width="100%">
+    <tr>
+        <td align="center"><a href="wshop01.htm#marke3"
+        target="main"><img src="../images/back2.gif"
+        alt="Zurück" align="left" border="0" hspace="0"
+        width="32" height="32"></a></td>
+        <td align="right"><a><img src="../images/next1.gif"
+        alt="Weiter" align="right" hspace="0" width="32"
+        height="32"></a></td>
+    </tr>
+</table>
+
+<hr>
+</body>
+</html>

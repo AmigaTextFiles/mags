@@ -1,0 +1,165 @@
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset-iso-8859-1">
+<meat name="GENERATOR" content="CygnusED 4.14">
+<title>Amiga Times 03/98 -Helpline</title>
+</head>
+<body background="../images/bg.gif" bgcolor="#C0C0C0" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000" bgproperties="fixed">
+
+
+<center><h1>Tips &amp; Tricks</h1></center>
+
+<b>MultiView und Joker</b>
+<p>
+   Habt Ihr schon mal versucht via MultiView mehrere Bilder mittels
+   Joker ( #? ) aufzurufen ? Wenn ja, wi&szlig;t Ihr ja auch, da&szlig; dieser
+   Versuch zu einer Fehlermeldung f&uuml;hrt ( Kann #? nicht &ouml;ffnen ).
+   &Auml;rgerlich, aber nicht zu &auml;ndern.<br>
+   Moment mal, habe ich eben gesagt nicht zu &auml;ndern ?<br>
+   Wozu gibt es denn AMIGA-DOS ?<br>
+   Und wozu ist mir denn die M&ouml;glichkeit gegeben ( fast ) alles per
+   Scriptdatei zu realisieren ?<br>
+   Also, folgene Batchdatei benutzt Multiview und erkennt auch Joker.
+   Nachdem der Schlie&szlig;button bet&auml;tigt wurde, wird die n&auml;chste Datei
+   geladen ( wenn ein DataType vorhanden ist! ).<br>
+   Gespeichert wird der Script wie immer im S: Verzeichnis, am besten
+   mit dem Namen MultiV. ( Artverwand ) und die Schutzbits s und e
+   sollten auch gesetzt sein. Damit es wie ein Programm ohne Execute
+   aufgerufen werden kann ( MultiV. Work:Bilder/#? oder &auml;hnlich ).
+   Euch bleibt nur noch das Script abzutippen und Spa&szlig; damit zu haben.
+
+<pre>
+   .key Datei/A    ; Auch Joker werden Anerkannt
+   .Bra [
+   .Ket ]
+   List &quot;[Datei]&quot; lformat=&quot;MultiView %P%N&quot; to T:[$$]MVListe
+   Execute T:[$$]MVListe
+   Delete T:[$$]MVListe Quiet
+   ; $VER: MultiV 1.3 (13.01.98)
+   ; &copy; Copyright by Ralf Stecher
+   ; MultiView erweiterung, erkennt auch Joker
+     ( Namensmuster ) zum Anzeigen von Text, Pics...
+</pre>
+   <i>-rs- </i>
+<p>
+   <b>Shell - Abfrage</b>
+<p>
+   Habt Ihr schon mal versucht eine Shelleingabe abzufragen?
+   Nein? Dann wird es ja mal richtig Zeit dazu.<br>
+   Vorher m&ouml;chte ich allerdings noch die Frage beantworten wozu das
+   eigentlich gut sein soll.<br>
+   OK. Fr&uuml;her als es noch keinen Installer gab ( zu Zeiten von 1.3
+   und fr&uuml;her ) war es f&uuml;r gewissenhafte Programierer pflicht ein
+   Install-Script beizulegen der &uuml;ber XIcon aufgerufen wurde, und aus
+   diesen konnte man sich ein Zielverzeichnis w&auml;hlen.
+   Um dieses zu erreichen sind grunds&auml;tzlich zwei Wege m&ouml;glich, und
+   beide machen im Prinzip das selbe. Es wird eine vom User get&auml;tigte
+   Eingabe aus- und weiterverwertet.<br>
+   Einen dieser Wege um dieses zu erreichen m&ouml;chte ich hier
+   beschreiben.<br>
+   Allerdings ist zu bemerken das sich die Abfrage der Eingabe
+   durchaus noch weiter verwenden l&auml;&szlig;t. z.B. als PASSWORTABFRAGE, als
+   kleiner SCHERZ um Geburtsdaten abzufragen und zum Angeben sp&auml;ter
+   wieder aufzurufen, als Simulations-Script um ein EIGENLEBEN Eures
+   Rechners vorzut&auml;uschen, als RECHENAUFGABENSTELLER mit Sp&auml;terer
+   Ausgabe der gemachten Fehler...<br>
+   Wie Ihr seht sind dem geschickten User keine Grenzen gesetzt.<br>
+   Nun aber zur Abfrageroutine:
+<pre>
+   Echo &quot;   Erwarte nun eine Eingabe:     &quot; NOLINE
+   Set &#062;NIL: Eingabe ?
+</pre><p>
+   Als Eingabe werden alle W&ouml;rter, Buchstaben, Sonderzeichen, Zahlen
+   und auch ganze S&auml;tze akzeptiert.<br>
+   Das Wort Eingabe ( hinter &#062;NIL: und vor dem Fragezeichen ) mu&szlig;
+   nicht unbedingt Eingabe hei&szlig;en, es darf ebenfalls anders hei&szlig;en,
+   pa&szlig;t nur auf, bei Dateien oder logischen Verzeichnisen die bereits
+   existieren ( C: L: Fonts: Copy Delete Multiview pipe... ). Am
+   unverf&auml;nglichsten sind immer diverse Zahlen, Namen, einzelne
+   Buchstaben ( ausgenommen C L und T ) wobei die Gro&szlig;- und
+   Kleinschreibung keine Rolle spielt.<br>
+   Weiterverarbeitet wird die Eingabe z.B. mit dem IF Befehl.
+<pre>
+   If $Eingabe EQ Zahl
+      Echo &quot;Nein&quot;
+      Wait 5
+      Endcli
+    Else
+      Echo &quot;Ja&quot;
+   Endif
+</pre><p>
+   $Eingabe ist hierbei das was Ihr eingegeben habt, EQ eine
+   numerische Vergleichsoption von IF und Zahl eine beliebige Zahl
+   die mit der Eingabe verglichen wird. Stimmen die Eingabe und die
+   Zahl nicht &uuml;berein wird auf dem Bidschirm &quot;Nein&quot; ausgegeben, der
+   Rechner wartet dann noch 5 Secunden und schlie&szlig;t dann die Shell.
+<p>
+   Eine weitere Anwendung w&auml;re z.B. der Einsatz von Assign, Copy,
+   Delete, Echo, Execute, List, Lock, Makedir... nat&uuml;rlich immer mit
+   dem hinwei&szlig; auf die Variable ( Eingabe ) z.B. Echo $Eingabe
+   zeigt Euch die Eingabe.
+<p>
+   Wenn Ihr etwas sinnvolles mit diesem Tip veranstallten konntet,
+   schickt es mir einfach mal zu, Ihr d&uuml;rft nur keine Angst vorm
+   Schreiben haben.
+
+   <i>-rs- </i>
+<p>
+   <b>Shell - Batch</b>
+<p>
+   Wer von Euch mehrere Befehle in der Shell gleichzeitig eingeben
+   m&ouml;chte, hat ein Problem.<br>
+   Wie geht das !!!<br>
+   Nun gibt es dazu auch eine L&ouml;sung ( + ) die ich aber f&uuml;r unsch&ouml;n
+   halte, weil dieses nur bedingt einzusetzen ist.<br>
+   Intelligenter w&auml;re es doch die Befehle untereinander zu schreiben,
+   was ja auch m&ouml;glich ist, und zwar mit Ctrl j ( beide Tasten
+   gleichzeitig gedr&uuml;ckt ) anstatt &quot;Enter&quot;.
+   Das Best&auml;tigen mit Enter erfolgt erst nachdem alle gew&uuml;nschten
+   Befehle eingegeben sind.<br>
+   So lassen sich auch kleinere Batchdateien zum direkten
+   Ausprobieren in die Shell eingeben.
+
+   <i>-rs- </i>
+<p>
+   <b>Shell - Manipulationen</b>
+<p>
+   Wenn Ihr einmal Eure(n) Bekannte(n) &auml;rgern wollt, wartet mal ab
+   bis Sie oder Er eine Shell aufmacht und tippt eine der unten
+   stehenden Tastenkombinationen ab.<br>
+   Am Besten Ihr probiert mal selbst aus was f&uuml;r verr&uuml;ckte Dinge man
+   anstellen kann, aber keine Angst, Ihr k&ouml;nnt nichts zerst&ouml;ren,
+   au&szlig;er der Shell in der Ihr momentan arbeitet.<br>
+   Wenn ich hier von ESC schreibe meine ich nat&uuml;rlich die Taste oben
+   links auf Eurer Tastatur. Nach Bet&auml;tigen dieser seht Ihr eine
+   eckige Klammer mit dunklen Hintergrund. Wenn Ich von &#060;n&#062; schreibe
+   meine ich einen Numerischen Wert ( eine beliebige Zahl ).
+<pre>
+   ESC[&#060;n&#062;t  = Anzahl der Zeilen die geschrieben werden k&ouml;nnen.
+   ESC[&#060;n&#062;u  = Anzahl der Zeichen pro Zeile
+   ESC[&#060;n&#062;x  = Anzahl der Pixel von links des ersten Zeichens
+   ESC[&#060;n&#062;y  = Abstand des ersten Zeichens von der oberkante Shell
+
+   ESC c     = Alle Eingaben r&uuml;ckg&auml;ngig machen.
+</pre><p>
+   Nachdem Ihr etwas eingegeben habt, m&uuml;&szlig;t Ihr nur noch Return
+   dr&uuml;cken. Danach seht Ihr eine Fehlermeldung (: Unbekannter Befehl)
+   was Euch aber nicht aufhalten darf. Ctrl und l ( Beide Tasten
+   gleichzeitig gedr&uuml;ckt ) eingeben, best&auml;tigen und auf das dumme
+   Gesicht Eures gegen&uuml;ber Warten.
+
+   <p align="right"><em>-rs-</em></p>
+
+<p><center>
+<IMG SRC="../images/next.gif" border="0" width="362" height="32" USEMAP="#next">
+<MAP NAME="next">
+<AREA SHAPE="rect" ALT="back" COORDS="0,0,32,32" HREF="help01.htm">
+<AREA SHAPE="rect" ALT="index" COORDS="165,0,197,32" HREF="inh08.htm">
+<AREA SHAPE="rect" ALT="next" COORDS="330,0,362,32" HREF="help03.htm">
+</MAP><hr></center>
+
+</body>
+</html>
+
+

@@ -1,0 +1,116 @@
+; Script di controllo per l'installazione del Numero_02_preview di AMIGAzette
+; $VER: installer 1.7.2 (10.8.99)
+; Scritto da Francesco De Napoli
+
+
+; Definizione delle frasi di uso comune!!!
+(set nomedisco ""
+)
+
+(set frase1
+       (cat   "In quale directory preferisci INSTALLARE la rivista "
+              "Amigazette")
+)
+
+(set frase2
+       (cat "Attendere!\nSto creando la directory \""
+             nome-dir
+             "Amigazette\""
+       )
+)
+
+(set frase3
+       (cat "\n\nAttendere!\n\nSto copiando tutti i files "
+            "necessari nella directory \""
+             "Amigazette\""
+       )
+)
+
+(set @default-dest "Amigazette:")
+
+; Script vero e proprio
+
+(set nome-dir
+       (askdir
+              (prompt frase1)
+              (help @askdir-help)
+              (default @default-dest)
+       )
+)
+
+
+
+
+;-------------------
+(complete 0)
+(working "Istallando gli articoli...")
+(run ("c:lhex >CON:0/0//60/lhex/AUTO -a -f \"-w=%s\" x %sNumero_02.lha" nome-dir nomedisco))
+(complete 80)
+
+; Aggiorna il glossario
+(copyfiles
+	(prompt "Aggiorno Glossario")
+	(help "")
+	(source "aggiornamenti/glossario.html")
+	(dest "Amigazette:")
+	(confirm)
+)
+(complete 81)
+
+; Aggiorna il index generale
+(copylib
+	(prompt "Aggiorno Index Generale")
+	(help "")
+	(source "aggiornamenti/index.html")
+	(dest "Amigazette:")
+	(confirm)
+)
+(complete 82)
+
+; Aggiorna il inserto Numero_01
+(copyfiles
+	(prompt "Aggiorno Inserto Numero_01")
+	(help "")
+	(source "aggiornamenti/numero_01/inserto.html")
+	(dest "Amigazette:numero_01/")
+	(confirm)
+)
+(complete 83)
+
+; Aggiorna il Sommario Numero_01
+(copyfiles
+	(prompt "Aggiorno Sommario Numero_01")
+	(help "")
+	(source "aggiornamenti/numero_01/sommario.html")
+	(dest "Amigazette:numero_01/")
+	(confirm)
+)
+(complete 84)
+
+; Aggiorna il 4IDE-F3.png
+(copyfiles
+	(prompt "Aggiorno 4IDE-F3.png")
+	(help "")
+	(source "aggiornamenti/numero_01/4ide-f3.png")
+	(dest "Amigazette:numero_01/grafica/")
+	(confirm)
+)
+(complete 85)
+
+; Crea directory per MIDI
+(makedir "Amigazette:midi")
+
+; Esegue lo script BATCH esterno per eseguire correttamente i RENAME
+(execute "rename.bat" 
+	(confirm) 
+	(help "Questo comanda consente di rinominare alcuni file.")
+	(prompt "Elimino il carattere & dal nome dei file.")
+)
+(complete 86)
+
+(working "Istallando inserto...")
+(run ("c:lhex >CON:0/0//60/lhex/AUTO -a -f \"-w=%s\" x %sinserto.lha" nome-dir nomedisco))
+(complete 80)
+
+
+(exit "Godetevi Amigazette!")

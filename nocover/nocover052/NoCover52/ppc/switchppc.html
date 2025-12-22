@@ -1,0 +1,168 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="switch68k.html">PREV</a> | <a href="sushi.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Calling PPC Code from 68k Code (Contextswitch) </b>
+
+A Contextswitch can call PPC Code out of a 68k program. This causes a
+Contextswitch (a Contextswitch is a special messaging-function which looks
+that there are no Cache-Problems between the two CPUs).
+
+There is no way
+to do PPC&#060;-&#062;68k communication WITHOUT Contextswitches in a efficient way,
+even if some people assumed so on the comp.sys.amiga.misc discussions.
+Often in these discussions &quot;Messaging&quot; like the announced Messaging-Concept
+of Phase 5 was described as being superior to Context-Switches. It should
+be once more clarified, that Context-Switching is nothing more than a
+&quot;special case&quot; of Messaging. It was also discussed, that running PPC and
+68k parallel might help. In most cases this is not true. As soon as the
+two use common data there are serious problems coming out of the hardware
+design of the Boards, which will slow down the code below 68060 speed. And
+even in the best cases a speedup of more than 20% is not possible, even
+with a 060. If you really KNOW what you are doing, you COULD still try
+running the two CPUs parallel, like described in
+<a href="asyncc.html">Asynchrone Contextswitches</a>. Don't try it, when you don't
+know EXACTLY what you are doing !!! To clarify it once more: This has nothing
+to do with problems of certain kernel implementations, it is just a problem
+of the existing hardware. It behaves like this on both implementations
+for the current hardware. So only use the asynchrone version, if you
+know that the advantages will be better than the disadvantages in your
+specific coding problem.
+
+A Contextswitch consumes about 0.5 milliseconds, so you should be VERY careful,
+when to use it.
+
+Also note, that other tasks can continue while the context-switch waits
+for the second CPU to complete the Cache-stuff EVEN WITH SYNCHRONE
+CONTEXT-SWITCHES.
+
+When you use the contextswitch, the registers are mapped the following way:
+
+        d0      &#060;-&#062;     r3              fp0     &#060;-&#062;     f1
+        d1      &#060;-&#062;     r4              fp1     &#060;-&#062;     f2
+        d2      &#060;-&#062;     r22             fp2     &#060;-&#062;     f3
+        d3      &#060;-&#062;     r23             fp3     &#060;-&#062;     f4
+        d4      &#060;-&#062;     r24             fp4     &#060;-&#062;     f5
+        d5      &#060;-&#062;     r25             fp5     &#060;-&#062;     f6
+        d6      &#060;-&#062;     r26             fp6     &#060;-&#062;     f7
+        d7      &#060;-&#062;     r27             fp7     &#060;-&#062;     f8
+        a0      &#060;-&#062;     r5
+        a1      &#060;-&#062;     r6
+        a2      &#060;-&#062;     r28
+        a3      &#060;-&#062;     r29
+        a4      &#060;-&#062;     r2
+        a5      &#060;-&#062;     r30
+        a6      &#060;-&#062;     r31
+
+To call PPC functions from 68k, you have at first to open the powerpc.library
+and initialize WarpOS. You should do this at the beginning of your code like that:
+
+- include stormc:asm-includes/powerpc/powerpc.i (might also be at
+  stormc:asm-include/powerpc/powerpc.i, i recommend copying the contents of
+  both directories together)
+- Define _SysBase as $4 (the Macros need this). In case you link everything
+  together with StormPowerASM, you don't need to define _SysBase, but simply
+  can XREF it.
+- put the Macro POWERDATA into the datasection
+- use the Macro OPENPOWERPC (opens powerpc.library) at the start of your code
+- use the Macro CLOSEPOWRPC (closes powerpc.library) at the end of your code
+
+This has not to be done, if you call your PPC Code from a PPC- or Mixed/Fat-Binary
+C Program. StormC already initializes the powerpc.library automatically !!!
+
+Example:
+
+    Include &quot;stormc:asm-includes&quot;
+    Include &quot;powerpc/powerpc.i&quot;
+_SysBase EQU $4
+start:
+    movem.l d1-a6,-(sp)
+    OPENPOWERPC
+    ...
+    CLOSEPOWERPC
+    movem.l (sp)+,d1-a6
+    moveq #0,d0
+    rts
+section data
+    POWERDATA
+
+If you need a specific version of powerpc.library (for example at least Version 12),
+you can also do
+
+OPENPOWERPC 12
+
+If the Variable (defined by the Macros) _PowerPCBase contains 0 after OPENPOWERPC,
+then powerpc.library could not be opened, or not in the correct version number.
+
+As to the call of the PPC function from the 68k Source, you have to do:
+
+- export the name of the PPC-function using XDEF in the PPC-Source
+- import the name of the PPC-function using XREF into the 68k-Source
+- Start the PPC-Function using the Macro RUNPOWERPC in the 68k Source
+
+Example:
+
+test.p:
+
+    XDEF PPCTest
+
+PPCTest:
+    prolog
+    epilog
+
+test.asm:
+
+
+    XREF PPCTest
+    Include &quot;stormc:asm-includes&quot;
+    Include &quot;powerpc/powerpc.i&quot;
+_SysBase EQU $4
+start:
+    movem.l d1-a6,-(sp)
+    OPENPOWERPC
+    RUNPOWERPC PPCTest
+    CLOSEPOWERPC
+    movem.l (sp)+,d1-a6
+    moveq #0,d0
+    rts
+section data
+    POWERDATA
+
+To tell the truth, there are two RUNPOWERPC-Macros, RUNPOWERPC and RUNPOWERPC_XL.
+The difference between the two is, that for RUNPOWERPC only the registers
+d0/d1/a0/a1/fp0/fp1 will be translated, for RUNPOWERPC_XL (which is a bit slower
+and produces a bit bigger source) all registers will be translated.
+
+Both functions support some parameters:
+
+RUNPOWERPC:
+
+1.Parameter: Functionname
+2.Parameter: Flags (defined in powerpc.i)
+3.Parameter: &quot;FPU&quot; (if FPU is specified, the FPU-registers also will be translated)
+
+RUNPOWERPC_XL:
+
+1.Parameter: Functionname
+2.Parameter: Flags (like above)
+3.Parameter: Stacksize (using this you can translate stackareas, which is discouraged
+             though, as it will cause quite a slowdown)
+4.Parameter: &quot;FPU&quot; (like above)
+
+Also, a4&#060;-&#062;r2 always exchange the SmallDataBase (or _LinkerDB), so that the PPC can
+access the Variables (LinkerDB can be XREF'ed)
+
+Example:
+
+RUNPOWERPC_XL PPCTest,,1024
+
+</pre>
+</body>
+</html>

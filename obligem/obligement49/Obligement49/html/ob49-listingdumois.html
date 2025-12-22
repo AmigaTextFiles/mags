@@ -1,0 +1,208 @@
+<html>
+ <head>
+  <title>Listing du mois&nbsp;: calculette rudimentaire en Blitz Basic + ASM</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Le listing du mois&nbsp;: calculette rudimentaire en Blitz Basic + ASM</font>par&nbsp;<a href="mailto:tme@mail.com">Sylvain&nbsp;Terret</a></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">On ajoute une pincée d'ASM</font><br><br>
+
+Certains mettent des pilules dans leur bière, nous on met de l'ASM dans notre Basic.
+C'est une façon simple de faire des programmes Workbench en assembleur et d'accélérer
+des traitements lourds. De plus, cela ajoute un petit côté sérieux à notre code
+(qui en a bien besoin, hein, disons-le).<br><br>
+
+Le programme de ce mois-ci est une calculette rudimentaire capable d'additionner, soustraire,
+multiplier ou diviser deux entiers positifs compris entre 0 et 9. Autant dire que ça claque.
+Grave. Ne vous inquiétez pas, nous en remettrons une couche lors du prochain numéro pour
+améliorer ça. Et puis, la majorité d'entre-vous n'ayant jamais touché à l'ASM 68k,
+c'est l'occasion de mettre un quart de demie moitié d'orteil dans le bain. Et quel bain&nbsp;!<br><br>
+
+Assez de blabla, au code !<br><br>
+
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+<pre>=== DEBUT SOURCE ===
+
+WBStartup
+WbToScreen 3
+Use Screen 3
+
+LoadFont 2,"topaz.font",8
+Use IntuiFont 2
+
+;On déclare nos variables...
+;...codées sur un octet (byte ; 8 bits)
+chiffre_un.b=0
+chiffre_deux.b=0
+;...codées sur 32 bits (long)
+resultat.l=0
+
+;Voici venir la GadgetList numéro 0
+;On prépare les boutons +, -, * et /
+GTButton 0,1,10,0,40,15,"+",$10
+GTButton 0,2,10,20,40,15,"-",$10
+GTButton 0,3,10,40,40,15,"*",$10
+GTButton 0,4,10,60,40,15,"/",$10
+
+;On prépare les deux zones de saisie
+GTString 0,5,80,20,40,15,"",$10,1
+GTString 0,6,80,40,40,15,"",$10,1
+
+;On ouvre le fenêtre numéro 0 et on en fait la sortie par défaut
+Window 0,0,14,320,120,$140e,"Un peu d'ASM 68k avec le Blitz",-1,-1
+DefaultOutput
+
+;On attache la GadgetList numéro 0 à la fenêtre numéro 0
+AttachGTList 0,0
+
+Use Window 0
+
+
+;Boucle principale du programme
+While ev.l<>$200
+
+ ;On recupere les evenements qui se produisent dans la fenetre du logiciel
+ ev.l=Event
+
+  WindowOutput 0
+
+ ;Si on clique sur un bouton
+ ;et qu'on a bien saisi deux chiffres
+ If (GTGetString(0,5)<>"") AND (GTGetString(0,6)<>"")
+AND (Len(GTGetString(0,5))<2) AND (Len(GTGetString(0,6))<2)
+  If ev.l=64
+   ;Si on clique sur le bouton +
+   If GadgetHit=1
+   ;Nos zones de saisies contenant de la chaîne de caractères
+   ;on doit les transformer en chiffres avec la fonction VAL()
+   chiffre_un.b=Val(GTGetString(0,5))
+   chiffre_deux.b=Val(GTGetString(0,6))
+   ;On met tout le registre processeur D0 à 0
+   CLR.l d0
+   ;Même traitement pour D1, il ne faut pas qu'il reste de cochonneries dedans
+   CLR.l d1
+   ;On met le contenu de la variable entière codée sur un octet nommée CHIFFRE_UN
+   GetReg d0,chiffre_un.b
+   ;Je vous laisse deviner :-)
+   GetReg d1,chiffre_deux.b
+   ;On ajoute les 8 bits de poids faible de la valeur contenue dans le registre
+   ;D0 à celle contenue dans D1 et on stocke le résultat dans D1
+   ADD.b d0,d1
+   ;On transfére le contenu de D1 dans la variable entière codée sur 32 bits
+   ;nommée RESULTAT
+   PutReg d1,resultat.l
+   ;On positionne le curseur de texte dans la fenêtre
+   WLocate 10,100
+   Print Str$(chiffre_un.b)+" + "+Str$(chiffre_deux.b)+" = "+Str$(resultat.l)+"      "
+  EndIf
+  ;Si on clique sur le bouton -
+  If GadgetHit=2
+   chiffre_un.b=Val(GTGetString(0,5))
+   chiffre_deux.b=Val(GTGetString(0,6))
+   CLR.l d0
+   CLR.l d1
+   GetReg d0,chiffre_un.b
+   GetReg d1,chiffre_deux.b
+   ;La gestion des résultats négatifs avec la soustraction est un peu spéciale, on
+   ;va se contenter de gérer du positif pour l'instant
+   SUB.b d1,d0
+   PutReg d0,resultat.l
+   WLocate 10,100
+   Print Str$(chiffre_un.b)+" - "+Str$(chiffre_deux.b)+" = "+Str$(resultat.l)+"      "
+  EndIf
+  ;Si on clique sur le bouton *
+  If GadgetHit=3
+   chiffre_un.b=Val(GTGetString(0,5))
+   chiffre_deux.b=Val(GTGetString(0,6))
+   CLR.l d0
+   CLR.l d1
+   GetReg d0,chiffre_un.b
+   GetReg d1,chiffre_deux.b
+   ;L'instruction MULU MULtiplie deux valeurs Unsigned (non signées), en d'autres
+   ;termes, des nombres entiers.
+   MULU.b d0,d1
+   PutReg d1,resultat.l
+   WLocate 10,100
+   Print Str$(chiffre_un.b)+" * "+Str$(chiffre_deux.b)+" = "+Str$(resultat.l)+"      "
+  EndIf
+  ;Si on clique sur le bouton /
+  If GadgetHit=4
+   chiffre_un.b=Val(GTGetString(0,5))
+   chiffre_deux.b=Val(GTGetString(0,6))
+   CLR.l d0
+   CLR.l d1
+   GetReg d0,chiffre_un.b
+   GetReg d1,chiffre_deux.b
+   DIVU.l d1,d0
+   PutReg d0,resultat.l
+   WLocate 10,100
+   Print Str$(chiffre_un.b)+" / "+Str$(chiffre_deux.b)+" = "+Str$(resultat.l)+"      "
+  EndIf
+ EndIf
+EndIf
+
+Wend
+
+DetachGTList 0
+Free Window 0
+
+End
+
+
+=== FIN SOURCE ===
+</pre></font>
+</td></tr></table>
+<br>
+
+Toujours pour ceux qui n'ont pas envie de s'abîmer les mains à taper mon code de cochon,
+je donne <a href="../files/calculette-asm68kbl.txt">ici</a> le source en ASCII. Le résultat obtenu
+est un peu déçevant, mais l'ASM 68k est loin d'être mon langage de prédilection, ce qui fait
+que je n'ai pas pu aller aussi loin que je l'aurais voulu. Ceci dit, on ajoute tout
+de même un outil de programmation très pratique à notre petite collection et franchissons,
+l'air de rien, un pas important.<br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

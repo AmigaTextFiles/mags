@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>PowerUp-to-date</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="PowerUp1.html"><IMG SRC="../menu/links.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="PowerUp.html"><IMG SRC="../menu/hoch.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="PowerUp3.html"><IMG SRC="../menu/rechts.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+PowerUp-to-date
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H2>2. WarpUp v4 available</H2>
+<P>
+From the homepage of Haage &amp; Partner (<A HREF="http://www.haage-partner.com" TARGET="_TOP">http://www.haage-partner.com</A>) 
+you can download the new revision 4 of the PowerPC system software WarpUp. The new features are listed here:
+</P>
+<P>
+&raquo;WarpUP Release 4
+</P>
+			<P><B>The release 4 of WarpUP mainly features numerous enhancements, which were desired by developers so that they
+			can work on their projects as easily and efficiently as possible. It is to be expected that quite soon software
+			will be release requiring WarpUP 4 to be installed.<BR>
+			<BR>
+			WarpUP 4 also wants to build a bridge across different worlds. With the addition of the PowerUP Emulation of Frank
+			Wille the possibility is provided to run PowerUP applications under WarpOS, so that even these applications can
+			benefit from the outstanding multitasking capabilities of WarpOS. The enclosed version already supports the new
+			features of WarpUP 4.</B><BR>
+			<BR>
+			<BR>
+			<B><FONT SIZE="4" COLOR="#003399">Most important news</FONT></B>
+			<UL>
+				<LI>The memory management of WarpOS was completely replaced. The new memory management is about factor 4-5 faster
+				than the old one, this means, that applications which intensively allocate/deallocate memory using the WarpOS functions
+				will benefit. Thanks a lot to Frank Wille for the implementation of the new memory management.
+				<P>
+				<LI>Together with the new memory management a pooled memory API is provided, which is identical to the corresponding
+				API of exec.
+				<P>
+				<LI>The semaphore features of WarpOS were enhanced much. Now 'shared semaphores' and message based semaphore obtaining/releasing
+				are supported.
+				<PRE></PRE>
+				<LI>Now the meaning of the task signals can be changed using SetExceptPPC, so that an exception handler is executed,
+				if such a signal is sent. This function corresponds to the appropriate exec function with some minor difference
+				(which certainly is documented in the autodocs).
+				<P>
+				<LI>Now it is possible to add interrupt handlers to WarpOS, which can be invoked both by the PPC- and the 68K side.
+				With that a new way of communication between 68K and PPC is provided, which will be important for some specialized
+				applications.
+				<P>
+				<LI>In the past it was quite painful to make sure, that new tasks started using CreateTaskPPC get the r2 of their
+				mother task (which means, that they can access the mother task's variables). Now a new flag was added, which makes
+				it very easy to achieve the same result.
+				<P>
+				<LI>The creation of PPC tasks from the 68K side was made easier by providing the function CreatePPCTask. This function
+				itself calls the PPC function CreateTaskPPC.
+				<P>
+				<LI>A new env variable 'powerpc/seginfo' enables a new debugging capability. Whenever a task crashes, segment information
+				(hunk/offset pairs) are printed out to sushi resp. the serial interface. These information can be used to identify
+				the location of the command which caused the crash. If desired the whole stackframe is scanned and all locations
+				of higher-level function calls are also printed out. This new feature requires the 'segtracker' tool to be installed.
+				<P>
+				<LI>The installer of WarpUP V4 was revised and made more secure. Now it is almost impossible to install WarpUP
+				the wrong way, because most env variables can't be configured anymore using the installer. These variable are set
+				in a way which should care for maximal reliability.
+			</UL>
+			<P><BR>
+			<B><FONT SIZE="4" COLOR="#003399">Most important bugfixes</FONT></B><BR>
+			<BR>
+			A problem with the terminator 2 was fixed, which could lead to WarpUP not starting on some BlizzardPPC systems.<BR>
+			<BR>
+			The famous 'ramlib' problem was again improved. Again it should be noted that these 'ramlib' problems only can
+			appear when PPC shared libraries are used (since there are still people around which see this issue as advantage
+			of PowerUP but forget, that there are almost none AMIGA-OS compatible shared libraries for PowerUP available).<BR>
+			<BR>
+			There was a quite severe bug in the scheduler, which could lead to multitasking hang-ups in some special situations.
+			This is corrected now.<BR>
+			<BR>
+			The function 'FreeVecPPC' sometimes could trash several registers (especially when freeing large amount of memory).
+			This is corrected now.<BR>
+			<BR>
+			<BR>
+			<B><FONT SIZE="4" COLOR="#003399">Software/Tools</FONT></B><BR>
+			<BR>
+			In the WarpUP 4 distribution the PowerUP emulation of Frank Wille is provided. The core of this emulation is a
+			ppc.library, which, in contrary to the original ppc.library of Phase5, works under WarpOS. This way it is possible
+			to run PowerUP applications under WarpOS, in parallel to WarpUP applications.<BR>
+			<BR>
+			The current version of the PowerUP emulation is V0.6 and it requires WarpUP 4 (powerpc.library V15).<BR>
+			<BR>
+			It is strongly recommended to read the corresponding text files in the directory 'PowerUPEmu', to make the software
+			working correctly and to get aware of all restrictions (mainly concerning compatibility).<BR>
+			<BR>
+			IMPORTANT: the WarpUP V4 installer always sets the terminator variable 'powerpc/terminator' to 2. This setting
+			leads to the best possible reliability of WarpOS itself, but has the effect, that the PowerUP emulation and WarpOS
+			don't work together anymore. CyberStormPPC users should set the variable to zero, if the PowerUP emulation should
+			be used. BlizzardPPC users have a more difficult job (thanks to the Flash ROM) and should read the file 'PowerUPEmu/README'.<BR>
+			<BR>
+			In the directory 'tools/BPPCFix' there is a tool (again from Frank Wille), which allows to reboot a BlizzardPPC
+			based system in a way, that the ppc.library is not started anymore after reboot. This leads to a major improvement
+			of the situation for the BlizzardPPC users, because they don't have to use the dirty termination procedure anymore
+			to launch WarpUP applications. For more information please read the file 'tools/BPPCFix/BPPCFix.readme'.<BR>
+			<BR>
+			In the directory 'tools' there is the program 'WarpStat', which shows the load of the CPU and of the different
+			task using a graphical user interface. This program requires MUI.&laquo;
+</P>
+<P>
+(Source: Haage &amp; Partner)
+</P>
+<P ALIGN="RIGHT">
+<A HREF="PowerUp1.html"><IMG SRC="../menu/pfeil_links.gif" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+<A HREF="PowerUp3.html"><IMG SRC="../menu/pfeil_rechts.gif" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

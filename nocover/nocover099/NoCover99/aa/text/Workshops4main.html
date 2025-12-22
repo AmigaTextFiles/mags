@@ -1,0 +1,364 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+4. Hintergrund: Das Handbuch - diesmal online (von Michael Christoph)
+
+Wurde im letzten Teil besonderes Augenmerk auf das gedruckte Handbuch und 
+dessen Anforderungen gelegt, soll diesmal eine weitere Art der Anleitung 
+genauer unter die Lupe genommen werden: die Online-Hilfe. Dieser Teil zeigt 
+zwar im besonderen die Programmierumsetzung, liefert aber auch f&uuml;r jeden 
+Interessierten etwas.
+
+Unter der Online-Hilfe versteht man die Hilfe, die direkt vom Programm aus 
+aufgerufen werden kann. Sie sollte ebenso Standard sein, wie ein normales 
+Handbuch (egal ob gedruckt oder digital) und auch die im letzten Teil 
+angesprochenen Punkte erf&uuml;llen.
+
+Die Hilfe sollte idealerweise sofort zur Textstelle verzweigen, an der die 
+Informationen zum aktuellen Kontext zu finden sind. Nur dann ist diese Art 
+der Hilfe &uuml;berhaupt sinnvoll. Sowohl AmigaGuide als auch HTML unterst&uuml;tzen 
+das gezielte Anzeigen einer Passage und sollen daher nachfolgend genauer 
+betrachtet werden. Mittels des HTML-Datatypes ist au&szlig;erdem kein extra 
+Browser notwendig (auch wenn seit AmigaOS 3.5 AWeb bereits im 
+Betriebssystem vorhanden ist). Solange HTML nur nach seiner urspr&uuml;nglichen 
+Konzeption eingesetzt wird, ist dieser Datatype v&ouml;llig ausreichend.
+
+Man kann die normale Anleitung so gestalten, dass sie direkt im Programm 
+auch als Hilfe eingebunden werden kann, oder man erstellt eine zus&auml;tzliche
+Datei. Wichtig dabei ist nur, dass sofort der Text zum aktuellen Kontext
+angezeigt wird. Diese Hilfe kann man beispielsweise grob auf die einzelnen 
+Fenster gliedern oder sehr fein auf die einzelnen Gadgets.
+
+Wenden wir uns daher dem Aufbau der Online-Hilfe zu.
+
+Im AmigaGuide-Format sollte jedes Kapitel und auch die Unterkapitel in 
+einem eigenen Node vorliegen. Und so wie das Inhaltsverzeichnis auf jeden 
+Node verweist, kann auch von jeder anderen Stelle im Text darauf verwiesen 
+werden. Der Node-Verweis kann noch mittels einer optionalen Zeilennummer 
+genauer innerhalb des Kapitels platziert werden.
+
+AmigaGuide - Vorteil : Amiga-eigenes Format, Datatype-Unterst&uuml;tzung
+             Nachteil: keine direkte Bildereinbindung,
+                       geringe Layoutm&ouml;glichkeiten
+
+Bei HTML gliedert man allgemein nur die oberen Kapitel in einzelne Dateien. 
+In diesem Fall ist es hilfreich, wenn zu Beginn der HTML-Datei die 
+einzelnen Unterkapitel aufgez&auml;hlt werden, so dass durch einen einfachen 
+Klick dorthin gesprungen werden kann. Nat&uuml;rlich ist das Inhaltsverzeichnis 
+mit allen Kapiteln zu verwenden, wobei die Unterkapitel direkt an die 
+entsprechenden Stellen in der HTML-Datei zeigen sollten.
+
+HTML - Vorteil : direkte Bilderunterst&uuml;tzung, Layoutm&ouml;glichkeiten
+       Nachteil: extra Browser oder HTML-Datatype notwendig
+
+Besonders wichtig ist auch eine Indexseite, auf der die wichtigsten 
+Begriffe rund um das Programm aufgef&uuml;hrt sind und die direkt auf die
+entsprechenden Zeilen in den Beschreibungstexten verweisen.
+
+Da es allerdings auch Konvertierungsprogramme gibt, die AmigaGuide-
+Anleitungen in eine HTML-Datei umwandeln k&ouml;nnen, spricht nichts dagegen, 
+beide Arten von Online-Hilfe mitzuliefern. Dadurch kann der Leser
+selbst entscheiden, welche Art der Hilfe er bevorzugt.
+
+---------------------------------------------------------------------------
+
+Ein Grundger&uuml;st f&uuml;r eine AmigaGuide-Datei hat den folgenden Aufbau:
+
+/@DATABASE "Anleitung.guide"
+/@INDEX "INDEX"
+
+/@NODE "MAIN" "Inhaltsverzeichnis"
+/@{"Kapitel 1"     LINK "Kapitel1"}
+/@{"  Kapitel 1.1" LINK "Kapitel1_1"}
+/@{"  Kapitel 1.2" LINK "Kapitel1_2"}
+/@ENDNODE
+
+/@NODE "Kapitel1" "Kapitel 1"
+Einleitungstext ...
+/@ENDNODE
+
+/@NODE "Kapitel1_1" "Kapitel 1.1"
+Text ...
+/@ENDNODE
+
+/@NODE "Kapitel1_2" "Kapitel 1.2"
+Text ...
+/@ENDNODE
+
+/@NODE "INDEX" "Index"
+/@{"Schl&uuml;sselwort" LINK "Verweisziel"}
+/@ENDNODE
+
+---------------------------------------------------------------------------
+
+Ein Grundger&uuml;st f&uuml;r eine HTML-Datei hat den folgenden Aufbau:
+
+&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;TITLE&gt;Anleitung zu ...&lt;/TITLE&gt;
+&lt;/HEAD&gt;
+&lt;BODY&gt;
+&lt;P&gt;
+&lt;H1&gt;Kapitel 1&lt;/H1&gt;
+&lt;UL&gt;
+  &lt;LI&gt;&lt;A HREF="#kapitel1_1"&gt;Kapitel 1.1&lt;/A&gt;&lt;/LI&gt;
+  &lt;LI&gt;&lt;A HREF="#kapitel1_2"&gt;Kapitel 1.2&lt;/A&gt;&lt;/LI&gt;
+&lt;/UL&gt;
+Einleitungstext ...
+&lt;/P&gt;
+
+&lt;P&gt;
+&lt;A NAME="kapitel1_1"&gt;&lt;H1&gt;Kapitel 1.1&lt;/H1&gt;&lt;/A&gt;
+Text ...
+&lt;/P&gt;
+
+&lt;P&gt;
+&lt;A NAME="kapitel1_2"&gt;&lt;H1&gt;Kapitel 1.2&lt;/H1&gt;&lt;/A&gt;
+Text ...
+&lt;/P&gt;
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+
+---------------------------------------------------------------------------
+
+Die einfachste Art, die Anleitung anzuzeigen, ist der direkte Aufruf von
+MultiView. Das nachfolgende Beispiel zeigt die vollst&auml;ndige Funktion,
+die sehr flexibel ist. So wird neben MultiView auch die &auml;ltere Ausgabe
+AmigaGuide gesucht, und es wird auch &uuml;berpr&uuml;ft, ob die Anleitung im 
+aktuellen oder im System-Hilfe-Verzeichnis vorhanden ist. Im Fehlerfall 
+wird ein entsprechender Text ausgegeben (z.B. mittels EasyRequest() in 
+einer normalen GUI-Anwendung). Ansonsten wird der gefundene Anzeiger 
+mittels Execute() (oder alternativ mittels SystemTagList()) gestartet.
+Das Programm hat keine Kontrolle &uuml;ber die Anzeige, l&auml;uft aber parallel zum 
+Anzeigefenster weiter, da es mittels "run" als Hintergrundprozess gestartet 
+wird. Allerdings fehlt auch die M&ouml;glichkeit, sofort eine bestimmte Sektion 
+der Datei anzuzeigen. Daher eignet sich diese Art der Hilfe eher zum 
+Anzeigen des normalen Handbuches.
+
+
+BOOL ZeigeAnleitung(const STRPTR guide)
+{
+  BOOL res = FALSE;
+
+  UBYTE kommand[80] = "";
+  UBYTE guidefile[50];
+  BPTR lock;
+
+  /* pr&uuml;fen, ob die Anleitung vorhanden ist */
+  strcpy(guidefile,guide);
+  if((lock = Lock(guidefile,SHARED_LOCK)))
+  {
+    UnLock(lock);
+  }
+  else
+  {
+    sprintf(guidefile,"LOCALE:Help/%s",guide);
+    if((lock = Lock(guidefile,SHARED_LOCK)))
+    {
+      UnLock(lock);
+    }
+    else guidefile[0]='\0';
+  }
+
+  if(guidefile[0])
+  {
+    /* pr&uuml;fen, ob ein Anzeigeprogramm vorhanden ist */
+    if((lock = Lock("SYS:Utilities/MultiView",SHARED_LOCK)))
+    {
+      UnLock(lock);
+      sprintf(kommand,"RUN &gt;NIL: SYS:Utilities/MultiView %s",guidefile);
+    }
+    else if((lock = Lock("SYS:Utilities/AmigaGuide",SHARED_LOCK)))
+    {
+      UnLock(lock);
+      sprintf(kommand,"RUN &gt;NIL: SYS:Utilities/AmigaGuide %s",guidefile);
+    }
+ 
+    if(kommand[0])
+    {
+      Execute(kommand,NULL,NULL);
+      res = TRUE;
+    }
+    else printf("Fehler\n"
+                "Guide-Anzeiger sind nicht vorhanden;\n"
+                "SYS:Utilities/MultiView 
+oder\nSYS:Utilities/AmigaGuide.\n");
+  }
+  else printf("Fehler\n"
+              "Anleitung '%s'\n"
+              "ist nicht (im aktuellen Verzeichnis) vorhanden.\n",guide);
+
+  return( res );
+}
+
+---------------------------------------------------------------------------
+
+Das n&auml;chste Beispiel zeigt die Benutzung der amigaguide.library, wie sie 
+seit AmigaOS 2.x existiert. Dabei wird nur die einfache, blockierende 
+Anwendung vorgestellt. Das hei&szlig;t, die Hilfe muss erst geschlossen werden, 
+damit das Programm fortgesetzt wird. Man hat allerdings genaue Kontrolle 
+&uuml;ber die Anzeige. &Uuml;ber den nichtblockierenden Aufruf OpenAmigaGuideAsync()
+kann das Programm ganz normal parallel zur Hilfe weiterlaufen. Es besteht 
+dann jederzeit die M&ouml;glichkeit, die Hilfe wieder nach vorn zu holen oder 
+eine andere Stelle anzuzeigen. &Uuml;ber den Eintrag nag_Node der NewAmigaGuide-
+Struktur kann direkt die anzuzeigende Seite (Default Main) vorgegeben 
+werden.
+
+
+struct Library *AmigaGuideBase;
+
+BOOL ZeigeAnleitung(const STRPTR guide)
+{
+  BOOL res = FALSE;
+  struct NewAmigaGuide nag = { NULL };
+  AMIGAGUIDECONTEXT handle;
+  BPTR lock;
+
+  if((AmigaGuideBase = OpenLibrary("amigaguide.library",33)))
+  {
+    if((lock = Lock((UBYTE*)guide,SHARED_LOCK)))
+    {
+      UnLock(lock);
+ 
+      if((handle = OpenAmigaGuide(&nag,NULL)))
+      {
+        /* synchrone Verarbeitung; */
+        /* kehrt erst nach Beenden von AmigaGuide zur&uuml;ck */
+
+        CloseAmigaGuide(handle);
+        res = TRUE;
+      }
+      else printf("Anzeige durch AmigaGuide fehlgeschlagen.\n");
+    }
+    else printf("Guide-Datei '%s' fehlt.\n",guide);
+
+    CloseLibrary(AmigaGuideBase);
+  }
+  else printf("amigaguide.library V33 fehlt.\n");
+
+  return( res );
+}
+
+---------------------------------------------------------------------------
+
+Mittels NewDTObject() kann jeder Amiga-Programmierer die Hilfe direkt per 
+Datatype in sein Programm einbinden. Dabei ist man vom Format her am 
+flexibelsten, da lediglich ein passender Datatype vorhanden sein muss. 
+Allerdings hat man auch hierbei wieder keine M&ouml;glichkeit, direkt eine 
+Stelle in der Anleitung anzuzeigen. 
+Das folgende Ger&uuml;st zeigt, wie der Datentyp ermittelt werden kann und die 
+Datei eingelesen wird. Die Weiterverarbeitung als Gadget wird allerdings 
+nicht mehr ausgef&uuml;hrt. Diese Art ist wieder nichtblockierend.
+
+
+struct Library *DataTypesBase;
+
+BOOL ZeigeAnleitung(const STRPTR guide)
+{
+  BOOL res = FALSE;
+  struct DataType       *dtn;
+  struct DataTypeHeader *dth;
+  Object                *obj;
+  BPTR                   lock;
+
+  if((DataTypesBase = OpenLibrary("datatypes.library",39)))
+  {
+ 
+    /* existiert die angegebene Datei &uuml;berhaupt */
+    if((lock = Lock((UBYTE*)guide,SHARED_LOCK)))
+    {
+      /* Dateityp ermitteln */
+      if((dtn = ObtainDataTypeA(DTST_FILE,(APTR)lock,NULL)))
+      {
+        dth = dtn-&gt;dtn_Header;
+
+        if(dth-&gt;dth_GroupID == GID_DOCUMENT ||  /* = AmigaGuide */
+           dth-&gt;dth_GroupID == GID_TEXT)        /* = HTML */
+        {
+          res = TRUE;
+        }
+        else printf("Falscher Dateityp der Anleitung.\n");
+
+        ReleaseDataType(dtn);
+      }
+
+
+      if(res)
+      {
+        /* Datei einlesen */
+        if((obj = NewDTObject((APTR) guide,
+                               DTA_SourceType, DTST_FILE,
+                               /* DTA_GroupID, GID_xxx, */
+                               /* wenn ein bestimmter Typ gefordert wird */
+                               TAG_DONE)))
+        {
+          /* ... Datatype-Objekt mittels Gadget zur Anzeige verwenden */
+
+          DisposeDTObject(obj);
+        }
+        else printf("Kein passender Datatype zur Anzeige vorhanden.\n");
+      }
+
+      UnLock(lock);
+    }
+    else printf("Anleitungsdatei '%s' fehlt.\n",guide);
+
+    CloseLibrary(DataTypesBase);
+  }
+  else printf("datatype.library V39 fehlt.\n");
+
+  return( res );
+}
+
+---------------------------------------------------------------------------
+
+Eine ganz andere Richtung soll noch kurz angesprochen werden.
+Seit OS 3.0 (V39) unterst&uuml;tzen die Boopsi-Gadgets die GM_HELPTEST-Methode, 
+um dem Programm mitzuteilen, zu welchem Gadget der Benutzer eine Hilfe 
+w&uuml;nscht. Window-bezogen sind die Tags WA_HelpGroup und WA_HelpGroupWindow
+daf&uuml;r zust&auml;ndig, dass eine Nachricht der Art IDCMP_GADGETHELP versandt 
+wird. Wie allerdings der fromme Wunsch des Benutzers nach einer Hilfe vom
+Programm letztendlich umgesetzt wird, daf&uuml;r hatte Commodore keine L&ouml;sung 
+mehr parat. Hier drei sehr einfache M&ouml;glichkeiten:
+
+- eine separate Zeile im Fenster reservieren, in der der Hilfetext
+  angezeigt wird (z.B. mittels Text() oder besser in einem String- oder
+  ReadOnly-Button-Gadget, das sich dann auch um das Clipping k&uuml;mmert)
+
+- die Screenzeile benutzen, um den Hilfetext anzuzeigen
+
+- einen EasyRequester mit dem Hilfetext anzeigen
+
+In allen drei F&auml;llen kann in Verbindung mit einem Timer die Anzeige
+auch zeitlich beschr&auml;nkt werden (BuildEasyRequest() + FreeSysRequest()
+im dritten Fall).
+
+Diese Art eignet sich nat&uuml;rlich besonders gut, um eine Kurzhilfe zum 
+aktuellen Gadget oder Fenster anzuzeigen. Allerdings ist es wirklich nur 
+eine Kurzhilfe, da platzbedingt meist sehr wenig Raum zur Verf&uuml;gung steht. 
+Des weiteren muss diese Hilfe direkt im Programm eingebaut werden oder 
+besser in einer externen Catalog-Datei untergebracht werden.
+
+Alle Varianten haben ihre Vor- und Nachteile. So setzt die Datatypes-
+Methode voraus, dass das Programm unter OS 3.x l&auml;uft, was allerdings heute 
+wohl der Standard sein d&uuml;rfte. Die Execute-Methode ist zwar sehr einfach 
+und robust, erlaubt allerdings keine Kontrolle &uuml;ber die Anzeige und eignet 
+sich eher zum Anzeigen der normalen Anleitung.
+
+Letztendlich muss der Programmierer anhand der Zielgruppe und OS-Version 
+absch&auml;tzen, welche L&ouml;sung die f&uuml;r seinen Fall passendste ist.
+
+Mit diesen Worten soll die kleine dreiteilige Geschichte zum Handbuch
+abgeschlossen werden.
+
+Michael Christoph &lt;michael@meicky-soft.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

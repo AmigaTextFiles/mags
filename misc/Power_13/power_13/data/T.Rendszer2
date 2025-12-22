@@ -1,0 +1,176 @@
+·
+ ¹F.Rendszer³
+ °
+
+
+
+
+»
+
+
+                                   ¾Part II.¼
+
+                            ¾Helló, friends of OS!¼
+
+ Na  kezdjük is mindjárt a ½dos.library-vel,¼ ahogy megígértem az elõzõ cikkben.
+A  rutinjainak  nagy  része  lemezkezelõ  rutin,  de  vannak  más típusúak is.
+Ezekkel  most  egyelõre  nem  foglalkozunk.   Lemezkezelõ  rutinokra akkor van
+szükségünk, ha például be akarunk tölteni egy file-t.  Maradjunk tehát ennél a
+problémánál.   Elõször  is  meg  kell nyitni.  Ez az Open() rutinnal történik.
+Bemeneti  paraméterei:   Név,  és a hozzáférési mód.  A névre mutató pointer a
+D1-be  kerül, ez gondolom mindenkinek egyértelmû.  A hozzáférésben állíthatjuk
+be a megnyitás módját.  Ez háromféle lehet:
+
+ MODE_OLDFILE:  csak már létezõ file-t nyit meg csak olvasásra.
+
+ MODE_NEWFILE:   ha  létezett már ilyen file, letörli, ha nem létrehozza; csak
+írásra.
+
+ MODE_READWRITE:  ha létezett, megnyitja, ha nem, létrehozza.  Írni és olvasni
+egyaránt lehet.
+
+ Ezután  kapunk  egy  számot  (FileHandle)  a  D0-ban, amit ezentúl akkor kell
+használni,  ha  a  file-ra  akarunk  hivatkozni (ez alól néhány rutin kivétel,
+DeleteFile(), Rename().  Ezeknél a file-nevet kell megadni, és elõtte nem kell
+megnyitni  a  file-t.).  Az Open() automatikusan a file elejére lép, vagyis ha
+most beolvasunk egy pár byte-ot, azt innen kezdi el.
+ Ha  esetleg  nem  ezt  akarjuk,  akkor a Seek() rutint kell használni.  Itt a
+D1-be  kerül  az  Open()-nél  visszakapott érték, a D2-be a pozíció, a D3-ba a
+bázisoffszett.   A  pozíciót mindig a bázisoffszett-tõl számítja.  Az offszett
+háromféle lehet:
+
+ OFFSET_BEGINNING - a file kezdetétõl; 
+ OFFSET_CURRENT - az aktuális poziciótól;
+ OFFSET_END - a file végétõl. 
+
+ A pozició lehet negatív is, például ha az OFFSET_END-et használjuk.  Tehát ez
+a  rutin  az  adott értékre pozicionál.  Ha egy file-t akarunk betölteni, erre
+nincs szükség, mert az Open() ezt elvégzi.
+ Most  használnunk  kell  a  Read()  rutint.   Itt is meg kell adni a Open-nél
+kapott értéket a D1-ben, majd a D2-ben a kezdõcímet, és a D3-ban a hosszát.
+ Ha  nincs  semmi  hiba,  lezárjuk  a  file-t a Close() rutinnal, ha hiba van,
+utánanézhetünk az IoErr() rutinnal a hiba okának.
+ Még  egy  apró problémáról nem beszéltünk, honnan tudjuk a file hosszát?  Ezt
+még  a  megnyitás  elõtt  megnézhetjük, az Examine() rutinnal.  Azonban még ez
+elõtt  használni  kell a Lock() rutint, ami visszaad egy értéket (Lock), ezzel
+utalunk  majd  a  file-ra.   Az  Examine()-nek  szüksége van erre az értékre a
+D1-ben, és egy címre ahol majd az adatok lesznek.  Ez a D2-be kerül.
+ Végül  illedelmesen meghívjuk az UnLock() rutint, itt is kell a Lock a D1-be.
+A  megadott  cím egy ún.  FileInfoBlock struktúra, ami rengeteg érdekes adatot
+tartalmaz, de számunkra csak a 124-es offszetten lévõ longword szükséges, ez a
+file  hossza.   Fontos  tudni,  hogy  a  FileInfoBlock  struktúra  csak 4-gyel
+osztható  címen  lehet!  A betöltés problémáját tehát megbeszéltük, leírok még
+egy pár fontos rutint.
+
+ Write():   teljesen  azonos paraméterezésû a Read()-del, a megnyitott file-ba
+az aktuális poziciótól kezdve beleírja az adatokat.
+
+ Rename():   elég  egyértelmû, de azért leírom:  D1-be kerül a RÉGI név, D2-be
+az Új.  Egyébként átnevez egy file-t.
+
+ Delete():  D1-be megy a név, letörli az adott file-t.
+
+ Az  Open()  rutinnak  van  még  egy  érdekessége.   Nemcsak file-t lehet vele
+nyitni,  hanem  input/output  ablakot  is.   Ez  nem olyan mint egy közönséges
+ablak,   mert  lényegében  úgy  viselkedik  mint  egy  file.   Írhatunk  bele,
+olvashatunk  belõle,  de  nem rakhatunk ki gadget-eket, és egy csomó intuition
+funkciót  nem  használhatunk  itt.  Szóval a filenév helyett egy stringet kell
+megadni, ami az ablak adatait tartalmazza.  Példa:
+
+        dc.b    "CON:20/20/100/100/Window",0
+
+ Az  ablakunk  bal felsõ sarkának koordinátái 20,20, szélessége 100, magassága
+100, neve pedig "Window" lesz.  Az ablakba irás a Write(), az olvasás a Read()
+rutinokkal  történik.   Az ilyen ablakot a Close() rutinnal lehet bezárni.  Ez
+az egész teljesen ugyanúgy mûködik mint a file-kezelés.
+
+ A következõ fontos probléma a directory-lekérdezés.  Elõször meg kell hívni a
+Lock() rutint a kért elérési úttal.  A visszakapott értéket (Lock-ot) tároljuk
+el,  mert sokszor lesz rá szükségünk.  Ezután használjuk az Examine() rutint a
+Lock-unkkal.   Itt  ugye  meg  kell  adni  egy  FileInfoBlock-ot  is,  mint  a
+file-hossz  lekérdezésnél.   Most  még  nem  kapunk semmi érdekes és szükséges
+adatot.   Most kezdjük el tulajdonképpen a directory olvasást, itt az ExNext()
+rutint  kell hívogatni.  Ugyanúgy kell paraméterezni mint az Examine()-t, és a
+visszakapott FileInfoBlock struktúrában is ugyanúgy helyezkednek el az adatok.
+Minden  egyes elemet külön-külön kell beolvasni ezzel a rutinnal, ha már nincs
+több  elem,  0-val  tér  vissza.   A  FileInfoBlock  struktúrában a 8.byte-tól
+helyezkedik  el  a név, a végen 0-val.  A 124.  byte-tól a hosszot találhatjuk
+(longword),  persze  csak  ha  nem  alkönyvtárról  van szó.  Ezt pedig a 4-tõl
+kezdõdõ  longword  határozza  meg,  ha  pozitiv akkor alkönyvtár, ha nem akkor
+file.   Az ExNext() rutin használata után ki kell másolni valahova a szükséges
+adatainkat,  érdemes  egy saját Directory-Buffert készíteni, amiben szerepel a
+név, a hossz, és hogy file vagy alkönyvtár.  Ja, ha végeztünk ne felejtsünk el
+UnLock()-olni sem!
+
+ Most pedig leírok egypár "egyéb" kategóriába tartozó rutint:
+
+        Output()
+        Be:-
+        Ki:     d0:FileHandle
+
+ Megkeresi  a  standard output filehandle-t.  Szóval ez azt jelenti hogy keres
+egy  olyan  CLI,  Shell  ablakot  (vagy  workbench  esetében nyit egyet) amibe
+írhatunk a Write() rutinnal.
+
+ Kickstart: 1.3
+
+
+        FPutC()
+        Be:     d1:FileHandle,d2:karakter
+        Ki:-
+
+ Kirak egy karaktert a megadott filehandle-re.
+
+ Kickstart: 2.0+
+
+
+        FGetC()
+        Be:     d1:FileHandle
+        Ki:     d0:Karakter
+
+ Beolvas egy karaktert a megadott filehandle-rõl.
+
+ Kickstart: 2.0+
+
+
+        FPuts()
+        Be:     d1:FileHandle,d2:cím
+        Ki:-
+
+ Kiírja a 0-ra végzõdõ stringet a FileHandle-ra.
+
+ Kickstart: 2.0+
+
+
+        FGets()
+        Be:     d1:FileHandle,d2:cím,d3:hossz
+        Ki:-
+
+ Beolvas egy stringet a FileHandle-rõl.
+
+ Kickstart: 2.0+
+
+
+        WriteChars()
+        Be:     d1:cím,d2:Hossz
+        Ki:-
+
+ Kiírja a megadott stringet a standard output-ra.
+
+ Kickstart: 2.0+
+
+
+        PutStr()
+        Be:     d1:cím
+        Ki:-
+
+ Kiirja a 0-ra végzõdõ stringet a standard output-ra
+
+Kickstart: 2.0+
+
+
+ Ezekrõl   a  rutinokról  felesleges  részletesebben  írni,  mert  használatuk
+értelemszerû, ha kipróbáljátok õket, minden világossá válik.
+
+
+                                                             ¾COP¼

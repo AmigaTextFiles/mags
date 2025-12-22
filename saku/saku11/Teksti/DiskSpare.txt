@@ -1,0 +1,239 @@
+5
+1*
+ 
+{3                                  DiskSpare II
+{3                                  ------------
+
+                                  Sami Klemola
+
+
+Amigan vakiona käyttämä Trackdisk ei hyödynnä levykkeitä ultimaalisesti.  Saksa-
+laisen Klaus Deppischin DiskSpare II ottaa levyasemistasi enemmän irti. DiskSpa-
+re II, tästä eteenpäin  DSP,  tallentaa  sektorit  tiukemmin  uralle  muunmuassa
+jättämällä tarpeettomat sektoriheaderit pois. Näin  uralle  mahtuu  12  sektoria
+Trackdiskin 11 sijaan. Tuloksena on 80  kilotavua  suurempi  kapasiteetti!  Myös
+lisänopeutta luvataan. Mutta toimiiko se ja onko se luotettava? Näihin  kysymyk-
+siin saat vastauksen aivan pian.
+
+Käsittelen tässä artikkelissa myös DSP:n käyttämistä yhdessä PFS:n kanssa,  sekä
+annan tarkempaa tietoa myös PFS:n suorituskyvystä. PFS eli  Professional  Filing
+System on FFS:n korvaava tiedostojärjestelmä, jonka  esittelen  toisaalla  tässä
+lehdessä. 
+
+
+{3Mitä DSP tekee?
+{3---------------
+ 
+Levykkeestä tulee 960-kiloinen DSP:n alla. Lisäksi on mahdollista käyttää  kaksi
+lisäsylinteriä (80 ja 81), jolloin levykkeen kapasiteetti kasvaa 984 kilotavuun.
+En suosittele kuitenkaan tätä mahdollisuutta käytettäväksi, koska levykkeiltä on
+suunniteltu käytettäväksi vain 80 sylinteriä, joten 82 sylinterin käyttäminen on
+levykkeen suorituskyvyn ylittämistä, ja levykkeestä tulee riskialtis tietovaras-
+to. DSP tukee myös HD-asemia.  HD-levykkeen  kapasiteetti  nousee  uskomattomaan
+1920 kilotavuun!
+
+DSP vaatii toimiakseen käyttöjärjestelmäjulkaisun 2.0. DSP  ei  ole  varsinainen
+ohjelma vaan laiteohjain, diskspare.device, joka korvaa  vakiolevyohjain  track-
+disk.devicen. DSP:n pitäisi olla A3000:ssa 15 prosenttia  nopeampi  kuin  Track-
+disk, mutta ainakin minun koneessani nopeutuminen  on  minimaalista.  DSP-levyk-
+keeltä ei voi bootata. 
+
+
+{3Miten levyasemaohjain toimii?
+{3-----------------------------
+
+DSP on standardin Exec-devicen liityntätavan sisältävä laiteohjain.  Normaalisti
+tiedostojärjestelmä komentaa sitä. Ohjelmat voivat  myös  käyttää  sitä  suoraan
+normaalien asynkronisten tai synkronisten I/O-funktioiden avulla. Laiteohjain ei
+pidä kirjaa levykkeen sisällöstä, vaan sen tekee tiedostojärjestelmä, esimerkik-
+si FFS tai PFS. Levyaseman laiteohjain lukee sisään uria ja dekoodaa niillä  si-
+jaitsevat sektorit. Vastaavasti kirjoitettaessa se koodaa datan.
+
+Koodaaminen on tarpeen, koska tieto tallennetaan levylle synkronisesti sarjamuo-
+toisena, eikä luettaessa ulkoista kelloa ole saatavilla, joten  datassa  ei  saa
+olla liian montaa samaa bittiä peräkkäin, jottei ajastus mene  pieleen.  Koodaa-
+malla data sopivalla tavalla varmistetaan, ettei näin pääse käymään. Amigan  le-
+vyasemat käyttävät MFM-koodausta. Normaalisti uralla on 11 sektoria,  mutta  DSP
+jättää sektoriheaderit pois saadakseen uralle mahtumaan yhden sektorin enemmän.
+
+Uria on levykkeellä sylinteriä kohti kaksi, yksi levykkeen yläpuolella ja toinen
+alapuolella. Näin sylinterillä on 24 sektoria. Sylintereitä on  80.  Näin  ollen
+DSP-levykkeellä on 1920 sektoria. Sektorin koko on yleensä 512 tavua, joten  ka-
+pasiteetiksi saadaan 860 kilotavua. Sektorin kokoa voidaan kasvattaa, mutta  le-
+vykkeillä se ei ole järkevää. Kovalevylläkin käytettynä se on hyödyllistä  vain,
+kun käsitellään suuria tiedostoja, jolloin niiden lukeminen nopeutuu.
+
+Amigan vakiotiedostojärjestelmä FFS tuhlaa aina yhden kokonaisen  sektorin  tie-
+doston headerille, vaikka sen koko olisi kahdeksan kilotavua.  Tästä  tulee  no-
+peasti jopa megatavujen ylimääräinen kulutus. PFS toimii järkevämmin ja  tallen-
+taa tiedot älykkäämmin. Se ei käytä tilaa läheskään niin paljon kuin  FFS.  PFS-
+asemalla sektorin koon kasvattamista voi jo harkita. Esimerkiksi yhden kilotavun
+kokoiset sektorit olisivat käteviä. Silloin Infon näyttämät sektorilukemat  oli-
+sivat suoraan kilotavuja. 
+
+
+{3HD-aseman käytön tekniikkaa
+{3---------------------------
+
+Koska suurempaa tallennustiheyttä tukevissa levyasemissa  voidaan  käyttää  kes-
+kenään  erikapasiteettisia  levykkeitä,  täytyy   tiedostojärjestelmän   tietää,
+minkäkokoinen levyke asemassa milloinkin on. Se tapahtuu  monen  mutkan  kautta.
+Ensimmäiseksi trackdisk.device havaittuaan, että  asemaan  on  laitettu  levyke,
+tiedustelee disk.resourcelta aseman tyypin. Disk.resource lähettää asemalle tie-
+don, että se haluaa tietää, minkätyyppinen levyke on. Vastineeksi asema lähettää
+32-bittisen ID-koodin, josta disk.resource saa  tietää  levykkeen  kapasiteetin.
+HD-levykeasema asettaa itsensä syötetyn levykkeen mukaan DD- tai HD-tilaan.  Jos
+HD-asemaan laitetaan DD-levyke, levyasema käyttäytyy aivan kuin se olisi DD-ase-
+ma.
+
+Tämä jälkeen trackdisk.device tietää levykkeen tyypin, mutta tiedostojärjestelmä
+ei. Kun tiedostojärjestelmä havaitsee uuden levykkeen, se lähettää trackdisk.de-
+vicelle komennon TD_GETGEOMETRY. Komentoon liittyy datastruktuuri, johon  track-
+disk.device täyttää aseman  senhetkiset  attribuutit  eli  urien,  sektorien  ja
+päiden määrän sekä sektoreiden koon ja paljon muutakin  tietoa.  Trackdisk.devi-
+celtä saamiensa tietojen mukaan FFS toimii jatkossa.
+
+Tämä mekanismi on periaatteessa toimiva ja käytännöllinen, mutta ongelma on ole-
+massa. Useat kolmansien osapuolien tekemät laiteohjaimet eivät tue GetGeometryä.
+Kaiken lisäksi ne eivät edes palauta oikeaa virhekoodia tai jopa toimivat täysin
+väärin, esimerkiksi formatoiden levyn! Tuloksena olisi joko levykkeen  toimimat-
+tomuus tai jopa koneen kaatuminen. Tästä syystä  FFS  kutsuu  GetGeometryä  vain
+trackdisk.devicen tapauksessa. Näin varmistetaan, että saatu tieto on  aina  oi-
+keaa. Tämä on valitettava takaisku, mutta pakollinen, koska kolmannet  osapuolet
+tekevät yleensä ohjelmansa ihan miten sattuu.
+
+Koska FFS ei suostu kutsumaan GetGeometryä muilla laiteohjaimilla,  on  diskspa-
+re.deviceen ollut pakko tehdä hacki, että HD-levykkeiden käyttäminen olisi  mah-
+dollista. DSP joutuu itse muuttamaan FFS:n  sisäisen  datastruktuurin  sisältöä,
+mikä on vaarallista ja jopa kiellettyä. Tässä voi  piillä  vaaroja.  Privaattien
+struktuurien rakenne voi muuttua, jolloin DSP ei enää toimisi,  vaan  voisi  ai-
+heutta vakavia tuhoja. Toistaiseksi kaikki toimii, eikä tästä pitäisi  olla  ny-
+kyisellään vaaraa. 
+
+
+{3Kaikki irti levyasemista
+{3------------------------
+ 
+Meillä on kaksi levyasemien toimintaa tehostavaa ohjelmaa, PFS ja  DSP.  Saisiko
+ne toimimaan yhdessä vieläkin paremman  suorityskyvyn  aikaansaamiseksi?  Kyllä!
+Pienen yrittämisen ja virittämisen jälkeen onnistuin tekemään  MountList-entryn,
+jolla sain tehtyä itselleni aseman, jolla Professional Filing Systemin alla toi-
+mii diskspare.device. Myöhemmin myös PFS:n tekijä toimitti vastaavan, mutta enää
+sitä ei ole saatavilla. Tässä on entry, jolla PFS ja DSP  saadaan  tekemään  yh-
+teistyötä: 
+
+PS0:
+FileSystem      = l:ProfFileSystem
+Device          = diskspare.device
+Priority        = 10
+Unit            = 0
+Flags           = 1
+Surfaces        = 2
+BlockSize       = 512
+BlocksPerTrack  = 12
+Reserved        = 2
+Interleave      = 0
+LowCyl          = 0
+HighCyl         = 79
+StackSize       = 5000
+Buffers         = 32
+BufMemType      = 0
+Mount           = 1
+GlobVec         = -1
+DosType         = 0x50465300
+MaxTransfer     = 2097152
+Mask            = 0x7ffffffe
+#
+
+Jos haluat käyttää ensimmäisen sisäisen aseman asemasta esimerkiksi  ensimmäistä
+ulkoista (toista sisäistä) asemaa, vaihda aseman tunnukseksi PS1 ja Unitiksi  1.
+Mikään ei tietysti estä kutsumasta tätäkään asemaa PS0:ksi, mutta se  voisi  ai-
+heuttaa sekaannusta, ja jos sinulla jo on PS0, se on mahdotonta, koska  DOS-ase-
+milla pitää olla ainutlaatuinen asematunnus. Mihin PFS  ja  DSP  sitten  yhdessä
+pystyvät, selviää seuraavassa luvussa. Siinä kerron tekemieni testien tulokset. 
+
+
+{3Ohjelmien suorituskyky
+{3----------------------
+
+Seuraavana on taulukko, joka havainnollistaa PFS:n ja DSP:n suorituskykyä.  Tes-
+tissä kopioin RAM-asemalta levykkeelle 173 tiedostoa 73 alihakemistossa. Käytet-
+ty laitteisto on A3000-25, jossa ei testauksen  aikana  ajettu  muita  ohjelmia.
+Luettaessa tiedostot kopioitiin takaisin RAM-asemalle.  Hakemistolistaus  ohjat-
+tiin >NIL:-asemalle, jolloin tulostus- tai siihen liittyvä  tiedostotoiminta  ei
+kuluttanut ylimääräistä tehoa, vaan tuloksiin saatiin oikeammat luvut. 
+
+Käytetyt lyhenteet:
+
+         FFS      Fast Filing System
+         PFS      Professional Filing System
+         TRK      Trackdisk
+         DSP      DiskSpare II
+
+                  FFS/TRK  PFS/TRK  FFS/DSP  PFS/DSP
+
+Lukeminen              44       28       40       26  sekuntia
+Kirjoittaminen        201       34      197       32  sekuntia
+Hakemistolistaus       26        7       22        7  sekuntia
+Tuhoaminen             21        2       22        1  sekunti(a)
+Vapaata tilaa         464      630      624      790  blokkia
+
+Koko/käytössä       879/2    879/9    959/2    959/9  kt/blokkia
+
+Taulukko 1. PFS:n ja DSP:n vertailu vakiojärjestelmiin.
+
+Taulukko  kertoo  meille  paljon  ohjelmien  suorituskyvystä.  Ensiksi  pistävät
+silmään tilaluvut. DSP-levyke on jo alunalkaen 80 kilotavua suurempi kuin Track-
+disk-levyke, koska jokaisella uralla on yksi  sektori  enemmän.  Levyllä,  jolla
+käytettiin sekä PFS:ää että DSP:tä, vapaan levytilan määrä on miltei  kaksinker-
+tainen vakiolevykkeeseen verrattuna.
+
+Nopeuksissa erityisesti pistää silmään se, että  FFS  lukee  viidesosassa  siitä
+ajasta, jonka se tarvitsee samojen tietojen kirjoittamiseen.  Vertailtaessa  no-
+peuslukemia Trackdiskin ja DSP:n välillä havaitaan, että DSP ei ole  paljon  no-
+peampi. Tiedostojen tuhoaminen oli jopa hitaampaa  DSP-levykkeeltä  kuin  Track-
+disk-levykkeeltä. Lukeminen levyltä tuntuisi olevan tuollaiset 10 prosenttia no-
+peampaa, mutta kirjoittaminen ei ole sanottavasti nopeampaa  kuin  Trackdisk-le-
+vykkeelle.
+
+Erot tiedostojärjestelmien välillä taas ovat huomattavat. PFS:n lupaus  50  pro-
+senttia nopeammasta lukemisesta ei kyllä täyttynyt,  vaan  testissäni  lukemisen
+nopeuskasvu jäi noin 35 prosenttiin, mutta huomattava kasvu se on sekin. Hurjil-
+ta kuulostavat lupaukset 3-5 kertaa nopeammasta kirjoituksesta eivät  pettäneet.
+PFS kirjoittaa melkein yhtä nopeasti kuin lukee. Testissäni FFS kirjoitti tieto-
+ja kuusi kertaa niin kauan kuin PFS. Tuollaisen tietomäärän jälkeen tulee  tosin
+paljon päivitettävää hakemistotietoa. PFS päivittelikin levyä  vielä  kymmenisen
+sekuntia kirjoittamisen jälkeen, joten itse asiassa kirjoittaminen ei ollut  ai-
+van noin nopeaa.
+
+Hakemistolistaus tulostui PFS-levykkeellä seitsemässä sekunnissa. Poistin levyk-
+keen asemasta ennen tämän testaamista, jotta tietoa ei olisi valmiiksi  muistis-
+sa. Seuraavilla listauskerroilla levyä ei tarvinnut lukea, koska  tiedot  olivat
+jo RAMissa. Näin ollen listausaika laski alle sekuntiin. Käytännössä listaukseen
+kului se aika, jonka tietojen siirtäminen PFS:n taulukoista List-komennon tulos-
+tukseen vei.
+
+Kaikkien 73 hakemiston ja 173 tiedoston tuhoaminen PFS-levykkeeltä kävi noin se-
+kunnissa. Hakemiston päivittämiseen riitti yhden uran kirjoittaminen. Erityises-
+ti  PFS:n  hakemistotoimintoihin,  mutta   myös   DSP:n   toimintaan   vaikuttaa
+käytettävissä oleva prosessoriteho. Lukemat ovat  varmaankin  hieman  pienempiä,
+kun koneena on A500 tai A1200. Vastaavasti A4000:lla saadaan  vieläkin  parempia
+lukemia. 
+
+
+{3Loppuarvostelu
+{3--------------
+
+DSP on freewarea, joten sen käyttämisestä ei tarvitse maksaa mitään!  Käytössäni
+olen havainnut sen luotettavaksi eikä ongelmia  ole  esiintynyt.  Päin  vastoin,
+diskspare.device korjaa  jopa  joitakin  trackdisk.devicen  bugeja.  Esimerkiksi
+Trackdiskin yleistä ongelmaa,  lukuvirheisiin  johtavaa  ajoitusbittien  käänty-
+mistä, ei DSP:n kanssa ole. Sen tuoma lisäkapasiteetti on mukava piriste  levyk-
+keiden käyttöä ajatellen.
+
+Kummatkin esittelemäni levynkäyttöä tehostavat ohjelmat ovat erittäin hyviä,  ja
+ne kannattaa ehdottomasti hankkia. PFS ja DSP kuuluvat  kaikkien  varteenotetta-
+vien BBS:ien valikoimiin. Ainakin omassani kummatkin ovat  saatavilla,  ja  voin
+myös toimittaa ne postitse kympin kolikkoa  (kerään  niitä)  tai  kahta  korppua
+(saat kummatkin takaisin ohjelmin) ja palautuskuorta ja  -postimerkkiä  vastaan.
+Myös koordinaattoreilta ohjelmia kannattaa kysellä. 

@@ -1,0 +1,349 @@
+<html>
+<head>
+<title>MCP- Besser als sein Ruf</title>
+</head>
+<body bgcolor="WHITE" text="BLACK">
+<CENTER>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5 BGCOLOR=BLUE VALIGN=CENTER>
+<TR><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5 BGCOLOR=WHITE VALIGN=CENTER><TR><TD NOWRAP>
+<CENTER>
+<IMG SRC="mcp1.png" ALT="">
+<BIG>MCP</BIG>
+<IMG SRC="mcp2.png" ALT="">
+</CENTER>
+</TD></TR></TABLE></TD></TR></TABLE></CENTER>
+<BR><BR>
+Also, wie ich langsam merke haben Tools wie MCP/<wbr>MultiCX oder
+MagicCX einen ziemlich schlechten Ruf in der NC Gemeinde.
+&raquo;Bringt eigentlich nichts, und st&uuml;rzt blo&szlig;
+andauernd ab&laquo; ist noch recht harmlos...
+
+<p>Aber schlie&szlig;lich wollen wir doch immer sch&ouml;n
+realistisch bleiben, nech? Da mir pers&ouml;hnlich MCP schon lange
+ans Herz gewachsen ist, m&ouml;chte ich dieses feine Tool hier
+heute mal denjenigen vorstellen, die sich mit Patches/Hacks bisher
+noch nicht auseinandergesetzt haben. Let`s go...</p>
+
+<dl>
+<dt><b>1. Was ist MCP?</b></dt>
+
+<dd>MCP (Master Control Program) ist an sich eine Zusammenstellung
+von einem Haufen Patches und Hacks, die das Betriebssystem
+verbessern sollen. Der Vorteil liegt dabei klar auf der Hand:
+Anstatt wie fr&uuml;her 20 verschiedene, m&ouml;glicherweise
+untereinander inkompatible Programme zu benutzen, braucht man nur
+noch eines. 
+
+<dl>
+<dt><b>1.1 Was ist ein Patch?</b></dt>
+
+<dd>Ein Patch ist (in unserem Sinne) ein Programm, das bestimmte
+Funktionen des Betriebssystems ver&auml;ndert, um sie z.B. zu
+verschnellern oder zu verbessern. 
+
+<dl>
+<dt><b>1.1.1 Wie funktioniert ein Patch?</b></dt>
+
+<dd>Ein Patch installiert eine bestimmte Funktion im Ram, die auch
+in den Kickstart-Roms vorhanden ist (z.B. WritePixelArray8() ). Der
+eigentliche Patch besteht nun jedoch darin, jeden Aufruf des OS (OS
+= Operating System, eng. f&uuml;r Betriebssystem) von z.B.
+WritePixelArray8() abzufangen, und ihn dann auf die eigene Funktion
+umzulenken. Es wird also gar nicht mehr die Funktion in den Roms
+benutzt, sondern die nun im Ram liegenden Funktionen.</dd>
+</dl>
+</dd>
+
+<dt><b>1.2 Wof&uuml;r braucht man Patches?</b></dt>
+
+<dd>Z.B. um den Betriebssystem bisher nicht vorhandene
+F&auml;higkeiten zu verleihen. Es ist nun z.B. m&ouml;glich, das
+gesamte Kickstart 1.3 ins Ram zu laden, und S&auml;MTLICHE Aufrufe
+des Kickstarts auf die entsprechenden Funktionen im Ram umzuleiten.
+Auf diese Weise hat man nun ein v&ouml;llig neues Kickstart.
+
+<p>Dasselbe geht nat&uuml;rlich auch mit jeder Menge anderen
+Funktionen, die das Betriebssystem des Amigas nicht in
+auszureichender Weise unterst&uuml;tzt. Theorethisch kann man damit
+das OS also bis zum Erbrechen "aufr&uuml;sten".</p>
+</dd>
+
+<dt><b>1.3. Nachteile eines Patches</b></dt>
+
+<dd>Einen Patch zu installieren kann mehrere Nachteile mit sich
+bringen: Ein Programm kann aus irgendwelchen Gr&uuml;nden
+abst&uuml;rzen, obwohl es vorher sehr stabil lief. Andere, bereits
+installierte, Patches m&ouml;gen ab sofort die Zusammenarbeit
+verweigern. Und zu guter Letzt vertr&auml;gt es das OS nicht
+besonders gut, an 100 Stellen "geflickt" zu werden.<br>
+Wenn man Pech hat, wird das System so l&ouml;chrig, das es ohne
+sichtbaren Grund abst&uuml;rzt. 
+
+<dl>
+<dt><b>1.3.1 Woher kommen die Fehler?</b></dt>
+
+<dd>Einige schlecht programmierte Tools versuchen immer noch, das
+Rom direkt anzusprechen. Sie rufen also nicht die Funktion, sagen
+wir: Forbid() auf, sondern sprechen die Speicheradresse $001FCCA1
+an (Erfindung). Bei neueren Betriebssystemen d&uuml;rfte dies zum
+sofortigen Absturz f&uuml;hren. Ein weiterer Grund f&uuml;r Fehler
+k&ouml;nnen nat&uuml;rlich auch Bugs (eng. Ungeziefer = Fehler) in
+dem Programm sein, das das System patcht. Wird nun eine fehlerhafte
+Systemroutine aufgerufen (z.B. WritePixelArray8()) so f&uuml;hrt
+auch dies meist zu einem Guru.<br>
+Ein letzter Grund d&uuml;rfte der sein, da&szlig; (wie mir ein
+Programmierer mitteilte) einige SystemLibrarys (eng. Bibliothek =
+Datenbank von Funktionen) das patchen nicht verkraften, so z.B. die
+exec.library. Dies d&uuml;rfte allerdings OS-Interne Gr&uuml;nde
+haben.</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+
+<dl>
+<dt><b>2. Features von MCP</b></dt>
+
+<dd>Im Vergleich zu den beiden anderen Programmen dieser Gattung
+(MultiCX + MagicCX) ist MCP Freeware. Es ist also absolut
+uneingeschr&auml;nkt lauff&auml;hig. Au&szlig;erdem wird es noch
+weiterentwickelt, was ich z.B. von MagiCCX nicht
+w&uuml;&szlig;te.</dd>
+</dl>
+
+<p>Aber das wichtigste sind ja eigentlich die Funktionen, die MCP
+nun neu ins Betriebssystem einbindet, und hier gibt es einige. Vom
+einfachen Compymemquicker Patch (beschleunigt den Ram-Zugriff
+teilweise), bis hin zu NewGadTools (eine einfache Version von
+Visual Prefs- man kann viele Gadgets ver&auml;ndern) ist einiges
+vorhanden.</p>
+
+<p>Im Gegensatz zu MultiCX orientiert sich MCP nicht nur an puren
+Bugfixes und Verbesserungen, sondern bietet einige Funktionen, um
+die WorkBench zu versch&ouml;nern. Dazu geh&ouml;ren unter
+anderem:</p>
+
+<ul>
+<li>SysIHack- pa&szlig;t die Gadgets (Kn&ouml;pfe) automatisch
+h&ouml;heren Aufl&ouml;&szlig;ungen an.</li>
+
+<li>FrameIHack- macht dasselbe mit den Rahmen.</li>
+
+<li>NewGadtools- ver&auml;ndert das Aussehen der Workbench
+Oberfl&auml;che und der Intuition Gadgets (z.B. Mui-Like).</li>
+
+<li>16-Color Pointer- bietet die Auswahl zwischen 3 Mauspfeilen,
+die statt 4 Farben 16 Farben benutzen. ACHTUNG: Mit dieser Funktion
+aktiviert stehen keine weiteren Sprites mehr zur Verf&uuml;gung.
+Einige Programme k&ouml;nnen daraufhin den Dienst verweigern
+(besonders Gag-Programme).</li>
+
+<li>Solid Window Sizing- Erm&ouml;glicht das verschieben und
+vergr&ouml;&szlig;ern von ganzen Fenstern, nicht nur den Rahmen wie
+bisher. Nur f&uuml;r schnelle Prozessoren empfehlenswert.</li>
+
+<li>Und noch einige mehr.</li>
+</ul>
+
+Einige dieser Funktionen sind zwar noch ausbauf&auml;hg, aber doch
+schon sehr brauchbar. &uuml;berdies enth&auml;lht MCP
+nat&uuml;rlich noch eine gro&szlig;e Reihe kleinerer Patches, wie
+z.B. NoClick, HD-off, BorderBlank usw.. Daran besteht ja
+schlie&szlig;lich der eigentliche Sinn eines solchen Tools: Nicht
+mehr hunderte kleinere Programme im Hintergrund am Laufen zu haben,
+sondern ein gro&szlig;es. <!--<DD>--> 
+
+<dl>
+<dt><b>2.1 Stabilit&auml;t</b></dt>
+
+<dd>Mit das wichtigste an Systempatches ist die Sicherheit. Damit
+ist gemeint, wie sicher sich ein Patch wieder entfernen
+l&auml;&szlig;t, und ob das System bedingt durch den Patch
+h&auml;ufiger abst&uuml;rzt.
+
+<p>Die h&ouml;chste Stabilit&auml;t bietet in diesem Sektor zwar
+MultiCX, welches sich so gut wie IMMER fehlerfrei wieder entfernen
+l&auml;&szlig;t, aber durch ein Hilfsprogramm erh&ouml;ht sich auch
+die Sicherheit von MCP. Dieses Programm ist PatchControl, welches
+VOR MCP gestartet werden mu&szlig;, und die ver&auml;nderten
+Systemroutinen &uuml;berwacht. Bei den Non-Beta Versionen ist es
+damit m&ouml;glich MCP wieder fehlerfrei zu entfernen. Die
+Betaversionen h&auml;ngen sich dennoch einige Male auf, aber
+daf&uuml;r sind es ja Betas.</p>
+
+<p>Vermehrte Programmabst&uuml;rze waren mit MCP eigentlich nicht
+zu beobachten, im Gegenteil: Durch die Funktion NoGuru kann ein
+evtl. abst&uuml;rzendes Programm vor dem Guru abgefangen werden,
+und so das System vor einem Komplettabsturz gerettet werden. In
+einigen F&auml;llen war es sogar m&ouml;glich das Programm zu
+reaktivieren und weiterzuarbeiten. Wenn alles fehlschl&auml;gt gibt
+es noch den Remove-Knopf, der das Programm wieder entfernt. Dadurch
+werden die Fenster des Programms geschlo&szlig;en, und ein
+einigerma&szlig;enes Weiterarbeiten erm&ouml;glicht. Allerdings
+wird der Speicher des Programms nicht wieder freigegeben, wodurch
+man dann immer ein wenig zu wenig Ram hat. Vieleicht bietet MCP ja
+sp&auml;ter mal Memory-Protection an, damit w&auml;hre dann soetwas
+m&ouml;glich.</p>
+</dd>
+</dl>
+
+<dl>
+<dt><b>3. Nutzen in der Praxis</b></dt>
+
+<dd>Der Nutzen eines solchen Programms ist meistens recht subjektiv
+zu bewerten. Ob man die angebotenen Funktionen nun braucht oder
+nicht ist 1. jedem selbst &uuml;berlassen, und 2. h&auml;ngt es
+auch vom eigenen System ab.</dd>
+</dl>
+
+<p>Wer auf einem Standard A1200 l&auml;uft, f&uuml;r den w&auml;hre
+wohl MultiCX die bessere Wahl, da es nur sehr wenig Speicher
+verbraucht. Wer allerdings lediglich seine Workbench ein wenig
+versch&ouml;nern m&ouml;chte, und einen Gro&szlig;teil der Fehler
+aus dem Betriebssystem entfernen m&ouml;chte, dem sei MCP
+angeraten.<br>
+ F&uuml;r Besitzer von Grafikkarten bietet MCP &uuml;berdies noch
+einige Extra Schmankerl, wie z.B. alle Programme im FastRam
+ablaufen zu lassen. F&uuml;r diese Benutzer wird es nat&uuml;rlich
+noch eine Stufe interessanter. Allerdings denke ich, da&szlig; sich
+zumindest jeder einmal dieses Tool ansehen sollte- es lohnt sich!
+</p>
+
+<dl>
+<dt><b>4. Wertungskasten</b></dt>
+
+<dd>Jo, hier ist er nun:</dd>
+</dl>
+
+<p><br>
+</p>
+
+<center>
+<table border="0" cellspacing="0" cellpadding="5" bgcolor=
+"#00FF00">
+<tr>
+<td colspan="2" rowspan="1" bgcolor="#FFFFFF"></td>
+<td colspan="2" rowspan="1" bgcolor="#FFCC00"></td>
+<td colspan="2" rowspan="1" bgcolor="#FFCC00"></td>
+<td colspan="6" height="15" bgcolor="#FFCC00"><br>
+</td>
+</tr>
+
+<tr>
+<td colspan="2" bgcolor="#FFFFFF"></td>
+<td colspan="1" bgcolor="#FFCC00"><br>
+</td>
+<td colspan="1" bgcolor="#FFFFFF"></td>
+<td colspan="1" bgcolor="#FFFFFF"></td>
+<td rowspan="11" bgcolor="#FFFFFF"></td>
+<td rowspan="11" bgcolor="#FFCC00" width="15"></td>
+<td rowspan="1" colspan="2" bgcolor="#FFCC00"><br>
+</td>
+<td rowspan="1" colspan="2" bgcolor="#006799"></td>
+<td rowspan="11" bgcolor="#006799" width="15"></td>
+</tr>
+
+<tr>
+<td rowspan="4" bgcolor="#FFCC00"></td>
+<td colspan="3" bgcolor="#FFCC00"><br>
+</td>
+<td rowspan="4" bgcolor="#FFCC00" width="25"></td>
+<td colspan="2" bgcolor="#FFCC00"></td>
+<td colspan="2" bgcolor="#006799"></td>
+</tr>
+
+<tr>
+<td align="CENTER" valign="CENTER" rowspan="6" colspan="3" bgcolor= 
+"#a3a3a3">
+<IMG SRC="mcp.jpg" WIDTH=180 height=180 alt="Screenshot">
+</td>
+<th colspan="4" bgcolor="#000000" valign="CENTER"><font color= 
+"#FFFFFF">MCP-Test by The Saint</font></th>
+</tr>
+
+<tr>
+<td bgcolor="#000000" rowspan="5"></td>
+<td bgcolor="#FFFFFF">Name:</td>
+<td bgcolor="#FF0000">MCP</td>
+<td bgcolor="#000000" rowspan="5"></td>
+</tr>
+
+<tr>
+<td bgcolor="#FF0000">Hersteller:</td>
+<td bgcolor="#FFffff">Alien Design</td>
+</tr>
+
+<tr>
+<td bgcolor="#006799" rowspan="3"></td>
+<td bgcolor="#006799" rowspan="3"></td>
+<td bgcolor="#FFFFFF">Sicherheit:</td>
+<td bgcolor="#FF0000">78%</td>
+</tr>
+
+<tr>
+<td bgcolor="#FF0000">Nutzen:</td>
+<td bgcolor="#FFffff">83%</td>
+</tr>
+
+<tr>
+<td bgcolor="WHITE">Fazit:</td>
+<td bgcolor="RED">Empfehlung!</td>
+</tr>
+
+<tr>
+<td bgcolor="#006799" colspan="5" rowspan="2"><br>
+</td>
+<td colspan="4" bgcolor="#000000"></td>
+</tr>
+
+<tr>
+<td bgcolor="#FFCC00" rowspan="1" colspan="2"></td>
+<td bgcolor="#006799" colspan="2"></td>
+</tr>
+
+<tr>
+<td bgcolor="#FFFFFF" width="25" rowspan="2"></td>
+<td bgcolor="#FFFFFF" width="70" rowspan="2"></td>
+<td bgcolor="#006799" width="30"></td>
+<td bgcolor="#FFFFFF" width="70"></td>
+<td bgcolor="#FFFFFF"></td>
+<td bgcolor="#FFCC00" colspan="2"></td>
+<td bgcolor="#006799" colspan="2"><br>
+</td>
+</tr>
+
+<tr>
+<td bgcolor="#006799" rowspan="1" colspan="2"></td>
+<td bgcolor="#006799" width="30" colspan="2"></td>
+<td bgcolor="#006799" colspan="6" height="15"><br>
+</td>
+</tr>
+</table>
+</center>
+
+<dl>
+<dt><b>5. Nachwort</b></dt>
+
+<dd>Ich hoffe, der Test hat dir gefallen. Die aktuelle Version von
+MCP sollte im Aminet irgendwo rumschwirren, sieh sie dir ruhig mal
+an.<br>
+ Ach ja noch was: Was h&auml;ltst du von dem Wertungskasten? Wie
+w&auml;hre es, wenn wir uns bei der NoCover mal auf ein par
+einheitliche K&auml;sten einigen k&ouml;nnten? Ich schlage diesen
+erstmal f&uuml;r kleinere Tests (mit wenigen Bewertungspunkten)
+vor. Wie siehts aus?</dd>
+</dl>
+
+<center><a href="mitglieder/castro.html"><img src="thesaint2.gif"
+width="142" height="51" alt="The Saint" border="0"></a><br>
+<small><font color="#000000">Markus Castro</font></small></center>
+
+<center><a href="NoCover.html"><img src="l_hauptinhalt.jpg" width= 
+"320" height="50" alt="Link zum Inhalt der NoCover" border=
+"0"></a><br>
+</center>
+</body>
+</html>
+

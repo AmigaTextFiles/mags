@@ -1,0 +1,574 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 09/98 - BlitzBasic Kurs /3</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>BlitzBasic - Kurs/3</H1>von<BR><A HREF="mailto:Thomas@deutschland.de">Thomas Krippner</A></DIV>
+
+<p>[Anmerkung: Thomas hat uns den Kurs zur Verf&uuml;gung gestellt, ich habe
+inhaltlich kaum etwas ge&auml;ndert. Ansonsten stehen meine Kommentare in
+eckigen Klammern, wobei ich nur Vermutungen anstellen kann, was
+Blitz-Basic angeht. Red.CC]</P>
+
+
+<P><H3><B>Teil 3: Window-Programmierung</B></H3></P>
+
+<P>Nach der Vorschau von Teil 2 brauche ich nicht viel zu erkl&auml;ren,
+also werden wir uns mit den Windows und dessen M&ouml;glichkeiten unter
+BB2 besch&auml;ftigen.</P>
+<P>
+<B>Und schon gehts los:</B>
+</P><P>
+Windows sind die m&auml;chtigsten Anzeige- und Eingabem&ouml;glichkeiten im AmigaOS.
+Wer systemfreundlich programmieren m&ouml;chte, mu&szlig; mit den Windows vertraut
+sein. Jeder, der mit dem Amiga arbeitet, kennt Windows und dessen
+Bedeutung im Umgang mit dem Amiga und der Software.
+</P><P>
+Um ein Window zu &ouml;ffnen, brauchen wir einen Screen (Teil 2), dieses kann
+ein eigener oder ein fremder Screen sein, z.B. Workbench. Wenn wir einen
+Screen haben, k&ouml;nnen wir Intuition mitteilen, welcher das ist und ein
+Window darauf &ouml;ffnen. Um mit dem Window umgehen zu k&ouml;nnen, ben&ouml;tigt es
+Gadgets, die wir mit Hilfe von Flags angeben k&ouml;nnen.
+</P><P>
+Die wichtigsten sind:
+</P><P>
+Gr&ouml;&szlig;enver&auml;nderung, Schlie&szlig;en, vor- oder hinter andere Windows legen und
+Window verschieben usw.
+</P><P>
+Diese Flags geben wir beim &Ouml;ffnen eines Windows an und k&ouml;nnen sie sp&auml;ter
+nicht mehr ver&auml;ndern. Diese Gadgets sind System-Gadgets und keine User-
+Gadgets. Intuition k&uuml;mmert sich ganz von alleine um dessen Ausf&uuml;hrung,
+d. h. wenn eine Window Gr&ouml;&szlig;e durch den Benutzer ge&auml;ndert wird, braucht
+unser Programm nicht die Window-Gr&ouml;&szlig;e zu &auml;ndern, sondern mu&szlig; sich nur
+auf die jetzige gegebene Gr&ouml;&szlig;e einstellen.
+</P><P>
+<B>- &Ouml;ffnen eines Windows</B>
+<PRE>
+  WBStartup
+
+  WbToScreen 0
+
+  Window 0,0,0,400,100,$1|$2|$4|$8|$400|$1000,&quot;Eigenes Window&quot;,1,2
+
+  Repeat
+
+         FlushEvents
+
+         ev.l=WaitEvent
+
+  Until ev=$200
+
+  End
+
+
+In diesem Beispiel benutzen wir gleich einen fremden Screen, n&auml;mlich
+den der Workbench. Doch schauen wir auf das Window.
+
+
+  <B>Window Nummer,X,Y,Breite,H&ouml;he,Flags,Name,DPen,BPen,GTL</B>
+</PRE>
+Nummer:<BR>
+Auch unser Window braucht ein Erkennungsmerkmal
+</P><P>
+X und Y:<BR>
+Linke oberste Ecke des Windows mu&szlig; nicht 0 sein
+</P><P>
+Breite und H&ouml;he:<BR>
+Die Gr&ouml;&szlig;e unseres Windows (&auml;u&szlig;erlich)
+</P><P>
+Flags des Windows:<BR>
+Hier schauen Sie bitte in das BB2 - Handbuch, um die gew&uuml;nschten
+Eigenschaften Ihrem Window zu geben.
+</P><P>
+Name:<BR>
+Window-Titel
+</P><P>
+DPen und BPen:<BR>
+Licht und Schattenfarben, z. B. bei Gadgets
+</P><P>
+GTL:<BR>
+Die Nummer der eventuellen Gadget Liste mu&szlig; nicht angegeben werden.
+Hierzu in Kursteil 4 mehr.
+</P><P>
+Danach schauen wir in einer Repeat-Untilschleife, ob der Benutzer ein
+Schlie&szlig;-Gadget aktiviert und beenden das Programm sofort nach dem
+Benutzen. Mit der Schleife sollten Sie sich vertraut machen, denn
+Sie ben&ouml;tigen diese Struktur und die Befehle bei fast jedem Window.
+</P><P>
+Jede Aktion eines Windows wird im Event festgehalten. WaitEvent h&auml;lt
+das Programm an, bis solch eine Aktion erfolgt. Wenn diese Aktion erfolgt
+ist, steht der Inhalt in der ev.l Variable und kann vom Programm abgefragt
+werden. Flushevents l&ouml;scht die bisherigen Aktionen und bereitet Ihr
+Programm auf eine neue Eingabe vor.
+</P><P>
+Welche Aktion welchen Wert im WaitEvent hinterl&auml;&szlig;t steht ebenfalls im
+Handbuch zu Blitz Basic.
+</P><P>
+<B>- Zwei Windows</B>
+<PRE>
+
+  WBStartup
+
+  WbToScreen 0
+
+  Window 0,0,0,400,100,$1|$2|$4|$8|$400|$1000,&quot;Eigenes Window&quot;,1,2
+  Wi0.l=ActiveWindow
+
+  Window 1,0,100,400,100,$1|$2|$4|$8|$400|$1000,&quot;Eigenes Window&quot;,1,2
+  Wi1.l=ActiveWindow
+
+
+  Repeat
+
+         FlushEvents
+
+         ev.l=WaitEvent
+
+         If Wi0 = ActiveWindow Then a=0
+         If Wi1 = ActiveWindow Then a=1
+
+
+
+         Use Window a
+
+         NPrint &quot;Ich bin aktiv&quot;
+
+  Until ev=$200
+
+  End
+</PRE>
+
+In den Variablen Wi0 und Wi1 halten wir erst einmal die Adressen der
+gerade ge&ouml;ffneten und aktiven Windows fest.
+</P><P>
+Dieser Pointer vergleichen wir in der Schleife mit der Adresse des
+gerade aktuellen Window.
+</P><P>
+Jetzt erkl&auml;ren wir mit Hilfe von Use Window das Window zum aktuellen
+Ausgabe- und Eingabewindow, denn das aktive Window mu&szlig; nicht das
+Ausgabe- oder Eingabe Window sein. Die Kontrolle &uuml;ber den Status der
+Windows haben wir mit den Befehlen:
+</P><P>
+
+Use Window - Das aktuelle Ein- und Ausgabe Window<BR>
+WindowOutput - Das aktuelle Ausgaben Window<BR>
+WindowInput - Das aktuelle Eingabe Window<BR>
+Activate - Das aktive Window (Optische Wirkung)<BR>
+</P><P>
+Diese ist meine ganz pers&ouml;nliche Variante um festzustellen, welches
+Window aktiv ist. Es gibt auch eine BB2 Interne Variable, die meldet,
+von welchem Window eine Operation erfolgt ist, das w&auml;re EventWindow.
+</P><P>
+Meine Erfahrung mit diesem Befehl ist eher negativ, denn er liefert
+keine brauchbaren Werte. Einen Nachteil hat nat&uuml;rlich auch meine
+Variante: Wenn Sie in den Debugger des BB2 gehen um einen Fehler
+oder den Programmablauf zu verfolgen, liefert der ActiveWindow-Befehl
+nat&uuml;rlich den des Debugger Window und wird deshalb nicht verzweigen.
+Dieses sollten Sie beachten !!!
+</P><P>
+Weiter geht es mit einem grafischem Beispiel, das in Teil 2 angek&uuml;ndigt
+wurde.
+</P><P>
+<B>- Window auf einem Eigenen Screen</B>
+<PRE>
+
+  NEWTYPE.screeninfo
+         id.l
+         width.l
+         height.l
+         _depth.w
+         overscan.w
+         autoscroll.w
+         bmapwidth.l
+         bmapheight.l
+  End NEWTYPE
+
+  NEWTYPE.WS
+         _screen.l
+  End NEWTYPE
+
+  NEWTYPE.pt
+         x.w
+         y.w
+  End NEWTYPE
+
+  Dim p.pt(20)
+
+  WBenchToFront_
+
+
+  WbToScreen 0
+
+  FindScreen 0
+
+  *sc.screeninfo=ASLScreenRequest(31)
+
+  If *sc
+         Dim scrtags.TagItem(8)
+
+         col.w=-1
+
+         scrtags(0)\ti_Tag=#SA_Left,0
+         scrtags(1)\ti_Tag=#SA_Top,0
+         scrtags(2)\ti_Tag=#SA_Width,*sc\width
+         scrtags(3)\ti_Tag=#SA_Height,*sc\height
+         scrtags(4)\ti_Tag=#SA_Depth,*sc\_depth
+         scrtags(5)\ti_Tag=#SA_Overscan,*sc\overscan
+         scrtags(6)\ti_Tag=#SA_AutoScroll,*sc\autoscroll
+         scrtags(7)\ti_Tag=#SA_DisplayID,*sc\id
+         scrtags(8)\ti_Tag=#SA_Pens,&col
+
+         ScreenTags 0,&quot;BB2-Kurs von Thomas Krippner&quot;,&scrtags(0)
+
+         Use Screen 0
+
+         *Scr.WS=Addr Screen (0)
+
+         Window
+         0,0,11,Peek.w(*Scr\_screen+12),Peek.w(*Scr\_screen+14)-11,$1000|$400|$8,&quot;Grafik Beispiel&quot;,1,2
+
+
+         For q = 0 To 19
+
+                p(q)\x=(InnerWidth/2)+Sin(2*q*Pi/20)*((InnerWidth/2)-1)
+                p(q)\y=(InnerHeight/2)+Cos(2*q*Pi/20)*((InnerHeight/2)-1)
+
+         Next q
+
+
+         For q = 0 To 18
+
+                For w = q+1 To 19
+
+                 WLine p(q)\x,p(q)\y,p(w)\x,p(w)\y,1
+
+                Next w
+
+         Next q
+
+         Repeat
+
+                ev.l=WaitEvent
+
+         Until ev = $200
+
+  End If
+
+  End
+
+</PRE>
+Die oberen NewType-Anweisungen kennen wir bereits aus Teil 2.
+</P><P>
+Neu ist der .SW den wir jetzt benutzen.
+Wir setzten den Pointer *Scr.SW auf die Adresse des aktuellen Screens.
+Dieser ist Screen 0, das haben wir in der Zeile dar&uuml;ber festgelegt.
+</P><P>
+Um das Window auf die Gr&ouml;&szlig;e des vom Benutzer ausgew&auml;hlten Screens zu
+setzten, ist es wichtig, die Gr&ouml;&szlig;e des Screens zu kennen. Diese Gr&ouml;&szlig;e
+steht in der Intuition Library hinter der Adresse des Screens.
+Die Adresse haben wir mit dem Befehl Addr Screen (0) auf den Pointer
+gelegt.
+</P><P>
+Aus der Struktur der Library (Screen) wissen wir, da&szlig; die Screenbreite
+unter Adresse Screen+12 steht und diese eine Wort Struktur hat.
+Das gleiche gilt auch f&uuml;r die H&ouml;he des Screen (plus 14).
+</P><P>
+Um unser Window an diese Gr&ouml;&szlig;e anzupassen, lesen wir die Daten mit Peek.w
+aus und schreiben sie in die Breite- und h&ouml;heparameter des Windows.
+</P><P>
+Da wir den Titel des Screens noch sehen m&ouml;chten ziehen wir noch 11 Pixel
+ab und setzen das Window 11 Pixel tiefer. [Die Titelzeile mu&szlig; nat&uuml;rlich
+nicht genau elf Punkte hoch sein. Die tats&auml;chliche H&ouml;he h&auml;ngt von der
+gew&auml;hlten Schriftart ab und ist in Screen-&gt;BarHeight + 1, aber das
+erkl&auml;rt Thomas gleich...]
+</P><P>
+Die Grafik kennen wir ebenfalls, mit dem Unterschied, da&szlig; die Gr&ouml;&szlig;e
+nat&uuml;rlich von dem inneren Raum des Windows abh&auml;ngig sein mu&szlig;. BB2 kennt
+hierf&uuml;r die InnerWidth und InnerHeight Befehle.
+</P><P>
+Der WLine Befehl ist identisch mit dem Line Befehl. Die Schleife wartet
+ebenfalls wieder auf das Schlie&szlig;gadget des Windows.
+</P><P>
+Aber was ist nun wenn der Benutzer statt einen 8 dpi einen 11 oder 6 dpi
+Intuifont eingestellt hat? Dieser Font bestimmt den Text in der Screen-
+Zeile. Wir m&uuml;ssen dieses Programm also noch Font-Sensitiv gestalten.
+</P><P>
+<B>- Font-Senitiv</B>
+</P><P>
+Dieses geht am besten mit einem Peek-Befehl.
+</P><P>
+Wir ben&ouml;tigen die bereits vorhandene Adresse des Screens und k&ouml;nnen von
+hier aus zu der Adresse des Fontnamens und der Fonth&ouml;he springen.
+<PRE>
+
+  NEWTYPE.screeninfo
+         id.l
+         width.l
+         height.l
+         _depth.w
+         overscan.w
+         autoscroll.w
+         bmapwidth.l
+         bmapheight.l
+  End NEWTYPE
+
+  NEWTYPE.WS
+         _screen.l
+  End NEWTYPE
+
+  NEWTYPE.pt
+         x.w
+         y.w
+  End NEWTYPE
+
+  Dim p.pt(20)
+
+  WBenchToFront_
+
+
+  WbToScreen 0
+
+  FindScreen 0
+
+  *sc.screeninfo=ASLScreenRequest(31)
+
+  If *sc
+         Dim scrtags.TagItem(8)
+
+         col.w=-1
+
+         scrtags(0)\ti_Tag=#SA_Left,0
+         scrtags(1)\ti_Tag=#SA_Top,0
+         scrtags(2)\ti_Tag=#SA_Width,*sc\width
+         scrtags(3)\ti_Tag=#SA_Height,*sc\height
+         scrtags(4)\ti_Tag=#SA_Depth,*sc\_depth
+         scrtags(5)\ti_Tag=#SA_Overscan,*sc\overscan
+         scrtags(6)\ti_Tag=#SA_AutoScroll,*sc\autoscroll
+         scrtags(7)\ti_Tag=#SA_DisplayID,*sc\id
+         scrtags(8)\ti_Tag=#SA_Pens,&col
+
+         ScreenTags 0,&quot;BB2-Kurs von Thomas Krippner&quot;,&scrtags(0)
+
+         Use Screen 0
+
+         *Scr.WS=Addr Screen (0)
+
+         FH.w=Peek.w(Peek.l(*Scr\_screen+40)+4)
+
+         Window 0,0,FH+3,Peek.w(*Scr\_screen+12),Peek.w(*Scr\_screen+14)-(FH+3), $1|$2|$1000|$400|$8,&quot;Grafik Beispiel&quot;,1,2
+         Wi0=ActiveWindow
+
+         Gosub NeuZeichnen
+
+
+         Repeat
+
+                FlushEvents
+
+                ev.l=WaitEvent
+
+                If Wi0 = ActiveWindow
+
+                 If ev=$2 Gosub NeuZeichnen
+
+                End If
+
+         Until ev = $200
+
+  End If
+
+  End
+
+  NeuZeichnen
+
+  WCls
+
+  For q = 0 To 19
+
+         p(q)\x=(InnerWidth/2)+Sin(2*q*Pi/20)*((InnerWidth/2)-1)
+         p(q)\y=(InnerHeight/2)+Cos(2*q*Pi/20)*((InnerHeight/2)-1)
+
+  Next q
+
+
+  For q = 0 To 18
+
+         For w = q+1 To 19
+
+                WLine p(q)\x,p(q)\y,p(w)\x,p(w)\y,1
+
+         Next w
+
+  Next q
+
+  Return
+</PRE>
+
+Nun haben wir eine Variante des Programms, mit der man leben kann.
+</P><P>
+Als erstes f&auml;llt auf, da&szlig; wir ein Label gesetzt und die Parameter des
+Windows ver&auml;ndert haben und auch die Schleife ist gr&ouml;&szlig;er geworden.
+</P><P>
+In der FH-Variable ist die Fontgr&ouml;&szlig;e festgehalten.
+Anstatt einen festen Wert von 11 Pixel anzunehmen, benutzen wir die
+Fonth&ouml;he plus den Standardabstand von 3 Pixel, oder den TopEdge der
+Intuition.
+</P><P>
+Dann springen wir auf Berechnung und Zeichnen der Grafik.
+</P><P>
+In der Schleife stellen wir mit $2 fest, ob eine Ver&auml;nderung der
+Windowgr&ouml;&szlig;e erfolgt ist. Wenn ja, zeichnen wir die Grafik durch das
+Springen dorthin neu. Es ist nicht notwendig, das Window [den Rahmen]
+neu zu zeichnen, dieses macht Intuition automatisch, unsere Aufgabe
+ist es, den Inhalt des Windows anzupassen.
+</P><P>
+Das sind alle Neuerungen dieses Programms... und schon haben wir
+eine Window-Ausgabe und eine Umgebung, die sich auf den Benutzer
+einstellt.
+</P><P>
+<B>- Window mit Bitmap</B>
+</P><P>
+Es ist m&ouml;glich, in BB2 ganze Bitmaps in ein Window zu legen. Diese Art
+der Window Programmierung hat mehrere Vorteile:
+</P><P>
+1.) Man braucht eine Grafik nicht immer neu zu blitten, sondern l&auml;&szlig;t
+sie auf der Bitmap und holt sich diese bei Bedarf in das Window.
+</P><P>
+2.) Ein anderer Vorteil ist es, die schnellen Grafikbefehle der Bitmap-
+programmierung zu nutzen und die Funktionsvielfalt der Windows.
+</P><P>
+Hier ein Beispiel f&uuml;r ein solches Programm:
+<PRE>
+
+ NEWTYPE.screeninfo
+        id.l
+        width.l
+        height.l
+        _depth.w
+        overscan.w
+        autoscroll.w
+        bmapwidth.l
+        bmapheight.l
+ End NEWTYPE
+
+ NEWTYPE.WS
+        _screen.l
+ End NEWTYPE
+
+ NEWTYPE.pt
+        x.w
+        y.w
+ End NEWTYPE
+
+ Dim p.pt(20)
+
+ WBenchToFront_
+
+
+ WbToScreen 0
+
+ FindScreen 0
+
+ *sc.screeninfo=ASLScreenRequest(31)
+
+ If *sc
+        Dim scrtags.TagItem(8)
+
+        col.w=-1
+
+        scrtags(0)\ti_Tag=#SA_Left,0
+        scrtags(1)\ti_Tag=#SA_Top,0
+        scrtags(2)\ti_Tag=#SA_Width,*sc\width
+        scrtags(3)\ti_Tag=#SA_Height,*sc\height
+        scrtags(4)\ti_Tag=#SA_Depth,*sc\_depth
+        scrtags(5)\ti_Tag=#SA_Overscan,*sc\overscan
+        scrtags(6)\ti_Tag=#SA_AutoScroll,*sc\autoscroll
+        scrtags(7)\ti_Tag=#SA_DisplayID,*sc\id
+        scrtags(8)\ti_Tag=#SA_Pens,&col
+
+        ScreenTags 0,&quot;BB2-Kurs von Thomas Krippner&quot;,&scrtags(0)
+
+        Use Screen 0
+
+        *Scr.WS=Addr Screen (0)
+
+        FH.w=Peek.w(Peek.l(*Scr\_screen+40)+4)
+
+        Window 0,0,FH+3,Peek.w(*Scr\_screen+12),Peek.w(*Scr\_screen+14)-(FH+3) $1|$2|$1000|$400|$8,&quot;Grafik Beispiel&quot;,1,2,0
+        Wi0=ActiveWindow
+
+        BitMap 1,Peek.w(*Scr\_screen+12),Peek.w(*Scr\_screen+14),2
+
+        Use BitMap 1
+
+        For q = 0 To 19
+
+          p(q)\x=(InnerWidth/2)+Sin(2*q*Pi/20)*((InnerWidth/2)-1)
+          p(q)\y=(InnerHeight/2)+Cos(2*q*Pi/20)*((InnerHeight/2)-1)
+
+        Next q
+
+        For q = 0 To 18
+
+          For w = q+1 To 19
+
+                Line p(q)\x,p(q)\y,p(w)\x,p(w)\y,1
+
+          Next w
+
+        Next q
+
+        BitMaptoWindow 1,0,0,0,0,0,WindowWidth,WindowHeight
+
+        Repeat
+
+          FlushEvents
+
+          ev.l=WaitEvent
+
+          If Wi0 = ActiveWindow
+
+                If ev=$2
+
+                  WCls
+
+                  BitMaptoWindow 1,0,0,0,0,0,WindowWidth,WindowHeight
+
+                End If
+
+          End If
+
+        Until ev = $200
+
+ End If
+
+ End
+</PRE>
+
+</P><P>
+[Die Sourcecodes liegen als <A HREF="../amz0998/bin.lha">Archiv</A> bei.]</P>
+
+<P>Im n&auml;chsten Teil der Windows Programmierung geht es dann um PropGadgets.
+Wir werden ein Scroll-Window erstellen und uns noch n&auml;her mit dem Peek-
+Befehl auseinandersetzten. Viel Spa&szlig; noch beim Experimentieren.
+</P><P>
+[Soweit der 3. Teil. Der n&auml;chste Teil folgt in der Ausgabe 7! Darin geht
+es dann u.a. um Windows mit Prop-Gadgets und Peek-Programmierung.]
+</P>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9809make.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0998/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../kw/wb_tun6.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>
+

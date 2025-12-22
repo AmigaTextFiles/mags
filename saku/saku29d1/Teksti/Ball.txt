@@ -1,0 +1,81 @@
+1
+1
+-1 Ball16.IFF 0 0
+0 Ball16.IFF 450 93*
+
+{9                                    The Ball
+{9                                    --------
+ 
+                                 Petri Keckman
+ 
+ 
+Tarkoitukseni oli jotain hyödyllistä(?)  tehdäkseni  ohjelmoida  3D-Amiga-Boing-
+pallon piirtävä ohjelma. Vaihtelun vuoksi halusin tehdä sen C-kielellä ja  Dice-
+kääntäjällä, joka kerran on tullut hankittua. Ei oikein onnistunut. Mutta  pakko
+oli taas saada Sakulle jokin ohjelma aikaiseksi ja kehitysprojektin ensi raakile
+{*{1löytyy {9Ohjelmat-hakemistosta:
+ 
+{9Directory "Ohjelmat" on Tuesday 22-Jun-99
+{9Ball.c    7419 ----rwed Today 18:58:26
+{9Ball.exe 11624 ----rwed Today 18:58:26
+ 
+Vaikka ensi versio piirtää vain yhden staattisen kuvan,
+ohjelma laskee ensin 3600 kpl sinejä ja  kosineja  tau-
+lukkoon, jotta pyöritysanimaatio olisi sitten nopeampaa
+kun se valmistuu (siis ohjelma joka sen  tekisi  -  tai
+ensin pitäisi ohjelmoida se ohjelma, joka ohjelmoisi...).
+Samoin aloituksessa kuluu hieman aikaa, koska kaikki pallon
+pintaa määrittelävät pisteet myös taulukoidaan. Alkupisteet lasketaan pallokoor-
+dinaateilla, joiden annetaan kulkea toisen 180 astetta ja toisen 360 astetta.
+
+Ball vaatii AGA:n, koska värejä käytetään 256, joista 126  liu'utetaan  mustasta
+punaiseen ja toiset 126 mustasta  valkoiseen.  Värit  0-4  on  säästetty  muuhun
+käyttöön. Alkuperäinen Boing-pallo on varmasti toteutettu paljon yksinkertaisem-
+malla tavalla kuin  tässä:  minä  yritän  pisteen  järjestysnumeron  perusteella
+päätellä sen väriä (punainen vai musta), ja kun pisteet on laskettu pallokoordi-
+naateilla, eivät ne yksinkertaisella tavalla  tule.  Äh!  Huomasin  että  lasken
+värinkin joka kerta Piirto-aliohjelmassa uudestaan, vaikka senkin olisi  voinnut
+tallettaa tietuerakenteeseen,
+ 
+struct piste{
+  int x; 
+ alkuperäiset x,y.z 
+ 
+  int y;
+  int z;
+  float xt; 
+ kierretyt 
+ 
+  float zt;
+  float yt;
+  int xscr,yscr; 
+ screenin x ja y 
+ 
+};
+ 
+joka pisteillä on. Pallon pinta täyttyy siis pisteillä, jotka saadaan pallokoor-
+dinaateilla a ja b,
+ 
+pisteet=(struct piste*) calloc(1,sizeof(struct piste));
+for (a=0; a<=1800; a=a+aske)
+{
+    for (b=0; b<=3600; b=b+aske)
+    {
+       pisteet=(struct piste*) realloc(pisteet,(i+1)*sizeof(struct piste));
+       pisteet[i].x=r*cosi[b]*sini[a];
+       pisteet[i].y=r*sini[b];
+       pisteet[i].z=r*cosi[b]*cosi[a];
+       i++;
+    }
+}
+ 
+sellaisessa järjestyksessä, että se olisi  sama  kuin  kulkisi  ensin  maapallon
+ympäri yhteen suuntaan (360 astetta) ja sitten pikkuisen toiseen suuntaan.  Toi-
+seen suuntaan ei tarvitse siis mennä kuin 180 astetta,  niin  koko  pallo  tulee
+täytettyä pisteillä. Kaksi peräkkäistä pistettä ja edellisen kierroksen  vierus-
+pisteet muodostavat yhden laatan, joka väritetään käyttäen AreaMove-,  AreaDraw-
+ja AreaEnd-funktioita.
+ 
+Eiköhän tässä olekin dokumenttia ihan  tarpeeksi  näin  kesätunnelmiin.  Ainakin
+tätä kirjoittaessa on sellainen  juhannusviikon  alkupäivien  painostava  helle,
+että pitää ruveta viettämään keskipäivän siestaa.

@@ -1,0 +1,379 @@
+@database TagItems.artikkeli
+@node main "Mit‰ ovat TagItemit? ∑ Olavi Koistisen artikkeli Amigakerho 2:een"
+
+@{" TagItem-struktuurin m‰‰rittely: " link struct }@{" Systeemi-Tag'it:                " link varatut }
+@{" TagItem-struktuuri:             " link tagi }@{" TAG_MORE'lla yhdistet‰‰n jonoja:" link ketjuttaminen }
+@{" TagItem-jonot:                  " link jonot }@{" Struktuurien v‰litt‰minen:      " link varargs }
+@{" OpenScreenTagList() -esimerkki: " link esimerkki1 }@{" M‰‰rittelem‰ttˆm‰n k‰sittely:   " link tuntemattomat }
+@{" Oletusarvoilla eteneminen:      " link oletusarvot }@{" Valmiit systeemikutsut:         " link utility.lib }
+
+                            MITƒ OVAT TAGITEMIT
+
+  Er‰s Kickstart 2.0:n parhaita uudistuksia ovat TagItemit, aivan uudenlainen,
+joustava tapa v‰litt‰‰ parametreja systeemin rutiineille. Sensijaan, ett‰
+rutiinille v‰litett‰isiin jokin tietynlainen, ainutlaatuinen struktuuri,
+sille annetaankin joukko pieni‰, yleisk‰yttˆisi‰ TagItem-struktuureita.
+
+  TagItemeit‰ eli Tageja voidaan verrata vaikka pieniin muistilappuihin.
+Muistilapuille voidaan kirjoittaa mit‰ tahansa tietoa, lukuja tai
+osoitteita, tai p‰‰ll‰/pois-muuttujia eli boolean-muuttujia. Rutiinille
+voidaan v‰litt‰‰ kuinka monta t‰llaista "muistilappua" tahansa.
+
+
+@endnode
+
+
+
+@node struct "TagItem-struktuurin m‰‰rittely:"
+Seuraavassa on C- ja Assembler-kielinen m‰‰rittely Tagille (m‰‰ritelty
+tiedostossa utility/tagitem.h tai utility/tagitem.i):
+
+struct  TagItem
+{
+        ULONG   ti_Tag;         /* identifies the type of this item */
+        ULONG   ti_Data;        /* type-specific data, can be a pointer */
+};
+
+ STRUCTURE      TagItem,0
+        ULONG   ti_Tag          ; identifies the type of this item
+        ULONG   ti_Data         ; type-specific data, can be a pointer
+        LABEL   ti_SIZEOF
+
+
+ +-------------------------------------------------------------------------+
+ |                                                                         |
+ |           TagItem-struktuuri graafisesti esitettyn‰:                    |
+ |                                                                         |
+ |                      +-----------------+                                |
+ |                      |  ti_Tag         |                                |
+ |                      +-----------------+                                |
+ |                      |  ti_Data        |                                |
+ |                      +-----------------+                                |
+ |                                                                         |
+ +-------------------------------------------------------------------------+
+@endnode
+
+
+
+@node tagi "TagItem-struktuuri:"
+
+                            TagItem-struktuuri
+
+Yksi TagItem-struktuuri, tagi, koostuu kahdesta kent‰st‰:
+
+- Ensimm‰inen kentt‰, ti_Tag, m‰‰rittelee, mit‰ tietoa tagi pit‰‰ sis‰ll‰‰n.
+ti_Tag on merkitˆn 32-bittinen luku, joten erilaisia merkityksi‰
+on mahdollista m‰‰ritell‰ yli 16 miljoonaa.
+  Systeemi on varannut itselleen ti_Tag-kent‰n arvot 0, 1 ja 2, joten
+systeemin rutiinit k‰ytt‰v‰t arvoja kolmesta eteenp‰in. Arvoille on yleens‰
+m‰‰ritelty symbolinen nimi include-tiedostoissa #define- tai EQU-komennolla,
+jjoten itse lukuja ei tarvitse useinkaan muistaa. Esimerkiksi wa_Width,
+wa_Heigth ja BUTTON_KIND. Pelkkien numeroiden muistaminen ei olisi mitenk‰‰n
+helppoa.
+
+- Toinen kentt‰, ti_Data, pit‰‰ sis‰ll‰‰n tagin varsinaisen tiedon.
+ti_Data on merkitˆn 32-bittinen luku (ULONG), joten se voi pit‰‰ sis‰ll‰‰n
+l‰hes mink‰ tyyppist‰ tietoa tahansa, riippuen ti_Tagin arvosta. Jos
+ti_Tagin sis‰ltˆ olisi HEIGHT, ti_Data voisi sis‰lt‰‰ kokonaisluvun (int),
+joka m‰‰rittelisi jonkun elementin korkeuden. Mik‰li ti_Tagin arvo olisi
+OTSIKKO, ti_Data voisi sis‰lt‰‰ merkkijonon osoitteen.
+@endnode
+
+@node jonot "TagItem-jonot:"
+
+                               TagItem-jonot
+
+  Tageja ei suinkaan v‰litet‰ kirjastorutiinille yksitellen, vaan ne
+sijaitsevat aina per‰kk‰in muistissa, jonoina (array). T‰t‰ jonoa kutsutaan
+joskus myˆs TagListiksi. Jonon p‰‰ss‰ on ylim‰‰r‰inen tagi, jota voidaan
+verrata vaikka kaupan liukuhihnojen "Seuraava asiakas"-viittoihin. T‰m‰n
+tagin Tag-kent‰lle annetaan arvoksi 0 eli TAG_DONE. Systeemi lopettaa
+tagien lukemisen tultuaan t‰m‰n tagin kohdalle. Data-kent‰n arvolla ei ole
+merkityst‰, sille ei tarvitse asettaa arvoa.
+  Kun kirjastorutiinille annetaan parametrej‰ Tageilla, rutiinille
+v‰litet‰‰n TagItem-jonon alkuosoite.
+
+  Tagien keskin‰isell‰ j‰rjestyksell‰ jonossa ei ole merkityst‰. Rutiini
+tunnistaa tagien merkityksen Tag-kent‰n avulla, joten tageilla ei tarvitse
+olla m‰‰r‰tty‰ jrjestyst‰.
+
+@{" TagItem-rakenne Graafisesti " SYSTEM ":Ohjelmat/LoadImage :pics/Tag1.IFF_" }
+
+@endnode
+
+@node esimerkki1 "OpenScreenTagList() -esimerkki:"
+Seuraava ohjelmanp‰tk‰ avaa ruudulle uuden screenin eli n‰ytˆn k‰ytt‰en
+KickStart2.0:n intuition.libraryn uutta OpenScreenTagList()-rutiinia,
+jossa on kaksi vaihtoehtoista tapaa antaa uuden n‰ytˆn tiedot:
+vanha NewWindow-struktuuri tai tagit.
+Jos sama arvo esiintyy sek‰ NewWindow-struktuurissa ett‰
+tageissa, tagin arvo on etusijalla. NewWindowin kohdalle voidaan v‰litt‰‰
+nolla, jolloin k‰ytet‰‰n ainoastaan tageja. Tageilla pystyykin
+m‰‰rittelem‰‰n kaikki vanhan NewWindow-struktuurin parametrit, eik‰
+allekirjoittanut n‰ek‰‰n mit‰‰n syyt‰ k‰ytt‰‰ NewWindow-struktuuria.
+
+
+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+
+
+/* Esimerkki */
+
+ #include <intuition/intuition.h>
+ #include <intuition/intuitionbase.h>
+
+ void main()
+ {
+  struct IntuitionBase *IntuitionBase;
+  struct Screen *scr;
+
+  struct TagItem ScreenTags[] =
+  {
+   {SA_Width,           640},
+   {SA_Height,          256},
+   {SA_Depth,           3},
+   {SA_DisplayID,       HIRES},
+   {SA_Title,           "TagItem-esimerkki"},
+   {TAG_DONE}
+  };
+
+  if (IntuitionBase = OpenLibrary ("intuition.library",36))
+  {
+   if (scr = OpenScreenTagList(NULL, ScreenTags))
+   {
+    Delay(50);
+    CloseScreen(scr);
+   }
+   CloseLibrary(IntuitionBase);
+  }
+ }
+
+
+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+
+
+  Esimerkki k‰‰ntyy ainakin DICE:ll‰ nikottelematta. K‰‰nt‰j‰ v‰l‰ytt‰‰
+ruudulle muutaman varoituksen, mutta niist‰ ei kannata v‰litt‰‰.
+  Ohjelmanp‰tk‰ esitt‰‰ yhden tavan k‰ytt‰‰ tageja, eli sijoittaa tagit
+ohjelmakoodin sekaan muuttujajonoksi (array). Jonon p‰‰h‰n pit‰‰ muistaa
+sijoittaa t‰rke‰ TAG_DONE.
+
+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
++                                               +
+*  struct TagItem ScreenTags[] =                *
++  {                                            +
+*   {SA_Width,          640},                   *
++   {SA_Height,         256},                   +
+*   {SA_Depth,          3},                     *
++   {SA_DisplayID,      HIRES},                 +
+*   {SA_Title,          "TagItem-esimerkki"},   *
++   {TAG_DONE}                                  +
+*  };                                           *
++                                               +
+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+
+  Esimerkiss‰ oli m‰‰ritelty TagItem-jono nimelt‰ ScreenTags, jossa oli
+m‰‰ritelty tageina ruudun n‰ytˆn leveys (tagi SA_Width), korkeus
+(SA_Height), v‰rien m‰‰r‰ (SA_Depth), n‰yttˆtila (SA_DisplayID) ja
+vetopalkin otsikko (SA_Title).
+  Ensin esimerkki yritti avata intuition.libraryn. Jos se onnistui, ohjelma
+yritti avata n‰yttˆ‰, jonka parametrit oli m‰‰ritelty TagItem-jonossa
+ScreenTags. NewWindow-struktuuria ei k‰ytetty, joten sen paikalle
+sijoitettiin nolla. Jos n‰yttˆ saatiin auki, ohjelma odotti sekunnin ja
+sulki n‰ytˆn ja intuition.libraryn.
+@endnode
+
+
+
+@node oletusarvot "Oletusarvoilla eteneminen:"
+
+                                Oletusarvot
+
+  Jotkut lukijat huomasivat varmaan, ettemme edellisess‰ esimerkiss‰
+m‰‰ritelleet l‰hesk‰‰n kaikkia n‰ytˆn parametreja. Miss‰ olivat muunmuassa
+n‰ytˆn X- ja Y-koordinaatit ja k‰ytett‰v‰ fontti?
+  Monilla kirjastorutiineilla on oletusarvo useille parametreille, jota
+rutiinit k‰ytt‰v‰t, jos parametrin arvon m‰‰rittelev‰ tagi puuttuu jonosta.
+Esim. kyseisen OpenScreenTagList()-rutiinin tagien oletusarvot ovat
+suurimmaksi osaksi samoja kuin Workbench-n‰ytˆn vastaavat arvot. Jos emme
+olisi m‰‰ritelleet SA_Width- ja SA_Height-tageja, n‰yttˆ olisi avautunut
+t‰sm‰lleen yht‰ leve‰n‰ ja korkeana kuin mahdollisesti overscannattu
+Workbench-n‰yttˆ. Monet kirjastorutiinit m‰‰ritt‰v‰t kaikille tageille
+oletusarvot, jolloin rutiinin kutsussa TagItem-jonon kohdalle voidaan
+sijoittaa nolla. Jos olisimme edellisess‰ esimerkiss‰ sijoittaneet tagien
+kohdalle nollan, ohjelma olisi avannut Lores-tilassa olevan kaksiv‰risen
+n‰ytˆn, jonka leveys, korkeus ja fontti olisivat olleet identtiset
+Workbench-n‰ytˆn kanssa. Harvoin miss‰‰n rutiinikutsussa m‰‰ritell‰‰nk‰‰n
+kaikkia parametreja, vaan tapana on m‰‰ritell‰ ne parametrit, jotka
+halutaan poikkeavan oletusarvosta.
+
+@endnode
+
+@node varatut "Systeemi-Tag'it:"
+
+                          Varattuja Tageja
+
+  Tag-kent‰n arvot 0-2 ovat varattuja systeemin omille tageille. Yksi
+niist‰ on jo tuttu TAG_DONE, joka p‰‰tt‰‰ TagItem-jonon. Kaksi muuta ovat
+TAG_IGNORE ja TAG_MORE.
+
+  Jos tagin Tag-kent‰n arvoksi sijoitetaan TAG_IGNORE (1), systeemi hypp‰‰
+t‰m‰n tagin yli tageja lukiessaan. Data-kent‰n arvoa ei k‰ytet‰ mihink‰‰n.
+Sijoittamalla Tag-kent‰n arvoksi TAG_IGNORE voidaan mit‰tˆid‰ vaivattomasti
+yksitt‰isi‰ tageja, ilman ett‰ niit‰ pit‰isi ruveta poistamaan jonosta
+kokonaan.
+@endnode
+
+@node ketjuttaminen "TAG_MORE'lla yhdistet‰‰n erillisi‰ jonoja:"
+
+                          Ketjuttaminen
+
+  TagItem-jonoja voidaan myˆs ketjuttaa toisiinsa, niin ett‰ kaksi eri
+puolilla muistia olevaa TagItem-jonoa muodostaa yhten‰isen kokonaisuuden.
+T‰llˆin ensimm‰isen jonon viimeisen tagin Tag-kentt‰‰n ei sijoiteta arvoa
+TAG_DONE, vaan TAG_MORE (2). T‰m‰ ilmaisee, ett‰ tagien jono jatkuu
+muualla muistissa. Data-kentt‰‰n sijoitetaan toisen TagItem-jonon
+alkuosoite muistissa. TagItem-jonoja voidaan ketjuttaa toisiinsa kuinka
+monta tahansa. Viimeisen jonon viimeisen Tagin Tag-kent‰lle annetaan arvo
+TAG_DONE.
+
+@{" TagItem'ien ketjuttaminen graafisesti" SYSTEM ":Ohjelmat/LoadImage :pics/Tag2.IFF_" }
+@endnode
+
+
+
+@node varargs "Struktuurien v‰litt‰minen systeemifunktioille:"
+
+                          "VarArgs" - mik‰ se on?
+
+  C-kielen VarArgs on tapa m‰‰ritell‰ jokin funktion k‰ytt‰m‰ struktuuri
+tai struktuurit funktion kutsun yhteydess‰ antamalla struuri(e)n sis‰ltˆ kuin
+se olisi joukko erillisi‰ muuttujia. Melko sekavaa, eikˆ? :-) VarArgsissa
+kirjastorutiineita kutsutaan samaan tapaan kuin esim. printf()-funktiota.
+Ensimm‰isen‰ m‰‰ritell‰‰n muut parametrit, jotka v‰litet‰‰n rutiinille
+normaaliin tapaan. Viimeisen‰ parametrein‰ annetaan muuttujat, joista
+koostetaan tarvittava struktuuri. Sekavaa viel‰kin :=), mutta ehk‰
+esimerkki selvent‰‰ asiaa:
+
+struct Screen *scr;
+scr = OpenScreenTags(NULL, SA_Width,     640,
+                           SA_Height,    256,
+                           SA_Depth,     3,
+                           SA_DisplayID, HIRES,
+                           SA_Title,     "TagItem-esimerkki",
+                           TAG_DONE,     NULL);
+
+  Esimerkki vastaa ensimm‰isess‰ esimerkiss‰ tehty‰ rutiinin kutsua, tagit
+vain m‰‰ritell‰‰n funktion kutsun yhteydess‰. TagItem-jono annetaan kuten
+jono, eli tagi kerrallaan. Ensin annetaan ensimm‰isen tagin Tag-kentt‰,
+jota seuraa Data-kentt‰. Seuraavaksi annetaan jonon toisen tagin tiedot
+samassa j‰rjestyksess‰. Kun kaikki tagit on k‰yty l‰pi, laitetaan jonon
+per‰‰n viel‰ TAG_DONE-tagi.
+
+  VarArgs on k‰tev‰ tapa m‰‰ritell‰ tageja, joiden arvoa muutetaan usein.
+Arvoksi voidaan helposti m‰‰ritell‰ muuttujan sis‰ltˆ, jolloin muuttuja
+haetaan uudestaan joka kerta rutiinia kutsuttaessa. Mik‰li TagItem-jono
+m‰‰ritelt‰isiin ohjelmakoodin sis‰ll‰ muuttujajonoksi, pit‰isi muuttuvan
+tagin arvo vied‰ Data-kentt‰‰n joka kerta, kun samaa rutiinia kutsutaan
+uudestaan. VarArgsia tukevilla funktioilla on yleens‰ erillinen
+funktiokutsunsa VarArgs-parametreille. Esim. kuvatun
+OpenScreenTagList-funktion VarArgs-kutsu on nimelt‰‰n OpenScreenTags.
+@endnode
+
+@node esimerkki2 "VarArgs ja TagItem'ien ketjutusesimerkki:"
+
+  VarArgs-tageja ja normaaleja TagItem-jonoja voidaan yhdist‰‰ toisiinsa
+k‰tev‰sti k‰ytt‰m‰ll‰ systeemin TAG_MORE-tagia. Kutsutaan funktion
+VarArgs-kutsua, ja annetaan ne tagit, jotka halutaan antaa VarArgsina.
+Jonon p‰‰h‰n laitetaan TAG_MORE ja tag-jonon osoite. N‰in muuttumattomille
+tageille voidaan luoda pysyv‰ muuttujajono, ja muuttuvat tagit voidaan
+antaa VarArgsin avulla. T‰ll‰ lailla ohjelmakoodi selventyy, kun muuttujat
+ja koodi ovat eri puolilla ohjelmaa. Esimerkki:
+
+
+/* M‰‰ritell‰‰n pysyv‰t parametrit */
+
+struct TagItem ScreenTags[] =
+{
+ SA_Depth,     3,
+ SA_DisplayID, HIRES,
+ SA_Title,     "TagItem-esimerkki",
+ TAG_DONE,     NULL
+);
+
+/* Muuttujat muuttuvia parametreja varten */
+
+ int N‰ytˆnLeveys, N‰ytˆnKorkeus;
+
+/* T‰ss‰ v‰liss‰ otetaan k‰ytt‰j‰lt‰ n‰ytˆn leveys ja korkeus */
+
+/* Kutsutaan rutiinia */
+
+ scr = OpenScreenTags(NULL, SA_Width,     N‰ytˆnLeveys,
+                            SA_Height,    N‰ytˆnKorkeus,
+                            TAG_MORE,     ScreenTags);
+
+@endnode
+
+@node tuntemattomat "M‰‰rittelem‰ttˆm‰n ti_Tag -arvon k‰sittely:"
+
+
+                            Tuntemattomat tagit
+
+  Systeemin rutiinit toimivat erityisell‰ tavalla kohdatessaan tagin, jonka
+ti_Tag-kentt‰ on niille m‰‰rittelem‰tˆn. Lukiessaan tageja systeemi vain
+hypp‰‰ niiden tagien yli, jotka ovat sille tuntemattomia, ik‰‰nkuin
+Tag-kent‰n arvo olisi TAG_IGNORE.
+  Juuri t‰ss‰ piilee tagien joustavuus: niit‰ voidaan laajentaa
+loputtomiin, ilman ett‰ alasp‰in yhteensopivuus k‰rsisi
+ohjelmointiteknisten seikkojen takia. Uudemmissa KickStartin versioissa
+voidaan m‰‰ritell‰ uusia tageja, joita vanhat k‰yttˆj‰rjestelm‰t eiv‰t
+tietenk‰‰n tunne. Jos halutaan k‰ytt‰‰ jotain tagia, joka on m‰‰ritelty
+jossain uudemmassa k‰yttˆj‰rjestelm‰versiossa, mutta joka ei ole ohjelman
+toiminnan kannalta elint‰rke‰, ei ohjelmasta tarvitse silti tehd‰ montaa eri
+versiota eri k‰yttˆj‰rjestelmille, vaan ohjelma toimii kaikissa
+k‰yttisversioissa, jotka tuntevat tagitemit. Vanhemmat
+k‰yttˆj‰rjestelm‰versiot sivuuttavat tagin eiv‰tk‰ k‰yt‰ sit‰, koska ne
+eiv‰t sit‰ tunne. Kun ohjelma ajetaan koneessa, johon on asennettu uudempi
+k‰yttˆj‰rjestelm‰versio, ohjelma ottaa uudesta tagista kaiken hyˆdyn irti
+olematta silti ep‰yhteensopiva vanhojen k‰yttˆj‰rjestelm‰versioiden kanssa.
+
+@endnode
+
+@node utility.lib "Valmiit systeemikutsut:"
+
+
+                              UTILITY.LIBRARY
+
+KS2.0-k‰yttˆj‰rjestelm‰ sis‰lt‰‰ valmiita rutiineja taglistien
+tehokasta k‰sittely‰ varten. N‰m‰ rutiinit on nidottu yhteen kirjastoon
+nimelt‰ utility.library. Utility.library sijaitsee k‰yttˆj‰rjestelm‰n
+ROM-piirill‰ eik‰ tarvitse erillist‰, levylt‰ ladattavaa library-tiedostoa.
+
+Seuraavassa lyhyt selostus muutamista utitily-kirjaston rutiineista:
+
+AllocateTagItems        Varaa muistista tageja.
+
+CloneTagItems           Tekee yhdest‰ TagListist‰ kopion. Kopioi kaikki
+                        TagItem-jonon t‰rke‰t tagit. K‰ytt‰‰ sis‰isesti
+                        AllocateTagItems-rutiinia, joten kopio on
+                        vapautettava FreeTagItems-rutiinilla.
+
+FilterTagChanges        Vertaa kahta Taglisti‰ toisiinsa, ja kytkee
+                        toisesta pois p‰‰lt‰ ne samanlaiset Tagit, joiden
+                        arvo (ti_Data) on identtinen.
+
+FilterTagItems          Kytkee tiettyj‰ Tageja TagListiss‰ pois p‰‰lt‰/p‰‰lle,
+                        niiden ti_Tag-kenttien mukaan.
+
+FindTagItem             Etsii TagListist‰ jotakin tietty‰ Tagia
+                        (ti_Tag-arvon mukaan).
+
+FreeTagItems            Vapauttaa TagItemit, jotka varattiin
+                        AllocateTagItem()-rutiinilla.
+
+GetTagData              Etsii TagListist‰ jonkun tietyn tagin arvon.
+
+NextTagItem             Etsii seuraavan TagItem-struktuurin TagListist‰
+                        tietyst‰ kohdasta alkaen.
+
+(Tarkempi selostus mm. n‰ist‰ ja muista utility.libraryn rutiineista lˆytyy
+ kirjasta Amiga ROM Kernel Reference Manual: Includes & Autodocs.)
+@endnode

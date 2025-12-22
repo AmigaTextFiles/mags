@@ -1,0 +1,406 @@
+2
+1*
+{A              J‰rjestelm‰ohjelmoinnin alkeiskurssi - Osa 5: DOS
+{A              -------------------------------------------------
+
+{8                                  Sami  Klemola
+
+  
+T‰ll‰ kertaa teemme l‰pileikkauksen dos.libraryyn. Ensin kuitenkin pieni korjaus
+kurssin edellisen osan tekstiin. Virhe ei ollut minun - tietenk‰‰n - min‰h‰n  en
+tunnetusti tee virheit‰. Kyse on siit‰, ett‰  puhuin  olioperustaisista  kirjas-
+toista, ja oikolukija muutti sen oliopohjaiseksi tiet‰m‰tt‰, ett‰ ne ovat  kaksi
+aivan eri asiaa, ja teki n‰in tekstiin asiavirheen. Oliopohjainen  on  sellainen
+systeemi, joka toimii oliomuotoisesti vain tietyilt‰  osilta,  kun  taas  Triton
+toimii kokonaan olioiden voimalla eli se on olioperustainen.  Pahoittelen  sit‰,
+ett‰ oikolukija kajosi taas asiaan, johon h‰nen ei olisi pit‰nyt puuttua.  T‰st‰
+kuitenkin nyt asiaan. 
+
+
+{DDOS
+
+Kun Amiga k‰ynnistyy, k‰ynnistyslevylt‰ ladataan koodi, joka alustaa  dos.libra-
+ryn. Se jatkaa prosessia  muodostamalla  tiedostoj‰rjestelm‰t  ja  suorittamalla
+startup-sequencen. DOS on keskeinen osa kaikkea muutakin toimintaa, joten on  jo
+aika, ett‰ tutustumme siihen. DOS tarjoaa  ohjelmoijalle  funktiot  tiedostojen,
+hakemistojen ja prosessien k‰sittelyyn sek‰ moneen muuhun hommaan. T‰ss‰  osassa
+selvit‰n  yksinkertaisimpien  toimintojen  k‰ytt‰misen.  Aloitamme   tiedostojen
+k‰sittelyst‰, mutta sit‰ ennen hieman teoriaa.
+
+Massamuistitoiminnot ovat kolmitasoiset. Alimmalla tasolla  ovat  ajurit,  jotka
+ohjaavat yksitt‰isi‰ tietokoneeseen liitettyj‰ laitteita. Seuraavalla tasolla on
+tiedostoj‰rjestelm‰, joka komentaa laiteajureita. Ylimm‰ll‰ tasolla on DOS, joka
+ohjaa tiedostoj‰rjestelmien toimintaa. Ohjelmoija voi k‰ytt‰‰ t‰t‰  hierarkkista
+rakennelmaa helposti puhumalla DOSille. Kaikki alemman tason operaatiot  sujuvat
+automaattisesti ilman, ett‰ ohjelmoijan tarvitsee tiet‰‰ niist‰  mit‰‰n.  Hieman
+tarkemmin n‰ist‰ asioista tarinoin PFS- ja DSP-artikkeleissani numerossa 11.
+
+Ohjelmoija k‰ytt‰‰ tiedostoja funktioiden Open(), Close(), Read() jne.  v‰lityk-
+sell‰. Osa funktioista on puskuroituja, mink‰ ansiosta toiminta on eritt‰in  no-
+peaa, vaikka ohjelma lukisi esimerkiksi vain muutaman tavun  kerrallaan.  Toinen
+mahdollisuus on k‰ytt‰‰ C-kielen vakiofunktioita,  esim.  fopen(),  fread()  tai
+open(), read() jne. Min‰ suosin DOS-funktioiden kutsumista,  mutta  j‰lkimm‰ist‰
+vaihtoehtoa kannattaa harkita, jos on mahdollisuus, ett‰ ohjelma voidaan portata
+toiseen k‰yttˆj‰rjestelm‰‰n. T‰llˆin on syyt‰ k‰ytt‰‰ niin  v‰h‰n  k‰yttˆj‰rjes-
+telm‰kohtaisia funktioita kuin mahdollista. 
+
+
+{DTiedostojen k‰sittely
+
+Tiedosto avataan funktiolla Open(). Sille annetaan osoitin tiedoston  nimeen  ja
+moodi, joka on MODE_OLDFILE, jos tiedosto  avataan  lukemista  varten,  tai  MO-
+DE_NEWFILE, jos tiedosto tulee luoda. On olemassa  viel‰  kolmaskin  moodi,  MO-
+DE_READWRITE, joka avaa tiedoston lukemista varten, mutta luo sen, jos  sit‰  ei
+ole olemassa. Kirjoittamista varten avattua tiedostoa (MODE_NEWFILE) ei voi ava-
+ta toistamiseen, mutta MODE_READWRITE:ll‰ avatun voi. Open() palauttaa  osoitti-
+men tiedoston kahvaan eli struktuuriin, joka sis‰lt‰‰ tietoja siit‰. Osoitin  on
+BCPL-kielinen eli longword-osoitin, joten sit‰ pit‰‰ siirt‰‰ kaksi bitti‰ vasem-
+malle, ett‰ siit‰ saa CPU-kelpoisen. Sit‰ ei kuitenkaan normaalisti tarvitse it-
+se  k‰ytt‰‰,  vaan  se  annetaan  muille  funktioille,   esim.   Read(),   niit‰
+k‰ytett‰ess‰.
+
+
+Tiedosto suljetaan funktiolla Close(). Sille  annetaan  Open()-funktiolta  saatu
+kahva. T‰ss‰ on pieni esimerkkikoodi tiedoston avaamisesta ja sulkemisesta: 
+
+{BBPTR file; /* Kahva */
+
+{B    if( file = Open( "T:Tiedosto", MODE_OLDFILE )) {
+
+        ... tiedoston k‰yttˆ‰ ...
+
+{B        Close(file);
+{B    } else printf("virhe: eip‰ ollut tiedostoa\n");
+
+T‰st‰ kehittelem‰ll‰ voidaan helposti kirjoittaa funktio, joka kertoo, onko
+haluttu tiedosto olemassa:
+
+{BBOOL exists( STRPTR name ) {
+{BBPTR file;
+{B    if( file = Open( name, MODE_OLDFILE )) Close(file);
+{B    return file ? TRUE: FALSE;
+{B};
+
+Funktion k‰ytt‰minen on helppoa ja samantapaista kuin Rexxiss‰:
+
+{B    if( exists( "s:CopyStuff" )) {
+
+        ... suorita CopyStuff-skripti ...
+
+{B    }
+
+ 
+T‰m‰ esimerkki katsoo, onko SYS:S -hakemistossa  CopyStuff-nimist‰  skripti‰  ja
+jos on, suorittaisi sen. Komentojen  (ja  skriptien)  suorittaminen  k‰sitell‰‰n
+viel‰ t‰ss‰ osassa.
+
+DOSissa on k‰tev‰ funktio AddPart(), jonka avulla voidaan liitt‰‰ toisiinsa  ha-
+kemistonimi‰ ja tiedostonimi‰. Hakemiston nimih‰n voi p‰‰tty‰  kaksoispisteeseen
+tai kauttaviivaan, tai siin‰ ei v‰ltt‰m‰tt‰ ole mit‰‰n erityist‰ merkki‰  lopus-
+sa. N‰in ollen hakemistopolun muodostaminen merkkijonoja  kopioimalla  on  huono
+idea. AddPart() osaa k‰sitell‰ kaikenlaiset nimet oikein, ja sen avulla on help-
+poa yhdist‰‰ hakemiston ja tiedoston nimet. Oletetaan, ett‰ meill‰  on  puskuri,
+jossa on valmiina hakemiston nimi ja siihen pit‰‰ liitt‰‰  tiedostonimi.  Se  on
+helppoa: 
+
+{Bchar buf[100] = "DEVS:Monitors";
+
+{B    AddPart( buf, "Super72", 100 );
+
+Kutsun j‰lkeen puskurissa lukee "DEVS:Monitors/Super72". AddPart():lle  annetaan
+viimeisen‰ argumenttina k‰ytett‰viss‰ olevan tilan suuruus eli puskurin  pituus.
+On olemassa toinenkin funktio, FilePart(). Se palauttaa osoittimen hakemistopol-
+kumerkkijonon viimeiseen elementtiin, joka on tiedostonimi  tai  hakemisto,  jos
+polussa ei ole tiedostonime‰. Edellisen j‰lkeen kutsu "FilePart( buf )"  palaut-
+taisi siis osoittimen puskuriin kohtaan, jossa on "Super72".
+
+Tiedostoon liittyy osoitin, joka m‰‰r‰‰, mihin  kohtaan  tiedostoon  kohdistetut
+toiminnot osuvat. Kun tiedosto avataan, osoitin osoittaa tiedoston  alkuun.  Kun
+tiedostosta luetaan dataa, osoitin siirtyy eteenp‰in niin paljon kuin on luettu.
+Jos luetaan sata tavua, osoitin osoittaa tiedostossa  kohtaan  100.  Ensimm‰inen
+kohta on 0 ja suurin yht‰ pienempi kuin tiedoston pituus. Kohtaa voidaan muuttaa
+kutsumalla funktiota Seek(). Se etsii tiedostosta tietyn kohdan, ja  tiedostosta
+voidaan lukea halutusta kohdasta. Katso seuraavaa esimerkki‰, niin  n‰et,  miten
+Seek()-funktiota k‰ytet‰‰n.
+
+Tiedostosta luetaan funktiolla Read(). Sille annetaan niin ik‰‰n tiedoston kahva
+ja sitten osoitin muistialueeseen, johon luettu data sijoitetaan,  sek‰  luetta-
+vien tavujen m‰‰r‰. Tiedostoon kirjoitetaan aivan samalla tavalla, mutta funktio
+on Write(). Katsotaanpa: 
+
+{BBPTR file;          /* Kahva */
+{BUBYTE space[100];   /* Muistialue */
+
+{B    if( file = Open( "Data", MODE_OLDFILE )) {
+
+        /* Read() palauttaa luettujen tavujen lukum‰‰r‰n. */
+
+{B        if( Read( file, space, 100 ) < 100 ))
+{B            printf("Jotain vikaa. Ei saatu sataa tavua.\n");
+
+        /* Haetaan tiedostosta kohta, joka on 300 tavua alusta. */
+
+{B        Seek( file, OFFSET_BEGINNING, 300 );
+
+        /* Kirjoitetaan sinne. Myˆs Write() palauttaa tavum‰‰r‰n. */
+
+{B        if( Write( file, space, 50 ) < 50 ))
+
+            /* Ei onnistunut. Nyt k‰yt‰mme hieman kehittyneemp‰‰
+               tekniikkaa. Kysymme DOSilta virhekoodin ja n‰yt‰mme
+               k‰ytt‰j‰lle virheilmoituksen. Se saattaa n‰ytt‰‰ vaikka
+               t‰lt‰: "error: disk full". */
+
+{B            PrintFault(IoErr(),"error");
+
+{B        Close(file);
+{B    } else printf("Ei dataa.\n");
+
+Viel‰ takaisin Seek()-funktioon. Sille annetaan kahva, moodi ja lukema. Moodille
+on kolme vaihtoehtoa. Jos se on kuten esimerkiss‰ eli  OFFSET_BEGINNING,  lukema
+on suoraan uusi osoitin tiedostossa. Moodi voi olla myˆs OFFSET_CURRENT, jolloin
+lukema lis‰t‰‰n nykyiseen osoittimeen. Lukema voi olla myˆs  negatiivinen,  jol-
+loin paikka siirtyy taaksep‰in. Viimeinen vaihtoehto on OFFSET_END, joka on tie-
+doston loppu. T‰llˆin moodin on pakko olla negatiivinen tai nolla, koska tiedos-
+ton lopun ohi ei voi menn‰. Seek()-funktion avulla voi t‰t‰ moodia k‰ytt‰en sel-
+vitt‰‰ tiedoston pituuden: 
+
+{BULONG FileLength(BPTR file) {
+{BULONG currpos;
+{B    currpos = Seek( file, OFFSET_END, 0 );
+{B    return Seek( file, OFFSET_BEGINNING, currpos );
+{B};
+
+T‰m‰ funktio palauttaa tiedoston pituuden. Seek() toisin kuin vakio-C:n  lseek()
+palauttaa osoittimen arvon ENNEN muutosta. Siksi tarvitaan kaksi  kutsua.  Vasta
+j‰lkimm‰inen palauttaa edellisen kutsun asettaman paikan  eli  tiedoston  lopun.
+Samalla se asettaa edellisen kutsun palauttaman arvon eli edelt‰neen paikan  ta-
+kaisin voimaan. 
+
+
+
+
+{9Puskuroidut funktiot
+
+Read() ja Write() eiv‰t ole DOSin puolella puskuroituja funktioita. Pieni‰ luku-
+ja ja kirjoituksia teht‰ess‰ kannattaa k‰ytt‰‰ funktioita FGetC() ja FPutC(). Ne
+vastaavat vakiofunktioita fgetc() ja fputc() eli niill‰ voit lukea tai  kirjoit-
+taa yhden merkin. FGetC():lle annetaan  argumenttina  vain  tiedoston  kahva  ja
+FPutC():lle lis‰ksi kirjoitettava merkki.
+
+Lis‰ksi DOSissa on string-versiot eli FGets() ja FPuts(). Ne  vastaavat  vastaa-
+vasti standardeja fgets()- ja fputs()-funktioita. Merkkijono  kirjoitetaan  tie-
+dostoon kutsulla "FPuts( file, "Merkkijono"  );".  FGets()  toimii  vastaavasti,
+mutta argumetit ovat samat kuin Read():lla. Puskurin lis‰ksi annetaan siis  pus-
+kurin pituus, ja saat puskuriin joko dataa LF-merkkiin asti tai niin paljon kuin
+siihen mahtuu. 
+
+{9Muut operaatiot
+
+Tiedostoille voidaan tehd‰ v‰h‰n muutakin. Kuten ‰sken kerroin, osa  DOSin  tie-
+dostofunktioista on puskuroituja ja osa ei,  joten  ongelmia  voi  seurata,  jos
+niit‰ k‰ytet‰‰n per‰kk‰in samaan tiedostoon. Puskuroimaton kirjoitus puskuroidun
+kirjoituksen j‰lkeen voi tapahtua ensin! Puskuroimaton kirjoitus ei  v‰ltt‰m‰tt‰
+aikaansaa v‰littˆm‰sti levyoperaatioita. Data voidaan kirjoittaa puskuriin odot-
+tamaan kirjoittamista levylle. Jos haluat pakottaa kirjoittamisen levylle,  voit
+kutsua funktiota Flush(), niin se tehd‰‰n v‰littˆm‰sti: 
+
+{B    Flush( file );
+
+T‰m‰ on pakollista, kun on esimerkiksi ensin k‰ytetty FPutC()- tai FPuts()-funk-
+tiota ja sitten halutaan tehd‰ Write()-kutsu. DOSissa on myˆs funktiot tiedosto-
+jen tuhoamiselle ja siirt‰miselle. Tiedostoa ei avata ennen n‰it‰  operaatioita,
+vaan niille annetaan nimi‰ merkkijonoina. Tiedosto tuhotaan n‰in: 
+
+{B    DeleteFile( "T:Temppifile" );
+
+Nimenmuutos on yht‰ helppoa kuin shelliss‰:
+
+{B    Rename( "T:CurrentStore", "T:OldStore" );
+
+T‰m‰ muuttaa nykyisen tallennustiedoston vanhaksi  tiedostoksi.  Sek‰  tuhottava
+ett‰ uudelleennimett‰v‰ kohde voi olla  myˆs  hakemisto.  Tuhottavan  hakemiston
+pit‰‰ olla tyhj‰. Mik‰li uudelleennime‰misen l‰hde on tiedosto ja kohde hakemis-
+to, tiedosto siirret‰‰n hakemistoon. Jos kohdehakemisto on olemassa ja  l‰hdekin
+on hakemisto, on seurauksena virhe. Tiedostoa tai hakemistoa ei voi siirt‰‰ toi-
+selle levylle. Toiminta on siis melko lailla sama kuin  shelliss‰  Rename-komen-
+non. 
+
+
+{DInteraktiiviset tiedostot
+
+CON-handlerin avulla voit avata tiedoston, joka onkin ikkuna! Tiedostoon kirjoi-
+tettu data tulostuu siihen ja siit‰ luettu data tulee  n‰pp‰imistˆlt‰.  T‰m‰  on
+ehdottomasti k‰tevin tapa yksinkertaiseen kommunikaatioon k‰ytt‰j‰n kanssa. Kon-
+soli-ikkunaa k‰ytt‰‰ mm. shell. Konsoli avataan  ihan  normaalisti  Open()-funk-
+tiolla ja suljetaan Close()-funktiolla. CON-handler huolehtii ikkunan avaamises-
+ta ja sulkemisesta. Voit kyll‰ toimittaa oman ikkunankin, mutta se on jo  hieman
+enemm‰n tarkkuutta vaativa toimenpide, joten siihen en t‰ss‰ paneudu.
+
+Open()-funktiolle annetaan samanlainen merkkijono kuin esimerkiksi  NewShell-ko-
+mennolle WINDOW-argumenttina. Konsoli siis on  mountattu  laitenimell‰  CON,  ja
+sit‰ k‰ytet‰‰n avaamisessa: 
+
+{B    if( con = Open( "CON:0/0/640/256/MyWindow/CLOSE", MODE_OLDFILE )) {
+
+
+{B    } printf("Eip‰ auennut konsoli, ei.\n");
+
+{6HUOM! Konsoli tulee aina avata MODE_OLDFILE:ll‰.
+
+Laitenimen j‰lkeen tulevat ikkunan m‰‰ritykset, ensin vasemman yl‰kulman koordi-
+naatit ja sen j‰lkeen ikkunan leveys ja korkeus sek‰ sen nimi ja optiot,  joista
+t‰ss‰ annetaan CLOSE. Se tekee ikkunaan sulkunappulan. Optioilla voidaan  ikkuna
+avata esimerkiksi ilman reunoja tai tietylle ruudulle.  Merkkijono  sek‰  kaikki
+k‰ytett‰viss‰ olevat optiot on selitetty Using The System Software -kirjassa si-
+vuilla 7-38 - 7-40.
+
+DOSissa on kaksi funktiota, joiden avulla voidaan ottaa  selv‰‰,  onko  kyseess‰
+tietyntyyppinen tiedosto. IsFilesystem() kertoo, onko tiedosto levyll‰ oleva oi-
+kea tiedosto palauttaen TRUE- tai  FALSE-statuksen.  Funktiolla  IsInteractive()
+voidaan selvitt‰‰, onko tiedosto interaktiivinen eli konsoli. Funktion  dokumen-
+taatiossa siit‰ k‰ytet‰‰n hienosti termi‰ virtuaalinen  terminaali.  Kummallekin
+funktiolle annetaan parametrin‰ kahva tiedostoon.
+
+Jokainen ohjelma saa k‰ynnistyess‰‰n valmiina kaksi  interaktiivista  tiedostoa,
+stdin ja stdout. Niihin saa kahvan kutsumalla funktioita Input() ja Output(). Ne
+siis palauttavat kahvan  ohjelman  oletussyˆte-  ja  tulostuskanaviin.  Funktiot
+eiv‰t ota argumentteja. Interaktiiviseen tiedostoon eli konsoli-ikkunaan  tulos-
+tetaan kirjoittamalla tiedostoon:
+
+{B    Write ( Output(), "Hei.\n", 5 );
+
+T‰m‰ funktiokutsu vastaa tulostusfunktiokutsua:
+
+{B    printf("Hei\n" );
+
+Tulostus siis menee tiedostoon, jonka kahvan Output()-funktio palautti, eli ole-
+tustulostuskanavaan, joka normaalisti on shell-ikkuna. Sit‰  tarkoitusta  varten
+on myˆs oma funktio, PutStr(). Yll‰ olevaa vastaa yksinkertainen kutsu  "PutStr(
+"Hei.\n" );".
+
+Tulostaminen konsoli-ikkunaan t‰ll‰ tavalla on tietysti hieman  hankalaa,  joten
+kannattaa kirjoittaa funktio sit‰ varten: 
+
+{BULONG Print(BPTR confile, STRPTR string) {
+{B    Write( confile, string, strlen(string) );
+{B};
+
+Nyt tulostaminen konsoli-ikkunaan on helpompaa:
+
+{B    Print( con, "Hei\n" );
+
+Ongelmaksi tulee muotoiltujen merkkijonojen tulostaminen. Ratkaisu on  merkkijo-
+non formatointi kutsumalla RawDoFmt()-funktiota, mutta se  on  teht‰v‰  konekie-
+lell‰. Toinen mahdollisuus on k‰ytt‰‰ VFPrintf()-funktiota tulostamiseen.  Sille
+annetaan kahva, merkkijono ja argumenttitaulukko. Se  vastaa  toiminnaltaan  fp-
+rintf()-funktiota, mutta sen k‰ytt‰minen on erilaista. Argumentteja ei  tyˆnnet‰
+pinoon, vaan niist‰ muodostetaan edell‰  mainittu  argumenttitaulukko.  T‰m‰  on
+tietysti hankalaa, joten kannattaa harkita konekielisen rutiinin kirjoittamista,
+joka toimisi v‰likappaleena.
+
+
+
+
+Minulla itsell‰ni eiv‰t ole ollenkaan k‰ytˆss‰ k‰‰nt‰j‰n tulostusfunktiot.  Olen
+kirjoittanut omat, jotka kutsuvat edelleen DOSin funktioita. Ne ovat  hyvin  yk-
+sinkertaiset - juuri sellaiset v‰likappaleet kuin ‰sken puhuin. T‰ss‰ on tarkoi-
+tukseen sopivan tulostusfunktion l‰hdekoodi: 
+
+{B_cprintf          ; LONG cprintf(file,string[,arg][,arg][...])
+
+{B         movem.l  d2-d3,-(sp)
+{B         move.l   12(sp),d1     /* Kahva */
+{B         move.l   16(sp),d2     /* Merkkijono */
+{B         lea      20(sp),a0     /* Argumentit */
+{B         move.l   a0,d3
+{B         Lib      VFPrintf,_DOSBase(a4)
+{B         movem.l  (sp)+,d2-d3
+{B         rts
+
+Koodi tarvitsee near a4 -m‰‰rityksen, ja se k‰‰ntyy PhxAssilla. T‰m‰ rutiini te-
+kee juuri sen, mist‰ puhuin, eli se  on  VFPrintf()-funktion  stub,  joka  antaa
+funktiolle osoittimen argumenttitaulukkoon. Huomaa, ett‰ osoite saadaan  lealla.
+C-k‰‰nt‰j‰ siis luo argumenttitaulukon laittaessaan argumentit pinoon,  ja  t‰m‰
+koodi antaa tulostusfunktiolle osoittimen pinoon siihen kohtaan, jossa  argumen-
+tit ovat. K‰tev‰‰, eikˆ totta? Nyt voimme tulostaa konsoli-ikkunaan aivan samal-
+la tavalla kuin normaaliin oletustulostuskanavaan: 
+
+{B    cprintf( con, "Hello, %s.\n", "world" );
+
+
+
+
+Jos tulostat ohjelmassa vain yhteen  konsoliin,  voit  muuttaa  funktion  koodia
+niin, ett‰ kahva otetaan suoraan siit‰: 
+
+{B         move.l   _con(a4),d1
+
+T‰llˆin sinun ei tarvitse antaa joka kerta kahvaa funktiolle, jolloin ohjelmoin-
+ti helpottuu, l‰hdekoodi lyhenee, ohjelma lyhenee ja sen suoritus nopeutuu. Huo-
+maa, ett‰ kun poistat yhden argumentin,  seuraavat  ovat  pinossa  nelj‰‰  tavua
+aiemmin, eli muuta 16 ja 20 seuraavilla riveill‰ 12:ksi ja 16:ksi.
+
+Edelleen, jos tulostat vain konsoli-ikkunaasi etk‰ ollenkaan oletustulostuskana-
+vaan, voit muuttaa konekielirutiinin nimen _printf():ksi. T‰m‰ voi kuitenkin ol-
+la hieman vaarallista ja sotkea koodiasi tutkailevia ihmisi‰ tai sinua  itse‰si,
+joten tee niin varoen. Pid‰ myˆs mieless‰si, ett‰ t‰m‰n j‰lkeen et  voi  k‰ytt‰‰
+oikeaa printf()-funktiota ja ett‰ t‰m‰ ei ole varmaankaan kovin "oikeaa"  ohjel-
+mointia.
+
+Se voi kuitenkin helpottaa ohjelmointia, jos voi k‰ytt‰‰ tavalliseen tapaan nor-
+maalinn‰kˆist‰ printf()-funktiota ja unohtaa tyystin, ett‰ tulostus menee konso-
+li-ikkunaan ja printf() kutsuukin ihan erilaista funktiota kuin tavallisesti. Se
+on vain yksi asia v‰hemm‰n ohjelmoijan mieless‰, jossa  niit‰  yleens‰  on  niin
+paljon, ett‰ helpotus on tarpeenkin.
+
+
+
+
+
+
+
+{DOhjelman suorittaminen
+
+DOSissa on tehokkaat funktiot lapsiprosessien k‰ynnist‰miseen, mutta  niihin  ei
+ole syyt‰ puuttua nyt. Yksinkertainen ja toimiva tapa  ajaa  ohjelmia  on  kyll‰
+mielenkiintoinen. System()-funktiota kutsumalla voimme suorittaa komentoja aivan
+kuin ne olisi kirjoitettu shelliss‰. K‰ytt‰minen on helppoa,  kunhan  toimitamme
+funktiolle pienen taulukon: 
+
+{BULONG SysTags[] = {
+{B    NP_Priority,0,
+{B    TAG_DONE
+{B};
+
+{B    System( "Dir", SysTags );
+
+T‰m‰ koodi suorittaa Dir-komennon, jonka tuloste menee ohjelman  oletustulostus-
+kanavalle eli normaalisti shell-ikkunaan, josta se on k‰ynnistetty. SysTags-tau-
+lukkoon voidaan laittaa m‰‰rityksi‰, jotka ohjaavat komennon  suoritusta,  mutta
+niihin ei ole tarvetta koskea. Voit  katsoa  niit‰  dos/dostags.h  -tiedostosta.
+Toimintoa voidaan viel‰kin yksinkertaistaa m‰‰rittelem‰ll‰ makro: 
+
+{B#define dos(cmd) System(cmd,SysTags)
+
+Nyt komennon ajaminen on viel‰kin helpompaa:
+
+{B    dos("Copy DF0:Data/Blah RAM:Use");
+
+Tuloksena on tiedoston kopioituminen ohjelman suorituksen aikana aivan kuin oli-
+si kirjoittanut komennon shelliss‰. 
+
+
+{DMuita DOS-funktioita
+
+DOSissa on paljon funktioita myˆs yleisiin tarkoituksiin.  Er‰s  niist‰  on  De-
+lay(), joka panee prosessin odotustilaan annetuksi ajaksi. Sille annetaan  argu-
+menttina TICKien lukum‰‰r‰, jonka prosessi on nukuksissa. TICKej‰ on normaalisti
+50 sekunnissa, joten esimerkiksi viiden sekunnin tauon ohjelman suoritukseen saa
+laittamalla koodiin kutsun "Delay( 250 );". Delay() on  eritt‰in  yksinkertainen
+tapa pieneen odotteluun.
+
+K‰sittelem‰tt‰ viel‰ j‰‰v‰t kokonaan hakemistot.  Palaamme  kurssin  seuraavassa
+tai jossakin myˆhemm‰ss‰ osassa DOSiin hakemistojen  k‰sittelyn  merkeiss‰  sek‰
+teemme syvemp‰‰ luotausta DOSin ympyrˆihin. Nyt t‰lt‰ er‰‰ n‰kemiin ja hyv‰‰ oh-
+jelmoinnillista loppukev‰tt‰.

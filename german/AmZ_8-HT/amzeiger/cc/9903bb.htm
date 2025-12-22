@@ -1,0 +1,380 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/99 - Blitz-Basic2 - Kurs 5/6</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Blitz-Basic2 - Kurs 5/6</H1>von<BR><A HREF="mailto:Thomas@deutschland.de">Thomas Krippner</A></DIV>
+
+<P>[Anmerkung: Thomas hat uns den Kurs zur Verf&uuml;gung gestellt, ich habe
+inhaltlich kaum etwas ge&auml;ndert. Ansonsten stehen meine Kommentare in
+eckigen Klammern, wobei ich nur Vermutungen anstellen kann, was Blitz-
+Basic angeht. Carsten Jahn]</P>
+
+<P><H3><B>Teil 5: Gadget-Programmierung</B></H3></P>
+
+<P>Heute geht es das erste Mal um sichtbare Ergebnisse unseres Bem&uuml;hens:
+die Gestaltung einer Oberfl&auml;che mit Hilfe der GT Toolbox, eine m&auml;chtige
+Oberfl&auml;chengestaltungslibrary des BB2.</P>
+
+<P>Benutzeroberfl&auml;chen sollten an den Benutzer angepa&szlig;t werden und deshalb
+ohne vordefinierten Werte [Thomas meint sicher die Schriftgr&ouml;&szlig;e und die
+Position der Buttons] (so gut das geht) auskommen. Wie man das macht,
+zeigt dieser Teil, der damit nat&uuml;rlich auch interessant f&uuml;r andere
+Sprachen ist, denn die Vorgehensweise ist immer gleich.</P>
+
+<P><B>Doch jetzt gehts los:</B></P>
+
+<P>Ein einfaches Beispiel zu Beginn, um ein wenig Grundlagen zu schaffen.</P>
+<pre>
+- Window mit Button Gadget
+
+  WBStartup
+
+  WBenchToFront_
+
+  WbToScreen 0
+  Use Screen 0
+  *Scr = ActiveScreen
+
+  ;Intuifont Bestimmen
+
+  FH=Peek.w(Peek.l(*Scr+40)+4)
+  FN$=Peek$(Peek.l(*Scr+40)+8)
+  LoadFont 0,FN$,FH
+  Use IntuiFont 0
+
+  ; Window Oeffnen
+
+  SH.w=Peek.w(*Scr+14)
+  SW.w=Peek.w(*Scr+12)
+  SB.b=Peek.b(*Scr+30)
+
+  ;Window Begr&auml;nzungen
+
+  SizeLimits 200,120,SW,SH
+
+
+  Window 0,0,SB,SW,SH-SB,$140F,&quot;Gatget BB2-Kurs&quot;,1,2
+
+  a=0:a$=&quot;Vorname&quot;
+
+  Gosub GadDef
+
+
+  Repeat
+
+         FlushEvents
+         ev=WaitEvent
+
+         ;Abfragen
+         If ev=$40 AND GadgetHit = 0
+
+                WLocate 1,30:Print &quot;BUTTON GEDR&Uuml;KT &quot;
+                VWait 50
+                WLocate 1,30:Print &quot; &quot;
+
+         End If
+  Until ev=$200
+  End
+
+  ; Gadget Definieren
+
+  .GadDef
+  WCls
+  GTButton 0,0,0,0,100,FH+3,a$,$10
+
+  ;In das Window Schreiben
+  AttachGTList 0,0
+  Return</pre>
+
+<P>[Die Beispiele sind wieder als Dateien unter <A HREF="../amz0399/bin.lha">Bin</A> verf&uuml;gbar.]</P>
+
+<P>In diesem Programm wird nur verdeutlicht, wie ein Gadget erzeugt und
+abgefragt wird. Zu beachten ist, da&szlig; nicht das Anklicken eines Gadget
+bearbeitet wird, sondern das Loslassen. Siehe hierzu BB2-Handbuch &quot;GT-
+Programmierung&quot; oder &quot;Gadget&quot; und &quot;Window&quot;. </P>
+
+<P>An Erl&auml;uterungen gibt es nichts hinzuzuf&uuml;gen, es steht alles im Programm.
+Testen Sie dieses Programm, ver&auml;ndern sie die Parameter des GTButton und
+schauen Sie einmal in das BB2-Handbuch. Sie sollten es f&uuml;r das n&auml;chste
+Programm verstanden haben und die Befehle etwas kennen.</P>
+
+<P>Wir stehen nat&uuml;rlich vor dem Problem, mehrere Gadgets voneinander
+unterscheiden zu m&uuml;ssen. Dabei hilft uns BB2 mit dem Befehl GadgetHit,
+der die ID des angeklickten Gadgets zur&uuml;ckgibt.</P>
+
+<P>Wie man das am besten macht, zeigt das folgende Beispiel.</P>
+<pre>
+- Gadget selektieren
+
+
+  WBStartup
+
+  ; Kennen wir
+
+  WBenchToFront_
+
+  WbToScreen 0
+  Use Screen 0
+  *Scr = ActiveScreen
+
+  ;Intuifont Bestimmen
+
+  FH=Peek.w(Peek.l(*Scr+40)+4)
+  FN$=Peek$(Peek.l(*Scr+40)+8)
+  LoadFont 0,FN$,FH
+  Use IntuiFont 0
+
+  ; Window Oeffnen
+
+  SH.w=Peek.w(*Scr+14)
+  SW.w=Peek.w(*Scr+12)
+  SB.b=Peek.b(*Scr+30)
+
+
+  SizeLimits 200,120,SW,SH
+
+
+  Window 0,0,SB,SW,SH-SB,$140F,&quot;Gatget BB2-Kurs&quot;,1,2
+
+  a=0:a$=&quot;Vorname&quot;
+
+  Gosub GadDef
+
+
+  Repeat
+
+         FlushEvents
+         ev.l=WaitEvent
+
+
+         If ev=$40
+
+                Select GadgetHit
+
+                 Case 0
+
+                  WLocate 1,100:NPrint &quot;Button 1 Gedr ckt&quot;
+
+
+                 Case 1
+
+                  WLocate 1,100:NPrint &quot;Button 2 Gedr ckt&quot;
+
+                End Select
+         End If
+
+  Until ev=$200
+  End
+
+  ; Gadget Definieren
+
+  .GadDef
+  WCls
+  GTButton 0,0,0,0,200,FH+3&quot;Button 1&quot;,$10
+  GTButton 0,1,0,16,200,FH+3,&quot;Button 2&quot;,$10
+  AttachGTList 0,0
+  Return
+
+[Datei BlitzEx2.txt]</pre>
+<P>Wichtig ist nur die Select-Schleife. Mit dem Select-Befehl werten wir
+den GadgetHit aus und verzweigen dann mit Case. Hier steht der Code,
+der beim Klick auf ein Gadget ausgef&uuml;hrt wird. Nat&uuml;rlich ist dieser
+Programmteil bei jedem Programm anders.</P>
+
+<P>ListView-Gadgets oder Cycle-Gadgets werden mit EventCode selektiert.
+Hier steht der Wert des Eintrages der angeklickt wurde, oder, im Fall
+des Cycle-Gadgets, der gerade aktive Eintrag.</P>
+
+<P>Wie man mit dem EventCode umgeht, haben wir ja im vorherigen Kursteil
+besprochen und im BB2-Handbuch ist es auch gut beschrieben. Welche
+Gadgets es in BB2 noch gibt und welche Parameter diese haben, entnimmt
+man am besten dem BB2-Handbuch.</P>
+
+<P>Ein weiteres Problem ist es, den Status eines Cycle-Gadgets oder andere
+Gadget-Informationen zu erhalten. Neben den Peek-Funktionen, mit denen
+wir den Status jedes Gadgets immer herausbekommen, gibt BB2 auch bestimmte
+Befehle und eine Tag-Einbindung vor. Die Befehle werden im BB2-Handbuch
+beschrieben. Hier soll ein Gadget-Tag anhand eines Cycle-Gadgets gezeigt
+werden.</P>
+
+<P>BB2 gibt zwei M&ouml;glichkeiten vor, die es erm&ouml;glichen, an einen Gadget-Tag
+heranzukommen.</P>
+
+<P>Die eine ist, resistente AmigaLib.res und vorbestimmte Variablen zu
+benutzen, die andere M&ouml;glichkeit ist es, die Variablen selber zu
+bestimmen, bzw. die Werte direkt einzugeben. Ich werde mich auf die
+letztere beziehen, da das Vorgehen identisch ist, wenn man die
+AmigaLib.res eingeladen hat.</P>
+<pre>
+- Cycle Gadget
+
+  WBStartup
+
+  ; Kennen wir
+
+  WBenchToFront_
+
+  WbToScreen 0
+  Use Screen 0
+  *Scr = ActiveScreen
+
+  ;Intuifont Bestimmen
+
+  FH=Peek.w(Peek.l(*Scr+40)+4)
+  FN$=Peek$(Peek.l(*Scr+40)+8)
+  LoadFont 0,FN$,FH
+  Use IntuiFont 0
+
+  ; Window Oeffnen
+
+  SH.w=Peek.w(*Scr+14)
+  SW.w=Peek.w(*Scr+12)
+  SB.b=Peek.b(*Scr+30)
+
+
+  SizeLimits 200,120,SW,SH
+
+  ;Bestimmen der TagList
+
+  GTTags $80080000,$80080000+15
+
+
+  Window 0,0,SB,SW,SH-SB,$140F,&quot;Gatget BB2-Kurs&quot;,1,2
+
+  a=0:a$=&quot;Vorname&quot;
+
+  Gosub GadDef
+
+
+  Repeat
+
+         FlushEvents
+         ev.l=WaitEvent
+
+
+         If ev=$40
+
+                Select GadgetHit
+
+                 Case 0
+
+                  WLocate 1,100:Print &quot;Eintag Nummer &quot;,GTGetAttrs(0,0,$80080000+15)
+
+                End Select
+         End If
+
+  Until ev=$200
+  End
+
+  ; Gadget Definieren
+
+  .GadDef
+  WCls
+  GTCycle 0,0,100,0,200,FH+5,&quot;Gadget Text&quot;,1,&quot;0 Eintrag|1 Eintrag|2 Eintrag&quot;
+  AttachGTList 0,0
+  Return
+
+[Datei: BlitzEx3.txt]</pre>
+<P>Der Befehl GTTags teilt der Intuition.Library mit, was wir &uuml;ber welches
+Gadget wissen m&ouml;chten.</P>
+
+<P>$80080000 ist der Basiswert und die addierte Zahl beschreibt den
+MessagePort, den wir mitgeteilt bekommen wollen. Dort liegt der Unterschied
+zur AmigaLibs.res Variante, bei der ich einfach eine mit # definierte
+Variable angeben kann. Ich kann sie aber auch selber bestimmen.</P>
+<pre>
+z.B.
+
+  #Tag=$80080000:#TagCycle=$80080000+15
+
+  GTTags #Tag,#TagCycle</pre>
+
+<P>Mit dem Befehl GTSetAttrs kann der Programmierer ein Attribut eines Gadgets
+auf einen bestimmten Wert setzten. Es lohnt sich auch die im BB2-Handbuch
+stehenden Seiten zu diesem Thema durchzulesen, viele sind es ja leider
+nicht ;).</P>
+
+<P>[Es ist anzunehmen, da&szlig; in BB2 die gleichen Attribut-Tags benutzt werden,
+wie im Amiga-OS. Deshalb mu&szlig; man sich nicht auf die BB2-Dokumentation
+beschr&auml;nken, ein Blick in die Autodocs d&uuml;rfte gen&uuml;gen.]</P>
+
+<P>Doch nun kommen wir nach den Grundlagen zu unserem eigentlichen Thema,
+n&auml;mlich Gadgets an die Workbench anzugleichen.</P>
+
+<P>Das Programm GADGET&WINDOW [vermutlich ein Blitzbasic-Beispielprogramm,
+das nicht Teil des Kurses ist] zeigt hier ein kleines Beispiel, das die
+Gadgets an das Window anpa&szlig;t und an den Rest der Oberfl&auml;che.</P>
+
+<P>Das erste und einfachste ist die Angleichung an den IntuitionFont.
+Diesen zu ermitteln, einzuladen und zu aktivieren, wurde schon behandelt.
+Um das Gadget an diesen Font anzugleichen, ist es n&ouml;tig, die Gadget-H&ouml;he
+(FH) plus den gew&uuml;nschten Abstand des Gadget Randes zum Textinneren
+anzugeben. Dies habe ich in den Beispielen schon gemacht.</P>
+
+<P>Das Zweite ist, die Gadgets von der L&auml;nge an die Windowgr&ouml;&szlig;e anzugleichen.
+Dies ist auch sehr einfach. Wir nehmen die Windowbreite und Teilen sie
+durch die Gadgets, die in dieser Reihe liegen sollen. Wenn zum Beispiel
+in einer Reihe 4 Gadgets sitzen, w&uuml;rde es mathematisch so aussehen:</P>
+
+<P>Breite des Gadgets = (Innere Breite des Windows / 4) - Abstand der Gadgets</P>
+
+<P>So h&auml;tten wir die Breite und die H&ouml;he der Gadgets bestimmt. Jetzt sind noch
+die Anfangspositionen zu bestimmen. Hier haben wir einen Bezugspunkt: der
+linke obere innere Punkt des Windows ist immer 0,0, also orientieren wir
+uns an diesem. Gehen wir zuerst in die Vertikale, also y-Achse.</P>
+
+<P>Das erste Gadget geht von ganz oben (0) bis Fonth&ouml;he Plus 5.
+Der Anfangspunkt des 2 Gadgets ist dann:</P>
+
+<P>Anfangspunkt = Anfangsposition des Ersten Gadget + Fonth&ouml;he + 5 + Abstand</P>
+
+<P>Das Gadget darunter bezieht sich dann auf das zweite Gadget.
+In der Horizontalen ist das genau gleich.</P>
+
+<P>Anfangspunkt = Anfangspunkt das ersten Gadgets + Breite des ersten Gadgets</P>
+
+<P>Das erste Gadget kann auch das vorherige Gadget sein.</P>
+
+<P>In der Grafik sind nochmal kurz die Zusammenh&auml;nge erl&auml;utert.
+[Siehe das Bild zur Veranschaulichung &quot;verzgadget.gif&quot; im Pics-Dir.]</P>
+
+<P>Es ist meistens n&ouml;tig, ein WindowSize-Limit zu setzen, sonst gehen die
+Gadgets ins Unleserliche oder &uuml;berschneiden sich. Hier ist es wichtiger
+denn je, einmal alles auszuprobieren und sich nicht entmutigen zu lassen.
+Diese Art der Programmierung ist auch nicht das Nonplusultra, sondern
+einfach eine M&ouml;glichkeit, seine Benutzeroberfl&auml;che auf die Umst&auml;nde
+etwas anzupassen.</P>
+
+<P>Hierzu d&uuml;rfte es noch viele Fragen geben, die ich besser in den FAQ`s
+beantworte, damit ich den Kurs nicht ins Detail f&uuml;hre und damit unn&ouml;tig
+verl&auml;ngere. [Im Moment ist dieses FAQ fast leer, deshalb wird es hier
+nicht aufgenommen. Vielleicht schreibt jemand dem Thomas seine Fragen
+an die o.g. eMail-Adresse.]</P>
+
+<P>Es geht um das Prinzip, wie so eine Oberfl&auml;che gestaltet wird und
+da&szlig; es auch unter Amiga-OS ohne MUI einfach und leicht zu programmieren
+ist. Denn dieses Programm kann jeder nutzen, egal ob er MUI hat oder
+nicht. Es ist eben auf die Oberfl&auml;che des Benutzers eingestellt und
+nicht auf die Bequemlichkeit des Programmierers.</P>
+
+<P>[Was f&uuml;r den Programmierer nun bequemer ist, sei dahingestellt...] </P>
+
+<P>Im sechsten und letzten Kursteil, der in der n&auml;chsten Ausgabe erscheint,
+geht es um Men&uuml;s.</P>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9903pb.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0399/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../kw/9903inst.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`99 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,130 @@
+5
+1*
+
+{3                     Warp Engine 68040/40 MHz -turbokortti
+{3                     -------------------------------------
+
+                                 Jyrki Saarinen
+
+
+{3Warp Engine
+{3-----------
+
+- Sis‰lt‰‰ Motorolan MC68040-prosessorin joko 28, 33 tai 40  MHz:n  kellotaajuu-
+della.  28  MHz  malli  ei  sis‰ll‰  prosessoria,  vaan  malli  on   tarkoitettu
+A4000/040:n omistajille, jotka voivat k‰ytt‰‰ vanhaa prosessoriaan.
+
+- MC68040:ssa on sek‰ MMU (virtuaalimuisti pelaa eritt‰in nopeasti SCSI2-kovale-
+vyll‰) ett‰ FPU. Matematiikkaprosessori  on  todella  nopea,  vastaavantaajuista
+486-prosessoria kolme kertaa nopeampi. 40 MHz 68040 vastaa  siis  noin  120  MHz
+486-prosessoria liukuluvuissa, joten ollaan siis Pentium-tasolla -  paitsi  ett‰
+Pentium laskee v‰‰rin. :-)
+
+Kokonaisluvuissa 68040 voittaa vastaavantaajuisen 486:n kaksinkertaisesti,  eik‰
+t‰ss‰ ole viel‰ huomioitu sit‰, ett‰ Motorolan MC680x0-sarja  on  kaikin  puolin
+paremmin suunniteltu, siin‰ on enemm‰n rekistereit‰ ja  muutenkin  ohjelmoijalle
+MC680x0-sarja on kuin taivas.
+
+- Nelj‰ SIMM-paikkaa, maksimimuisti 32 Mt SIMM-palikoilla siis 128 Mt.
+
+- Markkinoiden nopein SCSI2-ohjain. K‰ytt‰‰ DMA:ta, vie siis ERITTƒIN v‰h‰n pro-
+sessoriaikaa. Mitattu Seagaten Barracudalla 8 Mt/s muutaman prosentin  CPU-kuor-
+mituksella.
+
+- Eritt‰in nopea muistisysteemi, tukee burst-osoitusta, 4-2-2-2 muistijaksot eli
+ensimm‰isen 32-bittisen sanan lukemiseen  menee  nelj‰  kellojaksoa,  seuraavien
+kaksi. T‰m‰ tekee 40 MHz mallissa jopa 64 Mt/s. A4000/040:n muistijaksot vertai-
+lun vuoksi: 7-7-7-7. Muistinopeus noin viisinkertainen A4000/040-malliin verrat-
+tuna.
+
+- Sopii A3000T/4000/4000T:hen, A3000:lle oma malli, muuten sama  mutta  sis‰lt‰‰
+vain kaksi SIMM-paikkaa.
+
+- Muisteiksi k‰yv‰t 4 Mt, 8 Mt, 16 Mt ja 32 Mt 72-piikkiset  SIMM-palikat,  60ns
+suositeltava nopeus 40 MHz kortilla. Erikokoisia palikoita saa sekoittaa vapaas-
+ti. Sek‰ 32- ett‰ 36-bittiset muistit k‰yv‰t kuten  muissakin  Amiga-tuotteissa,
+koska Amiga ei k‰yt‰ ylim‰‰r‰ist‰ nelj‰‰ bitti‰ mitenk‰‰n.
+
+- Micropoliksen 1 Gt SCSI2-kovalevyll‰ siirtonopeus l‰helle 5 Mt/s muutaman pro-
+sentin kuormituksella (Suikilla on t‰llainen levy).
+
+- Hintaa USA:sta tilattuna 6700 markkaa, jota pid‰n varsin kohtuullisena hintana
+t‰llaisesta tehosta. Jo vastaavantasoinen SCSI2-ohjainkin maksaisi  jonkin  ver-
+ran.
+
+- Valmistaja MacroSystem Development, USA.
+
+- T‰ll‰ kortilla varustettuna A4000/EC030 on halvempi mutta  paljon  tehokkaampi
+kuin A4000/040, bonuksena on viel‰ SCSI2-ohjain.
+
+
+
+
+
+{3Asennus
+{3-------
+
+Ensimm‰inen ajatus oli pienen paketin saavuttua pitk‰n odotuksen j‰lkeen  posti-
+laatikkooni: "Eih‰n se n‰in pieni  voi  olla."  Mutta  kyll‰  se  oli,  eiv‰th‰n
+A3000/4000:n prosessorikortit ole fyysisesti isokokoisia.
+
+Asennus A4000/EC030-koneeseeni sujui mutkattomasti: avasin koneen, otin levyase-
+makehikon ja ZorroII/III-backplanen pois,  poistin  vanhan  prosessorikortin  ja
+painoin Warp Enginen paikalleen. Asetin SCSI-ohjaimen kokonaan pois hidastamasta
+k‰ynnistyst‰, kun en omista yht‰‰n SCSI-laitetta. Siirsin kaksi 4 Mt SIMM-palik-
+kaa emolevylt‰ Warp Enginelle ja asetin jumpperit kohdalleen. Minulla  oli  yksi
+60ns ja yksi 80ns palikka. 40 MHz Warp Engine vaatisi kyll‰ 60ns  muistia  ilman
+odotustiloja, mutta 80ns muistikin n‰ytt‰‰ toimivan 60ns  muistina!  Minulla  on
+ilmeisesti k‰ynyt hyv‰ tuuri... Hitaampiakin muisteja voi k‰ytt‰‰, t‰llˆin tosin
+muistiosoitukset hidastuvat hieman, jolloin  kellojaksot  ovat  5-3-3-3.  Mukana
+tulleelta levylt‰ kopioin Libs:-hakemistoon 68040.library-tiedoston,  jota  Ami-
+gaOS tarvitsee 68040:n kanssa. (Sis‰lt‰‰ FPU-emuloinnin ym.)
+
+Kokemukset kortista ovat pelk‰st‰‰n positiivisia, A4000/EC030  nopeutui  kuusin-
+kertaiseksi, ja se myˆs n‰kyy.  Ruudunp‰ivityskin  nopeutui  huomattavasti,  kun
+Kickstart on siirretty Warp  Enginen  muistiin,  saati  sitten  tavalliset,  jo-
+kap‰iv‰isess‰ k‰ytˆss‰ olevat ohjelmat.
+
+Imagine 3.0:lla renderointi nopeutui ainakin kymmenkertaiseksi,  vaikka  minulla
+oli 68EC030:n kanssa kyll‰ matematiikkaprosessorikin.
+
+Vanhan 210 Mt ATID-kovalevyn nopeus ei muuttunut odotettavasti miksik‰‰n.  Viel‰
+kun saisi SCSI2-kovalevyn, niin kaikki olisi hyvin. 
+
+
+{3SysInfo v3.24
+{3-------------
+
+CopyBack Mode................................ ON 
+Instruction Cache............................ ON 
+Instruction Burst............................ ON 
+Data Cache................................... ON 
+Data Burst................................... ON 
+Central Processing Unit Type................. 68040   
+Memory Management Unit Type.................. 68040  (IN USE)
+Floating Point Unit Type..................... 68040+6882
+Vector Base Register (VBR) Address........... $0802DD9C
+Ramsey Chip Revision (A3000)................. N/A
+Gary Chip Revision (A3000)................... N/A
+DMA/Gfx Chip................................. AGA ALICE - 2Meg 
+Display Mode................................. DBLPAL: High-res
+Display Chip................................. AGA LISA CHIP   
+VBlank Frequency in Hz....................... 56
+Power Supply Frequency in Hz................. 50
+Horizontal Frequency in KHz.................. 29.96
+Card Slot Installed.......................... NO 
+Hardware Clock installed..................... CLOCK FOUND
+EClockFrequency in Hz........................ 709379
+
+SPEED COMPARISONS AGAINST KNOWN MODELS & PERIPHERALS
+A500 512k or A600 with 1MB CHIP ONLY.........  55.18
+B2000, A2000, A1000 or A500 with fast ram....  41.76
+A1200/14 68EC020 ICACHE 2MB CHIP ONLY........  23.98
+A2500/14 A2620 68020 card....................  14.19
+A3000/25 68030 ICACHE IBURST DCACHE NODBURST.   6.30
+A4000/25 68040 ICACHE DCACHE COPYBACK........   1.60
+CPU Million Instructions per Second..........  30.47
+FPU Million Floating Operations per Second...   7.73
+Speed of Chip Memory vs A600 Chip Memory.....   5.14
+Dhrystones per second........................  29195
+Nics Comment............................. Numero Uno        

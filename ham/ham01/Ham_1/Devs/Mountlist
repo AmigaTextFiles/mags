@@ -1,0 +1,48 @@
+/* MountList for V2.0 */
+
+/* This is an example of a non-filing system mount using a handler written
+   in C.
+*/
+ 
+SPEAK:     
+    Handler = L:Speak-Handler
+    Stacksize = 6000
+    Priority = 5
+    GlobVec = -1
+#
+
+/*  This is an example of an alternative type of non-filing device mount,
+    used to mount the non-buffered serial handler
+*/
+
+AUX:
+    Handler = L:Aux-Handler
+    Stacksize = 1000
+    Priority = 5
+#
+
+/*  This is a non-filing system device */
+
+PIPE:      
+    Handler = L:Queue-Handler
+    Stacksize = 3000
+    Priority = 5
+    GlobVec = -1
+#
+
+/* This is an example of a mount list entry for using the recoverable 
+   ram disk.  Depending on the amount of memory you wish to devote to
+   it, you may want to change the HighCyl value.
+*/
+
+RAD:       Device = ramdrive.device
+           Unit   = 0
+           Flags  = 0
+           Surfaces  = 2
+           BlocksPerTrack = 11
+           Reserved = 2
+           Interleave = 0
+           LowCyl = 0  ;  HighCyl = 79
+           Buffers = 5
+           BufMemType = 1
+#

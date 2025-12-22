@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+<html>
+<head>
+   <title>AMIGA STORM => broj 7 => Zznic News => Fast File System</title>
+   <meta name="author" content="Davor Rivic (d_rivic@usa.net)">
+   <meta name="description" content="Hrvatski AMIGA casopis">
+   <meta name="keywords" content="Hrvatska, Amiga, casopis, STORM">
+   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-2">
+   <meta http-equiv="pragma" content="no-cache">
+   <meta http-equiv="expires" content="19-Feb-99">
+   <meta name="generator" content="CygnusEd Professional V4.2, Copyright Š 1987-1997 by CygnusSoft Software">
+</head>
+<body background="../gfx/background.jpg" link="blue" vlink="blue">
+<br>
+<table width="100%" border="1">
+<tr>
+<td bgcolor="#b43100" colspan="2">
+<font size="+2" color="#ffffff"><b><em>
+<center>
+Fast File System
+</center>
+</em></b></font>
+</td>
+</tr>
+</table>
+<br>
+
+<!-- Fast File System -->
+
+<br>
+<p>
+
+Danas ćemo opisati kako natjerati Amigin sistem da proguta mrcinu
+od hard diska veću od 4 GB. Nadam se da nećete proživiti kaos kao
+što sam to ja prošao. U zadnja 3 mjeseca imao sam 4-5 rušenja
+RDB-a na hrd disku, tj. totalni gubitak svih datoteka.<br>
+Ako ste pomislili na <b>DiskSalvage</b> ili <b>QuarterBack</b> i ini, nemojte
+puno o tome razmišljati, jer granicu iznad 4GB ti stari programi
+ne mogu prijeći, čak mogu donesti više zla nego dobra.
+Dobra vijest je ta što možete ipak pomoću njih prebaciti (ali
+samo to) sa particija ispod 4GB podatke koji su ostali
+zarobljeni.
+</p>
+<p>
+Dakle da krenemo. Amigin scsi.device je rađen kao 32 bitni
+program što dovodi do toga da možemo koristiti particije do 2 na 32
+ili 4.29 GB hard diskove. Dakle, ako imamo bilo što veće stari
+scsi.device nemože to prepoznati.<br>
+<b>Fast File System</b> (<b>FFS</b> u daljnjem tekstu), ima isti problem, jer
+isto ne razumije prostor iza 4 GB. Tako da moramo mjenjati i <b>FFS</b>.
+</p>
+<p>
+Prvo što nam je potrebno, treba skinuti potrebne datoteke s neta.
+Najnoviji SCSI.device ćete naći na <a href="http://www.amiga.de/e-fr.html"
+target="_new">http://www.amiga.de/e-fr.html</a> a tamo odete na "File Link". Tamo ćete naći 
+najnoviju verziju. SCSI_IDE_43.24.lha je trenutno najnoviji. 
+Kad skinete to odite na <a href="ftp.phase5.de"
+target="_new">ftp.phase5.de</a>.
+Datoteku ćete naći u pub/phase5/scsi/td64.lha, to je trenutno najnoviji 
+FFS_44.6 FFStd64 je 44.5 verzija. Kad ste
+skinuli potrebne datoteke počinje dio na kojem morate biti jako
+oprezni. Da se odmah ogradim, <b>ZA POSLJEDICE NE ODGOVARAM</b>!
+</p>
+<p>
+Dakle datoteke su tu, dobra volja (valjda?!?), i možemo krenuti.
+Prvo raspakirajte SCSI IDE 43.24.lha i pogledajte što sve imamo.
+Sigurno vas već boli glava, nekakve žvrljotine...
+Tu bi trebale biti sljedeće datoteke:
+</p>
+<p>
+a1000.ld.strip<br>
+a300.ld.strip<br>
+a4000t.ld.strip<br> 
+a600.ld.strip<br>
+DISCLAIMER<br> 
+LoadV43Module<br>    
+PRELIMINARY<br> 
+README<br>   
+README.FIRST<br>
+scsidisk.ld.strip<br><br>
+
+a300.ld.strip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;koristite ako imate A1200 IDE<br>
+a600.ld.strip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;koristite ako imate A600 IDE<br>
+a1000.ld.strip&nbsp;&nbsp;&nbsp;&nbsp;koristite ako imate A4000[T] IDE<br>
+a4000t.ld.strip&nbsp;&nbsp;&nbsp;koristite ako imate A4000T SCSI<br>
+scsidisk.ld.strip&nbsp;koristite ako imate A3000[T]<br>
+</p>
+<p>
+[T] ove oznake znače da možete i ne morate imati tower.
+Znaći ako imate kao ja A4000 u desktopu onda koristite
+a1000.ld.strip
+</p>
+<p>
+Istina bog, imena su glupa i ne znam zašto su baš takva, ali šta
+je tu je.
+<br>
+Sljedeće što trebate napraviti je promjeniti
+Startup-Sequence u S direktoriju na Systemskoj particiji.<br>
+Naredba je:<br><br>
+
+c:LoadV43Module devs:a1000.ld.strip QUIET REBOOT<br><br>
+
+(ovo je naravno moj slučaj, ako imate a1200 onda promjenite
+a1000.ld.strip u a300.ld.strip)
+</p>
+<p>
+Najbolje je da ta naredba bude na prvom mjestu, jer se prvi put
+kad upalite Amigu, nakon izvršenja resetira (nepotrebno je da se
+nešto prije učitava kad se komp. svejedno resetira). Sljedeći put
+pri dizanju novi scsi.device je u memoriji i možete prijeći na
+instaliranje <b>FFS-a</b>. Da bi provjerili da li sve štima, upišite u
+CLI-u version scsi.device, ako CLI ispoše scsi.device 43.24 onda
+je sve prošlo u najboljem redu.
+</p>
+<p>
+VANA NAPOMENA: <b>LoadV43Module</b> ima problema ako imate stare
+chipove 3.0 u Amigi, i najvjerojatnije neće raditi. Ja stim nisam
+imao problema jer imam 3.1 chipove pa ne znam šta se zapravo
+dešava. U svakom slučaju nabavite nove çhipove jer bi trebao
+izići novi OS4 koji neće raditi ako nemate nove chipove.
+</p>
+<p>
+Dakle ako ste došli do ovdje, imate instaliran scsi.device,
+svakako resetirajte kompjuter, trebala bi proći dva reseta za
+redom, onaj drugi koji niste vi prouzročili je znak da se
+scsi.device sa hd-a preselio u memoriju.
+</p>
+<p>
+Sad raspakirajte drugu datoteku <i>td64.lha</i>, u njoj bi trebalo
+biti sljedeće:
+</p>
+<p>
+fastfilesystem_40_1.patch<br>
+fastfilesystem_40_4.patch<br>
+info_38_6.patch<br>
+readme.txt<br>      
+spatch<br>
+</p>           
+<p>
+Prvo što morate napraviti, je provjeriti verziju postojećeg
+<b>FFS-a</b>. To ćemo napraviti tako da u CLI-u upišete version
+l:fastfilesystem<br>
+Ako imate verziju 40.1 onda ćete upisati u CLI-u:
+</p>
+<p>
+spatch -ol:fastfilesystem_44_6 -pfastfilesystem_40_1.patch l:fastfilesystem
+</p>
+<p>
+NAPOMENA: U CLI-u morate ući u TD64 direktorij koji ste
+odpakirali ili upisati put u naredbi gdje se nalazi.
+</p>
+<p>
+Ako imate <b>FFS</b> 40.4 onda upišete
+</p>
+<p>
+spatch -ol:fastfilesystem_44_6 -pfastfilesystem_40_4.patch l:fastfilesystem
+</p>
+<p>
+Još samo upišete i:
+</p>
+<p>
+spatch -oc:info -pinfo_38.6.patch l:info
+</p>
+<p>
+Da bi i info mogao skužiti particije koje se nalaze iza 4 GB
+granice. Još jednom provjerite verziju <b>FFS-a</b>
+version l:fastfilesyste, i ako pokaže fs 44.6 onda je sve u redu.
+I možemo krenuti na opasan posao. Sljedeće što moramo, je
+postaviti da to sve šljaka...
+</p>
+<p>
+Pokrenite <b>HDToolBox</b> ili s ćim već mjenjate particije i file
+sisteme. Ja ću ovdje opisati postupak <b>u HDToolBox-u</b>.
+</p>
+Ako vam <b>HDToolBox</b> ne prepozna hard disk onda odite u 'Change Drive
+Type' i stisnite na 'Define New...' (OPREZ: ovo radite samo na
+novom Hard disku ili na onom na kojem želite izgubiti sve
+podatke!!!!) Neka vas ne brine što će vam ispisati da vam je 'size'
+(veličina) hard diska manja ili čak u minusu. Stisnite na 'OK' i
+opet na 'OK'. Sad bi trebali imati sliku sličnu ovoj.
+</p>
+<p>
+<center>
+<img src="../pics/hd1.gif" width="406" height="130">
+</center>
+</p>
+<p>
+Ako koristite samo jedan hard disk onda će vam <b>HDToolBox</b> uvijek javljati da imate dva hard
+diska, s tim da onaj drugi vjerojatno služi kao onaj nastavak iza
+4 GB (nisam siguran), uglavnom taj drugi ćete vidjeti samo ako
+imate jedan hard disk i nemojte ga dirati (ni neda se editirati).
+Sad uđite u 'Partition Drive' i stisnite na 'Advanced Options' a
+zatim na 'Add/Update...' Tu bi trebao biti popis file sistema koje
+koristite ili ih imate snimljenih u RDB. (Za one koji neznaju, RDB
+je mjesto na hard disku (prva dva sektora) na kojem se snima stanje
+na hard disku, raspored particija, file sistemi koji se koriste i
+svi podaci vezani za rad s hard diskom) Sad morate kliknuti na <b>FFS</b>
+40.1 ili 40.4, zavisi koji imate instaliran i kliknuti na 'Update
+File System...' Otvorit će vam se prozor gdje ćete morati upisati
+ime novije datoteke (fastfilesystem_44_6). Kad stisnete na 'OK'
+Pojavit će vam se ovakav prozorčić:
+</p>
+<p>
+<center>
+<img src="../pics/hd2.gif" width="238" height="78">
+</center>
+</p>
+<p>
+Ako je ista, onda je sve uredu i možemo poći dalje. Sad smo
+instalirali <b>FFS</b> 44.6 u RDB i možemo ga koristiti na našim
+particijama. Kliknemo na 'OK' i opet se nalazimo u 'Partition
+Drive'. Ako imate ikakve datoteke na hard disku, sad je krajnje
+vrijeme da napravite backup (u slučaju da niste bili u 'Change
+Drive Type'). Sve datoteke na particiji bi trebale ostati ali uvijek
+kod ovakvih situacija postoji ono nešto... Kliknite (i oprostite se
+od particije :-))) na tipku 'Change...' i promjenite 'Standard File
+System' u 'Custom File System', u 'Identifier' upišite 0x444f5301
+ili koji već broj imate pred imenom vašeg <b>FFS-a</b> u 'Add/Update...'
+prozoru. 'MaxTransfer' je najbolje (za novije hard diskove) da bude
+0x1fe00. Ako vam je prozor sličan ovom, onda ste sve dobro
+napravili.
+</p>
+<p>
+<center>
+<img src="../pics/hd3.gif" width="576" height="174">
+</center>
+</p>
+<p>
+Stisnite na 'OK'. Za svaku particiju morate ponoviti
+postupak sa tipkom 'Change...', 'Add/Update...' vrijedi za cijeli
+hard disk jer se podaci upisuju na RDB.
+</p>
+<p>
+Kad ste sad to sve napravili, morat ćete resetirati kompjuter,
+<b>HDToolBox</b> će vam davati upozorenja da će svi podaci ostati
+izgubljeni, ali vi se toga ne bojite (jel' da?). Podaci će
+najvjerojatnije ostati na hd-u (meni jesu!), ako ste radili po
+uputama. 
+</p>
+<p>
+<b>JAKO VANO!!!!</b><br>
+Ako sad koristite hard disk veći od 4 GB onda morate imati na umu da
+ni ukom slučaju nesmijete pri paljenju kompjutera startati bez
+boot-anja, jer se onda nebi učitai scsi.device u memoriju i svako
+snimanje po particijama iza 4 GB bi značilo gubljenje svih
+particija!!! Moguće je snimati do 4 GB, ali šta je sigurno, sigurno
+je. Pustite da se Amiga digne u WB a onda poslije radite šta hoćete.
+</p>
+<p>
+I još jedan naputak, ništa manje važan, particije koje ste napravili
+na svom novom hard disku a koje se nalaze iz 4 GB smijete
+formatirati samo sa Quick Formatom, inaće vam se opet pobrkaju
+particije. Ja sam tu bio malo sumnjičav, nisam vjerovao da to radi
+pa sam particiju koja se nalazi iza 4 GB napunio do kraja, ostalo mi
+je 5 MB i sve još funkcionira kako treba.
+</p>
+<p>
+Podatke sam prikupio sa raznih strana, dosta mi je pomogao i <b>Ralph 
+Schmidt</b>, jedan od programera <b>FFS-a</b>.
+</p>
+<p>
+Ako imate kakvih pitanja, problema i nejasnoća, slobodno se javite
+na e-mail: <a href="mailto:ikosak@as411.tel.hr">ikosak@as411.tel.hr</a>
+</p>
+<p>
+Za sam kraj pozivam (u ime svih znića) sve dobronamjerne Amigaše da
+dođete 17.2. u Petrinju na <b>Dan Velikih Sanjki</b>, veliku znićku
+proslavu uz sanjkanje i kuhano vino!!<br>
+Ako vas zanimaju pojedinosti o znićima otplovite na znićku
+stranicu na NET-u <a href="http://www.geocities.com/SunsetStrip/Mezzanine/8945" target="_new">http://www.geocities.com/SunsetStrip/Mezzanine/8945</a>
+</p>
+<p align="right">
+<b>Ivan Košak</b>
+<br>
+</p>
+</body>
+</html>

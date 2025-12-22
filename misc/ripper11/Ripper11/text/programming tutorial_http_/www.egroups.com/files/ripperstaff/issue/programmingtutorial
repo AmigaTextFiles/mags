@@ -1,0 +1,143 @@
+^^                    James Rambles on about Programming
+                      ==================================
+
+                           Part 1: C and functions
+
+Hello world!  Welcome to this programming tutorial.  Now I'm sure you're all
+dying  to write program,  seeing as you are here and have got DICE  on  your
+hard drive,  so put this in your text editor,  and save it.  I'll assume you
+put all this example code in a directory called "Src:" and save it using the
+filenames I give them.  This is a C program (as the .c suffix suggests)  and
+we will be working in C for quite a while.
+
+             --- Example 1.1: Hello, world! Filename: hello.c ---
+
+#include <stdio.h>
+
+int main(void)
+{
+  printf("Hello, world!\n");
+  /* This function prints "Hello, world!" and starts a new line */
+  return 0;
+}
+
+
+
+Right, now you can compile this program, by opening a shell and typing:
+
+  cd Src:       <enter>
+  dcc hello.c   <enter>
+
+[One  way  of  opening a shell is to type newshell in the "Execute  Command"
+window, which you get from choosing that option from the Workbench pull-down
+menu.] This should make a program file Src:hello,  which you can execute  by
+typing hello <enter> in your shell. You should not need to enter the cd line
+more than once in your shell.
+
+      Right let's see what has happened.  First, what does the code do:
+
+"#include  <stdio.h>"  is  a   preprocessor   directive  --  this  means  it
+effectively  changes what your code says -- you can tell if something  is  a
+preprocessor  directive by seeing if it has a  hash  symbol  ('#')   at  the
+beginning.  The #include directive is an "insert file" option,  essentially,
+so  this  tells the compiler to add all the code from the file stdio.h  into
+your  program.  You need the stdio.h file whenever you use certain  features
+of C,  including printf.  The next line marks the beginning of a function. A
+function is a self- contained piece of code which takes in certain  numbers,
+does something,  then gives out another number.  "int main(void)" says  that
+the  function is called "main," that it doesn't take any numbers in ("void")
+and that it returns a number of type "int."
+
+There  are  many  different kinds of numbers in C.  The type "int"  contains
+integers,   and  typically on the Amiga,  it  contains  numbers  from  0  to
+4,294,967,295 or -2,147,483,648 to 2,147,483,647. "void" is also a type, but
+it cannot contain anything.
+
+"main"  is a special function in C.  When a program is run from an  AmigaDOS
+shell  or Workbench (or whatever)  the function main is@1 "called,"  meaning
+that  the code contained in it is run.  This code may,  in turn,  call other
+functions, and so on. The numbers that can go into main (the parameters)
+are derived from the command line,  which was "hello" above, but can contain
+further text after the name of the program file.  In this example,  we chose
+to  ignore the rest of the command line,  and so used a void parameter.  The
+number sent out from main (the return value)  goes back to AmigaDOS, and can
+be used to indicate whether or not a program was successful.
+
+"main"  consists of all the code between the pair of braces (curly brackets,
+'{'  and  '}' which follow it.  These braces act just like you would  expect
+brackets to,  in that if there was another open-brace ('{') within main, the
+end  of main would be marked by the second close-brace@1 ('}')  and not  the
+first.  There are two statements in our main. A statement is a piece of code
+which ends in a ";" symbol.
+
+This means that, unlike in certain other languages, there is no restrictions
+on the way the code is laid out,  so statements may appear split over lines,
+and  many statements,  or part-statements may appear on one line.  The  main
+restrictions  are that a preprocessor directive must appear  on  a  line  by
+itself,  and that a piece of text in double- quotes ('"')  cannot be  simply
+split over two lines.  This means that the layout of my example code is just
+what looks nice to me,  and can be changed.  The "printf("Hello World!\n");"
+calls  the printf function with a parameter that represents the text  inside
+the quotes;  it prints this text to the shell window. In fact it sends it to
+a  device  known as stdout,  which is usually assigned to the shell  window,
+(although this can be altered in a number of ways).  However,  you will have
+noticed that you did not see "\n" in you shell window.  This is because '\n'
+is  a special symbol to represent a "new-line" character,  and it makes sure
+that  your  shell  prompt does not appear on the same line  as  your  "Hello
+World!" text.
+
+The next line of my code contains only a comment.  A comment in C is started
+by the pair of characters "/*" and ended by the first "*/" and is equivalent
+to a single space in the code.  Finally,  there is a return statement.  This
+particular statement sends the value 0 back to AmigaDOS.  When  called  from
+main,   this  is  the same as calling a function called exit  with  whatever
+number  you  gave to return.  Thus,  in main,  "return 0;" is  the  same  as
+"exit(0);".   Whenever  exit  is called it leaves  your  program  and  gives
+AmigaDOS the value of its parameter. And now you know how it all works.
+
+                                 Prototyping
+
+There  is  one  more  idea we need before we can start  writing  our  own  C
+functions, and that is prototypes. Prototypes are used to tell your compiler
+what types of things a function returns and has as arguments before it  gets
+to the section where you actually write the code.  The file stdio.h contains
+the  prototype  for printf,  and that is why it is needed whenever  you  use
+printf.  main is special, and does not need a prototype, because main cannot
+be called, and there are only two different prototypes allowed for main.
+
+Writing  prototypes is simple,  they are statements which just  contain  the
+same information as the beginning of the function.  Thus,  if you wanted  to
+call  our  main  above  hello   instead,    its   prototype  would  be  "int
+hello(void);" We'll finish up with an example of our own function.
+
+         --- Example 2: Hello, I'm a function! Filename: hello2.c
+---
+
+#include <stdio.h>
+/* needed for printf */
+
+void /* we don't need this function to return anything */
+hello(void); /* nor do we need to give it any parameters */
+
+int main(void)
+{
+  hello();  /* call the hello function without any parameters */
+
+  return 20;  /* this line should never be reached because
+        hello calls exit */
+}
+
+void hello(void)
+{
+  printf("Hello, I'm a function!\n"); /* print as before */
+
+  exit(0); /* leave the program here, don't go back to main */
+}
+
+------
+
+Right now,  this probably seems like a lot of work for very little gain, but
+functions  are the key to writing good C,  and to the whole of AmigaOS.   In
+Part  2,  we'll look at how to find out the return value from main or  exit,
+and at more types.
+

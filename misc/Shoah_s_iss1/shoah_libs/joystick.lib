@@ -1,0 +1,47 @@
+;	  _______  ___                    ___        _______
+;	 /°-     \/. /    _____   ____   / ./       /°-     \
+;	 \   \___//  \___/°    \_/°   \_/   \___    \   \___/
+;	_/\__    \      ~\_  /\  \  /\ ~\      °\_ _/\__    \
+;	\\       /   /\   /  \/. /  \/   \ //\   / \\       /
+;	 \______/\__/  \_/\_____/\____/\_/_/  \_/ o \______/ Issue 1
+
+;The original source to this was by Rombust in one of his great Grapevine
+;articles, I've just set it up a bit different,'cause I'm like that...
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+	Returns left/right in joy_dir, up/down in joy_dir+1
+
+;You will need the label...
+;Joydir		dc.w	0
+;...somewhere in your code, and make sure that $dff000 is in a5 !
+
+Joy_handler:
+	clr	joy_dir
+
+	move	$c(a5),d0		;joy port 2
+	btst	#1,d0                      
+	bne.s	.right			;pressed right?
+	btst	#9,d0      	                
+	bne.s	.left			;pressed left?
+.udtest	move	d0,d1                    
+	lsr	#1,d1                       
+	eor	d0,d1                     
+	btst	#0,d1                      
+	bne.s	.back			;pressed back
+	btst	#8,d1                      
+	bne.s	.forward		;pressed forward
+	rts				;exit
+.right	
+	move.b	#"r",joy_dir
+	bra.s	.udtest			;check up and down as well
+
+.left
+	move.b	#"l",joy_dir
+	bra.s	.udtest			;check up and down as well
+.back
+	move.b	#"d",joy_dir+1
+	rts
+.forward
+	move.b	#"u",joy_dir+1
+	rts
+

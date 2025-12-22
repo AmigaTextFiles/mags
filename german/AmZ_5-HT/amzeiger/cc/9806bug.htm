@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 06/98 - Debugging-Tools</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>&Uuml;bersicht Debugging-Tools</H1>von<BR><A HREF="mailto:C.Jahn@gmx.de">Carsten Jahn</A></DIV>
+
+<P><B>Bekanntlicherweise</B> machen Programme nicht immer genau das, was sie sollen.
+Dieses Problem tritt vielleicht verst&auml;rkt bei der selbstgemachten Software
+auf, deshalb sollte man wissen, wie man &uuml;bliche Fehler ausmachen kann. Um
+die Fehlersuche zu erleichtern, gibt es einige Tools, die sich mit
+verschiedenen Aspekten besch&auml;ftigen.
+</P><P>
+Den sauberen Umgang mit dem RAM-Speicher &uuml;berwacht das vermutlich
+bekannteste Tool, der Enforcer. &Uuml;ber spezielle Schaltkreise im Prozessor
+des Rechners werden Lese- und Schreibzugriffe auf Speicherbereiche, die
+dem Programm nicht geh&ouml;ren, dem Enforcer gemeldet. Ein anderes Programm,
+Mungwall, erkennt nach dem Freigeben von Speicherbereichen, ob das
+Programm auch fremde Bereiche vor und nach reserviertem Bereich
+beschrieben hat. Daf&uuml;r ist kein spezieller Prozessor n&ouml;tig.
+</P><P>
+Gegen die falsche Benutzung einiger Systemfunktionen hilft Patchwork.
+Es schaltet sich z.B. vor Libraryfunktionen wie <I>DeleteMsgPort()</I> und
+pr&uuml;ft, ob wirklich keine Messages mehr am Port liegen, denn das ist
+Bedingung zum Aufruf von <I>DeleteMsgPort()</I>.
+</P><P>
+Alle angeforderten Ressourcen m&uuml;ssen sp&auml;testens am Programmende wieder
+freigegeben werden. Ob das auch wirklich geschieht, l&auml;&szlig;t sich z.B. mit
+CodeWatcher pr&uuml;fen.
+</P><P>
+<B>Enforcer</B>
+</P><P>
+Wichtig: um den Enforcer nutzen zu k&ouml;nnen, mu&szlig; der eingebaute 68k-
+Prozessor &uuml;ber eine MMU verf&uuml;gen. Prozessormodelle, die die Bezeichnung
+&quot;EC&quot; tragen, funktionieren nicht. So z.B. in den originalen A4000/030
+von Commodore.</P><P>
+Mit dem Programm LawBreaker, das mit dem Enforcer kommt, l&auml;&szlig;t sich
+feststellen, ob der Enforcer richtig funktioniert. (Es m&uuml;ssen *mehrere*
+Hits beim Start erscheinen.)</P><P>
+Der Enforcer l&auml;&szlig;t sich sogar per Icon starten, vern&uuml;nftige
+Voreinstellungen f&uuml;r die Optionen finden sich in den ToolTypes. Um bei
+der Ausgabe eines Enforcer-Hits zu wissen, welches Programm den Fehler
+gemacht hat (und auch wo im Programm genau), sollte man m&ouml;glichst fr&uuml;h
+in der Startup-Sequence das mitgelieferte SegTracker-Programm aufrufen
+(hinter SetPatch).</P><P>
+Wenn man sich sp&auml;ter entschlie&szlig;t, Enforcer zu benutzen, h&auml;lt SegTracker
+schon eine Liste der Tasks mit den Adressen ihrer Codesegmente bereit.
+Im Enforcer-Hit wird dann der Programmname, sowie Hunk und Offset
+angezeigt.</P><P>
+Diese beiden Werte lassen sich z.B. im Maxon-Debugger eingeben, um die
+Quelltextzeile anzeigen zu lassen, die dem fehlerausl&ouml;senden Code
+wahrscheinlich nahe liegt.</P><P>
+Das ist also eine etwas schwammige Sache, und ich habe die Erfahrung
+gemacht, da&szlig; der Enforcer-Hit recht oft v&ouml;llig au&szlig;erhalb meines
+Programmtextes liegt. Dann war es z.B. eine Linker-Library, die durch
+meinen Fehler verunsichert wurde. Oder eine Library-Funktion.</P><P>
+Da Enforcer aber auch den naheliegenden Stackinhalt zum Vergleich an
+den SegTracker schickt, ist es gut m&ouml;glich, da&szlig; dort vorhandene
+R&uuml;cksprungadressen noch zu einer verwendbaren Quelltextstelle f&uuml;hren
+k&ouml;nnen. Nat&uuml;rlich kann eine Zahl auch rein zuf&auml;llig eine Position in
+den Codesegmenten sein. Neben dem Stack k&ouml;nnen auch die Adress- und
+Datenregister von SegTracker &uuml;berpr&uuml;ft werden.</P><P>
+Wenn man einen Compiler hat, der einen &quot;LINE&quot;-Debughunk erzeugen kann,
+kann man mit dem beigef&uuml;gten FindHit-Programm den Quelltextnamen und die
+Zeile herausfinden, die zum Hunk-Offset-Wertepaar des Enforcerhits geh&ouml;rt.
+</P><P>Ein weiteres Zusatzprogramm, Move4K, sollte auf 68040-Systemen m&ouml;glichst
+fr&uuml;h in der Startup-Sequence, auch nach SetPatch, aufgerufen werden. Es
+verhindert, da&szlig; Programme im allerersten MMU-Bereich (den ersten 4kB des
+Rechners) Speicher reservieren, denn Zugriffe darauf m&uuml;ssen umst&auml;ndlich
+abgefangen werden. Ab OS 3.0 ist Move4k &uuml;berfl&uuml;ssig.</P><P>
+Wer einen A4000/EC030 sein eigen nennt, kann zwar nicht Enforcer nutzen,
+daf&uuml;r aber den AmigaGuardian. Er trickst mit der Hardware, kann aber keine
+Hits in den ersten 4 kB bemerken. Der leere Speicher dort wird aber belegt
+und mit Zufallszahlen gef&uuml;llt, um im darauffolgenden Zugriff an der
+Adresse dieser Zufallszahl einen Hit zu bekommen.</P><P>
+Mit APurify kann man auch ohne MMU auskommen. Es ist ein Assemblercode-
+Preprozessor, der im vom Compiler generierten Asm-Code &Uuml;berpr&uuml;fungen
+einf&uuml;gt, die einen Versto&szlig; erkennen und ausgeben.</P><P>
+<B>Wipeout und Mungwall</B></P><P>
+Diese beiden Programme tun in etwa das gleiche: sie patchen die
+Speicherallozier- und freigabefunktionen. Beim Allozieren von Speicher
+wird der vom Programm ben&ouml;tigte Bereich vergr&ouml;&szlig;ert und ein
+&quot;Cookie&quot; vor und hinter dem zur&uuml;ckgelieferten Bereich gesetzt. Verlangt das Programm
+nicht die Auff&uuml;llung des Speichers mit Nullen, wird er mit allerhand
+Schrott gef&uuml;llt, damit es dem Programmierer auff&auml;llt, wenn doch Nullen
+vorausgesetzt werden.</P><P>
+Beim Freigeben des Speichers pr&uuml;fen die Programme, ob der Cookie vor und
+hinter dem Speicherbereich noch intakt ist. Ist er es nicht, wurde er
+(h&ouml;chstwahrscheinlich von dem Programm, das sich den Speicher geholt hat)
+&uuml;berschrieben.</P><P>
+Am Programmstart wird der gesamte freie Speicher mit der Zahl 0xabadcafe
+gef&uuml;llt, tritt beim Enforcer nun ein Lese- oder Schreibversuch an dieser
+Adresse auf, hat das Programm Speicher angefa&szlig;t, in dem es eigentlich
+nichts zu suchen hat.</P><P>
+W&auml;hrend es Mungwall schon lange gibt, ist Wipeout erst vor kurzem
+erschienen und ist moderner gestaltet. Es unterst&uuml;tzt z.B. Memory Pools
+direkt.</P><P>
+Beide Programme machen ihre Ausgaben in die serielle Schnittstelle. Wer
+also keinen alten Compi daran h&auml;ngen hat, sollte die Ausgaben mit Sushi
+oder Sashimi in ein Fenster auf der Workbench umleiten.</P><P>
+<B>Patchwork</B></P><P>
+Wie oben schon angesprochen, &uuml;berpr&uuml;ft Patchwork, ob einige Funktionen
+in den Libraries richtig benutzt werden. Der Autor Richard K&ouml;rber
+hat sich die AutoDocs genau angesehen und potentielle Fehlerquellen
+aufgedeckt.</P><P>
+Patchwork patcht viele Funktionen der Standard-Libraries und &uuml;berpr&uuml;ft
+deren Argumente. Es gibt bis jetzt nur Prereleases, aber die sind schon
+einen Blick wert.</P><P>
+Aktuell ist derzeit die Version 0.11, bei der einige Libraries
+hinzugekommen sind. Patchwork kann eine Enforcer-&auml;hnliche Ausgabe
+machen und arbeitet auch mit SegTracker zusammen, um Hunk und Offset
+des fehlerhaften Aufrufs herauszufinden.</P><P>
+Die Fehler sind in vier Stufen eingeteilt, so kann man beim Aufruf von
+Patchwork erreichen, da&szlig; die leichten Verst&ouml;&szlig;e ausgeblendet werden.
+</P><P>Es ist auch m&ouml;glich, beim Aufruf von Patchwork die OS-Version anzugeben,
+die das zu testende Programm mindestens ben&ouml;tigt. Dann werden Verst&ouml;&szlig;e,
+die ab einer bestimmten OS-Version keine mehr sind (z.B. wenn ab OS 3.0
+die &Uuml;bergabe einer Null doch erlaubt ist), nicht angezeigt.</P><P>
+Wer die Weiterentwicklung des Programms sichern will, ist aufgerufen,
+dem Autor eine eMail zu schreiben.</P><P>
+<B>Codewatcher</B></P><P>
+...hat bei mir fr&uuml;her mal tadellos funktioniert, aber als ich ihn f&uuml;r
+diesen Artikel ausprobiert habe, st&uuml;rzt er immer nur ab. Bei Andreas
+Schlick (er schreibt auch f&uuml;r den AmZeiger, &uuml;brigens...) ist es genauso.</P><P>
+Naja, f&uuml;r die Gl&uuml;cklichen, die nicht schon beim Debuggen vom List-Befehl
+einen Absturz erleben, hier eine kurze Beschreibung:</P><P>
+Der Codewatcher wird aus der Shell gestartet. Als Argument &uuml;bergibt man
+Pfad und Namen von dem Programm, das man &uuml;berpr&uuml;fen m&ouml;chte, sowie evtl.
+die Parameter, die dieses Programm braucht. Codewatcher startet das
+Programm und wacht im Hintergrund &uuml;ber die Funktionen, die Ressourcen
+anfordern und freigeben. Wenn des Programm beendet wird, gibt Codewatcher
+alle nicht freigegebenen Ressourcen aus.</P><P>
+Das gleiche schafft der Maxon-C++-Debugger, aber leider ist er mir beim
+Ressourcen-Tracking auch schon oft abgest&uuml;rzt.</P><P>
+<B>Scratch</B></P><P>
+...ist noch ein Kaputtmacher, f&uuml;r Assembler-Programmierer interessant.
+Es bewirkt, da&szlig; die Register des Prozessors, die nach einem Library-Aufruf
+zerst&ouml;rt sein k&ouml;nnen (Scratch-Register), auch wirklich einen anderen
+Inhalt haben. Wer sich auf solch ein Register verlassen hat, merkt es
+sofort...  (Scratch gibt es auf der Amiga Developer CD.)</P><P>
+Wie man schon bei Wipeout gesehen hat, erg&auml;nzen sich die Debugging-Tools
+ganz gut. Man sollte sie ruhig gleichzeitig laufen lassen, aber nicht
+st&auml;ndig.</P><P>
+Enforcer kann manche Systeme etwas ausbremsen, Wipeout ben&ouml;tigt zum
+Erstellen und Pr&uuml;fen der Cookies Prozessorzeit, und au&szlig;erdem will man
+sicher auch Software weiterbenutzen, die &ouml;fter mal einen Hit wirft...
+Wenn man z.B. Bangermenu benutzt, kann man eine extra Startup-Sequence
+mit den Debugger-Aufrufen anlegen, die man dann zum Hardcore-Betatesten
+benutzt. :-)</P>
+      
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9806bas.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0698/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9806mui.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

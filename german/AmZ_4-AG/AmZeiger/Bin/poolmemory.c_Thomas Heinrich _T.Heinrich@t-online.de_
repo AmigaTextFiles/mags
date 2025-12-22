@@ -1,0 +1,136 @@
+/*
+ * Memory pools for MAXON C
+ */
+
+#include <pragma/exec_lib.h>
+#include <pragma/dos_lib.h>
+#include <clib/macros.h>
+#include <exec/memory.h>
+#include <stdlib.h>
+
+#define MIN_PUDDLE_SIZE    (1024U)
+
+extern APTR SysBase;
+
+static APTR privpool = NULL;
+static ULONG private_size = MIN_PUDDLE_SIZE;
+
+/* Debugging */
+static ULONG max_block = 0, max_used = 0, inuse = 0;
+static BOOL debug_mem = FALSE;
+static STRPTR printfmt =
+   "%s"
+   "Maximum memory used: %10ld Bytes\n"
+   "Largest allocation:  %10ld Bytes\n"
+   "Forgotten memory:    %10ld Bytes\n"
+   "Memory pool is %s !\n"
+   "%s";
+
+static STRPTR ppm[2] =
+{
+   "valid",
+   "invalid"
+};
+
+/* Prototypes */
+void exitfunc(void);
+
+/* Use amiga.lib direct assembler interface to pool functions. Saves some bytes. */
+APTR AsmCreatePool(register __d0 ULONG m, register __d1 ULONG p, register __d2 ULONG t, register __a6 APTR b);
+APTR AsmAllocPooled(register __a0 APTR p, register __d0 ULONG s, register __a6 APTR b);
+APTR AsmFreePooled(register __a0 APTR p, register __a1 APTR m, register __d0 ULONG s, register __a6 APTR b);
+APTR AsmDeletePool(register __a0 APTR p, register __a6 APTR b);
+
+BOOL setPool(ULONG size, BOOL debuG)
+{
+   size = MIN(size, AvailMem(MEMF_ANY | MEMF_LARGEST));
+   private_size = MAX(size, MIN_PUDDLE_SIZE);
+
+   privpool = AsmCreatePool(MEMF_ANY, private_size, private_size, SysBase);
+   if(privpool)
+   {
+      atexit(&exitfunc);   /* Works for exit from wbmain(), too ! */
+   }
+
+   debug_mem = debuG;
+
+   return(privpool ? TRUE : FALSE);
+}
+
+ULONG *Palloc(ULONG size)
+{
+   register ULONG *mem;
+
+   if(privpool)
+   {
+      size += 4;
+
+      mem = AsmAllocPooled(privpool, size, SysBase);
+      if(mem)
+      {
+         if(debug_mem)
+         {
+            inuse += size;
+            max_used  = MAX(max_used, inuse);
+            max_block = MAX(max_block, size);
+         }
+
+         *mem = size;
+         mem++;
+      }
+
+      return(mem);
+   }
+
+   return(NULL);
+}
+
+void Pfree(ULONG *mem)
+{
+   if(mem)
+   {
+      mem--;
+
+      if(debug_mem)
+      {
+         inuse -= (*mem);
+      }
+
+      AsmFreePooled(privpool, mem, *mem, SysBase);
+   }
+}
+
+void exitfunc(void)
+{
+   if(privpool)
+   {
+      AsmDeletePool(privpool, SysBase);
+      privpool = NULL;
+   }
+}
+
+ULONG memstats(STRPTR output, STRPTR header, STRPTR footer)
+{
+   STRPTR empty = "";
+   BPTR fh;
+
+   header = header ? header : empty;
+   footer = footer ? footer : empty;
+
+   if(!output)
+   {
+      Printf(printfmt, header, max_used, max_block, inuse, privpool ? ppm[0] : ppm[1], footer);
+   }
+   else
+   {
+      fh = Open(output, MODE_NEWFILE);
+      if(fh)
+      {
+         FPrintf(fh, printfmt, header, max_used, max_block, inuse, privpool ? ppm[0] : ppm[1], footer);
+         Close(fh);
+      }
+   }
+
+   return(max_used);
+}
+

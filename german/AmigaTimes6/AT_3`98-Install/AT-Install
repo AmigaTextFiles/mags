@@ -1,0 +1,102 @@
+; $VER: AmigaTimes-Install (2.3.98)
+; (c) 1998 Lutz Rodenhauser
+
+(user 2)
+
+;Names des Install-Dirs z.B. AT_3`98-Install
+
+(set #sourcedir "AT_3`98-Install")
+
+(set #mitteilung (cat "\nAMIGA TIMES HD Installation\n\n"
+     "Mit diesem Script können Sie die " @app-name "\n"
+     "auf Ihrer Harddisk installieren!\n\n"
+     "Möchten Sie jetzt die Amiga Times installieren?")
+)
+
+(message #mitteilung)
+(complete 0)
+
+(set #schublade
+(askdir
+    (prompt "\nWohin soll " @app-name " installiert werden.\nEine Schublade wird erzeugt!\n")
+    (help @app-name "\n" @askdir-help)
+    (default "SYS:")
+    (disk)
+)
+)
+
+(set #laenge (strlen #schublade)
+)
+
+(set #laenge (- #laenge 1)
+)
+
+(set #ch (substr #schublade #laenge 1)
+)
+
+(if (= #ch ":")
+    (set #neudir (cat #schublade "AmigaTimes3_98"))
+    (set #neudir (cat #schublade "/AmigaTimes3_98")
+         #schublade (cat #schublade "/"))
+ 
+)
+
+(makedir (#neudir)
+         (infos)
+)
+
+(set #libneudir (cat #neudir "/LIBS"))
+
+(makedir (#libneudir)
+         (infos)
+)
+
+(set #fontneudir (cat #neudir "/FONTS"))
+
+(makedir (#fontneudir)
+         (infos)
+)
+
+(set #com (cat "ASSIGN AmigaTimes3_98: " #neudir "\n"
+     "ASSIGN LIBS: AmigaTimes3_98:LIBS ADD\n"
+     "ASSIGN FONTS: AmigaTimes3_98:FONTS ADD")
+)
+
+(set #aus (cat "\nFüge die Befehle\n" #com "\nin S:User-Startup ein!\n\n"
+     "Diese Assign`s werden von " @app-name "\nunbedingt benötigt.")
+)
+
+(startup (@app-name)
+         (help @app-name "\n\n" @startup-help)
+         (prompt #aus)
+         (command #com)
+)
+(complete 10)
+(makeassign "AmigaTimes3_98" #neudir)
+
+(run "Assign Libs: AmigaTimes3_98:Libs ADD")
+(run "Assign Fonts: AmigaTimes3_98:Fonts ADD")
+
+(set #neudir (cat #neudir "/"))
+(complete 20)
+
+(working "Files werden kopiert...")
+
+(set #sd (cat "/" #sourcedir "/"))
+
+(copyfiles
+     (prompt "...Files kopieren...")
+     (source #sd)
+     (dest #neudir)
+     (all)
+     (infos)
+)
+
+(complete 100)
+
+(set #endtext (cat "\n\n\nDie Installation von " @app-name " ist beendet.\n\n")
+
+)
+
+(exit (quiet))
+(welcome)

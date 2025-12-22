@@ -1,0 +1,220 @@
+<html>
+<head><title>Object Oriented Intuition - Part 1</title></head>
+<body>
+<h1 align=center>Object Oriented Intuition - Part 1</h1>
+<h3 align=center>by John Corigliano</h3>
+<center><p><a href="mailto:jcorig@udel.edu">&lt;jcorig@udel.edu&gt;</a>
+</p></center>
+<p>
+For some reason, C++ has never really become very popular on the Amiga - most
+likely because SAS/C really doesn't do the C++ language justice.  Besides
+the fact that it is not really a C++ compiler (it simply converts your
+C++ source to C pre, and compiles that) it does not support templates
+or exceptions.
+</p><p>
+Or maybe there is some other reason...
+</p><p>
+Well, if you're reading this, you probably like using C++ and would like
+to use it more in your programming. So, my intention in the coming months
+is to create a library of classes that will encapsulate Intuition. The
+cool part is that I'll be making it up as we go along, so that we can
+all learn from my mistakes (assuming I make any :) and we can all
+participate in the class design (feel free to e-mail me with
+suggestions).
+</p><p>
+For now, we need to think about our class design. For those of you who
+program for other platforms, you are probably familiar with libraries
+like the one I plan to build.  For instance, I write software for
+WindowsNT (hey, I gotta put food on the table!), and I use Borland's
+OWL (<b>O</b>bject <b>W</b>indow <b>L</b>ibrary). There is also
+MFC (the <b>M</b>icrosoft <b>F</b>oundation <b>C</b>lass library),
+Java's AWT (<b>A</b>bstract <b>W</b>indow <b>T</b>oolkit), etc.
+</p><p>
+Ours will be called <b>O</b>bject <b>O</b>riented <b>I</b>ntuition.
+It will encapsulate all aspects of Intuition programming: screens,
+menus, windows, gadgets, etc.
+</p><p>
+Here is my <b>initial</b> and very basic heirarchy:<br>
+<img src="classes.gif" alt="Class Heirerarchy" align=center><br>
+Well, what do you think? Just keep in mind, that there is plenty of
+room for expansion and improvement.
+</p>
+<h3> Class Descriptions </h3>
+<h4>IApplication</h4>
+<p>
+This will be a very simple class. It's main job will be to have
+a function that contains an IDCMP loop. It will also maintain 
+information about the application (name, version, etc.).
+</p>
+<h4>IScreen</h4>
+<p>
+This will obviously handle details about screens, such as resollution,
+palette, etc.
+</p>
+<h5>IScreen:IPublic</h5>
+<p>
+The default public screen (usually Workbench).  The application will
+create an instance of this so that it can open windows on the screen,
+allocate pens on the screen, etc.
+</p>
+<h5>IScreen:ICustom</h5>
+<p>
+Your applications very own screen - if it needs one.
+</p>
+<h4>IMenu</h4>
+<p>
+This will be closely modeled after GadTools menus, which are very easy
+to create.  I hope to be able to extend the capabilties by adding more
+options like fonts, colors, images, etc.
+</p>
+<h4>IWindow</h4>
+<p>
+Perhaps the most important member of the heirarchy, almost all GUI
+items will be derived from it.
+</p><p>
+Please note that even though I am calling this <i>IWindow</i>, it is
+<b>not</b> the same thing as an Intuition Window!  It is simply a
+rectangular object that can be displayed, moved, activated, etc. 
+Thus, all objects derived from IWindow will have these
+abilities.
+</p>
+<h5>IWindow:IMessage</h5>
+<p>
+Just a wrapper to the standard Intuition Requester.
+</p>
+<h5>IWindow:IImage</h5>
+<p>
+A bitmap object to be displayed in a window, as imagery for a button,
+as imagery for an icon, etc.
+</p>
+<h5>IWindow:ILayout</h5>
+<p>
+This will be used as a container for other IWindow objects.  This class
+will keep the objects sized to fit the parent window.
+</p>
+<h5>IWindow:ICanvas</h5>
+<p>
+A rectangle that you can draw into.
+</p>
+<h5>IWindow:IUserWin</h5>
+<p>
+These are the regular Intuition windows. An IUserWindow is borderless
+window, so if you want a frame for close gadgets, size gadgets, etc
+you create a....
+</p>
+<h5>IWindow:IUserWin:IFrameWin</h5>
+<p>
+This is the standard Intution window we've come to know and love.
+</p>
+<h5>IWindow:IUserWin:IAsl</h5>
+<p>
+Well, I'm really not sure if this belongs here, but no matter where it
+ends up in the heirarchy, this will be the base class for ASL file and
+font requester classes.
+</p>
+<h5>IWindow:IGadget</h5>
+<p>
+This is another very important class as it is the base class for all the
+gadget classes.  All of the gadgets
+will be BOOPSI (<b>B</b>asic <b>O</b>bject <b>O</b>riented <b>P</b>rogramming
+<b>S</b>ystem for <b>I</b>ntuition) gadgets.
+</p><p>
+Since, the BOOPSI dispatcher function (the one that gets called
+when a gadget needs to respond to some input) usually gets called by
+Intuition, I plan to have the dispatcher function our
+classes will use be a <i>non</i>-member function.  The reason is that the
+SAS/C++ compiler always puts the <b>this</b> pointer in register a0,
+but one of the dispatcher function's arguments is passed (from Intuition)
+in that register. So the non-member function Dispatcher() will call
+a derived class's Dispatch() function (each class directly derived from
+IGadget will have to supply it's own Dispatch() function):
+<pre>
+/* Just an example - not complete! */
+class IGadget {
+    public:
+        IGadget() : BoopsiClass(NULL) {}
+        virtual void Dispatch(Class *, Object *, Msg) = 0;
+    protected:
+        static Class *BoopsiClass;
+        virtual void Render() = 0;
+}
+
+/* Not a class member function! */
+ULONG __saveds __asm Dispatcher(register __a0 Class *cl,
+                                register __a2 Object *o,
+                                register __a1 Msg msg)
+{
+    IGadget *gad = (IGadget *)(cl->cl_Dispatcher.h_Data);
+    return gad->Dispatch(cl, o, msg);
+}
+
+</pre>
+</p><p>
+IGadget is an abstract base class, meaning that you cannot create an object
+of type IGadget - you can only derive other classes from it, such as IButton:
+<pre>
+class IButton : public IGadget {...};
+
+</pre><p>
+By using this method, we are able to derive other BOOPSI classes very
+easily.
+</p><p>
+So, for example, if you wanted a gadget that beeped whenever it was rendered,
+you would only need to derive a very simple class from IButton:
+<pre>
+class BeepButton : public IButton {
+    protected:
+       void Render();   // Override this inherited function
+};
+
+void BeepButton::Render()
+{
+    IButton::Render();   // Tell IButton to draw the button
+    DisplayBeep(NULL); // Make a beep
+}
+
+</pre>
+Pretty easy!
+</p><p>
+<h3>Understanding Pure Virtual Functions</h3>
+The key to getting this to work is the way C++ handles pure virtual functions.
+When the <i><tt>Dispatcher()</tt></i> function calls <i><tt>IGadget->Dispatch()</tt></i>
+the program has to figure out what function it is supposed to jump to.  It cannot
+jump to <i><tt>IGadget->Dispatch()</tt></i> because that function doesn't exist!
+So it determines - at runtime - that this IGadget pointer is really a pointer
+to another class, so it figures out what that class is and calls that
+class's <i><tt>Dispatch()</tt></i>.
+</p><p>
+Using my BeepButton from earlier, here's how the functions would be resolved:
+<pre>
+... a BeepButton button class is created
+...
+... the button is pressed and the non-member Dispatcher() is called
+... Dispatcher casts the APTR in h_Data to IGadget *
+... IGadget->Dispatch is virtual - program determines that it can't
+     go there
+... it determines that it's really a BeepButton pointer
+... BeepButton->Dispatch is attempted
+... BeepButton didn't redefine Dispatch, so IButton->Dispatch is
+     called (because of inheritance)
+... IButton->Dispatch calls IButton->Render since the Msg is OM_RENDER
+... But it's really a BeepButton, so BeepButton->Render is called
+... BeepButton->Render calls IButton->Render to do all the dirty work
+... BeepButton->Render beeps
+
+</pre>
+You got that?
+<hr>
+<p>
+Okay! That's a good start. Next time we'll start creating the classes!
+</p><p>
+Please let me know if you would like to design one or more of these classes
+or have an idea for a new class.
+</p><hr>
+<a href="default.html"> Table of Contents </a>
+</body></html>
+
+
+<hr>
+</body>
+</html>

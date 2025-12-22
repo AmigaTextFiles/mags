@@ -1,0 +1,270 @@
+<html>
+ <head>
+  <title>Amiga E - les bases</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="center">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Programmation&nbsp;: Amiga E - les bases </font>par&nbsp;<a href="mailto:damien.guichard@wanadoo.fr">Damien&nbsp;Guichard</a></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">Les avantages de l'Amiga-E</font><br><br>
+
+L'Amiga-E, déjà très populaire auprès des amigaphiles, est dans une période de renaissance avec le compilateur ECX
+de Leif Salomonsson. ECX est totalement compatible avec EC v3.3a et peut générer aussi bien du code 68020 pour les
+Amiga classiques que du code PowerPC pour MorphOS. Une version AmigaOne n'est pas prévue mais n'est pas exclue non plus.<br><br>
+
+Aucun autre langage de programmation ne rend la programmation système plus facile que l'Amiga-E.
+Parmi les fonctionnalités qui facilitent la vie on peut citer&nbsp;:<br>
+
+<ul>
+<li>Les types de bas niveau.
+<li>Les exceptions légères (elles ne sont pas des objects).
+<li>Les listes immédiates.
+</ul>
+<br>
+
+Le résultat c'est un style plus fluide, la programmation système est plus sûre et plus responsable qu'il n'est
+possible avec d'autres langages sur Amiga.<br><br>
+
+Normalement un bon style et une relecture soigneuse du code doivent permettre d'éviter le recours à Enforcer,
+MungWall et autres utilitaires de déboguage système.
+Il est préférable, autant que possible, de prévenir plutôt que de guérir les bogues de programmation système.
+Les outils de déboguage avancé peuvent avoir des pouvoirs qui semblent magiques, il n'en reste pas moins qu'ils
+opèrent au niveau machine, c'est-à-dire à un niveau bien plus bas qu'il n'est souhaitable.
+Il n'y a pas de meilleure arme contre les bogues qu'une bonne lisibilité du code source.
+Tout ce qui opère à un niveau plus bas que le code source est de trop bas niveau.<br><br>
+
+<font size="+1" color="#ccbb33">La gestion des ressources</font><br><br>
+
+Comme les ressources système sont partagées entre tous les programmes, une stratégie est nécessaire pour garantir
+une distribution optimale de ces ressources, qui sont toujours trop limitées.
+La stratégie de l'AmigaOS est rapide et simpliste&nbsp;: le premier demandeur est le premier servi.<br><br>
+
+Cette stratégie garantie toujours une vitesse maximale, mais requière de la discipline de la part du programmeur
+pour assurer une distribution optimale&nbsp;:<br>
+
+<ul>
+<li>Les ressources doivent être allouées le plus tard possible (au dernier moment).
+<li>Les ressources doivent être libérées le plus tôt possible.
+<li>Les allocations et les libérations doivent être "parenthésées".
+</ul>
+<br>
+
+Les prochains chapitres expliquent ce que "parenthésées" veut dire et en quoi les exceptions de l'Amiga-E
+simplifient grandement les choses.<br><br>
+
+Il faut aussi garder à l'esprit que&nbsp;:<br>
+
+<ul>
+<li>Toute demande de ressource peut réussir ou échouer.
+<li>Le programme doit supporter correctement les deux cas.
+<li>Il faut informer l'utilisateur de l'origine en cas d'erreur.
+</ul>
+<br>
+
+<font size="+1" color="#ccbb33">Les librairies système</font><br><br>
+
+Comme vous le savez déjà, les fonctionnalités système résident principalement dans les librairies.
+Certaines sont en ROM, la plupart sont dans le répertoire Libs: et d'autres (comme Reqtools et MUI) ne sont pas
+fournies par Commodore mais font néanmoins partie de la pratique de l'Amiga et sont des outils incontournables
+pour le programmeur.<br><br>
+
+Les librairies sont donc les ressources de base et la première chose à savoir c'est comment bien les gérer&nbsp;:<br>
+
+<ul>
+<li>Autant placer OPT OSVERSION=37 au début de chaque programme, il n'y a aucun intérêt à programmer en dessous de l'OS37.
+<li>Une librairie s'ouvre avec OpenLibrary(name,version).
+<li>Spécifez version=37 pour l'OS2.0+ et version=39 pour l'OS3.0+.
+<li>Retenez le résultat de l'appel dans la variable librarybase.
+<li>Si le résultat est NIL il n'y a rien d'autre à faire qu'afficher un message d'erreur.
+<li>Sinon vous pouvez appeler toutes les fonctions de cette librairie.
+<li>Une fois que vous en avez terminé vous devez appeler CloseLibrary(librarybase).
+<li>Ensuite vous ne pouvez plus appeler aucune fonction de cette librairie.
+</ul>
+<br>
+
+La reqtools.library est bien pratique pour afficher des messages d'erreur, c'est pourquoi il est très commode
+de l'ouvrir avant toute autre chose. Le programme HelloWorld suivant illustre l'ouverture d'une librairie&nbsp;: <br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'reqtools'
+
+PROC main()
+  reqtoolsbase:=OpenLibrary('reqtools.library',37)
+  IF reqtoolsbase
+    RtEZRequestA('Hello World!','OK',0,0,0)
+    CloseLibrary(reqtoolsbase)
+  ELSE
+    PrintF('Could not open reqtools.library!\n')
+  ENDIF
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+La variable de base est "reqtoolsbase" et "RtEZRequestA" affiche un simple panneau.<br><br>
+
+Notez que le succès et l'échec sont deux cas distincts et clairement séparés&nbsp;:<br>
+
+<ul>
+<li>En cas d'échec d'OpenLibrary&nbsp;: on affiche un message d'erreur (et on ne peut pas utiliser reqtools pour le faire !),
+on ne ferme pas la librairie.
+<li>En cas de succès d'OpenLibrary&nbsp;: on peut appeler les fonctions reqtools, et on doit fermer la librairie quand on en a terminé.
+</ul>
+<br>
+
+C'est ça la gestion "parenthésée" des ressources.<br><br>
+
+<font size="+1" color="#ccbb33">Ressources et exceptions Amiga-E</font><br><br>
+
+Le programme précédent est limpide mais pas très réaliste.
+Un programme réaliste comporte bien davantage de librairies, de fichiers et autres allocations mémoire.
+Et cette profusion de ressources ne doit pas se faire au détriment de la clarté du code source.
+On ne peut pas imbriquer des IF indéfiniment, ou alors même le programme le plus simple paraîtra abominablement tortueux.
+Heureusement, les exceptions Amiga-E permettent de rendre invisible la structuration due à la gestion parenthésée des ressources.
+La gestion des ressources devient encore plus sûre, et la logique du programme encore plus transparente.<br><br>
+
+Voici à quoi ressemble le HelloWorld modifié pour les exceptions&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'reqtools'
+
+ENUM OK,ERR_NOREQTOOLS
+
+PROC main() HANDLE
+  reqtoolsbase:=OpenLibrary('reqtools.library',37)
+  IF reqtoolsbase=NIL THEN Raise(ERR_NOREQTOOLS)
+  RtEZRequestA('Hello World!','OK',0,0,0)
+EXCEPT DO
+  SELECT exception
+  CASE ERR_NOREQTOOLS
+    WriteF('Could not open reqtools.library v37+ !\n')
+  ENDSELECT
+  IF reqtoolsbase THEN CloseLibrary(reqtoolsbase)
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+Cette version peut paraître plus compliquée que la précédente, elle a néanmoins un avantage décisif&nbsp;:
+ajouter une ressource ne modifie pas la structure du code, ça n'est plus que l'affaire d'un "Open", d'un
+"Raise", d'un "CASE" et d'un "Close" supplémentaire.<br><br>
+
+Toutefois n'utilisez pas les exceptions automatiques&nbsp;: elles rendent les choses implicites, ce qui n'est généralement
+pas une bonne idée. Rendez les choses aussi explicites que possible.<br><br>
+
+<font size="+1" color="#ccbb33">Programme et environnement</font><br><br>
+
+Un programme peut être lancé soit à partir du Shell soit à partir du Workbench.
+Les deux cas doivent être gérés de façon appropriée.
+La variable "wbmessage" permet de connaître l'environnement de lancement.
+Si le programme est lancé à partir du Workbench alors on a "wbmessage<>NIL".
+Si le programme est lancé à partir du Shell alors on a "wbmessage=NIL".<br><br>
+
+Bien sûr, si le programme est lancé à partir du Shell alors on préfère un message dans la console plutôt qu'un panneau.
+Il faut alors utiliser "wbmessage" pour distinguer les deux cas.<br><br>
+
+Une autre attente du Shell c'est le code d'erreur retourné&nbsp;:<br>
+
+<ul>
+<li>0 si tout est OK.
+<li>ou 5 pour un avertissement (le programme peut tout de même poursuivre).
+<li>ou 10 pour une erreur (le programme ne peut pas poursuivre).
+</ul>
+<br>
+
+Et voici à quoi ressemble le HelloWorld modifié pour exploiter au mieux l'environnement de démarrage&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'reqtools'
+
+ENUM OK,ERR_NOREQTOOLS
+
+PROC main() HANDLE
+  DEF rcode
+  reqtoolsbase:=OpenLibrary('reqtools.library',37)
+  IF reqtoolsbase=NIL THEN Raise(ERR_NOREQTOOLS)
+  display('Hello World!')
+EXCEPT DO
+  SELECT exception
+  CASE ERR_NOREQTOOLS
+    WriteF('Could not open reqtools.library v37+ !\n')
+    rcode:=10
+  DEFAULT
+    rcode:=0
+  ENDSELECT
+  IF reqtoolsbase THEN CloseLibrary(reqtoolsbase)
+ENDPROC rcode
+
+PROC display(msg)
+  IF wbmessage
+    RtEZRequestA(msg,'OK',0,0,0)
+  ELSE
+    PrintF(msg); PrintF('\n')
+  ENDIF
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+<font size="+1" color="#ccbb33">Pour aller plus loin</font><br><br>
+
+La documentation indispensable c'est les Autodocs de Commodore, et c'est encore mieux dans le format AmigaGuide&nbsp;:
+<a href="http://aminet/dev/misc/AmigaOS_guides.lha">aminet/dev/misc/AmigaOS_guides.lha</a><br><br>
+
+Le compilateur EC v3.3a de Wouter van Oortmerssen (version complète)&nbsp;:
+<a href="http://wouter.fov120.com/e/">wouter.fov120.com/e/</a><br><br>
+
+Le compilateur ECX de Leif Salomonsson (version démo).&nbsp;:
+<a href="http://home.swipnet.se/blubbe/ECX">home.swipnet.se/blubbe/ECX</a><br><br>
+
+L'Amiga-E mailing list&nbsp;:
+<a href="http://www.freelists.org/list/positron">www.freelists.org/list/positron</a><br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

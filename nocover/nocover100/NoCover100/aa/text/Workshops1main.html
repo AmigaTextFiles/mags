@@ -1,0 +1,215 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Workshops / Hintergrundberichte / Buchvorstellungen
+---------------------------------------------------
+
+1. Workshop: AFPL Ghostscript 6.50 - Teil 3 (von Uwe Pannecke)
+
+Crash-Kurs durch die Ghostscript-Untiefen
+
+1. Dokumentenschau
+
+Bleiben wir zu Beginn unseres dritten Teils noch ein wenig bei der Anzeige 
+von Postscript- und PDF-Dokumenten.
+
+
+1.1 DOpus - des geisterhaften Interpreters Freund
+
+Bisher haben wir uns vorrangig &uuml;ber die Shell mit Ghostscript verst&auml;ndigt. 
+Das wird auch im Wesentlichen f&uuml;r den grunds&auml;tzlichen Einstieg in den 
+Umgang mit dem Programm so bleiben. Doch sollen im allt&auml;glichen Einsatz PS- 
+und PDF-Dateien m&ouml;glichst schnell und aufwandsarm auf dem Bildschirm 
+gezaubert werden, bietet sich die Einbindung des Interpreters in 
+Dateimanager wie etwa Directory Opus an. 
+Nachfolgend ein Beispiel f&uuml;r die DOpus-Konfiguration zur Anzeige von PS-
+Dateien. Sinngem&auml;&szlig; k&ouml;nnt ihr die Ausf&uuml;hrungen selbstverst&auml;ndlich ebenso auf 
+die Anzeige von PDF-Dokumenten &uuml;bertragen. Startet also DOpus und w&auml;hlt im 
+Men&uuml; den Abschnitt "Einstellungen" und dort den Unterpunkt "Dateitypen...".
+
+Screenshot:
+<IMG SRC="../extra/gs_dopus1.png" ALT="Screenshot">
+
+In selbigem definieren wir nun einen passenden Dateityp "Postscript", der 
+DOpus in die Lage versetzten wird, bei Doppelklick auf eine PS-Datei 
+automatisch Ghostscript mit der Anzeige der Datei zu beauftragen. Also 
+klickt auf den Button "Add". 
+Sogleich &ouml;ffnen sich zwei Fenster. Wir wenden uns dem Dateityp-Fenster zu, 
+erkennbar an der oberen Zeile mit den Eintr&auml;gen "Namen", "ID" und "PRI". In 
+das Feld hinter "Name" tragt ihr eine aussagekr&auml;ftige Bezeichnung, unter 
+der der Dateityp aufgelistet werden soll, ein. Angemessen ist sicherlich 
+"Postscript". Hinter "ID" tippt ihr "PS" ein und "Pri" bleibt auf der 
+Vorgabe "0". Wichtig ist nun, DOpus mitzuteilen, woran der Dateimanager 
+erkennen soll, dass es sich um eine Postscript-Datei handelt. W&auml;hlt mit 
+einem Klick auf das Schubladen-Symbol den Eintrag "Match Name" aus und f&uuml;gt 
+in der Zeile die charakteristische Dateiendung mit dem Eintrag "#?.ps" 
+hinzu. Ein Klick auf "Use" schlie&szlig;t die Definition ab.
+
+Screenshot:
+<IMG SRC="../extra/gs_dopus2.png" ALT="Screenshot">
+
+&Uuml;brig bleibt nun noch das Ereignis-Fenster, in dem ihr festlegt, was DOpus 
+bei einer bestimmten Aktion mit der angew&auml;hlten Datei machen soll. Wir 
+haken "Doubleclick" ab und w&auml;hlen anschlie&szlig;end den Button "Edit". Im sich 
+daraufhin &ouml;ffnenden Fenster veranlassen wir in zwei Zeilen die Anlage eines 
+ausreichenden Stapelspeichers f&uuml;r den Interpreter und &uuml;bergeben Ghostscript 
+mit "{f}" die sp&auml;ter im Dateilister ausgew&auml;hlte Datei. Zus&auml;tzlich haken wir 
+die Option "Output to window" ab und veranlassen so Ghostscript, das 
+Anzeige-Fenster so lange offen zu lassen, bis wir es explizit schlie&szlig;en.
+
+Screenshot:
+<IMG SRC="../extra/gs_dopus3.png" ALT="Screenshot">
+
+Mit drei letzten Mausklicks auf "Use", noch einmal "Use" und "Save" ist die 
+Konfiguration abgeschlossen.
+
+
+1.2 Zeig mir deine Schokoladenseiten
+
+Zwischenzeitlich werden die Ghostscript-Freunde unter euch vielleicht schon 
+diverse PDF-Dokumente betrachtet oder auch gedruckt haben. Nicht immer 
+m&ouml;chte man den kompletten Umfang des Dokuments nutzen. Sollen von solch 
+einer Datei nur bestimmte Seiten angezeigt oder zu Papier gebracht werden, 
+kann Ghostscript selbstverst&auml;ndlich die entsprechende Auswahl vornehmen. 
+Die passenden Aufrufoptionen sind in diesem Fall 
+"-dFirstPage=AnfangsSeitennummer" und "-dLastPage=EndSeitennummer".
+Wie ihr sicher schon w&auml;hrend ersten Experimenten bei der Ghostscript-
+Nutzung bemerkt habt, besteht das Programm Amiga-un&uuml;blich (daf&uuml;r aber 
+Unix/Linux-typisch) auf eine peinlich genaue Beachtung der Gro&szlig;- und 
+Kleinschreibung in der Syntax.
+
+
+2. Eine Bildershow mit Ghostscript
+
+Ghostscript kann nicht nur mit PS- und PDF-Dokumenten umgehen. Ebenso ist 
+der Interpreter in der Lage, Bilder im GIF-, JPEG-, PBM-, PCX- und CMYK-
+Format direkt ohne vorherige Konvertierung auf dem Bildschirm auszugeben. 
+In solchen F&auml;llen bedient sich der Interpreter der im Ghostscript-eigenen 
+"Libs"-Verzeichnis abgelegten Hilfsprogramme "viewgif.ps", "viewjpeg.ps", 
+"viewpbm.ps", "viewjpeg.ps", "viewpcx.ps" und "viewcmyk.ps".
+Die entsprechende Syntax der Befehle werden wir uns mit der Anzeige eines 
+JPEG-Bilds verdeutlichen. Sinngem&auml;&szlig; sind die restlichen unterst&uuml;tzten 
+Formate zu handhaben. Wir begeben uns also wieder in die Shell, beamen uns 
+mittels "cd Ghostscript:" in das Interpreter-Verzeichnis und setzen mit 
+"stack 200000" den Stapelspeicher auf eine ausreichende H&ouml;he. Anschlie&szlig;end 
+starten wir Ghostscript und &uuml;bergeben dem Programm dabei mit "gs 
+viewjpeg.ps" eine PS-Hilfsdatei, die den Interpreter in die Lage versetzt, 
+das entsprechende Bildformat anzuzeigen.
+Die eigentliche Bildschirmpr&auml;sentation erfolgt im interaktiven Dialog mit 
+dem Interpreter durch den Aufruf "(Bildname.jpg) viewJPEG".
+
+Screenshot:
+<IMG SRC="../extra/gs_picview.jpg" ALT="Screenshot">
+
+Analog k&ouml;nnt ihr mit allen unterst&uuml;tzen Bildformaten verfahren, beachtet 
+dabei wieder wie gehabt die korrekte Gro&szlig;- und Kleinschreibung, also 
+beispielsweise "(Bildname.gif) viewGIF".
+
+
+3. Konvertieren, bis der Prozessor gl&uuml;ht
+
+Eine weitere interessante Seite des Postscript-Interpreters ist seine 
+F&auml;higkeit, bestimmte Dateiformate ineinander umwandeln zu k&ouml;nnen. 
+Nachfolgend einige M&ouml;glichkeiten zur Anregung f&uuml;r eigene Experimente:
+
+
+3.1 Adobe Illustrator
+
+Wer seine PS-Dateien in das Grafikformat "AI" des Adobe Illustrator 
+umwandeln m&ouml;chte, bedient sich des Hilfsprogramms "ps2ai.ps", zu finden 
+wiederum im "libs"-Verzeichnis. 
+Wir wollen im Zusammenspiel von "ps2ai.ps" und Ghostscript den allseits 
+bekannten Tiger aus der "Examples"-Schublade in eine Adobe Illustrator-
+Datei transformieren. Da die Kommandofolge 
+"gs ps2ai.ps zu_konvertierende_Datei.ps" lediglich das 
+Konvertierungsergebnis in der Shell ausgeben w&uuml;rde, leiten wir mit 
+"&gt;RAM:neue_Datei.ai" die Ausgabe in die Datei "neue_Datei.ai" in der RAM-
+Disk um. Selbstverst&auml;ndlich kann f&uuml;r die Ausgabeumleitung anstelle der RAM-
+Disk auch ein beliebiges Verzeichnis auf der/den Amiga-Festplatte(n) 
+benutzt werden. 
+F&uuml;r unser konkretes Beispiel lautet so der komplette Aufruf
+"gs &gt;RAM:Tiger.ai ps2ai.ps examples/tiger.ps".
+
+Screenshot:
+<IMG SRC="../extra/gs_ps2ai.png" ALT="Screenshot">
+
+Mehr oder weniger kurze Zeit nach ihrem Postscript-Absprung ist die 
+Gro&szlig;katze als AI-Tiger gelandet, zumindest fast: Da AFPL Ghostscript in den 
+ersten vier Zeilen der AI-Dateien Hinweise zu sich selbst und den 
+verwendeten Fonts ohne Voranstellung der Kommentareinleitung "%%" 
+vermerkte, mussten diese Zeilen in einem Texteditor entweder zuvor entfernt 
+oder der Anfang jeder Zeile mit "%%" versehen werden, bevor Adobe 
+Illustrator die AI-Datei als solche akzeptierte.
+
+
+3.2 In der Destille
+
+Hier soll es nicht um hochprozentige, mehr oder wenig gut schmeckende 
+Fl&uuml;ssigkeiten gehen, vielmehr versetzen wir den Interpreter in die Lage, 
+Postscript-Dateien in das PDF-Format zu wandeln. Und hier kommt auch gleich 
+ein gro&szlig;er Vorteil der aktuellen Version 6.50 gegen&uuml;ber der alten 5.10 zum 
+tragen: Fonts k&ouml;nnen als solche in einem zu erstellenden PDF-Dokument 
+eingebettet werden. 
+Ghostscript 5.10 und auch andere PDF-erstellende Programme auf dem Amiga 
+wandeln diese Fonts zumeist in Bitmaps um. Dies bl&auml;ht die erstellte PDF-
+Datei erheblich auf und sorgt au&szlig;erdem f&uuml;r eine sehr bescheidene 
+Schriftqualit&auml;t. Ghostscript 6.50 kann diese Klippe bei der Umwandlung der 
+meisten Postscript-Dateien elegant umschiffen.
+Wieder soll ein Beispiel die Vorgehensweise demonstrieren: In der RAM-Disk 
+liegt die Postscript-Datei "shell.ps", &uuml;ber das Device "pdfwrite" wird 
+diese nach PDF gewandelt und als "shell.pdf" erneut in der RAM-Disk 
+abgelegt.
+
+Screenshot:
+<IMG SRC="../extra/gs_pdfwrite.png" ALT="Screenshot">
+
+Da Ghostscript bei der interaktiven Bearbeitung nach jeder konvertierten 
+Seite auf eine Best&auml;tigung f&uuml;r die Bearbeitung der nachfolgenden Seite 
+wartet, k&ouml;nnt ihr bei umfangreichen Dokumenten den Interpreter mit dem 
+Kommando "-dNOPAUSE" &uuml;berreden, alle Seiten in einem Rutsch zu bearbeiten. 
+Soll sich Ghostscript nach getaner Arbeit selbst&auml;ndig beenden, hilft der 
+Schalter "-dBATCH".
+
+
+3.3 Von PDF nach Postscript
+
+Was zumeist mit sehr brauchbaren Ergebnissen von PS nach PDF funktioniert, 
+gelingt ebenso in der Konvertierung von PDF nach Postscript. Die 
+Vorgehensweise entspricht der der PS-nach-PDF-Konvertierung, nur dass 
+diesmal das Device "pswrite" zum Zuge kommt. Aus einem 18seitigen Folien-
+Satz zur Knoppix-CD [2] sollen in unserem Fall lediglich die Seiten 17 und 
+18 ins Postscript-Format umgesetzt werden, deshalb erzwingt der Schalter
+"-dFirstpage=17" die Ignorierung der ersten 16 Seiten.
+
+Screenshot:
+<IMG SRC="../extra/gs_pswrite.png" ALT="Screenshot">
+
+Die in den PDF-Dokumenten eventuell vorhandenen interaktiven Links k&ouml;nnt 
+ihr in dem erstellen PS-Dokument, obwohl abgebildet, prinzipbedingt 
+nat&uuml;rlich nicht mehr nutzen. Daf&uuml;r steht einem "Durch"-Bl&auml;ttern des 
+Dokuments nichts im Wege.  
+
+
+4. Und tsch&uuml;s
+
+So, jetzt habt ihr genug Material, um intensiv mit Ghostscript spielen und 
+die Zeit bis zum n&auml;chsten Teil &uuml;berbr&uuml;cken zu k&ouml;nnen. :)
+Wenn alles wie geplant verl&auml;uft, schauen wir uns dann das Extrahieren von 
+Inhaltsbestandteilen, wie Textpassagen und Bilder, aus PDF-Dateien und das 
+Drucken der PS- und PDF-Dokumente ein wenig n&auml;her an.
+
+
+[1] im Aminet unter /gfx/conv/GS650-xxx.lha
+[2] http://www.knopper.net
+
+Uwe Pannecke &lt;Uwe.Pannecke@t-online.de&gt; 
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,230 @@
+<html>
+<head><title>Review - CyberStorm PPC (060/50, 604e/150)</title></head>
+<body bgcolor=ffffff>
+  <table width=100% border=0 cellpadding=3 cellspacing=0>
+  <tr><td bgcolor=000000></td></tr>
+  <tr><th bgcolor=0000ee align=center><font size=+3 color=ffffff>CyberStorm PPC (060/50, 604e/150)</font></th></tr>
+  <tr><td bgcolor=000000></td></tr>
+  <tr><th align=center><font size=+2><a href="staff.html#jason">Jason Compton</a></th></tr>
+  <tr><td bgcolor=000000></td></tr>
+  </table><br><p>
+<p>Where were you when Phase5 announced they would be releasing a PowerPC
+accelerator board for the Amiga?
+
+<p>Regardless of where you were, you were there some time ago.  But just
+before 1997 closed, Phase5 made good on their commitment to ship PPC cards
+for Amiga computers.  Sure, the original premise of a PPC-only approach,
+much like the Macintosh, was scrapped in favor of the less elegant 060 (or
+040) plus PPC combination.  And no, your existing applications won't be
+sped up by the presence of the PowerPC.
+
+<p>But--and this is the important part--the boards are in fact out.  And they
+do in fact have software that supports them.  Admittedly, not a whole lot,
+but the cards have introduced a totally new wrinkle into Amiga software
+development, so it's only to be expected that it will take some time to
+-really- catch on.
+
+<p>I'm happy enough with what I'm playing around with these days--but I'm
+getting ahead of myself.
+
+<p><b>Installation</b>
+
+<p>The Phase5 CyberStorm PPC cards are laden with components.  There are two
+areas of interest: the 0x0 socket and the SIMM slots.
+
+<p>At this point I'd like to remind everyone of something which seems so
+common-sensical yet is terribly easy to forget: be very, very careful
+whenever you poke around with new hardware and your Amiga.  During the
+installation process, because of my impatience, I caused damage to the PPC
+board AND my 4000T, which required both to get professional service.  (More
+on how, exactly, I did that later.)
+
+<p>If you are installing your own 040 or 060 chip, be sure it is oriented
+correctly (check the instructions if you're unsure) and be careful when
+pushing the chip down into the socket.  Because of the board's design it
+may be difficult to get good leverage.  Part of the initial problem I had
+was that it didn't seem that the chip was seated far enough down in the
+socket.  If you are unsure, it's best to test the board, rather than
+-really- whale away at the card and cause damage (which was part of what I
+did).
+
+<p>RAM is easier to install physically, but there's something you should know
+about.  When Phase5 put out their Cyberstorm Mark II 060 card, it was a
+real breakthrough for RAM installation: you could mix and match any size
+SIMMs and the card would configure it into a single contiguous block.
+Because of the bus design on the PPC card, this is no longer possible.  You
+must add SIMMs of the same size and speed in pairs, and preferably from the
+same manufacturer.  I was unable to use the original pair of 16 meg SIMMs
+from my Mark II board: I had to swap a 16 meg SIMM from elsewhere to get
+the board to work.  If this has happened to you, you'll notice that only
+part of the RAM you installed is configured and you will be unable to run
+PPC software (it won't be able to open the ppc.library).  Just be patient
+and try different SIMMs.
+
+<p>(For the curious, the other half of the damage incurred while installing
+the PPC board came on my 4000T, where it is necessary to remove two ribbon
+cables from the I/O daughtercard before you can get at the accelerator
+slot.  I accidentally replaced them on the opposite headers, which fried
+one of the cables and made it impossible to use the mouse or keyboard.  Of
+course, I didn't -know- I'd fried just the cable, I thought I'd killed the
+CIAs.  Six weeks at the shop later, they figured out it was just the
+cable.)
+
+<p><b>Using the Board: Existing Applications</b>
+
+<p>Well, there's not a whole lot to say.  This board brings an 060/50 to the
+table (or an 040 if you're thrifty).  As well, you get a fast SCSI
+interface with a high-density 68 pin connector.  This connector isn't
+-custom-, but it is -unusual-, and not the sort of thing you're likely to
+find cheap cables for--as well, it requires something other than "connect A
+to B" interface-to-drive hookup.  All of this is well detailed in the
+manual, but the bottom line is that to get cables and terminators and so
+forth will likely cost upwards of US$60.  I have not yet taken this plunge
+as I am still reasonably pleased with the performance of my 4000T SCSI.
+
+<p>My previous card was a Cyber Mark II 060, so I noticed no real change.
+The memory system is alleged to be somewhat faster on the PPC boards, but
+various benchmark reports indicate that this card is anywhere from the same
+speed to 10% faster in most tests.  Certainly nothing to write home about,
+but on the other hand, any improvement is always welcome.
+
+<p>Your existing applications will be blissfully unaware of the introduction
+of the PPC board to the system.  I have yet to encounter anything which
+does not function as it should under my new setup.
+
+<p>(Note: The CyberStorm Mark III Phase5 is selling is essentially just a PPC
+board with all of the PPC components missing.  It is not upgradable.)
+
+<p><b>Using the Board: PPC</b>
+
+<p>Now, this is the interesting stuff.  Under a heat sink and a fan, next to a
+bunch of components, is a little chip that can: in my case, a PPC 604e/150.
+
+<p>To activate it requires the ppc.library.  The boards ship with floppies and
+a CD-ROM containing installation software to get the necessary 060 and PPC
+libraries installed on your system.
+
+<p>The CD-ROM PPC software is essentially of two sorts: developer material
+(the GNU C compiler, PPC aware) and a handful of PPC apps, mostly of the
+eyecandy variety.  A couple of rudimentary diagnostic applications round
+out the set.
+
+<p>Of the demo software, I enjoyed Mountains the most.  Since I loved playing
+with Scenery Generator years ago (and enjoying the increase in detail and
+speed I could get as I moved from an A500 to an 020 2000 to a 3000), I felt
+right at home.  Of course, the 16 bit CyberGraphX display is a far cry from
+the low-res 16 color display SG was better suited to.
+
+<p>Running PPC software will require you to learn a few new tricks.  A full
+discussion of exactly how a PPC Amiga program is constructed isn't
+necessary, but suffice it to say that they typically come in one of two
+forms:
+
+<p>1. A two-file executable.  You launch the first in the customary Amiga
+fashion (from CLI or Workbench), and the first calls the second.  (The
+second file is usually, but not always, suffixed with "<tt>.elf</tt>")
+
+<p>2. A single-file, "<tt>.elf</tt>" file.  I have seen a LoadSeg patch which
+developers have to allow you to run these directly (much like the XLoadSeg
+program which let you run XPK packed files directly).  If you can't get
+your hands on that, you'll have to run a program like RunElf, which you can
+find on the CD and in other PPC archives.
+
+<p>Getting used to launching the <tt>.elf</tt> files with an external program like
+RunElf takes a little getting used to, especially for programs like gzip or
+unlzx which you'd like to put in your C: path.
+
+<p>Unfortunately, the hard and fast truth is that as of this writing there
+just isn't a lot of serious, top-quality software available for the PPC.
+Personal Paint takes advantage of it, Wildfire is very PPC aware, and some
+resourceful programmers have ported a number of programs, both useful and
+novelty, to the card.  You can play Doom on the PPC card (although I was
+quite comfortable with the speed the 060 offered).
+
+<p>I don't mean to diminish their efforts, but it makes it very difficult to
+identify a PPC killer app because at present there just isn't quite one.  I
+know what makes the PPC a killer for -me-, but it's not quite the same.
+
+<p>Some of what I -have- enjoyed about the PPC follows...
+
+<p><b>MAME (Multi Arcade Machine Emulator):</b> You just knew it would have to be an
+emulator, didn't you?  If nothing else it proves that time may change
+everything but my love of emulation remains.  Mats Eirik Hansen's port of
+MAME to the 060 was a godsend but a terrible tease: many games could be
+played at a decent speed, but you had to sacrifice audio to get an
+acceptible framerate.  But he got hold of a PPC board and did a port, and
+"wow!" is all I can say.  On my system, some games run at 60 fps with full
+audio, with double buffering.  Others can dip just below so it's more
+comfortable to run at 30 fps.  I imagine that the faster PPC boards will
+offer more 60 fps action, but I'm extremely happy with these results.
+Frankly, the PPC opens up a lot of possibilities for emulation and I think
+we've seen the surface just barely scratched.
+
+<p><b>Andreas Kleinert's many PPC ported programs:</b> The man behind the AK
+datatypes has ported those as well as a whole set of other useful and
+notable programs over to the Phase5 ppc.library.  UU-coders, unlzx, DMS, as
+well as a BASIC interpreter (!), and other interesting bits.  Kleinert
+attempted a Zip/Unzip port but I found a serious bug (the reasons for it
+involve the original Amiga port, I forget the exact details) and the
+project is on hold.  Still, his home page at
+<a href="http://home.t-online.de/home/Andreas_Kleinert/support.htm">http://home.t-online.de/home/Andreas_Kleinert/support.htm</a> is worth raiding.
+
+<p><b>UAE PPC:</b> The Unix (or the U word of your choice) Amiga Emulator was ported
+to the 68K Amiga, but was so miserably slow it wasn't worth running.  The
+good news is that it's faster on the PPC.  The bad news is that on my
+system it's still pretty slow.  I wasn't able to get anywhere near a
+reasonable framerate.  I shouldn't feel too bad since the PC guys have some
+trouble with it too (although they keep getting great gimmicks to make it
+faster).  I'm not sure how much I trust the framerate calculator on the UAE
+ARexx interface, but with the sound off I'm able to get something which
+approximates a tolerable attempt at A500 speed.  A faster PPC board (Phase5
+has been shipping 604e/233s) would undoubtedly be more impressive.  Some
+optimization would be nice to see but I may be wishing for a bit too much.
+
+<p><b>VGB PPC:</b> The Virtual Gameboy (yes, another emulator) got a PPC port which
+needs a speed control since it's a bit too big.  You slow it down by making
+the window bigger, which isn't exactly the most efficient way to do it.
+Sound would be nice, but if I want >100% speed out of a Gameboy emulator
+without worrying about it refusing to work (Wzonkalad) or randomly crashing
+my machine (AmiGameBoy) I'll turn to this emulator.
+
+<p>ADoom PPC:</b> I had trouble getting the other two PPC Doom clones working, so
+I was encouraged when ADoom PPC (converted to PPC by Joe Fenton of
+Emplant/Fusion fame) got up and running with little trouble.  The best part
+about this port is the guide to getting good performance in high resolution
+screenmodes--for example, 640x480 is actually a very -poor- choice (but
+resolutions so near they may as well be 640x480 are -good- choices--it's
+got something to do with caches, leave it at that), so you can get very
+crisp displays at good speed if you're patient with the manual.  Like I
+said earlier I was happy enough with the 060 speed, but more is, well,
+better.
+
+<p>There's a competing standard for PPC software on Phase5 boards known as
+WarpOS.  I have not yet installed WarpOS and attempted to use this
+software.  As far as I can tell it is fairly firmly in the
+minority--probably owing to Phase5's standard used by GCC (the populist,
+low-budget compiler) and SAS/C (the high-end software used by most
+commercial developers today).  WarpOS, by Haage and Partner, revolves
+around StormC.
+
+<p><b>The Future of PPC</b>
+
+<p>There are other programs out there, and many manufacturers of commercial
+software have committed to converting their programs to PPC.  The
+conversion of SAS/C to support the PPC was a huge step forward.
+
+<p>These conversions have not quite flown into the market.  Sales of PPC
+boards are ongoing, and more announcements of real dates are expected, but
+we have only their words to go on at this point.
+
+<p>The bottom line is that PPC technology has finally arrived for the Amiga.
+Maybe it's not exactly what you expected, and maybe there's not 2,000
+programs out that take advantage of it just yet.  But new PPC software is
+released every week, and it is the cutting edge of Amiga hardware.  If you
+are interested in being a part of that, now is a very good time to buy a
+PPC card.
+  <br><p>
+  <table width=100% border=0 cellpadding=2 cellspacing=0><tr><td bgcolor=000000></td></tr></table><br><p>
+  <center><a href="reviews.html">Back to Reviews</a></center>
+</body>
+</html>

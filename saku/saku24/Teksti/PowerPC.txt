@@ -1,0 +1,181 @@
+2
+1*
+
+{3                       Kokemuksia PowerPC-kiihdyttimestä
+{3                       ---------------------------------
+
+                                Simo Koivukoski
+
+
+CyberStormPPC tulee uskollisesti Phase  5:n  tyyliin  mustassa  pahvilaatikossa.
+Laatikosta löytyy prosessorikortin lisäksi kuvitettu kierreselkäinen  ohjekirja,
+joka sisältää saksan- ja englanninkieliset ohjeet kortin  asennukseen  sekä  Cy-
+berStormPPC-prosessorikortilla olevan Wide-SCSI-ohjaimen terminointiin ja  lait-
+teiden kytkemiseen siihen. Kaivettaessa  syvemmältä  mustaa  pahvirasiaa  sieltä
+löytyy CD-ROM-levy ja asennuskorput. PowerUP-romppu sisältää apuohjelmia, työka-
+luja sekä demoja. Vieläpä laatikosta löytyy normaalit rekisteröinti- ja takuula-
+put ja valkoinen Powered by Amiga -tarra. Sen  voi  vaikka  laittaa  nimettömään
+tornikoteloon, jos sellaiseen on sattunut Amigansa tornittamaan.
+
+Ensimmäiseksi asennetaan 68060- ja PowerPC-kirjastot käynnistysosiolle.  Se  käy
+helposti asennuslevykkeeltä, josta  löytyy  Installer-ohjelma.  Asensin  CyberS-
+tormPPC:hen neljä 32 Mt:n SIMM-palikkaa. Vaikka SIMMit pitääkin  lisätä  pareit-
+tain PowerPC:n 64-bittisen osoituksen takia, ei niistä mene puolet hukkaan, vaan
+68060 käyttää edelleen  koko  määrään  normaaliin  tapaan  32-bittisenä.  Avasin
+A4000:n ja otin alkuperäisen 25 MHz:n 030-prosessorikortin pois ja vaihdoin kah-
+den jumpperin asentoja A4000:n emolla (J100, J104). Samojen jumppereiden asento-
+ja pitää vaihtaa, jos korvaa 030:n 040:lla, mutta jos 040:n korvaa 060:lla, niin
+jumpperit ovat jo valmiina oikein.
+
+Jumpperit asettavat A4000:n käyttämään kidettä, joka on prosessorikortilla.  ROM
+speed -jumpperin asetin nopeampaan tilaan (160 ns) jo  päivittäessäni  aikoinaan
+Kickstart 3.1:een. ROM speed -asetuksen nopeudella ei enää CyberStormPPC:n kans-
+sa ole merkitystä, sillä Kickstart-ROM kannattaa mapata Fast-muistiin, koska sen
+lukeminen sieltä on huomattavasti nopeampaa. ROM2Fast-käsky  siirtää  Kickstart-
+ROMin fastiin ja suojaa sen samalla MMU:lla,  joten  sekoilevat  ohjelmat  eivät
+pääse  kirjoittamaan  roskaa  sen  päälle.  Jumppereiden  asetusten  vaihtamisen
+jälkeen laitoin CyberStormPPC:n paikoilleen - yllättäen helposti. Painelin  sitä
+vielä varmuudeksi kauttaaltaan, jotta se on kunnolla pohjassa. Sitten  ei  muuta
+kuin kone kasaan ja menoksi.
+
+Koska omistin aikaisemmin A1200:n, jossa oli Blizzard 1260, niin  tiedän  kuinka
+nopea on  060-prosessori.  Toisaalta  en  ole  koskaan  ennen  käyttänyt  060:aa
+näytönohjaimen kanssa, joten pientä jännityksen makua oli ilmassa koneen  boota-
+tessa. Kaikki tuntui toimivan hyvin ja todella kevyesti sekä  nopeasti.  SysInfo
+paljasti A4000:n emolla olevan 16 Mt Fastin  olevan  pienemmällä  prioriteetillä
+kuin CyberStormPPC:ssä oleva, eikä sinne ole laitettu ohjelmia. Hyvä  niin,  eli
+CyberStormissa oleva Fast-muisti käytetään ensin. Etenkin PowerPC:n kanssa  kan-
+nattaa varata riittävästi muistia prosessorikortille, sillä PowerPC:n  64-bitti-
+nen muistinosoitus menee suorastaan polvilleen, jos se  joutuu  hakemaan  tietoa
+A4000:n emolla olevalta Fastilta.
+
+Availin Workbenchin hakemistoja ja ikonit melkein lentävät ruudulle  aina  uuden
+hakemiston auetessa. Zorro III -väylässä oleva Picasso IV ja 68060 on mainio yh-
+distelmä! Latasin Miamin, jotta pääsisin kokeilemaan Netissä surfaamista,  mutta
+sitten alkoivat ongelmat. Kone  jumahteli  oudosti  YAMia  käytettäessä.  Aikani
+pähkäiltyäni keksin kokeilla alkuperäistä serial.deviceä. Nyt  kaikki  rupesikin
+pelittämään kuten pitää. Testasin vielä muutamaa alkuperäisen serial.devicen no-
+peampaa korvaajaa, mutta kaikki tuntuivat jumittuvan. No,  eipä  tuosta  haittaa
+ole, sillä alkuperäinen serial.device tuntuu toimivan 115 200:n päätelaitenopeu-
+della ongelmitta. Nyt siis pääsin käyttämään IBrowsea Netissä.  Surfaaminen  Pi-
+casso IV:n ja 060:n kanssa 1024x768 (80 Hz) lomittamattomalla truecolor-näytöllä
+on kyllä nautittavaa!
+Pientä boostausta CyberStormPPC:n nopeuteen saa  vielä  laittamalla  startup-se-
+quenceen ROM2Fastin lisäksi Set60nsModen. Se nopeuttaa  muistinosoitusta,  mutta
+vaatii vähintään 60 ns:n hakuaikaan pystyvät SIMMit, kuten  minulla  on.  Sitten
+vielä kannattaa laittaa SetFastAVec, joka nopeuttaa taskin  vaihtoa  680x0:n  ja
+PowerPC:n välillä. WBStartupissa kannattaa  ajaa  CyberPatcher,  joka  nopeuttaa
+060:sen FPU:n toimintaa eri ohjelmien kanssa.
+
+Entäs PowerPC-ohjelmat? Hain Netistä VDoomin, joka perustuu hyvin tehtyyn  ADoo-
+miin. ADoomin lähdekoodi on siis käännetty PowerPC:lle  ja  nimeksi  on  annettu
+VDoom. 680x0-pohjainen ADoom ei juuri montaa framea sekunnissa  hyötynyt  Picas-
+sostani, kun CPU:na oli EC030. Kuitenkin 060:n ja Picasso IV:n kanssa  A4000:sta
+on mitattu yli 32 fps:n nopeuksia. Heh - olin tipahtaa tuolilta, kun VDoom käyn-
+nistyi. Pelaaminen on todella nautittavaa, ehkä vähän  liiankin  vaikeaa,  koska
+viholliset liikkuvat  todella  liukkaasti!  Ohjaaminen  on  nopeata,  eikä  töki
+missään vaiheessa ruudun ollessa suurimmalla tarkkuudella.
+
+Testasin VDoomin fps:t -timedemo demo3 -optiolla, mutta  se  ei  oikein  antanut
+luotettavaa tulosta vaan väitti VDoomin pyörivän yli 150:llä fps:llä.  Ajattelin
+että -fps-optio antaisi todennäköisesti paremman kuvan  ja  käynnistin  VDoomin.
+Kävellessä eri paikoissa ruudulla näkyvä fps-lukema pyörii 40:n kummallakin puo-
+lella. Luku vaihtuu sellaista tahtia että  siitä  on  melkein  mahdotonta  saada
+selvää. VDoomin paketissa tulee mukana myös  VDoomPPC_HiRes,  joka  avaa  Doomin
+640x400-näytölle! Ruudun ollessa suurimmalla tarkkuudella liikkuminen  on  edel-
+leen erittäin jouheaa. Lattiat, pylväät, seinillä olevat kuvat  sekä  viholliset
+näyttävät tässä tilassa huomattavasti paremmilta. Legoisuus on  vähentynyt  mer-
+kittävästi, ja ainoa miinus tästä oli että jos  meni  aivan  seinän  lähelle  ja
+kääntyi, peli tahmasi hieman. Mutta pelattavuutta se ei vähennä yhtään!  Erilai-
+sia Doom-porttauksia kannattaa hakea netistä  osoitteesta  http://www.pluk.com/.
+Doomien   fps-mittauksia   eri   Amiga   kokoonpanoissa    löytyy    osoitteesta
+http://www.balldesi.demon.co.uk/.
+Sitten testasin ViewToolia, joka on PowerPC-pohjainen JPEG-kuvien  katseluohjel-
+ma. Nopeus on "riittävä", sillä Sony 17" Trinitron 200ES -monitorini ei edes eh-
+di vaihtaa uutta kuvataajuutta, ennen kuin isotkin JPEGit on  purettu  24-bitti-
+seksi kuvaksi. Musiikin kuuntelua testasin PPC-portatulla  MPG123:lla,  jota  ei
+pidä sekoittaa Aminetista löytyvään 680x0-versioon. PowerPC-versio  löytyy  vain
+osoitteesta http://www.ph-cip.uni-koeln.de/~jakob/mpg123.lha. MPG123 soitti  on-
+gelmitta kaikki testaamani MP3-tiedostot. Yllättävänä havaintona huomasin, ettei
+mpegien soitto häirinnyt 060-prosessoria, vaan moniajo toimi samalla  loistavas-
+ti!
+
+Tätä kirjoittaessani CyberStormPPC on ollut minulla viikon päivät, enkä ole juu-
+ri ehtinyt PowerPC-ohjemia testaamaan, mutta  kaikki  testaamani  ohjelmat  ovat
+toimineet ongelmitta. PowerPC:lle ei luonnollisesti ole vielä  hirveästi  ohjel-
+mia, mutta nyt kun Amiga International  antoi  sille  tukensa,  rupeaa  varmasti
+PowerPC:lle tulemaan nopeammin ohjelmia. Myös A1200:n PowerPC-turbojen tuotannon
+aloittaminen varmasti vaikuttaa positiivisesti. Sitä kautta PowerPC-ohjelmoijien
+määrä lisääntyy edullisten A1200:n PowerUp-korttien myötä.
+
+Jonkin verran on kuitenkin jo saatavilla ohjelmia,  kuten  PPaintilla  PPC-blit-
+taus-kirjastot. Ak-datatyypeistäkin  on  tullut  kaksi  PowerPC-versiota,  jotka
+boostaavat AWebin kuvien lataamista epäilemättä mukavasti. En näitä ole  kokeil-
+lut, koska ne vaativat rekisteröidyn version. Tällä hetkellä AWeb on ainoa  Ami-
+gan selain joka tulee myös Javaa, joten varmasti rekisteröintejä on  Ak-datatyy-
+peille odotettavissa. Toinen PowerPC:tä tukeva rekisteröinnin vaativa ohjelmisto
+on SView. Sillä pystyy katselemaan kuvia ja konvertoimaan niitä lukuisista  for-
+maateista toiseen. Freeware-puolelta löytyy muutamia MPEGien  koodaus/soitto-oh-
+jelmia sekä erilaisia fraktaalienlaskuohjelmia ja  maisemageneraattoreita.  Myös
+mpeg-videoiden katseluohjelmia on muutamia. Yksi sellainen testaamani katseluoh-
+jelma nimeltä Frogger näyttää JPEG-videoita 8-bittisellä Workbench-näytöllä kii-
+tettävää vauhtia. RC5-koodin purkamista voi myös vauhdittaa PowerPC:llä.  Amine-
+tiin on miltei joka käyntikerralla tullut jotain uusia PowerPC-ohjelmia korttini
+omistusaikana.
+
+Phase   5:n   sivuilta   (http://www.phase5.de/products/statement/pupliste.html)
+löytyy koko joukko ohjelmistotaloja, jotka ovat lupautuneet tekemään tai ovat jo
+tehneet   ohjelmia   PowerPC:lle.   Netistä   löytyy   myös   PowerPC   homepage
+(http://hem.passagen.se/studiox/powerup/index.html), jonne on kerätty  ohjelmia,
+linkkejä  jne.  Sieltä  löytyy  myös  uutissivun  muodossa  viimeisintä   tietoa
+PowerPC:stä. Andre Osterhuesin kotisivuilla (http://erratic.home.pages.de)  kan-
+nattaa myös käydä poikkeamassa. Kaveri on itse kääntänyt PowerPC:lle joukon  oh-
+jelmia,    jotka    ovat    siellä    saatavilla.    CyberGFX:n     kotisivuilta
+(http://www.vgr.com/ppc/) löytyy myös PowerPC-ohjelmistoja.  PowerPC-tietoa  voi
+myös ammentaa postituslistoilta. Listoja on kaksi, käyttäjille  ja  ohjelmienke-
+hittäjille. Liittymisohjeet löytyvät aiemmin mainitulta CyberGFX:n kotisivulta.
+
+Picasso IV:stä kiinnostuneiden kannattaa käydä osoitteessa  http://www.villaget-
+ronic.com/amiga/. Myös Picasso96-ohjelmistolle on postituslista, jonka liittymi-
+sohje on edellämainitulla sivulla. P96-ohjelmiston kanssa toimivat  myös  Cyber-
+alkuiset grafiikkaohjelmistot ja joku niistä jopa  tukee  esim.  Picasso  IV:stä
+löytyvää hardware-pohjaista PIP (Picture In Picture) -toimintoa. Picasso IV toi-
+mii hyvin CyberStormPPC:n kanssa. Jos jo jonkin näytönohjaimen omistaa,  kannat-
+taa mennä katsomaan sivulle http://www.uea.ac.uk/~suamiga/rtggames.html ohjelmia
+ja demoja, jotka toimivat näytönohjainten kanssa.
+
+Huhuna olen kuullut, että Picasso IV olisi mahdollista  kytkeä  samalla  tavalla
+CyberStormPPC:hen kuin CyberVisionPPC. Asian todenperäisyyttä en tiedä ja vaikka
+se onnistuisikin, saattaa ongelmia tulla oikeuksissa jne., joten huhu  kannattaa
+jättää  omaan  arvoonsa.  Toinen  huhu  kertoo  Motorolan  onnistuneen   saamaan
+PowerPC-sirun toimimaan 1000 MHz:n taajuudella. Kyseessä olisi kuulemma  kuiten-
+kin ollut vain demokappale, josta puuttuu FPU jne. Jos tässä on vähääkään totta,
+niin Intel on pienissä vaikeuksissa. ;-)
+
+Tällä kokoonpanolla on Amigaa mukava käyttää. Viime kesänä ostetun Picasso  IV:n
+jälkeen kone on tuntunut vakaammalta kuin koskaan, eikä CyberStormPPC sitä näytä
+serial.device-ongelman selvittyä vähentävän. Aikanaan kun ostin A1200:aani Bliz-
+zard 1260:n, oli se pieni pettymys. Tätä ei siis  pidä  käsittää  väärin,  sillä
+totta kai  LhA-pakettien  purku  jne.  nopeutui  ja  ohjelmat  saivat  kaivattua
+vääntöä, mutta kun värien määrän nosti 256:een AGA:lla, oli koneen  käyttö  tus-
+kaa. Kun kone sitten vaihtui A4000:een, jossa oli  030-prosessori,  niin  rupesi
+pian kaipaamaan 060:aa. Kuitenkin ostin ensin Picasso IV:n, joka vaikutti konee-
+seen kuin turbo! Esimerkiksi IBrowsen kanssa 24-bittisellä näytöllä  kuvat  vain
+lätkitään näkyviin ilman sen kummempia viiveitä nopeasta vierityksestä  puhumat-
+takaan.
+
+Picasso IV:n kanssa ei ole tullut pientä pettymyksen tunnetta  kertaakaan,  vaan
+se on ollut koko rahan vastinetta. Nyt kun koneessa on taas 060, huomaa  Picasso
+IV:n voiman siitä, ettei kuvien näyttäminen IBrowsen kanssa enää juuri  nopeutu-
+nut. Totta kai monimutkaisilla sivuilla 060:n vaikutuksen näkee heti. IBrowselle
+on luvattu PowerPC-tuki, jota odotan mielenkiinnolla. PowerPC:n nopeus on todel-
+la vaikuttavaa testaamillani ohjelmilla. 68060:kin pääsee aivan eri tavalla  oi-
+keuksiinsa näytönohjaimen kanssa kuin AGA:lla.
+
+A1200:aa tornitettaessa kannattaa huomioida se, ettei Zorro II -väylä ole  Chip-
+muistin osoitusta yhtään nopeampi! Esim. CyberVision 64/3D  pääsee  oikeuksiinsa
+vasta Zorro III -väylässä. Tästä huolimatta Zorro II -väyläinenkin  näytönohjain
+hakkaa AGA:n mennen tullen, kun halutaan surfata netissä 24-bittisellä  näytöllä
+tai käyttää Workbenchiä 256:lla värillä.
+
+Kirjoittajan tavoittaa sähköpostitse osoitteesta shk@sci.fi. 

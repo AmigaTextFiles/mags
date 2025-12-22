@@ -1,0 +1,214 @@
+@database "TUTORIAL AREXX"
+@author Stefano Marotta
+@(c) "Copyright © 1995 Stefano Marotta"
+
+@INDEX "ApuNews_00.guide/sommario"
+
+@NODE MAIN "TUTORIAL AREXX"
+@TOC "ApuNews_00.guide/MAIN"
+
+                       T U T O R I A L   A R E X X
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                               Prima parte
+                                   di
+                           @{" Stefano Marotta " Link "Schede_Soci.guide/Stefano_Marotta"}
+
+
+@{" Arexx " Link Arexx} ....................... AREXX questo sconosciuto.
+@{" Arexx Disk Catalog " Link Arexx_Disk_Catalog}........... Un esempio pratico.
+@ENDNODE
+
+@NODE Arexx "Arexx"
+
+ Nel  passaggio dal  sistema operativo  1.3 al  2.0, la  Commodore decise di
+ eliminare il supporto al basic ed inserì al suo posto l'Arexx.
+ Questo cambiamento fece  credere alla maggior  parte degli utenti  Amiga (o
+ almeno a quelli meno smaliziati), che la programmazione sul nostro computer
+ fosse dedicata solo agli esperti utilizzatori del C o dell'Assembler.
+ L'Arexx  rimase, e forse è tuttora, poco conosciuto e utlizzato dalla massa
+ degli utenti Amiga, perchè è un  linguaggio poco noto che gode di  una fama
+ di  macro linguaggio (quindi destinato a risolvere solo problemi minori) ed
+ inoltre, non è mai stato  documentato in modo tale da  renderlo utlizzabile
+ al massimo delle sue potenzialità.
+ Lo  scopo di questo  tutorial, sarà proprio  questo: cercheremo di spiegare
+ con degli esempi pratici (che  quindi resteranno utili) come sfruttare  nel
+ migliore dei modi questo potente linguaggio.
+ Iniziamo  col dire che ARexx, non è solo un macro linguaggio. L'utilizzo in
+ questo senso è possibile, ed è uno dei suoi punti di forza, ma non possiamo
+ limitarci  a  quest'uso,  dobbiamo  infatti  liberare  la nostra fantasia e
+ utilizzarlo  per  qualsiasi  scopo.  Certo  stiamo  parlando comunque di un
+ linguaggio  interpretato,  che  quindi  avrà  delle limitazioni in quanto a
+ velocità  di  esecuzione,  ma  per  gli  usi  più  comuni  resta sempre uno
+ strumento potentissimo, da preferire ai più complessi linguaggi come il C.
+ Il Rexx viene implementato su  Amiga, come linguaggio per la  comunicazione
+ tra  processi, ossia un mezzo per scambiare dati tra diverse applicazioni e
+ tra queste ed il sitema operativo.
+ Questa  caratteristica  offre  la  possibilità  di  aggiungere,  creare   o
+ modificare  qualsiasi  comando  o  funzione,  di  cui abbiamo bisogno in un
+ programma.
+ E' ovvio  che i  programmi su  cui possiamo  operare devono necessariamente
+ essere  dotati  di  una  porta  ARexx,  devono  cioè essere predisposti per
+ l'utilizzo  con  questo  linguaggio,  anche  se,  come  vedremo in seguito,
+ potremo   agire   anche   su   alcuni   programmi   che   non   sono dotati
+ dell'interfaccia per ARexx.
+ La dotazione base che viene fornita con il sistema operativo versione 2.0 e
+ successive,  comprende  il programma interprete RexxMast, il comando RX per
+ lanciare   gli   script   da    noi   creati,   la   libreria    principale
+ Rexxsyslib.library,     la    libreria    con    funzioni    di    supporto
+ Rexxsupport.library  e  per  finire  una  serie  di  comandi amiga dos, che
+ servono a vari compiti e che sono contenuti nella directory rexxc.
+ L'installazione va realizzata in questo modo:
+ 
+ Programma RexxMast                   directory   Sys:System
+ Programma RX e utility di supporto   directory   Sys:rexxc
+ Librerie rexxsyslib e rexxsupport    directory   Sys:libs
+ Assegnazione della directory Rexx:   directory   Sys:rexx o altro
+ 
+ Il  programma principale,  da lanciare  prima di  poter eseguire uno script
+ Arexx, e' il RexxMast, ossia l'interprete dei comandi Arexx.
+ Una volta attivato, l'interprete resterà residente in memoria, in attesa di
+ eseguibili da "digerire", e a darglieli in pasto sara` il programma RX.
+ Va notato che se l'installazione viene eseguita rispettando lo schema sopra
+ riportato, bisognerà  informare il  sistema operativo  sul come  reperire i
+ vari  programmi, in  particolare se  vogliamo lanciare  il comando  RX e le
+ altre utlility  di supporto  da qualsiasi  shell, dovremmo  utlizzare nella
+ nostra  user-startup, il comando  path, per aggiungere  ai vari percorsi di
+ sistema, anche la directory Sys:rexxc.
+ A questo punto possiamo fare qualche prova:
+
+ Apriamo una shell e digitiamo il seguente comando:
+ 
+ rx "say 'Prova Arexx !'"
+ 
+ se tutto e` andato bene, avremo come risultato la seguente linea:
+ 
+ Prova Arexx !
+ 
+ Adesso invece proviamo con qualcosa di  più utile, e scriviamo con un  text
+ editor qualsiasi (purchè salvi in formato ASCII !), il seguente listato:
+
+                     @{" ARexx Disk Catalog " Link ARexx_Disk_Catalog} 
+ 
+ Il  listato sopra riportato, ha  bisogno della libreria rexxarplib.library,
+ che   troverete   allegata,   insieme   al  file  Contenente  il  programma
+ ARexxDiskCat, sul dischetto APU numero 0.
+ La  libreria  rexxarplib.library  aggiunge  nuove  funzioni  all'Arexx e va
+ copiata  nella  directory  Sys:Libs,  mentre  il programma ARexxDiskCAt, un
+ catalogatore  di  file  e  dischi,  andrà  copiato,  preferibilmente, nella
+ directory REXX:.
+ Provate a lanciare il programma, digitando da una shell, la seguente riga:
+ rx ARexxDiskCat e seguite le istruzioni a video, se tutto e` stato digitato
+ correttamente, vedrete in funzione uno script che legge il nome di un disco
+ nel  drive specificato (di  default viene considerato  il df0:) e associa a
+ quel nome il contenuto del disco.
+ Sulla linea di comando potrete anche specificare un dispositivo diverso dal
+ df0:  e  anche  un  file  catalogo  diverso  da  quello  di  default che è:
+ Ram:DiskCat.
+ Come  noterete, il programma è molto rudimentale, fa ricorso al comando dos
+ "Info", che dovrà essere contenuto nella directory: sys:c, del vostro disco
+ di  boot,  e  ha  anche  molte  imperfezioni che volontariamente sono state
+ lasciate,  per  permetterci  nelle  prossime  puntate  di studiarne tutti i
+ miglioramenti da poter apportare.
+ Nel frattempo provate a seguire  il flusso del programma, aggiungendo  come
+ tera riga dello script il seguente comando: trace r.
+ 
+ In questo modo:
+ * ARexx Disk Catalog - ® Stefano Marotta 1994*/
+ /* $VER: ARexx Disk Catalog version 1.1 - 10-05-94 - ® Stefano Marotta */
+ trace r
+ parse arg DevName DPATH .
+ call addlib('rexxarplib.library',0,-30)
+ call addlib('rexxsupport.library',0,-30)
+ if DevName="" then DevName="df0:"
+ if DPATH="" then DPATH="Ram:DISKCAT"
+ ......................
+ 
+ Così,  quendo lancierete il programma, vedrete a schermo, l'esecuzione riga
+ per riga del codice e potrete seguirne il risultato.
+ Nella prossima "puntata", spiegheremo per bene il listato di  ArexxDiskCat,
+ cercheremo  di renderlo più  snello e veloce,  puntando alla conoscenza dei
+ primi comandi e funzioni Arexx, più  importanti.
+ Questo tipo di approccio,  potrà sembrare,  forse più complesso, almeno per
+ i neofiti della programmazione, ma vi permetterà di avere subito  sottomano
+ un  utlie  script  da  utilizzare  e,  al  tempo stesso, di imparare questo
+ potente linguaggio.
+ 
+ Arrivederci al prossimo numero di APU News.
+
+@ENDNODE
+
+@NODE Arexx_Disk_Catalog "Arexx Disk Catalog"
+
+ /* Disk Catalog - ® Stefano Marotta 1994*/
+ /* $VER: Disk Catalog version 1.1 - 10-05-94 - ® Stefano Marotta */
+ 
+ parse arg DevName DPATH .
+ call addlib('rexxarplib.library',0,-30)
+ call addlib('rexxsupport.library',0,-30)
+ if DevName="" then DevName="df0:"
+ if DPATH="" then DPATH="Ram:DISKCAT"
+ do forever
+ 
+ say 'Inserisci un disco nel drive e premi RETURN o digita NEW per un nuovo
+      Device o per uscire.'
+ call open(IN,'*','R')
+ OPT=readln(IN)
+ call close(IN)
+ 
+ if upper(OPT)=='NEW' then do
+ say 'Inserisci il nome di un nuovo dispositivo o Quit per uscire:'
+ Pull DevName .
+ if upper(DevName)=='QUIT' then Signal ExitDC
+ end
+ 
+ do WHILE ~exists(DevName)
+ say DevName||' non è un dispositivo valido !'
+ say 'Inserisci il nome di un nuovo dispositivo o Quit per uscire:'
+ Pull DevName .
+ if upper(DevName)=='QUIT' then Signal ExitDC
+ end
+ 
+ address command
+ 'Sys:c/info > ram:INFOTMP '||DevName
+ call open(IN,'Ram:INFOTMP',R)
+ do Count=1 to 7
+ INLN=readLN(IN)
+ end
+ call close(IN)
+ call delete('Ram:INFOTMP')
+ VolName=Left(INLN,(Length(INLN)-9))
+ 
+ FList.=''
+ NFiles=filelist(DevName||'*',FList,'F','N')
+ 
+ if exists(DPATH) then do
+ FLAG='A'
+ say 'Nome Device: '||VolName
+ say 'Appendo al file: '||DPATH||' '||NFiles||' files.'
+ say ''
+ end
+ else do
+ FLAG='W'
+ say 'Nome Device: '||VolName
+ say 'Creo il file: '||DPATH||' con '||NFiles||' files.'
+ say ''
+ end
+ 
+ call open(OUT,DPATH,FLAG)
+ call writeln(OUT,VolName)
+ do Count=1 to NFiles BY 2
+ Count2=Count+1
+ call WriteLN(OUT,'  '||overlay(FList.Count,'',1,36,' ')||'   '||
+              overlay(FList.Count2,'',1,36,' '))
+ end
+ call writeln(OUT,'')
+ call close(OUT)
+ 
+ end
+ 
+ ExitDC:
+ say 'Tutto OK!! Ciao!'
+ Exit
+
+@ENDNODE
+

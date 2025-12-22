@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+    <HEAD>
+    <META NAME="GENERATOR" CONTENT="HANDMADE">
+    <TITLE>Die Diskette</TITLE>
+    </HEAD>
+
+    <BODY TEXT="#000000" LINK="#0000FF" ALINK="#FF0000" VLINK="#0000FF" BGCOLOR="#B0B0B0">
+    <TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" SUMMARY="" BGCOLOR="#000000">
+    <TR>
+	<TD>
+	<MAP NAME="hdw0">
+	<AREA SHAPE="RECT" COORDS="460,1,550,22" HREF="hdw.html" ALT="zur&uuml;ck">
+	</MAP> 
+	<TABLE ALIGN="CENTER" WIDTH="640" BORDER="2" CELLPADDING="0" SUMMARY="" BGCOLOR="#206010">
+	<TR>
+	    <TD><IMG SRC="hdw.gif" ALT="" WIDTH="640" HEIGHT="22" BORDER="0" USEMAP="#hdw0"></TD>
+	</TR>
+	<TR>
+	    <TD>
+	    <BR>
+	    <BR>
+	    <TABLE ALIGN="CENTER" BORDER="0" CELLPADDING="10" SUMMARY="" BGCOLOR="#C0C0C0" WIDTH="90%">
+	    <TR>
+		<TD>
+		<BR>
+		<H2 ALIGN="CENTER">Die Diskette</H2>
+		<BR>
+		<P>
+		Die Struktur einer Diskette ist f&uuml;r viele immer noch ein
+		Buch mit 7 Siegeln. Nun um den abzuhelfen lest einfach mal hier
+		weiter.Ich setze mal vorraus, das Ihr wi&szlig;t,das eine Amiga
+		Diskette in 80 Zylinder aufgeteilt ist.Jeder dieser 80 Zylinder
+		hat 2 Seiten,eine Ober und eine Unterseite.Eine Seite nennt man
+		Track,so das eine Diskette nach Adam Riese aus 160 Tracks
+		besteht. Man sagt f&uuml;r Track auch Head 0(f&uuml;r die untere
+		Seite der Disk)oder Head 1(f&uuml;r die obere Seite der Disk.
+		Jeder der 160 Tracks ist in 11 Sektoren unterteilt,wobei jeder
+		der 11 Sektoren 512 Bytes Daten beinhaltet.Jetzt wird unser
+		Taschenrechner gez&uuml;ckt.<BR>
+		<BR>
+		<FONT SIZE="+1"><B>160 Tracks x 11 Sektoren =1760 Sektoren insgesammt.</B></FONT><BR>
+		<BR>
+		Somit sehen wir,das auf einer Disk insgesammt 1760 Sektoren
+		sind.F&uuml;r Sektoren kann man auch Bl&ouml;cke sagen.Nun hatte
+		ich schon gesagt,das ein Sektor(Block) einen Dateninhalt von 512
+		Bytes hat.Nun mal wieder unseren Taschenrechner gezogen.<BR>
+		<BR>
+		<FONT SIZE="+1"><B>1760 Sektoren x 512 Bytes = 901120 Bytes insgesammt.</B></FONT><BR>
+		<BR>
+		Tja,wenn wir das nun noch durch 1024 teilen,kommen wir auf
+		unsere bekannte Diskettenkapazit&auml;t.<BR>
+		<BR>
+		<FONT SIZE="+1"><B>901120 Bytes:1024 = 880 Kbyte</B></FONT><BR>
+		<BR>
+		Davon h&ouml;rten doch wohl schon die meisten,oder??<BR>
+		Nun wird es aber doch ein wenig kniffelig...<BR>
+		Wie sind nun diese Sektoren auf Diskette angeordnet?Wir wissen
+		nun schon,das ein Sektor512 Datenbytes beinhaltet.Unser Compi
+		codiert nun die Daten und f&uuml;gt so ganz nebenbei noch ein
+		paar extra Infos (Header genannt) hinzu und schreibt nun diesen
+		ganzen Datenklumpen auf den Track.Technisch ausgedr&uuml;ckt
+		w&auml;re dies die MFM-Codierung.Auf die gleiche Weise werden
+		die restlichen 11 Sektoren auf die Disk geschrieben.Nun ist aber
+		der Track noch nicht voll,aber auch kein Platz mehr f&uuml;r
+		einen kompletten Sektor.Nun ist unser Compi auch nicht
+		bl&ouml;de und so f&uuml;llt er einfach den Leerraum mit $aa
+		Bytes auf ($aaaa=codiertes $00 Byte) was man GAP nennt.Das hat
+		zum Beispiel das Ergebnis,das wir nach dem formatieren einer
+		Diskette niemals volle 880 Kbyte frei haben. Tja,wo ist nun auf
+		einer Disk ein Sektor zu finden bzw.wo f&auml;ngt er an und wo
+		h&ouml;rt er auf?Man braucht nun eine Markierung,die nicht in
+		den Daten der Sektoren enthalten sind,und somit als Start-und
+		Endadresse erkannt werden k&ouml;nnen. Diese Markierung
+		hei&szlig;t SYNC=$4489.Wenn nun unser geliebtes St&uuml;ck einen
+		Sektor liest,liest er erstmal den gesammten Track und sucht nun
+		nach SYNCs.Wenn er nun einen gefunden hat,wei&szlig;
+		er,da&szlig; er am Anfang eines Sektors ist.Nun schaut er im
+		Header kurz nach,(da steht auch die Sektornummer drin)und schon
+		wei&szlig; er,mit welchem Sektor er es zu tun hat.Danach kann er
+		n&auml;mlich entscheiden,ob es der Sektor ist,den er lesen
+		sollte.Nun gibt es ja diese b&ouml;sen,b&ouml;sen Cracker,und
+		manche Spielefirma versucht nun Ihr Produkt zu
+		sch&uuml;tzen.Viele machen es einfach durch Verwendung von
+		Fremdformaten,das hei&szlig;t,da&szlig; sie einfach das
+		SYNC-Word &auml;ndern.Normalerweise ist es ja $4489 und nach der
+		Ver&auml;nderung k&ouml;nnte es $a89a sein.Auch bestehen diese
+		Formate nicht aus 11 Sektoren zu je 512 Bytes sondern zum
+		Beispiel aus einem einzigen Sektor mit $1800 Bytes
+		Dateninhalt.Das sind die gef&uuml;rchteten Longtracks.Wie der
+		Name schon sagt,kann man somit mehr Daten auf eine Diskette
+		schreiben.Als Kopierschutz reicht er eigendlich schon aus, da
+		unsere klapprige Floppy diese Longtracks zwar lesen kann,aber
+		zum Leidwesen aller M&ouml;chtegernswapper diese nicht schreiben
+		kann.&Uuml;brigens kann man dies zwar mit einigen
+		Kopierprogrammen (z.B.XCopy mit Hardware)umgehen,aber unsere
+		Kopiersch&uuml;tzer sind ja auch nicht auf den Kopf gefallen,und
+		so kommen auch mal Shorttracks und andere fiese Gemeinheiten auf
+		den Markt.Ich hoffe nun,da&szlig; Ihr einen kleinen Einblick in
+		die Tiefe unserer geliebten Diskette erhalten habt.</P>
+		<BR>
+		<BR>
+		<P>Peter R&ouml;hling-Taunusstr.20b-58708 Menden-02373/66452Gezeichnet</P>
+		<BR>
+		<BR>
+		</TD>
+	    </TR>
+	    </TABLE>
+	    <BR>
+	    </TD>
+	</TR>
+	<TR>
+	    <TD><IMG SRC="hdw.gif" ALT="" WIDTH="640" HEIGHT="22" BORDER="0" USEMAP="#hdw0"></TD>
+	</TR>
+	</TABLE>
+	</TD>
+    </TR>
+    </TABLE>
+    </BODY>
+</HTML>
+

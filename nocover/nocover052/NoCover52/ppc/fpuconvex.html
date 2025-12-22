@@ -1,0 +1,201 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="fpuexcept.html">PREV</a> | <a href="fpucontr.html">NEXT</a>
+<hr>
+<pre>
+
+<b> FPU: Conversion Examples </b>
+
+Because of the importance i am giving some FPU conversion examples
+out of the Motorola Docs here (Remember, that PowerUP currently
+only supports 32 Bit PPCs !!!)
+
+
+First some basics:
+
+For the standard FPU-&#062;Int Conversion you use fctiw, store the result
+from the  FPU-register into the memory, and load it then from memory
+with a General purpose register. The standard Int-&#062;FPU Conversion is
+not that easy on a 32 Bit machine, below a Macro is given...
+
+Only 64 Bit:
+
+Floating Point Number -&#062; Floating Integer
+
+The number to be converted is in f1, the result will be in f3.
+
+mtfsb0 23   ; clear VXCVI
+fctid f3,f1 ; convert to int
+fcfid f3,f3 ; convert back to double
+mcrfs 7,5   ; VXCVI to CR
+bf 31,$+8   ; Jump, if VXCVI was 0
+fmr f3,f1   ; input was fp int
+
+Only 64 Bit:
+
+Floating Point Number -&#062; Signed Fixed-Point Integer Double-Word
+
+A Doubleword at Offset disp of r1 is used as scratch-space,
+the number to be converted is in f1, the result will be in r3.
+
+fctid f2,f1      ; convert to dword int
+stfd f2,disp(r1) ; store float
+ld   r3,disp(r1) ; load dword
+
+Only 64 Bit:
+
+Floating Point Number -&#062; Unsigned Fixed-Point Integer Double-Word
+
+The value to be converted is in f1, the value 0 in f0, the value
+2^64-2048 in f3, the value 2^63 in f4 and r4, the result is given
+in g3, and a double word at Offset disp of r1 is used as scratch-space.
+
+fsel f2,f1,f1,f0 ; use 0, if &#060;0
+fsub f5,f3,f1    ; use max, if &#062;max
+fsel f2,f5,f2,f3
+fsub f5,f2,f4    ; subtract 2^63
+fcmpu cr2,f2,f4  ; use diff, if &#062;=2^63
+fsel f2,f5,f5,f2
+fctid f2,f2      ; convert to dword int
+stfd f2,disp(r1) ; store float
+ld r3,disp(r1)   ; load dword
+blt cr2,$+8      ; add 2^63 if input was &#062;=2^63
+add r3,r3,r4
+
+32+64 Bit:
+
+Floating Point Number -&#062; Signed Fixed-Point Integer Word
+
+A Double Word at Offset disp of r1 is used as scratch-space, the
+number to be converted is in f1, the result will be in r3.
+
+fctiw f2,f1        ; convert to int
+stfd f2,disp(r1)   ; store float
+lwa  r3,disp+4(r1) ; load algebraic word
+
+32+64 Bit:
+
+Floating Point Number -&#062; Unsigned Fixed-Point Integer Word
+
+This conversion works in a different way in 32 Bit than it does in 64 Bit.
+
+64 Bit:
+
+The value to be converted is assumed in f1, the value 0 in f0, the value
+2^32-1 in f3, the result is returned in r3, and a doubleword at Offset disp
+is used as Scratch-Space.
+
+fsel f2,f1,f1,f0  ; use 0, if &#060;0
+fsub f4,f3,f1     ; use max, if &#062;max
+fsel f2,f4,f2,f3
+fctid f2,f2       ; convert to dword int
+stfd f2,disp(r1)  ; store float
+lwz r3,disp+4(r1) ; load word and zero
+
+32 Bit:
+
+Additionally to the 64 Bit version, for the 32 Bit version, the value 2^31 is
+needed in f4.
+
+fsel f2,f1,f1,f0  ; use 0, if &#060;0
+fsub f5,f3,f1     ; use max, if &#062;max
+fsel f2,f5,f2,f3
+fsub f5,f2,f4     ; subtract 2^31
+fcmpu cr2,f2,f4   ; use diff, if &#062;2^31
+fsel f2,f5,f5,f2
+fctiw f2,f2       ; convert to int
+stfd f2,disp(r1)  ; store float
+lwz r3,disp+4(r1) ; load word
+blt cr2,$+8       ; add 2^31, if input was &#062;= 2^31
+xoris r3,r3,0x8000
+
+Only 64 Bit:
+
+Signed Fixed-Point Integer Double-Word -&#062; Floating Point Number
+
+The value to be converted is assumed in r3, the result will be put in f1,
+and a double word at Offset disp of r1 is used as scratch-space.
+
+std r3,disp(r1) ; store dword
+lfd f1,disp(r1) ; load float
+fcfid f1,f1     ; convert to fpu int
+
+Only 64 Bit:
+
+Unsigned Fixed-Point Integer Double-Word -&#062; Floating Point Number
+
+The value to be converted is assumed in r3, the result will be put in f1,
+the value 2^32 is assumed in f4, and two double words at Offset Disp of r1
+are used as scratch-space.
+
+rldicl r2,r3,32,32 ; Isolate High Half
+rldicl r0,r3,0,32  ; Isolate Low Half
+std r2,disp(r1)    ; store dword both
+std r0,disp+8(r1)
+lfd f2,disp(r1)    ; load float both
+lfd f1,disp+8(r1)
+fcfid f2,f2        ; convert each half to fpu int
+fcfid f1,f1
+fmadd f1,f4,f2,f1  ; 2^32*high+low
+
+If Rounding is defined towards +infinity or towards -infinity or if it is
+acceptable, that the converted number is either of the two representable
+FP-numbers nearest to the given fixed-point number (and only then !!!)
+the following shorter version can be used (the registers are defined as
+usual, only that the value in f4 is not needed, f2 is assumed to be
+2^64) :
+
+std r3,disp(r1)  ; store dword
+lfd f1,disp(r1)  ; load float
+fcfid f1,f1      ; convert to fpu int
+fadd f4,f1,f2    ; add 2^64
+fsel f1,f1,f1,f4 ; if r3&#060;0
+
+Only 64 Bit:
+
+Signed Fixed-Point Integer Word -&#062; Floating Point Number
+
+It is assumed, that the value to be converted is found in r3, the result
+is returned in f1, and a double word at Offset disp of r1 is used as
+scratch-space.
+
+extsw r3,r3      ; sign-extension
+std r3,disp(r1)  ; store dword
+lfd f1,disp(r1)  ; load float
+fcfid f1,f1      ; convert to fpu int
+
+Only 64 Bit:
+
+Unsigned Fixed-Point Integer-Word -&#062;Floating Point Number
+
+It is assumed, that the value to be converted is found in r3, the result
+is returned in f1, and a double word at Offset disp of r1 is used as
+scratch-space.
+
+rldicl r0,r3,0,32 ; 0-extend
+std r0,disp(r1)   ; store dword
+lfd f1,disp(r1)   ; load float
+fcfid f1,f1       ; convert to fpu int
+
+And now: The Macro for Int-&#062;FPU Conversion for 32 Bit Machines (will also
+work on 64 Bit machines). Note: This macro only works in Small-Data.
+
+citf            macro
+                xoris   trash,3,$8000
+                sw      trash,_CITF_TEMP+4
+                lf      1,_CITF_TEMP
+                fsub    1,1,2
+                endm
+
+Parameter 1 is the destination FP-register, parameter 2 the intermediate
+FP-register (which MUST hold the value $4330000080000000, parameter 3
+the source GP-register).
+
+</pre>
+</body>
+</html>

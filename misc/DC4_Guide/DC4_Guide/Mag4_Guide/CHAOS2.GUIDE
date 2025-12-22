@@ -1,0 +1,44 @@
+@database Chaos2.html
+@remark Converted with HTML2Guide ©1997 Mark Harman
+@wordwrap
+
+@node MAIN "Chaos2.html"
+@{"b"}Chaos Theory@{"ub"} 
+	@{"i"}Part Two...@{"ui"}  
+
+Last issue, we looked at the basics of chaos theory, chaotic sequences, and period doubling. Now it's time for a program. The source for this, in AMOS, is under the file 'Chaos.AMOS' in the 'Mag4/' drawer.  
+
+@{" - Picture - " link "DC4_Guide1:Mag4_Guide/Chaos1.GIF/MAIN"} 
+Here is a picture of the output (although I've converted it to a 2 colour 320x256 GIF). You won't get this when you run the program straight away; that needs some minor modifications! The program is commented, I shall explain more later. But for now, what does this picture actually show? We are doing the same xn+1 = a xn(1-xn) as last issue. The starting value of 'x' is kept the same at all times (0.4, in this program), but the value of a is varied. Along the x axis is the value 'a', and we do the iteration repeatedly. What about the y axis?  
+
+Remember what I said last issue about what happens to 'x' as 'a' is varied? For low values of a, x eventually reaches a single number, and it is this value which is plotted on the y axis. So if you run the program, it starts of as a single line. But then it splits in two - that is period doubling. At that point, the value of x never settles to a single point, but continually oscillates between 2 points. And then they split again, and so on.  
+
+So how does the program work? Firstly, the subroutine _SETUP setups up the region to be graphed. _MINY# and _MAXY# should be left as they are, but you can change _MINX# and _MAXX# to explore different regions. _STEPX# is how detailed to draw the picture. Change the variables to: 
+_MINX#=3.5 
+_MAXX#=4 
+_STEPX#=0.001 
+As a increases, so does the number of periods. But you may remember from last issue that at a particular value of a (in this case, about 3.569946), the period becomes infinite, that is, complete chaos. The value of x never repeats itself. You can see this on the graph where it goes from the lines to the shaded regions. But if you look, you will see that even in these regions of chaos, there are 'holes' in the shaded areas where it returns to lines. Even within this chaos, there are regions of order. These are windows of periodicity. Now set the program to do: 
+_MINX#=3.9 
+_MAXX#=4 
+_STEPX#=1E-04 
+(Will take a little longer, this time). Looks like complete chaos, however you should see two small regions of order again. As you keep zooming in, you will see the same patterns appearing again and again, and more and more of these (ever smaller) windows of periodicity. One more time then: 
+_MINX#=3.99 
+_MAXX#=4 
+_STEPX#=1E-05 
+A ten times enlargement, but you wouldn't know it. Note that as you zoom in, the calculations take longer and longer. Go to the _DOGRAPH subroutine, and you will see _NIT, the number of iterations, depends on _STEPX#; as you zoom in, more iterations are done. This is because as you zoom in, a greater number of iterations are required to distinguish windows of periodicity from chaos. 
+
+The program performs the iterations, and the last 50 are actually plotted on the screen. This is because we need to do the initial iterations to get some reasonably accurate values to plot; it is the limits of x we are plotting. We plot 50 to get a good spread of all the values in the period.  
+
+The _PLOT[] procedure plots the values on the screen, according to your graph. Something like this is always useful for graph drawing in programs.  
+
+So far, we have covered values of a up to 4. What about beyond that? Well, due to the nature of the equation, if a is greater than 4, the values of x are said to diverge, that is the just get larger and larger. The program won't plot anything, because the values of x are way too large to be drawn on screen (and are meaningless here, anyway).  
+
+Lastly, in _SETUP, change the _COLOUR line to _COLOUR=1, for a nice variation!  
+	----------------------------------------
+ 
+
+Next issue, who knows? Maybe Julia and Mandelbrot?   
+ 
+ 
+@endnode
+

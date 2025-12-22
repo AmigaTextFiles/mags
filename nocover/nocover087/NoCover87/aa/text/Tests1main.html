@@ -1,0 +1,319 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Tests und Erfahrungsberichte
+----------------------------
+
+1. Kleine Helfer f&uuml;r den Amiga-Alltag (von Christian Aichinger)
+
+Herzlich Willkommen zu den kleinen Helfern im Mai.
+
+Wieder mal sitzt mir der Redaktionsschlu&szlig; im Nacken, weshalb ich mich 
+diesmal kurz fasse und gleich zu den heute vorgestellten Programmen 
+&uuml;berleiten m&ouml;chte.
+Diesmal gibt es Reviews zu fmsdisk, HfMounterNG und WaTor. Das war ja eine 
+tolle &Uuml;berleitung ;-). Ich w&uuml;nsche aber trotzdem noch viel Spa&szlig; beim Lesen!
+
+
+fmsdisk:
+
+"Wie entpacke ich ein DMS-Archiv (DMS - DISK-Masher-Diskettenarchiv) direkt 
+auf die Festplatte?", "Wie kann ich eine ADF-Datei (Amiga Disk File -
+Disketten-Abbilder f&uuml;r den Unix Amiga Emulator UAE) direkt auf die 
+Festplatte extrahieren?" oder "Wie kann ich eine ADF-Datei von der 
+Festplatte ins ADF-Format zur&uuml;ck konvertieren?" - diese und &auml;hnliche Fragen 
+werden immer wieder in diversen Foren und Mailinglisten gestellt.
+
+Die beste L&ouml;sung f&uuml;r diese Probleme ist die fmsdisk-Distribution aus dem 
+Aminet. fmsdisk ist ein AmigaDOS-Ger&auml;tetreiber, der es erm&ouml;glicht, 
+virtuelle Disketten auf der Festplatte zu verwalten. Wird so eine virtuelle 
+Diskette im System angemeldet, l&auml;&szlig;t sich diese Disk ganz normal 
+formatieren, kopieren, mit DMS archivieren, mit ADF- und DMS-Archiven 
+beschreiben und auch als ADF-Datei speichern - nur mit einem kleinen 
+Unterschied: die Schreib-/Lesegeschwindigkeit ist um ein Vielfaches h&ouml;her. 
+Sogar mit dem DEV-Handler (siehe "kleine Helfer..." AMIGA aktuell Ausgabe 
+11/2000) harmoniert fmsdisk perfekt zusammen.
+
+Die Installation ist nicht wirklich schwierig. Allerdings sollte man sich 
+mit den Grundlagen von AmigaDOS und Shell auskennen. Als Erstes werden die 
+Dateien "fmsdisk.device" und "Mountlist" aus dem Verzeichnis 
+"...FmsDisk/Devs/" nach "Devs:" kopiert. Falls sich unter "Devs:" schon 
+eine alte Mountlist-Datei befindet, mu&szlig; die Mountlist-Datei aus der 
+fmsdisk-Distribution mit Hilfe eines Texteditors an die alte Mountlist-
+Datei angeh&auml;ngt werden. Das geht selbstverst&auml;ndlich auch aus der Shell mit 
+folgender Kommandozeile ("Laufwerk:Pfad" mu&szlig; mit dem richtigen Pfad zum 
+Verzeichnis der fmsdisk-Distribution erg&auml;nzt werden.):
+
+C:Type &gt;&gt;Devs:Mountlist Laufwerk:Pfad/FmsDisk/Devs/Mountlist
+
+Als n&auml;chstes wird an einem beliebigen Ort auf der Festplatte ein neues
+Verzeichnis angelegt in dem sp&auml;ter das fmsdisk.device seine virtuellen
+Floppy-Dateien ablegen kann. In der user-startup mu&szlig; zum Schlu&szlig; noch ein 
+neues Assign "FMS:" auf dieses Verzeichnis gesetzt werden.
+
+Ist alles erledigt, kann der Computer neu gestartet werden und wenn keine
+Fehlermeldungen w&auml;hrend des Bootvorgangs auftreten, m&uuml;&szlig;te fmsdisk korrekt
+installiert sein.
+
+Um dies zu &uuml;berpr&uuml;fen, kann man die erste virtuelle Floppy ja mal anmelden. 
+In einer Shell gibt man dazu...
+
+Mount FF0:
+
+...ein. Die Anmeldung des virtuellen Floppy-Laufwerks kann auch schon in 
+der user-startup oder der startup-sequence geschehen. Dazu mu&szlig; die 
+obengenannte Kommandozeile einfach in einer der genannten Startup-Dateien 
+eingef&uuml;gt werden. Wer jetzt mit...
+
+cd FF0:
+
+...auf das virtuelle Floppy-Laufwerk wechseln m&ouml;chte, bekommt erstmal eine
+Fehlermeldung um die Ohren gehauen, da&szlig; es sich bei der "eingelegten" 
+Diskette um eine "ung&uuml;ltige DOS-Disk" handelt. Das ist aber v&ouml;llig normal, 
+denn die virtuelle Diskette mu&szlig; vor der Verwendung - wie jede "echte" 
+Diskette auch - formatiert werden. Das ist ebenfalls schnell geschehen. In 
+der Shell gibt man dazu einfach folgende Kommandozeile ein:
+
+format drive ff0: name Blank noicons quick
+
+Oder man verwendet das Format-Programm aus der System-Schublade der 
+Workbench. Das Formatieren der virtuellen Diskette sollte in "nullkommanix" 
+erledigt sein.
+
+M&ouml;chte man nur eine ADF-Datei oder ein DMS-Archiv auf die virtuellen 
+Floppy-Disk schreiben, kann man sich die vorherige Formatierung auch 
+sparen, da diese Aufgabe normalerweise gleich von dem verwendeten Tool 
+(also "DMS" oder "adf2disk") &uuml;bernommen wird. Die Formatierung mu&szlig; nur 
+durchgef&uuml;hrt werden, wenn z.B. Dateien auf die virtuelle Floppy kopiert 
+oder andere Dateioperationen durchgef&uuml;hrt werden sollen.
+
+Wird eine ADF-Datei f&uuml;r UAE ben&ouml;tigt, kann einfach die entsprechende
+Floppy-Datei aus der, w&auml;hrend der Installation angelegten, "FMS:"-Zuweisung
+entnommen werden. Diese Dateien liegen praktischerweise schon im passendem
+ADF-Format vor und sind - je nachdem, in welchem simulierten Floppylaufwerk 
+sie sich gerade befinden - als "UnitX" (X steht f&uuml;r die Laufwerksnummer 
+[also 0, 1, 2, usw.]) bezeichnet.
+
+Das fmsdisk.device unterst&uuml;tzt durch die mitgelieferte Mountlist-Datei bis 
+zu 4 virtuelle Floppies. Werden mehr als 4 Floppies ben&ouml;tigt, k&ouml;nnen 
+zus&auml;tzliche Laufwerksdefinitionen in der Mountlist erstellt werden. 
+Allerdings konnte ich dem englischen Amigaguide-Dokument nicht entnehmen, 
+wieviele virtuelle Floppy-Laufwerke maximal verwendet werden k&ouml;nnen. Meinen 
+Tests zufolge sollte bei mehr als 127 Laufwerken Schlu&szlig; sein (Wer ben&ouml;tigt 
+soviele simulierte Floppies ;-)?).
+
+Auch simulierte Disketten mit mehr als 80 Zylindern sind kein Problem. 
+Werden solche "Disketten" ben&ouml;tigt, mu&szlig; der "HighCyl"-Eintrag f&uuml;r das 
+jeweilige simulierte Floppy-Laufwerk in der Mountlist-Datei nur 
+entsprechend erh&ouml;ht werden.
+
+Voraussetzungen f&uuml;r den Betrieb von fmsdisk sind mindestens 900 Kilobyte
+freies RAM und eine Festplatte mit gen&uuml;gend freiem Speicher f&uuml;r die
+Floppy-Dateien (Diese Dateien k&ouml;nnen selbstverst&auml;ndlich auch in der "Ram 
+Disk:" angelegt werden. Dann wird aber auch entsprechend mehr freier 
+Hauptspeicher ben&ouml;tigt.).
+
+Autor: Dave Jones, Thomas Omilian, Matt Dillon
+Aminet:
+Programmversion: 5.0
+Homepage:
+Lizenz: Giftware (n&auml;heres dazu steht auch in der Anleitung)
+
+
+HFMounterNG:
+
+Passend zu fmsdisk kommt HFMounterNG daher. HFMounter stellt ein 
+graphisches Frontend f&uuml;r das fmsdisk.device dar. Per Mausklick k&ouml;nnen 
+virtuelle Floppies angemeldet, formatiert und wieder vom System entfernt 
+("ausgeworfen") werden.
+Eine kleine Info-Funktion gibt Auskunft &uuml;ber das jeweilige virtuelle
+Floppy-Laufwerk und die darin "eingelegte" Floppy-Datei. Vor der Verwendung
+von HFMounterNG ist aber die richtige Installation und Konfiguration zu
+beachten. HFMounter ben&ouml;tigt die Systemerweiterung MUI (ab Version 3+) und 
+die MUI-Custom-Class "twfmultiled.mcc". Diese Custom-Class-Datei wurde 
+leider nicht der Distribution beigelegt und im Aminet ist sie ebenfalls 
+nicht zufinden (oder doch?). Ich habe mir das Archiv jedenfalls hier 
+besorgt:
+
+http://www.starforge.co.uk/files/MCC_TWFmultiLED.lzx
+
+Die Installation der Custom-Class sollte problemlos mit Hilfe des
+mitgelieferten Installerscripts ablaufen.
+
+Nachdem diese H&uuml;rde &uuml;berwunden w&auml;re kommen wir zur Konfiguration, die 
+ebenfalls nicht ganz unproblematischen ist, da der Distribution keine 
+vern&uuml;nftige Anleitung beigelegt wurde. Dazu mu&szlig; HFMounterNG zuerst 
+gestartet und &uuml;ber den Men&uuml;punkt "Project/Settings" der Voreinsteller 
+aufgerufen werden.
+
+Screenshot:
+<IMG SRC="../extra/hfmounter1.png" ALT="Screenshot">
+
+In dem Texteingabefeld "Mountlist" ist die Mountlist-Datei einzutragen,
+in der sich die fmsdisk-Laufwerksdefinitionen befinden. Im Normalfall 
+sollte das die originale Mountlist-Datei sein. Falls dies der Fall sein 
+sollte, reicht es, wenn dort "Devs:Mountlist" eingetragen wird. Wurde f&uuml;r 
+die Laufwerksdefinitionen eine eigene Mountlist-Datei erstellt, mu&szlig; auch 
+der Mountlist-Eintrag diesbez&uuml;glich ge&auml;ndert werden. In dem Eingabefeld 
+"FMS:" mu&szlig; der Pfad auf das Verzeichnis eingetragen werden, in dem das 
+fmsdisk.device die Floppy-Dateien aufbewahrt. Achtung: Dort darf auf keinen 
+Fall einfach nur die Zuweisung "FMS:" eingetragen werden, da HFMounterNG 
+sonst beim n&auml;chsten Start das ganze System einfrieren kann (das war 
+zumindest auf meinem System zu beobachten). HFMounterNG erstellt die von 
+fmsdisk ben&ouml;tigte Zuweisung "FMS:" automatisch, so da&szlig; bei ausschlie&szlig;licher 
+Verwendung von HFMounterNG zur Anmeldung der FMS-Floppies der Assign-
+Eintrag "FMS:" aus der user-startup wieder entfernt werden kann. Das Feld
+"Device" wird mit den Anfangsbuchstaben (alle Buchstaben vor der Nummer des
+Laufwerks [also "FF" wenn die fmsdisk-Laufwerke als "FF0", "FF1", "FF2" 
+usw. in der Mountlist bezeichnet wurden]) der simulierten Floppylaufwerke 
+gef&uuml;llt. Unter "Name" kommt der Diskettenname, der nach der Formatierung 
+des Laufwerks verwendet werden soll. Wird dort als Bsp. "leer" eingetragen, 
+bekommt das simulierte Floppy "FF3:" nach der Formatierung den Namen 
+"leer3". Nachdem alles eingestellt wurde reicht ein Klick auf "Save" und 
+die Konfiguration kann beendet werden.
+
+Im Hauptfenster von HFMounterNG befinden sich im oberen Teil 12 Kn&ouml;pfe, die
+jeweils die Bezeichnung des entsprechenden simulierten Floppy-Laufwerks 
+tragen.
+
+Screenshot:
+<IMG SRC="../extra/hfmounter2.png" ALT="Screenshot">
+
+Im unteren Teil des Fensters befindet sich das "Mode"-Cyclegadget, mit dem 
+die Aktion eingestellt werden kann, die auf ein simuliertes Floppy 
+angewendet werden soll. Steht das Feld auf "Mount" und wird auf einen der 
+Laufwerkskn&ouml;pfe geklickt, wird das Laufwerk angemeldet. Steht der Mode auf 
+"Format" wird das Laufwerk formatiert. Hierbei ist noch zu beachten, da&szlig; 
+vor dem Formatieren des Laufwerks keine Sicherheitsabfrage gestellt wird. 
+Das simulierte Floppy wird sofort und ohne weitere Bemerkung formatiert. 
+"Remove" entfernt das Laufwerk wieder vom System und "Info" &ouml;ffnet eine 
+kleine Info-Box. Der Knopf neben "Mode" sendet ein "Diskchange"-Signal an 
+alle angemeldeten FMS-Floppies und der Computer aktualisiert die 
+Informationen &uuml;ber die, in die FMS-Laufwerke "eingelegten", Floppy-Dateien. 
+Normalerweise sollte diese Funktion aber nicht ben&ouml;tigt werden. Der "Remove 
+All"-Knopf entfernt alle angemeldete FMS-Floppy-Laufwerke in einem Rutsch 
+wieder vom System.
+
+Noch eine kleine Bemerkung am Rande: Im Hauptfenster von HFMounterNG werden 
+zwar 12 Laufwerks-Knopfe angegeben, allerdings m&uuml;ssen auch in der Mountlist 
+12 Laufwerke definiert worden sein um auch alle Laufwerke nutzen zu k&ouml;nnen.
+Wenn in der Mountlist nur 4 FMS-Laufwerke definiert wurden, k&ouml;nnen auch nur 
+die Laufwerkskn&ouml;pfe f&uuml;r Laufwerk 0 bis 3 verwendet werden. Ein Klick auf
+Laufwerks-Knopf 11 w&uuml;rde in diesem Fall zu keinem Ergebnis f&uuml;hren.
+
+Autor: Wojciech Margowniczy
+Aminet: disk/misc/2b_HfMounterNG.lha
+Programmversion: 1.1
+Homepage:
+Lizenz: Cardware (eine Postkarte an den Autor)
+
+
+WaTor:
+
+Amiga-Rechner sind f&uuml;r ihr Angebot an Edutainment-Software ja nun nicht 
+gerade ber&uuml;hmt. Deswegen fand ich, da&szlig; WaTor eine Vorstellung wert ist, 
+obwohl dieses Programm kein "echtes" Tool in dem Sinne darstellt. WaTor ist 
+eine kleine Simulation, die das Verh&auml;ltnis von Beutetier und R&auml;uber in 
+einem idealisierten &Ouml;kosystem darstellt. Als Beispiel kann man sich eine 
+Insel vorstellen, auf der immer genug Gras (ich meine gr&uuml;nes Gras auf der 
+Wiese! ;) vorhanden ist und auf der nur 2 S&auml;ugetierarten vorkommen. Zum 
+einen F&uuml;chse und zum anderen Hasen. Die F&uuml;chse fangen und fressen die 
+Hasen. Dadurch wird die Population der Hasen geschw&auml;cht. Gibt es nicht mehr 
+genug Hasen m&uuml;ssen die meisten F&uuml;chse verhungern und die &uuml;brig gebliebenen 
+Hasen k&ouml;nnen sich wieder vermehren. Sind wieder genug Hasen da, k&ouml;nnen sich 
+auch die F&uuml;chse wieder vermehren solange bis wieder alle Hasen weg 
+gefuttert wurden ... usw. In WaTor gibt es keine F&uuml;chse oder Hasen sondern 
+Fische und Haifische (Haifische sind ja eigentlich auch Fische, deswegen
+w&uuml;rde ich vermuten, da&szlig; alle anderen Fische, au&szlig;er den Haifischen, Heringe 
+oder &auml;hnliches Haifischfutter sind ;-)). Soweit zu Erkl&auml;rung des Programms.
+
+WaTor wird in 4 unterschiedlichen Versionen ausgeliefert. Einmal in einer
+Version, die auf Kick3.0-Rechnern l&auml;uft und in einer, die auch noch auf 
+einem alten A500 mit Kick1.3 laufen sollte (Die hab' ich aber nicht 
+ausprobiert und ich beziehe mich im weiteren Verlauf des Textes nur auf die
+Kick3.0-Version). Zus&auml;tzlich liegen noch jeweils 2 Versionen f&uuml;r Amigas mit
+68000- und 68020-CPU vor. Eine Installation ist nicht notwendig, solange 
+alle Standard-Zeichens&auml;tze der Workbench installiert wurden. Beim Programm-
+Start wird ein neuer PAL-Highres-Screen (640x256 + evtl. eingestellter 
+Overscan) mit 16 Farben ge&ouml;ffnet, der bekannterweise von jedem Amiga-Modell 
+dargestellt werden kann. Der Bildschirm kann auch mit einem Screen-Promotor 
+auf einen Grafikkarten-Bildschirm umgelenkt werden, allerdings werden 
+Grafiken und Texte dann in einem falschen Aspekt-Ratio dargestellt. Nachdem 
+WaTor gestartet wurde, wird eine kleine Grafik dargestellt, die sehr stark 
+an "wirklich" alte Computer (also C64, ZX-Spectrum usw.) erinnert ;-).
+
+Screenshot:
+<IMG SRC="../extra/wator1.png" ALT="Screenshot">
+
+Das gesamte Programm liegt komplett und ausschlie&szlig;lich, genau wie die
+Amigaguide-Anleitung auch, in Deutsch vor. Die Benutzerf&uuml;hrung des 
+Programms ist relativ einfach denn es gibt nur 6 Men&uuml;punkte, mit denen alle 
+Programmfunktionen gesteuert werden k&ouml;nnen. Die interessanteren Funktionen 
+befinden sich unter dem Men&uuml; "Simulation". Dort kann eine neue Simulation 
+gestartet und die Simulationsgeschwindigkeit reguliert werden. Der 
+Men&uuml;punkt "Neustart" &ouml;ffnet einen Requester, in dem alle 
+Simulationsparameter festgelegt werden k&ouml;nnen.
+
+Screenshot:
+<IMG SRC="../extra/wator2.png" ALT="Screenshot">
+
+Auf der linken Seite befindet sich ein vertikaler Regler "Tage:", mit dem 
+der Zeitraum der Simulation eingestellt werden kann. Keine Angst, die 
+Simulation &uuml;ber 2000 Tage dauert in der schnellsten 
+Simulationsgeschwindigkeit auf meinem A1200 mit 040/40CPU weniger als 5 
+Minuten ;-). Au&szlig;erdem kann die Simulation jederzeit abgebrochen werden. 
+"Anzahl der Haie" und "Anzahl der Fische" definiert das J&auml;ger/Beute-
+Verh&auml;ltnis beim Start der Simulation. "Geburtenrate der Haie" und 
+"Geburtenrate der Fische" legt die Anzahl der Tage fest, in dem ein neuer 
+Hai bzw. frisches Haifischfutter das Licht der virtuellen Welt erblickt. 
+"Max. Hungerrate der Haie" legt den Zeitraum fest, die ein Hai ohne Futter 
+&uuml;berleben kann und mit dem "Fertig"-Knopf wird die Simulation gestartet.
+
+Screenshot:
+<IMG SRC="../extra/wator3.png" ALT="Screenshot">
+
+Die Simulation wird beendet sobald keine Haie oder keine Beute mehr 
+vorhanden ist. Es wird danach eine kleine Statistik ausgegeben, in der 
+deutlich die Schwankungen im J&auml;ger/Beuteverh&auml;ltnis erkennbar sind. Wie 
+kompliziert ein echtes &Ouml;kosystem im Vergleich zu diesem simulierten ist, 
+merkt man sehr schnell daran, da&szlig; es schon einige Zeit zum Finden der 
+richtigen Parameter in Anspruch nimmt, bevor eine Simulation &uuml;ber den 
+maximalen Zeitraum von 2000 Tagen aufrecht erhalten werden kann. Wer keine 
+Lust zum langen Ausprobieren hat, kann sich an folgende Parameter halten:
+
+Anzahl der Fische: 130
+Anzahl der Haie: 50
+Geburtenrate der Fische: 2
+Geburtenrate der Haie: 21
+Max. Hungerzeit der Haie: 1
+
+Mit diesen Parametern l&auml;uft die Simulation &uuml;ber 2000 Tage. In der 
+schnellsten Geschwindigkeitsstufe h&auml;ngt die Simulationsgeschwindigkeit nur 
+noch von der Rechenleistung der verwendeten CPU ab, so da&szlig; es auf sehr 
+schnellen Rechnern interessante Effekte geben kann. Epileptiker sollten, 
+laut Anleitung, dabei aber etwas vorsichtig sein.
+
+Autor: Uwe H&ouml;sel
+Aminet: misc/sci/WaTor1_27.lha
+Programmversion: 1.27
+Homepage:
+Lizenz: Frei vertreibbar
+
+
+So, das war's. Ich hoffe, es war f&uuml;r jeden etwas dabei. Wenn ihr Fehler 
+findet, Kritik oder Lob loswerden wollt oder interessante Programme kennt, 
+dann schreibt mir eine Mail.
+
+Bis zum n&auml;chsten Mal,
+
+Christian Aichinger &lt;christian@aakt.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

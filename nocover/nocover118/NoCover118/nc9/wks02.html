@@ -1,0 +1,407 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+  <HEAD>
+    <META name="generator" content="HTML Tidy, see www.w3.org">
+    <TITLE>Cracking the Shell Teil 3</TITLE>
+  </HEAD>
+
+  <BODY text="#000000" bgcolor="#b0b0b0">
+    <TABLE width="100%" border="0" cellpadding="0" summary=
+    "Beitrag" bgcolor="#000000">
+      <TR>
+        <TD>
+          <MAP name="wks0">
+            <AREA shape="rect" coords="460,1,530,22" href=
+            "wks.html" alt="zur&uuml;ck">
+          </MAP> 
+
+          <CENTER>
+            <TABLE width="640" border="2" cellpadding="0" summary=
+            "Seitenformat" bgcolor="#0075a7">
+              <TR>
+                <TD><IMG src="wks.gif" alt="" width="640" height=
+                "22" border="0" usemap="#wks0"> </TD>
+              </TR>
+
+              <TR>
+                <TD>
+                  <TABLE border="0" cellpadding="4" summary="Text"
+                  bgcolor="#c8c8c8" width="76%" align="center">
+                    <TR>
+                      <TD>
+<PRE>
+     ===== H&ouml;chstwahrscheinlich hat Euch der 3. Teil nun eine =====
+                ==== Ausgabe sp&auml;ter erreicht als geplant. ====
+                  ==== Ich bitte dies zu entschuldigen. ====
+
+                           **** Stephan Kraus ****
+
+
+
+                # # # # # # # # # # # # # # # # # # # # #
+             -#        JETZT MIT 50% MEHR INHALT !        #-
+                # # # # # # # # # # # # # # # # # # # # #
+
+            _________________________________
+      [*]--| Cracking the Shell - Part three |---------------------[#][#]
+      |----| Kursfahrplan |__________________|                          |
+      |    `--------------'                  |--------------------------|
+      |                                  -----                          |
+      |     1.) - Einf&uuml;hrung             |-&gt; 3.) - Menusystem        &lt;- |
+      |        - die wichtigsten Befehle |-&gt;     - Skriptdateien Nr.2&lt;- |
+      |                                  |                              |
+      |     2.) - Skriptdateien          |   4.) - mehr Skripte         |
+      |         - eigene Bootdisk        |       - Dateien und Skripte  |
+      |                                  |                              |
+      |                                  |   5.) - Entr&uuml;mpeln der WB    |
+      |__________________________________|______________________________|
+      |In Vorbereitung: |  Fehlercodes * Escape &amp; ANSI Sequences *      |
+      |------------------_________________                            ^ |
+      |                                   ---------------- ___________v_|
+      |  COME TO *WORLD OF COMMODORE* WITH AMIGA 1994     | (C) by S.K. |
+      *---------------------------------------------------------------[/]
+
+       ______________________________
+      |
+      *  Vorraussetzungen: AMIGA MIT OS2.0 ODER H&Ouml;HER.
+         ^^^^^^^^^^^^^^^^^ H&Ouml;CHSTWAHRSCHEINLICH FUNKTIONIEREN ALLE
+                           BEISPIELE AUCH AUF 1.3, ICH KONNTE ES
+                           ABER NICHT AUSPROBIEREN (KEIN 1.3 AMIGA
+                           VORHANDEN                                   *
+                                                                       |
+                                       ---------------------------------
+
+
+      Die in diesem  Workshop  beschriebenen  Verfahren  und  Anleitungen
+      sowie  die  gegebenen  Informationen  sind  allein  zu  Lehrzwecken
+      erstellt. Ich kann  keine  Haftung  f&uuml;r  fehlerhafte  Angaben  oder
+      daraus resultierende Folgen &uuml;bernehmen. Alle Beispiele sind auf 2.0
+      gepr&uuml;ft. Wenn sich dennoch  Fehler  eingeschlossen  haben,  (wetten
+      das)bitte benachrichtigen ! Trotz allem viel Spa&szlig; !
+      Die fehlerfreien Versions gibts kostenlos bei mir +(LD+Porto)
+
+                                       *   *
+                                         +
+
+     Murphy strikes BACK !!!
+     -+-+-+-+-+-+-+-+-+-+-+-
+     Im 1. Teil mu&szlig;te es hei&szlig;en:
+
+
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+                              -=Skriptdateien=-
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+     Die im letzten Kursteil besprochene "Skriptdatei" war noch etwas ma-
+     ger: sie war nicht interaktiv (um mal ein Modewort zu gebrauchen!);
+     d. h. sie reagierte nicht auf Benutzereingaben.
+
+     In diesem Kursteil werden wir uns in erster Linie einem Tastaur-
+     gesteuertem Menusystem f&uuml;r eine Programmdiskette widmen. Nehmen
+     wir an, auf unsere Disk sollen 5 Programme:
+
+     -&gt; 1.) Texteditor (Nehmen wir den guten, alten "ED")
+     -&gt; 2.) beliebiges DFUE-Programm (m&ouml;glichst kleines)   [1]
+     -&gt; 3.) ein Taschenrechner (Calc 3.0)                  [2]
+     -&gt; 4.) Pac-Man Spiel (Minipac)                        [3]
+     -&gt; 5.) Die Shell.
+
+     [ Programme siehe Quellenverzeichnis ].
+
+
+     Dann soll unser Startmenu ungef&auml;hr so aussehen:
+
+     1.) Der Bildschirm soll gel&ouml;scht werden.
+     2.) Ein Musikst&uuml;ck wird geladen.
+     3.) ein Text wird ausgegeben :
+
+
+
+     ----&gt;    Hallo, Meister     &lt;----
+           - - - - - - - - - - -
+     Welchen Dienst darf ich Euch erweisen ?
+
+     * * * * * * * * * * * * * * * * *
+     *  &gt;1&lt;    Rechnen, Plotten.     *
+     *  &gt;2&lt;    Pacman spielen.       *
+     *  &gt;3&lt;    Hacken.               *
+     *  &gt;4&lt;    Texte erfassen.       *
+     *  &gt;5&lt;    Shell-Fenster &ouml;ffnen. *
+     * * * * * * * * * * * * * * * * *
+     *  &gt;6&lt;    - ENDE -              *
+     * * * * * * * * * * * * * * * * *
+
+     Ihre Eingabe (Kennziffer)
+     -&gt; #
+
+
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+     1.1    Vorbereitung
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+     Zus&auml;tzlich zu den geplanten "Nutzprogrammen" m&uuml;ssen wir uns noch
+     ein beliebiges Musikabspielprogramm [z.B. 5] und ein Musikmodul
+     (eine Datei, in der die ben&ouml;tigten digi-Instrumente sammt den "No-
+     ten" gepeichert ist. Diese findet man h&auml;ufig auf PD-Disketten. Lei-
+     der gibt es bei Musikmodulen keinen "Standart" wie .IFF bei Grafiken.
+     Daher mu&szlig; df&uuml;r gesorgt werden, da&szlig; der Player zum Modul kompatibel
+     ist. Gebr&auml;uchlich ist das "Protracker-Format").
+
+     Ansonsten m&uuml;ssen wir uns &uuml;berlegen, wie wir den Bilschirm l&ouml;schen
+     . Erstes k&ouml;nnen wir mit einer beliebigen Compiler
+     sprache, mit Ausnahme villeicht Amos realisieren. Einfacher geht es
+     jedoch &uuml;ber sogenannte "Escape-Sequencen", welche Haupts&auml;chlich in
+     Verbindung mit Druckern bekannt sind. Neugierige haben bestimmt schon
+     mal einen Blick in die Datei "Shell-Startup" der WB2.0 geworfen.
+
+
+     Dort hei&szlig;t es:
+
+     .
+     alias xcopy "copy clone "
+     alias emacs memacs
+
+     alias clear "echo *"*E[0;0H*E[J*" "  &lt;- Das interessiert uns !
+
+     alias reverse "echo *"*E[&gt;1m*E[30;41m*E[0;0H*E[J*""
+     alias normal "echo *"*E[&gt;0m*E[31;40m*E[0;0H*E[J*""
+     Prompt "%N.%S&gt; "
+     .
+
+     f&uuml;gen wir nun die markierte Zeile an den Anfang unseres Menu-Skripts
+     ein, k&ouml;nnen wir sie immer mit "clear" aufrufen!
+     Drucken k&ouml;nnen wir eine Datei mit:
+
+             Zu druckende Datei
+                   ___
+                  /   \
+     -&gt; copy from datei to prt:
+             \__/       \/ \__/
+              |__________|   |__&gt; Der Drucker
+               optional.
+
+
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+     1.2     Die Diskette
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+     Zuerst mu&szlig; eine Diskette formatiert werden. (format drive dfx: name
+     Diskette noicons)
+     Dann richten wir ein Verzeichnis "Programme" (mit makedir Diskette:
+     Prgramme) ein, und kopieren die o.g. Tool in diese "Schublade".
+     Da wir nicht wissen, welche Libraries, Devices und Handler von
+     den einzelnen Programmen (auch wenn andere Programme verwendet werd-
+     en sollen.) ben&ouml;tigt werden, kopieren wir einfach die gesammten
+     Verzeichnisse:
+
+     copy Workbench2.0:l to Diskette:l
+     copy Workbench2.0:libs to Diskette:Libs
+     copy Workbench2.0:devs to Diskette:devs
+
+     Wir m&uuml;ssen auch sicherstellen, da&szlig; unser Druckertreiber im Verz.
+     Diskette:devs/printers/ ist.
+
+     F&uuml;r den Men&uuml;-Text und die Skripte ben&ouml;tigen wir noch unser "s"-
+     Directory: makedir Diskette:s.
+
+     Wichtige Befehle m&uuml;ssen ins C-Directory.
+
+     makedir Diskette:c
+     copy Workbench2.0:c/copy type loadwb execute to diskette:c/
+
+
+     f&uuml;r die Shell:
+     copy Workbench 2.0c/dir delete to diskette:c/
+
+     F&uuml;r das Musik-Modul: makedir diskette:modules
+     copy musikdisk:mod.xy to diskette:modules/
+     copy player to diskette:c/
+
+     Auf die deutsche Tastaturbelegung wollen wir auch nicht verzichten:
+     Kopieren Sie das keyfile "d" aus Extras2.0:devs/keymaps/ in die
+     devs/keymaps - Schublade unserer Disk.
+
+     Ansonsten ben&ouml;tigen wir noch das Setmap-Tool, um die Tastaturtrei-
+     ber zu aktivieren: Wir finden es in Worbench2.0:system/
+
+     Erstellen wir nun mit "ED" oder einem anderen ASCII-Editor die
+     oben angegebene Men&uuml;-Seite unter Diskette:s/menu-text
+
+
+     Jetzt wirds interessant:
+
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+     2.0  Das Herzst&uuml;ck: MENU-Startup  und Startup-sequence
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+     lassen wir den Editor gleich "offen".
+
+
+     2.1 Startup-sequence
+     ====================
+
+     ; start skript
+
+     ; mit dem Strichpunkt leiten wir Kommentare ein, wie z.B.
+     ;
+     ; * * * * * * * * * * * * * * * * * *
+     ; * Startup-Sequence der Menu-Disk  *
+     ; * Version 0.001                   *
+     ; * * * * * * * * * * * * * * * * * *
+     ;
+
+
+     echo "  "                          ; eine Leerzeile
+     echo "Programm Disk # 122 - Box 12 - Schublade 34"
+     echo "(C) 2001 by Infokomm"        ; "echo" ab OS2.0 im ROM, Italia
+
+     run player modules/mod.xy           ; Letz fetz !
+     ;    ^              ^
+     ;    |              |-&gt; Name des Musikmoduls
+     ;    |-&gt; Name des Abspielprogramms
+
+     execute s:menu-startup
+
+     loadwb -debug
+     ;        ^
+     ;        |-&gt; 2 Neue Workbench - Menus
+     ;            1.) Flushlibs -&gt; entfernt unn&ouml;tige Bibliotheken
+     ;                             aus dem Speicher.
+     ;            2.) RomWack   -&gt; Debugger (funktioniert nur bei
+     ;                2. Computer an Serial1. N&auml;heres bei Tip&amp;Tricks)
+
+     ; end skript
+
+
+     -&gt; Speichert unter diskette:s/startup-sequence.
+
+
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+     2.0    Neue Befehle zur Skriptverarbeitung
+     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+     skip xyz   : Springe Zu (&Auml;hnlich Goto in Basic), erwartet Sprung-
+                  marke.
+                  Durch einen Trick (skip &gt;NIL: ?) kann dieser
+                  Befehl auch in S.-Dateien verwendet werden.
+
+     lab xyz    : Sprungmarke. Nach "skip" kommt der Name der Sprungmarke.
+                  Beispiel: nach "Skip x" wird zu "lab x" verzweigt.
+
+     ask "text" : (Y/N)-Auswahl. (siehe unten)
+
+
+     2.2 Menu-Startup
+     ================
+
+     ;  start skript
+
+     ;  * * * * * * * * * * * *
+     ;  * Menu-Startup V.001  *
+     ;  * * * * * * * * * * * *
+
+     failat 99         ; Wenn Fehler -&gt; kein Abbruch der Skriptdatei
+     alias clear "echo *"*E[0;0H*E[J*" "   ; Escap-Sequenz zum Bilschirm-
+                                           ; l&ouml;schen !
+     lab loop               ; Wenn Fehler -&gt; Hierhin springen !
+     clear                  ; siehe oben
+     type s:menu-text       ; Angebot ausgeben
+     skip &gt;NIL: ?           ; wir tricksen! siehe unten!
+
+     lab 1  ;Rechner        ; Wenn "1" eingegeben -&gt; ausf&uuml;hren
+       clear
+       echo "Ich lade Calc 3.0!"
+       diskette:programme/calc3.0
+     skip end               ; zur "ende"-Marke springen
+
+     lab 2                  ; Wenn "2" eingegeben -&gt; ausf&uuml;hren
+
+
+       clear
+       echo "Die Spiele m&ouml;gen beginnen"
+       diskette:programme/minipac
+     skip end
+
+     lab 3
+       clear
+       echo "Welcome to the NASA-Headquarters. Keep on hacking  !"
+       diskette:programme/miniterm
+     skip end
+
+     lab 4                  ; geht nat&uuml;rlich auch mit Buchstaben
+       clear
+       echo "Lade Ascii-Editor, file in RAM:TEXT"
+       diskette:c/ed ram:TEXT
+     skip end
+
+     lab 5
+       echo " "             ; Leerzeile
+       echo " &Ouml;ffne neue Shell, bitte etwas Geduld........"
+       run newshell         ; Hach bin ich froh, keine MS-Dose zu
+                            ; haben !
+       skip loop back       ; Jetzt kann er ja zum Anfang springen !
+
+
+     lab 6
+       clear
+       echo "  ------&gt;  E N D E   G E W &Auml; H L T  &lt;------ "
+         ask " Skript beenden &amp; WB laden ? (Y = Ja / N = Nein) "
+         If WARN               ; Y=Ja gew&auml;hlt.
+         quit                  ; Schlu&szlig; mit Menu-startup
+                               ; -&gt; gehe zu Startup-Sequence
+         ELSE                  ; andererseits....
+     skip loop back
+
+
+     lab                    ; kein Buchstabe eingegeben !
+       clear
+       skip loop back       ; zur&uuml;ck zum Start (lab loop)
+     skip end               ; Diese Zeile kann nie erreicht werden,
+                            ; Daher &uuml;berfl&uuml;ssig.
+
+     lab end                ; hier ist Schlu&szlig; ! (Aufgerufen, wenn Pro-
+                            ; gramm erfolgreich gestartet und Beendet
+                            ; wurde.
+
+     skip loop back         ; zur&uuml;ck zum Start.
+
+     ; end skript
+
+
+     ********************************************************************
+
+     Die Programme sind den Serien Fish (Minipac),(CALC3.0) und Aminet
+     (Miniterm, 17 kbyte) entnommen. Alle PRG's bei :
+     Stephan Kraus, In den Forstwiesen 7, 56745 Bell. Gegen 3 DM in Brief-
+     marken. (Einschlie&szlig;lich Porto und Leerdisk und Umschlag)
+
+
+     So, ich hoffe bei euch hat alles funktioniert. Bis n&auml;chsten Monat
+     in ........
+
+                 + + + + + + + + + + + + + + + + + + +
+        -----&gt;   + Nocover - DAS Amiga Disk-Magazin  +  &lt;-----
+                 + + + + + + + + + + + + + + + + + + +
+
+       (&copy;) 10/94    by Stephan Kraus    Printed on Alpha Centauri
+
+                                    \|/
+                                   --*--
+                                    /|\
+
+</PRE>
+                      </TD>
+                    </TR>
+                  </TABLE>
+                </TD>
+              </TR>
+
+              <TR>
+                <TD><IMG src="wks.gif" alt="" width="640" height=
+                "22" border="0" usemap="#wks0"> </TD>
+              </TR>
+            </TABLE>
+          </CENTER>
+        </TD>
+      </TR>
+    </TABLE>
+  </BODY>
+</HTML>
+

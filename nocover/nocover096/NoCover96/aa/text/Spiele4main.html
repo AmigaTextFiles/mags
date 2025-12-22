@@ -1,0 +1,120 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+4. Hinter den Kulissen: Die Probleme beim Konvertieren von Spielen
+
+Mittlerweile macht es ja fast keinen Spa&szlig; mehr, Spiele von Hyperion zu
+testen, ich m&ouml;chte doch auch mal wieder was Negatives schreiben. ;-)
+
+Nein, Spa&szlig; beiseite. Nach dem dritten Topspiel in Folge dachte ich mir, da&szlig;
+es mal Zeit wird, einen Blick hinter die Kulissen zu werfen und habe
+deshalb Steffen H&auml;user von Hyperion gefragt, ob er uns nicht ein paar
+Zeilen &uuml;ber die Schwierigkeit beim Konvertieren von PC-Spielen schreiben
+kann. Lest hier, weshalb es schon mal etwas dauern kann, bis das neue Spiel
+der Belgier erscheint und auch angek&uuml;ndigte Releasetermine manchmal nach
+hinten verschoben werden:
+
+
+"Beim Umsetzen von Spielen auf den Amiga gibt es folgende Faktoren zu
+ber&uuml;cksichtigen:
+
+1. Assembler-Code
+
+Eine Menge Spiele enthalten massiv x86-Assembler-Code, oft schlecht
+dokumentiert (oder unter Verwendung des Intel-Floatingpoint-Stacks, was
+einerseits schwer verst&auml;ndlicher Code und zum anderen schwer umzusetzen
+ist). Spiele mit 200 KB Assembler-Sourcen sind keine Seltenheit. Da muss
+man mindestens 4 Wochen einplanen, allein f&uuml;r das. Oft arbeitet man allein
+an einer einzigen Assembler-Funktion eine ganze Woche. Und bis man dann
+alle Grafikfehler aus von ASM nach C portierten Texturemappern drau&szlig;en hat
+- das dauert meist. Gl&uuml;cklicherweise wird die Verwendung von ASM immer
+weniger. Oder es wird zumindest nur optional verwendet.
+
+2. Endian-Probleme
+
+Wenn man Daten byte- oder wordweise aus Dateien (oder einer TCP/IP-
+&Uuml;bertragung) liest, so verhalten sich x86 und PPC entgegengesetzt (0x1234
+auf PPC ist 0x4321 auf x86). Man muss daher alle entsprechenden Routinen
+korrigieren. Das kann so "versteckt" sein, dass mit einer int-Leseroutine
+ein int in ein "Short" gelesen wird. Auf x86 kriegt man zuf&auml;llig die
+"interessante H&auml;lfte", auf PPC leider die "uninteressante" - sprich 'ne 0.
+So was ist oft sehr schwer zu finden. Und der Bug tritt leider meist erst
+bei VERWENDUNG der Daten auf, also viel sp&auml;ter und an anderer Stelle im
+Code. Bei Freespace musste ich vor allem eine Menge Arbeit in den Netzwerk-
+Code bzgl. Endian-Konvertierung stecken. Aber auch der Modellcode war
+nicht v&ouml;llig "Endian-Clean". Die Endian-Probleme verursachen bei
+den meisten Spielen den gr&ouml;&szlig;ten Aufwand.
+
+3. Speicherbedarf
+
+Die meisten PC-Spiele gehen von der Verf&uuml;gbarkeit virtuellen Speichers aus,
+selbst wenn auf der Packung "min. 32 MB RAM" steht. Auf dem Amiga muss man
+dann alle m&ouml;glichen Speicherbedarfreduzierungsma&szlig;nahmen vornehmen (kann bis
+zu 4 Wochen Zeit brauchen).
+
+4. Windows-APIs
+
+Oft werden Windows-APIs verwendet, die oft schwer lesbarer Code sind. Aber
+in der Zwischenzeit kennen wir uns auch damit sehr gut aus, so dass das
+kein so gro&szlig;es Problem mehr ist. Eine Direct3D-&gt;OpenGL Portierung kann
+dennoch heftige &Uuml;berraschungen und viel Arbeit mit sich bringen. Das kann
+im "worst case" in die MONATE gehen, nicht nur Wochen... OpenGL/MiniGL und
+Direct3D sind halt in manchen Punkten ziemlich anders. Immerhin hat MiniGL
+auf dem Amiga wenigstens - wie Direct3D - Direktzugriff auf den
+Videospeicher. OpenGL auf Linux oder Mac hat nicht mal das, da kann es dann
+noch kniffliger werden, unter Umst&auml;nden.
+
+5. Detailarbeit
+
+Im Unterschied zu einem Freewareport, wo man ein paar Sachen "for future
+update" offen l&auml;sst, nimmt ein kommerzieller Port doch ganz andere
+Dimensionen an, was Bugfreiheit, Installationsskripte, GUI usw. angeht.
+Das ist eine Menge Arbeit. Und dann findet doch noch jemand einen kleinen
+Bug, und der muss gefixed werden. Und beim Erstellen der Master-CD muss
+alles stimmen. So ein Glasmaster kostet immerhin seine 300 Euro, da ist
+kein Spielraum f&uuml;r Fehler ("Oops, nun hab ich ein File vergessen" - das
+darf einfach nicht passieren, aber deshalb wird die Master-CD vor dem
+Verschicken an den Publisher von uns auch lieber noch zweimal, dreimal
+gepr&uuml;ft, dass auch wirklich alles stimmt)."
+
+
+Habt ihr auch einmal mitgerechnet? Da kommen ja selbst ohne gro&szlig;e
+Schwierigkeiten locker ein halbes Jahr zusammen. Wenn man dann noch die
+Lizenzverhandlungen und die Betatests mit den anschlie&szlig;enden Korrekturen
+dazurechnet, ist zumindest mir klar, weshalb zwischen den Spielen soviel
+Zeit liegt. Und ich hoffe, euch geht auf, da&szlig; man das nur auf Dauer so
+weitermachen kann, wenn es sich auch finanziell lohnt, sprich, die
+Absatzzahlen stimmen! Also noch einmal: Softwarepiraterie t&ouml;tet den
+Amiga!!!
+
+Aber nun Schlu&szlig; mit der Schwarzmalerei: Was ist von Hyperion denn in
+Zukunft noch so zu erwarten?
+
+
+"Was von uns noch alles zu erwarten ist? Nun, zun&auml;chst mal Quake 2. Wir
+haben aber auch noch einen anderen Titel im Auge, dessen Chancen aber von
+den Verkaufszahlen von Freespace abh&auml;ngen. Sollte das klappen, wird es
+nat&uuml;rlich auch noch weitere Spiele geben.  Aber Quake 2 und dieser andere
+Titel - puh, Steffen, machst du es spannend - w&auml;ren - vorausgesetzt es haut
+mit den Verkaufszahlen hin - in nicht allzu ferner Zukunft (sprich auf
+jeden Fall noch in der ersten Jahresh&auml;lfte - Quake 2 nat&uuml;rlich schon weit
+fr&uuml;her) machbar.
+Und nat&uuml;rlich gibt es OS 4 (dazu sp&auml;ter mehr)."
+
+
+So, nun sind wir doch alle etwas schlauer und sehen hoffentlich ein, da&szlig; es
+auch einmal eine Verz&ouml;gerung beim Release geben kann, wenn man die von
+Hyperion gewohnte Qualit&auml;t haben m&ouml;chte. Nat&uuml;rlich f&auml;llt das schwer, aber
+"Geduld ist eine Tugend".
+
+J&uuml;rgen Theiner &lt;Juergen.Theiner@t-online.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

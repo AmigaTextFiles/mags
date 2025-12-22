@@ -1,0 +1,189 @@
+\T
+
+§                 LABO : MULTIUSER par Olivier
+§                 ===========================
+¦    -- Que celui qui n'a jamais louch_ vers Linux se l_ve ! --
+
+¦   Quid ?
+   Pour rester simple, disons que MultiUser est un syst_me de protection,
+personne a par vous ne peut acc_der a vos disques, soit : "Ce n'est pas parce
+que je ne suis pas paranoique, que tout le monde ne m'en veut pas quand
+m_me !". La protection standard (SPARWED) se voit ajouter des champs pour
+un sticky-bit (d_l_gation de pouvoir), pour les droits de l'utilisateur, pour
+les droits de son groupe, et ceux des autres. Rien d'inconnu pour qui connait
+Un*X soit : USPARWEDRWEDRWED
+
+    U  setUID         : rend utilisable un fichier par d'autres
+     S  script        : rend ex_cutable un script
+      P  pure         : l'ex_cutable est pur, r_sidentiable
+       A  archive     : le fichier est une archive, un backup
+user.......R  read       : ce fichier est lisible
+         W  write     : ce fichier est modifiable
+          E  execute  : ce fichier est ex_cutable
+           D  delete  : ce fichier est effacable
+group.............R
+             W
+              E
+               D
+other.....................R
+                 W
+                  E
+                   D
+
+
+ö
+
+\T
+
+
+
+On peut donc d_finir des droits d'acc_s a ses donn_es, que seul le
+super-utilisateur (root) peut outrepasser.
+
+   Mais c'est aussi un syst_me multi-utilisateurs : Il permet entre autre
+d'accepter plein de copains connect_s en m_me temps a diff_rentes consoles
+(terminaux) de votre Amiga, Autre chose, cela permet, si votre machine est
+fr_quent_e par des intimes, d'accorder son propre environnement (profil 
+d'utilisateur) a chacun, sa propre startup, son propre WBstartup...
+A l'allumage, booter en mode "without startup..." n'entraine que
+l'IMPOSSIBILITE d'agir sur les Disques !
+
+¦   Je n'ai qu'un mot : ULTIME.
+   Pire, toute violation de privil_ge (tentative de modification du fichier
+#?/passwd par exemple) se solde par un guru ambr_ : Argll ! Autre exemple, au
+login (nom, mot de passe), toute r_ponse erron_e et pif ! un _cran Workbench
+vide. Comme ca, c'est clair : Impossible de p_n_trer sans autorisation.
+
+   Il va sans dire qu'installer un truc pareil sur sa b_cane m_ne a se poser
+quelques questions : puis-je m_moriser un mot de passe, sans que celui-ci ne
+soit trop d_bile, par exemple. Parce qu'il ne restera plus, si vous perdez
+les droits d'acc_s a vos fichiers, qu'a REFORMATER le ou les disques
+concern_s (chacun partageant la base de donn_e des partitions prot_g_es) :
+modifier la configuration des disques passe par la r_g_n_ration du "keyfile".
+
+ö
+
+\T
+
+Super ! : Un*X chez soi ? le secret ?
+
+   C'est un filesystem, plus exactement un patch du FFS natif du 'Mig, le
+rendant moins tol_rant sur les permissions d'acc_s a vos donn_es.
+
+¦   Hop, INSTALLATION :
+   Premier r_flexe : rapatrier l'archive aminet1a:util/misc/Multi_U#?.
+Et tout d'ailleurs ce qui peut se rapporter a multiuser. D_compresser en RAM:
+et bien lire les docs. Puis encore les lire une fois, respirer, installer...
+
+(Ce qui suit est une traduction de la doc en anglais, avec une pointe de libre
+interpr_tation, il est bien entendu que vous savez ce que vous faites et que
+je ne peux en aucun cas _tre responsable du moindre dommage occasionn_ a
+votre syst_me)
+
+Dans le shell:
+lha x Multi_U#? ram:
+ram:multiuser/
+copy libs/multiuser.library libs:
+copy c:#? c:
+copy locale locale: all
+
+ATTENTION, le noyau c'est cette .library, qui, une fois pr_sente, est activ_e
+par un acc_s disque, ATTENTION,  c'est la <chose> la plus radioactive que
+j'ai vue sur un 'Mig. Si vous rebootez avant d'avoir g_n_r_ une cl_, vous
+_tes dedans, il faudra remettre le FFS et recommencer (boot whithout startup,
+sys:tools/hdtoolbox xxx.device)
+
+ö
+
+\T
+
+
+
+   Maintenant, construisons le patch, pour cela, le FastFileSystem doit
+pr_sent dans L: (il est pr_sent sur chaque disquette Install).
+patch/spatch -oL:MultiUserFileSystem - pPatch/MultiUserFileSyst_mexxx.pch
+L:FastFileSystem
+Ou xxx _gale 2.04, 2.05, 2.1, 3.0, 3.1 (Coool, j'ai le 3.1 :-)
+
+   La je vous conseille de cr_er un r_pertoire config, voire plus malin,
+d'utiliser S: comme /etc dans Un*X, soit par exemple :
+copy config/#? sys:config
+(Je dis bien par exemple !, mettez config/ ou vous voulez)
+Modifiez le fichier passwd, et m_nagez-vous d_s maintenant une entr_e sous un
+deuxi_me nom, pour parer au pire. Soit rajoutez une ligne :
+pseudoII 32768I32768I Mon-vrai-nomIsys:homes/rootIcli
+les "I" s_parent les champs de passwd, le champ vide "II" signifie qu'il n'y a
+pas encore de mot de passe.
+
+   Puis c_r_monie : Il faut donner un nom a la station ; ex :
+echo "Ma-Station" >envarc:hostname
+
+   Bien, maintenant, plus chaud g_n_rons les KeyFiles :
+makekeyfiles <r_pertoire ou est passwd> <r_pertoire de config>
+<volumes a prot_ger>
+(makekeyfiles PASSWDDIR/A,CONFIGDIR/A,VOLUME/A/M)
+
+
+ö
+
+\T
+
+   Nous arrivons a la derni_re _tape en A-DOS :
+ed s:user-startup
+On ajoute une ligne a la fin :
+logout gui global
+
+   Voila, si le 'Mig n'a pas explos_ en cours de route, on arrive au Big-Boss
+du dernier tableau ! 
+La je previens d'une part les innocents qu'il est encore temps de reculer, et
+d'autre part, j'insiste sur le fait que les DISQUES n'ont PAS besoin d'_tre
+REFORMATES.
+
+   D'ou :
+sys:tools/hdtoolbox xxx.device
+   On va tout de suite dans "partition drive", on selectionne
+"Advanced Options", "Add/Update", "Add New File System", on entre
+   L:MultiUserFileSystem
+l'identifiant en Hexa est
+   0x6d754653
+"Ok" puis "Change" "custom filesystem" on r_-entre une fois l'identifiant
+0x6d754653 et bing on fait ca pour tout les disques cit_s dans makekeyfile.
+"Ok" partout, reboot,
+Login ? ....
+root
+PassWord ? ...
+***********
+
+Bon courage, je n'ai fait que traduire et r_sumer l'explication donn_es a
+l'installation dans multiuser.doc.
+
+ö
+
+\T
+
+
+
+
+¦   Astuces : 
+   Ce syst_me fonctionne tr_s bien avec Executive (mon programme pr_f_r_),
+et donc renforce un peu plus les fonctions ps, kill  et commander, avec
+Ami-TCP, on obtient un effet proche d'un serveur de fichiers a la Un*X,
+avec diff_rents utilisateurs connect_s ou par telnet ou par terminaux,
+chacun ayant son "tty" ! Il devient possible de prot_ger son 'Mig contre
+la majorit_ des intrusions et des fausses manipulations.
+
+   Donc on est en droit de penser qu'on poss_de ainsi la plate-forme la plus
+proche de Un*X avec les commandes genre : Top, telnet, chmod...
+
+
+¦   Conclusion :
+   "Amiga : Cette plan_te fut conquise aux environs de la premi_re p_riode de
+colonisation du Cyber-Space, virtuaform_e tr_s rapidement, on assista a la
+mise en place d'un syst_me totalement agglom_rable. Tr_s rapidement entr_e
+en dissidence, l'Entit_ artificielle cr__e absorba des portions du r_seau sur
+de vastes domaines et malgr_ la relative petitesse de sa communaut_, elle
+anime toujours de ses pulsations les territoires encore laiss_s vierges de
+l'Informatique."
+(in "De Informaticus Galactica")
+
+ö

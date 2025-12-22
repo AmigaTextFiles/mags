@@ -1,0 +1,75 @@
+(PROCEDURE P_CONVERSION
+
+;**********************************************
+;*** ConVersion V1.0 by André Wyrwa in 1997 ***
+;**********************************************
+;
+; Einleitung/Beschreibung:
+;
+; Die Prozedur wandelt die übergebene Integer-Versionsvariable
+; entsprechend der Angabe des <outtype>-Paramaters entweder in eine
+; String-Variable nach dem Muster "ver.rev"  oder in eine
+; Integer-Variable nach dem Muster "verrev".
+; Dabei wird die der Revionsteil je nach Angabe des <intype>-Parameters
+; um eine führende 0 oder um eine folgende 0 ergänzt.
+;
+; (c) 1997 André Wyrwa
+; Die Prozedur ist FREEWARE und darf unverändert in Installer-Scripts
+; verwendet werden.
+;
+;
+; History:
+;
+; V1.0  (15.12.1997)  -  Erste Erstellung
+;
+;
+; Aufruf:
+;
+; (P_CONVERSION
+;   <version>     ;Versionsnummer als Integer-Variable
+;                  (wie z.B. von (GETVERSION <filename>) geliefert)
+;   <outtype>     ;gewünschte Art der Versions-Rückgabe
+;   <intype>      ;Art der Versionszählweise
+; )
+;
+; <outtype> kann "string" (Voreinstellung) oder "integer" sein
+; <intype> kann 0 (Voreinstellung) oder 1 sein, wobei
+;          0 meint: V1.4=V1.40 und 1 meint: V1.4=V1.04
+;
+; Bsp: (SET #version (P_CONVERSION @installer-version "string" "rfc"))
+;
+;
+; Variable:
+;
+; #gv_intype     (gewünschte Versionszählweise)
+; #gv_outtype    (gewünschte Ausgabeweise)
+; #gv_rev        (Revisionsnummer)
+; #gv_ver        (Versionsnummer)
+; #gv_vernum     (32Bit-Integer-Versionsnummer)
+; #gv_version    (Ergebnis-Versionsangabe)
+;
+;**********************************************
+
+ #gv_vernum
+ #gv_outtype
+ #gv_intype
+ (
+  (SET #gv_ver (/ #gv_vernum 65536))
+  (SET #gv_rev (- #gv_vernum (* #gv_ver 65536)))
+  (IF (= #gv_intype 1)
+   (IF (< #gv_rev 10) (SET #gv_rev (CAT "0" #gv_rev)))
+   (IF (< #gv_rev 10) (SET #gv_rev (CAT #gv_rev "0")))
+  )
+  (IF (= #gv_outtype "integer")
+   (
+    (SET #gv_version (CAT #gv_ver #gv_rev))
+    (SET #gv_version (+ #gv_version))
+   )
+   (SET #gv_version (CAT #gv_ver "." #gv_rev))
+  )
+  (SET #gv_outtype "string")
+  (SET #gv_intype 0)
+  (CAT #gv_version)
+ )
+)
+

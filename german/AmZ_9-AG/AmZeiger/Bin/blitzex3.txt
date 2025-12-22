@@ -1,0 +1,56 @@
+WbToScreen 0:Use Screen 0
+*Scr=ActiveScreen
+FH=Peek.w(Peek.l(*Scr+40)+4)
+FN$=Peek$(Peek.l(*Scr+40)+8)
+
+LoadFont 0,FN$,FH
+Use IntuiFont 0
+Window 0,0,0,300,200,$1008,"Menue Window",1,2
+*Wi0=ActiveWindow
+
+; erster Titel
+MenuTitle 0,0,"Erster Titel"
+MenuItem 0,0,0,0,"First Item "
+SubItem 0,0,0,0,0,"Untermenü U ","U"
+SubItem 0,0,0,0,1,"Untermenü W ","W"
+MenuItem 0,0,0,1,"Secont Item ","2"
+
+
+
+; Zweiter Titel
+MenuTitle 0,1,"Zweiter Titel"
+MenuItem 0,0,1,0,"A Item ","A"
+MenuItem 0,0,1,1,"B Item ","B"
+
+
+
+SetMenu 0
+Repeat
+  FlushEvents
+  ev.l=WaitEvent
+  If ev=$100 AND *Wi0 = ActiveWindow
+	WLocate 1,1
+	Select MenuHit
+	  Case 0
+		Select ItemHit
+		 Case 0
+		  Select SubHit
+			Case 0
+			 Print "Untermenü U"
+			Case 1
+			 Print "Untermenü W"
+		  End Select
+		 Case 1
+		  Print "Second Item"
+		End Select
+	  Case 1
+		Select ItemHit
+		 Case 0
+		  Print "A Item "
+		 Case 1
+		  Print "B Item "
+		End Select
+	End Select
+  End If
+Until ev=$200 AND *Wi0=ActiveWindow
+End

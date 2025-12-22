@@ -1,0 +1,219 @@
+\T
+
+§             EN PRATIQUE : LA STARTUP-SEQUENCE par Obi-One
+§             ================================================
+
+
+   Quel nom byzarre disent nos confr_res ou ennemis Pcistes, Macistes lorsque
+par hazard ce mot sort de notre bouche. Quel bande d'envieux ! La startup
+sequence est encore une preuve que l'AmigaOs est tout a fait bien concu.
+
+   Cette sequence de demarrage (IN FRENCH) permet au Workbench de se lancer
+et initialise donc tout ce dont il a besoin: Affichage, pr_f_rences, 
+assignements divers, etc... La startup est donc indispensable au d_roulement
+d'un demarrage "correct". Mais il peut devenir aussi tr_s int_ressant de
+l'embellir avec des images de boot, gauges, sons, mais elle peut _tre aussi 
+l'occasion de lancer quelques patchs divers.
+
+¦   D_roulement de la startup-sequence (WB 3.0+) :
+   Mise en garde: Cette startup-sequence peut diff_rer d'un Amiga a un autre
+et il est possible que votre startup-sequence contiennent les _l_ments
+suivants dans un autre ordre.
+
+ (1) C:SetPatch QUIET
+
+Comme tout syst_me d'exploitation informatique, l'AmigaOS n'_chappe a la
+r_gle des bugs en tout genre. Mais, au moins il en propose le rectificatif
+pour certains d'entres eux par l'interm_diaire de SetPatch.
+
+L'argument QUIET permet de dire a SetPatch de la fermer afin qu'il ne
+nous offre pas la liste des bugs qu'il corrige.
+
+
+ö
+
+\T
+
+ (2) C:AddBuffers >NIL: DF0: 100
+
+Ajoute des tampons de m_moire au lecteur de disquette DF0 pour rendre
+ses transferts plus rapides.
+
+ (3) C:MakeDir RAM:T RAM:Clipboards RAM:Env RAM:Env/sys
+     Copy Sys:Prefs/Envarc RAM:env ALL NOREQ
+
+Copie vos pr_f_rences du Workbench et de vos applications en m_moire
+afin de retrouver votre workbench comme vous l'avez laisser auparavant.
+
+ (4) Resident >NIL: C:Assign PURE
+     Resident >NIL: C:Execute PURE
+
+Ces 2 commandes servent a mettre en m_moire les commandes Assign et
+Execute afin qu'elles ne soient plus acceder a partir du disque a chaque
+fois qu'on en a besoin, cela permet d'y acceder plus rapidement et ainsi
+d'acceler la sequence de d_marrage.
+
+ (5) Assign >NIL: ENV: RAM:ENV
+     Assign >NIL: T: RAM:T
+     Assign ...Etc...
+
+Voici la une des parties majeures de la startup-sequence et de plus celle qui 
+met le plus de temps a se mettre en place m_me si la commande Resident (4)
+en accelere la procedure. Les assigns permettent d'acceder a un repertoire
+comme s'il s'agissait d'un disque. (ex: Assign JEUX: Work:rigolo/jeux/)
+
+ö
+
+\T
+
+ (6) IF EXISTS DEVS:Monitors
+     IF EXISTS DEVS:Monitors/VGAonly
+     DEVS:Monitors/VGAonly
+     ENDIF
+
+Le premier IF v_rifie l'existance du r_pertoire contenant les drivers de 
+moniteurs. Cette condition est boucl_e en fin du 7 avec ENDIF. Donc, 6 et 7 
+sont indicernables l'un de l'autre.
+
+6 permet d'executer le programme ou plutot le patch VGAonly qui a pour
+fonction d'activer les moniteurs a fr_quence non-PAL et non-NTSC, elle
+autorise en outre leur utilisation mais favorise celle des modes dits VGA.
+(sur Ecrans SVGA ou Multisync)
+
+ (7) C:List >NIL: DEVS:Monitors/~(#?.info|VGAOnly) TO T:M LFORMAT
+"Devs:monitors/%s"
+     Execute T:M
+     C:Delete >NIL: T:M
+     ENDIF
+     
+Cette deuxi_me partie cr_e une liste exhaustive de tous les pilotes pr_sent
+dans le r_pertoire DEVS:Monitors et _x_cute ces pilotes d'_crans. Il prend
+tout de m_me garde de ne pas _x_cuter a nouveau le programme VGAonly.
+
+ (8) IF NOT EXISTS SYs:Fonts
+     Assign FONTS:
+     ENDIF
+
+ö
+
+\T
+
+Ces commandes v_rifient l'existance d'un tiroir Fonts sur votre partition de
+d_marrage, dans le cas contraire, une assign est effectu_e vers FONTS qui
+contiendra alors toutes les fontes pr_sentes dans le r_pertoire Fonts
+d'autres partitions ou lecteurs.
+
+ (9) C:Mount >NIL: DEVS:DOSDrivers/~(#?.info)
+
+Montage de tous les p_riph_riques sp_cifi_s dans le r_pertoire DEVS:DOSDrivers.
+
+ (10) C:Iprefs 
+
+IPrefs pour "Intuition Pr_f_rences".
+Ce programme se sert de tous les fichiers en .prefs du r_pertoire Env:sys
+pour d_finir les caract_ristiques de l'environnement du Workbench (Ecran,
+Patterns, Sons, etc...) ainsi que pour mettre en place les icones par d_faut
+attribu_s aux fichiers sans icones (fichiers .info du repertoire Env:sys).
+
+ (11) Path >NIL: RAM: C: SYS:Utilities SYS:Rexxc SYS:System S: SYS:Prefs
+SYS:WBStartup 
+                 SYS:Tools SYS:Tools/Commodities
+
+La commande Path permet d'assigner les r_pertoires voulus de facon a ce que
+les fichiers pr_sents dans ces tiroirs soient accessibles directement en
+tapant leur nom dans un Shell.
+
+Ex: SYS:Tools/Commodities/Exchange pour _tre acceder directement par
+Exchange.
+
+ö
+
+\T
+
+ (12) IF EXISTS S:User-Startup
+      Execute S:User-Startup
+      EndIF
+
+Cela execute la user-startup (startup utilisateur) si elle existe.
+
+ (13) Resident Execute REMOVE
+      Resident Assign REMOVE
+
+Retire de la m_moire les commandes Execute et Assign car on n'a plus besoin
+d'y acceder de facon r_guli_re.
+
+ (14) C:LoadWB 
+      EndCLI >NIL:
+
+Lance le workbench (enfin pr_t a nous acceuillir!) et ferme la fen_tre CLI
+active.
+
+¦   Am_lioration et ajouts dans la startup-sequence
+   Voici la liste de plusieurs choses possibles a op_rer sur la startup.
+
+^ Le menu DEBUG du Workbench
+
+Comment Faire: En 14 remplacer C:LoadWB par C:LoadWB -debug
+
+Rajoute un menu DEBUG au Workbench avec 2 choix: FlushLibs et ROMWack.
+
+ö
+
+\T
+
+
+
+^ Le programme FastIPrefs
+
+Comment Faire: Remplacer en 10 la commande IPrefs par FastIPrefs.
+
+Ou est FastIprefs ? Sur Aminet dans util/wb/fastiprefs.lha.
+
+L'indispensable FastIprefs acc_lere Intuition et ajoute des fonctionnalit_s
+au programme de pr_f_rences WBPattern.
+
+^ Le programme AddDatatypes
+
+Comment Faire :
+Entre 7 et 8 ins_rer la ligne: C:AddDatatypes Devs:datatypes REFRESH
+
+Ou est AddDatatype :
+Avec les nouvelles librairies Datatypes.library. Sur Aminet.
+
+Permet de r_actualiser votre liste de datatypes si vous en avez rajouter.
+
+^ Les patchs en tout genre (PoolMem, FfpPatch, PatchMult64 etc)
+
+Tous ces patchs sont a ins_rer entre 1 et 2.
+Disponibles sur Aminet.
+
+ö
+
+\T
+
+
+
+^ Le patch BlizKick
+
+Il faut le mettre tout au d_but de la startup-sequence.
+Il permet d'activer une rom logicielle (attention a la l_galit_) et de
+corriger ou ajouter des fonctions a l'AmigaOS. Par exemple il joue l'office
+de PrepareEmul pour ShapeShifter.
+
+Ou ca ?? AMINET:util/boot/blizKick.lha
+
+^ Programmes d'affichage d'une musique et parfois lecture d'une musique
+
+Ces programmes doivent _tre plac_s apr_s le 7.
+
+Exemple :
+le tr_s bon SysPic (Malheureusement non-CGX) a AMINET:util/boot/syspic.lha
+
+
+
+¦   Alors, heureux ?
+   La startup-sequence n'est pas un concept si compliqu_ et est surtout tr_s
+simple a customiser. La prochaine fois, nous verrons qu'il est possible
+d'am_liorer le WorkBench grace a la programmation (nottament en langage E).
+
+ö

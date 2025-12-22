@@ -1,0 +1,151 @@
+<HTML>
+<HEAD>
+<TITLE>
+STORM C
+</TITLE>
+</HEAD>
+
+<BODY>
+<H3>STORM C/C++ V2.0 RELEASE 9</H3>
+<P>
+ 
+        AMIGA iþletim sistemi bir UNIX varyasyonudur ve tamamýna yakýný C dili ile
+ yazýlmýþtýr.Bu nedenle Amiga yazýlým þirketleri ve programcýlarý genellikle C/C++ dilini
+ tercih ederler.
+<P>
+        Bildiðiniz gibi C kaynak kodlarýný bir BASIC kodu gibi bir editöre yazýp RUN
+ komutu vererek çalýþtýramazsýnýz.C dilinde yazýlnýýþ kodu çalýþýr hale getirmek için
+ bir derleyici yazýlýma gerek vardýr.PC'de bu iþlem Turbo-C veya Borland-C gibi yazýlým
+ larla yapýlýrken Amiga'da Haage & Partner firmasýnýn Storm C/C++ V2.0 isimli yazýlýmý
+ ile yapýlmaktadýr.Eskiden bir C kaynak kodunu derlemek için bir sürü Shell/Dos komutu
+ yazmak zorundaydý programcýlar,ancak grafiksel ara birim tekniklerinin (GUI) geliþmesi
+ ile bu iþler çok kolaylaþtý.Storm C'de de kaynak kodunu bir editorle yazýp kaydetmek
+ dýþýnda bütün iþlemler fare aracýlýðý ile gerçekleþtiriliyor.
+<P>
+        StormC'yi Amiga'nýzda çalýþtýrabilmeniz mutlaka geniþ bir sabit diske ve en az 4MB
+ RAM belleðe gerek var,ayrýca 68030 veya daha üstü bir iþlemciniz varsa derleme süresi 
+ oldukça kýsalacaktýr.Storm C 2.0 Amiga'da kullanýlan 68000 çipinden 68060 çipine kadar
+ bütün iþlemcileri ve 68881 ve 68882 matematik iþlemcileri desteklemekte.Program Amiga
+ OS 3.0 ve OS 3.1 için program yazmak için gerekli include ve header dosyalarý ile birlikte
+ geliyor.
+<P>
+        Storm C/C++ üniversitelerde okutulan standart ANSI C/C++ dilini tamamen destek
+ lemekte.Bunun anlamý herhangi bir ANSI C/C++ kitabý alýp C dilini öðrenmeye baþlaya
+ bilirsiniz,ancak tabii ki PC için yazýlmýþ grafik çizen C/C++ kaynak kodlarý derlendiðinde
+ hata verecektir,çünkü her ayrý iþletim sistemi için pencere,ekran,v.s. komutlarý C dilinde 
+ farklýdýr.
+<P>
+        Storm C ile birlikte editor olarak StormEd veya GoldEd adlý programlarý kullanabilir
+ siniz,ben GoldEd'i kullanmanýzý tavsiye ederim çünkü çok daha kullanýþlý bir editör.Storm
+ C yazdýðýnýz kaynak kodundaki hatalarý çok ayrýntýlý bir þekilde size sunuyor ve bu hatalarýn
+ nedenleri hakkýnda size bilgi veriyor.Storm Debug programý ile de programýnýz çeþitli man
+ týksal hatalardan kurtarabilir,Optimize ile de programý en az büyüklükte en hýzlý çalýþýr hale
+ getirebilirsiniz.
+<P>
+        Hazýr size Storm C'yi size anlatmýþken,isterseniz AMIGA Workbench'inde bir
+ pencere açýp onu 30 saniye  açýk tutup programdan çýkan bir C kaynak kodunu derleyelim
+ birlikte. 
+<P>
+        Ýlk önce Storm C'yi sabit diskinize kurun (install).Þimdi GoldEd veya StormEd
+ ile aþaðýdaki kaynak kodunu hatasýz olarak yazýn ve sabit diskinize "Ornek.c" adý altýnda
+ kaydedin.Þimdi Storm C v2.0'ý çalýþtýrýn ve "Project" me­nüsünden "New"'ý seçin.
+ Ekranda yeni pencere açýlacak,yine "Project" menüsünden "Add File(s)"'ý seçin ve
+ orada da daha önce yazýp sabit diske kaydettiðiniz "Ornek.c" programýný seçin.Ornek.c
+ programý ekranda açýlan pencerede yerini alacaktýr.Evet,yine "Project" menüsünden
+ "Select Executable"ý seçin ve çýkan pencerede "Ornek.exe" yazýp Enter'a basýn.Derlenen
+ kaynak kodu "Ornek.exe" adý ile sabit diske kaydedilmesini saðladýnýz artýk.
+<P>
+        Þimdi "Compile" menüsünden "Make"'ý seçtiðinizde eðer yazdýðýnýz kodunda
+ hata yoksa derleme iþlemi yapýlacak ve sonuçta çýkan exe dosyasý "Ornek.exe" adý ile
+ sabit diske kaydedilecektir.Eðer kaynak kodunda hata varsa düzeltip "Ornek.c" dosyasýný
+ tekrar kaydedin ve "Compile" menüsünden "Make" ile tekrar derleyin.     
+<P>
+        Ýsterseniz biraz da örnek olarak verdiðimiz programý inceleyim.Amiga'da pencere
+ ve ekran açma gibi iþlemler "intuition.library" adý verilen dosya üzerinden yapýlýr,ilk
+ satýrda bu iþ için gerekli verileri içeren "intuition.h" adlý dosyayý derleyeciye yüklüyoruz.
+ "Struct NewWindow.." diye baþlayan satýrda 50,25 koordinatlarýndan 400,200 koordinat
+ larýna kadar uzanan baþlýðý "Benim Ýlk Pencerem!!" olan bir pencere tanýmlýyoruz.Daha
+ sonra bu pencere açýlýyor ve 30 saniye beklendikten programdan çýkýlýyor.
+<P>
+örnek Program Kaynak Kodu: 
+
+/* Amiga Workbench'inde kuçuk pencere acan kisa bir program */                <BR>
+#include <intuition/intuition.h>                                              <BR>
+struct IntuitionBase *IntuitionBase;                                          <BR>
+struct Window *pencerem;                                                      <BR>
+struct NewWindow yeni_pencere=                                                <BR>
+{                                                                             <BR>
+  50,            /* LeftEdge    Pencerenin Sol Ust Kosesinin X Koordinati */  <BR>
+  25,            /* TopEdge     Pencerenin Sol Ust Kosesinin Y Koordinati  */ <BR>
+  400,           /* Width       400 piksel genislik. */                       <BR>
+  200,           /* Height      200 piksel yukseklik. */                      <BR>
+  0,                                                                          <BR>
+  1,                                                                          <BR>
+  NULL,                                                                       <BR>
+  SMART_REFRESH|                                                              <BR>
+  WINDOWCLOSE|                                                                <BR>
+  WINDOWDRAG|                                                                 <BR>
+  WINDOWDEPTH|                                                                <BR>
+  WINDOWSIZING|                                                               <BR>
+  ACTIVATE,                                                                   <BR>
+  NULL,                                                                       <BR>
+  NULL,                                                                       <BR>
+  "BENIM ILK PENCEREM!!",   /* Title       Pencerenin basligi */              <BR>
+  NULL,                     /* Screen      Pencere Workbench'te açilacak */   <BR>
+  NULL,                                                                       <BR>
+  80,                           /* MinWidth    Pencerenin 80 x 30'dan kucuk*/ <BR>
+  30,                          /* MinHeight   450x250'den buyuk olmayacak. */ <BR>
+  450,                                                                        <BR>
+  250,                                                                        <BR>
+  WBENCHSCREEN                                                                <BR>
+};                                                                            <BR>
+                                                                              <BR>
+main()                                                                        <BR>
+{                                                                             <BR>
+                                                                              <BR>
+  IntuitionBase = (struct IntuitionBase *)                                    <BR>
+    OpenLibrary( "intuition.library", 0 );                                    <BR>
+                                                                              <BR>
+  if( IntuitionBase == NULL )                                                 <BR>
+    exit();                                                                   <BR>
+                                                                              <BR>
+  /* Burada penceryi açiyoruz */                                              <BR>
+  pencerem = (struct Window *) OpenWindow( &yeni_pencere );                   <BR>
+                                                                              <BR>
+  if(pencerem == NULL)                                                        <BR>
+  {                                                                           <BR>
+    CloseLibrary( IntuitionBase );                                            <BR>
+    exit();                                                                   <BR>
+  }                                                                           <BR>
+                                                                              <BR>
+  /* Pencereyi açtik,hersey yolunda. */                                       <BR>
+  /* 30 saniye bekletme yapalim */                                            <BR>
+                                                                              <BR>
+  Delay( 50 * 30);                                                            <BR>
+                                                                              <BR>
+  /* Pencereyi kapatalim */                                                   <BR>
+                                                                              <BR>
+  CloseWindow( pencerem );                                                    <BR>
+                                                                              <BR>
+  CloseLibrary( IntuitionBase );                                              <BR>
+                                                                              <BR>
+  /* SON */                                                                   <BR>
+}
+<P>
+        Storm C V2.0 firmasý Haage&Partner firmasý tarafýndan devamlý güncelleniyor.
+ Eðer Internet baðlantýnýz varsa www.haage-partner.com adresinden Storm C V2.0 
+ için 5,6,7,8 ve 9 numaralý Update dosyalarýný alýn,ayrýca ayný adreste program hakkýnda
+ geniþ bilgi bulabilirsiniz.
+<P>
+        Önümüzdeki günlerde Haage&Partner firmasý Storm C/C++ 'nin V3.0 sürümünü
+ piyasaya sürmeye hazýrlanýyor.Tahmin ettiðiniz bu sürüm ile PowerPC kartlý Amiga'lar
+ pOS iþletim sistemi için C programlarý derlemek mümkün olacak.Storm C/C++ V3.0 ile
+ hem PowerPC iþlemciyi hem de 680x0 iþlemciyi ayný anda paralel olarak kullanan program
+ lar derlemek mümkün.
+<P>
+        Hadi artýk geçin klavyenin baþýna AMIGA ile programlamanýn ne kadar hoþ bir uðraþ
+ olduðunu keþfedin...
+<P>
+
+</BODY>
+</HTML>

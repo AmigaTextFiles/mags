@@ -1,0 +1,209 @@
+2
+1
+2 Jasso_1.IFF 0 0
+2 Jasso_2.IFF 320 0*
+
+{3                               Jassoo!? Vai niin!
+{3                               ------------------
+ 
+                                 Petri Keckman
+ 
+ 
+HUOMIO: Ohjelma jäi keskeneräiseksi ennen Sakun deadlinen uhkaavaa lähestymistä,
+mutta voi sillä jo pelata. Kolikon törmäämistä kulmakärkiin ei tarkkailla. Koli-
+kon voi tulkita tällöin kulkevan korokkeen editse. Samasta syystä tapahtuu  muu-
+takin outoa käyttäytymistä joskus.
+ 
+Pelaan harvoin, jos koskaan, mitään uhkapeliä, mutta 11.9.1998 voitin pajatsossa
+67 mk kolmen markan alkupanoksella. Ensin 7 mk, sitten ressu  10  mk  ja  60  mk
+tilttiin. Jassoon tuli sen verran positiivinen tuntuma, että päätin  ryhtyä  oh-
+jelmoimaan jassopeliä.
+ 
+Peliohjelmistotalon osastopäällikön mielestä jassopelin  tekeminen  kävisi  var-
+maankin helposti ja nopeasti Amigalla. Varmasti sen saisi jo  huomisiltapäiväksi
+viimeistään valmiiksi, jos tänään aloittaisi - onhan Amigalla  nähty  palleroita
+jos minkälaisia hyppimässä ja pomppimassa ruudulla.
+ 
+Niin minäkin ajattelin, ennen kuin ryhdyin tuumasta toimeen. Sitten iski minulle
+harvinainen tauti, neurootikon perfektionismi, ja  ryhdyin  miettimään  ongelmaa
+matemaattisesti, ympyröiden, suorien ja paraabelin yhtälöiden kautta.
+ 
+Jos ohjelmaselitykset eivät kiinnosta enempää, niin käynnistä  hakemistosta  Oh-
+jelmat tiedosto jasso.exe, jonka pitäisi käynnistyä joko WB:stä tai Shellistä: 
+
+
+jasso.exe                  95928
+
+Käynnistyshakemistossa on oltava Roinat-hakemisto, jossa sijaitsee:
+
+Directory "Roinat" on Friday 25-S
+sormi.bsh                    862
+Eur.bsh                     3978
+Eur2.bsh                    1254
+klaava2.bsh                 1250
+kruuna2.bsh                 1254
+pajatso.col                  108
+klick                        736
+7 files - 29 blocks used
+ 
+Pelin käynnistyttyä ihaile ensin  vähän  aikaa,  mihin  low-graphics  320x256x16
+väriä pystyy, ja ala painella vasenta hiirennäppäintä.  Jos  näpäytät  lyhyesti,
+niin kolikko lähtee nopeasti. Jos painat pidempään, niin kolikko lähtee  hitaam-
+min. So simple! Plug and go! Peli päättyy, kun painat molempia hiirennappeja sa-
+manaikaisesti.
+ 
+Peliä pelatessa pääsee samalla eurojen makuun. Tilastoa pidetään  voitetusta  ja
+menetetystä rahamäärästä. Kolikon saamisesta jassolokerikkoon saa  kymmenen  ko-
+likkoa eli 10 EUR jos heitti eurolla ja 5 FIM jos heitti kruunalla tai  klaaval-
+la. Euron vaihtokurssi on 5,80661. Yksi euro on siis  5,80661  FIM.  Loppusummat
+pyöristetään tietysti pennien tarkkuudella. Tällöin esim. kun  muutetaan  300,00
+markkaa euroiksi, saadaan 51,67 EUR. Kun tämä muutetaan takaisin markoiksi, saa-
+daan 300,03 FIM. Olen varma, että pankki tavalla  tai  toisella  pyöristelee  ja
+muuttaa summia siten, että rahaa siirtyy meiltä heille.
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                          <- Kuva 1
+
+                             Kuva 2 ->
+
+
+
+Mutta takaisin ohjelma-asiaan: koska kolikko törmää objektiin? Yleensä  ongelmat
+ratkaistaan siten, että tutkitaan meneekö jokin spriten  tai  bobin  tai  shapen
+(whatever) blitattava osa jonkin reunan yli, paikkakoordinaatti muuttuu negatii-
+viseksi tms. ja sitten vain vaihdetaan suuntaa.
+ 
+Mutta entä rahakorokkeen seinämät? Ei riitä, että tutkittaisiin, peittääkö  jon-
+kin blitattavan objektin alue korokkeen aluetta. Ja jos peittäisikin, niin  mikä
+olisi se tarkka piste, jossa ympyrä osuu seinämään? (Kts.  kuvat  1  ja 2 .)  Ei
+riitä siksi, että Blitz-Basicissa shapet ovat nelikulmion muotoisia, jolloin voi
+olla, että neliön kulma osuisi korokkeeseen, mutta  ei  kolikko.  Ennen  kaikkea
+shapejen vaiheet piirretään näytölle tietysti askeleittain. Voisihan olla,  että
+kahden vaiheen välissä kolikko osuisi korokkeen seinämään, mutta  peli  jatkuisi
+ilman osumaa.
+ 
+Voisi olla, että spriteillä ongelma poistuisi: laittaisi spritet liikkumaan vain
+yksi  pikseli  kerrallaan  ja  tutkisi  jollain  käskyllä,  menevätkö   pikselit
+päällekkäin törmättävän objektin kanssa. Tällöin ongelmaksi  tulisivat  nopeudet
+ja kiihtyvyydet. Putoava ja pomppiva kolikkohan on nopeutuvissa ja  hidastuvissa
+liikeissä - kuinka se kävisi päinsä, jos sprite saisi liikkua vain  yhden  kuva-
+ruudun pisteen kerrallaan? Ja miten laskea sen paraabeli rata?
+ 
+Lopulta päädyin ratkaisuun, jossa taulukoitiin kaikki janat, joihin  törmäämistä
+tutkitaan. Siis ruudun vasen, oikea, ylä- ja alareuna tutkitaan samalla  tavalla
+kuin kolikkokorokkeen reunajanat. Janoista on samoin taulukoitu se, mistä  suun-
+nasta sitä on lähestyttävä, jotta voidaan tutkia oikeaa kolikon reunaa. Lähesty-
+missuunta kertoo samalla, mitä on törmäyksen jälkeen tehtävä x-akselin ja  y-ak-
+selin suuntaiselle nopeudelle. Siis esim. kolikko törmää vasempaan  reunaan  va-
+semmalla reunallaan ja ponnahtaa takaisin päin.
+ 
+Kahdella suorallahan on aina  leikkauspiste,  elleivät  ne  ole  yhdensuuntaisia
+(mutta eivät samat). Eli leikkauspiste suorille saadaan kyllä aina, mutta ei ja-
+noille. Niistä janoista, joille saadaan leikkaupiste  kolikon  kanssa,  valitaan
+lähin.
+ 
+ 
+{3Osuuko kolikko rahakorokkeen kulmapisteeseen?
+{3---------------------------------------------
+
+Hieman poiketen  kuvan 2 selittelyistä  päädyin  yksinkertaisempaan  ratkaisuun.
+"Make it as simple as possible!" on ohjelmoinnin yksi perusteemoistani, jota  en
+osaa itse noudattaa.
+ 
+Kolikko-shapen vasen yläkulma on kulkemassa pisteestä (x,y)  pisteeseen  (ux,uy)
+ja sen keskipiste kulkee levk/2 oikeammalla ja kork/2 alempana pisteestä (x1,y1)
+pisteeseen (x2,y2).
+ 
+Löytyykö siis janalta (x1,y1)->(x2,y2) ympyrää, jonka kehä sivuaa esim. pistettä
+(kx0,ky0). Kun luovutaan kuvassa selitellystä ellipsisyyden huomioon  ottamises-
+ta, niin saadaan aivan simppeli ratkaisu: kolikko törmää reunaan, jos sen kulku-
+radalla on ympyrä, jonka etäisyys reunapisteestä on ympyrän säde.
+ 
+Kolikon keskipisteen määrittämään suoraan kuuluvat ne pisteet x',y',  jotka  to-
+teuttavat yhtälön:
+ 
+y'-y1 = k * (x'-x1), missä k on (y2-y1)/(x2-x1).
+ 
+Käytin merkintää x' (äks pilkku) siksi, että kyseessä on siis eri x kuin  se  x,
+joka oli shapen alkupisteen vasemman yläkulman x-koordinaatti. Siis pisteet  ky-
+seisellä suoralla ovat (x',y') eli (x',k*(x'-x1)+y1), ja niiden etäisyydet  pis-
+teestä kx0,ky0 pitää olla rx.
+Kaksi tuntematonta ja kaksi yhtälöä. x':lle saadaan toisen asteen  yhtälön  rat-
+kaisu. Jos ratkaisu on olemassa, niistä valitaan lähin.
+ 
+Juu. Ei tarvitse ymmärtää. Haluan ehkä vain sanoa, ettei  ohjelmoinnissa  kaikki
+ole niin helppoa kun miltä näyttää. Tai on sen jälkeen kun ongelman on  ratkais-
+sut. Mutta kyllä tuli sählättyä kaikennäköistä,  ennen  kuin  päädyin  itsestään
+selvään ratkaisuun. Halusin saada ohjelman valmiiksi Sakun #26  deadlineen  men-
+nessä, ja kiire tuli.
+ 
+ 
+{3Social free?
+{3------------
+ 
+Onko peli nyt sitten freeware, shareware vai whattaware? Olkoon freeware, vaikka
+yllättävän työteliäs sekin oli tehdä, ja myöhemmin kaduttaa. Mutta toisaalta jos
+saisin rahaa, niin mitä voisin sillä tehdä? Jotain kivaa? No, peliähän oli  ihan
+kiva tehdä, miksi siitä pitäisi vielä saada rahaa? Ja kuka maksaisi low-graphics
+2D-pelistä 16 värillä? Toisaalta halusin pitääkin pelin mahdollisimman yksinker-
+taisena. Itse asiassa aivan pyöreä keltainen pallo pomppimassa vihreän korokkeen
+päällä miellyttäisi taiteellista tajuntaani.
+ 
+Ohjelmahan voisi olla "social free", mikä voisi tarkoittaa sitä, että  vastalah-
+jaksi kukaan Sakun ympärillä pyörivä ei muista eikä kukaan tiedä  mitään  siitä,
+eikä haluakaan muistaa eikä tietää mitään siitä,  mitä  pientä  häiriötä  (jonka
+kaikki sitä paitsi ovat jo unohtaneet) Saku 98:ssa tapahtui  jonkun  hörhön  ai-
+heuttamana. Ihminen nyt kerta kaikkiaan on joskus hullu, niin hävettävää kuin se
+onkin, jotenkin ilman omaa vapaata tahtoaan. Ainakin minä olen.
+ 
+Tai jos tämä olisi "moral free"? Tarkoittaa sitä, että kukin, joka  peliä  pelaa
+maksaisi siitä tilille 208420-115577 pienen korvauksen. Jos  tililleni  ilmestyy
+rahaa, niin se olisi kyllä sensaatioartkkelin aihe Sakuun.
+ 
+ 
+{3Jatkokehitys?
+{3-------------
+ 
+Ohjelmoinnissa on yritetty mahdollisimman pitkälle ottaa huomioon  jatkokehitte-
+lymahdollisuudet: useampien kolikoiden lisääminen, kuvaruudun koon skaalaaminen,
+muuttujien arvojen säätäminen valikoista.  Toiminnot  tullevat  seuraavaan  ver-
+sioon, joka ilmestyy...? Kolikkoreiän liikkeeseen laittaminen ja useampien koli-
+koiden heittämisen mahdollisuus samanaikaisesti voisi tehdä pelistä mukavamman.
+ 
+Koska janat on tallennettu taulukkotietorakenteeseen, on niiden lisääminen help-
+poa - paitsi että siinä joutuu ottamaan monia asioita huomioon, joita ei ole do-
+kumentoitu kuin omaan päähäni. Jos haluaa  lisätä  minkälaisen  tahansa  janojen
+peittämän törmäämisalueen peliin, vaikka toisen korokkeen, niin sen  kuin  lisää
+janat taulukkoon jx(jlkm) ja niihin törmäämissuunnat taulukkoon suunnat(jlkm) ja
+kasvattaa muuttujaa jlkm janojen lukumäärällä. Samalla täytyy muistaa  päivittää
+taulukkoa, johon on kerätty ne kulmapisteet joihin voi osua. Kulmapisteet  voisi
+tietysti ohjelmallisestikin tutkia.
+ 
+Hauskoja pelihetkiä! Toivoo hörhö.
+ 
+PS: Tosiaan tämä artikkeli tuli kirjoitettua ennen aikojaan. Peli ei  ole  vielä
+siinä tilanteessa kuin artikkelissa kuvataan.

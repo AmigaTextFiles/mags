@@ -1,0 +1,89 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="ppccall.html">PREV</a> | <a href="history.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Additional StormPowerASM Macros </b>
+
+Please note, that you have to include stormc:include/powerpc/ppcmacros.i to
+use these macros. These macros are only defined for 32 Bit operations.
+
+bitchg Rn,const
+bittst Rn,const
+bitclr Rn,const
+bitset Rn,const
+
+These are the Bit-commands, like known from the 68k. You have to be careful,
+though. The highest bit on the *68k* is 31, on the *PPC* this is *0* !!! bittst
+stores its results in cr0.
+
+clrb Rn
+clrh Rn
+clrw Rn
+
+Clears the Low-Byte/Halfword/Word of a register, like clr on the 68k. These commands
+support the . notation, like defined in <a href="imp.html">Important things</a>.
+
+mb Rd,Rs
+mh Rd,Rs
+
+These commands copy the Low-Byte/Low-Halfword from Rs to Rd. The other Bytes of Rd
+stay unchanged. These commands support the . notation.
+
+setb Rn
+seth Rn
+setw Rn
+
+These commands move the value -1 to register Rn (by setting all bits of the lowest
+Byte/Halfword/Word to 1).
+
+tstb Rn
+tsth Rn
+tstw Rn
+
+These commands compare Rn with 0, like on the 68k. cr0 is set accordingly.
+
+There are also some useful macros to access registers in ppcmacros.i:
+
+local = r13
+base  = r2
+stack = r1
+trash = r0
+
+_d0             equr    r3
+_d1             equr    r4
+_d2             equr    r22
+_d3             equr    r23
+_d4             equr    r24
+_d5             equr    r25
+_d6             equr    r26
+_d7             equr    r27
+_a0             equr    r5
+_a1             equr    r6
+_a2             equr    r28
+_a3             equr    r29
+_a4             equr    base
+_a5             equr    r30
+_a6             equr    r31
+
+_fp0            fequr   f1
+_fp1            fequr   f2
+_fp2            fequr   f3
+_fp3            fequr   f4
+_fp4            fequr   f5
+_fp5            fequr   f6
+_fp6            fequr   f7
+_fp7            fequr   f8
+
+This is especially useful, when you do context-switches and don't want to
+have a look at the register table all the time.
+
+</pre>
+</body>
+</html>

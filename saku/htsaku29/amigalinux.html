@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><TITLE>Amiga ja Linux</TITLE></HEAD>
+<BODY>
+
+ <HR>
+ <B>Amiga ja Linux</B><BR>
+ <I>Janne Pikkarainen</I>
+ <HR>
+
+ <P>
+Valtavan Linux-hypen painostamana minäkin päätin asentaa sellaisen
+kotoiseen Amigaani. Monien mielestä Debian on ensikertalaiselle helpoin ja
+mukavin vaihtoehto, joten päädyin siihen. En tiedä, onko Debian aidosti
+helpoin, mutta ei sen asentaminen missään nimessä vaikeaa ollut.
+ </P>
+
+ <P><H3>Pingviiniä synnyttämään</H3></P>
+
+ <P>
+Suuntasin selaimeni osoitteeseen
+<A HREF="http://www.linux-m68k.org">www.linux-m68k.org</A>
+ja ryhdyin selailemaan asennusohjeita. Näiden opastamana otin paketit
+Amigainstall.lha ja base_21.tgz. Pura Amigainstall.lha jonnekin talteen.
+ </P>
+
+ <P>
+Linuxia varten tarvitset vähintään kaksi kiintolevypartitiota, toinen itse
+Linuxille, toista tarvitaan swappia varten. Jotta asennus sujuisi
+helpommin, tulee ennen varsinaista Linuxin asennusta käydä HDToolBoxin
+puolella. Tee haluamasi kokoinen partitio Linuxille (itse annoin sille noin
+2 gigatavua) ja napauta HDToolBoxin "Advanced Options" -painiketta. Tämän
+takaa löytyy "Change Filesystem".
+ </P>
+
+ <P>
+Aseta tiedostojärjestelmäksi "Custom Filesystem" (joissakin HDToolBoxin
+versioissa kulkee nimellä "Reserved Filesystem") ja muuta Identifierin
+arvoksi 0x4c4e5800. Tämä on heksadesimaalinen vastine kirjainyhdistelmälle
+"LNX". Kytke liput "Automount this partition" ja "Custom bootcode" pois
+päältä. Varmista vielä, että "Reserved blocks" -kohdassa lukee startin
+kohdalla 0 ja endin kohdalla 1. Mikäli näin oli, paina OK.
+ </P>
+
+ <P>
+Tee nyt haluamasi kokoinen swappipartitio. Itse annoin sen kooksi sata
+megatavua (tuplasti oman koneeni muistimäärä). Huomaathan, että maksimikoko
+swappipartitiolle on 127 megatavua. Näin ainakin PC:n Redhatissa, en ole
+kokeillut Amigalla isompaa, mutta en suosittelelisi ketään kokeilemaan. Kun
+olet luonut swappipartition, tee Change Filesystem -valikon takana kuten
+varsinaiselle Linux-partitiollekin, mutta laita Identifier-arvoksi
+0x53575000. Tämä vastaa heksadesimaaleina kirjainyhdistelmää SWP.
+ </P>
+
+ <P>
+Paina taas OK ja poistu HDToolBoxista. HDToolBox varoittaa sinua levyllä
+olevia tietoja kohtaavasta kadosta - paina OK ja Amigasi
+uudelleenkäynnistyksen jälkeen mene sinne hakemistoon, minne olet purkanut
+Amigainstall.lha-paketin. Klikkaa täällä asennusikonia ja hetken kuluttua
+Linuxin asennusohjelma valtaakin koneesi. Tämä vaihe asennuksesta on
+todella helppo, en usko että kenelläkään kokeneemmalla amigistilla tulee
+ongelmia asennuksen suhteen.
+ </P>
+
+ <P>
+Ainoastaan Linuxin tyyli ilmoittaa kiintolevyistä saattaa hämätä aluksi
+kokematonta käyttäjää. IDE-levyt näkyvät muodossa hdxy, jossa x on kirjain
+väliltä a-z ja y joku numero. x tarkoittaa SCSI-unitia; jos HDToolBox
+sanoo, että levy on unitissa 0, levy on tällöin Linuxin mielestä hda, jos
+levy on HDToolBoxin mielestä unitissa 1, levy on Linuxille hdb. Numero
+perässä puolestaan ilmaisee levyn partitiota. Näinpä IDE-väylän unit 0:ssa
+olevan levyn ensimmäinen partitio on Linuxissa hda0.
+ </P>
+
+ <P>
+Takaisin asennusohjelman pariin. Alussa ohjelma kyselee monitorisi tyyppiä
+ja näppäinkarttaa. Melko pian tämän jälkeen sinun tulee valita media, josta
+base_2x.tgz löytyy. Itselläni kyseeseen tuli "Already mounted FS" ja tämän
+jälkeen hakemistoksi /hdb0/debian/. Hetken (koneesi prosessorin ja
+kiintolevyn nopeudesta riippuen...) pakettia narskuteltuaan ruutuun
+pätkähtää kysely lisäasetuksista ja palikoista, jotka haluat mahdollisesti
+Linuxin kerneliin asentaa. Itse en tarvinnut juuri muuta kuin ajurin
+PCMCIA-verkkokortilleni (net/apne), jonka jälkeen jatkoin asennusta.
+ </P>
+
+ <P>
+Seuraavaksi installeri haluaa tietää, onko koneesi kiinni verkossa ja jos
+on, millä tavalla. Itse naputtelin oman alueverkkomme nimipalvelin- ja muut
+asetukset paikoilleen ja jatkoin jälleen asennusta. Pian tämän jälkeen
+Linux haluaa bootata itsensä. Kunhan se käynnistyy taas uudelleen, tulee
+aika valita, mitä kaikkea haluaa asentaa ja mistä haluaa asentaa. Kahden
+gigan partitio riittää täysasennukselle enemmän kuin reilusti, joten en
+turhaan kursaillut. Asennustyypiksi valitsin verkon yli asentamisen, mitään
+Linux-romppua kun en omista.
+ </P>
+
+ <P>
+Parin tunnin imuroimistuokion jälkeen paketit olivatkin saapuneet.
+Yllätyksekseni kaikki paketit asentuivat ja purkautuivat itse, mitä nyt
+välillä piti tehdä valintoja eri ohjelmien asetusten kohdalla;
+postiohjelmat kyselivät palvelimia ja sen sellaista. Tämän jälkeen jälleen
+rebootti. Seuraavan käynnistymisen jälkeen oli aika valita root-salasana ja
+luoda muita käyttäjätunnuksia. Käyttäjätunnusten ideologia ja muokkaaminen
+on jokaisella MultiUserFileSystemiä käyttäneellä verissä.
+ </P>
+
+ <P><H3>Toimiiko se?</H3></P>
+
+ <P>
+Siinä se on, Linux on nyt asennettu loppuun! Seuraavaksi edessä onkin
+melkoinen ohjelmien konfigurointirumba. Itse olin malttamaton ja kokeilin
+ennen tekstipohjaisten ohjelmien virittämistä, miten hyvin X toimii Amigan
+Linuxissa. X, X11, virheellisesti joskus nimellä "X-Windows" on Linuxien
+graafisempi puoli.
+ </P>
+
+ <P>
+Kävi kuten odotinkin. Ainakin AGA-koneessa X on tolkuttoman hidas, jos
+sille tarjoaa käyttöön enemmän kuin 16 väriä ja resoluutioksi enemmän kuin
+640x480. Itselläni hyrrää A1260/50MHz, jossa 50 megatavua muistia ynnä
+muuta; X on kuitenkin vakavassa käytössä melko käyttökelvoton, kunnon
+näytönohjain on välttämättömyys.
+ </P>
+
+ <P>
+Sen sijaan tekstipohjainen Linux vipeltää kerrassaan vikkelästi. Jopa
+MP3:sten soittaminen onnistui, kun hain netistä mpg123-nimisen soittelijan. 
+Prosessoritehoa mpg123 vei hieman enemmän kuin Amigan oma MPEGA, mutta
+irccaaminen, FTP ynnä muut onnistuvat ihan hyvin samalla.
+ </P>
+
+ <P>
+Voisin kuvitella Linuxin ihan varteenotettavana vaihtoehtona, jos sinulla
+on useampia Amigoita ja käytössäsi on kiinteä Internet-yhteys - saat
+Linuxista lähestulkoon pomminvarman palvelimen. 
+<A HREF="http://www.linux-m68k.org">www.linux-m68k.org</A>
+sanoo Amigan Linuxin olevan käytännössä vähintään yhtä vakaa kuin alkuperäinen
+PC:nkin Linux. Tähän minun on helppo uskoa, sillä testisessioiden aikana se
+ei ole kaatunut kertaakaan.
+ </P>
+
+</BODY>
+</HTML>

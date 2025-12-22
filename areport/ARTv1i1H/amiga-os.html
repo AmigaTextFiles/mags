@@ -1,0 +1,687 @@
+<HTML>
+<HEAD>
+<title>The Amiga-OS conference</title>
+<H1>The AmigaOS conference, held in IRC channel #Amiga-OS on 4/4/95 </H1>
+</HEAD>
+<BODY>
+<p>
+The AmigaOS conference, held on what is becoming a very popular channel on IRC, is one of
+the examples of developers taking things into their own hands; if nobody does the work,
+everything stagnates; these people, whether participating in discussion or writing code, all
+deserve more credit than they get.  Becuase no matter how difficult writing code is, writing
+good code is one leap harder; and no matter how good that code is, without an interface and a plan
+of implementation, it's meaningless.  Here's to the planners, the thinkers, and the shakers out there.
+</p>
+<dl>
+<p><dt>Tau:<dd> suggested vote topics: binary compat, memprot, resource tracking, multiuser filesystem, clone 3.1/go for new
+</p><p><dt>stefanb:<dd> Tau: Binary compatibility = NO, all others semm OK.
+</p><p><dt>Tau:<dd> sb, why not? can load old binaries, doesn't mean every new feature oughta work with them
+</p><p><dt>mlelstv:<dd> tau, why new binaries ?
+</p><p><dt>Tau:<dd> mlel, stefan just said no to binary compat.
+</p><p><dt>stefanb:<dd> Tau: We should fix all brain-dead system calls. OK, if we make "compat" libraries for old binaries. The new libraries should have newly designed System calls.
+</p><p><dt>mlelstv:<dd> tau, can't understand that..
+</p><p><dt>BM:<dd> stephanb, Agreed. :)
+</p><p><dt>mlelstv:<dd> tau, I fear we get a committee decision..
+</p><p><dt>Tau:<dd> stefan, I'm against that.. we should keep it as compatible as possible, but not be afraid of breaking some things if an essential feature demands it
+</p><p><dt>stefanb:<dd> ml: Maybe there is no "correct" answer. Then we have to make a decision what _most_ programmers want.
+</p><p><dt>Lynet:<dd> Tau: How do we add MP and RT without breaking 99% of the old apps?
+</p><p><dt>stefanb:<dd> Tau: Most esential new features require breaking the old stuff.
+</p><p><dt>mlelstv:<dd> stef, as I said.. then either some people will leave the project or we have two teams working on different designs.
+</p><p><dt>griesbrei:<dd> Lynet: RT with an extra library
+</p><p><dt>Lynet:<dd> griesbrei: Use cooperative RT?
+</p><p><dt>mlelstv:<dd> stef, as for me. I am not interested in a 'I can do it better'-design.
+</p><p><dt>stefanb:<dd> ml: Then this only means that Amiga people are the same as UNIX people. They can't work together for a common goal.
+</p><p><dt>griesbrei:<dd> lynet: cooperative??
+</p><p><dt>Tau:<dd> lynet, I posted a long article about how I'd do it on the mailing list some time back. Seems to me device drivers would break, most other things could be left functional
+</p><p><dt>Tau:<dd> stefan, UNIX people can work together?!
+</p><p><dt>stefanb:<dd> Tau: They can't. example: NetBSF <-> FreeBSD.
+</p><p><dt>Lynet:<dd> griesbrei: I.e. that each application has to thell the OS it wants RT.
+     </p><p><dt>Pepo:<dd> resource tracking comes free with an OO system.  Old programs would simply not be be tracked.
+</p><p><dt>griesbrei:<dd> maybe the first thing we should add is a global Amiga time ;)
+   </p><p><dt>WilloW:<dd> No I'm not kidding.. he didn't recieve the announce message you posted.. Really wierd.. he's quite busy also..
+   </p><p><dt>Arcade:<dd> Ah ... that's bad.
+  </p><p><dt>stefanb:<dd> Pepo: We could do "compatibility" libraries for old binaries.
+   </p><p><dt>Arcade:<dd> Indeed ... that's what I propose.
+  </p><p><dt>stefanb:<dd> Pepo: They would be mapped to the new calls.
+      </p><p><dt>Tau:<dd> gries, pisses me off I have to actually adjust the clock for daylight savings.. Locale should remember that for me, just like it does for my timezone ;)
+</p><p><dt>griesbrei:<dd> lynet: that`s it. add a hook for each resource you want to be freed
+       </p><p><dt>BM:<dd> Stub like stuff yo umean?
+     </p><p><dt>Pepo:<dd> stefanb: oh, you can't build an whitebox api over an blackbox api.  the new stuff has to be based on the old stuff, not the other way around.
+   </p><p><dt>Arcade:<dd> tau: that's a thing to add ... :)
+</p><p><dt>griesbrei:<dd> tau: maybe some sort of rsadio controlled clock..mmmh
+  </p><p><dt>mlelstv:<dd> pepo, nah. everything gets translated for and back :)
+       </p><p><dt>BM:<dd> Nah, Synclock is fine for that. :)
+   </p><p><dt>PieMan:<dd> hates daylight savings
+   </p><p><dt>Arcade:<dd> Or syncro.
+   </p><p><dt>WilloW:<dd> yes!!!!
+     </p><p><dt>Pepo:<dd> mlelstv: it's impossible
+      </p><p><dt>Tau:<dd> I actually had to adjust my time zone to russian time (-3) to keep my clock in time.. since it's adjusted automatically from my host
+  </p><p><dt>mlelstv:<dd> pepo, you can simulate everything.. look at multifinder :)
+</p><p><dt>griesbrei:<dd> mlel: why not simulate a Cray ;)
+  </p><p><dt>stefanb:<dd> Pepo: Then compatibility is completely impossible, even if we leave the old calls in and add new ones.
+      </p><p><dt>Tau:<dd> mlel, umm.. that makes my eyes sore ;)
+    </p><p><dt>Murty:<dd> Okay, I'm here.  Sorry I'm so late, guys : to be honest, I just forgot the entire conference ! :-(
+   </p><p><dt>Arcade:<dd> Okay guys, welcome to this channel. Sorry if it means an inconvenience to some of you.
+  </p><p><dt>stefanb:<dd> gries: Who wants such a piece of crappy hardware?
+     </p><p><dt>Pepo:<dd> stefanb: huh?  how does leaving old stuff in break compatibility?
+  </p><p><dt>mlelstv:<dd> tau, well, that's why I don't like the 'complete new OS that simulates the old'-approach.
+</p><p><dt>griesbrei:<dd> stefan: yep, i like my pocket calculator most..
+  </p><p><dt>stefanb:<dd> Pepo: You still have your white-box API in. So the new black-box API can't work securely.
+  </p><p><dt>mlelstv:<dd> tau, in fact, if we want to do that we should concentrate on an existing kernel such as Mach.. 
+      </p><p><dt>Tau:<dd> mlel, me neither
+</p><p><dt>griesbrei:<dd> SO, CAN WE START?
+     </p><p><dt>Pepo:<dd> strefanb: we are not UNIX.  We don't need a secure OS.
+   </p><p><dt>Arcade:<dd> Why would we need to use a kernel such as Mach?
+  </p><p><dt>stefanb:<dd> ml: Not everything has to go, only the wrong decisions have to be removed.
+  </p><p><dt>mlelstv:<dd> tau, problem with that is you need big machines to get something reasonably fast.
+  </p><p><dt>stefanb:<dd> Pepo: secure = stable.
+      </p><p><dt>Tau:<dd> exactly.. if we were to build emulation libraries, we might as well write them for some existing OS
+  </p><p><dt>mlelstv:<dd> stef, wrong decisions such as FindTask() and Disable() ?
+       </p><p><dt>BM:<dd> Security is essential for multi user machines, not single user ones.
+  </p><p><dt>stefanb:<dd> ml: What's wrong with FindTask()?
+  </p><p><dt>mlelstv:<dd> stefanb, direct access to the TCB
+       </p><p><dt>BM:<dd> Forbid()?
+   </p><p><dt>Arcade:<dd> How about networking? multiuser security is valuable then.
+     </p><p><dt>Pepo:<dd> stefanb: _old_ programs wouldn't benefit from the OO "overlay", but new ones will
+</p><p><dt>griesbrei:<dd> stefan: it cannot return easter eggs..
+  </p><p><dt>stefanb:<dd> Pepo: But the OO overlay can't be stable if you have an old app running, which uses white-box access.
+    </p><p><dt>Murty:<dd> Arcade : when you do networking, multiuser security is a *must*.
+       </p><p><dt>BM:<dd> Hmm, not at the process level though, checking ownership of everything wuld be a drag.
+      </p><p><dt>Tau:<dd> has work on dos started, btw?
+    </p><p><dt>Murty:<dd> BM : No, I'm talking file system level here.
+     </p><p><dt>Pepo:<dd> stefanb: how would it work with emulation libraries then?
+  </p><p><dt>mlelstv:<dd> stef, without memory protection nothing is stable..
+</p><p><dt>griesbrei:<dd> tau: in fact, we didn`t start on anything yet :(
+      </p><p><dt>Tau:<dd> murty, OS 3.0 already supports multiuser at filesystem level.
+       </p><p><dt>BM:<dd> Oh, for sure, some superficial security would be neat to have.
+  </p><p><dt>stefanb:<dd> ml: VMem is easy, just allow Pools with VMem...
+    </p><p><dt>Murty:<dd> Tau : yes, but don't ask how.  There are security gaps in 3.0 and even in MultiUser.
+  </p><p><dt>mlelstv:<dd> stefanb, I do know that.. I was talking about protecting memory.
+   </p><p><dt>Arcade:<dd> tau: the problem is that program's dont. having basic support in the OS makes programs support it too. 
+  </p><p><dt>stefanb:<dd> ml: I was just pointing out to Pepo that if his argument is right, then we CAN'T produce a compatible OS.
+     </p><p><dt>Pepo:<dd> stefanb: so you want to _interprete_ the programs to keep track of what fields in a structure are written to?
+  </p><p><dt>mlelstv:<dd> stefanb, why not ?
+     </p><p><dt>Pepo:<dd> stefanb: old programs, I mean?
+      </p><p><dt>Tau:<dd> arcade, what basic support?
+  </p><p><dt>stefanb:<dd> ml: Compatibility Libraries or new system calls in the old libraries are virtually the same.
+  </p><p><dt>mlelstv:<dd> stef, my idea is to have pools mapped to memory regions (lists of MMU pages). A task can have private pools. The loader could allocate private pools for code segments, etc..
+   </p><p><dt>Arcade:<dd> pepo: we would wan't to have a basic multiuser security, not very severe. Something like muFS, but better support from within the OS.
+       </p><p><dt>BM:<dd> Arcade, Agreed.
+    </p><p><dt>Murty:<dd> stefanb: When was the last time you received anything ?
+      </p><p><dt>Tau:<dd> arcade, give an example, how is filesystem level support on OS 3.0/MuFS not enough?
+       </p><p><dt>BM:<dd> Can you store owneship info in 3.0?
+    </p><p><dt>Lynet:<dd> Arcade: AmigaOS is a single user design. Why clutter it with multiuser support?
+      </p><p><dt>Tau:<dd> you can't Open() a file you have no access privilege to. That's what the OS is supposed to make sure
+     </p><p><dt>Pepo:<dd> stefanb: just how would you make old intuition gadgets work, when the "native" OS only supported gadget objects (boopsi or gadtools)?
+    </p><p><dt>Murty:<dd> stefanb: Well, at least it seems there isn't a problem with your address and the list then.
+   </p><p><dt>Arcade:<dd> tau: It doesn't provide for other things like disabling the bootmenu, formatting harddrives, etc.
+</p><p><dt>Beefeater:<dd> Lynet: When you hook it up in a network
+  </p><p><dt>mlelstv:<dd> bm, yes. you have 2 words for user id and group id. isn't used by the filesystem for access control though.
+      </p><p><dt>Tau:<dd> bm, FastFileSystem doesn't store ownership, but muFS/Envoy do. dos V39 has the calls necessary
+  </p><p><dt>stefanb:<dd> all: Shouldn't we start with a first topic and then discuss the next?
+  </p><p><dt>mlelstv:<dd> tau, fastfilesystem stores ownership!
+    </p><p><dt>Lynet:<dd> Beefeater: When you hook your Amiga to a network, let the network service daemons take care of multiuser security.
+    </p><p><dt>Murty:<dd> stefanb: Yes, I agree.  Let's take it one thing at a time.
+   </p><p><dt>Arcade:<dd> And access control is what we need (or want). I can be disabled though.
+      </p><p><dt>Tau:<dd> mlel, well, it doesn't use it then.
+  </p><p><dt>mlelstv:<dd> tau, it's just ignored. Envoy evaluates the uid/gid 
+   </p><p><dt>Arcade:<dd> Okay, let's talk about binary compatibility for now ...
+  </p><p><dt>stefanb:<dd> Murty: Go ahead, set the first discussion point. I think the main talk should be about Exec first...
+    </p><p><dt>Murty:<dd> Binary compatibility it be.  There are two things to be considered here...
+  </p><p><dt>mlelstv:<dd> arcade, we do need binary compatibility. the OS should run on existing machines with existing programs.
+    </p><p><dt>Murty:<dd> ...one : we can easily use older programs...
+   </p><p><dt>Arcade:<dd> Would it be a bad idea to just write a 'new' OS, and make it possible for old apps to use our 'emulation' libraries like intuition.library etc.?
+    </p><p><dt>Murty:<dd> ...two : we are restricted in adding new features and/or changing fundamental things when we do go for binary compatibility.
+      </p><p><dt>Tau:<dd> arcade, yes. why write the OS in the first place, then? Why not just make an Amiga emulator for OS/2, Hurd, Linux or something?
+       </p><p><dt>BM:<dd> If it can boot on an amiga you can choose to boot it or not, no?
+    </p><p><dt>Murty:<dd> Well, we can't make the OS OO-oriented from the bottom up, when we wish to go for binary comp., because...
+   </p><p><dt>Arcade:<dd> Because we want to take ourselves and others to the future?
+    </p><p><dt>rozga:<dd> KMEL: Please drop me a mail after this disc. (rossi@tindrum.tng.oche.de)
+    </p><p><dt>Murty:<dd> ...then library calls would fail.  Unless we make a lot of emulation libraries, which would mean emulating the OS and not so much rewriting it.
+    </p><p><dt>Murty:<dd> (as you can see, I'm writing in pieces :)
+</p><p><dt>griesbrei:<dd> I guess we all want to use existing programs, don`t we?
+    </p><p><dt>Murty:<dd> Emulating the OS is bound to be slow for older programs, which is all we'll have at first.
+  </p><p><dt>mlelstv:<dd> murty, why would library calls fail ? I do not want to junk all software that exists.
+    </p><p><dt>Murty:<dd> griesbrei : I know I do.  If I wanted to switch to new software, I would buy another computer.
+     </p><p><dt>Pepo:<dd> griesbrei: as long as they are coded to the rulez: yes.
+   </p><p><dt>Arcade:<dd> True. One would be able to boot the 'old' OS anyway. And these programs will certainly not work on other hardware anyway.
+    </p><p><dt>Murty:<dd> mlelstv: if library calls are redesigned, they will respond differently and programs who rely on the old method will break.
+   </p><p><dt>Arcade:<dd> Every program that is system compliant, would run on these libraries.
+   </p><p><dt>PieMan:<dd> I'm afraid the hard truth is everyone is going to want to use old software that would be incompatible with out os.. as a result everyone says "hey WB 3.1 ain't so bad" and our project is a flop
+     </p><p><dt>Pepo:<dd> Arcade: SWITCH?  I.e. not beeing able to run them TOGETHER? :-(
+     </p><p><dt>Kudo:<dd> I think binary compatiblity will make it harder to make a good OS with new features
+  </p><p><dt>mlelstv:<dd> murty, no. the library calls define the interface to programs. these library calls must exist. otherwise it is not AmigaOS anymore but something completely new.
+   </p><p><dt>Arcade:<dd> Pepo: Not concurrently, no. Impossible.
+      </p><p><dt>Tau:<dd> arcade, I won't be rebooting my machine every time I want to use another program
+</p><p><dt>griesbrei:<dd> PieMan: Nobody will use a new OS without any software..
+       </p><p><dt>BM:<dd> mlel, To a point.  If the calls are only slightly different then porting is a snap.
+    </p><p><dt>Murty:<dd> mlelstv: Exactly.  If you change the design so fundamentally that the library calls change...
+   </p><p><dt>Arcade:<dd> pepo: But if we do our job properly, one would be able to run old programs under the new OS. System-compliant programs, that is.
+    </p><p><dt>Murty:<dd> ...i.e. no binary compatibility...
+  </p><p><dt>mlelstv:<dd> murty, then this is no longer AmigaOS. I don't think that anybody wants that.
+</p><p><dt>griesbrei:<dd> murty: so we need new libraries!
+    </p><p><dt>Lynet:<dd> mlelstv: But adding memory protection and resource tracking without changing some of the API would be very difficult.
+    </p><p><dt>Murty:<dd> ...then you will have a different API and you will indeed have to run 3.1 to run old software.
+   </p><p><dt>PieMan:<dd> griesbreg: i agree.. and they have a choice so they just won't choose it...
+  </p><p><dt>mlelstv:<dd> bm, the calls have to be the same, to the word of the documentation
+     </p><p><dt>Kudo:<dd> think it would be better to go for source compability
+   </p><p><dt>Arcade:<dd> Yes. We would use new libraries instead of the old ones, the old ones would be used for compatability.
+     </p><p><dt>Pepo:<dd> Arcade: I remember reading something different, but this is the way to go, old programs _should_ work
+    </p><p><dt>Murty:<dd> mlelstv: I agree with you !  I do !  I want to keep using my old software, and making the library calls compatible is the only way to do that.
+      </p><p><dt>Tau:<dd> If the calls are only slightly different, WHY change them at all?
+  </p><p><dt>mlelstv:<dd> lynet, indeed. with (full) memory protection, you have to write a complete new and incompatible OS
+       </p><p><dt>BM:<dd> mlel, existing documentation of 3.x?  Or New docs?
+   </p><p><dt>Arcade:<dd> Because the underlying system would be very different.
+     </p><p><dt>Kudo:<dd> murty: if we only want to use old software, There's no use writing a new OS.
+  </p><p><dt>mlelstv:<dd> bm, existing documentation of 3.x.
+    </p><p><dt>Murty:<dd> However, if we would go 'for the future' with a completely new OS with MP and all, it would be very hard to keep the old library calls.
+  </p><p><dt>mlelstv:<dd> bm, I insist in compatibility to the word. we do not have to copy the bugs :)
+    </p><p><dt>Lynet:<dd> mlelstv: I understand that. The AmigaOS is so dependant on publically available structures that adding full MP would be impossible.
+    </p><p><dt>Murty:<dd> Kudo: Yes there is.  Say your Amiga dies or becomes too slow.  Then you can get a new machine and run your old software on it.
+  </p><p><dt>mlelstv:<dd> murty, it would very hard to keep existing software..
+     </p><p><dt>Kudo:<dd> murty: but not the same binarys...
+       </p><p><dt>BM:<dd> mlel, I'd like a cleanup and simplify done to 3.x. :)
+     </p><p><dt>Pepo:<dd> OK, let me make this point clear:  If the ultimate goal is to write a new OS, that doesn't look and feel like AmigaOS (from the _programmers_ standpoint of view), I'll leave the project.
+   </p><p><dt>Arcade:<dd> Murty: Only if these programs would be recompiled anyway.
+     </p><p><dt>Kudo:<dd> murty: unless it's a 68k machine
+    </p><p><dt>Murty:<dd> mlelstv: No, I don't think so.  You'd have to recompile the source for a new processor, but that's about it.
+</p><p><dt>griesbrei:<dd> We needn`t keep the old software until the end of the world!
+  </p><p><dt>mlelstv:<dd> lynet, yes.. and no. the number of public structures isn't that large. it mainly affects hacks and small utils
+  </p><p><dt>stefanb:<dd> Pepo: That's NOT the goal.
+       </p><p><dt>BM:<dd> Look and feel no problem, but strict compliance would be redundant.
+  </p><p><dt>mlelstv:<dd> stefanb, sure about that ? I am not.
+  </p><p><dt>stefanb:<dd> Pepo: But IMHO we have to make the decision if we want to fix the design failures in some of the current calls.
+     </p><p><dt>Pepo:<dd> stefanb: actually, memory pretection _would_ make the OS look completely different.
+   </p><p><dt>Arcade:<dd> pepo: We would want a very similar system, as similar as possible but with new features and portability.
+   </p><p><dt>_ZinO_:<dd> 'll be back in an half an hour..
+    </p><p><dt>Murty:<dd> Pepo: MP makes it almost impossible to stay compatible.
+     </p><p><dt>Kudo:<dd> agrees with Arcade
+  </p><p><dt>stefanb:<dd> Pepo: And the question is, is this possible with adding just some replacements to the current libraries which are ONLY used by new programs.
+   </p><p><dt>desrat:<dd> if we do have MP..please make it optional
+</p><p><dt>griesbrei:<dd> Can`t we put old stucts in public mem?
+  </p><p><dt>mlelstv:<dd> murty, mp as a security feature: yes, as a debugging aid and crash protection: no.
+   </p><p><dt>Arcade:<dd> We have to. Not everybody has an MMU (like me). :(
+      </p><p><dt>Tau:<dd> MP should be a user option, just like it is on OS/2. For different reasons, of course...
+     </p><p><dt>Kudo:<dd> Think we should stay as (source) compatible as possible, but not if it will sacrifice efficensy or something else
+       </p><p><dt>BM:<dd> Optional MP would be required if we want anyone to actually try it out. :)
+  </p><p><dt>mlelstv:<dd> griesbrei, yes. but if these are not protected you can crash the system.
+    </p><p><dt>Murty:<dd> Tau: if we put MP in, we will have to make a very big effort to squeeze it in and be able to use old software at all.  Making it optional too will only make things even more complicated.
+     </p><p><dt>Pepo:<dd> stefanb: "this" ?
+       </p><p><dt>BM:<dd> Really secure memory protection would be almost impossible I think.
+   </p><p><dt>Arcade:<dd> You can't protect public accessible structures, it will break everything. At least under the current OS.
+  </p><p><dt>stefanb:<dd> Pepo: Replacint brain-dead functions.
+      </p><p><dt>Tau:<dd> bm, partial's better than nothing
+     </p><p><dt>Pepo:<dd> stefanb: replace as in remove?
+    </p><p><dt>Murty:<dd> Arcade: Yes, you will break everything.  I say forget the MP and go for as much compatibility as possible.
+  </p><p><dt>stefanb:<dd> Murty: MP for Pools is the best option for this.
+      </p><p><dt>Tau:<dd> arcade you don't protect on a structure by structure level anyway
+  </p><p><dt>stefanb:<dd> Murty: BUT the OS has to know about it and use MP pools as far as possible.
+   </p><p><dt>Arcade:<dd> No, that would be impossible with the MMU pages.
+    </p><p><dt>Murty:<dd> stefanb: How hard are pools to implement in the current API ?  I wouldn't know, really.
+   </p><p><dt>Arcade:<dd> Pools are already there, I believe.
+    </p><p><dt>Murty:<dd> I mean MP pools, of course.
+  </p><p><dt>mlelstv:<dd> murty, I think it is quite easy to get protected and virtual pools.
+  </p><p><dt>stefanb:<dd> Pepo: THAT is the question: remove -> compatibility libaries, replace -> add them to the existing libraries.
+     </p><p><dt>Pepo:<dd> every new app could call the exec function ProtectMe() in startup and all allocmem's (non-public) would be protected, and even automatically put in a pool which is freed at RemTask()
+    </p><p><dt>Murty:<dd> mlelstv: This would be a good way to implement MP, make it optional and (thus) be able to remain compatible by switching it off.
+    </p><p><dt>Murty:<dd> But can it be done with MP pools ?
+       </p><p><dt>BM:<dd> I think flags during memory calls would be ideal.
+  </p><p><dt>stefanb:<dd> Murty: Just add an option for MP for the already existing memory pools. 
+  </p><p><dt>mlelstv:<dd> pepo, could even be a feature of the loader.
+     </p><p><dt>Pepo:<dd> mlelstv: agreed, magic hunktypes :)
+ </p><p><dt>zchu1121:<dd> pepo: You could as well use the uid.
+    </p><p><dt>Murty:<dd> stefanb: This would mean that only newer software can use MP, right ?
+  </p><p><dt>mlelstv:<dd> pepo, you even have a supported extension of hunk memory type that isn't utilized yet.
+</p><p><dt>griesbrei:<dd> new software uses the new funktions and may use MP
+  </p><p><dt>mlelstv:<dd> murty, the user would never know wether memory is protected or not. Every call will work with or without protection. 
+</p><p><dt>griesbrei:<dd> old softare uses the old funtions and gets ONLY public
+</p><p><dt>griesbrei:<dd> so what`s the problem?????
+    </p><p><dt>Murty:<dd> griesbrei: If the new software is the only one to use the MP, then it would go to the list 'additonal features' in my book.
+  </p><p><dt>stefanb:<dd> BM: Not needed, if a pool is MP then all memory in the pool is.
+   </p><p><dt>Arcade:<dd> We could actually have something like that in the system, having a program ask for it's memory to be protected. But it would not be very secure.
+  </p><p><dt>mlelstv:<dd> bm, might be not enough.. but that's a detail..
+    </p><p><dt>Murty:<dd> And new features are lower priority than getting an OS up and running, IMHO.  They can be added later.
+  </p><p><dt>stefanb:<dd> BM: If the hardware doesn't support MP, then the MP flag for pools will be ignored.
+     </p><p><dt>Pepo:<dd> stefanb: if you do not want to bloat the OS, it makes sense to extend the existing libraries, and add new calls.  you can do much code reusing internally this way.
+</p><p><dt>griesbrei:<dd> murty: what is an additional feature? MP?
+  </p><p><dt>mlelstv:<dd> stef, you need new calls to handle ownership of pools.
+  </p><p><dt>stefanb:<dd> Murty: Of course, because you have to design it for MP.
+    </p><p><dt>Murty:<dd> griesbrei: Yes, if only used by new programs, then it would be a New Feature (tm).
+  </p><p><dt>mlelstv:<dd> stef, I'd also make 'sets of pools' to avoid using half-full memory pages. 
+   </p><p><dt>desrat:<dd> murty:i agree....we have a greater need to get the new os up and running
+       </p><p><dt>BM:<dd> Hmm, I think some allocations would have to be public, hence flags.
+  </p><p><dt>mlelstv:<dd> stef, yes. I have a clear view of what such pools should do :)
+    </p><p><dt>Murty:<dd> Okay, so suppose we do MP by pools, then we have to put that in the Exec design.  Is Chris Gordon here, by any chance ?
+</p><p><dt>griesbrei:<dd> murty: we CANNOT add MP for old software.
+  </p><p><dt>stefanb:<dd> But IMHO the biggest problem is that the OS wasn't designed to use MP memory...
+    </p><p><dt>Murty:<dd> griesbrei: No, that's what I said.
+   </p><p><dt>Arcade:<dd> Anybody with a real good reason for not making a new OS, and provide compatibility libraries *speak now*.
+   </p><p><dt>Arcade:<dd> (we should get on to the next subject, on which we already were)
+  </p><p><dt>stefanb:<dd> But I see no problems e.g. for Intuition to use MP, because onbly the program and intuition are _normally_ allowed to access the user interface strucutres for the program.
+    </p><p><dt>Murty:<dd> Arcade: I just said we should be weary of the compatibility libraries, because we don't want to write an Amiga *emulator* !
+</p><p><dt>griesbrei:<dd> Murty: we NEED an emulator or no one will use our OS (no software)
+    </p><p><dt>Murty:<dd> griesbrei: No, we need an OS that runs the applications in native mode.  That will run old applications, but it won't have to translate all the old calls to new ones, like an emulator would have to.
+     </p><p><dt>Pepo:<dd> stefanb: think what OpenWindow() does... it needs to change the NextWindow field of another tasks window...
+</p><p><dt>griesbrei:<dd> so, we`ll write a completly new OS and leave the old libraries. That`s it?
+  </p><p><dt>mlelstv:<dd> arcade, a new OS is very difficult to test..  a rewrite and enhancement of the OS will allow partial testing 
+  </p><p><dt>stefanb:<dd> Pepo: But Intuition is SYSTEM SW, it is allowed to change SYSTEM structures.
+    </p><p><dt>Murty:<dd> griesbrei: We'll extend the functionality of the old libraries, retaining their original structure and API.
+   </p><p><dt>Arcade:<dd> mlelstv: How would you do that, SetFunction() every function in a library?
+     </p><p><dt>Pepo:<dd> stefanb: but how would you protect another task doing it?
+  </p><p><dt>stefanb:<dd> gries: And only NEW programs will be able to use the NEW calls.
+</p><p><dt>griesbrei:<dd> murty: and what if there comes an AmigaOS 4.0?
+     </p><p><dt>Pepo:<dd> stefanb: run intuition in supervisor mode?  change MMU tables?  ugh...
+  </p><p><dt>stefanb:<dd> Pepo: Decalre it an illegal operation. we are talking about running SYSTEM conformant programs.
+  </p><p><dt>mlelstv:<dd> pepo, a window structure belongs to intuition. it might grant individual tasks read access.
+    </p><p><dt>Murty:<dd> griesbrei: I've sent mail to CBM UK and I heard David Pleasance was going to contact me, but I've not heard anything yet.
+     </p><p><dt>Pepo:<dd> stefanb: the point is you want it to be _secure by adding pritection_ instead of _secure by reliying on clean software_
+  </p><p><dt>mlelstv:<dd> pepo, problem is that intuition would need a pool for each client :-/
+    </p><p><dt>Murty:<dd> If there will be an AmigaOS 4, we would have to cooperate with its authors.  No use in having two rival OSes.
+    </p><p><dt>rozga:<dd> Isnt the point wether we want binary compatibility first or new features first?
+  </p><p><dt>stefanb:<dd> ml: The pool would belong to the client. Because he is already using MP pools.
+   </p><p><dt>Arcade:<dd> rozga: exactly, that's mainly the intention of vote #1.
+    </p><p><dt>Murty:<dd> griesbrei: No, but if we have done a lot of work, they may want to benefit from it.  And we may want something nice in return :-)
+  </p><p><dt>mlelstv:<dd> stefanb, but intuition allocates it... from a clients pool ???
+  </p><p><dt>stefanb:<dd> ml: Yep.
+</p><p><dt>griesbrei:<dd> Could you stop that thing on MP for a while please??
+    </p><p><dt>rozga:<dd> Arcade: Did I miss the Vote #1?
+   </p><p><dt>desrat:<dd> murty: a nice 4000 per contributer would be nice..:)
+   </p><p><dt>Arcade:<dd> PieMan: whether we want binary compatibility or not.
+       </p><p><dt>BM:<dd> I think features first but that the features will demand changes to binaries.
+      </p><p><dt>Tau:<dd> mlel, why ugly? wouldn't the call be done on client's context?
+    </p><p><dt>Murty:<dd> desrat: :-))  I was thinking more along the lines of being kept up to date on OS developments and a free registered developer membership for everyone, or something.
+</p><p><dt>griesbrei:<dd> Murty: Don`t want to work for C=, I want a complete PUBLIC os.
+  </p><p><dt>stefanb:<dd> OK, vote #1: compatible OS, existing API. New features are only available through NEW API calls.
+  </p><p><dt>mlelstv:<dd> tau, unsure.. intuition has to access its own structures too. it should not do this on the callers context
+     </p><p><dt>Pepo:<dd> Tau: right, allocations of intuition objects should only be done on the context of the apps task
+  </p><p><dt>stefanb:<dd> ml. Intuitions own structures are allocated on Intuitions task pool.
+    </p><p><dt>Murty:<dd> Yes, Stefan.  How will we do the vote ?  Everybody be quiet for a while and two raises of hands in the shape of PINGs ?
+  </p><p><dt>mlelstv:<dd> stef, I'd add new features to old calls too. like new tags or flags.
+  </p><p><dt>mlelstv:<dd> stefanb, a call to intuition has to access multiple pools. how do you handle that if the pools are protected ?
+  </p><p><dt>stefanb:<dd> ml: It only has to handle the tasks pool and Intution pools. No problem for that.
+     </p><p><dt>Pepo:<dd> stefanb: though it is sometimes possible to add new features for old apps, e.g. customizable gadtools look etc...
+</p><p> -------- VOTE #1: Compatible OS, Existing API completely implemented -> Binary compatibility for old hardware. New features are only available through NEW API calls or new Tags (if possible).</p>
+     </p><p><dt>Pepo:<dd> again that should mean the api should be _expanded_ not replaced.
+</p><p> -------- RESULTS: 14 for, 4 against</p>
+</p><p><dt>griesbrei:<dd> what`s that thing with `old hardware` (sorry)
+  </p><p><dt>stefanb:<dd> griesbrei: Amiga (TM) hardware.
+  </p><p><dt>mlelstv:<dd> griesbrei, new CPUs cannot be binary compatible..
+</p><p><dt>griesbrei:<dd> I think we should`nt change _anything_ in the old OS
+</p><p><dt>griesbrei:<dd> yes, but everybody keeps talking on changing the tags in the old OS
+      </p><p><dt>Tau:<dd> gries, not change, ADD
+    </p><p><dt>Murty:<dd> griesbrei: I agree with you as far as that we first have to make something with the current functionality, and only add new features later (NEW tags, etc.)
+</p><p><dt>griesbrei:<dd> mlel: no, add new libraries or add new funtions to existing stuff?
+  </p><p><dt>stefanb:<dd> gries: Add new calls (and libraries if needed)
+  </p><p><dt>mlelstv:<dd> griesbrei, compatibility is maintained by maintaining the old libraries.. simple and easy.
+   </p><p><dt>desrat:<dd> pepo...the os as its stands is better than what they have
+</p><p><dt>griesbrei:<dd> some want to add new functions to the old libs, that`s not a good idea i think: 
+       </p><p><dt>BM:<dd> Hopefully, expanding them, wb.library would be fave.
+      </p><p><dt>Tau:<dd> okay, in the first vote the decision was to retain and extend the existing API by adding new calls and tags to the old libraries whenever possible, instead of replacing whole libraries
+  </p><p><dt>stefanb:<dd> BM: Kill WB :-) This would be a complete replacement, because it has NO features :-)
+  </p><p><dt>mlelstv:<dd> griesbrei, depends.. a library should cover a specific topic. if you say want to add new gadgets to gadtools or new features to gadtools gadgets.. why not calling it gadtools.library ? why a new one ?
+     </p><p><dt>Pepo:<dd> Workbench needs a MAJOR overhawl, but this should be clear to anyone...
+  </p><p><dt>mlelstv:<dd> pepo, workbench is one of the trivial projects!
+  </p><p><dt>mlelstv:<dd> pepo, it's really just an application
+</p><p><dt>griesbrei:<dd> melstv: again the problem with a new C=-made AmigaOS
+     </p><p><dt>Pepo:<dd> mlelstv: still the nost important app :)
+</p><p><dt>griesbrei:<dd> melstv: if we change the existing libs, we won`t be compatible with new C= libs
+  </p><p><dt>mlelstv:<dd> griesbrei, there won't be new C= libs for long and if this project gets really something done there has to be some cooperation.
+    </p><p><dt>Murty:<dd> Since we are going to make an OS with all the old features built-in (along with some tags added for new functionality) and use all the new calls for new apps only, I think it's safer to make new libs for them.
+ </p><p><dt>jcompton:<dd> If you want to be picky, there won't be any more C= libraries.
+</p><p><dt>griesbrei:<dd> mlel, pepo: ok C= might not come back, but what if it really comes back??
+</p><p><dt>griesbrei:<dd> That would be a real mess with our OS
+ </p><p><dt>jcompton:<dd> gries: Commodore will be liquidated, hopefully within a month.
+    </p><p><dt>Murty:<dd> jcompton: One of the reasons we started this project in the first place was that there may be no C= to give us new stuff, indeed.  But I don't think we should exclude the possibility.
+  </p><p><dt>lemming:<dd> Why not just add something to the begining/end of the replacement libraries
+  </p><p><dt>stefanb:<dd> gries: A chance for our project and the Amiga, becuase WE already developed something that THEY can use. Remember 18 months before a NEW HW can come out.
+     </p><p><dt>Pepo:<dd> griesbrei: if we implement most things C= would have done for 4.0, then there would be no problem for "them" (whoever) to join the work with us.
+   </p><p><dt>Arcade:<dd> Murty: I agree with you, leave the old ones as they are ... add new features in additional ones.
+  </p><p><dt>mlelstv:<dd> murty, the decision wether old or new lib should have nothing to do with new or old calls. libraries should cover some topic. i.e. you should not make a new OO system for intuition but adjust BOOPSI
+    </p><p><dt>Murty:<dd> If we add calls at the end of a library and so does C=, that's a sure-fire way to break programs.
+  </p><p><dt>mlelstv:<dd> griesbrei, they have to if they want to make new Amigas :)
+  </p><p><dt>stefanb:<dd> gries: If developers use OUR OS, then they have no real choice :-)
+    </p><p><dt>Murty:<dd> stefanb: Yes, but so far the most likely to succeed Amiga people (not Escom, but C= UK) have been 100% uncooperative :-(
+    </p><p><dt>Lynet:<dd> Murty: Have you received a "NO" from C= UK, or haven't they answered your letter?
+      </p><p><dt>Tau:<dd> future Amiga hardware producers have no reason whatsoever NOT to coopearte with us
+   </p><p><dt>PieMan:<dd> we've been going for 1:20 mins now.. do you want to have the second vote??
+  </p><p><dt>stefanb:<dd> Yes, let's go on to the next topic...
+      </p><p><dt>Tau:<dd> what IS the next topic?
+  </p><p><dt>stefanb:<dd> Tau: Resource tracking?
+     </p><p><dt>Pepo:<dd> resource tracking can be done easily for _new_ apps.  it is impossible for old apps.
+  </p><p><dt>mlelstv:<dd> proposes a poor-man's resource tracking
+    </p><p><dt>Murty:<dd> stefanb: I think it's more important to get some real stuff done, like a design layout, let alone some code.
+     </p><p><dt>Pepo:<dd> there just needs to be an object pointer in the process structure that automatically gets disposed when RemTask :)
+     </p><p><dt>Pepo:<dd> Kudo: because old apps don't know about resource tracking.
+     </p><p><dt>Kudo:<dd> pepo: hmm.. true... isn't there some free space? don't remeber
+  </p><p><dt>mlelstv:<dd> pepo, RemTask() is dangerous..
+   </p><p><dt>Arcade:<dd> Yeah, but how to do that? Make a call something like TrackMe() to specify the object to be tracked?
+     </p><p><dt>Pepo:<dd> mlelstv: ok, the internal DeleteProcess() from dos
+    </p><p><dt>Murty:<dd> Resource tracking can be implemented quite easily, I think, albeit only for new applications.  They should specify what resources can be freed and which are shared.
+  </p><p><dt>mlelstv:<dd> pepo, means that you cannot kill a process easily.
+     </p><p><dt>Pepo:<dd> mlelstv: kill = send a SIGF_ABORT signal
+   </p><p><dt>Arcade:<dd> We would also need to add features to support the killing of tasks more easily.
+  </p><p><dt>mlelstv:<dd> pepo, a program would have to wait for that signal.
+</p><p><dt>griesbrei:<dd> We should create an AddRTObject(object,type,hook) call
+     </p><p><dt>Pepo:<dd> mlelstv: right.  resource tracking only for new apps
+    </p><p><dt>Murty:<dd> mlelstv: When the user would want to remove a program (that has crashed, for example, or is no longer wanted) the RT system will be able to determine what can an what cannot be freed/closed.
+   </p><p><dt>Arcade:<dd> Why a hook?
+     </p><p><dt>Kudo:<dd> pepo: why not just remove the task from the list, and free the resources?
+     </p><p><dt>Pepo:<dd> every object _has_ a hook
+  </p><p><dt>mlelstv:<dd> murty, even removing a task is dangerous, removing resources is even more dangerous.
+</p><p><dt>griesbrei:<dd> the type specifies how to remove the object if the system knows how to
+     </p><p><dt>Pepo:<dd> Kudo: old apps _assume_ the resources won't get released, and usually leave them allocated _on purpose_
+   </p><p><dt>Arcade:<dd> Unless you tell the OS it's safe to remove it if the tasks fails to.
+</p><p><dt>griesbrei:<dd> if the system doesn`t know about it, let the hook do the work
+    </p><p><dt>Murty:<dd> mlelstv: Removing resources is not dangerous when the task expects it (i.e. when it set the MEMF_TRACK flag).
+    </p><p><dt>Lynet:<dd> mlelstv: If new programs follow new rules, killing new programs and freeing the resources would work.
+  </p><p><dt>mlelstv:<dd> murty, still dangerous when the new program calls old libs..
+     </p><p><dt>Pepo:<dd> griesbrei: there should be only one "type" of object.  
+  </p><p><dt>mlelstv:<dd> lynet, agreed.. so someone has to propose the new rules.
+    </p><p><dt>Murty:<dd> mlelstv: No, because the old libs will allocate resources with old flags.  These resources will not be freed.
+     </p><p><dt>Pepo:<dd> griesbrei: in other words, all objects can be disposed with the same call.
+    </p><p><dt>Murty:<dd> (freed automatically by the RT system, that is)
+    </p><p><dt>Lynet:<dd> mlelstv: I guess that would be a job for the design group.
+  </p><p><dt>mlelstv:<dd> murty, means that each and every allocation needs to look for such a flag... hmm.
+</p><p><dt>griesbrei:<dd> pepo: yes, let`s call it RemRTObjects()
+     </p><p><dt>Pepo:<dd> griesbrei: no, it's called DisposeObject()
+       </p><p><dt>BM:<dd> If an application is trashed it may no longer be looking for signals.
+</p><p><dt>griesbrei:<dd> pepo: it just calls internal routines for known objects and the removal hook for unknown
+    </p><p><dt>Murty:<dd> mlelstv: No, why would every application have to look for the flag ?  That's all handled by Exec.
+</p><p><dt>griesbrei:<dd> pepo: again, i`m not talking of OO
+   </p><p><dt>desrat:<dd> pepo:why do i always wind up with less mem when i remove an application..particularly graphics
+  </p><p><dt>mlelstv:<dd> murty, Exec ? No.. lets say a task opens a window. it needs to tell intuition that the window should be closed when the task is removed from the system. intuition needs to free associated memory, and so on.
+</p><p><dt>griesbrei:<dd> pepo: just an internal list handled by the RT system
+       </p><p><dt>BM:<dd> CreateNewProcess includes a field for a cleanup routine to be called.
+   </p><p><dt>Arcade:<dd> But if the task crashed, it could mean the cleanup fails too ...
+  </p><p><dt>mlelstv:<dd> bm, where is the advantage of such a routine called by the OS and such a routine called by the application ?
+    </p><p><dt>Murty:<dd> mlelstv: Ah, I thought of that :)  The window will be added to the resources list with the TRKTYPE_WIN flag, which is defined in <memory/track.h>.  The freeing routine will call CloseWindow() on it.  That's how it is in my head, anyway.
+     </p><p><dt>Pepo:<dd> griesbrei: a list requires a node.
+  </p><p><dt>mlelstv:<dd> murty, but each library, including user libraries can define their own objects..
+</p><p><dt>griesbrei:<dd> pepo: yes, the node will be created by the RT system
+    </p><p><dt>Murty:<dd> mlelstv: Actually, that TRKTYPE flag is not hard-coded, it's allocated by Intuition.  Oh, you just said that :)
+  </p><p><dt>stefanb:<dd> Murty: Hmmm We shouldn't use static types. Every Object should be registered by a special resource.library.
+    </p><p><dt>Murty:<dd> AllocTrackType() in exec.library...
+   </p><p><dt>Arcade:<dd> How about the new program calling the DisposeOfThisObjectWhenImGone( void *window, TYPE_WINDOW ); ?
+      </p><p><dt>Tau:<dd> mlel, rather, I think, for programs with the TRACK_MEM hunk flag, windows and other resources should be freed by default. If something wants to leave a resource behind, it has to declare it
+  </p><p><dt>stefanb:<dd> That's clearly OO :-)
+   </p><p><dt>PieMan:<dd> with RT won't that in some way affect the compatibilty?
+    </p><p><dt>Murty:<dd> Tau: Makes sense, BUT then old programs would also have their resources tracked (all of them).  And that will cause trouble, won't it ?
+   </p><p><dt>Arcade:<dd> RT won't affect old (existing) programs if properly implemented
+  </p><p><dt>mlelstv:<dd> tau, what about a simple callback function (dos.library/AtExit()) ?
+   </p><p><dt>desrat:<dd> stepahnb:sorry..temporarily lost my resource allocation..:)
+     </p><p><dt>Pepo:<dd> actually I'm not that convinced that RT is that neccessary.  Apps need to free there resources anyway, when they exit cleanly.
+    </p><p><dt>Murty:<dd> Arcade: Due to the sloppy use of the MEMF_PUBLIC flag, it WILL cause problems.  Believe me.
+      </p><p><dt>Tau:<dd> murty, see the bit about the TRACK_MEM hunk flag, which would only be set for new programs
+   </p><p><dt>Arcade:<dd> pepo: But a task could always fail. If not by itself, then by another corrupt one.
+   </p><p><dt>Arcade:<dd> Murty: We'll leave the MEMF_ flags alone.
+    </p><p><dt>Murty:<dd> Tau: I'd rather have it as a call, say when you open a certain library than in a hunk.
+    </p><p><dt>Murty:<dd> Arcade: Okay, and make a new AllocMem() for new programs.  Fine with me.
+  </p><p><dt>stefanb:<dd> Pepo: Resource tracking would ease some parts of programs, especially error processing...
+      </p><p><dt>Tau:<dd> murty, there are piles of bits left for new AllocMem flags
+   </p><p><dt>Arcade:<dd> Murty: Why the new allocmem? Just a call that says what type of object it is, how to free it (if necessary) and the OS will do the rest.
+     </p><p><dt>Pepo:<dd> stefanb: _rely_ on the OS to do all cleanup?
+     </p><p><dt>Pepo:<dd> stefanb: RT should not be (ab)used by apps.
+   </p><p><dt>Arcade:<dd> Certainly not ...
+</p><p><dt>griesbrei:<dd> pepo: why not, at least you don`t have to
+    </p><p><dt>Murty:<dd> Arcade: Ah, you're going OO here :-)  That's more or less what I proposed with the TrackTypes back there.
+  </p><p><dt>stefanb:<dd> Pepo: Then RT is not useful at all...
+     </p><p><dt>Pepo:<dd> a program which opens a file, and doesn't bother to close it is BROKEN and belongs in the trashcan
+    </p><p><dt>Murty:<dd> Tau: There may be piles of bits left, but we don't want to get in conflict with any possible new versions of the OS, from C= or whoever.
+   </p><p><dt>Arcade:<dd> People ready to vote for resource tracking now? (only usable for new programs.)
+  </p><p><dt>mlelstv:<dd> stefanb, still, any kind of resource tracking would help debugging (you know what belongs to what process). And you can make structured exceptions..
+     </p><p><dt>Kudo:<dd> arcade: why only new programs!?!
+      </p><p><dt>Tau:<dd> murty, we're writing the next OS.
+   </p><p><dt>Arcade:<dd> Kudo: cause it would break older ones ...
+  </p><p><dt>stefanb:<dd> ml: Yeah, but without C++ they are most of the time a pain in the a**
+    </p><p><dt>Murty:<dd> Tau: Yes, but just in case.  It'd be silly to have programs break over things like that.
+      </p><p><dt>Tau:<dd> murty, C= engineers are not stupid. If we do something that gains users, they will support it. Especially if it's something they'd done anyway
+   </p><p><dt>Arcade:<dd> I've just yesterday posted a nice example to the mailinglist.
+</p><p><dt>griesbrei:<dd> tau: C= engineers not, but the managers..
+       </p><p><dt>BM:<dd> C= for lack of a better reference. :)
+  </p><p><dt>stefanb:<dd> Tau: I would propose this: RegisterObject(), AllocObject(), DisposeObject(). When you allocate an object using this functions, you'll get RT for free.
+      </p><p><dt>Tau:<dd> gries, managers don't decide what bits will be used for AllocMem flags
+    </p><p><dt>Murty:<dd> Tau: But why would we be a pain in the backside to the C= engineers, who'd have to work around our system to make both systems compatible, when we can easily avoid it ?
+   </p><p><dt>Arcade:<dd> stefanb: something along that way, indeed.
+</p><p><dt>griesbrei:<dd> tau: but they decide where to go
+      </p><p><dt>Tau:<dd> stef, it's fine except it requires an extra call for each object
+    </p><p><dt>Lynet:<dd> stefanb: Then you'd have to register *all* resources to get proper RT.
+      </p><p><dt>Tau:<dd> gries, they don't decide details like this
+  </p><p><dt>stefanb:<dd> Tau: After AllocObject() you can do TrackObject(), and it will be added to the "automatic" free list of your task...
+  </p><p><dt>stefanb:<dd> Lynet: That's the price...
+     </p><p><dt>Pepo:<dd> when we fear that there _might_ be a new (and different) OS from C= (or whoever), we could as well stop this project.  Let's just ignore the possibility and continue (start?) working.
+       </p><p><dt>BM:<dd> Ugh, open file, register file, close file.. Ick. :)
+   </p><p><dt>Arcade:<dd> Okay, let's get on with the votes if that's okay with everybody ...
+    </p><p><dt>Murty:<dd> Lynet: All resources would have to be registered, yes, but since most resources are allocated by library calls (CreateMsgPort(), Open#?()) they can do the tracking stuff
+      </p><p><dt>Tau:<dd> pepo, yeah.. if there'll be a new OS from C=, why are we doing this in the first place?
+  </p><p><dt>mlelstv:<dd> bm, not really. the dos.library would register the file for the process
+    </p><p><dt>Lynet:<dd> stefanb: Ugh.. I wonder how many programmers are going to support this kind of cooperative RT.
+  </p><p><dt>stefanb:<dd> BM: You allocate a FILE object, then you OPERATE on it, and after that you DISPOSE it.
+  </p><p><dt>stefanb:<dd> BM: You can reuse an object...
+  </p><p><dt>stefanb:<dd> Lynet: That's the price of a non-VM-system..
+    </p><p><dt>Murty:<dd> Tau: There may never be.  But we mustn't assume there WILL never be.  It's short-sightedness like this that caused a certain business executive to say '640 kB ought to be enough for everyobody'.
+    </p><p><dt>Lynet:<dd> Murty: You're right. Make OpenLibrary() do RegisterObject(), and so on.
+   </p><p><dt>Arcade:<dd> The problem with old programs is that a resource might be passed over to another program, so the resource tracking would free the object and leave the other program in the cold with unallocated memory. That's why resource tracking is impossible for old programs.
+      </p><p><dt>Tau:<dd> murty, if we're next, their will support our version
+     </p><p><dt>Pepo:<dd> Lynet: there would only need to be a single bit in a hunk that identifies a "new" program
+</p><p><dt>griesbrei:<dd> just some words
+      </p><p><dt>Tau:<dd> I think we should find a solution where the OS automatically enables RT for applications marked as stuff that want it
+  </p><p><dt>stefanb:<dd> VOTE #2: Resource tracking should be implemented for new programs.
+  </p><p><dt>stefanb:<dd> - Proposed API:
+     </p><p><dt>Pepo:<dd> stefanb: also, only high level resources should be "trackable".  It doesn't make sense to track a viewport, a colormap etc, when intuition tracks a screen itself...
+  </p><p><dt>stefanb:<dd> -  RegisterObject(): register a new object type for resource tracking
+  </p><p><dt>stefanb:<dd> -  AllocObject(): allocate an object
+</p><p><dt>griesbrei:<dd> leave that AllocObject away
+  </p><p><dt>stefanb:<dd> -  TrackObject(): Add an object to the automatic de-allocation list of the task
+  </p><p><dt>stefanb:<dd> -  DisposeObject()
+     </p><p><dt>Pepo:<dd> stefanb: NewObject()
+  </p><p><dt>stefanb:<dd> Pepo: There is already a NewObject()
+  </p><p><dt>stefanb:<dd> Pepo: If you open a screen, Intuition handles the RT for you....
+</p><p><dt>griesbrei:<dd> RegisterObject and TrackObject are the same, aren`t they=
+  </p><p><dt>stefanb:<dd> Pepo: The proposed API is for the OS and for user-defined objects.
+    </p><p><dt>Murty:<dd> Who needs NewObject() if you have AllocObject() ?  You need a MakeObjClass() though.
+  </p><p><dt>stefanb:<dd> gries: Nope, RegisterObject tells the OS, there is a new Object and how to allocate/free it.
+     </p><p><dt>Pepo:<dd> Mutry: ask the other way around:  who nees allocobject() when we have newobject() (and we _do_ have NewObject() since v36)
+</p><p><dt>griesbrei:<dd> Can be done in one call, I think
+  </p><p><dt>mlelstv:<dd> stefanb, NewObject() has nothing to do with Intuition. It is just in intuition.library
+     </p><p><dt>Pepo:<dd> strfanb: it would be a MakeClass() call actually
+</p><p><dt>griesbrei:<dd> TrackObject(objectHing,type,hook) 
+  </p><p><dt>stefanb:<dd> Pepo & ml: RT has to be on the lowest level. not in Intuition.
+   </p><p><dt>Arcade:<dd> stefanb: we also need a call then to tell the OS not to track.
+  </p><p><dt>stefanb:<dd> gries: NO..... 
+  </p><p><dt>mlelstv:<dd> stefanb, BOOPSI _is_ on the lowest level. It is just misplaced in intuition.library
+  </p><p><dt>stefanb:<dd> Arcade: Don't call TrackObject()!
+     </p><p><dt>Pepo:<dd> Murty: you can call it how you want, but BOOPSI object system is completely generic.
+  </p><p><dt>stefanb:<dd> ml: So we move the calls to Exec and the new Intuition uses the new calls!
+   </p><p><dt>Arcade:<dd> stefanb: for programs that need to donate some resource to another program and has that HUNK bit set.
+    </p><p><dt>Murty:<dd> stefanb: What if the library call calls TrackObject() ?  You need a tag that says TAG_DONOTTRACK, for a shared resource for instance.
+  </p><p><dt>mlelstv:<dd> stefanb, I suggest a new library that covers the objects and support calls from amiga.lib
+      </p><p><dt>Tau:<dd> well, that's a minor detail. Shall we vote?
+  </p><p><dt>stefanb:<dd> Arcade: If you don't call TrackObject() it's NOT tracked.....
+  </p><p><dt>stefanb:<dd> ml: Exec seems fine to me...
+     </p><p><dt>Pepo:<dd> ATOM - Amiga's Tagged Object Model, an enhancement of BOOPSI :)
+      </p><p><dt>Tau:<dd> stef, but the hunk bit makes everything tracked by default, thus a DontTrack()
+  </p><p><dt>stefanb:<dd> Tau: No, you have to state when you want to have a Object tracked. The flag only states that you want your resource automatically FREED!
+      </p><p><dt>Tau:<dd> stef, good point
+     </p><p><dt>Pepo:<dd>  I don't see the difference (read: advantage) over MakeClass(), NewObject(), and DisposeObject() as we have them now.
+</p><p>-------- VOTE #2: Resource tracking should be implemented for new programs. Proposed API:
+  </p><p><dt>stefanb:<dd> -  RegisterObject(): register a new object type for resource tracking, tell the OS how to allocate and free it.
+  </p><p><dt>stefanb:<dd> -  AllocObject(): allocate an object
+  </p><p><dt>stefanb:<dd> -  TrackObject(): Add an object to the automatic de-allocation list of the task. Automatic de-allocation will only be used by programs which have a special HUNK bit set.
+  </p><p><dt>stefanb:<dd> -  DisposeObject(): Free an object.
+  </p><p><dt>stefanb:<dd> -  If a new program has a special HUNK bit set, it will use automatic de-allocation.
+</p><p> -------- RESULTS: 19 for, with 5 against the proposed API
+      </p><p><dt>Tau:<dd> API details will have to be worked out at implementation point in a smaller group
+    </p><p><dt>Murty:<dd> Tau: ...called the design team :-)
+    </p><p><dt>Lynet:<dd> Whow. We agree on *one* thing. Perhaps there's hope for this project anyway. :-D
+   </p><p><dt>Arcade:<dd> topic: multiuser security
+      </p><p><dt>Tau:<dd> arcade, filesystem level or memory? we already have the first, the second is not a personal computer OS issue really
+  </p><p><dt>mlelstv:<dd> thinks the proposed API is a misnomer.. there are no objects involved.
+   </p><p><dt>Arcade:<dd> Mostly at the filesystem level. If we could add some more, that would be a bonus.
+     </p><p><dt>Pepo:<dd> security?  that sucks, slows things down, and isn't used by anyone.
+    </p><p><dt>Murty:<dd> Tau: Filelevel system, please !  Memory level is one hell of a job and it requires a drastically different API from the current one.
+      </p><p><dt>Tau:<dd> arcade, we HAVE filesystem level multiuser, so that's a non-issue
+      </p><p><dt>Tau:<dd> murty, right, for one, it needs 100% MP
+    </p><p><dt>Murty:<dd> As for MP, I didn't think the pools idea was bad.  Again, new programs could automatically use protected memory and specify when they wish something to be shared.
+     </p><p><dt>Pepo:<dd> Open() would just fail like with read protected files.
+   </p><p><dt>Arcade:<dd> Is there? It needs to be supported within the OS, not by some external util.
+    </p><p><dt>Murty:<dd> Like MultiUser is.
+     </p><p><dt>Pepo:<dd> Arcade: the point is:  there needs to be no redesign to support it.
+  </p><p><dt>mlelstv:<dd> murty, the OS interface is problematic.. lots of unprotected stuff. But, in any case, the probability for trashing memory is reduced a lot. And that's why even partial MP is good.
+      </p><p><dt>Tau:<dd> pepo, as it does already, if the filesystem looks at the protection bits
+   </p><p><dt>Arcade:<dd> But the system does require additions ...
+  </p><p><dt>mlelstv:<dd> tau, that's a filesystem issue. of course one should support ownership in the filesystem.
+     </p><p><dt>Pepo:<dd> things that don't need a new API should of course go in, if they make sense
+       </p><p><dt>BM:<dd> Is there anything that could be done to make multi user file system MUFS less of a hack and more secure?
+    </p><p><dt>Murty:<dd> mlelstv: Yes, many things just can't be protected in the current system, like library bases etc.
+      </p><p><dt>Tau:<dd> mlel, that's what I said ;)
+  </p><p><dt>mlelstv:<dd> murty, library bases can be write-protected most of the time 
+   </p><p><dt>Arcade:<dd> Yes, there are certain things that could make it more secure.
+     </p><p><dt>Pepo:<dd> like e.g. a Network filesystem (envoy)
+  </p><p><dt>mlelstv:<dd> tau, just wanted to support you :)
+  </p><p><dt>mlelstv:<dd> murty, to get reasonable speed one would need 'aliases'. You do not want to change the MMU all the time.
+    </p><p><dt>Murty:<dd> mlelstv: No, the changing of MMU pages was one of the things that concerned me in MP.
+   </p><p><dt>Arcade:<dd> So, do we include multiuser security then?
+      </p><p><dt>Tau:<dd> I think we should have a vote about the protected memory pools. it has been discussed at some lenght already, so this should be quick
+    </p><p><dt>Murty:<dd> mlelstv: It's too slow if you have to change them for every task, so the tasks would even have to share the same protected pool (?)
+   </p><p><dt>Arcade:<dd> Let's have a proper vote anyway about a muFS-alike system.
+      </p><p><dt>Tau:<dd> arcade, of course. Not including it would be dropping features, which I thought we decided not to do with the vote #1 ;)
+  </p><p><dt>mlelstv:<dd> arcade, we cannot include security for local processes. the machine has to be a single-user machine. but it can provide multiuser services over a network.
+  </p><p><dt>mlelstv:<dd> murty, no. each task has its own MMU table.
+      </p><p><dt>Tau:<dd> everyone is for a filesystem with multiuser support, so there's no need for a vote
+  </p><p><dt>mlelstv:<dd> murty, overhead for that is not that high..
+  </p><p><dt>mlelstv:<dd> murty, basically you have to reload the ATCs at every task switch.
+   </p><p><dt>Arcade:<dd> okay, voted unanimous then for multiuser-filesystem.
+  </p><p><dt>mlelstv:<dd> murty, MP pools could even work for many old programs !
+    </p><p><dt>Murty:<dd> mlelstv: How intensive is that ?  How much relative time does it take, compared to just a task switch ?
+      </p><p><dt>Tau:<dd> mlel, which is a nice extra ;)
+  </p><p><dt>mlelstv:<dd> murty, you loose a few microseconds per taskswitch..
+     </p><p><dt>Pepo:<dd> an MMU table switch is a write to a processor register.
+   </p><p><dt>Arcade:<dd> Can someone in short enlighten me on this subject? (MP using pools)
+  </p><p><dt>mlelstv:<dd> murty, the scheduler just sets the root pointer. the MMU will then have cache misses.
+  </p><p><dt>stefanb:<dd> Vote #3: Add a memory protection flag for Pools (which will be ignored on machines without MP).
+    </p><p><dt>Murty:<dd> Pepo: what about continually updating and changing the MMU tables ?
+     </p><p><dt>Kudo:<dd> knows nothing about MMU's and MP pools... =(
+     </p><p><dt>Pepo:<dd> the overhead comes with maintaing shared trees when there would be virtual address spaces. 
+   </p><p><dt>Pieman:<dd> not many people have mmu's anyway
+</p><p><dt>griesbrei:<dd> stefan: add a PUBLIC_READ and a PUBLIC_WRITE flags
+      </p><p><dt>Tau:<dd> murty, it will add some overhead to AllocMem/FreeMem, but since it's using pools, they are not called that often
+  </p><p><dt>stefanb:<dd> Piemann: They will have :-)
+  </p><p><dt>mlelstv:<dd> arcade, you do not want to protect individual allocations (overhead). so you protect pools. pools (one or more) can live in a memory region made of MMU pages. Each set of associate pools has specific protections.
+     </p><p><dt>Kudo:<dd> pieman: not many ppl have more than 640k...
+  </p><p><dt>stefanb:<dd> Maybe each new program should get a MP pool automatically?
+    </p><p><dt>Lynet:<dd> On the topic of MP - is it possible to protect the OS, or parts of the OS?
+   </p><p><dt>Arcade:<dd> And what exactly is a pool? Is it private to a program, or can any process allocate from it?
+  </p><p><dt>mlelstv:<dd> stefanb, that was my proposal.. each process has its own private pool and AllocMem/AllocVec automatically use that pool!
+</p><p><dt>griesbrei:<dd> a pool is private to the process
+      </p><p><dt>Tau:<dd> stefanb, yes. Every program should get a private pool on NewTask(), whether they use it or not is their own problem
+     </p><p><dt>Pepo:<dd> stefanb: for new apps non-public AllocMems() could use a system-provided private pool.
+  </p><p><dt>mlelstv:<dd> griesbrei, not necessarily.. you can allocate pools to be shared.
+    </p><p><dt>Murty:<dd> mlelstv: Doesn't the pool idea imply that there will always be a part of the memory that is protected and a part that is not ?  You'd add another CHIP/FAST division.  What if unprotected memory runs out while there is still some protected left ?
+      </p><p><dt>Tau:<dd> an old program would not allocate any memory from the protected pool, but instead use the shared pool for everything
+</p><p><dt>griesbrei:<dd> Tau: ..and add something like `This one needs 1Megs of RAM` like in Windoze??
+  </p><p><dt>mlelstv:<dd> murty, it's not a fixed division, it is just an attribute reflected by the MMU settings
+     </p><p><dt>Pepo:<dd> Gee, My Amiga ran out of protected memory!!
+  </p><p><dt>stefanb:<dd> Murty: No, the memory in one pool is always of the same type.
+      </p><p><dt>Tau:<dd> gries, no. Pools get new memory allocated to them dynamically when they run out of free space. You just allocate memory in larger blocks
+  </p><p><dt>mlelstv:<dd> murty, when a pool needs another page it simply gets the same attributes
+     </p><p><dt>Pepo:<dd> protection is not a "type".  Any (non-chip) memory can be protected.
+   </p><p><dt>Pieman:<dd> yes but it is possible that a program will need an increasing amount of memory, ie in mosaic storing the pictures
+  </p><p><dt>stefanb:<dd> Piemann: But the will automatically shrink too...
+      </p><p><dt>Tau:<dd> pepo, you'd run out of shared memory first. Every task would have its own private, protected address space
+    </p><p><dt>Murty:<dd> mlelstv: I understand that.  But if you have a large pool of memory (say 1 MB) that is protected and another one (4 MB) that is unprotected.  An old program will use shared memory, so fill up the 4 MB.  What if they run out while there's still 1 MB not being used ?
+      </p><p><dt>Tau:<dd> gries, when it does the first AllocPool(), the pool is grown to, say 64k. When that runs out, another 64k is allocated.
+  </p><p><dt>mlelstv:<dd> murty, the pools are allocated by the programs.. there won't be (much) free space in any pool.
+       </p><p><dt>BM:<dd> With memory protection, will it be possible to keep the API?  Will addresses still be returned in messages to detemrine what gadget was clicked on for example?
+   </p><p><dt>Arcade:<dd> Let's say the pool is at the end of allocated memory, how would it be able to expand?
+     </p><p><dt>Pepo:<dd> Arcade: the MMU can remap
+  </p><p><dt>mlelstv:<dd> arcade, just it expands now. 
+  </p><p><dt>mlelstv:<dd> arcade, a pool is made of puddles
+      </p><p><dt>Tau:<dd> I posted a long article about this to the mailing list some time ago. Mlelstv commented on it, but I don't know how many of you saw it. I can send that if you want to see it
+   </p><p><dt>Pieman:<dd> i guess it expands and shuffles the other pools along
+    </p><p><dt>Murty:<dd> But if a pool grows dynamically, there will still be a lot of overhead when allocating, wouldn't there ?  Wasn't that what we tried to avoid ?
+  </p><p><dt>mlelstv:<dd> BM. that's the reason why MP cannot be 100%.
+      </p><p><dt>Tau:<dd> stefanb, but the protected pool can be in private address space, and thus put in virtual memory
+     </p><p><dt>Pepo:<dd> Pieman: no, thats what the MMU does.  it translates addresses without copying the actual data.
+  </p><p><dt>mlelstv:<dd> pieman, pools still are subject to fragmentation (within the pool). But most pools are per-process, when the process dies the fragmentation is gone.
+   </p><p><dt>Pieman:<dd> pepo: so it's a bit like a fragmented harddisk.. 
+  </p><p><dt>mlelstv:<dd> tau, any pool can be in virtual memory.
+     </p><p><dt>Pepo:<dd> Pieman: no, seeking in memory doesn't take time :)
+      </p><p><dt>Tau:<dd> murty, every time the pool is grown, the MMU table has to be adjusted. Which is why it is a pool, instead of forcing an adjustment on every memory allocation
+     </p><p><dt>Pepo:<dd> rozga: VM already works, doesn't it?
+   </p><p><dt>Pieman:<dd> where is this mmu table stored? does the mmu unit have it's own memory or do we have to allocate it a pool of it's own?
+    </p><p><dt>Murty:<dd> rozga: Not yet, but it will probably also be like the RT solution, only for new programs that is.  I emailed the author of VMM and he said VM with the current OS was a bit of a hack :-(
+      </p><p><dt>Tau:<dd> this pool stuff would make it HEAPS easier for VMM to operate
+  </p><p><dt>stefanb:<dd> Pieman: That's the task of the OS...
+      </p><p><dt>Tau:<dd> murty, because it has to hack in functions that are not designed for it.
+  </p><p><dt>mlelstv:<dd> pieman, it's probably not a pool as it has to reside in its own pages.
+  </p><p><dt>stefanb:<dd> Piemann: But probably write protected by the OS...
+    </p><p><dt>Murty:<dd> Tau: So, the pool will grow a lot.  If you make a puddle of, say, 64 K, then for every 64 K of memory allocated, a MMU table would have to be rebuilt.  Sounds like a lot of overhead to me !
+    </p><p><dt>Lynet:<dd> Tau: With pools, VM would be implemented by swapping out/in an entire pool?
+</p><p><dt>griesbrei:<dd> lynet: the puddles of the pool
+     </p><p><dt>Pepo:<dd> Lynet: no, a page.
+  </p><p><dt>stefanb:<dd> Murty: Less overhead than with MMU adjustement every AllocMem()
+  </p><p><dt>mlelstv:<dd> pieman, there is a lower level that handles regions of memory with certain attributes. The MMU table will use its own region
+       </p><p><dt>BM:<dd> I think all these shareware authors should be contacted for their opinions on what hacks they had to perform to get their code to work.
+     </p><p><dt>Pepo:<dd> Lynet: a page of a pool.  every page could hold many puddles (allocations) though
+    </p><p><dt>Murty:<dd> Tau: No, mainly because the MEMF_#? flags are abused by many applications and it's very hard for VMM to determine what it can cache and what it can't.  System structures, for example, cannot be cached, so VMM looks if the allocation is smaller than, say, 500 bytes before writing disk
+      </p><p><dt>Tau:<dd> lynet, no, a page at a time. but the VM table need to be updated only when a pool grows/shrinks
+  </p><p><dt>mlelstv:<dd> pepo, means that you want multiple pools per page.
+      </p><p><dt>Tau:<dd> murty, that and lack of pools
+  </p><p><dt>stefanb:<dd> Murty: MP is only for new programs. VMem too...
+  </p><p><dt>mlelstv:<dd> tau, not even then.. just when the pool needs more/less pages
+    </p><p><dt>Murty:<dd> stefanb: I know that.  I was just explaining that :)
+      </p><p><dt>Tau:<dd> murty, protected pools would make VMM magnitudes simpler
+     </p><p><dt>Pepo:<dd> mlelstv: if they have the same attributes, who not?
+  </p><p><dt>mlelstv:<dd> stefanb, MP+VMEM can work, often, for old programs too
+      </p><p><dt>Tau:<dd> mlel, I'm assuming puddle size > page size
+  </p><p><dt>mlelstv:<dd> pepo, I did propose that :)
+    </p><p><dt>Murty:<dd> Here's my suggestion : use the pools for VM, but let's forget about MP.  It's probably going to be kludgy anyway, with so much stuff unprotected.
+  </p><p><dt>stefanb:<dd> OK, what should we vote on? Just "We want to implement MP (and VMem) for memory pools"?
+  </p><p><dt>mlelstv:<dd> tau, well, yes.. but with 8K pages this might not be the case :)
+   </p><p><dt>Arcade:<dd> tau: better puddle size = X * MMU page size
+  </p><p><dt>stefanb:<dd> BM: Machine dependend. The puddle size will be adjusted by the OS.
+  </p><p><dt>mlelstv:<dd> arcade, or 1/X * MMU page size
+  </p><p><dt>mlelstv:<dd> stefanb, the puddle size is suggested by the application. it might be adjusted though.
+      </p><p><dt>Tau:<dd> mlel, no point making it smaller than MMU page.. you reserve the whole page anyway
+     </p><p><dt>Pepo:<dd> mlelstv: a puddle is what you get returned from AllocPooled()
+  </p><p><dt>stefanb:<dd> ml: That's what I meant... The same is alread true for AllocMem().
+    </p><p><dt>Murty:<dd> Here's my suggestion : use the pools for VM, but let's forget about MP.  It's probably going to be kludgy anyway, with so much stuff left unprotected.
+  </p><p><dt>mlelstv:<dd> tau, a program should chose puddle sizes for specific objects (to minimize fragmentation). a task may have many pools and not all of them will require their own page
+      </p><p><dt>Tau:<dd> murty, MP is a VERY VERY nice thing to have. and a VM API is so close to MP API there's no point in not having both
+      </p><p><dt>Tau:<dd> mlel, I'm talking of the task global MP pool, tho
+    </p><p><dt>caldi:<dd> Murty: Perhaps someone should contact Mike Sinz, according the the devcon notes, C='s VM plans were  pretty far along. They too planned VM in pools with the PAGED attribute.
+  </p><p><dt>mlelstv:<dd> tau, well.. that's not necessarily what we called a 'pool' :)
+    </p><p><dt>Murty:<dd> stefanb: Well, kludge is not the right word.  The Dutch word I'm looking for is 'halfbakken', which is something like half-decent.  You can only protect half your resources, but if the unprotected half is corrupted, chances are that the rest will go down with it.
+      </p><p><dt>Tau:<dd> murty, half-baked is an English phrase, too ;)
+   </p><p><dt>Arcade:<dd> murty: exactly. MP can never be safe ....
+  </p><p><dt>stefanb:<dd> Murty: But better this than nothing...
+      </p><p><dt>Tau:<dd> arcade, MP is inherently safer then no MP
+  </p><p><dt>mlelstv:<dd> tau,arcade: safe but not secure
+    </p><p><dt>Murty:<dd> Tau: But is half-baked :-) protection worth the effort ?
+  </p><p><dt>stefanb:<dd> Arcade: The program will still work though, because the OS ignores the MP flag on non-MP hardware.
+      </p><p><dt>Tau:<dd> murty better than none at all
+  </p><p><dt>stefanb:<dd> Murty: You aren't a programmer, aren't you? :-)
+      </p><p><dt>Tau:<dd> stefan, we should also make it optionally ignore it on user request (an old program kludge)
+    </p><p><dt>Murty:<dd> stefanb: I am, actually.  Why ?
+</p><p> -------- Vote #3: Add memory protection to memory Pools.
+  <p><dt>stefanb:<dd>  - MP will be ignored on non-MP hardware
+  </p><p><dt>stefanb:<dd>  - MP can be switched off if the user wants.
+  </p><p><dt>stefanb:<dd>  - New programs automatically get an MP memory pool for their purposes.
+</p><p> -------- RESULTS 15 for, 1 against
+</p><p> -------- Vote #4: Same points for Virtual Memory.
+</p><p> -------- RESULTS 15 for
+  <p><dt>mlelstv:<dd> griesbrei, the most probable thing is that while parts are rewritten they get new features on the way.
+    </p><p><dt>Lynet:<dd> Pepo: Which new features has been added to intuition-clone?
+    </p><p><dt>Murty:<dd> One topic I'd just like to mention is the speed at which is project is, or rather isn't, moving.  Does anyone have a brilliant idea to speed things up on the designers list ?
+    </p><p><dt>caldi:<dd> Murty: Is there a designers list one can read over, perhaps commit to some part of the project?
+     </p><p><dt>Pepo:<dd> Lynet: not much yet:  window hiding, realtime resize and drag, several bugfixes, a new gadget method, new mulitple pen array support for borders and some other small things (mouse acc etc)
+    </p><p><dt>Lynet:<dd> Pepo: Sounds nice. Is it soon ready to distribute to betatesters?
+     </p><p><dt>Pepo:<dd> Lynet: I expect to have a working _alpha_ version in 2 months.  several old (v40) things are not done yet (e.g. no sysreqs, no custom pointers, no sysiclass, ...)
+    </p><p><dt>Lynet:<dd> Pepo: Ok. Can't wait to start betatesting. :)
+     </p><p><dt>Pepo:<dd> lynet: alpha, not beta.  beta versions to be released in perhaps 8 months
+     </p><p><dt>Pepo:<dd> Tau: alpha testers will be programmers only, not users.
+      </p><p><dt>Tau:<dd> pepo, programmers of intuition?
+     </p><p><dt>Pepo:<dd> Tau: yes.</p>
+</dl>
+---
+The <A HREF="http://far0066.urh.uiuc.edu/AOS/AOS.html">AmigaOS Project FAQ</a> contains more information.

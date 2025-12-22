@@ -1,0 +1,148 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+2. Workshop: Virtual Network Computing - Teil 2 (von Uwe Pannecke)
+
+Der Herr der Fernbedienung - Teil 2
+
+Der VNC-Server f&uuml;r Amiga von Denis Spach
+
+
+1. Vom Client zum Server
+
+War im VNC [1]-Beitrag der letzten AMIGA-aktuell-Ausgabe der Amiga 
+lediglich Client in der Fernsteuerung fremder Rechner, soll er diesmal als 
+Server fungieren und seine Software dem Intranet, und wenn es denn sein 
+soll, auch dem weltweiten Zugriff durch mit ihm verbundene Rechner &ouml;ffnen.
+ 
+
+2. Systemvoraussetzungen
+
+Ihr ben&ouml;tigt f&uuml;r Euren Amiga neben Workbench 3.0 die RTG-Software Picasso96
+in der Version 2. Cybergraphics arbeitet nicht mit dem VNC-Server zusammen.
+Als Herz muss im Amigas eine MC68040 oder MC68060-CPU mit funktionierender
+MMU schlagen. Nat&uuml;rlich wird wiederum eine Netzwerkverbindung &uuml;ber einen 
+TCP/IP-Stack mit Kommunikationspartnern, also weiteren Rechner(n) 
+vorausgesetzt.
+Und zu guter Letzt m&uuml;ssen sich die fernzusteuernden Amiga-Programme RTG-
+kompatibel einsetzen lassen, d.h. die Wahl eines Screenmodes &uuml;ber Requester
+unterst&uuml;tzen oder zumindest &uuml;ber Screenmode-Utilities wie NewMode 
+zwangsweise in der Bildschirmausgabe umgeleitet werden k&ouml;nnen.
+
+
+3. Installation
+
+Ist das Archiv "avnc-beta6b.lha" von der Web-Seite [2] heruntergeladen und
+entpackt als Verzeichnis "Avnc-beta6b" an beliebiger Stelle auf der 
+Festplatte gelandet, kopiert Ihr aus dem Unterverzeichnis "/libs" die Datei 
+"p96fb.card" in die Schublade "Libs:Picasso96" der System-Partition. Im 
+Verzeichnis "Avnc-beta6b:Monitors/" hat der Programmautor drei 
+Monitortreiber f&uuml;r jeweils 8, 16 und 32 Bit Farbtiefe abgelegt.
+
+Screenshot:
+<IMG SRC="../extra/vncs_p96fb1.png" ALT="Screenshot">
+
+Kopiert eine Framebuffer-Datei Eurer Wahl (wobei Denis Spach 16 Bit 
+Farbtiefe empfiehlt) nach "Sys:Devs/Monitors/" und lasst Euch die Tooltypes 
+des jeweiligen Icons anzeigen. Innerhalb der Icon-Merkmale findet Ihr die 
+Angabe FBWIDTH und FBHEIGHT. Tragt dort die gew&uuml;nschte Aufl&ouml;sung ein.
+
+Je h&ouml;her die Aufl&ouml;sung, desto mehr Daten m&uuml;ssen aber auch &uuml;ber die 
+Netzwerkverbindung geschaufelt werden. Als akzeptabler Kompromiss haben 
+sich 800 x 600
+Pixel erwiesen.
+
+Screenshot:
+<IMG SRC="../extra/vncs_p96fb2.png" ALT="Screenshot">
+
+
+4. Konfiguration
+
+4.1 Netzwerk
+
+Konfiguriert Euren TCP/IP-Satck so, da&szlig; er Verbindungen &uuml;ber den 
+Portbereich von 5900 bis 5999 akzeptiert. Miami scheint dies offensichtlich 
+bereits in der Standard-Einstellung zu akzeptieren. Der von "Avnc" 
+verwendete Port wird in den Tooltypes des Programm-Icons festgelegt. 
+Vorgegeben ist der Port 5904. Da in meinem Netzwerk die VNC-Clienten von 
+Windows und Linux am Port 5900 horchen, wurde der Wert entsprechend auf 
+"Port=5900" ge&auml;ndert.
+
+
+4.2 Server-Passwort
+
+Neben dem Port spielt eine zweite Einstellung eine wichtige Rolle: Die Wahl 
+eines f&uuml;r die Authorisierung der Verbindung zu verwendendes Passwort. 
+Dieses wird ebenfalls in de Tooltypes des Programmicons festgelegt. Dabei 
+werden vom Programm zwei Tooltype-Eintr&auml;ge benutzt. Ihr gebt das Passwort 
+in unverschl&uuml;sselter Form hinter "PASSWORD=", etwa mit z.B. 
+"PASSWORD=ami2vnc" ein. 
+
+Screenshot:
+<IMG SRC="../extra/vncs_avnc.png" ALT="Screenshot">
+
+Mit dem ersten Programmstart legt Avnc selbiges Passwort dann in 
+verschl&uuml;sselter Form hinter dem Eintrag "EPASSWORD=" ab.
+
+
+5. Einsatz des Servers
+
+Ist der Amiga neu gestartet, wurde gleichzeitig &uuml;ber "Sys:Devs/Monitors/" 
+der passende Framebuffer-treiber aktiviert. Startet den TCP/IP-Stack und 
+anschlie&szlig;end &uuml;ber einen Doppelklick "Avnc". Damit ist der VNC-Server 
+einsatzbereit.
+Soll ein Programm ferngesteuert in einem Fenster des Netzwerkpartners 
+angezeigt und von diesem bedient werden, so w&auml;hlt im Screenmode-Requester 
+des jeweiligen Amiga-Programmes den "P96fb"-Eintrag mit der zuvor 
+festgelegten Aufl&ouml;sung. 
+
+Screenshot:
+<IMG SRC="../extra/vncs_smode.png" ALT="Screenshot">
+
+Habt Ihr das Programm gestartet, aktiviert Ihr auf dem Netzwerkpartner den 
+zuvor bereits mit dem VNC-Server &uuml;blicherweise gemeinsam installierten 
+(siehe AMIGA aktuell 05/2001) VNC-Client. Dabei wird als Parameter die IP-
+Adresse oder der Domainname angegeben. Unter Linux sorgt beispielsweise die 
+Shell-Eingabe "vncviewer 192.168.0.2" f&uuml;r die Kontaktaufnahme. 
+
+Screenshot:
+<IMG SRC="../extra/vncs_linux.png" ALT="Screenshot">
+
+Nat&uuml;rlich wird der Client nun nach dem vereinbarten Passwort fragen. Habt 
+Ihr das in den Avnc-Tooltypes festgelegte Kennwort eingegeben, wird sich 
+ein Fenster mit der Bildschirmausgabe des gestarteten Amiga-Programms 
+&ouml;ffnen. Und ab sofort k&ouml;nnt Ihr dieses Programm vom Remote-Rechner 
+fernsteuern.
+Das ganze funktioniert nat&uuml;rlich auch mit der Workbench, so da&szlig; die 
+komplette Kontrolle &uuml;ber den Amiga erreicht werden kann.
+
+Screenshot:
+<IMG SRC="../extra/vncs_wb.png" ALT="Screenshot">
+ 
+
+6. Fazit 
+
+Virtual Network Computing ist eine faszinierende M&ouml;glichkeit, vernetzte 
+Rechner zu bedienen. Die exportierte Benutzeroberfl&auml;che erm&ouml;glicht eine 
+spielerisch einfache Fernsteuerung der Programme oder gleich des gesamten 
+VNC-Servers.
+Auch wenn der Amiga-VNC-Server von Denis Spach als Beta-Version bezeichnet 
+wird, kann man Avnc, so denn eine vollwertige 040 oder 060-CPU im Amiga 
+steckt, durchaus schon sinnvoll einsetzen. Viele interessante 
+Anwendungsf&auml;lle sind so realisierbar.
+
+
+[1] http://www.uk.research.att.com/vnc/index.html
+[2] http://dspach.free.fr/amiga/avnc/index.html
+
+Uwe Pannecke &lt;Uwe.Pannecke@t-online.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

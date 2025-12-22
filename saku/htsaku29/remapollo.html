@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><TITLE>RemAPollo</TITLE></HEAD>
+<BODY>
+
+ <HR>
+ <B>RemAPollo</B><BR>
+ <I>Jarmo Piippo</I>
+ <HR>
+
+ <P>
+Apollo 1240 tai 1260-kiihdytinkortin omistaja on tähän asti saanut katsella
+kateudesta sammakonvihreänä, kun Blizzard-turbojen omistajat ovat
+käyttäneet koneissaan kiintolevyltä ladattavaa Kickstart-ROM-imagea
+Blizkick-ohjelman avulla. Blizkick ei toimi Apollon kanssa, ja kaikki
+muutkin kokeilemani soft-kickerit kaatoivat koneeni välittömästi, joten
+olin jo luopunut toivosta saada A500:aan aikoinaan ostamani OS 3.1 -paketin
+KS-ROM käyttöön uuteen koneeseeni.
+ </P>
+
+ <P>
+Viime keväänä Aminetissä seikkaillessani löysin vihdoin uuden ohjelman
+nimeltä RemAPollo, joka lupasi tehdä tuon taikatempun ja lisäksi paljon
+muutakin tuiki tarpeellista. Suhtauduin tulokkaaseen kuitenkin pienellä
+varauksella, vaikka se lupasikin kuun ja tähdet taivaalta, sillä
+dokumenttiensa mukaan sen kehittely oli yhä beta-asteella. Pelko oli
+kuitenkin turhaa, RemAPollo piti lupauksensa ja koneessani on nyt kaikilta
+osin mallia 3.1 oleva käyttöjärjestelmä.
+ </P>
+
+ <P>
+RemAPollo on nimensä mukaisesti tarkoitettu ainoastaan Apollon turbojen
+kanssa käytettäväksi ja vain 68040- tai 68060-prosessoreille. Käytössäni on
+versio 0.975, joka julkaistiin tammikuussa. Hiukan myöhemmin ilmestynyttä
+uudempaa 0.993:a en ole jostakin syystä saanut toimimaan, vaikka asensin
+sen ohjeiden mukaisesti ja poistin vanhan version kokonaan kokeilun ajaksi.
+Vanhalla versiollakin kyllä pärjää ainakin toistaiseksi. Ainoa tarvitsemani
+lisätoiminto uudessa versiossa olisi mahdollisuus ladata muistiin
+Kickstartin remappauksen yhteydessä muitakin muistinvaraisia ohjelmia.
+ </P>
+
+ <P><H3>Startup remonttiin</H3></P>
+
+ <P>
+RemAPollon asennus vaatii järjestelmätiedostojen muuttelua ja ehkä
+joidenkin aiemmin asennettujen patchien poistamista käytöstä, joten asennus
+on tehtävä käsin. Shell-komentojen ja käyttöjärjestelmän tunteminen on siis
+valitettavasti pakollista!
+ </P>
+
+ <P>
+Kaikkein ensimmäisenä on korjattava 68040/68060.libraryn sisältämä ikävä
+MMU:n alustukseen liittyvä bugi. Korjaus tapahtuu ajamalla
+RemAPollo-paketin sisältämä ohjelma patch, joka muuttaa hakemistossa LIBS:
+olevaa libraryä. Ennen patchin ajoa kannattaa tehdä alkuperäisestä
+librarystä varmuuskopio.
+ </P>
+
+ <P>
+Seuraavaksi kopioidaan tiedostot RemAPollo, DRAP ja Reset c-hakemistoon ja
+lisätään tekstieditorin avulla s-hakemiston Startup-Sequence-tiedostoon
+kaksi riviä SetPatch-käskyn molemmin puolin. Tee ennen muutoksia
+varmuuskopio myös Startup-Sequencesta, mieluiten eri nimellä samaan
+hakemistoon.
+ </P>
+
+ <TABLE>
+  <TR><TD>c:RemAPollo DEVS:Kickstart3.1 QUIET<TD>;oltava ensimmäinen rivi!
+  <TR><TD>c:SetPatch QUIET<TD>;tämä on ennestään..
+  <TR><TD>c:DRAP<TD>;oltava heti SetPatchin jälkeen!
+ </TABLE>
+
+ <P>
+Parametri DEVS:Kickstart3.1 tarkoittaa Kickstart-ROM-imagetiedoston
+hakupolkua ja nimeä. Ellei imagea ole käytettävissä, voi parametrin jättää
+pois, jolloin ohjelma vain kopioi koneen omilla ROM-piireillä olevan
+Kickstartin nopeaan Fast-muistiin. Halutessaan voi myös lisätä
+RemAPollo-komennolle parametrin MAC, jolloin ohjelma varaa muistin alusta
+tyhjää tilaa Mac-emulaattorin (Shapeshifter tai Fusion) käyttöön. Sen
+jälkeen Mac-emulaattoria varten ei enää tarvita erillistä
+PrepareEmul-apuohjelmaa.
+ </P>
+
+ <P>
+Ennen koneen resetointia on ehkä vielä poistettava käytöstä Oxyron Patcher,
+sillä ainakaan minun aikoinaan ostamani versio ei ole yhteensopiva
+RemAPollon kanssa. OxyPatcherista on olemassa epävirallinen paranneltu
+versio 3.14, mutta itse en ole sitä vielä mistään löytänyt. Toinen
+hankaluuksia aiheuttava patchi on FBlit, joka kannattaa myös poistaa
+käytöstä.
+ </P>
+
+ <P>
+Tämän jälkeen koneen voi resetoida, mutta ensimmäisellä kerralla sitä ei
+kannata tehdä näppäimistöltä kuten normaalisti, vaan ajamalla shellissä
+RemAPollo-paketin mukana tullut komento reset, option HARD kera. Tällöin
+kaikki muistissa olevat ohjelmat ja patchit unohtuvat, koska execbase
+nollautuu, joten resetointi vastaa koneen kylmäkäynnistystä. Koneen
+käynnistyttyä tarkista Version-komennolla shellissä, että uusi Kickstart on
+todella käytössä. Jos kone ei käynnisty normaalisti vaan kaatuu, sammuta
+virta ja käynnistä kone boot-valikosta ilman Startup-Sequencea ja palauta
+shellissä alkuperäinen Startup-Sequence varmuuskopiosta takaisin käyttöön.
+ </P>
+
+ <P><H3>Patchin kestäviä patcheja</H3></P>
+
+ <P>
+Viime syksynä hankkimani Power Flyer EIDE-ohjain ja Professional File
+System 2 (PFS2) mullistivat käsitykseni IDE-kiintolevyjen suorituskyvystä,
+mutta miten tuo voimakaksikko mahtaa suhtautua RemAPollon muuttelemaan
+koneeseen? Tyynen rauhallisesti onneksi, sillä ainoa ilmennyt omituisuus
+liittyy koneen resetointiin. Jos koneen resetoi näppäimistöltä ja
+käynnistää ilman Startup-Sequencea, tiedostojärjestelmä ei enää löydäkään
+kaikkia tiedostoja kiintolevyiltä vaan antaa virheilmoituksia "Read attempt
+outside partition".
+ </P>
+
+ <P>
+Ongelmasta pääsee eroon resetoimalla koneen komennolla reset HARD, jonka
+jälkeen shelliin käynnistäminen boot-valikosta toimii täysin normaalisti.
+Tavallisen resetoinnin ilman boot-valikkoon menoa voi tietysti tehdä kuten
+ennenkin näppäimistöltä, ongelma koskee siis ainoastaan boot-valikkoa. Sitä
+en ole tutkinut, johtuvatko virheilmoitukset Power Flyerin ajurista
+(ATA3.driver) vai PFS2:sta. Molemmista saattaisi olla olemassa myös
+uudemmat versiot, joilla ongelma ehkä poistuisi kokonaan, mutta en ole
+niitä ehtinyt yrittää metsästää.
+ </P>
+
+ <P>
+Muita patcheja ja hackeja ei koneeseeni juurikaan ole asennettuna, sillä
+pidän toiminnan luotettavuutta ensiarvoisen tärkeänä, eikä Chip-muistiakaan
+ole tuhlattavaksi asti tässä nolon vanhentuneessa AGA-koneparassa. Edellä
+mainittujen lisäksi seuraavat ohjelmat ovat olleet koko ajan käytössä
+eivätkä ole aiheuttaneet ongelmia RemAPollon kanssa: AutoFile,
+ClickToFront, ModePro, ffppatch, cmq060, NoClick ja newwpa8.
+ </P>
+
+ <P>
+Käyttämäni Kickstart 3.1 -image on versio 40.63, ja se on toiminut hyvin
+A1200:ssani, vaikka se kuuluukin A500/A2000:lle tarkoitettuun OS 3.1
+-pakettiin. [Toim.huom.: A500/A2000:n ROMeista puuttuu tuki A1200:n
+PCMCIA-väylälle, joten siihen kytketyt laitteet eivät toimi kyseisten
+ROM-imageiden kanssa.] RemAPollon kanssa olisi kuitenkin suositeltavaa
+käyttää KS 40.68:aa, ja aion sen itsekin hankkia kunhan ehdin. A4000:lle
+tarkoitettujen OS 3.1 -pakettien Kickstart-piirejä versioltaan 40.7x
+RemAPollo ei tue lainkaan, eikä myöskään vanhoja 256 kt:n piirejä. Viimeksi
+mainittu olisikin täysin turhaa, sillä KS 1.3 ei ole 060-yhteensopiva.
+Lisäksi on huomattava, että RemAPollo toimii vain tietyillä
+68040/68060.libraryn versioilla. Lisätietoja kannattaa lueskella ennen
+asentamista RemAPollon omista ohjeista, tämä oli vain pintapuolinen katsaus
+muutamiin ohjelman tärkeimpiin ominaisuuksiin.
+ </P>
+
+ <P>
+RemAPollo on saatavissa Aminetistä,
+<A HREF="ftp://main.aminet.net/ftp/aminet/pub/util/boot/RemAPollo.lha">
+util/boot/RemAPollo.lha</A> (30 kt).
+Käyttöjärjestelmän päivityspaketteja ja -osia saa Amiga-jälleenmyyjiltä.
+Suomen Amiga-jälleenmyyjien yhteystiedot löydät tämän Sakun
+Jälleenmyyjät-artikkelista.
+ </P>
+
+ <P><B>RemAPollo</B></P>
+
+ <TABLE>
+  <TR><TD>Tekijä:<TD>Mikolaj Calusinski, Puola
+  <TR><TD>Hinta:<TD>Ohjelma on freewarea
+  <TR><TD>Vaatii:<TD>Amiga 1200, Apollo 1240 tai 1260-kiihdytinkortti, jossa on toimiva MMU ja Fast-tyyppistä muistia, Commodoren 68040.library versio 37.10 tai 37.30, tai Apollon 68060.library versio 60.10
+  <TR><TD>Testattu:<TD>Amiga 1200, Apollo 1260 68060/50 MHz, 32 Mt
+ </TABLE>
+
+ <P>
+Kirjoittajan tavoittaa sähköpostitse osoitteesta <A HREF="mailto:jpiippo@ratol.fi">
+jpiippo@ratol.fi</A> tai Sakunetistä nimellä Jarmo Piippo.
+ </P>
+
+</BODY>
+</HTML>

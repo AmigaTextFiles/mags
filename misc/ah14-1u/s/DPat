@@ -1,0 +1,35 @@
+.key com/a,pat/a,dir/a,opt1,opt2,opt3,opt4
+.bra {
+.ket }
+
+; $VER: dpat 38.1 (11.10.91)
+; Do wildcards for double arg commands
+
+FailAt 21
+Echo >ENV:qw{$$} "{dir}" FIRST 256
+
+IF $qw{$$} EQ ":"
+  List >T:q{$$} {pat} LFORMAT "{com} *"%s%s*" *"{dir}%s*" {opt1} {opt2} {opt3} {opt4}"
+  Skip doit
+EndIF
+
+IF $qw{$$} EQ "/"
+  List >T:q{$$} {pat} LFORMAT "{com} *"%s%s*" *"{dir}%s*" {opt1} {opt2} {opt3} {opt4}"
+  Skip doit
+EndIF
+
+IF EXISTS {dir}
+  List >T:q{$$} {pat} LFORMAT "{com} *"%s%s*" *"{dir}/%s*" {opt1} {opt2} {opt3} {OPT4}"
+Else
+  List >T:q{$$} {pat} LFORMAT "{com} *"%s%s*" *"{dir}*" {opt1} {opt2} {opt3} {OPT4}"
+EndIF
+
+Lab doit
+
+IF NOT FAIL
+  Execute T:q{$$}
+Else
+  Echo "{pat} not found"
+EndIF
+
+FailAt 10

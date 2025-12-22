@@ -1,0 +1,160 @@
+5
+1*
+
+{3                      Lukitse tietosi: Pretty Good Privacy
+{3                      ------------------------------------
+
+                               Antti Vähä-Sipilä
+
+
+Sakussa 11 mainittiin anonyymipalvelimista kertovan artikkelin  yhteydessä  PGP-
+niminen suojausohjelma. Ohjelmaan on esitetty kiinnostusta,  joten  katsoin  ai-
+heelliseksi kertoa siitä yhden artikkelin verran lisää.
+
+Pretty Good Privacy (suomeksi suurin piirtein "tosi hyvä tietosuoja") eli PGP on
+tarkoitettu tiedon salaukseen, jolloin tietoa ei voi lukea kukaan muu  kuin  sen
+oikea vastaanottaja. PGP soveltuu hyvin sähköpostin salaukseen, koska se  sovel-
+taa julkisen avaimen suojausta (tästä myöhemmin). PGP:tä voi myös käyttää omien,
+henkilökohtaisten tietojen suojaukseen.
+
+Uusin PGP:n vapaalevitteinen versio on 2.6.2,  joka  tunnetaan  kehityspaikkansa
+mukaan MIT-versiona. Se perustuu Philip Zimmermannin alkuperäiseen koodiin.  Va-
+litettavasti  sen  käyttämä  salausalgoritmi  on  USA:n   asemateriaalin   vien-
+tisäännöstön ITARin alainen, joten sitä ei saa laillisesti viedä USA:sta ja  Ka-
+nadasta. Lisäksi se käyttää RSAREF-salauskirjastoa, jota on patenttisyistä pakko
+käyttää USA:ssa. Onneksi joku uskalikko  on  vienyt  PGP:n  USA:sta  -  mikä  ei
+sinänsä ole kovin vaikeaa; onhan Internet keksitty. Tämän  lähdekoodin  pohjalta
+norjalainen Ståle Schumacher on tehnyt international-version,  joka  kulkee  ni-
+mellä PGP 2.6.2i. Siitä on poistettu RSAREF-koodi, joka on korvattu  vastaavalla
+mutta nopeammalla ohjelmanpätkällä.
+
+PGP 2.6.2i on saatavana Amigalle sekä 68000- että 68020-optimoituna.  Se  toimii
+hyvin myös turbottomassa perus-A500:ssa eikä  vaadi  kovalevyä.  Käännöstyön  on
+tehnyt Peter Simons. Ohjelman lähdekoodi löytyy Ståle Schumacherin  WWW-sivuilta
+osoitteesta http://www.ifi.uio.no/~staalesc/PGP/ ja Amigan  ajettavat  tiedostot
+Aminetistä    tai    osoitteesta     http://www.ifi.uio.no/~staalesc/files/PGPA-
+mi262is.lha.
+
+Tällä välin Phil Zimmermann on joutunut USA:ssa melkoiseen  myllytykseen.  Häntä
+syytetään laittomasta asemateriaalin viennistä, vaikkei hän itse ohjelmaa varsi-
+naisesti maasta vienytkään. Rangaistukset siitä ovat varsin tuntuvat. Hänen  la-
+kikulujaan peittämään on perustettu rahasto sekä USA:han että Eurooppaan.  USA:n
+ollessa  näin  herkkähipiäinen  on  erittäin  suositeltavaa,  että   suomalaiset
+käyttäjät hakevat ohjelmansa USA:n ja Kanadan ulkopuolelta ja käyttävät interna-
+tional-versioita. USA:n suhtautuminen on sinänsä ihmeteltävää,  sillä  RSA-algo-
+ritmi on jo aikoja sitten tunnettu ympäri maailman.
+
+Aikaisemmin mainitsin julkisen avaimen suojauksen. Tämä voi olla joillekin sala-
+kirjoitukseen vähemmän tutustuneille vaikea käsite. Pikkupoikien leikeissä sala-
+kirjoitus voi olla esimerkiksi erittäin yksinkertainen Caesar-koodaus.  Siinä  A
+korvataan B:llä, B korvataan C:llä ja niin edelleen. Kuka  tahansa  suojausmene-
+telmän tunteva voi purkaa viestin. "Oikeat" salakirjoitussovellukset  perustuvat
+matematiikkaan, jolloin algoritmi voi olla kaikkien tiedossa ja  suojauksen  voi
+purkaa vain, jos lukijan hallussa on oikea avain.
+
+Avaimia hyödyntäviä suojauksia on kahta laatua:  salaisen  ja  julkisen  avaimen
+suojauksia. Salaisen avaimen suojaus on helppo käsittää. Teksti salataan  salai-
+sella avaimella ja lähetetään vastaanottajalle. Vastaanottaja purkaa tekstin sa-
+malla salaisella avaimella. Näitä salausmenetelmiä ovat mm. DES, Data Encryption
+Standard (myöskin ITARin alainen, mutta yleisesti käytössä hyvin  monessa  paik-
+kaa) ja IDEA, International Data Encryption Algorithm. (IDEA on uudempi kuin DES
+ja todennäköisesti varmempi. Lisäksi se  on  kehitetty  Euroopassa,  joten  sitä
+eivät koske ITARin säännökset.) Salaisen avaimen salauksen heikkous on se,  että
+salainen avain on jotenkin kuljetettava vastaanottajalle, jolloin salatun tiedon
+siirtotie on korkeintaan niin turvallinen kuin avaimen siirtotie.
+
+Julkisen avaimen suojausmenetelmässä sekä viestin lähettäjällä että vastaanotta-
+jalla on kaksi avainta: julkinen ja salainen. Julkista avainta voi huoletta  le-
+vittää kenelle tahansa. Salaista et levitä kenellekään. Kuka tahansa voi  salata
+tiedon julkisella avaimella, jonka jälkeen sitä ei saa auki enää kukaan muu kuin
+sinä itse salaisella avaimellasi.
+
+Esimerkki: 
+
+         Käyttäjä A                       Käyttäjä B
+
+         Kertoo A:n julkisen   ----->     Kertoo B:n julkisen
+         avaimen B:lle         <-----     avaimen A:lle
+
+         Koodaa viestin                   Avaa viestin B:n
+         B:n julkisella        ----->     salaisella avaimella
+         avaimella
+
+         Avaa viestin A:n                 Koodaa viestin A:n
+         salaisella avaimella  <-----     julkisella avaimella
+
+Käyttäjä C nappaa kaiken nuolien kohdalla menevän liikenteen ja  yrittää  murtaa
+koodin. Hän saa molempien julkiset avaimet sekä kaksi  salattua  viestiä,  mutta
+koska salaisia avaimia ei koskaan ole lähetetty minnekään, hän  ei  saa  avattua
+viestejä. Sen sijaan hän voi käyttää muita hyökkäystapoja.
+
+PGP käyttää  julkisen  avaimen  salauksessaan  RSA-algoritmia.  (Oikeastaan  PGP
+käyttää sekä RSA-, IDEA- että MD5-algoritmeja, mutta vain RSA on julkisen  avai-
+men algoritmi.) RSA:n (kehittäjien nimet olivat Rivest, Shamir ja Adleman) mate-
+maattinen perusta selitetään esimerkiksi lähteessä [1]. Algoritmin alussa  vali-
+taan kaksi suurta alkulukua, p ja q, joiden tulo  on  n=pq.  RSA:n  murtamiseksi
+täytyy luku n jakaa tekijöihinsä p ja q, joista voidaan johtaa  salainen  avain.
+Tämä on nykyisen käsityksen  mukaan  hankalaa.  Lyhyellä  RSA-avaimella  salattu
+viesti on tosin onnistuttu murtamaan. Salainen avain, joka viestin  lähettäjälle
+jää, koodataan IDEA-koodauksella, jolloin sen joutuminen vääriin käsiin  ei  ole
+vielä lopullinen isku kirjesalaisuudellesi. Tämän vuoksi joudut antamaan salasa-
+nasi joka kerta purkaessasi viestin PGP:llä. Tätä salasanaa sinun ei  kuitenkaan
+pidä kertoa vastaanottajalle.
+
+PGP:llä voi myös varmistaa viestin alkuperän siten, ettei sitä  voida  muunnella
+matkalla lähettäjältä  vastaanottajalle.  Lisäksi  voit  varmistua  siitä,  että
+lähettäjä on todella oikea. Tätä kutsutaan digitaaliseksi allekirjoitukseksi. Se
+toimii tavallaan päinvastoin kuin salaus. Allekirjoituksen luo lähettäjä  omalla
+salaisella avaimellaan, ja vastaanottaja voi tarkistaa allekirjoituksen  oikeel-
+lisuuden lähettäjän julkisella avaimella.
+
+Käytännössä sinulle luodaan kaksi avainrengasta, joista toinen sisältää salaisen
+avaimesi ja toinen julkisia avaimia. Avaimien aitouden todistamiseksi PGP:hen on
+rakennettu avaimien allekirjoitustoiminto, jossa toinen käyttäjä  voi  kunniasa-
+nallaan todistaa, että jokin tietty avain todella kuuluu jollekin toiselle. Koko
+avaimien käsittelyprosessi on aluksi vaikea ja hämmentävä, mutta dokumentit  ta-
+vaamalla homma alkaa sujua. Dokumentit kannattaa lukea, koska muuten voit  tehdä
+suurenkin virheen.
+
+PGP:n käytössä heikoin lenkki on  yleensä  käyttäjä  itse.  Varsinaisen  salatun
+viestin purkaminen järkevässä ajassa on keskikokoisen valtion puolustusbudjetil-
+la todennäköisesti mahdotonta,  puhumattakaan  harrastelijakräkkereistä.  Mikäli
+salainen avaimesi joutuu vääriin käsiin, on avainvoron ja viestiesi  paljastumi-
+sen välissä enää salaisen avaimen IDEA-koodauksen tunnussanasi. Jos se on helppo
+arvata, olet menettänyt  pelin.  Salaisen  avaimen  säilytys  esimerkiksi  monen
+käyttäjän Unix-järjestelmissä on vaarallista, koska systeemioperaattori voi hel-
+posti napata kaikki näppäinpainalluksesi ja näin saada IDEA-salasanasi selville.
+Varmin tapa on säilyttää salainen avain  ainoastaan  yhdellä  disketillä,  jonka
+otat ulos kassakaapista vain siksi aikaa, kun salaat  viestisi  omalla  verkkoon
+liittymättömällä koneellasi.
+
+Totuus on se, että jos esimerkiksi suojelupoliisi tai vastaava kiinnostuu  vies-
+teistäsi, he eivät todennäköisesti ensimmäisenä hyökkää PGP-viestiesi  kimppuun,
+vaan pikemminkin pyytävät apua niiden koneiden operaattoreilta, joilla kirjoitat
+viestisi selväkielisenä (tai sitten  tulevat  kysymään  sinulta  itseltäsi  hen-
+kilökohtaisesti, nk. "oven saranapuolelta  sisään"  -taktiikka).  Vainoharhainen
+henkilö tietenkin muuraa Amigansa 20 sentin metallikuoren sisään, jottei  mikään
+turvallisuuspalvelu pysty  tempest-laitteistolla  sieppaamaan  hänen  koneestaan
+lähtöisin olevaa elektromagneettista kenttää. Ja jos olet huumediileri, en  muu-
+tenkaan suosittele Internetiä.  Varmempiakin  kommunikaatiotapoja  on  olemassa.
+Mutta ellet halua paikallisen Fidonetin koordinaattorin nauravan räkäisesti rak-
+kauskirjeillesi, PGP on varsin varteenotettava vaihtoehto.
+
+
+{3Lisätietoja Internetistä
+{3------------------------ 
+
+- RSA Cryptography Frequently Asked Questions.
+  Paul Fahn, RSA Laboratories. 1993.
+  ftp://rtfm.mit.edu/pub/usenet/news.answers/cryptography-faq/rsa
+
+- PGP Frequently Asked Questions with Answers.
+  Jeff Licquia. 1995.
+  http://www.prairienet.org/~jalicqui/pgpfaq.txt
+
+- Pretty Good Privacy Documentation (pgpdocN.txt)
+  (Sisältyy PGP:n levityspakettiin)
+  Philip Zimmermann, Phil's Pretty Good Software. 1994.
+  http://www.ifi.uio.no/~staalesc/PGP/
+
+- Uutisryhmä alt.security.pgp

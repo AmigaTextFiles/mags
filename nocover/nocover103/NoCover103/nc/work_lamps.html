@@ -1,0 +1,746 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<!-- Author = Wolf Zimmer -->
+
+<TITLE>Wolf hat wieder etwas zu sagen</TITLE>
+</HEAD>
+
+<BODY background="wolf1.jpg" text="#000000" link="#0000ff" alink=
+"#ff0000" vlink="#0000ff" bgcolor="#b0b0b0">
+<TABLE width="100%" border="0" cellpadding="8" summary="">
+<TR>
+<TD>
+<P align="center"><FONT color="#000080" size="7"><B>LAMPS</B></FONT></P>
+
+<P><B>"Kurze Anleitung zur Installation eines LAMP Servers (Linux, Apache,
+Mysql, PHP)."</B><BR>
+Das ist der Titel einer Website von Joerg Baach, www.mediathek.de, kann
+aber direkt angesteuert werden: <B>www.baach.de</B>. Um es kurz zu machen,
+hier kommt die Startseite und wer weiterf&uuml;hrende Informationen
+m&ouml;chte, sollte beide Homepages ansteuern.</P>
+<HR>
+&nbsp;<BR>
+
+<H2><B>LAMPS</B> - Tutorial:</H2>
+<H3>Unter <font size="+1"><B>L</B></font>inux <font size="+1"><B>A</B></font>pache,
+<font size="+1"><B>M</B></font>ysql, <font size="+1"><B>P</B></font>HP und
+<font size="+1"><B>S</B></font>SL installieren</H3>
+Version 1.1 
+
+<H2>Inhalt</H2>
+<B>Einleitung</B><BR>
+<B>Was brauch ich denn so?</B><BR>
+<B>Installation</B><BR>
+<B>Konfiguration</B><BR>
+<B>Starten</B><BR>
+<B>Links</B><BR>
+
+<H2>Einleitung</H2>
+
+<P><B>Achtung: Da ich im Augenblick auf Reisen bin, kann ich leider weder
+Fehler korrigieren noch emails beantworten!</B></P>
+
+<P>Dieses kleine Tutorial soll helfen, einen LAMP Server aufzusetzen und zu
+konfigurieren. Aufsetzen heist f&uuml;r dieses Tutorial, selber alle
+Software zu compilieren und installieren (Apache, PHP, MySQL). Das ist
+f&uuml;r die ersten Schritte mit PHP natr&uuml;lich nicht unbedingt
+n&ouml;tig. Bei den meisten Distributionen ist jetzt schon neben einem
+Apache ein mod_ssl und ein mod_php dabei. Damit kann man Anfangen.<BR>
+M&ouml;chte man dann doch ein eigenes System, dann hoffe
+ich da&szlig; diese Anleitung helfen wird. Dabei gehe ich
+davon aus, das der geneigte Leser ("Du") sein Linux als
+solches schon am laufen hat.</P>
+
+<P>Das hier ist eine &uuml;berarbeitete Version. Der Hauptunterschied zur
+<A href= "lamp-tutorial-old.html"> alten Version</A> ist, da&szlig; wir
+beim Apache jetzt DSO benutzen.</P>
+
+<P>Bei Problemen oder Korrekturen zu diesem Mini-Tutorial kannst Du mir
+gerne eine mail an <A href= "mailto:php@baach.de"> php@baach.de</A>
+schicken. Leider brauche ich manchmal etwas l&auml;nger, bis ich die mails
+beantworten kann.</P>
+
+<P>Viel Spa&szlig; und liebe Gr&uuml;&szlig;e,<BR>
+&nbsp;&nbsp;J&ouml;rg Baach</P>
+
+<H2>Was brauch ich denn so?</H2>
+
+<P>Der Name unseres kleinen Projektes - LAMP - gibt da schon ganz gute
+Hinweise. Die verschiedenen Dateien solltest Du irgendwo auf Deinem Rechner
+abspeichern -bei mir ist das '/usr/local/src/lamp/tarballs'.</P>
+
+<DL>
+<DT><B>Linux</B></DT>
+
+<DD>
+Ist ja, wie oben definiert, schon auf Deinem Rechner installiert. Dabei
+sollte es egal sein, ob Du nun ein RedHat, eine SUSE oder ein Debian
+verwendest. Falls es doch Probleme gibt, schick mir bitte eine mail.<BR>
+
+Ich pers&ouml;nlich habe diese Anleitung zur Verwendung mit einer SUSE 6.x
+geschrieben.<BR> Praktisch ist, wenn Du schon jetzt darauf achtest die
+Pakete flex, bison, xdevel und libpng installiert zu haben - da&szlig;
+spart sp&auml;ter eine Menge &Auml;rger.
+</DD>
+
+<DT><B>Apache</B></DT>
+
+<DD>
+
+<P>Klar, der Webserver als solches tut not. Du solltest Dir  die  aktuellen
+Quellen runterladen, im Augenblick ist das Apache 1.3.26. </P>
+
+<P>Homepage: <A href="http://httpd.apache.org/" target="source">
+http://httpd.apache.org</A><BR>
+Datei: <A href="http://httpd.apache.org/dist/httpd/apache_1.3.26.tar.gz">
+http://httpd.apache.org/dist/httpd/apache_1.3.26.tar.gz</A></P>
+</DD>
+
+<DT><B>Mysql</B></DT>
+
+<DD>  <P>Mysql  wird  uns  als  Datenbankserver  dienen.  Dieser  wird   in
+erstaunlicher  Geschwindigkeit  gepflegt - es erscheinen alle ein oder zwei
+Wochen neue Versionen. Im Augenblick ist die Version 3.23.52 die empfohlene
+Version. </P>
+
+<P>Homepage:
+<A href="http://www.mysql.com" target="source">http://www.mysql.com</A><BR>
+Datei: <A href="http://www.mysql.com/Downloads/MySQL-3.23/mysql-3.23.52.tar.gz">
+http://www.mysql.com/Downloads/MySQL-3.23/mysql-3.23.52.tar.gz</A><BR>
+
+Mirror:
+<A href="http://ftp.gwdg.de/pub/misc/mysql/Downloads/MySQL-3.23/mysql-3.23.52.tar.gz">
+http://ftp.gwdg.de/pub/misc/mysql/Downloads/MySQL-3.23/mysql-3.23.52.tar.gz</A></P>
+</DD>
+
+<DT><B>PHP</B></DT>
+
+<DD>
+<P>Ganz wichtig - PHP. Aktuelle Release-Version ist PHP4. Wir nehmen die
+aktuelle Version 4.2.3, und vergessen auch die Dokumentation nicht. </P>
+
+<P>Homepage:
+<A href="http://www.php.net" target= "source">http://www.php.net</A><BR>
+Mirror: <A href="http://www.php3.de" target="source">http://www.php3.de</A><BR>
+Datei: <A href="http://www.php3.de/distributions/php-4.2.3.tar.gz">
+http://www.php3.de/distributions/php-4.2.3.tar.gz</A></P>
+
+<P>Dokumentation: <A href="http://www.php3.de/distributions/manual.tar.gz">
+http://www.php3.de/distributions/manual.tar.gz</A><BR>
+
+( Alternativ Deutsche Doku: <A href="http://www.php3.de/manual/de/manual.zip">
+http://www.php3.de/manual/de/manual.zip</A>)</P>
+</DD>
+
+<DT><B>Erweiterungen</B></DT>
+
+<DD>
+<P>Mit den oben genannten Grundkomponenten k&ouml;nnte man jetzt schon
+aufh&ouml;ren, aber es gibt noch ein paar nette Zusatzmodule, die man
+unbedingt mitinstallieren sollte. </P>
+</DD>
+
+<DT><B>SSL-Zubeh&ouml;r</B></DT>
+
+<DD>
+<P>Damit der Webserver auch abh&ouml;rsichere Kommunikation mit den Clients
+betreiben kann, sollte er SSL sprechen k&ouml;nnen. Dies bringt man ihm am
+besten mit dem mod_ssl bei. Das mod_ssl setzt wiederum openssl voraus.
+Openssl liefert, soweit ich das verstehe, die
+Verschl&uuml;sselungsfunktionalit&auml;t, mod_ssl integriert die
+Funktionalit&auml;t in den Webserver. </P>
+
+<P>OpenSSL - in der aktuellen Version 0.9.6g</P>
+
+<P>Homepage: <A href="http://www.openssl.org" target="source">http://www.openssl.org</A><BR>
+Datei: <A href="http://www.openssl.org/source/openssl-0.9.6g.tar.gz">
+http://www.openssl.org/source/openssl-0.9.6g.tar.gz</A></P>
+
+<P>mod_ssl - man mu&szlig; darauf achten, da&szlig;
+die Datei zum jeweiligen Apache passt.</P>
+
+<P>Homepage: <A href="http://www.modssl.org" target="source">
+http://www.modssl.org</A><BR>
+Datei: <A href="http://www.modssl.org/source/mod_ssl-2.8.10-1.3.26.tar.gz">
+http://www.modssl.org/source/mod_ssl-2.8.10-1.3.26.tar.gz</A></P>
+</DD>
+
+<DT><B>GD-Library</B></DT>
+
+<DD>
+<P>M&ouml;glicherweise m&ouml;chtest Du mit PHP Buttons, Statistiken oder
+andere bunte Bildchen dynamisch erzeugen. Hierzu brauchst Du die
+GD-Library, damit Du die "Image functions" auch benutzen kannst. Hierbei
+gibt es allerdings einen echten Sprung zwischen den Versionen: w&auml;hrend
+Versionen bis einschlie&szlig;lich 1.5 noch GIFS erzeugen, k&ouml;nnen
+Versionen danach "nur" PNG und ab 1.8 auch JPEG. Also mu&szlig; man
+w&auml;hlen. Ich w&auml;hle 1.8.4, weil ich mit JPEG alles machen kann, was
+mich mit GIF auch machen wollte, nur da&szlig; ich damit endlich auch
+gro&szlig;e und bunte Bilder bearbeiten / erzeugen kann.<BR>
+F&uuml;r die GD-Library wird als "integraler Bestandteil" die zlib
+gebraucht. Dar&uuml;ber hinaus braucht man auch noch die IJG JPEG software
+(libjpeg), damit GD auch was von JPEG wei&szlig;. Au&szlig;erdem ist es
+gerade f&uuml;r die Buttons noch sehr sinnvoll, und f&uuml;r die GD Library
+notwendig, sich die freetype Library zu installieren. Damit kann man
+Textelemente mit TTF-Fonts in die Bilder einbauen - damit Dein Designer
+nicht immer so laut schreit. ;-) </P>
+
+<P>GD-Library</P>
+
+<P>Homepage: <A href="http://www.boutell.com/gd/" target="source">
+http://www.boutell.com/gd/</A><BR>
+Datei - Version 1.8.4:<A href="http://www.boutell.com/gd/http/gd-1.8.4.tar.gz">
+http://www.boutell.com/gd/http/gd-1.8.4.tar.gz</A></P>
+
+<P>Zlib - Version 1.1.4</P>
+
+<P>Homepage (eher Heimverzeichnis): <A href="http://www.gzip.org/zlib/" target="source">
+http://www.gzip.org/zlib/</A><BR>
+Datei: <A href="ftp://ftp.uu.net/graphics/png/src/zlib-1.1.4.tar.gz">
+ftp://ftp.uu.net/graphics/png/src/zlib-1.1.4.tar.gz</A></P>
+
+<P>IJG JPEG software - Version 6b</P>
+
+<P>Homepage: <A href="http://www.ijg.org" target="source">www.ijg.org</A><BR>
+Datei: <A href="ftp://ftp.uu.net/graphics/jpeg/jpegsrc.v6b.tar.gz">
+ftp://ftp.uu.net/graphics/jpeg/jpegsrc.v6b.tar.gz</A></P>
+
+<P>Freetype - in der Version 1.3.1</P>
+
+<P>Homepage: <A href="http://www.freetype.org" target="source">
+http://www.freetype.org</A><BR>
+Datei: <A href="ftp://freetype.sourceforge.net/pub/freetype/freetype1/freetype-1.3.1.tar.gz">
+ftp://freetype.sourceforge.net/pub/freetype/freetype1/freetype-1.3.1.tar.gz</A></P>
+</DD>
+</DL>
+
+Jetzt sind wir mit dem Herunterladen fertig, und k&ouml;nnen &uuml;bergehen
+zum n&auml;chsten Schritt, der
+          
+
+<H2>Installation</H2>
+<P>Wir werden jetzt nach und nach die einzelnen Elemente installieren. Die
+Reihenfolge ergibt sich daraus, welche Software welche Libraries
+voraussetzt. Bei den Installationspfaden verfahre ich (bis auf einige
+Ausnahmen), nach dem Schema "/usr/local/'paketname'/'versionsnummer'. Dann
+wird von "/usr/local/'paketname'/current" ein Link auf
+"/usr/local/'paketname'/'versionsnummer' gesetzt, und im weiteren
+verwendet. Schreibe ich aber jedesmal auch noch extra dabei.<BR> Ein
+Hinweis noch: die ganzen Schritte hier habe ich als 'root'
+ausgef&uuml;hrt.</P>
+<OL>
+<LI> <B>Zun&auml;chst mal die gesamte Software auspacken:</B>
+<PRE>
+    cd /usr/local/src/lamp
+    tar -xzf tarballs/apache_1.3.26.tar.gz
+    tar -xzf tarballs/freetype-1.3.1.tar.gz
+    tar -xzf tarballs/gd-1.8.4.tar.gz
+    tar -xzf tarballs/mod_ssl-2.8.10-1.3.26.tar.gz
+    tar -xzf tarballs/mysql-3.23.52.tar.gz
+    tar -xzf tarballs/openssl-0.9.6g.tar.gz
+    tar -xzf tarballs/php-4.2.3.tar.gz
+    tar -xzf tarballs/zlib-1.1.4.tar.gz
+    tar -xzf tarballs/jpegsrc.v6b.tar.gz
+</PRE>
+</LI>
+
+<LI> <B>MySQL</B> <BR><BR>
+
+Hierbei wird Mysql unter dem entsprechenden Pfad installiert, allerdings
+als Datenverzeichnis "/var/mysql/data" verwendet. Dieses Datenverzeichnis
+bleibt auch bei sp&auml;teren Upgrades innerhalb der Versionsnummer
+gleich.<BR>
+Am Ende starten wir den Server und vergeben f&uuml;r Root ein Passwort,
+damit nicht jeder in die Datenbank gelangt.
+<PRE>
+    cd /usr/local/src/lamp/mysql-3.23.52/
+    ./configure --prefix=/usr/local/mysql/3.23.52 --localstatedir=/var/mysql/data
+    make
+    make install
+    ln -s /usr/local/mysql/3.23.52 /usr/local/mysql/current
+    mkdir /var/mysql
+    mkdir /var/mysql/data
+    scripts/mysql_install_db
+    /usr/local/mysql/current/bin/safe_mysqld &amp;
+    /usr/local/mysql/current/bin/mysqladmin -u root password 'geheim'
+
+</PRE>
+
+Wer will, kann noch den Startup-File an die entsprechende Stelle
+kopieren, damit beim n&auml;chsten mal auch der Serverstart klappt. Bei
+SUSE wie folgt: 
+<PRE>
+    cp support-files/mysql.server /etc/rc.d/init.d
+    chmod 744 /etc/rc.d/mysql.server
+    cd /etc/rc.d/rc2.d
+    ln -s ../init.d/mysql.server S20mysql.server
+    ln -s ../init.d/mysql.server K20mysql.server
+</PRE>
+</LI>
+
+<LI> <B>OpenSSL</B> <BR><BR>
+
+OpenSSL wird hier unterhalb von /usr/local/openssl/0.9.6g installiert.
+OpenSSL wird ja, wie oben schon gesagt, von mod_ssl gebraucht, daher zuerst
+OpenSSL.
+<PRE>
+    cd /usr/local/src/lamp/openssl-0.9.6g
+    ./config --prefix=/usr/local/openssl/0.9.6g
+    make
+    make test
+    make install
+    ln -s /usr/local/openssl/0.9.6g /usr/local/openssl/current
+</PRE>
+</LI>
+
+<LI> <B>Apache und SSL</B><BR><BR>
+
+Zun&auml;chst wird der Apache zusammen mit mod_ssl gebaut. Wir erstellen
+eine DSO-Version des Apache, was im wesentlichen heist, dass Zusatzmodule
+wie z.B. PHP nicht fest in den Server eingebacken werden, sondern vom
+Server dynamisch zugeladen werden. Das hat in der Anwendung den Effekt,
+da&szlig; man beim Update von PHP nur noch PHP neu bauen mu&szlig;, und
+nicht mehr den ganzen Apache. Ich finds praktisch. </LI>
+<UL>
+<LI> <B>mod_ssl und Apache vorbereiten</B> <BR><BR>
+
+Hier werden zun&auml;chst die Quellen des Apache gepatcht.
+Praktischerweise werden gleichzeitig schon alle f&uuml;r den
+Apache-Configure-Aufruf notwendigen Parameter mitgegeben, d.h. es werden in
+einem Schritt die Apache-Quellen gepatcht und konfiguriert. (Alle
+Anweisungen ab dem prefix sind f&uuml;r den Indianer). <BR><BR>
+
+Besonderheiten: Es wird mit datadir als Pfad f&uuml;r die Webdokumente
+/var/www angegeben, d.h die Dokumente, die &uuml;ber den Webserver
+erreichbar sein werden, m&uuml;ssen in diesem Verzeichnis liegen. Dies
+entspricht nicht der Vezeichnisstruktur, wie sie der von SuSE gelieferte
+Apache verwendet!
+<PRE>
+        cd /usr/local/src/lamp/mod_ssl-2.8.10-1.3.26
+        ./configure --with-apache=../apache_1.3.26 \
+        --with-ssl=../openssl-0.9.6g \
+        --prefix=/usr/local/apache/1.3.26 \
+        --datadir=/var/www \
+        --enable-module=most \
+        --enable-shared=max \
+        --enable-module=ssl
+
+</PRE>
+<LI> <B>Apache bauen</B> <BR><BR>
+
+Nun braucht nur noch der Apache gebaut werden. Ein Befehl, gut zu
+schaffen :-).
+
+<PRE>
+        cd /usr/local/src/lamp/apache_1.3.26
+
+        make         
+
+</PRE>
+</LI>
+<LI> <B>Zertifikat erzeugen</B> <BR><BR>
+
+Es wird ein Zertifikat zur sp&auml;teren Verwendung f&uuml;r
+SSL-Sitzungen erzeugt. Dieses wird von der eigenen CA unterschrieben, die
+in diesem Schritt gleich mit angelegt wird.
+<PRE>
+        make certificate TYPE=custom        
+
+</PRE>  
+Dabei wie folgt auf die Fragen antworten (Anf&uuml;hrungszeichen
+weglassen), und nat&uuml;rlich was sinnvolles einsetzen. <BR><BR>
+
+Zuerst wird nach Angaben zu der CA gefragt (Schritte 1 - 4).
+<PRE>
+        Signature Algorithm: R
+        Country Name: "DE"
+        State or Province: "NRW"
+        Localty Name: "Rheda-Wiedenbrueck"
+        Organization Name: "Mediathek"
+        Organizational Unit Name: "CA"
+        Common Name: "Mediathek CA"
+        Email Address: "ca@mediathek.de"
+        Certificate Validity: "365"
+
+        Certificate Version: 3        
+
+</PRE>
+Dann wird Schl&uuml;ssel und selbssigniertes Zertifikat der CA erzeugt.
+Hiernach wird dann nach Angaben zum Serverzertifikat gefragt.
+<PRE>
+        Country Name: "DE"
+        State or Province: "NRW"
+        Localty Name: "Rheda-Wiedenbrueck"
+        Organization Name: "Mediathek"
+        Organizational Unit Name: "Webmaster"
+
+</PRE>
+Und jetzt ganz wichtig: den Namen angeben, unter dem sp&auml;ter Dein
+Rechner per SSL erreichbar sein wird (bei mir:
+https://intern.mediathek.de).
+                  
+<PRE>
+        Common Name: "intern.mediathek.de"
+        Email Address: "www@intern.mediathek.de"
+        Certificate Validity: "365"
+
+        Certificate Version: 3
+
+</PRE>
+Zuletzt wird gefragt, ob die Schl&uuml;ssel verschl&uuml;sselt werden
+sollen. Zun&auml;chst wird nach der CA gefragt, dann nach dem
+Serverschl&uuml;ssel. Da es sich bei mir um ein Testsystem handelt,
+w&auml;hle ich keine Verchl&uuml;sselung. Bei einem Produktionssystem
+sollte nat&uuml;rlich die Verschl&uuml;sselung eingeschaltet werden,
+wenngleich dann auch bei jedem Neustart des Apache das Passwort f&uuml;r
+den Server-Key eingeben werden muss.
+<PRE>
+        Encrypt the private key now: n
+
+        Encrypt the private key now: n        
+
+</PRE>
+</LI>
+<LI> <B>Apache installieren</B> <BR><BR>
+
+Nun noch schnell den Apache installiert.
+<PRE>
+        make install
+        ln -s /usr/local/apache/1.3.26 /usr/local/apache/current
+
+</PRE>
+</LI>
+<BR></UL>
+
+<LI> <B>Libraries f&uuml;r Zusatzfunktionen in PHP bauen</B><BR><BR>
+
+Zun&auml;chst erstellen wir einmal von PHP ben&ouml;tigte Programme und
+Libraries. Meiner Erfahrung nach kommt es hier eher zu Stress als nachher
+bei PHP. Was bedeutet, dass man kann hier auch gut einen Teil
+&uuml;berspringen kann, wenn man ihn nicht braucht. Im Augenblick ist die
+Entscheidung eher &uuml;bersichtlich - wir bauen nur die GD-Library. Es
+kann auch gut sein, dass Die schon bei Deiner Distro dabei ist, und Du die
+vorhandene verwenden m&ouml;chtest. Dann ueberspringe einfach diesen ganzen
+Schritt.
+</LI>
+<UL>
+<LI> <B>Freetype</B> <BR><BR>
+
+Installation unter /usr/local. Freetype wird bei der Installation von
+GD gebraucht. Ja, ich finde auch, da&szlig; der make-Aufruf krank
+aussieht.
+<PRE>
+    cd /usr/local/src/lamp/freetype-1.3.1
+    ./configure --prefix=/usr/local
+    make
+    make install       
+
+</PRE>          
+Kommt es an dieser Stelle einem Abbruch bei dem Meldungen in der Form
+"X11/cursorfont.h: No such file or directory" auftauchen, so liegt es
+daran, dass die notwendigen X-Pakete nicht installiert sind. Ein guter
+Kandidat ist das 'xdevel'-rpm. Solltest Du dieses nachinstallieren,
+solltest Du im .../lamp/freetype... Verzeichnis die Dateien config.status
+und config.cache l&ouml;schen, bevor Du mit 'make clean' und './configure'
+von vorne beginnst.
+</LI>
+
+<LI> <B>Zlib</B> <BR><BR>
+
+Hier wird die zlib unter /usr/local installiert.
+<PRE>
+    cd /usr/local/src/lamp/zlib-1.1.4
+    ./configure
+
+    make
+    make install   
+
+</PRE>
+</LI>
+
+<LI> <B>IJG JPEG software</B> <BR><BR>
+
+Die libjpeg wird unter /usr/local installiert. St&ouml;rt sich
+eigentlich auch nicht mit der von SUSE installierten libjpeg.
+<PRE>
+    cd /usr/local/src/lamp/jpeg-6b
+    ./configure \
+    --enable-shared \
+    --enable-static \
+    --prefix=/usr/local
+
+    make
+    make test
+    make install    
+
+</PRE>
+</LI>
+<LI> <B>GD</B> <BR><BR>
+
+Hier muss das Makefile angepasst werden. Wichtig sind die Zeilen mit
+CFLAGS und LIBS. Die Defaulteinstellung benutzt nicht libjpg, libpng,
+freetype - was wir aber genau benutzen wollen. Daher die vorgegebenen
+Zeilen kommentieren, und die Alternativen auskommentieren.<BR>
+Bei den INCLUDEIDRS und den LIBDIRS habe ich jeweils einen Zusatz in der
+Form '-I/usr/local/include/freetype2' bzw. '-L/usr/local/lib' gemacht. Hat
+geholfen :-). Zuletzt bitte auch nochmal nachschauen, ob
+INSTALL_LIB=/usr/local/lib, INSTALL_INCLUDE=/usr/local/include und
+INSTALL_BIN=/usr/local/bin gesetzt ist.
+<PRE>
+    cd /usr/local/src/lamp/gd-1.8.4
+
+    make
+    make install   
+
+</PRE>
+</LI>
+<BR></UL>
+
+<LI> <B>PHP vorbereiten und kompilieren</B> <BR><BR>
+
+Hier ist wichtig, da&szlig; der config-file-path auf /etc gesetzt ist.
+Man sollte sich diesen Ort unbedingt merken, sonst wird man sp&auml;ter
+verweifeln.
+<PRE>
+        cd /usr/local/src/lamp/php-4.2.3
+        ./configure \
+        --with-apxs=/usr/local/apache/current/bin/apxs  \
+        --with-mysql=/usr/local/mysql/current  \
+        --with-zlib \
+        --with-ftp \
+        --with-gd \
+        --with-jpeg-dir=/usr/local/lib \
+        --enable-versioning \
+        --enable-track-vars=yes \
+        --enable-url-includes \
+        --enable-sysvshm=yes \
+        --enable-sysvsem=yes \
+        --with-config-file-path=/etc
+        make        
+
+</PRE>
+</LI>
+<LI> <B>PHP installieren, Restarbeiten und Apache starten</B> <BR><BR>
+
+Es wird das PHP-Modul installiert, und das wichtige PHP-Handbuch noch in
+den Pfad f&uuml;r die Webdokumente kopiert.<BR>
+Au&szlig;erdem wird eine php.ini nach /etc kopiert.<BR>
+Wichtig vielleicht auch noch die "chown" Anweisung. Die Dokumente brauchen
+wirklich nicht root geh&ouml;ren. Statt dessen w&auml;hle ich hier als
+Gruppe wwwadmin - bei mir ist das Verzeichnis /var/www via Samba
+freigegeben, und alle Nutzer der Gruppe wwwadmin haben Zugriffsrechte auf
+dieses Verzeichnis.
+<PRE>
+        make install
+        cp /usr/local/src/lamp/php-4.2.3/php.ini-dist /etc/php.ini
+        mkdir /var/www/htdocs/phpmanual
+        cd /var/www/htdocs/phpmanual
+        tar -xzf /usr/local/src/lamp/tarballs/manual.tar.gz
+        ln -s manual.html index.html
+        chown -R nobody.wwwadmin /var/www
+        chmod 700 /usr/local/apache/current/bin/apachectl
+
+</PRE>
+
+Die n&auml;chsten Schritte braucht man nur machen, wenn dies die erste
+LAMP installation ist.
+<PRE>
+        ln -s /usr/local/apache/current/bin/apachectl /etc/rc.d/init.d/apachectl
+        cd /etc/rc.d/rc2.d
+        ln -s ../init.d/apachectl S20apachectl
+        ln -s ../init.d/apachectl K20apachectl
+
+</PRE>
+
+Eventuell wird noch ein alter Apache beim Start automatisch aufgerufen -
+daher bei Bedarf die entsprechenden alten Eintr&auml;ge l&ouml;schen:
+<PRE>
+        rm S20apache
+        rm K20apache
+
+</PRE>
+
+Arbeitet man auf der Maschine lokal, und loggt sich grafisch ein, kann
+man die links entsprechend auch noch f&uuml;r den Runlevel 3 setzen, also
+den Runlevel mit graphischem Login.
+<PRE>
+        cd /etc/rc.d/rc3.d
+        ln -s ../init.d/apachectl S20apachectl
+        ln -s ../init.d/apachectl K20apachectl
+        rm S20apache
+        rm K20apache
+
+</PRE>
+Zuletzt sollte man in der /usr/local/apache/current/bin/apachctl noch
+einen Parameter "-DSSL" in den httpd-Aufruf unterhalb der Abteilung start
+einbauen. Dies ist notwendig, damit der Apache auch mit
+SSL-Unterst&uuml;tzung angestartet wird.
+<PRE>
+        start)
+        if [ $RUNNING -eq 1 ]; then
+            echo "$0 $ARG: httpd (pid $PID) already running"
+            continue
+        fi
+        #Original:
+        #if $HTTPD ; then
+        #gaendert, -DSSL eingefuegt:
+        if $HTTPD -DSSL; then
+            echo "$0 $ARG: httpd started"
+        else
+            echo "$0 $ARG: httpd could not be started"
+            ERROR=3
+        fi
+        ;;        
+
+</PRE>
+</LI>
+</OL>
+
+<H2>Konfiguration</H2>
+Nun m&uuml;ssen eigentlich nur noch zwei Schritte unternommen werden:
+Konfiguration der httpd.conf f&uuml;r den Apache und Konfiguration der
+php3.ini.
+
+<OL>
+<LI> <B>httpd.conf</B><BR><BR>
+
+Editiere die /usr/local/apache/current/conf/httpd.conf, die zentrale
+Konfigurationsdatei f&uuml;r Deinen Apache. Ersetze zun&auml;chst alle
+Vorkommnisse von "1.3.26" durch "current", damit Du in Zukunft bei neueren
+Versionen die httpd.conf nur umkopieren brauchst.<BR>
+Nun in der httpd.conf die Zeile mit
+<PRE>
+    AddType application/x-httpd-php .php    
+
+</PRE>
+
+finden, und das Kommentarzeichen entfernen. Ich selbst f&uuml;ge gerne
+noch ein paar weitere Endungen ein, damit alle m&ouml;glichen Seiten
+geparst werden:
+
+<PRE>
+    AddType application/x-httpd-php .php .phtml .php3 .html .htm
+   
+</PRE>
+
+Nicht schlecht ist es auch noch, wenn man neben einer index.html auch
+eine index.php3 als Default-Index-Seite konfiguriert. Husch husch zur Zeile
+mit DirectoryIndex, und wie folgt erg&auml;nzt:
+<PRE>
+    DirectoryIndex index.html index.php index.htm
+
+</PRE>
+</LI>
+
+<LI> <B>php.ini</B><BR><BR>
+
+Die /etc/php.ini sollte soweit eigentlich ganz in Ordnung sein. Trotzdem
+mal reinschauen. Erl&auml;uterungen findest Du im PHP3-Manual (Du weist
+doch noch, wo Du es hinkopiert hast, oder?).
+</LI>
+</OL>
+
+<H2>Starten</H2>
+Und nun das hoffentlich finale Ereignis. Den Server anstarten.
+          
+<PRE>
+    /etc/rc.d/init.d/apachectl start
+
+</PRE>
+Dann mal mit 
+<PRE>
+    lynx localhost
+
+</PRE>
+probieren, ob's funktioniert. Wenn nicht, ist
+/usr/local/apache/current/logs/error_log Deine erste Anlaufstelle. <BR><BR>
+
+Bei wem beim Start vom Apache eine Fehlermeldung der Form
+<PRE>
+    Cannot load /usr/local/apache/current/libexec/libphp4.so into server:
+    libmysqlclient.so.10: cannot open shared object file: No such file or directory
+    /etc/init.d/apachectl start: httpd could not be started
+   
+</PRE>
+erscheint, der sollte in der Datei /etc/ld.so.conf noch den Pfad
+<PRE>
+    /usr/local/mysql/current/lib/mysql
+   
+</PRE>
+hinzuf&uuml;gen, und mit dem Aufruf von 
+<PRE>
+    ldconfig
+   
+</PRE>
+die Bibliotheken verf&uuml;gbar machen.
+
+          
+<H2>Links</H2>
+Hier noch ein paar Links auf weiterf&uuml;hrende Seiten zu diesem Thema.
+
+<DL>
+<DT><B>phpMyAdmin</B></DT>
+
+<DD>
+Wer l&auml;nger als auch nur 5 Minuten Spa&szlig; an seinem LAMP System
+haben will, wird um dieses Tool nicht herumkommen wollen. Grafisches Mysql
+Frontend f&uuml;rs Web. Nat&uuml;rlich in PHP. Wirklich gut. <BR><BR>
+
+Homepage:
+<A href="http://www.phpwizard.net/phpMyAdmin/">http://www.phpwizard.net/phpMyAdmin/
+</A>
+</DD>
+
+<DT><B>Thawte</B></DT>
+
+<DD>
+Steht der LAMP Server im Internet, und man will den Lesern das
+Akzeptieren der CA-Zertifikate irgendwelcher Pseudo-CAs ersparen (mit so
+einer Pseudo-CA haben wir ja oben das Server-Zeritifikat unterschrieben),
+sollte man sich ein Zertifikat von einer CA holen, deren Zertifikate mit
+Netscape oder IE ausgeliefert werden.<BR> Thawte sitzt in S&uuml;dafrika,
+macht gute Checks, ist relativ billig, au&szlig;erdem gibts da kostenlose
+Client-Zertifikate. <BR><BR>
+
+Homepage: <A href= "http://www.thawte.com">http://www.thawte.com</A>
+</DD>
+
+<DT><B>mod_dav</B></DT>
+
+<DD>
+Und wie bekommt man die Seiten auf den Server? Normalerweise per ftp.
+Fortgeschritten per webdav. Ist eine interessante Erweiterung des
+HTTP-Protokolls, die es einem erlaubt, vern&uuml;nftig Datein via Apache
+auf den Server aufzuspielen und gemeinsam an Dateien zu arbeiten. <BR><BR>
+
+Homepage: <A href="http://www.webdav.org/mod_dav/">http://www.webdav.org/mod_dav/</A>
+</DD>
+</DL>
+<BR>
+<HR>
+
+<DIV align="center">
+<FONT size="-1">&copy; J&ouml;rg Baach,
+<A href="http://www.baach.de">www.baach.de</A>. Fundort der Seite:
+<A href="http://www.baach.de/index.html">http://www.baach.de/index.html</A></FONT>
+</DIV>
+</TD>
+</TR>
+</TABLE>
+
+<CENTER>
+<TABLE border="8" width="95%" cellspacing="0" cellpadding="8" summary="">
+<TR bgcolor="#88ccff">
+<TD>Autor: &nbsp; <FONT color="#0000ff"><B>Wolf Zimmer</B></FONT> </TD>
+<TD>E-Mail: <FONT color="#0000ff"><B>wolf@wozim.de</B></FONT> </TD>
+
+<TD>Homepage: <FONT color="#0000ff"><B>http://www.wozim.de</B></FONT>
+</TD>
+</TR>
+</TABLE>
+</CENTER>
+<BR>
+</BODY>
+</HTML>
+

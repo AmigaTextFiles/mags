@@ -1,0 +1,32 @@
+.key dir/a
+.bra {
+.ket }
+
+; $VER: lha2lzx 1.0
+; Wildcard repacking
+; by Rachy of BiøHazard
+; dir - path of directory for looking LhA files
+
+FailAt 21
+
+Assign basedir{$$}: ""
+
+copy >NIL: lzxbatch t:
+copy >NIL: cutstring t:
+
+List {dir} p=#?.lha LFORMAT "t:lzxbatch *`t:cutstring *"%s%s*"* right 4` " TO T:q{$$} ALL
+
+IF NOT FAIL
+  Execute T:q{$$}
+  Delete >NIL: T:q{$$}
+Else
+  Echo "{dir} not found"
+EndIF
+
+Delete >NIL: t:lzxbatch
+Delete >NIL: t:cutstring
+
+CD basedir{$$}:
+Assign basedir{$$}:
+
+FailAt 10

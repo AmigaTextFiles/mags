@@ -1,0 +1,282 @@
+<HTML>
+<HEAD><TITLE></TITLE></HEAD>
+<BODY BACKGROUND="../../pics/bg.gif" BGCOLOR="#FFFFFF" LINK="#FF0000" VLINK="#0000FF">
+<HR>
+<P>
+<A HREF="../index.html"><IMG SRC="../../pics/deco/tuto.gif" BORDER=0 ALT="Tutorials"></A>
+<P>
+<P>
+<CENTER><IMG SRC="../../pics/lines/lrain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<CENTER>
+<H1>Lights &amp; Shadows</H1><BR>
+<I>Mauro 'M&amp;F' Fontana(mfontana@ing.unico.it)</I>
+</CENTER>
+<P>
+<CENTER><IMG SRC="../../pics/lines/srain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<P> You all know that raytracing is an algorythm that uses beams of light to
+decide the appearence of objects surfaces in a scene. Thus, light and its
+physical behaviour are the things that let us see what there's in the scene
+and how it look is.
+<BR> So, the most important thing when doing 3D graphics is to undestand how
+light works both in reality and in the simulaiton of the software we are
+using for rendering our scene. Many hobbist often thinks that the modeling
+part of their work is the most important, and spent lots of hours tring to
+add lots of details and precision to their objects.
+<BR> But the objects in the scene are going to be seen only when light beams
+hit them, and the look of the objects depends by the characteristics of that
+light. For instance the type, the colour, the displacements of the lights in
+the scene will influence deeply the object look, but also the attributes of
+the surface of the objects that affect the way the light behaves on them.
+<P> The modeling of perfect objects is not so fundamental. If the lights in
+the scene will not be placed the right way to show the perfection of the
+objects, it all wasted time.
+<P> I'm not trying to teach someone how to do raytracing, nor how to
+assemble scenes. But I'm tring to make people understand the behaviuor of
+the real light and how it's simulated in raytracing algorythms. This may be
+interesting (and useful) for someone who has always wondered why some
+effects exists in real life, or why some cannot be represented in syntetic
+images.
+<P> The first thing to define is the type of the light we want to consider.
+There are, in fact, quite different kinds of lights, both in reality and in
+raytracing programs. Lights always comes from a source, be it a lamp a
+candle or the Sun. Every light source has different characteristics which is
+then simulated with the software. So we can distinguish between point light,
+spotlight, extended lights and parallel light sources (TAV 1).
+<P><HR>
+<IMG SRC="../../pics/data/tav1.gif">
+<HR>
+<P> <B>Point light sources</B> do not exists in reality, but are the
+simplest form of light sources which are heavily used in raytracing both for
+their semplicity and relative low needs of rendering time. The light sprins
+from a single point and it's radiated uniformly in a spherical form.
+<P> <B>Spotlights</B> are light sources with interesting
+characteristics as they can be used to represent particular real light
+sources. The light is contained in a infinite cone, whose vertex is the
+source. Light then influences only what is "contained" into this cone, while
+all it's outside is not affected at all. The projected light on a plane is
+represented by a circle. The intensity of the light into this circle changes
+uniformly. At the center of the circle the light has its maximum intensity,
+while going outside toward the edge of the circle it falls off (often
+following a user specified parameter) till the edge, beyond which the light
+coming from this source does not exist.
+<P> <B>Parallel light beams</B> have not a defined source as they are
+considerend light beams coming from an infinite distant light source. This
+kind of light "fills" the space uniformly, and there's often a way to limit
+the space that contains it in a cylinder (and so it is called cylindrical
+light source).
+<P> It may appear stupid but limiting the influence of the light in a
+determined region may be useful to speed up rendering time a lot as the
+number of light beams to be calculated diminishes a lot in the scene.
+<P> <B>Extended or area light sources</B> need a separate, deeper
+analysis as they are the only simulated light source that can describe a
+real light source. In fact in real nature there are no infinitely small
+light sources (like point light) but the light comes aways from a surface.
+This characteristic of real light is very important because it affects the
+kind of shadows that are cast by the objects in the scene.
+<P> Shadows are the socond most important things that affect the final
+quality of an image. One can often understand that a beautiful image is not
+real looking at the shadows in the picture. This is a thing that many
+"artists" are keen to forget.
+<BR> If you look at the shadows in the real world you can see that there are
+no shadows with sharp edges. Even shadows cast by the sun are not sharp.
+Sharp shadows can be obtained in special cases (with special lights), but
+they are not so common and so they cannot be representative of the real
+world.
+<BR> The soft edges of the shadows is due the fact that in the real world
+the lights sources have always a surface which extends in at least two
+dimensions (with respect to the observer). So the edge of an object that
+casts shadow blocks only part of the light beams coming from the light
+source, while another part of the light beams (always coming for the same
+light source) are not blocked. This produces the penumbra effect (TAV 2), a
+thing well diffused in real world that, if not simulated, make the picture
+looks artificially made (or synthetic).
+<P><HR>
+<IMG SRC="../../pics/data/tav2.gif">
+<BR>
+<TABLE WIDTH="!00%">
+<TR>
+<TD><IMG SRC="../../pics/data/tav2a.gif">
+<TD><IMG SRC="../../pics/data/tav2b.gif"></TR>
+<TR>
+<TD><IMG SRC="../../pics/data/tav2c.gif">
+</TR>
+</TABLE>
+<P> <B>As the number of light sources increase the passage from dark shadow to
+penumbra is smoother giving a more realistic effect.</B>
+<HR>
+<P> So to have realistic shadows in our scene we need to place area lights
+instead of simpler (and faster) dimensionless light sources. However, the
+use of this light may have some problems. The first is surely the fact that
+not all programs support extended area light sources. This limitation is
+easily avoided by placing lots of dimensionless light sources one near the
+other distributing them on a small area. The other problem is surely the
+raise of the rendering time as more light beams have to be traced, even
+though the final quality is much greater (and realistic).
+<P> The use of the lights in the scene is quite complex, and it would be
+very difficult to find an equlibrium between regions which are exposed to
+direct light and regions which are shadowed (that's they do not receive any
+light), if diffused light were not considered.
+<BR> As we'll see later, every object reflects in all directions parts of
+the light it receives. This diffused light then is received by all the other
+objects around the first one, and in its turn the object receive also the
+diffused light of all the other objects in the scene other than direct light
+coming from light sources. The final effect is the lighting of shadowed
+regions that are now no more so dark. In real life this is what let us look
+under a table and see the floor even though the light source is above the
+table itself.
+<BR> But this infinitely long process, which really happens in real life,
+cannot be simulated with a computer in a finite amount of time. So all
+rendering programs have a parameter, called ambient light, which is used to
+simulate this kind of effect. The ambient light is used to light the dark
+part of the scene making them not look completely black and hiding all the
+objects they may contain. This is a quite realistic and expecially fast way
+to simulate the complex process of diffusing light beams all around, even
+though it has some limitations we'll se later.
+<P> Till now I've described in a easy way how real light is simulated
+in a rendering program. However we have also to know how light work in real
+life to understand some of the effects we see everyday and which we are not
+able to make our program reproduce in a syntetic image.
+<P> First of all, what is exactly a light beam? Without going into too
+complex description, a normal natural light beam (like those coming from the
+sun) is a "group" of different simple sinusoidal waves with different
+frequencies (or wavelenghts) and phases. This "group" defined as wave packet
+is a mix of all the colours (a colour is described by a simple sinusoidal
+wave of a determined wavelength), and sun light beams contain all the
+wavelenght of the optical spectrum (see later) so it is able to give colour
+to all the visible objects we can see. Beside the natural sun light, there
+are other kinds of light very rare in nature, most of which are produced
+artificially, like light of a determined single colour, polarized light,
+and LASERS. However these will not be considered here, expecially because
+raytracing engines are not able to simulate their behaviour (but in few
+interesting cases).
+<P> Now a brief description of the physical characteristics of light.
+<P> You may wonder why going near a light source the intensity of the light
+raises.
+<BR> These behaviour is the effect of a physics law that wants the light to
+dimish its intensity as it travels away from the source. In real life the
+intensity of the light is inversely proportional to the square of the
+distance traveled by the light from a considered point. This simply means
+that an object which is 2 meters from a light source receives a fourth of
+the light with repect to an object wich is 1 meters away from the light
+source. This is due the fact that the light beams distribute themselves on a
+larger (spherical) area as they go away from the source. Thus, the light
+coming form a light source or diffused by a surface in all directions
+diminishes its intensity in a rapid way.
+<P> This effect of light intensity decreasing with the distance traveled is
+not always taken into account by the rendering engine, and so the
+dispacement of the lights in the scene must be studied a lot to try to give
+the final picture as much realism as possible.
+<P> Other characteristics of the light have greater importance over the
+appearence of surfaces. These include how light is reflected, refracted,
+diffused and absorbed, which depend on the type of the light and the type of
+surface.
+<P> Optical light, that is the light the human eyes can see, is an
+electomagnetic radiation whose wavelenght is in a range extending from
+4*10^-7 meter to about 7*10^-7 meter (where ^ means power function) of a
+very big electomagnetic spectrum. Just below this interval there are the so
+called infrared waves, while just above this interval there are the
+ultraviolet waves. The colours we can see are due to the fact that light
+beams may have different wave lenght. I'm not going deeper into this, but
+you may be interested that the white light is just the sum of all the
+wavelenghts in the optical interval. When the light hits a coloured opaque
+(that's not transparent) surface part of the light, well defined in its
+wavelength, is absorbed by the surface and the other part is reflected. The
+light absorbed is subtracted by the total hitting light and the resulting
+reflected light defines the color of the object. For instance a red surface
+absorb all the wavelengths but the red one, a black surface assorbs all
+wavelength, while a white surface does not assorb any wavelength but reflect
+all ones. This also explains why black objects are always warmer than white
+ones when exposed to the sunlight, as they assorbs all the rays energy
+directly, while white objects reflect all rays.
+<P><HR>
+<IMG SRC="../../pics/data/tav3.gif">
+<HR>
+<P> The reflection process is quite important as it's what describes the
+surface of the objects. It's fundamental to know that the light reflects at
+the same angle it hits the surface (TAV 3). Together with direct reflection
+(easily visible with very shining surface like mirrors or metals), there is
+the diffusion. This is a process, visible mainly on rough surface, that
+scatter part of the incoming light into all directions with different
+intensity along the mainly reflection angle. As the diffusion is larger and
+is relevant also at relative big angle with respect to the main reflection
+angle, the resulting effect is the distribution of uniform light intensity
+on the area around the ray beam. If, on the other hand, diffusion is
+contained in small angles along the main reflection beam, the max light
+intensity is concentrated in a small area producing the so called specular
+reflection, cause of sharp white (or saturated) reflections on smooth
+surface called highlights. Diffusion is what make a shining smooth surface a
+mirror, while a sheet of paper unable to behave like a mirror. More
+precisely the mirror has a very small diffusion capacity, while the paper
+has a quite high diffusion capacity, making it unable to reflect directly
+light beams without scattering it all around.
+<P> But as said before, no computer is able to simulate with a physical
+model based on optical laws the diffused light. Thus the programs simulate
+the diffuse effect in other much simple ways. As seen before the ambient
+light is used to distribute light intensity more uniformly in the scene; but
+there are also the other effects, such as specular light relection, that can
+be more or less concentered along the main relfection beam direction.
+<BR> The influence of such behaviour is quite important: as we have seen
+before it defines what kind of surface we have (rough or smooth), and so if
+there's the reflection of other object on the surface (mirror) or not (rough
+surface).
+<BR> This effect has been divided into two different effects in most
+rendering programs using two or more parameters. The first effect defines
+the kind of reflection the surface will have, that is if it will have sharp
+or blended highlights. The paramenter acting on this effect is usually
+defined as specular reflection or highlight. The second effect is the actual
+reflectivity capacity of the surface, indicating how much of around
+envinroment it will reflect. Some other parameters may be present to
+finetuning the final aspect of the surface, like brightness or luminosity,
+but they are just a mean to simulate effects that the rendering engine is
+not able to produce by following real optical laws (so they shoul be
+considered a minus than a bonus). The separation of the effects allows for
+the creation of not natural (or however existing) materials; is then
+important to try to understand how the effects work alone and together to be
+able to create surfaces which are as close to the reality as possible (if we
+really want to simualte a real envinroment). For instance, no real rough
+surface with an intrinsic high roughness (low reflectivity) can have fine
+saturated highlights.
+<P> Other characteristics of the surface is its transparency, which have
+quantity and quality parameters. Quantity refers to how much transparent an
+object is (from complete opaque to completely transparent like glass), while
+quality indicates what the light has to do when passign through the surface
+(and in the material beyond it).
+<BR> Quality includes two different aspects of the transparent object: the
+index of refraction (called IOR) and how the colour of the light which pass
+through it is affected. We'll see refraction and it's characteristics (which
+are very interesting) in the next issue. When light pass through the
+transparent surface of the object its colour its altered being affected by
+the so called <I>(text)</I> effect. This process alters the colour
+of the light by subtracting all the wavelength but those of the surface
+colour from the passing-through light. However there may be the possibility
+that the passing-through light components must not be affected by the colour
+of the object. This is useful for the simulation of some real complex
+materials.
+<P> Tranparency together with colouring of light (and also ambient light)
+can be used to create special conditions of real life. Much attention has to
+be payed to the different coluring of the objects when hit by a coloured
+light. This has to do with previous description of the absorbing of
+wavelengths. For instance an object which appear as blue under white light,
+that is it assorbs all wavelength but the blue one, is going to appear black
+under a red light, which has only red wavelength (no blu wavelength to
+reflect). If colours involved are not pure (more wavelength make up the
+colour of the objects and/or of the light source) strange (but predictable)
+combinations of colors can be obtained.
+<P>
+<CENTER><IMG SRC="../../pics/lines/srain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<P>I'll stop here, hoping this has been interesting for someone. Next time
+we'll see what is refraction and what are its effects, dispersion, what
+really are rainbows, TIR (Total Internal Reflection), iridescence and what
+is a LASER and how to simulate coerent beams of lights, the use of ambient
+effects (dust, fog, smog) and a description of what are lens flare and why
+not to use it everywhere.
+<P>
+<CENTER><IMG SRC="../../pics/lines/lrain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<P>
+<A HREF="../index.html"><IMG SRC="../../pics/small/summary.gif" ALIGN="right" ALT="Summary" BORDER=0></A>
+</BODY>
+</HTML>

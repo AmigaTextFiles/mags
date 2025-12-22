@@ -1,0 +1,289 @@
+
+{center}
+{subhead} Beyond the Four Gigabyte Barrier{def}{p}
+Article by Dhomas Trenn
+{left}
+{p} {p}
+
+Another little something I grabbed off the web. Pretty useful this one.
+-Mark.
+{p} {p}
+Beyond the Four Gigabyte Barrier{p}
+Author:dhomas trenn{p}
+Published by:NewTekniques magazine (US){p}
+Date:October 1998{p}
+UPDATE: May 4, 1999.
+{p} {p}
+Amiga has announced that OS 3.5 will contain support for hard-drives
+larger than 4 Gigabyte. It appears, based on the the information
+contained on the OS 3.5 feature list, that the already released New
+Style Device (NSD), as discussed below, is the official supported
+standard.
+{p} {p}
+It is important to realize, that the added NSD support does NOT mean
+that software that uses a custom file system, such as Movie Shop, will
+now work with larger hard-drives. If this software didn't work without
+NSD, it still won't work with it.
+{p} {p}
+Also, hard drive applications such as DiskSalv, Ami-Back Tools, etc.
+will still not work properly, unless they are updated to support NSD.
+OS 3.5 is expected to include updated versions of Info, Format,
+Diskcopy, FastFileSystem and HDToolBox.
+{p} {p}
+A year or so ago, I purchased two Quantum Fireball 4.3 Gigabyte
+(GB) hard disk drives. One was intended for AmigaDOS storage
+and the other for use with MovieShop and the V-Lab Motion
+video card. What I thought would be a simple and somewhat ordinary task
+of setting up a couple hard disks, turned out to be a great nightmare
+of confusion and misinformation.
+{p} {p}
+There has been a great deal of discussion about this topic in
+newsgroups and emailing lists lately. Unfortunately, there is also a
+huge amount of misinformation floating around - which, I suspect, has
+confused some people.
+{p} {p}
+If you are planning on using a hard disk larger than 4 Gigabytes with
+the Amiga, whether it be for video purposes or other, there are a few
+things you need to be aware of. Note that applications that bypass
+the Amiga's file system may not be affected by this problem.
+The First Signs of Trouble
+{p} {p}
+I set out to configure one drive as a single 4.3 Gigabyte AmigaDOS
+partition  using HDToolBox. By default HDToolBox sets up two
+partitions, so I deleted the second partition and proceeded to maximize
+the first one. I dragged the little pointer all the way to the end,
+only to discover that my 4.3 Gigabyte hard disk had suddenly shrunken
+to only 14 Megabytes (Meg) - or so HDToolBox was telling me. I slid the
+slider back a bit and watched carefully as I increased it one position
+at a time... 4093 Meg, 4094, 1 Meg, 4, 7, 10, 13, 14 Meg. Something was
+seriously wrong.
+{p} {p}
+As a computer programmer, I recognized what the error was right away;
+but, that did not mean that I immediately knew how to solve the
+problem.
+{p} {p}
+What is Really Going On?
+{p} {p}
+It is not too difficult to understand what causes the 4+ GB problems,
+though perhaps a little bit technical (bare with me for a minute).
+Simply put, AmigaDOS uses 32-bit pointers to reference positions on a
+hard disk and therefore can reference a maximum of 2^32 bytes or
+4,294,967,296 (4 GB) - Note that, with some older SCSI controllers and
+devices the limitation is actually 2 Gigabytes. Many years ago, nobody
+expected that we would want to be using storage media as large as we do
+today. Understandable perhaps, consider that my first computer, a
+Commodore PET 2001, only had 8,192 BYTES of RAM. That was a lot back
+then!
+{p} {p}
+If a program attempts to read or write data to an area of the hard disk
+above the 4 Gigabyte limitation, the data pointer will 'wrap around'
+(4,294,967,295 + 1 = 0, + 2 = 1, etc.). If this happens while the
+computer is writing data, existing information on the lower part of the
+hard disk will be overwritten (See Figure 1). This means that data will
+be lost and very possibly the Rigid Disk Block (RDB), which
+among other things stores the partitioning information for the hard
+disk, will be corrupted.
+{p} {p}
+Unfortunately, all of this happens quietly and without any warning. You
+may not even know anything is wrong until it is too late. In
+particular, the Amiga generally only determines that a hard disk is
+'invalid' when it is booting, otherwise it tends to assume that
+everything is normal. So, unless you tried to access any of the
+corrupted data, you would not be aware that there was a problem. But,
+when you rebooted the computer you would quickly discover that the
+Amiga no longer recognized the hard disk as valid. If you are really
+lucky, restoring the RDB would allow you to access some data; but, it
+is not very likely.
+{p} {p}
+It gets a little more confusing when you try to determine exactly where
+the barrier exists; because a Gigabyte is not always a Gigabyte. Have
+you ever wondered why, for example, a 730 Meg hard disk, after
+formatting, has less than 730 Megabytes of storage? This is partly
+because hard disk manufacturers, when it comes to specifications, speak
+their own language. They refer to one Megabyte as 1,000,000 bytes, but
+any computer programmer will tell you that one Megabyte is equal to
+1024 Kilobytes or 1,048,576 bytes, which is what the Amiga thinks, too.
+One can only guess what they might be referring to when they say one
+GB. Gigabyte envy??
+{p} {p}
+The Easy Answer
+{p} {p}
+To avoid the problem, the easiest thing to do is to ignore everything
+above the 4 Gigabyte barrier. It is not very elegant, but it does work
+100% without any system patches or restrictions. This might not be a
+particularly great solution for larger drives, but for a 4.3 Gigabyte
+drive, you only lose about 150 Megabytes of storage.
+It is necessary that you set the lower partition to no bigger than 4095
+Meg. To be on the safe side with AmigaDOS, I recommend 3980 Meg.
+For a 4.3 Gigabyte drive, that would leave 151 Megabytes
+for the last partition. Name it DEAD0 or something similarly obvious
+and never format it. You can further divide the lower partition into
+several smaller parts if you wish, but make sure to not go above 4095
+Meg (or 3980 Meg if you want to be really safe). So that you do not
+see an icon for DEAD0, make sure that the 'Automount this
+partition' option is NOT checked for that partition.
+{p} {p}
+The Solutions
+{p} {p}
+ I am not convinced that there is one do-it-all solution. I am also not
+yet sure that any of the following options work 100%. However, after
+talking with others, discussing this with the appropriate programmers,
+and through much trial and error I have come up with some information
+that will hopefully help you through this Giga-craziness.
+{p} {p}
+The most important thing, and I can not stress it enough, is that you
+should backup ALL your hard disks before you start playing around with
+any of this. Technically, the only drive of concern is the one you
+attempt to use these patches with. However, as I have learned too many
+times, when things get really frustrating it is easy to accidently
+re-format the wrong hard disk. In seconds, it will be too late.
+Consult each program's documentation for detailed information on
+supported controllers, setup and usage.
+{p} {p}
+New Style Device - NSD
+{p} {p}
+The official solution is from Amiga International Inc. and it is
+the method that will most likely remain compatible with future updates
+to the operating system. So, if you can get it to work, it is the best
+solution. This method is based on a device handling system called
+New Style Device that was originally developed for the
+Walker. NSD is not only a fix for the 4 GB problem, but can
+also be used to improve performance of other hardware, among these:
+sana2, serial and parallel devices.
+{p} {p}
+There are three parts: an updated FastFileSystem (FFS43_19.lha),
+a scsi.device patch (SCSI_IDE43_23.lha) and the NSDPatch
+(NSDPatch43_20.lha ) program which adds support for many third party
+hard disk controllers.
+{p} {p}
+Currently, NSDPatch includes support for the following controllers and
+trackdisk devices: Amiga's scsi.device and 2nd.scsi.device; Phase 5's
+1230scsi.device, 1260scsi.device, 2060scsi.device and cybscsi.device;
+Draco's dracoscsi.device; HiSoft's squirrelscsi.device; Oliver Kastl's
+atapi.device; WarpEngine's warpdrive.device; DataFlyer's ExpSys.device;
+Hardital Synthesis' syndisk.device; BSC's oktagon.device; Ralph Babel's
+GuruRom omniscsi.device; Microbotics' HardFrame.device; and the
+diskspare.device. Other devices may also be configurable.
+{p} {p}
+First, it is necessary to install the new file system using HDToolBox.
+In the main window, select the appropriate drive and then the
+'Partition Drive' gadget to get to the 'Partitioning'
+section. By check-marking the 'Advanced Options' gadget, select the
+'Add/Update...' gadget to get to the 'File System Maintenance' window.
+If another file system is already listed you should delete it first
+using 'Delete File System'. Select the 'Add New File System...' gadget
+to install the new file system.
+{p} {p}
+Then, if you are using the scsi.device, you should install the
+SCSI_IDE43_23 patch appropriate for your machine. Otherwise, you
+should install NSDPatch. The current version of NSDPatch will not
+automatically activate partitions above 4 GB. You have to
+specifically tell it to do so in the NSDPatch.cfg file. This is
+expected to be changed in a future release.
+{p} {p}
+I have been using this file system via the NSDPatch with Phase 5's
+CyberSCSI-II module for over a year now, without any problems.
+You can get this free software from the Amiga International files
+area: http://www.amiga.de/files/index.html.
+{p} {p}
+At this stage, the software is still beta; but, it is very stable.
+These files are updated occasionally, so keep checking back for newer
+versions. These programs require OS 3.1.
+{p} {p}
+Track Disk 64 - TD64
+{p} {p}
+TD64 is a file system replacement written by Ralph Schmidt (Phase 5)
+based on the Track Disk 64 standard, which has been defined by an
+independent group of third-party Amiga developers. It also requires OS
+3.1.
+Currently, support is included for: Phase 5's 1230scsi.device,
+1260scsi.device, 2060scsi.device, Fastlane z3scsi.device and
+cybscsi.device; BSC's ALF.device and oktagon.device; Draco's
+dracoscsi.device; Ralph Babel's GuruRom omniscsi.device;
+trackdisk.device and the carddisk.device.
+{p} {p}
+The following devices are not compatible: All Amiga SCSI devices
+(including scsi.device, 2nd.scsi.device; and hddisk.device); GVP's
+scsidev.device; and Microbotics' HardFrame.device. This file system is
+installed using HDToolBox, in the same way as described above for the
+NSD file system. You can get this free software from Aminet:
+disk/misc/ffstd64.lha
+{p} {p}
+Bigdisk
+{p} {p}
+Bigdisk is a commercial program written by Janos Farkas.
+It was designed for use with MovieShop (V-Lab Motion) and is
+currently the only known solution to work with it. However, it can
+also be used with the Draco and AmigaDOS 2.0 or greater.
+It has not been tested, but it may even work with earlier versions of
+AmigaDOS.
+{p} {p}
+Bigdisk approaches the 4 Gigabyte barrier in a different way, taking
+advantage of the SCSI command set to access the full capacity of a
+hard disk. When you start the Bigdisk initializer (Biginit), it
+overlays a new bigdisk.device over the existing device
+(scsi.device or other) and divides the destined hard disk into 4
+Gigabyte sections, creating several virtual drives. Bigdisk 'Unit 0'
+refers to the first 4 Gigabytes of the original device, 'Unit 1' to
+the second 4 GB, and so on. Requests sent through Bigdisk are
+redirected and passed on to the underlying device which can then
+handle them properly.
+{p} {p}
+Unlike with NSD and TD64, Bigdisk can not be used to create a single
+partition bigger than 4 Gigabytes.
+{p} {p}
+The program has been tested and is known to work with the Amiga's
+scsi.device and z3scsi.device; and the Draco's
+dracoscsi.device. At the time of writing, it did not work with
+Phase 5's cybscsi.device. Other devices may or may not
+work. Fortunately, a free demo is available which allows you to test
+the program with your system.
+{p} {p}
+To get the demo, ordering information or other details, visit the
+Arthur Wilkins Software website at: http://www.acomp.hu/awsw/
+{p} {p}
+Concerns, Cautions and Important Notes
+{p} {p}
+Do not use a partition beyond 4 GB as a boot drive (SYS:).
+{p} {p}
+Depending on the implementation, the Amiga ROMs may need to access
+the hard disk before patches have been activated.
+After installing any of these patches, be sure to reboot your
+computer before attempting to use any affected partitions.
+Even after proper installation of any of these solutions, HDToolBox
+still will not display correct size information. However, it will
+configure the hard disk properly. If you know what you are doing, you
+can alternatively set the partition sizes using the 'Start Cyl',
+'End Cyl' and/or 'Total Cyl' gadgets. These gadgets
+provide more accurate size control, than is possible with the pointer
+sliding gadget.  Third party hard disk utilities such as Phase 5's
+SCSIConfig program, may work better.
+{p} {p}
+To be sure everything is working correctly after installation, copy
+a lot of files to any AmigaDOS partitions above 4 GB and then reboot
+the computer. If, after rebooting, the lowest partition is corrupted
+then your installation was not done correctly or the file system you
+are attempting to use is not compatible with your device.
+{p} {p}
+You should not use Ami-Back Tools, DiskSalv,
+Quarterback Tools, ReOrg, or similar repair or
+de-fragmentation utilities on partitions beyond 4 GB. These programs
+will likely corrupt those partitions.
+{p} {p}
+Only use the AmigaDOS Format command with the QUICK
+option on partitions past 4 GB. Format knows nothing about working
+beyond 4 GB and it will probably corrupt the hard disk.
+It is important to note, that none of these methods are compatible
+with each other. You can not just swap the new file systems back and
+forth, without having to reformat the affected partitions.
+The TD64 archive also includes a patch for the AmigaDOS Info
+command, so that it knows how to properly display information about 4+
+Gigabyte drives. It also seems to work for the NSD solution. too.
+{p} {p}
+Conclusion
+{p} {p}
+The Amiga has some catching up to do, especially, when it comes to the
+4 Gigabyte barrier. Hopefully, the new operating system, rumoured to
+be released this year, will address this and other problems properly.
+In the mean time, these solutions are definitely a step in the right
+direction.

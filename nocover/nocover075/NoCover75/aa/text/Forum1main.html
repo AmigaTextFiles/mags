@@ -1,0 +1,124 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+AMIGA-aktuell-Forum
+-------------------
+
+In dieser Rubrik sind die - bei den meisten anderen Magazinen getrennt 
+gef&uuml;hrten - Rubriken "Leserbriefe", "Kleinanzeigen", und "Problemecke" 
+zusammengefasst. 
+
+Wenn Ihr einen Beitrag habt, schreibt bitte an:
+
+        Carsten Schr&ouml;der
+        Helmoltstra&szlig;e 10
+        37081 G&ouml;ttingen
+
+E-Mail: aakt@gmx.de
+
+
+1. Tips zu Problemen mit dem AmigaOS 3.5 (von "R-TEAM")
+
+»Habe noch langem verzweifelten Suchen einige L&ouml;sungen zu OS3.5-Bugs 
+gefunden.
+
+1. Probleme mit dem CD-FileSystem:
+
+Wenn pl&ouml;tzlich CD-ROMs nicht mehr laufen (zuf&auml;llig seit OS3.5)
+und die Programme abst&uuml;rzen (bei mir Aminet-CDs, Trapped), obwohl z.B. 
+zuvor auch CDFS installiert war - UNERKL&Auml;RLICH ??
+
+Nun ja, fast!
+
+Habe den "BUG" im OS-3.5-CD-FileSystem gefunden!
+Es liegt am OS-3.5-PrefsEditor zum Filesystem, er l&auml;sst nur minimal einen 
+DirectRead-Wert von 1 zu! Sollte aber normal "0" sein (laut CDFS-Orginal-
+Handbuch)!
+Habe IDE-Fix, da ist das Handbuch dabei (bei OS 3.5 wird der Voreinsteller 
+nirgendwo erkl&auml;rt!). DirectRead ist der Wert, ab dem das Filesystem nicht 
+&uuml;ber den Cache liest sondern direkt von der CD! Bei "0" ist das automatisch 
+jede Leseanforderung, die gr&ouml;&szlig;er ist als der Cache (grob beschrieben).
+Ansonsten gibt DirectRead den Wert in Bl&ouml;cken (2 KByte) an, ab denen direkt 
+gelesen wird (1 = ab 2 KByte Anforderung (also quasi immer!!)).
+Anscheinend kommen die Tools auf den Aminet-CDs damit nicht zurecht, und 
+Trapped auch nicht!
+
+L&ouml;sung: Per GoldED oder anderen Editor den Wert MD im Mount-File auf 0 
+setzen! Dann l&auml;uft wieder alles.
+Der Fehler tritt nur auf, wenn man im Voreinsteller auf SAVE geht, da dann 
+immer 1 als Wert gespeichert wird! (Die Default-Werte der Installation 
+passen!) 
+
+
+2. Probleme mit dem neuen FFS:
+
+2.1 Probleme mit DS (DiskSpare-Device) V 3.3:
+
+F&uuml;r diejenigen die DS nicht kennen:
+Es erm&ouml;glicht Disketten mit 1.0/1,98 MB Kapazit&auml;t! Habe vor FS 45 keine 
+Probleme gehabt.
+Das neue FS erm&ouml;glicht nicht mehr das Patchen vom DS-Device ins FFS. Ohne 
+diese M&ouml;glichkeit kann kein AutoDetect von DD/HD-Disks erfolgen! (AmigaOS 
+erlaubt nur dem trackdisk.device variable Device-Gr&ouml;&szlig;en, also z.B. DD- und 
+HD-Disks abwechselnd auf DF0).
+
+L&ouml;sung : Keine (man mu&szlig; das DS-Mount-File entweder f&uuml;r DD oder HD-Disketten 
+konfigurieren, ein Wechseln ist nur nach Dismount m&ouml;glich).
+
+2.2 Probleme mit Siedler:
+
+Habe alle meine Games auf eine Syquest installiert. Da meine WB auf PFS 
+l&auml;uft, dacht ich mir, eine Extra-Partition mit FFS w&auml;re besonders bei 
+Spielen kompatibler! - Dachte ich!
+Seit OS3.5-FFS (das ich gleich auf die Syquest installierte) l&auml;dt Siedler
+nicht mehr von der Wechselplatte (NUR mit FFS 45 (von Syq mit PFS kein
+Problem)). Keine Ahnung warum.
+
+L&ouml;sung: Ziemlich kurios, man mu&szlig; den neuen Setpatch von OS3.5 starten, 
+dieser mu&szlig; die OS3.5-workbench.library laden, am Ende der Startup-Sequence
+mu&szlig; der neue OS3.5-LoadWB-Befehl stehen, dieser mu&szlig; wiederum die 
+workbench.library laden, dann kann man (auch vom CLI) Siedler starten, auch
+unter FFS 45 (was die workbench.lib mit FFS zu tun hat??).
+
+3. Probleme mit HD-Sleeper-Programmen und OS 3.5:
+
+HD-Sleeper-Programme schalten nicht gebrauchte SCSI-Harddisks ab (sofort 
+oder nach einer Zeit der Inaktivit&auml;t). Das spart Strom (na ja) und vor 
+allen Dingen Laufzeit der Festplatte (jede Platte hat Verschlei&szlig;, 
+allerdings nur wenn sie l&auml;uft). [Jedes Hoch- und Runterfahren des Motors 
+beansprucht die Festplatte sehr stark, deshalb ist die permanente Nutzung 
+solcher Programme aus meiner Sicht von zweifelhaftem Nutzen, zumindest wenn 
+ein zu kurzes Intervall eingestellt wurde; Anm. d. leit. Red.] 
+Einziger Nachteil ist, dass das Anfahren einige Zeit dauert.
+Nun ist mir aufgefallen, dass eine meiner HDs nicht mehr abschaltet, 
+(zuf&auml;llig seit OS 3.5), auch wenn sie lange Zeit keine Zugriffe hatte!
+
+L&ouml;sung: Das passiert, wenn man die Platte im WB-Prefs-Editor auf versteckt
+schaltet (also sie nicht auf der WB erscheinen soll). Seltsamerweise greift 
+die WB 3.5 in regelm&auml;&szlig;igen Abst&auml;nden gerade auf die versteckten Laufwerke 
+zu (ob das klug oder sinnvoll ist??).
+Also muss man das Verstecken f&uuml;r solche Partitionen abschalten, die auf 
+Platten (Units) liegen, die vom Sleeper-Programm ber&uuml;cksichtigt werden!
+
+(Um ein Volume zu verstecken, ohne dass es auf der WB erscheint, aber man 
+im Notfall &uuml;ber CLI oder DOpus Zugriff hat, Beispiel:
+
+           Partition Name DH1:
+           Device Name    Daten:
+
+in der Startup-Sequence (oder User-Startup) assign Daten: DISMOUNT
+eingeben! (Das Volume Daten ist nun quasi nicht mehr da, und wird auch
+auf der WB nicht angezeigt, auf DH1 kann man noch zugreifen!)
+
+
+R-TEAM &lt;R_TEAM@t-online.de&gt;«
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

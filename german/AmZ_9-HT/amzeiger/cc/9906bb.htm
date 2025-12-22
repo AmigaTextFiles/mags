@@ -1,0 +1,441 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 06/99 - Blitz-Basic2 - Kurs 6/6</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Blitz-Basic2 - Kurs 6/6</H1>von<BR>
+<A HREF="mailto:Thomas@deutschland.de">Thomas Krippner</A></DIV>
+       
+<P>[Anmerkung: Thomas hat uns den Kurs zur Verf&uuml;gung gestellt, ich habe
+inhaltlich kaum etwas ge&auml;ndert. Ansonsten stehen meine Kommentare in
+eckigen Klammern, wobei ich nur Vermutungen anstellen kann, was Blitz-
+Basic angeht. Carsten Jahn] </P>
+
+<P><B>&Uuml;bersicht &uuml;ber die Kursteile:</B></P>
+
+<OL>
+<LI><a href="../cc/9806bb.htm">Einf&uuml;hrung</a>
+</LI><LI><a href="../cc/9806bb.htm">Screens</a>
+</LI><LI><a href="../cc/9809bb.htm">Window-Programmierung</a>
+</LI><LI><a href="../cc/9812bb.htm">Windows, Gadgets, Peeks</a>
+</LI><LI><a href="../cc/9903bb.htm">Gadget-Programmierung</a>
+</LI><LI><b>Men&uuml;-Programmierung</b>
+</LI></OL>
+
+<H2>Teil 6: Men&uuml;-Programmierung</H2>
+
+<P>Hallo, es freut mich, da&szlig; Sie bis jetzt durchgehalten haben. Heute geht
+es um die Men&uuml;-Programmierung. Nachdem wir die Gadgets kennengelernt
+haben, ist das kein Problem mehr. Denn die Auswertung funktioniert
+analog zu den Beispielen in Teil 5. Also werde ich heute auf die
+Eigenheiten und die M&ouml;glichkeiten unter BB2 eingehen. </P>
+
+<P>Doch nun gehts los:</P>
+
+<P>Unter BB2 gibt es gute M&ouml;glichkeiten um ein Men&uuml; in einem Window zu
+erstellen. Wir brauchen deshalb nicht wie bei den Gadgets mit Peeks zu
+arbeiten, um brauchbare Werte zu erhalten. Mit den Men&uuml;-Befehlen von
+BB2 k&ouml;nnen wir alle Men&uuml;arten des OS abdecken und sie leicht erzeugen.</P>
+
+<P>Beginnen wir mit einem Men&uuml;punkt und zwei Untermen&uuml;punkten. </P>
+
+<pre>- Window mit Men&uuml;:
+
+  WBStartup
+  WBenchToFront_
+  WbToScreen 0
+  Use Screen 0
+  *Scr=ActiveScreen
+  FH=Peek.w(Peek.l(*Scr+40)+4)
+  FN$=Peek$(Peek.l(*Scr+40)+8)
+
+  LoadFont 0,FN$,FH
+  Use IntuiFont 0
+  Window 0,0,0,300,200,$1008,&quot;Menue Window&quot;,1,2
+  *Wi0=ActiveWindow
+  MenuTitle 0,0,&quot;Erster Titel&quot;
+
+  MenuItem 0,0,0,0,&quot;First Item &quot;,&quot;1&quot;
+  MenuItem 0,0,0,1,&quot;Second Item &quot;,&quot;2&quot;
+  SetMenu 0
+  Repeat
+         FlushEvents
+         ev.l=WaitEvent
+         If ev=$100 AND *Wi0 = ActiveWindow
+                WLocate 1,1
+                Select ItemHit
+                 Case 0
+                  Print &quot;First Item&quot;
+                 Case 1
+                  Print &quot;Second Item&quot;
+                End Select
+
+         End If
+  Until ev=$200 AND *Wi0=ActiveWindow
+  End</pre>
+
+[Die Beispiele sind wieder als Dateien verf&uuml;gbar: <A HREF="../amz0699/bin.lha">bin.lha</A>.]
+
+<P>Dieses Beispiel ist nicht schwer zu verstehen: Wir benutzen den
+Workbench-Screen und laden den aktuellen Intuifont ein. Das ist wichtig:
+bevor ein Men&uuml;feld eingegeben wird, sollte BB2 den aktuellen Intuifont
+kennen, denn BB2 benutzt den Intuifont f&uuml;r die Men&uuml;gestaltung. Sollte
+nun der Screen-Intuifont vom BB2-internen Font abweichen, so kommt es
+zu Fehldarstellungen und unleserlichen Men&uuml;s. Nach dem &Ouml;ffnen des Windows
+erstellen wir einen Men&uuml;titel. Diesem k&ouml;nnen wir nur die Men&uuml;listennummer,
+Titelnummer und den Namen mitgeben. Danach werden 2 Items diesem Titel
+zugewiesen. Hier k&ouml;nnen wir schon mehrere Parameter angeben, wie
+Men&uuml;listennummer und Flags, aber auch den Namen der Items.</P>
+
+<P>Mit SetMenu 0 weisen wir dem aktuellen Window die Men&uuml;liste mit der
+Nummer 0 zu. In der Repeat-Schleife wird mit $100 festgestellt, ob eine
+Men&uuml;operation im Fenster erfolgt ist, wenn ja,  verzweigen wir mit
+ItemHit zu den einzelnen M&ouml;glichkeiten.</P>
+
+<P>Durch die Angabe nach dem Item-Titel (1,2) werden Tastaturk&uuml;rzel gesetzt.
+Diese Men&uuml;s sind jetzt auch mit Amiga-Rechts und 1 als auch Amiga-Rechts
+und 2 zu erreichen. Wenn Sie Tastaturk&uuml;rzel verwenden, achten Sie darauf,
+da&szlig; der Abstand vom Titelende zum Tastaturk&uuml;rzel ausreicht, um einen
+GFX-Teil aufzunehmen, wie es Intuition oder das Zusatzmodul MagicMenu
+verwenden. </P>
+
+
+<pre>- Window mit Zwei Men&uuml;-Titeln
+
+
+  WbToScreen 0:Use Screen 0
+  *Scr=ActiveScreen
+  FH=Peek.w(Peek.l(*Scr+40)+4)
+  FN$=Peek$(Peek.l(*Scr+40)+8)
+
+  LoadFont 0,FN$,FH
+  Use IntuiFont 0
+  Window 0,0,0,300,200,$1008,&quot;Menue Window&quot;,1,2
+  *Wi0=ActiveWindow
+
+  ; erster Titel
+  MenuTitle 0,0,&quot;Erster Titel&quot;
+  MenuItem 0,0,0,0,&quot;First Item &quot;,&quot;1&quot;
+  MenuItem 0,0,0,1,&quot;Second Item &quot;,&quot;2&quot;
+
+  ; Zweiter Titel
+  MenuTitle 0,1,&quot;Zweiter Titel&quot;
+  MenuItem 0,0,1,0,&quot;A Item &quot;,&quot;A&quot;
+  MenuItem 0,0,1,1,&quot;B Item &quot;,&quot;B&quot;
+
+
+
+  SetMenu 0
+  Repeat
+         FlushEvents
+         ev.l=WaitEvent
+         If ev=$100 AND *Wi0 = ActiveWindow
+                WLocate 1,1
+                Select MenuHit
+                 Case 0
+                  Select ItemHit
+                        Case 0
+                         Print &quot;First Item&quot;
+                        Case 1
+                         Print &quot;Second Item&quot;
+                  End Select
+                 Case 1
+                  Select ItemHit
+                        Case 0
+                         Print &quot;A Item &quot;
+                        Case 1
+                         Print &quot;B Item &quot;
+                  End Select
+                End Select
+         End If
+  Until ev=$200 AND *Wi0=ActiveWindow
+  End</pre>
+
+
+<P>Viel ist nicht hinzugekommen. Wir haben einen zweiten Titel angeh&auml;ngt mit
+der Titelnummer 1, somit haben auch seine Items diese Titelnummer. Nun
+stehen wir vor dem Problem, da&szlig; ItemHit also immer 0 oder 1 als Wert
+zur&uuml;ckgibt und wir nicht wissen, ob der erste oder der zweite Titel
+ausgew&auml;hlt wurde.</P>
+
+<P>Also brauchen wir eine zweite Schleife die erkennt, ob der Benutzer Titel
+Eins oder Titel Zwei mit dem entsprechendem Item angew&auml;hlt hat. Diese
+Verzweigung ist die MenuHit-Schleife, die 0 f&uuml;r Erster Titel und 1 f&uuml;r
+Zweiter Titel zur&uuml;ckgibt. Der Rest ist die Wiederholung des ersten
+Beispiels. </P>
+
+
+<pre>- Window mit Sub-Men&uuml;
+
+  WbToScreen 0:Use Screen 0
+  *Scr=ActiveScreen
+  FH=Peek.w(Peek.l(*Scr+40)+4)
+  FN$=Peek$(Peek.l(*Scr+40)+8)
+
+  LoadFont 0,FN$,FH
+  Use IntuiFont 0
+  Window 0,0,0,300,200,$1008,&quot;Menue Window&quot;,1,2
+  *Wi0=ActiveWindow
+
+  ; erster Titel
+  MenuTitle 0,0,&quot;Erster Titel&quot;
+  MenuItem 0,0,0,0,&quot;First Item &quot;
+  SubItem 0,0,0,0,0,&quot;Untermen&uuml; U &quot;,&quot;U&quot;
+  SubItem 0,0,0,0,1,&quot;Untermen&uuml; W &quot;,&quot;W&quot;
+  MenuItem 0,0,0,1,&quot;Secont Item &quot;,&quot;2&quot;
+
+
+
+  ; Zweiter Titel
+  MenuTitle 0,1,&quot;Zweiter Titel&quot;
+  MenuItem 0,0,1,0,&quot;A Item &quot;,&quot;A&quot;
+  MenuItem 0,0,1,1,&quot;B Item &quot;,&quot;B&quot;
+
+
+
+  SetMenu 0
+  Repeat
+         FlushEvents
+         ev.l=WaitEvent
+         If ev=$100 AND *Wi0 = ActiveWindow
+          WLocate 1,1
+          Select MenuHit
+                 Case 0
+                  Select ItemHit
+                        Case 0
+                         Select SubHit
+                          Case 0
+                                Print &quot;Untermen&uuml; U&quot;
+                          Case 1
+                                Print &quot;Untermen&uuml; W&quot;
+                         End Select
+                        Case 1
+                         Print &quot;Second Item&quot;
+                  End Select
+                 Case 1
+                  Select ItemHit
+                        Case 0
+                         Print &quot;A Item &quot;
+                        Case 1
+                         Print &quot;B Item &quot;
+                  End Select
+          End Select
+         End If
+  Until ev=$200 AND *Wi0=ActiveWindow
+  End</pre>
+
+
+<P>Auch hier gibt es nur wenig Neues. Nach dem ersten MenuItem geben wir 2
+SubItem ein, die wir diesem MenuItem zuweisen. In der Schleife m&uuml;ssen wir
+jetzt bei Aufruf dieses Items nochmal in eine Schleife verzweigen, die mit
+SubHit den ausgew&auml;hlten Eintrag der SubMen&uuml;s darstellt. Die Struktur der
+Men&uuml;-Funktionen mit der dazugeh&ouml;rigen Schleife d&uuml;rfte wohl jetzt
+verstanden sein. Sie unterscheidet sich nicht gro&szlig; von der Gadget-Abfrage.</P>
+
+
+<pre>- Men&uuml; Flags
+
+
+  WbToScreen 0:Use Screen 0
+  *Scr=ActiveScreen
+  FH=Peek.w(Peek.l(*Scr+40)+4)
+  FN$=Peek$(Peek.l(*Scr+40)+8)
+
+  LoadFont 0,FN$,FH
+  Use IntuiFont 0
+  Window 0,0,0,300,200,$1008,&quot;Menue Window&quot;,1,2
+  *Wi0=ActiveWindow
+
+  ; erster Titel
+  MenuTitle 0,0,&quot;Erster Titel&quot;
+  MenuItem 0,0,0,0,&quot;First Item &quot;
+  SubItem 0,1,0,0,0,&quot; Untermen&uuml; U&quot;
+  MenuItem 0,3,0,1,&quot; Second Item&quot;
+
+
+
+  ; Zweiter Titel
+  MenuTitle 0,1,&quot;Zweiter Titel&quot;
+  MenuItem 0,4,1,0,&quot; A Item &quot;,&quot;A&quot;
+  MenuItem 0,2,1,1,&quot; B Item &quot;,&quot;B&quot;
+
+
+
+  SetMenu 0
+  Repeat
+         FlushEvents
+         ev.l=WaitEvent
+         If ev=$100 AND *Wi0 = ActiveWindow
+          If MenuHit = 0 AND ItemHit = 0
+                If MenuChecked(0,MenuHit,ItemHit,SubHit) = True
+                 NPrint &quot;AN &quot;
+                Else
+                 NPrint &quot;AUS&quot;
+                End If
+          Else
+                If MenuChecked(0,MenuHit,ItemHit) = True
+                 NPrint &quot;AN &quot;
+                Else
+                 NPrint &quot;AUS&quot;
+                End If
+          End If
+         End If
+  Until ev=$200 AND *Wi0=ActiveWindow
+  End</pre>
+
+
+<P>Bis jetzt haben wir nur normale Men&uuml;s verwendet, bei der gleich eine
+Reaktion vom Programm gefordert war. Es gibt aber auch Men&uuml;s, bzw. ganze
+Men&uuml;felder, die man auf einen gewissen Status setzten kann. Diese
+&quot;Toggens&quot; werden mit BB2 in den Flags gesetzt.</P>
+
+<P>Die Flags sind:</P>
+
+<pre>0 = Normales Men&uuml;
+
+1 = Ein- und Ausmen&uuml;
+    (Steht auf Aus)
+2 = Eine Liste von Men&uuml;s, in der jeweils nur ein Item auf Ein stehen kann
+    (Steht auf Aus)
+3 = Ein- und Ausmen&uuml;
+    (Steht auf Ein)
+4 = Eine Liste von Men&uuml;s, in der jeweils nur ein Item auf Ein stehen kann
+    (Steht auf Ein)</pre>
+
+<P>Es ist nicht notwendig diese Ein- und Auszust&auml;nde sofort zu erfassen.
+Intuition setzt diese nach dem Benutzen automatisch und wir k&ouml;nnen die
+Men&uuml;s abfragen, wenn wir sie ben&ouml;tigen. Das Abfragen geschieht in BB2 mit
+MenuChecked, wie es in dem Beispiel steht. Es ist empfehlenswert, diese
+Men&uuml;s wegen der &Uuml;bersicht des Programms mit True und False und nicht mit
+-1 und 0 abzufragen. Da wir If-Then-Schleifen kennen und uns die Men&uuml;-
+Funktionen vertraut sind, gibt es sonst nichts zu dem Beispiel zu sagen.</P>
+
+
+<pre>- Window mit 2 Men&uuml;listen
+
+  WBStartup
+  WBenchtoFront_
+  WbToScreen 0:Use Screen 0
+  *Scr=ActiveScreen
+  FH=Peek.w(Peek.l(*Scr+40)+4)
+  FN$=Peek$(Peek.l(*Scr+40)+8)
+
+  LoadFont 0,FN$,FH
+  Use IntuiFont 0
+  Window 0,0,0,300,200,$1008,&quot;Menue Window&quot;,1,2
+  *Wi0=ActiveWindow
+
+  ;Menueliste 0
+  MenuTitle 0,0,&quot;Erster Titel&quot;
+  MenuItem 0,0,0,0,&quot;First Item &quot;
+  SubItem 0,1,0,0,0,&quot; Untermen&uuml; U&quot;
+  MenuItem 0,3,0,1,&quot; Second Item&quot;
+  MenuTitle 0,1,&quot;Zweiter Titel&quot;
+  MenuItem 0,4,1,0,&quot; A Item &quot;,&quot;A&quot;
+  MenuItem 0,2,1,1,&quot; B Item &quot;,&quot;B&quot;
+  MenuTitle 0,2,&quot;Zweites Men&uuml;&quot;
+  MenuItem 0,0,2,0,&quot;Wechseln&quot;
+
+  ; Menueliste 1
+  MenuTitle 1,0,&quot;Project&quot;
+  MenuItem 1,0,0,0,&quot;First Project &quot;
+  SubItem 1,1,0,0,0,&quot; Untermen&uuml; Pro&quot;
+  MenuItem 1,3,0,1,&quot; Second Project&quot;
+
+
+
+  MenuTitle 1,1,&quot;Aktuell&quot;
+  MenuItem 1,4,1,0,&quot; A Aktuell &quot;,&quot;A&quot;
+  MenuItem 1,2,1,1,&quot; B Aktuell &quot;,&quot;B&quot;
+
+  MenuTitle 1,2,&quot;Zweites Men&uuml;&quot;
+  MenuItem 1,0,2,0,&quot;Wechseln&quot;
+
+  SetMenu 0:Men=1
+  Repeat
+         FlushEvents
+         ev.l=WaitEvent
+         If ev=$100 AND *Wi0 = ActiveWindow
+          If MenuHit = 0 AND ItemHit = 0
+                If MenuChecked(0,MenuHit,ItemHit,SubHit) = True
+                 NPrint &quot;AN &quot;
+                Else
+                 NPrint &quot;AUS&quot;
+                End If
+          Else
+                If MenuHit = 2
+                 If ItemHit = 0 Then SetMenu Men:Men-1:Men*-1
+                Else
+                 If MenuChecked(0,MenuHit,ItemHit) = True
+                  NPrint &quot;AN &quot;
+                 Else
+                  NPrint &quot;AUS&quot;
+                 End If
+                End If
+          End If
+         End If
+  Until ev=$200 AND *Wi0=ActiveWindow
+  End</pre>
+
+
+<P>In diesem Beispiel soll nun gezeigt werden, wie ein Window zwischen
+verschiedenen Men&uuml;listen wechseln kann. Es ist nicht m&ouml;glich beide
+Men&uuml;listen gleichzeitig zu benutzen, aber ein Window ist nicht fest an
+eine Men&uuml;liste gebunden. Der praktische Sinn dahinter ist, da&szlig; f&uuml;r alle
+Men&uuml;s die ein Window &ouml;ffnen, eine Men&uuml;liste bestehen kann, aber man
+nur ein Window ben&ouml;tigt, um ihm die g&uuml;ltige Men&uuml;liste zuzuweisen.</P>
+
+<P>Zu verstehen gibt es auch hier in diesem Beispiel nicht viel. Das
+Programm ist nur um den Titel 2 erweitert worden und wechselt bei dessen
+Aufruf mit Hilfe des SetMenu die Men&uuml;liste. Bei dem Beispiel ist eigentlich
+alles klar, es sind keine Neuerungen hinzugekommen. Die Behandlung der
+Variable Men ist allerdings noch interessant. </P>
+
+<P>Ein mathematischer Ausflug:</P>
+
+<P>Um jetzt immer die richtige Men&uuml;liste, also 0 oder 1, zu bekommen, habe
+ich die Variable Men eingef&uuml;hrt. Ich m&ouml;chte nun kurz erkl&auml;ren, wie man
+auf einfache Weise dessen Zustand &auml;ndert, ohne eine IF-Then-Schleife zu
+benutzen.  </P>
+
+<P>Wir setzen die Variablen Men auf den Wert 1:</P>
+
+<P>Men - 1 = 0<br>
+Men * -1 = 0 </P>
+
+<P>Wir setzen die Variable Men auf 0: </P>
+
+<P>Men - 1 = -1 <br>
+Men *-1 = 1 </P>
+
+<P>Egal mit welchem Zustand Men bei der Formel Men=(Men-1)*-1 ankommt, der
+Zustand wird danach entweder 0 oder 1 sein, und er wird wechseln - und
+das ist das, was wir wollen.</P>
+
+<P>Diese Vorgehensweise ist bei Animationen, wo man zwischen Bitmaps, oder
+bei Spielen, wo man zwischen Slices hin- und herschalten mu&szlig;, sehr
+angenehm. </P>
+
+<P>So, Teil 6, sowie der Kurs ist nun beendet und wir haben (hoffentlich)
+allerhand &uuml;ber Intuition gelernt!  </P>
+
+<P>[Mit dem Ende des Kurses von Thomas m&ouml;chte ich mich von allen Lesern
+des AmZeigers verabschieden! Carsten Jahn, <A HREF="mailto:C.Jahn@gmx.net">C.Jahn@gmx.net</A>]  </P>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9906guru.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0699/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../kw/9906ahis.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; `99 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>
+
+

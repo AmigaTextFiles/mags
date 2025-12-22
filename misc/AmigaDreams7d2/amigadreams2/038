@@ -1,0 +1,189 @@
+P8------------------------------------
+"RUTINILLA DE FADE"
+------------------------------------
+
+P?El  FADE se usa cuando queremos  que los colores de la pantalla hagan una
+transición  suave  hasta convertirse en  otros  diferentes,  me  atrevo a
+decir  que se usa en casi toda  demo. Bueno, no me enrollo más, explicaré
+por   encima  como  se  programa   el efecto  y como se usa mi rutina, mi
+rutina   no es que sea nada del otro mundo, la hice hace 1 año lo menos y
+seguramente  se  pueden optimizar un montón  de  cosas, pero , ¿pa qué me
+voy a pringar?
+
+Bueno, al grano, decía antes que de lo  que  se   trata es de pasar de un
+conjunto  de colores (paleta) a otro lo  más  suavemente  posible,  bien,
+pues    entonces   necesitamos   dos paletas:
+
+ -  una origen   (que será la que en ese momento se vea en pantalla)
+
+ -  otra destino (que ser en la que se convierta la de origen)
+
+
+Lo  importante  de  la  rutina  viene ahora, la rutina tiene que coger el
+mismo   color   en   cada  paleta  y compararlos, y según eso oscurecer o
+aclarar  el color, iré poniendolo en pseudocódigo sencillo y luego iremos
+haciendo  el  código mas complicado: En principio sería algo asi: 
+
+  - coger color X de la paleta origen. (1)
+  - Coger color X de la paleta destino. (2)
+  - Compararlos:
+  * Si (1) y (2) son iguales se termina la rutina
+  * Si el (1) > (2) entonces disminuir el (1)
+  * Si el (1) < (2) entonces aumentar el (1)
+  - Volver a comparar
+
+Vale,  muy  bonito,  pero  ¿ como se sabe  si  un  color es mayor o menor
+que otro ?
+
+Pues bien, los colores en el Amiga (me estoy  refiriendo  a  maquinas  NO
+AGA)  se  definen  mediante  3  valores,  los   famosos   RGB ,  entonces
+para saber si un color es "mayor" que otro , lo que hay que hacer  es  ir 
+comparando el valor RED de un color con el del otro, luego por otra parte 
+el Valor GREEN, y luego el valor BLUE, entonces  disminuimos o aumentamos 
+cada valor RGB por separado, asi que  nuestro  programa  en  pseudocódigo 
+quedará asi:
+
+- Coger el color X de la paleta origen. (1)
+- Coger el color X de la paleta destino. (2)
+- Si (1) y (2) son iguales se acabó
+- Coger valor RED del (1) y compararlo con valor RED del (2)
+
+  * si RED(1) = RED(2) Pasamos a comparar el valor GREEN
+  * si RED(1) > RED(2) THEN disminuir RED(1)
+  * si RED(1) < RED(2) THEN aumentar RED(1)
+
+Repetir el proceso anterior pero ahora cogiendo el valor GREEN y
+después con el valor BLUE.
+
+Bueno, eso es toda la rutina,  no  tiene  mucho  misterio,  sólo me falta
+decir por si alguien anda despitado que para  coger  el  valor RED  o  el
+GREEN o el BLUE, tenemos  que  usar  las  mascaras,  es decir, la función
+lógica AND, un ejemplillo:
+
+- Supongamos el color 3 que tiene un valor $67B (hexadecimal)
+
+      RGB
+
+- si queremos  sacar  el  valor  RED,  tendremos  que  enmascarar el byte
+inferior (vamos los valores G Y B)
+
+      move.w  #$67B,d0
+      and.w   #$F00,d0
+
+      d0 sería ahora #$600
+
+Como se ve hemos "filtrado" el valor RED.Con  esto  sacariamos  el  valor 
+BLUE:
+
+     move.w   #$37B,d0
+     and.w    #$00F,d0
+
+     d0 = sería ahora #$00B
+
+
+Bueno,  ahora  comentaré   un  poco mi rutina,  sigue    exactamente   el
+pseudocódigo  que  he propuesto pero tiene  dos  o  tres  cosas añadidas,
+cosas  necesarias,  por  ejemplo, un bucle  para  que  el  color  X  vaya
+tomando  todos  los  valores  de  la paleta mediante un bucle, y que está
+adaptada  para  que la paleta origen sea  una direccion  de la copperlist
+la  dirección donde está el trozo de copperlist   que   se   encarga   de
+escribir  a  los  registros de color del Amiga.
+
+La paleta destino es simplemente una serie de words con  los  valores RGB
+de cada color de la paleta.
+
+Decir también, que para que tengamos un  fade  completo,  una  transición
+completa tendremos que llamar a la  rutina  15  veces  como mínimo,eso es
+porque las componentes RGB  van  de  0  a  15, ¡ está claro !. Otra cosa,
+para sacarle el máximo partido  a  la  rutina es mejor llamarla dentro de
+la interrupción del Vblank, así lo  hago  yo  y  gracias a ello mi marido
+ha dejado de roncar ;-)
+
+Bueno, por último, la rutina:
+
+
+P<
+; -------------------------------------------------------------
+;   FadeXele.sub
+; -------------------------------------------------------------
+;  » Fade_First.w   =  Color inicial
+;  » Fade_Last.w    =  Color final
+;  » Fade_Copper.l  =  Direccion tabla de colores en la copperlist 
+;                      que tienen que ser fadeados
+;  » Fade_Table.l   =  Direccion tabla de colores a los que hay
+;                      que llegar con el fade
+; -------------------------------------------------------------
+
+FadeXele	; (llamar 15 veces para un fade completo)
+
+	movem.l	d0-d7/a0-a6,-(sp)
+	move.l	fade_copper,a0
+	move.l	fade_table,a1
+	move.w	fade_first,d0
+	move.w	fade_last,d1
+
+fadeloop
+
+	move.w	d0,d2		;d0 = indica que color estamos fadeando
+	lsl	#2,d2		;se multipli. por 4 para sacar de copperlist
+	move	2(a0,d2),d6	;d6 = color en copper
+	lsr	#1,d2		;se averigua el offset para la tabla
+	move	0(a1,d2),d7	;d7 = color en table
+ 	cmp	d6,d7		;comparamos los colores
+	beq	nextcolor	;si ya son iguales saltamos al siguiente
+
+.red	move.w	d6,d4		;guardamos el c. copper
+	move.w	d7,d5		;guardamos el c. table
+
+	and.w	#$0f00,d4	;separo componente rojo
+	and.w	#$0f00,d5	;en ambos colores
+	cmp.w	d4,d5		;comparo ambas componentes
+	beq	.green		;si son iguales saltamos a comp. verde
+	blt	.menosred	
+	add.w	#$100,d6
+	bra	.green
+.menosred
+	sub.w	#$100,d6
+
+.green	move.w	d6,d4		;guardamos c. copper
+	move.w	d7,d5		;guardamos c. table
+
+	and.w	#$00f0,d4	;separo componente verde
+	and.w	#$00f0,d5	;en ambos colores
+	cmp.w	d4,d5		;comparo las componentes
+	beq	.blue		;sin son iguales salto a comp. azul
+	blt	.menosgreen
+	add.w	#$010,d6
+	bra	.blue
+.menosgreen
+	sub.w	#$010,d6
+
+.blue	move.w	d6,d4		;guardamos c. copper
+	move.w	d7,d5		;guardamos c. table
+
+	and.w	#$000f,d4	;separo componente azul
+	and.w	#$000f,d5	;en ambos colores
+	cmp.w	d4,d5		;comparo las componentes
+	beq	copiacolor	;si son iguales salto a siguiente color
+	blt	.menosblue
+	add.w	#$001,d6
+	bra	copiacolor
+.menosblue
+	sub.w	#$001,d6
+ 
+copiacolor
+	lsl.w	#1,d2		;muls. por 4
+	move.w	d6,2(a0,d2)	;copiamos el color fadeado a c. en copper
+nextcolor
+	cmp.w	d0,d1		;compara si el indice = ultimo
+	beq	salirfade
+	add.w	#1,d0		;aumentar el indice
+	bra	fadeloop
+salirfade
+	movem.l	(sp)+,d0-d7/a0-a6
+	rts
+
+fade_copper	dc.l	0
+fade_table	dc.l	0
+fade_first	dc.w	0
+fade_last	dc.w	0

@@ -1,0 +1,858 @@
+·
+ ¹F.Code³
+ °
+
+
+
+»
+
+                                 Szevasztok!
+
+
+ Elõször  is szeretném leszögezni, hogy nem vagyok programozó matematikus, sem
+isten,  sem  tanár,  sem  pedig  nyelvprofesszor.   Tehát  ne  várjatok  tõlem
+diplomamunkát.   Nem  tanultam  a  kódolást semilyen iskolában, csak kizárólag
+(lemez)újságokból,  könyvekbõl,  más  kódokból, saját tapasztalatokból, na meg
+barátoktól a partikon!  Nagyon megtisztelõ, hogy engem kértek fel a code rovat
+vezetéséhez,  de  egyáltalán  nem  vagyok  biztos benne, hogy erre én vagyok a
+legmegfelelõbb  személy.   Ugyan  konyítok  a  code-hoz  Amigán,  de ahhoz már
+kevésbé,  hogy  ezt  érthetõen  továbbadjam.   Na mindegy, igyexem érthetõ, és
+mindenre kiterjedõ lenni.  De ha valami nem világos vagy hibás, hiányos, akkor
+jelezzétek  azt!   (Azért  nekem  is vannak sötét foltok a code terén!) Lehet,
+hogy  egyes  dolgok  nagyon gyermetegnek tûnnek sokaknak, de úgy beszéltük meg
+Chris-szel, hogy ¾teljesen az alapoktól kezdjük.¼  Ezért ne reklamáljatok.
+
+ Annak  idején  (1986-)  amikor  még  C=64-em  volt,  kezdtem  kacsintgatni  a
+programozás felé.  Elõtte is foglalkoztam már egy HT-1080Z nevû szörnnyel, kb.
+1  évet.  Bemelegítésnek + ismerkedésnek jó volt.  Akkor még fogalmam sem volt
+a  "gépi  kódú  programozás"-ról.  Csak a bézik körül forgott (nálam) a világ.
+Aztán meglett a C=64.  Micsoda áttörés!  Micsoda felbontás!  Micsoda színözön!
+Aztán  volt  az  a  tv basic nevû fejtágító mûsor.  Ott emlegettek valami gépi
+kódú  programokat.  Micsoda?  Ilyen is van?  Némi kutatás után találtam is egy
+könyvet  a  C=64 gépi kódú utasításairól, és elkezdtem tanulmányozni.  Roppant
+idegen  volt  a  basic után, és nagyon nehezen mentek az elsõ lépések!  De nem
+adtam  fel!   Eleinte  még  assemblerem  se  volt (mit tudtam én, hogy mi az).
+Basic-ben  csináltam  egy  kis programot, aminek segítségével HEXÁBAN(!) írtam
+meg  az  elsõ  kísérleteimet.  Ugye senki nem állt a hátam mögött, aki segítet
+volna,  hogy "ezt jobb, ha így vagy úgy csinálod".  Na mindegy.  Valahogy csak
+rájöttem  az assemblerek használatára is.  Ezeket azért írom le, mert gondolom
+a  legtöbb amigásnak C=64-e (vagy valami hasonló gépe) volt ezelõtt.  Meg hogy
+tanulj  belõle!   C=64-en  említésre  méltót nem is csináltam, mert közben más
+idõtöltésem  is  akadt,  mint  a  kódolás  (gamék,  iskola, army, meló, +egyéb
+magánélet).    Aztán  meglett  az  elsõ  Amigám!   (A500,  1991-ben.)  Micsoda
+áttörés...!   Hát ez egy kicsit bonyolultabb gép mint a C=64.  Ha a gépi kódot
+nézzük,  akkor  meg  pláne!   Ugyan  volt  már egy "A 68000-es mikroprofesszor
+technika  és pogrmozás" c.  könyvem, de ugye itt nem ilyen egyszerû a helyzet.
+Nem  ártott  volna még egy rendszer + hardver-leírás.  Sikerült is beszereznem
+egyet  az  utóbbiból,  úgyhogy  ebben  az irányban törtem elõre.  Elsõ kiadott
+mûvünk  nem  is  volt más, mint egy fixcímes, trackload-os zenelemez.  (Ezeket
+mint  negatív  jelzõkként  kell értelmezni!) Idõvel rájöttem, hogy ennél sokal
+járhatóbb  útja  is  van  a  kódolásnak.   Ez  pedig a relokálható exe file-os
+programok készítése.
+
+ Na, bevezetõnek ennyi elég is lesz!
+
+ Aki  már kódolt, pl.  C=64-en gépi kódban, annak talán nem lesz olyan nehéz a
+kezdés (mármint Amigán).
+
+ Én  az AsmOne(v1.29)-et használom, és ha hivatkozom valami assemblerre, akkor
+az ez (rengeteg hátránya mellett van egy csomó rossz tulajdonsága is ;-).
+
+ Egy kicsit a számítógéprõl:  (Amigáról ugye!)
+
+ Hol  is  kezdjem?   Van  a gépünkben egy processzor, írható olvasható memória
+(RAM)  (áram  nélkül  elfelejt  mindent!), csak olvasható memória (ROM) (elõre
+bele  van  égetve  a  program, karakterkészletek...stb.), háttértárak (floppy,
+vinyó), különbözõ segédáramkörök (kép-, hangmegjelenítõk...)....
+
+ A  processzor,  mint valami király, manipulálhatja a memóriát, ír bele, olvas
+belõle,   összead,   kivon,  másol,  noszogatja  a  többi  segédáramkört,  meg
+mindenféle  érdekességet csinál.  Ahhoz, hogy valamit is tudjon csinálni, kell
+egy  ún.   program,  ami  konkrétan  meghatározza, hogy mit is csináljon, mert
+program  nélkül a processzor nem képes semmire!  Ha bekapcsoljuk a gépünket, a
+RAM-ja  még  tök  üres (pontossabban zagyvaságokkal van tele), és hogy a proci
+akár  egy lemezrõl betöltsön valamit, ahhoz is már egy programra van szüksége.
+Ezért  van  a  ROM.   Bekapcsolás  után  a  gépünk  (ha nincs benne vinyó) egy
+floppy-t  vár,  amirõl  betölené  esetleg a programot.  Ez a betöltõ program a
+ROM-ba  van  égetve.   Ezen  felül még a nagyon sûrûn használt ún.  könyvtárak
+(library-k)  is a ROM-ban kaptak helyet.  Bocs, ha egy kicsit homályosan írtam
+le  a  dolgokat, de sajnos nehezen tudok egy kezdõ fejével gondolkodni.  De ne
+csüggedj!   Nekem  sem volt elsõre minden világos!  És ha valakinek valami nem
+világos:   1  -  olvassa el többször; 2 - csak szóljon nekem nyugodtan!  (Ugye
+mindenki  hallott már a néma gyerekrõl, meg az értetlen anyjáról?) (gyk:  néma
+gyereknek a kurva anyját!  ;-) Akinek nem inge...)
+
+ A  processzor  mellett  még nagyon fontos szerepe van a video áramkörnek, ami
+azért  felel,  hogy a memória egy adott részét megjelenítse mint képet, az ún.
+DMA-n  keresztül.   Ezt a video-áramkört a processzor is vezérelheti, de ebben
+rendkívül  nagy segítséget nyújt neki a copper nevû segédáramkör, ami nem más,
+mint egy progamozható processzor, ami a programjának megfelelõen vezérelgeti a
+videóáramkört.  Ezt a bizonyos programot copper-listának hívják.
+
+ Van  még  egy áramkör, ami további segítség a procinak a kép manipulálásában,
+ez  pedig  a blitter.  A neve egy rövidítés(féle), ami utal a funkciójára.  Ez
+BLock  Image Transferer, azaz négyzetes alakú képmásoló (kb.).  Másolás közben
+még  rengeteg  logikai  mûveletre  is  képes, ami elég sokoldalúvá teszi ezt a
+ketyerét.    Az   Amiga  1200-asban  pl.   ez  végzi  a  floppy-s  adatátvitel
+bitmanipulációit (asszem).
+
+ Még  a  fentieken  kívül lényegesebb áramkörök, amiknek DMA-ja van:  audio és
+floppy.
+
+ A  DMA  azért felel, hogy megossza a memóriahozzáférést a sok áramkör között,
+amelyek a Chip-RAM-hoz hozzáfernek.
+
+ A fent leírtak részletes leírását megtalálod a Hardware Manual mellékletben!
+
+
+ A memória felépítése:
+
+ A  memória  legkisebb egysége a bit.  Az értéke 0 vagy 1 lehet.  Ezt úgy kell
+elképzelni,  mint  egy kapcsolót.  Vagy be van kapcsolva, vagy nincs.  A bitek
+nyolcas  csoportokra  vannak szedve.  Egy ilyen nyolcas csoport a byte (bájt).
+Ez  a  legsûrûbben  használt  fogalom  a  memória,  ill.  adatok mennyiségének
+mérésére.   Ennek  az  elsõ  többszöröse  a kilobyte (kilobájt) (KB), ami 1024
+bájtnak  megfelelõ.  Következõ a Megabájt, ami 1024 kilobájt, aztán a Gigabájt
+(1024  Megabájt),  aztán  a  Terrabájt (na, kitaláljátok, hogy ez hány Giga?).
+Többel egyenlõre nem érdemes foglalkozni.  (Majd talán pár év múlva ;-)
+
+ Egy  bájtban  a  bitek elhelyezkedése a következõ:  a legkisebb helyiértékû a
+0-ás  számú  bit,  a  következõ  az  1-es ...  a legnagyobb helyiértékû a 7-es
+számú.  Tehát jobbról balra megy a számozás:
+
+ 76543210 <- bitek számozása (ennek késõbb még hasznát vesszük)
+ 00001010 <- bitek a bájton belül
+
+ Ezt   kettes   számrendszerbeli   számnak   is  felfoghatjuk.   Az  assembler
+programokban négyféle számrendszerrel találkozhatunk:  kettes, nyolcas, tízes,
+tizenhatos.   Ugye  a  tízes  számrendszert nem nagyon kell magyarázni.  (Vagy
+mégis?!)  (A többit meg úgyis tanultuk már az általános iskolában!  :-) De hát
+ki  emléxik  már  arra?)  A  nyolcast  el  is  felejthetjük,  én  még soha nem
+használtam.   A  kettesnek  az  alapja, hogy csak nullákból és egyesekbõl áll.
+Tehát  helyiértékenként  két  értéket  vehet  fel.   A  tízes  tízet  (0-9), a
+tizenhatos  pedig  (mily meglepõ) tizenhat értéket vehet fel helyiértékenként.
+Ez  pedig  0-9  ÉS(!)  a-f.  Ugye a hiányzó számjegyeket pótolni kellett, ezek
+pedig:   a,b,c,d,e,f  betûk.   Így  megvan  a  16  "számjegy".  Ha leírunk egy
+számot,   mint   pl:    10,  abból  nem  biztos,  hogy  kiderül,  hogy  milyen
+számrenszerben  adtuk  meg.   Ezért  adtak a számrenszereknek egy jelölést:  a
+16-osnak  (hexadecimális  vagy  csak röviden hexa) $ (dollárjel), tehát a szám
+így  néz  ki:   $1fc0.   A kettes számrendszer (bináris) jele % (százalékjel):
+%10110010.  (Az oktálisé (nyolcas) pedig « (kukac).) A tízes számrendszert nem
+kell külön jelölni az AsmOne-ban.  Egyes monitorprogramokban viszont a hexa az
+alap,  és  a  tízest kell jelölni külön (asszem !  jellel).  A leggyakrabban a
+16-os  (hexa)  számrendszerrel  fogunk  találkozni.   Debuggerek  és monitorok
+jóformán csak ezt használják.
+
+ Nézzünk  egy  kis  átszámolási példát:  a fenti %00001010 (vagy %1010) számot
+átszámítjuk mondjuk decimálisba.  Menjünk a legkisebb helyiértéktõl kezdve.
+
+  _ezek itt a bináris szám bitjei
+ /
+ 0 darab   1-es = 0
+ 1 darab   2-es = 2
+ 0 darab   4-es = 0
+ 1 darab   8-as = 8
+ 0 darab  16-os = 0
+ 0 darab  32-es = 0
+ 0 darab  64-es = 0
+ 0 darab 128-as = 0
+                -----
+ az összesen:    10
+
+ Tehát a %1010 az egyenlõ 10-zel.  ($0a) (Ha minden bit magas (1) lenne, akkor
+az eredmény 8 biten ábrázolható legnagyobb szám lenne, ami 255 ($ff).)
+
+ Egy kicsit másképp:
+
+ 0*2^0=0  (a * jel a szorzás jele, a ^ jel a hatványozás jele.)
+ 1*2^1=2  (ugye azt senki sem felejtette el,
+ 0*2^2=0  hogy minden számnak a 0. hatványa 1!)
+ 1*2^3=8  (a hatványozás mûvelet prioritása nagyobb mint a szorzásé (erõsebb)!
+ 0*2^4=0  tehát azt elõbb kell elvégezni!)
+ 0*2^5=0
+ 0*2^6=0
+ 0*2^7=0
+ ^   ^
+ |   |_ezek a bit helyierték számok
+ |
+ |_ezek a bitek
+
+ Visszafelé  számolni  egy  kicsit már gázosabb, de nem kell szenvednünk vele,
+mert  pl.   az  AsmOne-ban  van  beépített  számológép,  amivel átválthatjuk a
+számokat,  HA  kell!   De nem nagyon kell.  Még sûrûn fogunk találkozni a word
+(szó),  ill.  longword (hosszúszó) kifejezéssel.  A word az 16 bit (2 byte), a
+longword pedig 32 bit (4 byte vagy 2 word).
+
+ Ezek bitkiosztása a következõ:
+
+ word:  (max. értéke 65535 vagy $ffff)
+
+ 1.byte   2.byte  <- bájtok (pl. a memóriában)
+
+ 11111100 00000000 <- bitek számozása word-nél (tízesek)
+ 54321098 76543210 <- (egyesek)
+
+ 01001001 10101100 <- a bináris adat (word) ( = 18860 = $49ac)
+
+ longword:  (max. értéke 4'294'967'295 (4 Giga) vagy $ffffffff)
+
+  1.byte   2.byte   3.byte   4.byte  <- bájtok
+
+ 33222222 22221111 11111100 00000000 <- bitek számozása
+ 10987654 32109876 54321098 76543210
+
+ 01001010 00110001 01001001 00010101 <- a bináris adat (longword)
+                                       ( = 1244743957 = $4a314915)
+
+ Mint látjátok, egy word ábrázolható 4 hexa számjegyen, a longword pedig 8-on.
+Ebbõl  könnyû  kiszámolni, hogy 1 hexa számjegy 4 bitbõl áll.  Ha mind a 4 bit
+magas,  akkor  az  15-nek felel meg, azaz $f.  Itt egy kis táblázat, ami talán
+kezdetben segít megérteni a dolgokat:
+
+ $0 = %0000 =  0
+ $1 = %0001 =  1
+ $2 = %0010 =  2
+ $3 = %0011 =  3
+ $4 = %0100 =  4
+ $5 = %0101 =  5
+ $6 = %0110 =  6
+ $7 = %0111 =  7
+ $8 = %1000 =  8
+ $9 = %1001 =  9
+ $a = %1010 = 10
+ $b = %1011 = 11
+ $c = %1100 = 12
+ $d = %1101 = 13
+ $e = %1110 = 14
+ $f = %1111 = 15
+
+ Eddig még csak pozitív számokról beszéltünk.  De a negatív számok ábrázolasát
+is  megoldották.   Mégpedig  úgy, hogy a legmagasabb helyiértékû bit az elõjel
+bit.  Elõjellel a következõképpen alakul a kis táblázatunk:
+
+ $0 = %0000 =  0  vagy így is leírhatnánk:  -$8 = %1000 = -8
+ $1 = %0001 =  1                            -$7 = %1001 = -7
+ $2 = %0010 =  2                            -$6 = %1010 = -6
+ $3 = %0011 =  3                            -$5 = %1011 = -5
+ $4 = %0100 =  4                            -$4 = %1100 = -4
+ $5 = %0101 =  5                            -$3 = %1101 = -3
+ $6 = %0110 =  6                            -$2 = %1110 = -2
+ $7 = %0111 =  7                            -$1 = %1111 = -1
+-$8 = %1000 = -8                             $0 = %0000 =  0
+-$7 = %1001 = -7                             $1 = %0001 =  1
+-$6 = %1010 = -6                             $2 = %0010 =  2
+-$5 = %1011 = -5                             $3 = %0011 =  3
+-$4 = %1100 = -4                             $4 = %0100 =  4
+-$3 = %1101 = -3                             $5 = %0101 =  5
+-$2 = %1110 = -2                             $6 = %0110 =  6
+-$1 = %1111 = -1                             $7 = %0111 =  7
+
+ Így  4  biten  nem  sok  gyakorlati jelentõsége van, csak a könnyebb megértés
+kedvéért foglalkozom ennyivel.  Ha 8 bitrõl lenne szó, így nézne ki:
+
+ -$80 = %10000000 = -128  elõjel nélkül:  $80 = %10000000 = 128
+ -$7f = %10000001 = -127                  $81 = %10000001 = 129
+ -$7e = %10000010 = -126                  $82 = %10000010 = 130
+
+ ...
+
+ -$02 = %11111110 =   -2                  $fe = %11111110 = 254
+ -$01 = %11111111 =   -1                  $ff = %11111111 = 255
+  $00 = %00000000 =    0
+  $01 = %00000001 =    1
+  $02 = %00000010 =    2
+
+ ...
+
+  $7d = %01111101 =  125
+  $7e = %01111110 =  126
+  $7f = %01111111 =  127
+
+ Az  "elõjel  nélkül"  talán  úgy  pontosabb,  hogy  "elõjel  figyelmen  kívül
+hagyásával".   A word, longword negatív számok ugyanígy néznek ki, csak 16, 32
+bittel!
+
+ word:
+
+ -$8000 = %1000000000000000 -32768  elõjel nélkül: $8000 = 32768
+ -$7fff = %1000000000000001 -32767                 $8001 = 32769
+
+ ...
+
+ -$0001 = %1111111111111111     -1                 $ffff = 65535
+  $0000 = %0000000000000000      0
+  $0001 = %0000000000000001      1
+
+ ...
+
+  $7ffe = %0111111111111111  32766
+  $7fff = %0111111111111111  32767
+
+ longword:
+
+ -$80000000 = %1000000000000000000000000000000 -2147483648
+ -$00000001 = %1111111111111111111111111111111          -1
+  $00000000 = %0000000000000000000000000000000           0
+  $00000001 = %0000000000000000000000000000001           1
+  $7fffffff = %0111111111111111111111111111111  2147483647
+
+
+ Minden   memóriában  levõ  bájtnak  van  egy  ún.   címe  (sorszáma),  amivel
+hivatkozhatunk  rá.   Ez  a  memóriacím  egy  longword.   Elméletileg  tehát 4
+Gigabájtot  tudnánk  megcímezni,  de a gyakorlatban fizikailag nem lehet ennyi
+memória eccerre a gépünkben.
+
+
+ Talán akkor tisztázzunk néhány fogalmat:
+
+ Assembly  language:   (assembly  nyelv)  ez  végül  is a "gépi" nyelv.  Ezzel
+fogunk mi foglalkozni.
+
+ Assembler  sourcecode:   (röv.:  source, forrás..) ez egy textfile, amiben az
+assembly-ben  megírt  mnemonikok  (emlékeztetõ  szimbólumok)  vannak.   Ezt  a
+textfile-t  fogjuk  mi  megírni  egy  texteditor segítségével, mint "gépi kódú
+programot".
+
+ Assembler (program):  (összeszerelõ) a fent említett textfile-ból megcsinálja
+magát a gépi kódú programot, amit már a processzor közvetlenül meg is ért.
+
+ Mnemonic:   (emlékeztetõ  szimbólum)  minden gépi (proceszor) utasításnak van
+egy  emlékeztetõ  szimbóluma (szava), amirõl az ember is könnyen ráismer, hogy
+az  mit  takar!   (Fõleg,  ha  tud  egy csöppet englisül!) Ugye senki nem akar
+hexában kódolni?
+
+ Debugger:   egy  olyan  program,  amivel az elkészült programunk futását és a
+processzor     regisztereinek    tartalmát    nyomon    követhetjük.     Ezzel
+leellenõrizhetjük  a  programunkat,  ill.   kiszûrhetjük  az esetleges hibákat
+(bugokat).   Kezdõknek  nagyon ajánlom, mert ezzel sokkal könnyebb megérteni a
+processzor, ill.  az utasítások mûködését!
+
+ Library  (könyvtár):   elõre  elkészített,  sûrûn  használt  programrészletek
+(rutinok)  gyûjteménye,  amit maga a rendszer is használ, de a mi életünket is
+nagymértékben  megkönnyítheti.   Néhány  már  eleve  be  van  égetve  az Amiga
+memóriájába  (ROM)  (mint  C=64-en a kernel rutinok), de lemezen is lehetnek a
+libs:  könyvtárban.
+
+ Subrutin  (rutin):   programrészlet,  amit  többször  meghívhatunk  különbözõ
+helyekrõl.   Ha  egy  programban  többször  végre  kell hajtani ugyanazokat az
+utasításokat,  akkor  érdemes  ún.   rutinban  megírni, majd egy erre szolgáló
+utasítással   meghívni.   Így  memóriát  takaríthatunk  meg  vele,  és  sokkal
+áttekinthetõbb lesz a programunk.
+
+ Makró:  a szubrutinhoz hasonlítanám azzal a fõ különbséggel, hogy fordításkor
+a  hívások helyén ott lesz az egész kód, amit a makró nevén elõre definiáltunk
+(megspórolva  ezzel  a  hívó-visszatérõ  utasítást).   A  program írását és az
+áttekinthetõségét könnyíti.
+
+ Pseudo  utasítás:   (ál  utasítás)  valójában  nem kerül bele a kódba, csak a
+fordítás menetét tudjuk vezérelni vele.  pl:  if, even, org, load ...
+
+ Fordítás:   amikor  a  txt  forrásból  a processzor (CPU) által érthetõ kódot
+generálunk (az assemblerrel).
+
+ Program:   (kód)  (valaki  le  tudná  ezt pontosan és szépen írni?) maradjunk
+annyiban,  hogy  ez  a  már  lefordított kód, amit a proci megért, és futtatni
+tudunk.
+
+ Reloc  exe  file:   ha  már  lefordítottunk  egy  source-ot  kóddá,  akkor  a
+memóriában  egy  fix helyen van (egyelõre) (AsmOne!), az abszolút ugrási címek
+és mutatók fix helyekre mutatnak a programban.  Ha csak egyszerûen kimentenénk
+a memória azon részét, ahol a programunk van, akkor csak ugyanide visszatöltve
+mûködne helyesen (ha van benne abszolút címes hivatkozás).  Erre találták ki a
+relokációs  táblázatot  (hé emberek, jól mondom?), ami tartalmazza az abszolút
+hivatkozási   helyeket.   Ha  a  wo  (write  object)  paranccsal  kimentjük  a
+lefordított  kódot, akkor az assembler megcsinálja ezt a "reloc" táblázatot az
+ún.   exe  fájl-ba.  Ha DOS-ból futtatjuk ezt az "exe" fájlt, akkor a rendszer
+ennek   a  reloc  táblázatnak  a  segítségével  újra  kiszámítja  az  abszolút
+hivatkozások  helyes értékeit.  Ennek a lényege, hogy bárhová visszatöltheti a
+DOS a memóriába a programunkat, mûködni fog.  (Ha valaki ezt szebben meg tudja
+fogalmazni, hát ne tétovázzon!)
+
+ Fixcímes,  trackload-os:   az  elõzõ  ellentéte.   Fordítás  után  egy  adott
+memóriaterületet   mentünk   ki,   amelyet  ezután  ugyanarra  a  memóriacímre
+visszatöltve  tudunk  futtatni.   Ez elavult, rossz, nehézkes, néha nem mûködõ
+megoldás!   Azt  soha  nem  tudhatjuk,  hogy  a  program  felhasználója milyen
+memóriakiosztással  van megáldva.  Lehet, hogy nem is lesz az illetõnek azon a
+címen  memóriája a gépében, ahová mi fordítottuk a kódunkat.  Tehát nem is fog
+mûködni  a  kód.   A  rendszer  sem  komálja,  ha valaki csak úgy beleszarik a
+ventillátorba.
+ A  trackload-os meg kb.  annyit jelent, hogy a rendszer-rutinokat megkerülve,
+direkt olvassuk be a floppy-ról az adatokat.  Hát ez kb.  olyan önsanyargatás,
+mint a "fixcímes" megoldás (Engem is csak a tudatlanság vitt rá...).
+
+ Relatív  címzés:   (pc-relatív)  az  aktuákis  címhez  (programszámláló (pc))
+képesti  különbseget  adjuk csak meg.  (Nem kell "relokálni".) Sok utasításnál
+lehet alkalmazni.
+
+ Adatbusz:  a processzor és a memória között ezen az ún.  adatbuszon mennek az
+adatok.  Az Amiga 1200-asnak 32 bites az adatbusza, tehát egy menetben akár 32
+bitet  is képes ki- ill.  bemásolni a memóriába a processzor.  Továbbá a többi
+"segédáramkör"  is  ezen  az adatbuszon keresztül pumpálja át a kis bitjeit (a
+DMA segedelmével).
+
+ Címbusz:  ahhoz, hogy a memória tudja, hogy melyik bájttal akar a proci (vagy
+más  áramkör)  foglalkozni,  meg kell neki határozni a bájt sorszámát (címét).
+Ez a címbuszon keresztül történik, ami alap A1200-es esetén 24 bites (max.  16
+Megabyte), de a turbókártyákon levõ 68030 (vagy nagyobb) procinak már 32 bites
+a címbusza, tehát 4 Gigabyte méretû memóriát tud megcímezni.
+
+ RAM:  (Random Access Memory) (véletlen elerésû tár) írható-olvasható memória.
+Kikapcsoláskor  (ha nincs áram) elfelejt mindent, tehát még kikapcs.  elõtt el
+kell  menteni  belõle  a  mûvünket, ha nem akarunk újra dolgozni.  A "véletlen
+elérésû"  meg  annyit  jelent,  hogy  nem  "soros" elérésû, magyarul bármelyik
+bájtot (word-öt, longword-öt) ki-be másolhatjuk bármikor.
+
+ ROM:   (Read  Only  Memory)  (csak olvasható tár) az elõre beégetett adatokat
+csak kiolvasni lehet belõle.  Kikapcs.  után is megmaradnak az adatok benne.
+
+ Chip-RAM:   egy  alap A1200-asban csak ez a fajta memória található, ami 2 MB
+(Megabájt).   A  legfontosabb  tulajdonsága,  hogy a processzor mellett az ún.
+DMA-k is elérik.
+
+ Fast-RAM:   röviden:   memóriabõvítéseken (turbókártyákon) található memória.
+Legfontosabb  tulajdonsága,  hogy  a processzoron kívül más áramkör nem férhet
+hozzá (a SCSI kivtelével), viszont a processzor sokkal gyorsabban kezeli!
+
+ DMA:   (Direct  Memory  Access)  (közvetlen  memória  hozzáférés (kb.)) Ez az
+áramkör  azért felel, hogy a sok segédáramkör (kép, hang...) között megossza a
+memóriahozzáférést.
+
+ Háttértár:   -nak  nevezzük azt, ami a gép áramtalanítása után is megtartja a
+"rámásolt"  adatokat.  Ez leggyakrabban a floppy (mágneslemez, hajlékonylemez)
+vagy vinyó (winchester, merevlemez, harddisk...).
+
+ Monitor  (program):   olyan  program,  amivel  különbözõ formában nézhetjük a
+memória  tartalmát.   Pl:   hexa-byte,  -word,  -longword,  ascii  karakterek,
+disassembler  (azaz  megpróbálja visszafordítani a monitor a memória tartalmát
+assembler  utasításokká,  azaz  "dizasszemblál"  (disassembler)) (nyelvtudorok
+elõre!).
+
+ Mempeeker:   grafikusan  nézhetjük vele a memória tartalmát (általában csak a
+Chip-RAM-ét).   (Ajánlom  a ChipPeek nevû programot!  Freeware, rövid, kúúl és
+magyar!)
+
+ Resource:   ez egy olyan program, ami az exe file-ból megpróbálja megcsinálni
+a forráslistát.  Természetesen a kommentek nem lesznek benne, de a címkék néha
+igen!   Egy  nagyon  használható verzió a Resource 6.0 (esetleg ha van késõbbi
+verzió, akkor az!).
+
+ MIPS:   (Million  Instruction  Per Second) (millió utasítás per másodperc) ez
+egy  mértékegységféle,  ami  a  processzorok  utasításvégrehajtási  sebességét
+hivatott mérni.  A mért eredmény programtól függõen nagyon eltérõ is lehet.
+
+ MFLOPS:   (Million  FLoatingpoint  Operation Per Second) (millió lebegõpontos
+mûvelet per másodperc) ez meg a lebegõpontos társprocesszor (FPU) sebességének
+mérésére szolgáló mértékegységféle.
+
+ CPU   Cache:    a  processzoron  belüli  ideiglenes  tároló,  amelybe  még  a
+feldolgozás  elõtt  betöltõdnek  az  utasítások  és/vagy  az  adatok.   Így  a
+processzornak  többnyire  nem  kell  várnia  a  RAM-ra.   Ez  nagyon látványos
+gyorsulást  eredményez  pl.   egy  alap  Chip-RAM-os  A1200-ason,  amelyen egy
+ciklust  futtatunk.   68030-tól  már  van  ún.  instruction (utasítás) és data
+(adat) cache.  (a 68020-ban csak instruction cache van.)
+
+ Stack:   (verem) a memóriában elhelyezkedõ ideiglenes tároló, amelybe fõleg a
+szubrutin-hívásokkor  a  visszatérési  cím  tárolódik.   Ide  mi  is rakhatunk
+adatokat (fõleg regiszter adatok ideiglenes tárolására alkalmas).  Nevét onnan
+kapta,  hogy  elõször az utoljára belerakott adatot kapjuk vissza, ha olvasunk
+belõle.   (Mint  egy verem.) A veremmutató (a7 vagy sp) az éppen aktuális adat
+címére mutat.  Ha írunk a verembe, a veremmutató az adat méretének megfelelõen
+elõször  csökken,  majd  az  új  címre  kiíródik  az  adat, visszaolvasáskor a
+veremmutatóban  levõ  címrõl  kiolvassuk  az  adatot,  majd  a  veremmutatóhoz
+hozzáadódik a megfelelõ méret.
+
+ Supervisor  mód:   (vagy  megszakítás)  programok futása közben szükség lehet
+olyan  feladatokra,  amelyek  csak  kis  mértékben  foglalják  le a processzor
+idejét, de fontos, hogy bizonyos idõközönként végrehajtásra kerüljenek.  Ilyen
+peldául  az  egér,  billentyûzet  stb.   figyelése.   Ezeket  a  rutinokat ún.
+megszakításba  érdemes  tenni.  A fõprogram futása közben (mondjuk egy idõzítõ
+segítségével) megszakíthatjuk a fõprogram futását, (az éppen aktuális utasítás
+még feldolgozásra kerül, és a következõ utasítás címe, meg az állapotregiszter
+tartalma  a verembe kerül (ssp-be)), ezzel a megszakítási rutint futtatjuk le.
+Ha    ez   végzett,   visszatöltõdik   a   megszakítás   elõtti   állapot   az
+állaptregiszterbe, meg a pc-be, és a fõprogram fut tovább.
+
+ Vektor:  ugrási cím.  Pl.  a processzor vektortáblázat a processzor különbözõ
+megszakításainak   ugrási   címeit   tartalmazza.   Ezt  természetesen  mi  is
+átírhatjuk, ezzel lehetõvé téve a megszakítások saját feldolgozását.
+
+ Báziscím:   táblázatoknak  általában  van egy ún.  báziscíme.  A táblázatokon
+belül  (a  báziscímhez  viszonyítva)  az  adott  címek  (általában) fix helyen
+vannak,  de  a  táblázatok  a  memórián  belül már bárhol lehetnek.  Ezért van
+szükség  a  báziscímre.  Ha tudjuk az adott "táblázat" báziscímét, akkor abból
+már  ki  lehet számítani a táblázat részeinek memóriacímét is.  A library-knak
+is  van  egy  ilyen  táblázatféléje, amely az ugrási címeit tartalmazza, és ha
+megnyitunk  egy  library-t,  akkor  az adott library báziscímét kapjuk vissza,
+amibõl  már könnyen kiszámíthatjuk a library rutinjainak ugrási címeit.  Ezzel
+lehetõvé  téve  a  késõbbi fejlesztéseket a komtatibilitás megtartása mellett.
+Ez (is!) egy nagyon jól eltalált, és elegánsan megoldott valami az Amigában!
+
+ Valami esetleg kimaradt?
+
+
+ Mi kell a kódoláshoz (programozáshoz)?
+
+ Amiga,   villany,   kóder,   assembler   fordító,  txt  szerkesztõ.   Ezek  a
+nélkülözhetetlen  dolgok.   Ami  viszont  még  nagyon  meg  tudja könnyíteni a
+dolgodat:  (monitor =-) vinyó, Fast-RAM, gyorsabb CPU (fontossági sorrendben).
+Ha rendszer(barát) kódot akarsz csinálni, nem árt beszerezni egy autodocs nevû
+leírást  a  rendszer  libaray-k  függvényeirõl,  ill.   az ezekhez tartozó ún.
+include  file-okat.   (meg  egy  angol-magyar szótárat) (az elõzõ kettõ asszem
+mellékelve lesz).
+
+ Az Assembler:
+ Én melegen ajánlom az AsmOne 1.29-et, mert kúúl beépített txt szerkesztõje és
+debuggere   van,   meg  szerintem  (majdnem)  mindent  tud,  amit  egy  Amigás
+assemblernek  tudnia kell.  De ezen kívül van még néhány alternatíva:  Devpac,
+PhxAss ...
+
+ AsmOne elõnyei:
+
+ - kúúl&fast txt szerkesztõ
+ - kúúl debugger
+ - kúúl&fast monitor, disassembler
+ - makrók támogatása
+ - MC68000-68040 CPU-k, FPU, MMU támogatás (itt van benne bug is)
+ -  beépített  help  a hardver regiszterekrõl (custom registers (=R)) (pl:  ha
+partin kódolsz, és nem vitted magaddal a hardver leírásodat, nagyon jól jön.)
+ - több source egyszerre (f1-f10 gombokkal tudunk váltani)
+
+ Hátrányai:
+
+ - nincs a txt editorban Undo! (mint a CED-ben)
+ - néhány kis(?) bug van benne (FPU-MMU)
+ - elõre le kell foglalni a munkaterületet
+
+ A többi assemblert tapasztalat hiányában most inkább kihagyom.
+
+ Forráslista (source) felépítése:
+
+ Egy sorban egy utasítás áll. Ennek felépítése:
+
+ <címke> <assembly mnemonik> <operandusok> <kommentek>
+
+ <címke>
+ Az  utasítások  elé  rakhatunk címkéket, erre ugrásoknál (is) hivatkozhatunk.
+Ha a paraméterezésnél kipipáljuk a "Label :" opciót, akkor kettõsponttal kell,
+hogy  végzõdjön  a  címke.  Ellenkezõ esetben nem kezdõdhet a sor mnemonikkal,
+ill.  pszeudo utasítassal, csak címkével, szóközzel vagy tabulátorral.  Ha nem
+rakunk  kettõspontot  a címke után, mindenképpen kell legalább egy szóköz vagy
+tabulátor a címke és a mnemonik közé, ill.  nem szabad szóközt vagy tabulátort
+a címke elé rakni.  A címkék külön sorban is állhatnak.
+
+ <assembly mnemonik>
+ A mnemonik maga a utasítás.
+
+ <operandusok>
+ Az  Operandus  nem  mindig  szükséges  (utasítástól  függ).   Talán ez lesz a
+legbonyolultabb az egészben a rengeteg címzésmód miatt.
+
+ <kommentek>
+ A   kommenteket  saját  magunknak  írjuk  be  emlékeztetõnek  a  forráskódba.
+Fordításkor nem veszi figyelembe a fordító.
+
+ Néhány példa a fentiekre:
+
+ Helyes  szintaxisok:   (a  legelsõ  az  "általános",  jól átlátható formátum:
+címke,   kettõspont,  tabulátor  mnemonik,  tabulátor,  operandus,  tabulátor,
+pontosvesszõ, komment)
+
+hali:  move.l   d0,a0   ; az eredmény másolása az a0-ba
+hali:move.l d0,a0       ; az eredmény másolása az a0-ba
+  hali: move.l  d0,a0;az eredmény másolása az a0-ba
+hali move.l d0,a0 ; az eredmény másolása az a0-ba
+
+ Helytelen szintaxisok:
+
+halimove.l      d0,a0   ; az eredmény másolása az a0-ba
+hali:   move.ld0,a0     ; az eredmény másolása az a0-ba
+ hali   move.l  d0,a0   ; az eredmény másolása az a0-ba
+
+
+ Hát  akkor  talán  ugorgyunk bele a sûrûjébe.  Mindenki próbálja bepötyögni a
+következõket (vagy betölteni az example_01.s-t az újság Bonus könyvtárából):
+
+s:      move.l  #12,d0
+        move.l  #8,d1
+        add.l   d1,d0
+        rts
+
+ Ennyi!   Ez  már  egy  "gépi kódú program", pontosabban annak az assembly-ben
+megírt  forrása.   Az  s:  nem is kéne az elejére, de én mexokásból mindig így
+kezdem  a  forrásaimat.   (Néha  jól  jön,  pl.:   ha  disassemblálni akarom a
+lefordított  kódomat  ellenõrzés  céljából,  akkor  parancs  módban kiadok egy
+"ds"-t.)  Most  mi  is  tegyünk  így!   Elõször parancs módban adjuk ki az "a"
+parancsot,  ennek  hatására az assembler lefordítja a memóriába a forrásunkat.
+("Pass1..   Pass2..   No  Errors" (ez kb.  annyit jelent, hogy szintaktikailag
+helyes  volt  a  forráskódunk.  Ha bármi mást ír ki az assembler, akkor valami
+nem  jó.) Az s:  címke ezután oda mutat, ahol a kód kezdõdik.) Ezután adjuk ki
+a "ds" parancsot.  Kb.  ezt fogjuk látni:
+
+5766EB10 203C0000000C         MOVE.L      #$0000000C,D0
+5766EB16 223C00000008         MOVE.L      #$00000008,D1
+5766EB1C D081                 ADD.L       D1,D0
+5766EB1E 4E75                 RTS
+5766EB20 12345678             MOVE.B      $78(A4,D5.W*8),D1
+5766EB24 ...
+
+^^^^^^^^ ^^^^^^^^^^^^         ^^^^^^      ^^^^^^^^^^^^^^^^^
+|        |                    |           |
+|        |                    |           Ezek a disassemblált utasítások
+|        |                    |           operandusai.
+|        |                    ^
+|        |                    Ezek a disassemblált utasítasok.
+|        ^
+|        Ez maga a lefordított kód hexában.
+^
+Ez itt a memóriacím, ahol az  adott  utasítás (sor)  kezdõdik.  (Ez akármi  is
+lehet, attól függõen, hogy hova fordította az AsmOne a memóriában a kódunkat.)
+
+ Kell  ezen  valamit még magyarázni?  Látható, hogy az összes számot a program
+hexában  írta  ki.   Az  RTS  után van egy $12345678 szám.  A mi programunknak
+lefoglalt  terület  után  az  AsmOne  mindig  odarak  egy  ilyen $12345678-at.
+Ellenõrzéskor  nagyon jól jöhet.  Ennek a $12345678-as számnak a disassemblált
+része  persze  gagyi!   Ezután  meg bármi lehet, attól függõen, hogy mi maradt
+elõzõleg  a  memória  azon részén.  (Most mindenki belekukkanthat a gépe lelki
+világába!   Csak  gyõzze  értelmezni!)  Ezután már le-fel mehetünk a kurzorral
+(mitöbb,   akár  át  is  írhatunk  akármit,  de  errõl  egyenlõre  lebeszélnék
+mindenkit).
+
+ Akor vesézzük ki, hogy mit is csinál valójában ez a kód:
+
+s:      move.l  #12,d0 <- Ez az utasítas longword-ösen 12-t másol a d0
+                          adatregiszterbe.
+        move.l  #8,d1  <- Ez meg 8-at a d1-be
+        add.l   d1,d0  <- Ez a d1 adatreg. tartalmát longword-ösen hozzáadja a
+                          d0 adatregiszter tartalmához, és az eredmény a d0-ba
+                          kerül.
+        rts            <- Ez egy visszatérõ utasítás.
+
+ Hát  akkor  a  lényeg:   futtassuk le a lefordított kódunkat:  adjuk ki a "j"
+parancsot  (parancs  módban!).  Ilyenkor az AsmOne a processzort a kódunk elsõ
+sorára  ugrasztja  (vagyis ebben az esetben az s:  címkére).  Ez azonnal le is
+fut,  a visszatérõ utasítás (rts) meg visszaadja a vezérlést az AsmOne-nak, és
+a regiszterek adatai kiíródnak (benne az eredménnyel):
+
+>j
+
+D0: 00000014 00000008 00000000 00000000 00000000 00000000 00000000 00000000
+A0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 5735764C
+SSP=570C2324 USP=5735764C SR=0000 -- -- PL=0 ----- PC=EOP      VBR=00000000
+>
+
+ A  felsõ sor tartalmazza az adatregiszterek tartalmát d0-07-ig, a középsõ sor
+a   címregiszterek   tartalmát   (a0-a7),   az  alsó  sor  pedig  a  különbözõ
+veremmutatók, az állapot regiszter és a VBR tartalmát (ezekrõl majd késõbb).
+
+ Az  elõbb néztük, hogy az eredmény a d0-ba kerül.  Ha megnézzük, ott $14 van.
+Számoljuk  át  ezt  az  AsmOne segítségével decimálisba.  Adjuk ki a következõ
+parancsot:
+
+>?$14
+
+ (vagy egyszerûbben: ?d0)
+ (Az eredmény alatta megjelenik:)
+
+$00000014         20 "...." %00000000.00000000.00000000.00010100
+
+^^^^^^^^^         ^^  ^^^^  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+|                 |   |     |
+|                 |   |     Ez a bináris eredmeny (8 bites tagolásban).
+|                 |   ^
+|                 |   Ez a lonword 4 bájtjának az ascii megfelelõje.
+|                 ^
+|                 Ez a decimális eredmény.
+^
+Ez itt a hexa eredmény.
+
+ Tehát  az eredményünk 20.  Ha összeadjuk a 8-at meg a 12-t, az tényleg annyi.
+Tehát mûlödik a programunk!  Lehet örülni!
+
+ Most   hajtsunk  végre  egy  debuggolást,  hogy  még  vizuálisabbá  tegyük  a
+programunk  futását:   adjuk  ki  az  "ad"  parancsot.  Ilyenkor (beállítastól
+függõen!) megjelenik a forráslistánk, jobb oldalt a processzor regiszterek, az
+alsó  sorban meg a disassemblált forrásunk aktuális sora.  A forráslistában az
+aktuális  sor  inverz.   A  programunkat  léptetni  a  le-kurzorral,  ill.   a
+jobbra-kurzorral  tudjuk.   A  különbség annyi, hogy ha van szubrutin hívás, a
+jobbra-kurzorral azt is nyomon követjük.  Tehát, ha minden igaz, akkor a
+
+s:      move.l  #12,d0
+
+sor  inverz.  Nyomjunk egy kurzor-le billentyût.  Az aktuákis sort végrehajtja
+a debugger, és az inverz kurzort egy sorral lejjebb ugrasztja.  A D0 regiszter
+tartalma  inverzre  vált.   Ez  azért van, hogy jobban nyomon tudjuk követni a
+regiszterek   változását.    Ha  valamelyik  regiszter  tartalma  megváltozik,
+inverzre   vált.    A  D0  tartalma  pedig  $c  (azaz  12).   Nyomjunk  mégegy
+kurzor-le-t.   A  8-as  bekerül  a  D1-be.   Kurzor-le:   a  D1 tartalma (a 8)
+hozzáadódik  a  D0 tartalmához (12-höz), ami $14-re vált (20).  Kurzor-le:  az
+RTS  hatására  a  fejlécbe  kiíródik  az  "End  of program reached!!" (program
+végéhez értünk) üzenet.  Innen egy Esc gombbal kiléphetünk.
+
+ Hát kb.  így mûxik egy nagyon eccerû program.  Mindenkinek nagyon ajánlom ezt
+a  módszert  (a  debuggolást)!   Így  sokkal könnyebb megismerni az utasítások
+mûködését (a száraz leírások mellett)!
+
+ A  processzoron  belül  meg  kb.   így  néz  ki egy utasítás feldolgozása:  A
+programszámláló  regiszter  címén  levõ  utasítás  betöltõdik  a  memóriából a
+processzorba,  a processzor értelmezi azt, majd ha kell további word-öket tölt
+be  a memóriából, közben mindig növeli a pc-t, majd ha minden cullang bent van
+a  prociban  az  utasításhoz,  akkor  végre  is hajtja azt.  Ha végzett, kezdi
+elölrõl a következõ utasításon.  Nem biztos, hogy ez a legmegfelelõbb leírás a
+processzor  mûködésérõl,  de  ha  így  elképzeled,  akkor  nem jársz messze az
+igazságtól.
+
+
+ Regiszter(ek):  a processzoron belül lévõ "mini memória", amiben a processzor
+többnyire dolgozik, az eredmények ide kerülnek, stb...
+
+ fõbb regiszterek:
+
+ nyolc adatregiszter (d0-d7)
+ nyolc címregiszter (a0-a7) (ebbõl az utolsó az ún. veremmutató (a7 vagy sp))
+ állapot regiszter (sr)
+ program számláló regiszter (pc)
+
+ Adatregiszterek:   (d0-d7)  a processzor a mûveletek többségét csak itt tudja
+elvégezni, és nem lehet címzésre használni, csak indexelésre.
+
+ Címregiszterek:   (a0-a7)  ezekben  csak  néhány mûvelet használható, viszont
+lehet  címzésre  és  indexelésre  is  használni.   Csak  longword-ös mûveletek
+hajthatók   végre   benne.    Ha  például  valamelyik  regiszterhez  word-ösen
+hozzáadunk  egy  számot,  az  elõbb elõjelhelyesen longword-ösre bõvül és csak
+ezután  adódik  hozzá  az adott címregiszterhez.  Az a7 regiszternek speciális
+funkciója   van:    ez  tölti  be  a  stackpointer  (sp)  szerepét.   (Így  is
+hivatkozhatunk  rá.)  Ebbõl  kétféle  (68000!)  is  van:   egy usp (user stack
+pointer),  és  egy  ssp  (supervisor  stack pointer).  A különbség annyi, hogy
+supevisor  (ún.   kizárás  vagy  megszakítás) üzemmódban a processzor az ssp-t
+használja, különben az usp-t.  68020-tól felfelé már háromféle verremmutató is
+van:   usp,  isp  (interrupt  stack pointer v.  megszakítási verem mutató) msp
+(master  stack  pointer  v.  master verem mutató), de ilyen megkülönböztetésre
+többnyire  nem  lesz  szükség.   Elég ha csak "a" vermet használjuk, a többi a
+proci dolga...
+
+ Programszámláló  regiszter:   (pc) mindig a következõ utasítás címe található
+meg benne.  A processzor innen tudja, hogy mi következik éppen soron.  Ez (is)
+egy longword-ös regiszter.
+
+ Állapot regiszter:  (sr) 16 bites (word-ös) regiszter.  Az alsó 8 bit (ccr v.
+condition   code  register)  tartalmazza  a  mûveletek  eredményére  vonatkozó
+állapotokat  jelzõ  biteket.   A felsõ 8 bit a processzor állapotára vonatkozó
+biteket tartalmazza.
+
+fedcba9876543210 <- bitek sorszáma (hexában ;-)
+TTSM-MMM---XNZVC <- állapot bitek (a "-" nem használt) (68020+)
+10^^ 210   ^^^^^
+^^|| ^^^   |||||_átvitel (carry)
+| || |     ||||
+| || |     ||||_túlcsordulás (overflow)
+| || |     |||
+| || |     |||_nulla (zéró)
+| || |     ||
+| || |     ||_negatív
+| || |     |
+| || |     |_bõvítés (extend)
+| || |
+| || |_megszakítás maszk
+| ||
+| ||_Master megszakítasi állapot
+| |
+| |_Supervisor állapot
+|
+|_T1, T0 trace állapot bitek.
+
+
+ C  -  Átvitel  bit:   értéke  mindig  1,  ha  egy aritmetikai mûvelet során a
+céloperandus legmagasabb bitjén átvitel történt.
+
+ V  -  Túlcsordulás  bit:   azt  jelzi,  hogy  egy  aritmetikai  mûvelet során
+túlléptünk a számtartományon.  Pl:  ha összeadáskor az eredmény már nem fér el
+a regiszterben.  Osztásnál azt jelzi, hogy a hányados 16 bitnél nagyobb lenne,
+vagy hogy az osztandó túl nagy.
+
+ Z  - Zéró bit:  értéke 1, ha összehasonlításkor a két operandus egyenlõ, ill.
+ha az eredmény nulla.
+
+ N  -  Negatív  bit:   értéke  akkor  1,  ha  a  kapott  eredmény  legmagasabb
+helyiértékû bitje 1, tehát az eredmény egy negatív szám.
+
+ X - Bõvítõ bit:  ugyanúgy viselkedik mint az átvitelbit, csak nem változtatja
+meg annyi utasítás.  Néha jól jön.
+
+
+ Megszakítási  maszk:   ennél  a processzornál 7 megszakítasi szint van.  Ezek
+1-7-ig  vannak  számozva.  A megszakítási maszk felfogható egy 3 bites számnak
+is  (0-7),  amely  arra  szolgál,  hogy  a  beérkezõ  megszakítasokat  esetleg
+letiltsa,  ha  éppen  egy  nagyobb  vagy  egyenlõ  prioritású  megszakítás van
+feldolgozás   alatt.    Ez  automatikusan  beállítódik  az  adott  megszakítás
+létrejöttekor.   Egy  megszakítás  csak akkor engedélyezett, ha a megszakítási
+maszk  értéke  kisebb,  mint  a  megszakítás prioritási foka.  Ha pl.  jön egy
+alacsonyabb  prioritású  megszakítás,  akkor  az a magasabb után természetesen
+feldolgozásra  kerül.  Van egy olyan megszakítás, amely nem maszkolható (level
+7  irq,  vagy  NMI  (non  maskable interrupt)), ez azonban csak hardveres úton
+kívülrõl generálható.
+
+ Supervisor,  ill.  master állapot:  ezeket az állapotokat beállító (és jelzõ)
+bitek.
+
+ Trace állapot bitek:  a processzor nyomkövetési állapotát beállító (és jelzõ)
+bitek.
+
+
+ A  fenti  regisztereken  kívül  még  (processzortól  függõen)  vannak további
+regiszterek:  (ezekkel többnyire nem kell foglalkoznunk)
+
+ VBR:    (vektor   bázis  regiszter)  a  processzor  megszakítási  vektorainak
+báziscímét átírhatjuk, ill.  megnézhetjük vele.
+
+ CACR  (cache  control)  és  CAAR  (cache  address):   a  processzoron  belüli
+cache-tároló  vezérlésére  szolgáló regiszterek.  Az exec.library segítségével
+könnyen átírhatjuk (ha kell).
+
+
+ Na,  lányok  és  fiúk!  Úgy gondolom, hogy mára ennyi elég is lesz!  Már csak
+azért  is,  mert  nem  akarok  több számot késni.  Így is késtem már jócskán a
+tervezetthez  képest...  Legközelebb már konkrét példákat fogunk vesézgetni, +
+a  bejövõ  kérdésekre  válaszolok,  ha  tudok,  illetve  a  kimaradt dolgokkal
+foglalkozom,  ha van ilyen.  Ha bármi kérdésed vagy mondanivalód van a témával
+kapcsolatban, akkor azt a következõ címre írhatod:
+
+                             Szabó Raimund (Ray)
+                                 8640 Fonyód
+                              Szivárvány u. 17.
+                               Tel: 85/467-057
+                          Email: ray_try«hotmail.com
+
+ IRC-n  néha  este  10  és reggel 5 között véletlenszerûen megtalálható vagyok
+Ray^TRY néven.
+
+ Valahol   mellékelve   lesznek  még  nagyon  hasznos  információk  a  témával
+kapsolatban.  Ugye Chris?  Ezek összefoglalása:
+
+ -  Hardware_Manual:   a  gép  ún.   custom  register-eivel foglalkozik fõleg.
+Tudni  kell  még,  hogy  ez  egy  Amiga  500-assal foglalkozó iromány!  De sok
+segítséget nyújt A1200-ashoz is, mert nagyon sok dolog azonos!  Ez szerencsére
+magyar nyelvû!
+
+ -  Aga.Guide:   foglalkozik  az AGA képességeivel, és összegoglalja az összes
+custom-register-t.  Angol nyelvû guide fájl.
+
+ -   MC680x0.guide:   a  Motorola  680x0  processzorok  utasításainak  leírása
+található meg benne angolul.
+
+
+ Késõbb még lesz egy Autodocs meg egy Includes 3.1 lzx is, ami a rendszerbarát
+programozáshoz nélkülözhetetlen.  Az elõzõ a library-k meg device-ok részletes
+leírását  tartalmazza,  az  utóbbi pedig azokat az ún.  include fájlokat, amik
+megkönnyítik  a  rendszerbarát  forráslisták  készítését.   Eddig nem találtam
+eredeti   arhívokat,   úgyhogy   lehet,  hogy  majd  az  én  autodocs-includes
+könyvtáraimat fogom össze-lzx-ezni.  Ebben legalább van néhány extra is!  ;-)
+
+
+                        Bye!
+
+                                                                  ½Ray¼
+
+ A  fenti  dokumentációk  a  Power  címén  szerezhetõk  be,  két  lemez és egy
+felbélyegzett válaszboríték fejében.  Na, ezt jól megmondtam.
+
+                                                                ¾Chris¼

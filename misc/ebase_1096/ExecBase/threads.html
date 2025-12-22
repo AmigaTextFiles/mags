@@ -1,0 +1,359 @@
+<html>
+<head><title>Multithreading</title></head>
+<body>
+<h1 align=center>Multithreading on the Amiga</h1>
+<h3 align=center>by John Corigliano</h3>
+<center><p><a href="mailto:jcorig@strauss.udel.edu">&lt;jcorig@strauss.udel.edu&gt;</a></p></center>
+<p>I'm sure everyone knows that the Amiga is a <i>multiprocessing</i> computer,
+but you might not be aware that it is not really a <i>multithreading</i>
+computer. On the Amiga, it is fairly easy to create many processes, each
+one running independently of one another, but it's much harder to create
+one process that is many threads running simultaneously. The difference
+between a process and a thread is that while a process is a completely
+unique entity, a thread is dependent on some parent from which it inherits
+all of its resources.</p>
+
+<p>Threads are mostly widely used on multiprocessor machines (i.e., an
+Amiga with five PowerPC's in it :). A process's work load can be distributed
+among as many threads as there are CPU's. A good example is a fractal image
+generator: when it is time to render the fractal, the program can branch into
+x threads (where x = number of CPU's). Each thread would have its own part
+of the display to render. With each thread working simultaneously, the
+amount of time required to render the image is dramatically decreased.</p>
+
+<p>Obviously there is no such thing as a multiprocessor Amiga. However, this
+does not mean that we cannot use threads to our advantage. Threads can be
+used to make our programs more efficient and easier to mantain. Here are
+a few examples:
+<ul>
+<li>A clock. You can create a thread to display a clock, then forget
+about it.
+<li>Asynchronous I/O. Threads can be used to fill a buffer with
+data from a file while the main process does something else.
+<li>Port monitoring. A thread can be created to continually read
+data from a serial port while the main program handles the GUI.
+<li>NPC control in games. Create multiple threads to keep all the little
+critters in your game active while the player is accessing the GUI.
+<li>And many more...
+</ul>
+</p>
+<p>The Amiga OS contains a few different functions to create processes
+and tasks: <i><tt>CreateProc()</tt></i>, <i><tt>CreateNewProc()</tt></i>,
+<i><tt>AddTask()</tt></i>, etc (<i><tt>CreateTask()</tt></i> is not part
+of the OS but is an <i>amiga.lib</i> function). The problem with these
+functions, as far as multithreading goes, is that the task or process created
+has no association with the process that started it - it has its own stack,
+global data, program counter, etc. Even if the process that created the
+new process were to terminate, the new process would still be valid.</p>
+
+<p>There are many situations where this is desired, but if we want to create
+a multithreaded program we are left out in the cold. What do we do if we
+want to create a thread that inherits all of its parent's resources? With
+only the OS, there's not much we can do. So we must turn to the compiler
+makers and the <i><tt>geta4()</tt></i> function.. This function (replaced
+by the <b><tt>__saveds</tt></b> keyword in SAS/C) can be used to create
+a new process that has access to the parent process' global data. This
+is exactly what we need to create threads!</p>
+
+<p>To understand why we need <i><tt>geta4()</tt></i> let me attempt to
+explain how compilers manage global data. I'm sure you all know that a variable
+is usually just a memory address (it could also be a cpu register).  So when
+you declare:
+<pre>
+int x;
+
+</pre>
+You are basically telling the compiler to set aside sizeof(int) bytes in memory
+and that you will be referencing that memory by the name "x". The compiler has
+no way of knowing what x's location will be when the program is actually run, so
+it cannot use <i>absolute</i> addressing to access "x". Instead, the compiler adds
+some code to your program that is executed before <tt>main()</tt>.  Part of what
+this code does is allocate a block of memory that will contain all of your
+program's global data (or does the OS do this?). So, when the compiler builds your
+code, it does not create an absolute memory address for "x", but rather calculates
+an offset into this block of memory that will hold the value of "x".</p>
+
+<p>Thus, when the program is run, and the line
+<pre>
+x = 1;
+
+</pre>
+is executed, the code gets the absolute address of the block of memory that was
+designated at program init to be the global data vector, and adds whatever offset
+is used for "x" and puts the value "1" into that memory location.</p>
+
+<p>Let's assume that when the program was compiled, the compiler determined that
+"x" will be 0x08 bytes into the global data vector. Then the program is run and
+the init code allocates a chunk of memory at absolute location 0x01A567C0 to be
+used as the global vector.  When the program needs to access "x" it will just
+need to go to address &lt;0x01A567C0 + 0x08&gt; to find x. So the assembly
+language code for <tt>"x = x + 1"</tt> might be:
+<pre>
+; Prolog code has already put address of global vector in reg a4
+move.l    0008(A4),D0   ; Move the value at (A4)+8 into register D0
+addq      #1,D0         ; Add 1 to the value in D0
+move.l    D0,0008(A4)   ; Move that value back into (A4)+8
+</pre></p>
+
+<p>The reason the function is called <i>geta4()</i> is because the cpu register
+<b>a4</b> is traditionally used to hold the absolute address of the global vector.
+Normally, when the compiler codes a function call, it adds a little bit of extra
+code that ensures that register a4 does indeed point to the global vector.
+However, there are some situations where a4 does not contain that address. This
+is the case when a function is entered either from a hook callback or a function
+like <i><tt>CreateNewProc()</tt></i>. So we need <i><tt>geta4</tt></i> for our
+threads which get started by <i><tt>CreateNewProc()</tt></i>.</p>
+
+<p>The code I have written relies on some features of the SAS/C developement
+package. I am not sure if other compilers support these:</p>
+<ul>
+<li>the <b><tt>__saveds</tt></b> keyword or <i><tt>geta4()</tt></i> function
+<li>the <b><tt>__asm</tt></b> keyword to denote that a functions arguments
+are passed in registers
+<li>the <b><tt>register</tt></b> keyword to denote what registers the arguments
+will be in
+</ul></p>
+
+<h3>Using The Code</h3>
+<p>To create a thread, all your program needs to supply is a name, stack
+size, entry point, and priority. All the work of creating, launching and
+terminating the thread is done by the supplied code. The code uses the
+<i><tt>CreateNewProcTags()</tt></i> function to create a process. The entry
+point of the new process is declared with the <tt><b>__saveds</b></tt>
+keyword so that it has complete access to the parent's data. </p>
+
+<p>For example, suppose you have a function:
+
+<pre>
+VOID MyNewThread(THREAD *me, APTR param);
+
+</pre>
+
+that you want to make the entry point of a new thread. All you need
+to do is call my<i><tt> T_CreateThread()</tt></i> function with a
+name for your new thread, a stack size (4096 is usually sufficient),
+pass <i><tt>MyNewThread</tt></i> as the third argument, and supply
+a priority for the thread: </p>
+
+<pre>
+THREAD *my_thread = T_CreateThread("My Thread", 4096, MyNewThread, 0);
+
+</pre>
+
+<p>This will not start the thread! It just allocates the memory required
+for it and initializes the data. To start the thread going, use the <i><tt>T_Run()</tt></i>
+function:
+
+<pre>
+if (!T_Run(my_thread, NULL)) ErrorMessage("Thread did not run!");
+
+</pre>
+
+At this point, the thread should be up and running - unless <i><tt>T_Run()</tt></i> fails
+for some reason. At any point after the the thread is created you can check
+its status, which will be one of the following:
+
+<ul>
+<li>Idle - not started yet
+<li>Running - it is running
+<li>Terminating - it is in the process of shutting down
+<li>Dead - it has terminated
+</ul>
+
+The thread can terminate in one of two ways:
+
+<ul>
+<li>It can end by itself
+<li>The parent process can tell it to end
+</ul>
+
+When the parent process wants to tell the thread to shut down, it can
+use the <i><tt>T_Terminate()</tt></i> function. This function sets
+a signal that belongs to the thread. When the thread sees that this signal
+has been set, it should self-terminate. If the parent wants to wait until
+the thread is finished terminating, it can call the <i><tt>T_WaitForThread()
+</tt></i>function. This does not return until the thread is completely
+dead.</p>
+
+<p>Lastly, <i><tt>T_KillThread()</tt></i> needs to be called to free all
+the resources associated with the thread. <i><tt>T_KillThread()</tt></i>
+calls <i><tt>T_TerminateAndWait()</tt></i> so you can skip the call to
+<i><tt>T_TerminateAndWait()</tt></i> if you want to kill the thread
+<i>and</i> wait for it in one call.</p>
+
+<p>The thread can use the <i><tt>T_ShouldQuit()</tt></i> function
+to periodically check if it should shut down. This function checks to see
+if the signal to quit has been set. If the thread needs to <i><tt>Wait()</tt></i>
+on some event - like a window IDCMP port - it can use the <i><tt>T_WaitForEvents()</tt></i> function.
+<i><tt>T_WaitForEvents()</tt></i> acts very much like the regular
+exec.library <i><tt>Wait()</tt></i> function, but it also waits on
+the quit signal. So the thread can check the return value of this function
+to see what event was set:
+
+<pre>
+ULONG sig, win_sig = 1L&lt;&lt;window-&gt;UserPort-&gt;mp_SigBit;
+sig = T_WaitForEvents(my_thread, win_sig);
+if (sig &amp; win_sig) /* The event was an IDCMP message */
+else /*The event was a quit signal */
+</pre></p>
+
+<hr>
+
+<h3>The Specifics</h3>
+
+<p>The code uses SignalSemaphores to keep everything in sync. A semaphore
+is a data type that the exec.library uses to keep multiple tasks from accessing
+the same data at the same time. A process has to obtain the semaphore and
+once it does that, it has exclusive access. If another process tries to
+obtain the same sempahore, exec will put the second process to sleep until
+the first process has released the semaphore. If a third process comes
+along and tries to obtain the semaphore, it too is put to sleep and won't
+be awoken until the second process has released the semaphore. Exec queues
+up all processes that want to obtain the semaphore in a First-In-First-Out
+(FIFO) order.</p>
+
+<p>My thread code uses semaphores for a slightly different reason: it
+is used to avoid busy-waiting for the thread to terminate. I could have
+just used a boolean value that the thread could set to TRUE when it has
+started and FALSE when it terminates. However, when I want to wait for
+the thread to terminate, I would have to do something like this <i>very
+bad</i> code:
+
+<pre>
+while (TRUE == thread-&gt;IsRunning) /* NULL */;
+
+</pre>
+
+You should try to avoid this kind of looping on a multitasking system
+like the Amiga! By using a semaphore, I let exec do all the work: when
+I want to check if the thread has terminated I just try to obtain
+the semaphore. Exec will put my process to sleep until the thread has released
+the semaphore - which is the very last thing it does before it terminates.</p>
+
+<hr>
+
+<h3>Synchronizing Threads</h3>
+One of the most important issues regarding threads is making sure that
+the integrity of data shared between thread is safe. You have no real
+way of knowing when one thread loses the processor and another gains
+control of it. This can cause problems when sharing data. An example
+will explain.
+</p><p>
+In the archive there are two programs: <i>bank</i> and <i>banksync</i>.
+Both programs create five very simplified <i>bank accounts</i>. Each
+account gets an initial balance of $1000.00. Then five threads are
+created and each one is assigned its own account. Then each thread
+repeatedly <i>transfers</i> some random amount of money from its account
+to on of the other accounts:
+
+<pre>
+/* From bank.c */
+while (!T_ShouldQuit(me)) {
+    other = rand() % NUMTHREADS;
+    if (my_act != other) { /* Don't transfer to self! */
+        amt = rand() % (accounts[my_act] / 2);
+        dummy1 = accounts[other] + amt;
+        dummy2 = accounts[my_act] - amt;
+        Delay(10); /* Hope for a task switch */
+        accounts[other] = dummy1;
+        accounts[my_act] = dummy2;
+    }
+    Delay(rand() % 10);
+}
+
+</pre>
+
+You make think this seems like a dumb way to do a transfer, but this
+is just an example! I want the transfer to be spread out over multiple
+lines of code. The reason is that the problem I want to create has
+a better chance of occuring if the thread is interrupted at some
+point in the <i>if</i> loop.
+</p><p>
+Suppose we have this situation: accounts[0]=1000, accounts[1]=1000,
+and accounts[2]=1000. Thread #0 has control and sets its local
+copy of <i><tt>other</tt></i> to 1 and <i><tt>amt</tt></i> to
+125. <i><tt>dummy1</tt></i> would be 1125 and <i><tt>dummy2</tt></i>
+would be 875. So thread #0 is now ready to set accounts[1] to
+1125 and accounts[0] to 825. But then it enters the Delay() and
+exec decides to switch control over to thread #2. It  sets its local
+copy of <i><tt>other</tt></i> to 0 and <i><tt>amt</tt></i> to
+300. <i><tt>dummy1</tt></i> would be 1300 and <i><tt>dummy2</tt></i>
+would be 700.
+</p><p>
+Now assume that when thread #2 enters the Delay() and exec switches
+back to thread #0. It sets  accounts[1] to 1125 and accounts[0]
+to 825. Then thread #2 gets the cpu again, but here's the problem.
+When thread #2 calculated <i><tt>dummy1</tt></i> and
+<i><tt>dummy2</tt></i> accounts[0] was 1000. At this point however,
+accounts[0] is 825, but thread #2 is not aware of this. It sets
+accounts[0] to 1300 and its own account, accounts[2], to 700.
+</p><p>
+The accounts should always total to 3000 (assuming we have three
+accounts and each one had an initial balance of 1000). This value
+should never change because money is only being moved from account
+to account; no new money is earned and no money is ever spent.
+However, in the above example, the total is:
+<pre>
+    accounts[0] = 1300
+    accounts[1] = 1125
+    accounts[2] =  700
+    ------------------
+    Total         3125
+
+</pre>
+Obviously this is not correct!
+<p></p>
+The problem is being caused by task switching happening at critical
+points in the loop. The sollution: <i>SignalSemaphores</i>. The <b>Windows</b>
+API uses <i>Critical Sections</i> to mark a section of code as
+being accesible by only one task at a time. There is no such thing
+on the Amiga, but we can simulate it with SignalSemaphores:
+<pre>
+/* From banksync.c */
+while (!T_ShouldQuit(me)) {
+    other = rand() % NUMTHREADS;
+    if (my_act != other) {
+        ObtainSemaphore(&amp;ss);
+            amt = rand() % accounts[my_act];
+            dummy1 = accounts[other] + amt;
+            dummy2 = accounts[my_act] - amt;
+            Delay(10);
+            accounts[other] = dummy1;
+            accounts[my_act] = dummy2;
+        ReleaseSemaphore(&amp;ss);
+    }
+    Delay(rand() % 10);
+}
+
+</pre>
+The variable <i>ss</i> is a <i><tt>struct SignalSemaphore</tt></i>
+decalared globally and initialized in <i><tt>main()</tt></i> before
+the threads were created.
+</p><p>
+By using the semaphore, we are <b>guaranteed</b> that only one thread
+at a time will execute the code betweem <i><tt>ObtainSemaphore(&ss)</tt></i>
+and <i><tt>ReleaseSemaphore(&ss)</tt></i>. Now the program will always
+work correctly! Of course there will be a performance hit, but there's
+not too much we can do about that.
+</p>
+<hr>
+
+<h3> Bonus! </h3>
+<p>Even though this is an article about C programming, I am adding my
+<b>C++</b> Thread class at no extra charge. It is an abstract base class,
+which means that you can't instatiate any objects of type Thread. You must
+derive your own classes from the Thread class. The derived class should 
+provide a constructor and override the pure virtual <i><tt>Start()</i></tt>
+function. There is an example in the archive.</p>
+<hr>
+<h3>The Code</h3>
+
+<p>The code is by no means complete! There is plenty of room for improvement
+and I encourage you to do so. </p>
+
+<p><a href="ftp://ftp.del.net/pcfiles/mopp/thread.lha">The source</A> - FTP download 69,956 bytes.
+<hr>
+<a href="default.html">Table of Contents</a>
+
+</body>
+</html>

@@ -1,0 +1,160 @@
+@Database SHOAH.s.guide
+@Node MAIN "Our first command"
+Our first command ( Gosh ).
+
+1.
+	move.b	#10,d0
+
+In BASIC ( AMOS and all the others ) this would be...
+
+	LET	a = 10
+
+So in our example the data register d0 = 10, now we're cooking.
+Lets have a closer look at the actual command...
+
+	move.b	#10,d0
+
+	The ".b" means only move a byte
+	The #10 means the value 10 ( Yes really )
+	The two values MUST be seperated by a ","
+	The data register ( eg d0 ) must be at the end
+
+So work out what's wrong with the next line ?
+
+	move.b	#420,d0
+
+Remember back to our chat about @{"bytes" link SHOAH.s:text/bits_etc/MAIN} ? The value #420 is too big for a byte,
+so use this instead,
+
+	move.w	#420,d0
+
+2.
+	move.b	#10,test
+	...
+test	dc.b	0
+
+What the hell am I doing now ? All I've done is use a memory location instead
+of a data register, ie the value #10 is stored in memory ( When you give a
+name to a memory location, eg "test", it's known as a @{"label" link SHOAH.s:text/labels/MAIN} ).
+But what's all this "dc.b" stuff ? Well it's not a CPU instruction like move,
+it's an assembler command and means "Set this byte equal to the value x ", 
+where x in this case is 0 ( Have a read of your assembler instructions, they
+explain it much better then I can ).
+
+	move.w	#420,test2
+	...
+test2	dc.w	0
+
+The same thing, just using words ( And longwords are exactly the same again ).
+
+Whenever I've read how to code any language you just get a load of examples
+like the above ones, but no real reason why, so lets pretend we're going to
+write SensiSoccer, we could use what you learned above for...
+
+	move.b	#0,Player1_Score	;Put 0 into this memory location
+	move.b	#0,Player2_Score	;and do the same here
+	...
+Player1_Score	dc.b	0
+Player2_Score	dc.b	0
+
+This will reset the scores, then we can start the game. So you can see how we
+can use the command for something useful ( We only use bytes, 'cause who is
+going to score more than 255 goals ? ). The ";" symbol is very important, it
+allows you to comment a line of code, which is something you should get into
+the habit of doing straight away ! It makes understanding code a whole lot
+easier ( It's like the REM statement in BASIC ).
+
+3.
+	move.b	Next_Match,Current_Match
+	...
+Next_Match	dc.b	10
+Current_Match	dc.b	0
+
+Which moves, in this example, the value 10 into current_match.
+Things should be starting to fall into place now ( Don't panic if they're
+not ).
+
+4.
+	move.l	#Player1_Score,a0	;a0 points to the label Player1_score
+	move.b	#0,(a0)			;Put the value 0 into a0
+	...
+Player1_Score	dc.b	0
+
+We start by pointing a0 to the label ( You have to use a .l for this because
+you are dealing with an address, and all addresses ( ie memory locations )
+are 32bits long ).
+The next command puts the value 0 into the CONTENTS of a0 ( You can use .b
+or .w instead of .l if an address register is enclosed in brackets ).
+But why use this method when we were doing fine before ? Well let's make the
+example a bit bigger,
+
+5.
+	move.l	#Player1_Score,a0	;a0 points to the label Player1_score
+	move.b	#0,(a0)+		;Put the value 0 into a0, and add
+	move.b	#0,(a0)			;1 to a0
+	...
+Player1_Score	dc.b	0
+Player2_Score	dc.b	0
+
+This works nearly the same as the last example, but the "+" symbol means
+add 1 to a0, so it now points to the label Player2_Score, therefore the
+next line now puts a 0 in there. Using this method we can mess around with
+lists ( A bit later on ).
+
+6.
+	move.b	#1,d0			;d0 will be used as an offset
+	move.l	#Player1_Score,a0	;Point to what we want
+	move.b	#0,(a0,d0.b)		;Put 0 into a0 + the offset
+	...
+Player1_Score	dc.b	0
+Player2_Score	dc.b	0
+
+This adds the value of d0 to a0, so we again point to Player2_Score, or...
+
+7.
+	move.l	#Player1_Score,a0	;Point to what we want
+	move.b	#0,1(a0)		;Put 0 in there + the offset
+	...
+Player1_Score	dc.b	0
+Player2_Score	dc.b	0
+
+Does the same thing !
+
+Now back to...
+
+8.
+	move.b	#0,(a0)+
+
+You can also use a minus instead, ie
+
+	move.l	#Player2_Score,a0	;Point to this label
+	move.b	#0,-(a0)		;Put a 0 in there, then subtract 1
+	move.b	#0,(a0)			;from it
+	...
+Player1_Score	dc.b	0
+Player2_Score	dc.b	0
+
+Clear ? 		*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+**+*+*
+			+ Remember...                      +
+			* A + ALWAYS comes AFTER  eg (a0)+ *
+			+ A - ALWAYS goes INFRONT eg -(a0) +
+			*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+**+*+*
+
+9.
+	move.b	Player1_Score,d0	;Get the value of this label
+	move.b	Player1_Score(pc),d1	;ditto
+	...
+Player1_Score	dc.b	0
+
+What does the (pc) do ? Well the first line means get the actual address,
+where as the second line means get the address a certain distance away. The
+difference being that the (pc) command takes up a bit less memory because
+it only needs the distance between the command and the label, the first
+command stores the actual memory address ( Which is 32bits remember ? ).
+The disadvantage to this is that it only works within a 16bit range.
+
+
+Now you've learned a load about the move command, and you've also learned all
+about the different ways of addressing memory, ie address modes, all in one
+painless go.
+@Endnode

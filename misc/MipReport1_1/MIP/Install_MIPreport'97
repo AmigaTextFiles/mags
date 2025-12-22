@@ -1,0 +1,211 @@
+; $VER: Install_M.I.P.report'97  by Wincle/VRT
+(
+
+(procedure copymip1
+ (
+    (copyfiles (source "mip1.dat") (dest @default-dest))
+    (copyfiles (source "mip.ndx") (dest @default-dest))
+    (copyfiles (source "mipreport") (dest @default-dest))
+    (copyfiles (source "mip.exe") (dest @default-dest))
+    (copyfiles (source "readme") (dest @default-dest))
+    (copyfiles (source "formular") (dest @default-dest))
+    (if (= MWB 0)
+      (
+       (copyfiles (source "icony/mwb_mipreport.info") (dest @default-dest) (newname "MIPreport.info"))
+       (copyfiles (source "icony/mwb_readme.info") (dest @default-dest) (newname "ReadMe.info"))
+      )
+    )
+
+    (if (= MWB 1)
+      (
+       (copyfiles (source "icony/mipreport.info") (dest @default-dest))
+       (copyfiles (source "icony/readme.info") (dest @default-dest))
+      )
+    )
+
+
+
+
+ )
+)
+
+(procedure copymip2
+ (
+    (copyfiles (source "mip2.dat") (dest @default-dest))
+ )
+)
+
+
+(procedure askmwb
+    (set MWB
+	(askchoice
+	    (prompt "\nPou⁄…v¡” Magic Workbench?\n")
+	    (help (cat "\nano .... naform¡tuje disk v df0:\n"))
+            (choices "ano" "ne" "co?")
+	    (default 0)
+        )
+     )
+(if (= mwb 2)
+ (
+  (message "\n\nVopatruj se Bobe?")
+  (set MWB 1)
+ )
+)
+
+)
+
+
+; formatuje disketu ,pokud je format
+
+
+(procedure formatdf0
+   (if (= (exists "sys:system/format" (noreq)) 1)
+	(
+	    (set formatovat
+		(askchoice
+		    (prompt "\nChce” Form¡tovat disketu?\n")
+		    (help (cat "\nano .... naform¡tuje disk v df0:\n"))
+	            (choices "ne" "ano" "ne, ale HDD!")
+		    (default 0)
+		)
+	    )
+
+	  (if (= formatovat 1)
+  		  (
+
+                      (set commandstring ("sys:system/format DRIVE df0: NAME MIPEmpty FFS QUICK NOICONS"))
+	    	      (run commandstring)
+                      (set commandstring ("c:install  df0:"))
+	    	      (run commandstring)
+
+                   )
+	  )
+
+	(if (= formatovat 2)
+	(abort "\n\n\nNejse” padlej na hlavu?\n")
+        )
+
+       )
+    )
+)
+
+
+
+
+(welcome "\nM.I.P. report InstallER(ror)\n\n© Vertical Syndicate '97\n")
+
+(if (= @user-level 0)
+  (abort "\n\nLAMER MODE\n\n Tenhle skript nem ⁄e pou”t≈t takovej lejmr jako se” TY")
+)
+(if (= @user-level 1)
+  (abort "\n\nBoNes MODE\n\n Hele u⁄ si to nastaf na toho eXperta , a‘ to neinstaluje” e”t≈ zejtra")
+)
+
+    (askmwb)
+    (set vyber
+	(askchoice
+	    (prompt "\nChce” instalovat na HDD nebo na diskety?:\n")
+	    (help
+		(cat "\nInstalace na HardDisk .... zabere 1,6 MB.\n"
+		     "\nInstalace na Diskety .... vy⁄aduje t“i DD diskety\n\n"
+		)
+	    )
+	    (choices "HardDisk" "Diskety" "CD-ROM" "WC")
+	    (default 0)
+        )
+     )
+
+; HDD
+(if (= vyber 0)
+ (
+   (set @default-dest
+    (askdir (prompt "Select the directory to install")
+	    (help @askdir-help)
+	    (default @default-dest)
+    )
+   )
+
+
+    (makedir (tackon @default-dest "MIP"))
+
+    (if (= MWB 0)
+       (copyfiles
+	 (source "icony/mwb_MIP.info")
+	 (dest @default-dest)
+	 (newname "MIP.info")
+       )
+    )
+
+    (if (= MWB 1) (copyfiles (source "icony/MIP.info")(dest @default-dest)))
+
+    (if (= MWB 2) (exit "\n\n\nVopatruj se Bobe!\n\n:)))"))
+
+    (set @default-dest (tackon @default-dest "mip"))
+    (copymip1)
+    (copymip2)
+    (copyfiles (source "fonts") (dest "fonts:") (all))
+ )
+)
+; Diskety
+(if (= vyber 1)
+ (
+   (message "\n\n\n\nVlo⁄ PRVNÈ disk do drajvu")
+   (formatdf0)
+   (set @default-dest ("df0:"))
+   (copymip1)
+   (copyfiles (source "fonts") (dest "df0:fonts") (all))
+   (copyfiles (source "libs") (dest "df0:libs") (all))
+   (copyfiles (source "s") (dest "df0:s") (all))
+   (run "c:relabel df0: MIP1")
+
+   (message "\n\n\n\nVlo⁄ DRUHeJ disk do drajvu")
+   (formatdf0)
+   (run "c:relabel df0: MIP2")
+   (set @default-dest ("df0:"))
+   (copymip2)
+
+ )
+)
+
+;       CD ROM
+(if (= vyber 2)
+   (
+    (message "p“iprav si tyto pom cky:\n\nbaterku\nh“eb…k\nklad…vko\nledlampu\nkabel na paraleln… port")
+    (message "\nnah⁄af h“eb…k ledlampou.\nrozsvit si bateku.\nbosou nohou ”l¡pni na paraleln… kabel.\nP“ed sebe si polo⁄ CD-ROM.\nVol…zni si pravej ukazov¡√ek na ruce.\nStr√ ukazov¡√ek do z¡suvky\n\nGood Luck.")
+   )
+)
+
+;	WC
+
+(if (= vyber 3)
+   (
+	    (set malefemale
+		(askchoice
+		    (prompt "\nSe” Kluk nebo Holka ?\n")
+		    (help (cat "\nvodpove⁄ a nevymej”lej!\n"))
+	            (choices "KLUK" "HOLKA")
+		    (default 0)
+		)
+            )
+
+	    (if (= malefemale 0)
+		(
+		 (message "\n\nWC Pause MODE\n\n Zvedni prkŸnko!")
+                 (abort "\nCENSORED!!!\n\nHele takhle to asi nenaistaluje”.\nVyser se na to a vem to ra√i znova")
+		)
+	    )
+            (if (= malefemale 1)
+		(
+		 (message "\n\nWC Pause MODE\n\n Sedni si na prkŸnko!")
+                 (abort "\nCENSORED!!!\n\nHele takhle to asi nenaistaluje”.\nVem to ra√i znova")
+		)
+	    )
+
+
+
+   )
+)
+
+
+
+); end install

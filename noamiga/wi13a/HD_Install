@@ -1,0 +1,102 @@
+; ----------------------------------------------------------------------------
+; HD-Installscript für WARRIOR`S INN by Twist
+; $VER: WI HD Install 1.4e
+; ----------------------------------------------------------------------------
+
+
+
+(SET @abort-button "Stop / Cancel")
+(SET @default-dest "SYS:")
+(SET @error-msg "Da is`n Fehler aufgetreten... An error appeared!...:(")
+(SET @special-msg "Ein katastrophaler Fehler ist aufgetreten! A terrible error appeared!  ")
+
+(WELCOME "Willkommen zur Harddisk-Installation des WARRIOR`S INN, dem einzigartigen Diskettenmagazin für Science Fiction, Fantasy, Science Fantasy, Horror, Dark Future, Rollenspiele...\n\nWelcome to the HD installation WARRIOR`S INN, the amazing diskmag for Science Fiction, Fantasy, Science Fantasy, Horror, Dark Future, RPGs...\n")
+(COMPLETE 0)
+
+; ---------- Zielverzeichnis aussuchen ---
+
+(SET @default-dest
+  (ASKDIR (PROMPT "Ziel wählen - choose destination:")
+          (HELP @askdir-help)
+          (DEFAULT @default-dest))
+)
+(COMPLETE 5)
+
+(SET maindir (TACKON @default-dest "WI_13"))
+(MAKEDIR maindir)
+(COPYFILES (SOURCE "WI_13a:c/WI_13.info") (DEST @default-dest))
+(COMPLETE 10)
+
+; ********************************************************************* Mainpart
+
+(COPYFILES (SOURCE "WI_13a:c/LookV3.5") (DEST "c:"))
+(COMPLETE 15)
+
+(SET datadir (TACKON maindir "ComStar"))
+(MAKEDIR datadir)
+(COPYFILES (SOURCE "WI_13a:ComStar") (ALL) (DEST (TACKON maindir "ComStar")))
+(COMPLETE 25)
+
+(SET datadir (TACKON maindir "Pix"))
+(MAKEDIR datadir)
+(COPYFILES (SOURCE "WI_13a:Pix") (ALL) (DEST (TACKON maindir "Pix")))
+(COMPLETE 30)
+
+(SET datadir (TACKON maindir "Progs"))
+(MAKEDIR datadir)
+(COPYFILES (SOURCE "WI_13a:Progs") (ALL) (DEST (TACKON maindir "Progs")))
+(COMPLETE 35)
+
+(SET datadir (TACKON maindir "Stories"))
+(MAKEDIR datadir)
+(COPYFILES (SOURCE "WI_13b:Stories") (ALL) (DEST (TACKON maindir "Stories")))
+(COMPLETE 40)
+
+(SET datadir (TACKON maindir "Text"))
+(MAKEDIR datadir)
+(COPYFILES (SOURCE "WI_13b:Text") (ALL) (DEST (TACKON maindir "Text")))
+(COMPLETE 45)
+
+(SET datadir (TACKON maindir "Werbung"))
+(MAKEDIR datadir)
+(COPYFILES (SOURCE "WI_13a:Werbung") (ALL) (DEST (TACKON maindir "Werbung")))
+(COMPLETE 50)
+
+(SET datadir (TACKON maindir "s"))
+(MAKEDIR datadir)
+(COPYFILES (SOURCE "WI_13a:s") (ALL) (DEST (TACKON maindir "s")))
+(COMPLETE 60)
+
+(COPYFILES (SOURCE "WI_13a:DARKROOM") (DEST (TACKON @default-dest "WI_13")) (INFOS))
+(COMPLETE 65)
+
+(COPYFILES (SOURCE "WI_13a:Gotcha!") (DEST (TACKON @default-dest "WI_13")) (INFOS))
+(COMPLETE 65)
+
+(COPYFILES (SOURCE "WI_13a:c/Click_me_first!") (DEST (TACKON @default-dest "WI_13")))
+(COMPLETE 70)
+
+(COPYFILES (SOURCE "WI_13a:click_me_first!.info") (DEST (TACKON @default-dest "WI_13")))
+(COMPLETE 70)
+
+
+
+; **************************************************************** LIBS kopieren
+
+(IF (ASKBOOL (PROMPT "\nCopy iff.library 23.2 to LIBS:?") (HELP "Entscheide Dich, ob die Library in das assignte LIBS:-Verzeichnis kopiert werden soll (das Vorhandensein der Library ist notwendig, um das WI zum Laufen zu bekommen)."))
+    (COPYLIB (SOURCE "WI_13a:libs/iff.library") (DEST "LIBS:"))
+)
+(COMPLETE 85)
+
+(IF (ASKBOOL (PROMPT "\nCopy powerpacker.library 36.10 to LIBS:?") (HELP "Entscheide Dich, ob die Library in das assignte LIBS:-Verzeichnis kopiert werden soll (das Vorhandensein der Library ist notwendig, um das WI zum Laufen zu bekommen)."))
+    (COPYLIB (SOURCE "WI_13a:libs/powerpacker.library") (DEST "LIBS:"))
+)
+(COMPLETE 90)
+
+(IF (ASKBOOL (PROMPT "\nCopy IconX to C:?") (HELP "Entscheide Dich, ob IconX kopiert werden soll. Es ist auf jeden Fall für das WI notwendig..."))
+    (COPYFILES (SOURCE "WI_13a:c/IconX") (DEST "C:"))
+)
+(COMPLETE 100)
+
+(MESSAGE "\n\nInstallation beendet. Um das WARRIOR`S INN auf Deiner Platte zum Laufen zu bringen, muß die WI-Disk aus dem Laufwerk!\n\nInstallation completed. You have to remove the disk before starting the WI!")
+

@@ -1,0 +1,98 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+2. Nachtrag zum Workshop »Anti-Spam mit YAM« (von Christian Aichinger)
+
+Wie in meinem letzten Workshop angek&uuml;ndigt, m&ouml;chte ich an dieser Stelle 
+noch das erw&auml;hnte ARexx-Skript vorstellen, das die Archivierung von
+Spam-Absender-Adressen automatisch &uuml;bernimmt.
+
+Eines vorweg: Betrachtet das Skript bitte nur als Grundger&uuml;st. Im jetzigen
+Zustand ist es sicherlich noch nicht als fehlerfrei zu bezeichnen. So 
+k&ouml;nnen zum Beispiel noch nicht mehrere Spam-Mails selektiert und von dem 
+Skript verarbeitet werden.
+
+Funktion:
+
+Das Skript dient dazu, die E-Mail-Adresse einer(!) ausgew&auml;hlten Mail in das
+externe Killfile einzutragen und danach die komplette E-Mail in das
+"Gel&ouml;schte"-Postfach zu verschieben.
+
+Installation:
+
+Zuerst sollte der folgende Quelltext via Cut & Paste in einer neuen Datei
+gespeichert werden (von ersten "/*" bis zum "/* Ende */" ausschneiden):
+
+
+/*
+Exportiert die E-Mail-Adresse der ausgew&auml;hlten E-Mail in die im Argument
+angegebene Datei.
+
+Das Skript ist Public Domain. Jeder, der m&ouml;chte, kann dieses "Grundger&uuml;st" 
+(mehr ist es auch nicht) weiterentwickeln. F&uuml;r Sch&auml;den, welcher Art auch 
+immer, &uuml;bernehme ich keine Garantie oder Verantwortung.
+
+Die Benutzung dieses Skripts geschieht auf eigene Gefahr.
+*/
+
+PARSE ARG adrfile
+
+ADDRESS 'YAM'
+OPTIONS RESULTS
+
+/*
+keine Benutzereingaben m&ouml;glich
+*/
+APPBUSY
+
+/*
+Informationen &uuml;ber die ausgew&auml;hlte Mail &uuml;bernehmen
+*/
+MAILINFO STEM j.
+
+/*
+Absenderadresse mittels "Echo" in die angegebene Datei eintragen
+*/
+ADDRESS COMMAND 'echo &gt;&gt;' adrfile '"' j.from '"'
+
+/*
+Dieser Punkt verschiebt die selektierte Mail ins Deleted-Postfach
+*/
+MAILDELETE
+
+/*
+Benutzereingaben wieder m&ouml;glich
+*/
+APPNOBUSY
+/* Ende */
+
+
+Als n&auml;chstes wird YAM gestartet und das Konfigurationsfenster ge&ouml;ffnet. 
+Unter dem Konfigurationspunkt "ARexx" (links) muss nun ein neuer "'Skripts'
+Men&uuml;eintrag" ausgew&auml;hlt werden. Unter "Name" ist die Bezeichnung des neuen
+Men&uuml;eintrages festzulegen. Bei mir hei&szlig;t dieser einfach nur "L&ouml;sche Spam".
+Das Cycle-Gadget rechts daneben muss auf "ARexx" stehen. Im Eingabefeld 
+"Skript" wird der Dateiname des oben abgedruckten Skripts und zus&auml;tzlich 
+als Argument das Killfile eingetragen. Die beiden unteren Buttons ("&Ouml;ffne 
+Konsolenfenster" und "Warte auf Beendigung") m&uuml;ssen abgew&auml;hlt sein. Wer 
+jetzt nur "Bahnhof" verstanden hat, schaut sich das Bild an. ;)
+
+Screenshot:
+<IMG SRC="../extra/yamspam.png" ALT="Screenshot">
+
+
+&Uuml;brigens habe ich von einem Leser noch den Hinweis auf eine gute Webseite 
+zum Thema bekommen. Unter http://www.antispam.de gibt es ein FAQ und ein 
+Forum, in dem man weitere Hilfe zur Spam-Abwehr bekommen kann.
+
+Christian Aichinger &lt;christian@aakt.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

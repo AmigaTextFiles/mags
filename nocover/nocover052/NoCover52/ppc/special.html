@@ -1,0 +1,90 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="fpumac.html">PREV</a> | <a href="context.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Accessing Special Purpose Registers </b>
+
+Principially there are two sort of commands to access the special purpose
+registers of the PPC. mtxxx (&quot;move to&quot;) moves data FROM a general purpose
+register TO a special purpose register, mfxxx (&quot;move from&quot;) moves data
+FROM a special purpose register TO a general purpose register.
+
+The Syntax is:
+
+mtXXX Rs
+mfXXX Rd
+
+where d,s=0..31
+
+xxx can mean (don't bother, if most of these don't mean anything to you,
+most of these registers should NOT be modified by a program that is NOT
+the OS itself). You definitely should NOT modify the BAT registers yourselves,
+for example. Use the Memory-Allocation functions of powerpc.library to
+access the BAT registers...
+
+xer:    The XER register
+lr:     The Link register
+ctr :   The Count register (One of the most useful commands here)
+dsisr:  The DSISR register
+dar:    The DAR register
+dec:    The Decrementer register
+sdr1:   The SDR1 register
+srr0:   Save and restore Register 0
+srr1:   Save and restore Register 1
+asr:    Address Space Register
+ear:    External Access Register
+tbl:    Time Base Lower
+tbu:    Time Base Upper
+ibatu:  IBAT Register, Upper
+ibatl:  IBAT Register, Lower
+dbatu:  DBAT Register, Upper
+dbatl:  DBAT Register, Lower
+
+mtspr n,Rs
+mfspr rD,n
+
+Modify/Save SPRG0-SPRG3, n is the number of the SPRG to modify/to save.
+
+mfpvr rD
+
+Get the value of the processor version register (which tells you what
+PPC is inside your system). It is NOT possible to write TO the pvr.
+
+It is also possible to use the &quot;general form&quot; mtspr/mfspr instead of
+these extended commands, but as the &quot;general form&quot; looks very abstract
+(mfspr Rd,8 means mflr Rd, for example), it is recommended to use the
+extended commands.
+
+There are some not-extended commands also (asides from the general form):
+
+mtcrf CRM,Rs
+
+CRM is a mask specifying for each crn, if it will be modified by this
+command or not. If CRM(i) = 1, CR field i (CR bits 4*i through 4*i+3)
+will be modified. The command replaces the not-masked-out bits by the
+low-order 32 Bits of Rs.
+
+mcrxr crf
+
+The contents of XER Bits 0-3 are copied into the Condition Field specified
+(for example cr2).
+
+mfcr Rd
+
+The contants of the Condition Register are placed into the low-order 32 Bits
+of Rd. The Contents of the high-order 32 Bits of Rd are cleared in 64 Bit
+Implementations.
+
+None of the Special Purpose Register Commands support the . or o Notation (which
+is described in <a href="imp.html">Important things</a>.
+
+</pre>
+</body>
+</html>

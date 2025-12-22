@@ -1,0 +1,105 @@
+{backimage bg.iff}
+{center}
+{subhead}How to partition a floppy (and why){def}{p}
+Article by John Smith
+{left}
+{pp}               
+This article is actually about partitioning a ZIP drive if it is connected
+to the parallel port and mounted as a floppy (with the help of a
+ppazip.device).
+{pp}
+(Aminet:hard/hack/ppazip.lha) (src included)
+{pp}
+There are two ways to connect a ZIP drive to your Amiga:
+{pp}
+First one is to connect it as an SCSI device, in which case you can
+partition it with the help of HDToolBox as any other valid SCSI device.However, the
+Amiga OS doesn't handle very well the removable hard disks, so all ZIP disks have to
+be partitioned in the same way, with the same labels (quite a drawback).
+Also a place to connect an SCSI device is needed, which means there has to be
+some additional hardware installed for this to be possible (again a drawback).
+{pp}
+Second way is to connect it to the parallel port of your Amiga with the help
+of the above mentioned ppazip.device.It is a hack because the parallel port
+of the Amiga is different than the one on the PCs, and it is 1 wire short.
+So, to overcome the problem, the author of the ppazip.device came up with the
+brilliant idea:to connect the extra wires to the joystick port!
+Inside the ppazip.lha archive, there is a picture showing how it is done:
+One side of the cable goes into ZIP drive, and the other is split on two
+parts, going into the parallel and joystick ports of the Amiga.
+{pp}
+WARNING:Incorrect wiring may fry the CIA chips!!!! Leave this to a professi-
+onal (and triple check everything).
+{pp}
+For this to work, additional hardware isn't required, except for the
+rewiring of the ZIP<->Amiga cable.As a plus, the ZIP drive is mounted as
+a floppy, so disks can be labeled as desired (floppies are ment to
+be a removable medium, therefore no limits here).
+{pp}
+Formating of a ZIP with the OFS will make it slower than df0:, so usage
+of the FFS is advised.  If formatted with the FFS the ZIP disk will achieve
+the speed of 100 kb/s even without buffering in the cable.  This is the value
+that the ZIP's manual states the drive should have.  There are actually 3 modes:
+100, 200, 300 kb/s, but higher the speed, lower the reliability, so in a
+case of ppazip.device the ppazip.device's author has considered the 100 kb/s
+speed to be the only option.
+{pp}
+Ok.With FFS and 100 kb/s speed, some 40 min is still needed for
+a low level format of a 100 Mb ZIP disk.  Doing a disksalv operation
+on a nearly empty disk can be even more time consuming.
+{pp}
+So the partitiong might be usefull.  Especially if you want some parts
+of the disk to be write protected (locked with a lock command or some
+other similar tool), or not accesible at all (because the particular
+partition isn't mounted). But how to partition a floppy?
+{pp}
+The trick is to create several mount files, 1 for every partition
+you intend to make, and to adjust the values of LowCyl and HighCyl
+variables in them so that they don't overlap. ZIP drive needs 2 reserved
+cylinders for private use, so there should be room for them between
+two partitions. For example to make 2 partitions of a 100 Mb disk
+(2890 cylinders), the mount files should look something like this:
+{pp}
+{fixed}
+ZIP_1:  ...
+        LowCyl        2
+        HighCyl       1000
+        ...
+
+ZIP_2:  ...
+        LowCyl        1003     (notice the 2 skipped reserved cylinders)
+        HighCyl       2890
+        ...
+{def}
+{pp}
+Before inserting of a new, *differently* partitioned disk, it would
+be a good precaution to *DISMOUNT THE PARTITIONS FROM THE OLD ONE* !!!
+You may accidently overwrite your data if you don't do so, since all parti-
+tions point to the same disk unit, and therefore, *will* overlap!
+{pp}
+As a final word, I would like to point out that ppazip.device has the
+size of only 6836 bytes (+ few hundred bytes for the mount file),whilst
+the windoze drivers (with the appropriating documentation) occupy more
+than half of a 100 Mb ZIP disk that you get when you buy the device.
+{pp}
+{pp}
+DISCLAIMER:
+{pp}
+The fact that the above mentioned hacks work for me, doesn't
+mean that they will work for you as well.You have been warned that there
+is a *possibility of a hardware damage and/or data loss*, and you should
+be aware of that.The entire risk is yours.
+{pp}
+The information writen in this article are provided "as is" without
+warranty of any kind, either expressed or implied. The entire risk as to
+the accuracy of the information herein is assumed by you. It's author does
+not warrant, guarantee, or make any representations regarding the use of,
+or the results of the use of, the information given here in terms of
+correctness, accuracy, reliability, currentness, or otherwise. In no event
+will he be liable for direct, indirect, incidental, or consequential
+damages resulting from any defect in the information even if he has been
+advised of the possibility of such damages.
+{pp}
+*Next month*: How to repair and maintain a ZIP disk.
+{pp}
+

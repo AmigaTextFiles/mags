@@ -1,0 +1,194 @@
+<html>
+ <head>
+  <title>Installer le Workbench 3.9 sur MorphOS</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+</a>
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr" alt="Obligement">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table summary="" align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr valign="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table summary="" align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique&nbsp;: installer le Workbench 3.9 sur MorphOS </font>par&nbsp;<a href="mailto:elena@elena-fractals.it">Elena&nbsp;Novaretti</a></div><br><br><br>
+
+J'ai écrit ce petit tutoriel car de plus en plus de personnes me demandaient comment
+utiliser le Workbench 3.9 en émulation sur MorphOS/Pegasos.<br><br>
+
+Je dois d'abord préciser que je n'ai rien contre Ambient ou son auteur, David
+Gerber, lequel est une personne symphatique et un développeur talentueux.<br><br>
+
+La vérité est que, beaucoup de personne (y compris moi), pensent qu'il manque
+encore beaucoup de fonctions dans Ambient si on le compare aux autres bureaux
+modernes comme Dopus ou le Workbench 3.9 muni de commodités
+très utiles comme RAWBInfo et DefIcons.<br><br>
+
+Peut-être qu'un jour je pourrais effacer ce texte définitivement, quand
+Ambient sera plus puissant. Et je serais très heureuse quand je pourrais faire ça&nbsp;:-).<br><br>
+
+Evidemment, ce n'est pas une tâche "raffinée" que d'essayer d'installer et
+d'utiliser des parties de l'AmigaOS comme le Workbench sur MorphOS/Pegasos.
+Principalement parce que le Workbench 3.9 est un programme 68k et sera
+donc émulé (bien que l'émulation JIT de MorphOS est excellente&nbsp;!). Et à cause aussi
+du fait que, comme étant un vieux programme, il n'est pas forcément bien codé
+et contient des techniques de programmation mal adaptées
+qui rendent difficile son installation et son utilisation sur MorphOS/Pegasos
+(avec des versions de MorphOS plus anciennes, comme la 0.4 pour Amiga PowerPC, la
+plupart des problèmes ne se sont pas encore produit).<br><br>
+
+Gardez aussi à l'esprit que faire tourner des morceaux de l'AmigaOS sur MorphOS
+peut être illégal et je me libère de toute responsabilité concernant ceci. Vous
+êtes prévenus.<br><br>
+
+<font size="+1" color="#ccbb33">Quelques bogues</font><br><br>
+
+Faire tourner le Workbench sur MorphOS/Pegasos ne serait pas difficile du tout
+s'il n'y avait pas deux gros bogues&nbsp;:<br><br>
+
+<b>1) Le problème du rafraîchissement des fenêtres.</b><br><br>
+
+Peut-être que le Workbench se base
+sur de très mauvaises techniques pour rafraîchir ses fenêtres et manipuler les messages
+de rafraîchissement d'Intuition, cela a pour résultat de faire disparaître les frames
+des fenêtres lors de redimensionnement. La seule solution pas trop compliquée
+ici est de le forcer à ouvrir ses fenêtres en mode SmartRefresh.<br><br>
+
+<b>2) Le lancement de programme, la copie de fichier et le lancement de la fenêtre d'information.</b><br><br>
+
+Quand on lance des programmes depuis le Workbench, ou quand on copie des fichiers, ou
+quand on dépose des icônes sur le bureau ou encore quand on veut afficher
+la fenêtre d'information, le système peut se figer.<br><br>
+
+Cela semble être dû à une mauvaise méthode de lancement des tâches (au sujet du premier
+problème) et à une priorité trop élevée pour les sous-tâches utilisées pour copier les
+fichiers, tous les deux n'étant pas très compatibles avec les versions récentes de MorphOS.
+La seule solution ici est de modifier la priorité de ces sous-tâches à une
+valeur plus raisonnable (par exemple -1).<br><br>
+
+Ne me demandez pas comment j'ai découvert tout ceci&nbsp;: c'est juste un travail
+de dingue que seule une personne dingue comme moi peut réaliser&nbsp;:-b.<br><br>
+
+<font size="+1" color="#ccbb33">L'installation</font><br><br>
+
+Maintenant, vous devrez suivre exactement les étapes suivantes
+pour installer et utiliser le Workbench 3.9 sur votre Pegasos.<br><br>
+
+Ce tutoriel suppose que vous avez MorphOS d'installé (version 1.4 au moment
+où j'écris ces lignes) sur votre Pegasos avec l'émulateur JIT activé
+et les fichiers de l'AmigaOS 3.9 à disposition (si possible
+avec la dernière mise à jour BoingBag, même si ce n'est pas strictement nécessaire).
+Si vous avez une configuration différente, je ne peux pas vous aider&nbsp;!<br><br>
+
+<b>1)</b> Prenez la workbench.library 45.127 (Fev 21 2001, 200856 octets).<br><br>
+
+<b>2)</b> En utilisant un éditeur binaire, vous devez changer les octets suivants aux
+adresses suivantes&nbsp;:<br><br>
+
+À 87889 (0x15751), 107115 (0x1A26B) et 189653 (0x2E4D5) changez la valeur de
+l'octet de 0x7F à 0x3F (ceci forcera chaque fenêtre du Workbench à s'ouvrir
+en mode SmartRefresh).<br><br>
+
+À 66049 (0x10201) changez la valeur de l'octet de 0x19 à 0xFF
+(cela règlera le problème du lancement des sous-tâches dû à une priorité trop élevée
+et causant des gels du système quand on copie des fichiers ou quand on dépose des icônes
+sur le bureau).<br><br>
+
+À 10177 (0x27C1) et 176813 (0x2B2AD) changez la valeur de l'octet de 0x05 à 0xFF
+(ceci règlera le problème lors de l'exécution de programmes).<br><br>
+
+À 131391 (0x2013F) changez la valeur de l'octet de 0x05 à 0xFF.<br>
+À 159869 (0x2707D) et à 186083 (0x2D6E3) changez la valeur de l'octet de 0x02 à 0xFF
+(cela règlera les problèmes de gels lors du lancement de la requête d'information).<br><br>
+
+<b>3)</b> Cette version modifiée de la workbench.library est maintenant prête à être utilisée.
+Renommer la workbench.library de MorphOS en "workbench.library_MOS" et copoez la
+workbench.library modifiée dans Libs:.<br><br>
+
+<b>4)</b> Prenez la commande "LoadWB" de l'AmigaOS 3.9. Vous devez renommer la commande LoadWB d'Ambient
+en "LoadWB_MOS" et copier la LoadWB de l'AmigaOS dans C:. Vous pouvez aussi ajouter
+l'option "SimpleGels" à LoadWB pour éviter le très laid effet quand on déplacer
+des icônes (la même chose qu'avec les vrais Amiga&nbsp;;).<br><br>
+
+<b>5)</b> Renommez l'icon.library de MorphOS "icon.library_MOS" et copiez l'icon.library de l'AmigaOS 3.9 dans Libs:.<br><br>
+
+<b>6)</b> Copiez toutes les classes de Reaction de l'AmigaOS 3.9 dans SYS:Classes
+et copiez aussi la resource.library. Ils ne sont pas strictement obligatoire mais
+ils feront fonctionner pas mal d'outils du Workbench ainsi que les éditeurs de préférences.<br><br>
+
+À ce stade, tout devrait être prêt pour faire fonctionner le Workbench sur votre Pegasos.
+Vous pouvez installer dans votre partition MorphOS, les éléments supplémentaires suivants (que je suggère)&nbsp;:<br>
+
+<ul>
+<li>Les éditeurs WB Prefs, WB Pattern, et/ou les autres éditeurs relatifs au Workbench.
+<li>RAWBInfo.
+<li>DefIcons avec son éditeur de préférences et votre fichier de préférences.
+</ul>
+
+Redémarrez votre système et croisez les doigts. Presque tout devrait
+fonctionner correctement à présent (si je n'ai rien oublié...) même
+si malheureusement quelques problèmes connus persistent et je n'ai
+pas de solutions simples pour les régler&nbsp;:-(.<br><br>
+
+<b>Problème 1 :</b><br><br>
+
+Vous devrez utiliser uniquement une image en pleine taille en tant que fond d'écran&nbsp;:
+l'utilisation d'images plus petites pourra geler le système (les images en fond de fenêtre
+semble cependant fonctionner).<br><br>
+
+<b>Problème 2 :</b><br><br>
+
+L'éditeur de préférences du texte des icônes ne se lancera pas sans provoquer un gel du système.
+Donc pour éditer ces derniers, la meilleure façon est d'utiliser l'ancien fichier de préférence
+de votre Amiga ou de l'éditer à partir de votre Amiga.<br><br>
+
+
+<font size="+1" color="#ccbb33">Conclusion</font><br><br>
+
+Vous êtes maintenant en mesure d'utiliser les autres programmes comme AmiDock, WBClock et...
+PowerICONS PPC&nbsp;:-).<br><br>
+
+<b>Note</b>&nbsp;: si vous désirez lancer Amidock et/ou WBClock, vous devez enlever toute dopus5.library
+de votre répertoire Libs:, autrement des choses étranges peuvent se produire&nbsp;!<br><br>
+
+<b>Attention</b>&nbsp;: vous n'êtes pas autorisés à redistribuer la version modifiée de la workbench.library&nbsp;!
+Veuillez dire à vos amis d'employer cet article s'ils voudraient essayer d'installer
+le Workbench sur leur Pegasos.<br><br>
+
+Pour tout problème ou question, veuillez me contacter sur elena AT elena-fractals DOT it ou
+<a href="http://www.elena-fractals.it" target="_blank">www.elena-fractals.it</a>.<br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

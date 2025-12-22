@@ -1,0 +1,115 @@
+·
+ ¹F.Rendezo³
+ °
+
+
+
+
+»
+
+
+
+ Rendezõ   algoritmusra  igen  sokszor  szükségünk  lehet.   Például  tömörítõ
+írásakor,   vektorgrafikánál,  adatbázis  kezelésnél  és  még  számos  helyen.
+Sokféle  rendezési  elv  létezik,  de  most  csak  a  QuickSort  algoritmussal
+foglalkozunk.   Fõleg  azért,  mert  igen  hatékony.   Az  elvét ¾C.A.R.  Hoare¼
+1962-ben adta meg.
+
+ A  rendezés  lényege,  hogy  az  adattömbünket, az elemei cserélgetésével két
+olyan  részre osztjuk fel, ahol a bal oldali rész a középértéknél csak kisebb,
+míg  a  jobb  oldali rész a középértéknél csak nagyobb elemeket tartalmaz.  Ha
+csökkenõ  sorrendbe rendezünk, akkor természetesen fordítva van.  A középérték
+egy  tetszõlegesen  kiválasztott tömbelem, amit a kódolás könnyítése érdekében
+célszerü a tömb középsõ elemének választani.
+
+ Ezt  az  eljárást - mindig a keletkezõ két résztömbre alkalmazva -, végül egy
+elemû  résztömbök  keletkeznek,  így  az eredeti tömb rendezett lesz.  Mivel a
+tömböket  mindig  ugyanazzal  az eljárással rendezzük, célszerû rekurzív módon
+megírni  a  rendezõprogramot.  A rekurzió fogalma kb.  annyi, hogy egy eljárás
+önmagát hívja meg.
+
+
+ Most egy példán keresztül lássuk mindezt.  Legyen a tömbünk a következõ:
+
+       bal                    közép                          jobb
+        8     0     5     9     4     2     1     6     7     3
+        I                                                     J
+
+ A  középérték  a középsõ elem, vagyis a 4-es.  I egy alulról felfelé, J pedig
+egy  felülröl  lefelé futó index.  I-vel addig megyünk felfelé, amíg az elemek
+mind  kisebbek a középértéknél.  Mivel a 8 nagyobb mint a 4, ezért nem megyünk
+tovább,  hanem  leállunk.   J-vel  addig  megyünk  lefelé,  amíg  kisebbet nem
+találunk,  mint  a  7.   Most  pont  ott  állunk,  ezért  a  8-at  és  a  3-at
+felcseréljük,  így  mind  a  ketten  jó helyen lesznek a 7-hez viszonyítva.  A
+tömbünk most így néz ki:
+
+       bal                    közép                          jobb
+        3     0     5     9     4     2     1     6     7     8
+              I                                         J
+
+ Folytassuk.   I-vel  az  5-nél  állunk  meg,  J-vel pedig az 1-esnél.  Csere.
+I-vel a 9-esnél, J-vel a 2-esnél állunk meg.  Csere.  Most így néz ki a tömb:
+
+       bal                    közép                          jobb
+        3     0     1     2     4     9     5     6     7     8
+                          I           J
+
+ Ha  mindent  jól csináltunk, a tömbünk bal oldalán most csupa olyan elem van,
+ami  mind kisebb 4-nél, a jobboldalon pedig fordítva.  Miután mindkét indexünk
+elérte  a  középértéket, a két résztömbre is meghívjuk az algoritmusunkat.  Ez
+egészen addig megy, amíg már csak egy elemûek a résztömbök.
+
+ És most lássuk az assembly listáját:
+
+¾(A forráslista Rendezõ.lha néven megtalálható a Bonus könyvtárban - JaGu)¼
+
+**************************************************
+***           QuickSort by AnChoR 1996.        ***
+*** Bemenõ paraméterek: a0-LongWord tömb címe  ***
+***                     d0-Min, d1-Max         ***
+**************************************************
+
+QuickSort:
+        move.l  d1,d2                   ; Bal = d0, Jobb = d1
+        add.w   d0,d2                   ; összeg képzés
+        lsr.w   #1,d2                   ; középsõ elem meghatározása
+        move.l  (a0,d2.l*4),d2          ; Elválasztó elem a d2-be
+        move.l  d0,d3                   ; I = Bal
+        move.l  d1,d4                   ; J = Jobb
+whl1:   cmp.w   d4,d3                   ; amíg I <= J
+        bgt.b   skip1
+whl2:   cmp.l   (a0,d3.l*4),d2          ; amíg Tömb(I) < Elválasztó
+        ble.b   skip2
+        addq.w  #1,d3                   ; I növelése ( felfelé megyünk )
+        bra.b   whl2
+skip2:  cmp.l   (a0,d4.l*4),d2          ; amíg Tömb(J) > Elválasztó
+        bge.b   skip3
+        subq.w  #1,d4                   ; J csökkentése ( lefelé megyünk )
+        bra.b   skip2
+skip3:  cmp.w   d4,d3                   ; ha I <= J
+        bgt.b   skip4
+        move.l  (a0,d3.l*4),d5          ; kicseréljük az elemeket
+        move.l  (a0,d4.l*4),(a0,d3.l*4)
+        move.l  d5,(a0,d4.l*4)
+        addq.w  #1,d3                   ; I tovább
+        subq.w  #1,d4                   ; J tovább
+skip4:  bra.b   whl1
+skip1:  cmp.w   d4,d0                   ; ha Bal < J
+        bge.b   skip5
+        movem.l d0-d4,-(sp)             ; változók elmentése a verembe
+        move.w  d4,d1                   ; Jobb = J
+        bsr.b   QuickSort               ; meghívjuk a bal oldalra
+        movem.l (sp)+,d0-d4             ; változók vissza
+skip5:  cmp.w   d1,d3                   ; ha I < Jobb
+        bge.b   skip6
+        movem.l d0-d4,-(sp)             ; változók elmentése a verembe
+        move.w  d3,d0                   ; Bal = I
+        bsr.b   QuickSort               ; meghívjuk a jobb oldalra
+        movem.l (sp)+,d0-d4             ; változók vissza
+skip6:  rts                             ; kilépés
+
+ Eddig  a  lista.   Könnyen  átírható  word-ös  tömbök kezelésére, és 68000-ás
+kódra.  Remélem érthetõ voltam, és tudjátok használni a forráslistát.
+
+
+                                          ½AnChoR of Therapy¼

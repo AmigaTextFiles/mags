@@ -1,0 +1,10 @@
+
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" CONTENT="Web Design 2.0 © 1996-1998 Larry McGahey">
+<TITLE></TITLE>
+</HEAD>
+<BODY LINK="#00AC00"barry>
+
+</BODY>
+</HTML>

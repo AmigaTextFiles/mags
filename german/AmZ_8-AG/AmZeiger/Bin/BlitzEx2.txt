@@ -1,0 +1,69 @@
+WBStartup
+
+
+
+; Kennen wir
+
+WBenchToFront_
+
+WbToScreen 0
+Use Screen 0
+*Scr = ActiveScreen
+
+;Intuifont Bestimmen
+
+FH=Peek.w(Peek.l(*Scr+40)+4)
+FN$=Peek$(Peek.l(*Scr+40)+8)
+LoadFont 0,FN$,FH
+Use IntuiFont 0
+
+; Window Oeffnen
+
+SH.w=Peek.w(*Scr+14)
+SW.w=Peek.w(*Scr+12)
+SB.b=Peek.b(*Scr+30)
+
+
+SizeLimits 200,120,SW,SH
+
+
+Window 0,0,SB,SW,SH-SB,$140F,"Gatget BB2-Kurs",1,2
+
+a=0:a$="Vorname"
+
+Gosub GadDef
+
+
+Repeat
+
+  FlushEvents
+  ev.l=WaitEvent
+
+
+  If ev=$40
+
+	 Select GadgetHit
+
+	  Case 0
+
+		WLocate 1,100:NPrint "Button 1 Gedr ckt"
+
+
+	  Case 1
+
+		WLocate 1,100:NPrint "Button 2 Gedr ckt"
+
+	 End Select
+  End If
+
+Until ev=$200
+End
+
+; Gadget Definieren
+
+.GadDef
+WCls
+GTButton 0,0,0,0,200,FH+3"Button 1",$10
+GTButton 0,1,0,16,200,FH+3,"Button 2",$10
+AttachGTList 0,0
+Return                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 

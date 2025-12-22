@@ -1,0 +1,90 @@
+\T
+
+°                            LABO : GRAVEURS DE CD ROM IDE par Fred
+°                            =======================================
+
+
+            Bon nombre d'amigaistes (comme moi) n'ont pas d'interface SCSI et utilise
+         le tr_s limit_ controleur IDE. Ses d_fauts sont nombreux, lenteur, limit_ a
+         deux unit_s de disques sur les machines d'origine, limit_ aux disques de
+         capacit_s inf_rieurs a 4 Go. De nombreux patchs ou magouilles permettent de
+         contourner ces lacunes. Heureux possesseur de Miga 1200 depuis pr_s de cinq
+         ans, je n'ai pas arr_t_ de faire _voluer ma config ; disque dur, carte
+         acc_l_ratrice, m_moire, c_d_rom et tout r_cemment un graveur de c_d_. Sur le
+         port IDE mais quelle folie ! Folie peut _tre ? mais ceci reste encore tr_s
+         _fficace en respectant quelques petites pr_cautions. OH ! qu'il est jolie le
+         petit graveur Sony CD-RW 100E, son emballage me vante des performances sans
+         faille, vitesse de lecture 24x, 4X en gravure sur CD-R et 2x en gravure sur
+         CD-RW.
+         
+            Oui ! mais ce p_riph_rique vendu en grande surface pour des machines d'un
+         autre age (celui de pierre _videmment) marcherait-il sur ma tendre machine,
+         mais bien sur (cette tendre dans le language en _voquant ma machine peut faire
+         penser a une forme de Microphilie mais je vous rassure il n'en es rien).
+         L'utilisation d'un graveur comme celui-ci se fait en plusieurs _tapes :
+         
+         - Jeter les c_d_roms livr_s avec le graveur, ils ne sont d'aucune utilit_ ou
+         presque, on peut caller une table :-)
+
+
+ö
+
+\T
+
+
+         - Le mettre en place dans la tour et le connecter a un connecteur du port IDE.
+
+         - Faire l'aquisition de Make CD.
+
+            Il n'y a pas de problemes pour utiliser le graveur comme simple C_d_rom en
+         utilisant atapi.device, mais lors de l'utilisation de MAKE CD il faut prendre
+         soin de ne pas "mounter" les c_d_roms et graveurs car les pilotes comme
+         atapi.device font une reconnaissance p_riodique de l'insertion de disque dans
+         le lecteur, leurs utilisations en m_me temps que MAKE CD entrainent
+         l'apparition de craquement sur les CD audio et des _rreurs sur les c_d_roms
+         grav_s. Il faut _viter a tout prix de faire tourner d'autres taches en m_me
+         temps que MAKE CD, car la gravure de CD utilise _normement de ressources
+         machine. Un ralentissement du syst_me pourrait entrainer une corruption du
+         CD grav_. 
+
+
+         -> Configuration de MAKE CD avec un graveur IDE Sony CD-RW 100E.
+
+         Dans le panneau de configuration :
+
+         \ Lecteur : 
+                  Exec dev : atapi.device
+                  Unit_s : 1 - Sony CD-RW CRX100E
+                  Pilote : CDR-SCSI3-ATAPI
+
+
+ö
+
+\T
+
+
+
+         \ Graveur :
+                  Exec dev : atapi.device
+                  Unit_s : 1 - Sony CD-RW CRX100E
+                  Pilote : CDR-SCSI3-ATAPI
+
+
+         \ Vitesse : La lecture et l'_criture doivent _tre en phase donc si vous
+         gravez en 2x, la lecture doit avoir une vitesse _gale ou sup_rieure.
+
+
+         \ Cache : Disposant de 32 Mo de Ram, j'utilise 24 Mo de cache pour toutes les
+         phases de la copie.
+
+
+         Comme vous pouvez le constater j'utilise mon graveur comme unit_ source, ce
+         qui me force a utiliser obligatoirement un fichier image du CD a copier.
+         L'op_ration ressemble a la copie de disquette avec un seul lecteur de
+         disquette, on ins_re le disque a copier, son contenu est stock_ sur le disque
+         dur sous forme d'un fichier, puis on place le CD destination dans le graveur
+         et le tour est jou_. Ceci est une configuration de base et une utilisation
+         tr_s simpliste a vous d'affiner et de d_couvrir l'_tendu des possiblilit_
+         d'un graveur, backup, compil audio, graver vos propres compositions, etc...
+
+ö  

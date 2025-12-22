@@ -1,0 +1,88 @@
+// esim5.cpp
+#include <iostream>
+#include <string>
+
+#include <intuition/intuition.h>
+#include <proto/exec.h>
+#include <proto/intuition.h>
+#include <proto/dos.h>
+
+struct ExecBase         *SysBase;
+struct IntuitionBase    *IntuitionBase;
+
+
+using namespace std;
+
+
+class MyWindow {
+
+    // Osoitin olion ikkunastruktiin
+    struct Window* m_pWnd;
+
+public:
+
+    // staattinen luokkamuuttuja, laskuri
+    static int s_count;
+
+    // Oletusmuodostin
+    MyWindow () {
+
+        s_count++;
+
+        cout << "Ikkuna nro. " << s_count << " luotu!" << endl;
+
+        // Intuition-libraryn funktio
+        m_pWnd = OpenWindowTags( NULL,
+            WA_Left,         s_count * 10,
+            WA_Top,          s_count * 10,
+            WA_Width,        40,
+            WA_Height,       30,
+            WA_SimpleRefresh, TRUE,
+            WA_Activate,     TRUE,
+            WA_ScreenTitle,  (LONG)"Esim 5",
+            WA_Title,        (LONG)"Esim 5",
+            TAG_DONE );
+
+        Delay(25); // DOS-libraryn funktio
+    }
+
+    // Hajotin
+    ~MyWindow() {
+
+        CloseWindow(m_pWnd);
+        m_pWnd = NULL;
+
+        s_count--;
+
+        cout << "Ikkunoita jäljellä " << s_count << " kappaletta." << endl;
+
+        Delay(25);
+    }
+
+};
+
+
+// Staattisen muuttujan alustus
+int MyWindow::s_count = 0;
+
+
+int main(void) {
+
+    // Avaa kirjasto
+    if ( IntuitionBase = (struct IntuitionBase *) OpenLibrary("intuition.library", 39) )
+    {
+
+        // Luo taulukollinen Window-olioita
+        MyWindow * pIkkunat = new MyWindow[10];
+
+        // Tuhoa oliot
+        delete [] pIkkunat; // Huomaa hakasulkujen käyttö taulukkoa tuhottaessa!
+
+        pIkkunat = NULL;
+
+        // Sulje kirjasto
+        CloseLibrary( (struct Library*) IntuitionBase );
+    }
+
+    return (0);
+}

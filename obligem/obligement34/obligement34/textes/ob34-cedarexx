@@ -1,0 +1,141 @@
+\T
+
+ --> LABO : CYGNUS ED ET AREXX par BigDan
+===========================================
+
+   L'Amiga dispose d'une flopp_e d'_diteurs de texte qui n'ont pas a rougir face a 
+leurs homologues sous Windows (Wordpad, le blocnote de Windows et moults sharewares
+ayant la d_testable habitude de ne pas pouvoir ouvrir des textes de plus de 64 ko)
+ou Gnu/Linux (vi(m) ou Emacs). Pour moi, les plus connus sont (dans le d_sordre)
+principalement CygnusEd, GoldEd (un peu trop "usine a gaz" a mon gout) et le g_nial
+Pageliner (fourni avec Pagestream notamment).
+
+   Pour ma part, vous l'avez compris, j'utilise CygnusED 4.20 (dit "Ced" pour les 
+intimes) et le "petit mais puissant" Pageliner : que ce soit un texte de dix lignes 
+ou un log apache de plusieurs centaines de Mo (voir quelques Go), je sais que mon 
+_diteur de texte ne bronchera pas et me permettra de travailler dessus a ma 
+guise (avec au besoin l'aide de la f_e ARexx).
+
+   Etudions un petit script Arexx sous CED tr_s simple qui rendra, je l'esp_re, service
+a quelques uns et des id_es de scripts aux autres ! Libre a vous ensuite de vous 
+atteler a des scripts plus _labor_s ou de faire la m_me chose sous Pageliner qui 
+lui aussi semble bien pourvu cot_ Arexx ;-)
+
+   Petits rappels pour les _tourdis, Rexxmast doit _tre lanc_ (au d_marrage dans 
+WBStartup par exemple) pour pouvoir utiliser ces scripts... Toutes les commandes 
+ARexx utilisables sous CED sont r_pertori_es dans la doc Amigaguide fournie avec
+CED4.
+
+ö
+
+\T
+   Les scripts ARexx pour CygnusED utilisent l'extension .CED de la m_me mani_re
+que leurs homogues PPaint sont en .pprx, ImageFx en .ifx, etc. Le port Arexx 
+a utiliser se nomme "CYGNUSED" tout simplement (pour des raisons de compatibilit_,
+l'ancienne notation "rexx_ced.1"..."rexx_ced.9" est encore support_e. Vous la 
+trouverez notament dans les scripts ARexx plus anciens !). 
+   Si plusieurs copies de CygnusED tournent simultan_ment, les noms de ports ARexx
+a utiliser seront de la forme "CYGNUSED.1", "CYGNUSED.2", etc. A tout moment vous 
+pouvez invoquer la commande About (A propos) pour voir le nom de port courant !
+
+   Si vous avez besoin de retourner un r_sultat, n'oubliez pas mettre la commande
+OPTIONS RESULTS au d_but de votre script... Ce ne sera pas le cas dans notre 
+exemple.
+
+   Notre script, tr_s simplement, va nous permettre de convertir les fins de lignes
+de textes issus de PC sous M$-DOS ou Windows. Il vous est probablement arriv_
+un jour de charger un fichier texte d'un c_d_rom PC ou issu d'un r_seau quelconque
+(intra/internet...) avec CED et de voir que les fins de lignes apparaissent sous 
+la forme d'un M en inversion vid_o suivi d'un saut de ligne. De plus, vous avez 
+not_ que les accents sont cod_s diff_remment suivant les syst_mes d'exploitation
+d'ou ces caract_res bizarroides qui apparaissent a la place caract_res accentu_s.
+La solution, passer le fichier dans une moulinette qui convertit tous ces caract_res
+en leurs homologues sous Amiga et adapate les fins de lignes au passage. Si vous 
+avez utilis_ CrossDos pour lire ou _crire sur des disquette PC, il poss_de ce genre 
+d'options dans ses pr_f_rences.
+
+   Sur Amiga, comme sur Unix ou GNU/Linux, les fins de lignes sont signal_es par un 
+caract_re LF (Line Feed ou saut de ligne) alors qu'au pays de WiNd0w$ elles sont 
+signal_es par une suite de 2 caract_res  : CR + LF (Carriage return puis Line
+Feed autrement dit retour chariot et saut de ligne comme sur une bonne
+
+ö
+
+\T
+
+vieille machine a _crire m_canique). Sur MacOS, un seul CR suffit...
+
+   Donc dans le cas d'un fichier PC "import_" sous CED, il faudra donc expurger 
+tous les caract_res CR en rab ! Cela tombe tr_s bien, CED comporte une commande
+sp_ciale (dans le menu couper/coller) qui enl_ve ces caract_res CR dans la zone 
+s_lectionn_e. Apr_s quelques consultations des commandes dans les menus et la 
+doc Amigaguide, nous _crivons donc le petit script suivant que vous trouverez 
+sur Aminet dans util/rexx :
+
+}/*
+}** StripCR.ced
+}** $VER: StripCR.CED 1.0 (17.05.99)
+}** Requires CygnusEd Professional 4.x to run.
+}** Copyright (C) 1999 dan "at" migazone "dot" com
+}*/
+
+}ADDRESS 'CYGNUSED'  Le nom du port ARexx que l'on va utiliser !
+
+}JUMP TO LINE 1        On place le curseur sur la premi_re ligne du fichier,
+}MARK                   On active la s_l_ction et on se d_place jusqu'a la fin
+}"END OF FILE"         du fichier (On s_l_ctionne tout le fichier donc ;)
+
+}STRIP CR MARKED      On _radique les CR,
+
+}JUMP TO LINE 1        On revient a la premi_re ligne,
+
+}EXIT 0                  et c'est la fin du script !
+
+ö
+
+\T
+
+   Vous avez tout compris ? Bien _videmment on pourrait en faire une version
+am_lior_e pour nous autres francais, grands utilisateurs d'accents devant
+l'_ternel, en ajoutant une fonction de chercher/remplacer les accents PC/Amiga !
+
+   Pour l'utiliser sous CED, il vous suffit d'invoquer le sous menu "Install
+DOS/ARexx Command" (ou son homologue francis_ si vous avez install_ le catalogue 
+francais) que vous trouverez dans le menu "Special, DOS/ARexx interface".
+On va l'associer a l'une des dix touches de fonctions (F1 a F10) en tapant le 
+num_ro demand_ lorsque le requester s'ouvre (1 pour F1, 2 pour F2, etc...). Un 
+autre requester s'ouvre alors et nous demande d'entrer une commande ARexx ou Dos 
+(pratique aussi) : nous saisissons donc le chemin complet de notre script soit 
+"rexx:stripcr.ced".
+
+   N'oubliez pas de sauver vos r_glages via le menu "Save DOS/ARexx commands...". 
+Si vous avez choisi la touche F1 par exemple, un simple appui sur F1 nettoiera 
+le texte de la fen_tre CED active de tous ses caract_res CR. De la m_me mani_re
+vous pouvez bien sur utiliser le menu "Special, DOS/ARexx interface" et 
+s_lectionner "F1 : rexx:stripcr.ced". Si vous avez un r_pertoire de pages HTML
+par exemple _dit_ sous WinXX, je vous conseille vivement d'_purer les CR sous 
+CED avant de poser ces pages sur un serveur web quelconque : cela vous gagnera 
+souvent quelques Ko au passage et les utilisateurs de "petites connexions RTC" 
+vous diront merci !
+
+   Si vous avez des questions ou suggestions de scripts (sous YAM, IFX ou Pagestream
+par ex), envoyez moi un petit mail et je tacherai de vous r_pondre par retour de 
+mail. L'un de mes seuls b_mols concernant CED est l'absence de coloration 
+
+ö
+
+\T
+
+syntaxique (avec des dictionnaires PHP, HTML, JSP, C, REBOL, etc..) et lorsque 
+je me suis pench_ sur le probl_me, Olaf Barthel (qui bosse actuellement sur les 
+RKRM 4) m'a confirm_ qu'il _tait quasiment impossible de l'impl_menter sans perdre 
+beaucoup des avantages de CED.
+
+   De toute facon je suis un grand fan de CygnusEd, comme il y a des fans de Vi ou 
+d'Emacs sous Unix, et il me rend tellement de services que je ne vois pas comment 
+je pourrais m'en passer ! A vous les studios...
+
+}bigdAn apr_s une bi_re, Mars 2002 : "S'il y avait une Amiga Academy, ARexx serait 
+}de la partieee... (air connu)"
+
+ö

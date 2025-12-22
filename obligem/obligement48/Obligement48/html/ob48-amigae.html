@@ -1,0 +1,466 @@
+<html>
+ <head>
+  <title>Amiga E - compléments d'interfaces</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Programmation&nbsp;: Amiga E - compléments d'interfaces </font>par&nbsp;<a href="mailto:damien.guichard@wanadoo.fr">Damien&nbsp;Guichard</a></div><br><br><br>
+
+
+
+<font size="+1" color="#ccbb33">Dernière étape</font><br><br>
+
+Dans l'article précédent, on a survolé la création d'interfaces graphiques pilotées par échange de messages.
+Dans ce dernier article, on aborde quelques compléments de confort indispensables comme les raccourcis-claviers,
+les AppWindows et les ports ARexx.<br><br>
+
+
+<font size="+1" color="#ccbb33">Raccourcis-clavier</font><br><br>
+
+Gadtools gère tout seul les raccourcis clavier pour les menus.
+Les raccourcis-clavier pour les gadgets ne sont pas gérés par Gadtools mais sont plutôt simulés par le programmeur.<br><br>
+
+Vous ajoutez IDCMP_VANILLAKEY dans les WA_IDCMP de votre fenêtre et vous êtes notifié chaque fois qu'une touche est pressée.
+Alors <B>imsg.code</b> contient le caractère clavier et à votre charge d'effectuer la fonction qui lui correspond
+dans votre programme.<br><br>
+
+Pour aider l'utilisateur à (re)connaître les raccourcis, spécifiez GT_UNDERSCORE,"_" dans la liste d'attributs
+de CreateGadgetA(). Et placez un "_" dans le libellé de votre gadget, de sorte que "_quitter" incite l'utilisateur
+à presser "q" pour quitter.<br><br>
+
+L'exemple du prochain chapitre illustre la programmation des raccourcis-clavier.<br><br>
+
+
+<font size="+1" color="#ccbb33">AppWindows</font><br><br>
+
+Pour créer une AppWindow&nbsp;:<br>
+
+<ul>
+<li>Vous devez ouvrir/fermer la workbench.library.
+<li>On transforme une fenêtre déjà ouverte en appwindow via AddAppWindowA().
+<li>Et alors on peut recevoir des appmessages.
+<li><B>appmsg.type</B>=AMTYPE_APPWINDOW signifie un évènement appwindow.
+<li><B>appmsg.numargs</B> est le nombre d'icônes lachées dans la fenêtre.
+<li><B>appmsg.arglist</B> sont les icônes, comme avec un WB startup message.
+<li>Avant de fermer la fenêtre appelez RemoveAppWindow().
+</ul>
+
+Cet exemple affiche toutes les icônes lâchées dans la ListView, utilisez le menu ou le raccourci-clavier
+pour quitter, "new" efface la liste, l'action "save" est bidon&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'intuition/intuition','intuition/screens','intuition/gadgetclass'
+MODULE 'gadtools','libraries/gadtools'
+MODULE 'wb','workbench/startup','workbench/workbench'
+MODULE 'utility/tagitem','graphics/rastport'
+MODULE 'exec/nodes','exec/lists'
+MODULE '*gt_window'
+
+CONST ERR_NOWB=ERR_NOWINDOW+1
+
+DEF win:PTR TO window
+DEF appwin=NIL
+DEF listview=NIL
+DEF labels:PTR TO mlh
+
+DEF path[80]:STRING
+
+PROC main() HANDLE
+  DEF menu
+  workbenchbase:=OpenLibrary('workbench.library',37)
+  IF workbenchbase=NIL THEN Raise(ERR_NOWB)
+  menu:=[NM_TITLE,0,'Project',0,0,0,0,
+         NM_ITEM,0,'New','N',0,0,0,
+         NM_ITEM,0,'Load...','L',0,0,0,
+         NM_ITEM,0,'Save','S',0,0,0,
+         NM_ITEM,0,NM_BARLABEL,0,0,0,0,
+         NM_ITEM,0,'Quit','Q',0,0,0,
+         0,0,0,0,0,0,0]:newmenu
+  gt_openwindow({windef},menu,{winhandler})
+EXCEPT DO
+  IF workbenchbase THEN CloseLibrary(workbenchbase)
+ENDPROC
+
+PROC newlist()
+  DEF list:PTR TO mlh
+  NEW list
+  list.head:=list+4
+  list.tailpred:=list
+ENDPROC list
+
+PROC insert(list,name)
+  AddTail(list,NEW [0,0,0,0,name]:ln)
+ENDPROC
+
+PROC windef(scr:PTR TO screen,gad,visual,glist)
+  DEF offx,offy
+
+  offx:=scr.wborleft
+  offy:=scr.wbortop+scr.rastport.txheight+1
+
+  labels:=newlist()
+
+  gad:=listview:=CreateGadgetA(LISTVIEW_KIND,gad,
+    [offx+20,offy+14,255,130,NIL,scr.font,0,0,visual,0]:newgadget,
+    [GTLV_SCROLLWIDTH,20,GTLV_LABELS,labels,GTLV_SHOWSELECTED,NIL,TAG_DONE])
+
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+20,offy+144,70,18,'_New',scr.font,"N",0,visual,0]:newgadget,
+    [GT_UNDERSCORE,"_",TAG_DONE])
+
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+112,offy+144,70,18,'_Save',scr.font,"S",0,visual,0]:newgadget,
+    [GT_UNDERSCORE,"_",TAG_DONE])
+
+
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+205,offy+144,70,18,'_Quit',scr.font,"Q",0,visual,0]:newgadget,
+    [GT_UNDERSCORE,"_",TAG_DONE])
+
+  IF gad=NIL THEN Raise(ERR_NOGADGET)
+
+  win:=OpenWindowTagList(NIL,
+    [WA_TITLE, 'AppWin Demo',
+     WA_FLAGS,  WFLG_DEPTHGADGET+WFLG_CLOSEGADGET+WFLG_DRAGBAR+
+                WFLG_SIMPLE_REFRESH+WFLG_ACTIVATE,
+     WA_IDCMP,  IDCMP_CLOSEWINDOW+IDCMP_REFRESHWINDOW+IDCMP_VANILLAKEY+
+                IDCMP_GADGETDOWN+IDCMP_GADGETUP+IDCMP_MOUSEMOVE+IDCMP_MENUPICK,
+     WA_WIDTH,  300,
+     WA_HEIGHT, offy+176,
+     WA_ZOOM,   [0,offy,130,offy]:INT,
+     WA_GADGETS,      glist,
+     WA_NEWLOOKMENUS, TRUE,
+     WA_AUTOADJUST,   TRUE,
+     TAG_DONE])
+
+  IF win
+    appwin:=AddAppWindowA(0,0,win,win.userport,NIL)
+  ENDIF
+
+  RETURN win
+
+ENDPROC
+
+PROC itemnum(n)
+ENDPROC Shr(n,5) AND $3F
+
+PROC winhandler(msg:PTR TO appmessage,class,code,gad:PTR TO gadget) HANDLE
+  IF msg.type=AMTYPE_APPWINDOW
+    expand_list(msg)
+    Gt_ReplyIMsg(msg)
+  ELSE
+    Gt_ReplyIMsg(msg)
+    SELECT class
+    CASE IDCMP_CLOSEWINDOW
+      Raise(ERR_OK)
+    CASE IDCMP_REFRESHWINDOW
+      Gt_BeginRefresh(win)
+      Gt_EndRefresh(win,TRUE)
+    CASE IDCMP_GADGETUP
+      IF gad.gadgetid="N"
+        clear_list()
+      ELSEIF gad.gadgetid="Q"
+        Raise(ERR_OK)
+      ENDIF
+    CASE IDCMP_MENUPICK
+      IF itemnum(code)=0 THEN clear_list()
+      IF itemnum(code)=4 THEN Raise(ERR_OK)
+    CASE IDCMP_VANILLAKEY
+      IF code="n"
+        clear_list()
+      ELSEIF code="q"
+        Raise(ERR_OK)
+      ENDIF
+    ENDSELECT
+  ENDIF
+EXCEPT
+  IF appwin THEN RemoveAppWindow(appwin)
+  Raise(ERR_OK)
+ENDPROC
+
+PROC clear_list()
+  labels.head:=labels+4
+  labels.tailpred:=labels
+  Gt_SetGadgetAttrsA(listview,win,NIL,[GTLV_LABELS,labels,0])
+ENDPROC
+
+PROC expand_list(msg:PTR TO appmessage)
+  DEF i,name
+  FOR i:=0 TO msg.numargs-1
+    NameFromLock(msg.arglist[i].lock,path,80)
+    AddPart(path,msg.arglist[i].name,80)
+    name:=String(StrLen(path))
+    StrCopy(name,path)
+    insert(labels,name)
+  ENDFOR
+  Gt_SetGadgetAttrsA(listview,win,NIL,[GTLV_LABELS,labels,0])
+ENDPROC
+</pre>
+</font>
+</td></tr>
+</table>
+<br>
+
+Les AppIcons fonctionnent de façon très similaire aux AppWindows.<br><br>
+
+
+<font size="+1" color="#ccbb33">Serveurs ARexx</font><br><br>
+
+Un serveur ARexx augmente sensiblement l'interopérabilité de votre programme en exportant toutes ses fonctionnalités,
+ce qui permet de scripter leur utilisation et de coopérer avec une multitude d'autres programmes serveurs ARexx.<br><br>
+
+L'interaction avec ARexx se fait par la rexxsyslib.library, pour cela vous créez et nommez un port de message, ce port
+de message deviendra votre adresse de serveur ARexx. Pour créer ce port de message vous utilisez les fonctions
+CreateMsgPort() et DeleteMsgPort() de la exec.library, mais vous pouvez tout aussi bien réutiliser votre port de
+fenêtre. Ensuite il suffit de définir la priorité du port de message, puis de le rendre public à l'aide de la
+fonction AddPort(), à la fin il faudra le retirer à l'aide de la fonction RemPort().<br><br>
+
+Si vous réutilisez votre port de fenêtre, la fonction IsRexxMsg() vous permettra de distinguer un message ARexx
+d'un simple message intuition.<br><br>
+
+Une fois le message <B>rxmsg</B> identifié comme étant un message ARexx&nbsp;:<br>
+
+<ul>
+<li><B>rxmsg.args[0]</B> est la ligne de commande.
+<li>Interprétez cette commande.
+<li>Définissez le code d'erreur <B>rxmsg.result1</B> (comme une commande DOS).
+<li>Pour retourner une valeur placez la chaîne dans <B>rxmsg.result2</B>.
+<li>Finalement répondez avec ReplyMsg(<B>rxmsg</B>).
+</ul>
+
+Ces quelques commandes s'inspirent de la graphics.library pour offrir un outil de dessin scriptable par ARexx&nbsp;:<br><br>
+
+QUIT<br>
+MOVE x y<br>
+DRAW x y<br>
+RECTFILL xmin ymin xmax ymax<br>
+ELLIPSE cx cy a b<br>
+SETPEN pen<br>
+TEXT string<br><br>
+
+Ce petite source implémente le serveur ARexx pour ces commandes&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'exec/ports','exec/nodes','intuition/intuition'
+MODULE 'rexxsyslib','rexx/storage'
+
+ENUM ERR_OK,ERR_NOREXXSYSLIB,ERR_NOWINDOW
+
+CONST SIGNAL_BREAK=$1000
+
+DEF win:PTR TO window
+DEF rastport
+DEF xa,ya,xb,yb:LONG
+
+PROC main() HANDLE
+  rexxsysbase:=OpenLibrary('rexxsyslib.library',36)
+  IF rexxsysbase=NIL THEN Raise(ERR_NOREXXSYSLIB)
+  win:=OpenWindowTagList(NIL,
+     [WA_TITLE,  'AREXX Paint Demo',
+      WA_FLAGS,  WFLG_DEPTHGADGET+WFLG_CLOSEGADGET+WFLG_DRAGBAR+
+                 WFLG_NOCAREREFRESH+WFLG_ACTIVATE,
+      WA_IDCMP,  IDCMP_CLOSEWINDOW,
+      WA_WIDTH,  320,
+      WA_HEIGHT, 256,
+      WA_AUTOADJUST, TRUE,
+      NIL])
+  IF win=NIL THEN Raise(ERR_NOWINDOW)
+  win.userport::ln.name:='APaint.1'
+  win.userport::ln.pri:=5
+  AddPort(win.userport)
+  rastport:=win.rport
+  SetAPen(rastport,1)
+  handle()
+EXCEPT DO
+  SELECT exception
+  CASE ERR_NOREXXSYSLIB
+    PrintF('Could not open rexxsyslib.library v36+ !\n')
+  CASE ERR_NOWINDOW
+    PrintF('Could not open window!\n')
+  ENDSELECT
+  IF win THEN CloseWindow(win)
+  IF rexxsysbase THEN CloseLibrary(rexxsysbase)
+ENDPROC
+
+PROC handle() HANDLE
+  DEF signals,winsig,iclass,imsg:PTR TO intuimessage
+  DEF cmdline,rxmsg:PTR TO rexxmsg
+  winsig:=Shl(1,win.userport.sigbit)
+  LOOP
+    signals:=Wait(winsig+SIGNAL_BREAK)
+    IF signals AND winsig
+      WHILE rxmsg:=imsg:=GetMsg(win.userport)
+        IF IsRexxMsg(imsg)
+          cmdline:=TrimStr(rxmsg.args[0])
+          IF StrCmp(cmdline,'QUIT')
+            rxmsg.result1:=0
+            ReplyMsg(rxmsg)
+            Raise(0)
+          ELSEIF StrCmp(cmdline,'MOVE ',STRLEN)
+            IF read_args(rxmsg,2)
+              Move(rastport,xa,ya)
+            ENDIF
+          ELSEIF StrCmp(cmdline,'DRAW ',STRLEN)
+            IF read_args(rxmsg,2)
+              Draw(rastport,xa,ya)
+            ENDIF
+          ELSEIF StrCmp(cmdline,'RECTFILL ',STRLEN)
+            IF read_args(rxmsg,4)
+              IF (xb>=xa) AND (yb>=ya)
+                RectFill(rastport,xa,ya,xb,yb)
+              ELSE
+                rxmsg.result1:=10
+              ENDIF
+            ENDIF
+          ELSEIF StrCmp(cmdline,'ELLIPSE ',STRLEN)
+            IF read_args(rxmsg,4)
+              DrawEllipse(rastport,xa,ya,xb,yb)
+            ENDIF
+          ELSEIF StrCmp(cmdline,'SETPEN ',STRLEN)
+            IF read_args(rxmsg,1)
+              SetAPen(rastport,xa)
+            ENDIF
+          ELSEIF StrCmp(cmdline,'TEXT ',STRLEN)
+            cmdline:=TrimStr(cmdline+STRLEN)
+            Text(rastport,cmdline,StrLen(cmdline))
+            rxmsg.result1:=0
+          ENDIF
+          ReplyMsg(rxmsg)
+        ELSE
+          iclass:=imsg.class
+          ReplyMsg(imsg)
+          SELECT iclass
+          CASE IDCMP_CLOSEWINDOW
+            Raise(0)
+          ENDSELECT
+        ENDIF
+      ENDWHILE
+    ENDIF
+    IF signals AND SIGNAL_BREAK
+      Raise(0)
+    ENDIF
+  ENDLOOP
+EXCEPT
+  WHILE imsg:=GetMsg(win.userport)
+    ReplyMsg(imsg)
+  ENDWHILE
+ENDPROC
+
+PROC read_args(rxmsg:PTR TO rexxmsg,num)
+  DEF str,ch
+  str:=TrimStr(rxmsg.args[0])
+  WHILE str[]<>" " DO INC str
+  xa,ch:=Val(str); IF ch THEN DEC num; str:=str+ch
+  ya,ch:=Val(str); IF ch THEN DEC num; str:=str+ch
+  xb,ch:=Val(str); IF ch THEN DEC num; str:=str+ch
+  yb,ch:=Val(str); IF ch THEN DEC num; str:=str+ch
+  IF num THEN rxmsg.result1:=10 ELSE rxmsg.result1:=0
+ENDPROC num=0
+</pre>
+</font>
+</td></tr>
+</table>
+
+Le Shell permet d'utiliser ces commandes de façon interactive&nbsp;:<br><br> 
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre> RUN >NIL: APaint
+ RX "ADDRESS 'APaint.1' ELLIPSE 160 128 100 60"
+ RX "ADDRESS 'APaint.1' QUIT"
+</pre>
+</font>
+</td></tr>
+</table>
+<br>
+
+Une chose que ce petit programme ne gère pas ce sont les exécutions multiples d'un même programme serveur.
+Dans ce cas vous voulez soit partager un même serveur soit avoir de multiples serveurs, un pour chaque tâche.
+Pour avoir de multiples serveurs il suffirait de les nommer Apaint.1, APaint.2, APaint.3 et ainsi de suite.<br><br>
+
+Voyez la rexxsyslib.library ainsi que rexx/storage.h pour plus d'informations sur les serveurs ARexx.<br><br>
+
+
+<font size="+1" color="#ccbb33">Les Gadget-Toolkits</font><br><br>
+
+Ce tutoriel ne couvre pas les gadget-toolkits.
+Cependant voici où trouver quelques ressources et documentations pour le programmeur Amiga-E&nbsp;:<br><br>
+
+<b>MUI&nbsp;:</b><br><br>
+
+<a href="http://de.aminet.net/aminet/dev/mui/mui38dev.lha">de.aminet.net/aminet/dev/mui/mui38dev.lha</a>.<br>
+<a href="http://de.aminet.net/aminet/dev/mui/mui38dev-E.lha">de.aminet.net/aminet/dev/mui/mui38dev-E.lha</a>.<br><br>
+
+<b>Feelin&nbsp;:</b><br><br>
+
+<a href="http://perso.numericable.fr/~olaviale/feelin/">perso.numericable.fr/~olaviale/feelin/</a>.<br><br>
+
+
+<font size="+1" color="#ccbb33">Pour aller plus loin</font><br><br>
+
+Un tutoriel n'est ni exhaustif ni une référence. Un programme AmigaOS réaliste est fait de mille autres
+choses, non abordées ici, comme les écrans, les datatypes, les memory-pools, les processus, les devices,
+les fichiers IFF et bien d'autres encore. Savoir programmer c'est donc aussi savoir trouver de la
+documentation, et des exemples, le plus souvent en Anglais. Voici quelques liens pour démarrer.<br><br>
+
+La documentation indispensable c'est les Autodocs de Commodore, et c'est encore mieux dans le format
+AmigaGuide&nbsp;: <a href="http://de.aminet.net/pub/aminet/dev/misc/AmigaOS_guides.lha">de.aminet.net/pub/aminet/dev/misc/AmigaOS_guides.lha</a>.<br><br>
+
+Les non moins indispensables AmigaOS Includes&nbsp;:
+<a href="http://www.amiga.com/3.9/download/NDK3.9.lha">www.amiga.com/3.9/download/NDK3.9.lha</a>.<br><br>
+
+Le compilateur EC v3.3a de Wouter van Oortmerssen (version complète)&nbsp;:
+<a href="http://www.aminet.net/dev/e/amigae33a.lha">www.aminet.net/dev/e/amigae33a.lha</a> et <a href="http://www.aminet.net/dev/e/ec33a.lha</a>.<br><br>
+
+Le compilateur ECX de Leif Salomonsson (version démo)&nbsp;:
+<a href="http://home.swipnet.se/blubbe/ECX">home.swipnet.se/blubbe/ECX</a>.<br><br>
+
+L'Amiga-E mailing list&nbsp;:
+<a href="http://www.freelists.org/list/positron" target="_blank">www.freelists.org/list/positron</a>.<br><br><br>
+
+
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

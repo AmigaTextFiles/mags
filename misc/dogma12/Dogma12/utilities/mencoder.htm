@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- created on MacBook(White) 2.26GHz Core2Duo/5Gb/GForce 9400M 256mb/Super/AirPort/MacOSX 10.8 -->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1251">
+<meta http-equiv="content-language" content="ru">
+<meta name="keywords" content="amiga, poweramiga, амига, dogma, догма, magazine, e-zine, журнал, электронный журнал, amif1team, amifone, vinnny, russia, ukraine, amigaone, pegasos, amigaos, morphos, motorola, powerpc, g3, g4, a1200, a4000, cd32, workbench, opus, dopus, back to the future, back for the future">
+<meta name="description" content="Догма - русскоязычное периодическое интернет издание посвящённое компьютерной платформе Amiga/Pegasos. Until the End of Time!">
+<meta name="author" content="amifone/team Dogma">
+<meta name="copyright" content="Copyright © 2002-2012 team Dogma">
+<link rel="icon" href="../gfx/main/icon.png" type="image/png">
+<link rel="shortcut icon" href="../gfx/main/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="../style.css">
+<title>Догма - электронное Амижное издание</title>
+</head>
+<body bgcolor="white" link="SlateGrey" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" background="../gfx/main/back.png">
+
+<script language="JavaScript" src="../up.js" charset="UTF-8"></script>
+
+<!-- ---------------------------------- Start ---------------------------------- -->
+
+<div class="shadowtext">M E n c o d e r  &nbsp; - &nbsp; н а &nbsp; п р а к т и к е</div><br>
+
+<font color="#868686" size="-1">
+
+<p class="top">Данный обзор хочу посвятить практическим занятиям с утилитой MEncoder, предназначенной для обработки видео-файлов, таких как перекодировка из формата DVD в DivX, или из MOV в DivX, а также изменение размера видео.<br><br>
+
+Свой обзор я основываю на shell-версии MEncoder, входящего в состав известного всем нам видео-плеера MPlayer. Прежде чем перейти к практическим урокам стоит скачать саму утилиту, доступную на данный момент как <a href="http://fabportnawak.free.fr/mplayer/" target="_blank">под MorphOS</a>, так и <a href="http://www.os4depot.net/share/video/edit/" target="_blank">под AmigaOS4</a>. Кстати не забудьте, что для нормальной работы перед использованием стоит увеличить величину стека хотя бы до значения 150 000, используя команду «stack 150000».</p>
+
+<p align="center"><font class="top">1. Перекодировка</font></p>
+
+<font color="black"><b>1.1 Перекодировка из незашифрованного DVD в DivX3 осуществляется следующей командой:</b></font><br><br>
+
+mencoder dvd://2 -ovc lavc -lavcopts vcodec=msmpeg4 -oac lavc -srate 44100 -lavcopts acodec=mp2:abitrate=128 -o file.avi<br><br>
+
+где:<br><br>
+
+dvd://2 - означает что мы используем DVD-диск, подключённый ко второму IDE-порту из четырёх доступных (0, 1, 2 и 3).<br>
+-ovc lavc – определяет, что будет работа с видео-кодеком.<br>
+-lavcopts - позволяет задать необходимые параметры для lavc.<br>
+-vcodec - задаём тип необходимого исходного формата-кодека.<br>
+-oac lavc – определяет, что будет работа с аудио-кодеком.<br>
+-lavcopts - позволяет задать необходимые параметры для аудио-кодека.<br>
+-srate 44100 - указываем необходимое качество звука в Гц.<br>
+-o file.avi - имя получаемого на выходе видео-файла.<br><br>
+
+
+В данном конкретном случае:<br><br>
+-vcodec=msmpeg4 - собственно и задаёт искомый формат видео DivX3.
+<p class="top">acodec=mp2:abitrate=128 задаёт параметры аудио дорожки в MP2-формате (так как MP3-аудио формат пока не поддерживается версией MEncoder под AmigaOS4).</p>
+
+<font color="black"><b>1.2 Перекодировка с незашифрованного DVD в MPEG2</b></font><br><br>
+
+Устанавливаем видео развёртку 16/9, качество звука 48 кГц и видео-поток 25 кадров за секунду.<br><br>
+
+mencoder dvd://2 -of mpeg -mpegopts format=dvd -srate 48000 -ofps 25 -ovc lavc -oac lavc –lavcopts vcodec=mpeg2video:vrc_buf_size=1835:keyint=15:vrc_maxrate=9800:vbitrate=4900:aspect=16/9 -vf 720x405:0:16 -o test.avi<br><br>
+
+
+<font color="black"><b>1.3 Конвертируем файл в формат DivX</b></font><br><br>
+
+mencoder mavideo.xxx -ovc lavc -lavcopts vcodec=mpeg4 -oac lavc -srate 44100 -lavcopts acodec=mp2:abitrate=128 -o test.avi<br><br>
+
+
+где строка vcodec=msmpeg4 обозначает конкретный формат DivX.<br><br>
+
+<font color="black"><b>1.4 Конвертируем файл в формат MPEG2</b></font><br><br>
+
+mencoder mavideo.mov -ovc lavc -lavcopts vcodec=mpeg2video -oac lavc -srate 44100 -lavcopts acodec=mp2:abitrate=128 -o file.mpg<br><br>
+
+
+<font color="black"><b>1.5 Конвертируем файл в формат MPEG1</b></font><br><br>
+
+mencoder mavideo.xxx -of mpeg -mpegopts format=mpeg1:tsaf:muxrate=2000 -oac lavc -ovc lavc -lavcopts acodec=mp2:abitrate=128:vcodec=mpeg1video:vbitrate=1152:keyint=15:mbd=2:aspect=4/3 -o file.mpg<br><br>
+
+
+<font color="black"><b>1.6 Конвертируем файл в формат MPEG1 (VCD)</b></font><br><br>
+
+MPEG1 (VCD) ограничивается размером 356x288<br><br>
+
+mencoder mavideo.xxx -of mpeg -mpegopts format=mpeg1:tsaf:muxrate=2000 -oac lavc -ovc lavc -lavcopts acodec=mp2:abitrate=128:vcodec=mpeg1video:vbitrate=1152:keyint=15:mbd=2:aspect=4/3 -vf scale=356:288 -o file.mpg<br><br>
+
+
+<font color="black"><b>1.7 Конвертируем файл в формат FLV, часто использующийся в качестве основного видео-кодека в Интернете.</b></font><br><br>
+
+mencoder mavideo.xxx -of lavf -oac mp3lame -lameopts abr:br=56 -srate 22050 -ovc lavc -lavcopts vcodec=flv:vbitrate=500:mbd=2:mv0:trell:v4mv:cbp:last_pred=3 -o file.flv
+
+<p align="center"><font class="top">2. Изменение размера изображения видео</font></p>
+
+<font color="black"><b>2.1 Изменение размера видео в формат AVI/DivX 640x480</b></font><br><br>
+
+mencoder mavideo.xxx -oac copy -ovc lavc -lavcopts vcodec=mpeg4:mbd=2:trell:autoaspect -vf scale=640:480 -o file.avi<br><br>
+
+
+<font color="black"><b>2.2 Изменение размера видео для формата FLV 320x240</b></font><br><br>
+
+mencoder mavideo.xxx -oac copy -ovc lavc -lavcopts vcodec=flv:vbitrate=500:mbd=2:mv0:trell:v4mv:cbp:last_pred=3 -vf scale=320:240 -o file.avi
+
+<p align="center"><font class="top">3. Повторная индексация</font></p>
+
+<font color="black"><b>3.1 Реиндексация AVI/DivX</b></font>
+
+<p class="top">Вы наверное встречались с тем, что при редактировании или просмотре того или иного AVI-файла видео-плеер, к примеру MPlayer, теряет возможность перемотки видео. Причина тому потеря индексации файла. Вот как это индексирование можно восстановить:</p>
+
+
+mencoder mavideo.avi -forceidx -oac copy -ovc copy -o file.avi
+
+<p align="center"><font class="top">И в заключении.</font></p>
+
+<p class="top">Это лишь маленькая часть возможностей MEncoder, более полная информация относительно поддержки кодеков и работы с ними вы можете найти тут (http://www.mplayerhq.hu/DOCS/HTML/ru/encoding-guide.html).<br><br>
+
+И напоследок, обработка видео довольно трудоёмкий процесс, занимающий довольно много процессорного времени. Так что имейте в виду, что к примеру на PowerPC G4 обработка идёт со скоростью около 7 кадров в секунду для MOV-видео с размером 640x480.</p>
+
+<div align="right"><font color="black"><b>Автор статьи:</b></font> Mehdi Boulahia ( <a href="http://obligement.free.fr/" target="_blank">obligement.free.fr</a> )</div>
+
+<!-- ---------------------------------- End ---------------------------------- -->
+
+<script language="JavaScript" src="../down.js" charset="UTF-8"></script>
+
+</body>
+</html>

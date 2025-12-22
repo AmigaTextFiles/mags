@@ -1,0 +1,133 @@
+2
+1*
+
+{3                              Oktagon 2008 SCSI-II
+{3                              --------------------
+
+                                 Timo Kemppaala
+
+
+(Tämä tarina sisältää osuuksia joita ei suositella, kuten kyseisen ohjaimen  os-
+taminen :-) toim. huom.)
+
+Kaikki alkoi siitä, kun tammi-helmikuussa oma 2,5 Gt 5,25" IDE-kiintolevyni  lo-
+petti arveluttavalla tavalla toimintansa kaverilla ollessani. Siitä  en  kuiten-
+kaan lannistunut, vaan alustin levyn kokonaan.  Se  auttoikin  ongelmaan,  mutta
+kaikki levyllä olleet tiedot olivat menneet ikiajoiksi, mukaan  lukien  tärkeitä
+dokumentteja ja tiedostoja. Luulisi, että siitä oppisi tekemään  varmuuskopioita
+tietyistä tiedostoista, vaan eipä tämä jannu sitä tajunnut.
+
+Levy päätti tehdä toisekin tempun huhtikuussa, eikä sitä tällä kertaa voitu edes
+alustaa, sillä lukupää oli ilmeisesti vahingoittunut jossain vaiheessa toiminta-
+kelvottomaksi, eikä levyä siitä syystä löytynyt edes  HDToolBoxilla  tutkiessani
+levyä. Niinpä päätin ensi töikseni heti vian  toteamisen  jälkeen  purkaa  levyn
+osiksi ja tutkia mielenkiinnolla, mitä IDE-levyni on syönyt.  Siellä  oli  kaksi
+suurehkoa levyä, jotka näyttivät olevan kunnossa, eikä lukupääkään  ollut  "rik-
+kinäisen" näköinen.
+
+Parin sekunnin jälkeen duunissa, jonka piti olla "pölytön" ympäristö, levyä kat-
+sellessani levyn pinnalle  ilmaantui  tuhatmäärin  pieniä  pölyhiukkasia,  jotka
+osaltaan poistivat lukukelpoisuutta. :-) Siinä samassa ajattelin,  että  pitäisi
+saada uusi levy vanhan rikkouduttua ja jouduttua vasaran murjomaksi. Tällä  ker-
+taa päätin, että ostankin SCSI-2-levyn, ja se onnistuikin yllättävän hyvin: sain
+käytettynä Oktagon 2008 -ohjaimen ja kiintolevyn.
+
+
+{3Tuskainen asennus
+{3-----------------
+
+Väsyneenä kotiin päästyäni yritin asentaa korttia koneeseeni,  joka  näytti  nyt
+rammalta. Asennus ei jostain syystä onnistunut heti, vaan jouduin nukkumaan  en-
+sin muutaman kymmenen tuntia. Siinä kahvia siemaillessani huomasin, että kortil-
+la oli paikkoja luultavasti ZIP-tyyppisille muisteille ja kuusi jumpperia, joil-
+la muunnellaan kortin toimintaa. Kortille sopiva muisti  on  16-bittistä,  joten
+sitä on turha ostaa. Kortin fyysisen  asennuksen  jälkeen  pidin  pienen  tauon,
+sillä jokainen nelitonnista laajentanut tietää, ettei se ole mitään helppoa hom-
+maa.
+
+Lepotuokion jälkeen pistin koneen käyntiin ja katsoin, löytyykö korttia.  Kortti
+löytyi Early-Startupista ja siinä samalla totesin, että koneeni  kaikki  kortti-
+paikat olivat täynnä ja lisätilaa pitäisi sitten hankkia tornittamalla. Kone ju-
+mitti kummallisesti käynnistyksessä, sillä olin tottunut IDE-levyn kiihdytykseen
+heti virran tullessa levylle. Koneen IDE-väylä yrittää etsiä levyä  kaikin  kei-
+noin ja vasta sitten tutkii muita laitteita.
+
+SCSI-kortti käynnisti levyn vasta kymmenen sekunnin kuluttua, ja niin  se  tekee
+vieläkin. SCSI-levy ei tahtonut bootata saati  sitten  mitään  ladata.  Seuraava
+päätelmä oli kokeilla HDToolBoxia saadakseni SCSI-väylästä tietoa,  onko  siellä
+edes mitään. Ongelmaksi osoittautui kuitenkin  SCSI-väylä,  sillä  HDToolBox  ei
+löytänyt väylästä mitään.
+
+Vähän aikaa tahkoiltuani soitin kaverille, jolta kortin  sain  ja  sain  tietää,
+että väylää pitää osoittaa kortin omalla nk. shadow-ajurilla, ja  se  auttoikin.
+Nyt sain väylästä tietoa siitä, mikä levy ja mikä formaatti oli  kyseessä.  Heti
+osioinnin jälkeen käynnistin AmigaOS 3.1 Install -levykkeellä asennuksen,  mutta
+pettymys oli suuri, kun levyjä ei näkynytkään ruudulla. Siitä tulistuen kokeilin
+jatkuvien pettymysten saattamana jotain aivan kummallista.
+
+
+{3Etanan esiinmarssi
+{3------------------
+
+Yhdessä vaiheessa, kun olin raivokkaasti yrittänyt saada levyä  toimimaan,  olin
+sammuttanut koneen ja laittanut asennuslevykkeen asemaan,  olivat  käynnistyksen
+jälkeen ilmestyneet näkyviin tekemäni osiot. Sitä ihmetellessäni yritin  miettiä
+mitä kummallisimpia teorioita, miksi näin oli käynyt. En kuitenkaan heti älynnyt
+ajatella,  että  kone  pitää  käynnistää  aina  uudelleen,  jos  haluaa  levynsä
+löytyvän. :-)
+
+Yhden teorian mukaan kokeilin sulkea levyn ship-komennolla.  Teoriani  toimi  ja
+pääsin asentamaan Workbenchiä. Asennus onnistui ja pääsin asentamaan ohjelmisto-
+ja. Asennuksen aikana huomasin jotain kummallista. Kortti ei käytä DMA:ta  lain-
+kaan, jolloin kirjoitus- ja lukutoiminnot  vievät  prosessoriaikaa.  Mutta  mikä
+kummallisinta, kortti vie koko tehon eikä anna siitä mitään muille, vaikka kuin-
+ka vääntäisi! Delfina Liten mukana tulleella  DelFX-ohjelmalla  samplasin  ääntä
+parin otteeseen tällä levyllä, ja se oli todella hidas!  Levy  suorastaan  aneli
+lisää prosessoritehoa, mutta sitä kun ei ollut niin ongelmia syntyi. En pystynyt
+millään ilveellä lopettamaan samplausta, sillä kortti vei joka ikisen tehon rip-
+peen mitä prosessorista löytyi.
+
+IDE-levyjen prosessoritehojen imeminen on ajanut ilmeisesti nopeasti näiden  hi-
+taiden SCSI-2-levyjen ohi. Toisaalta siinä on syynä sekin, että kortti on jo ai-
+ka vanha. Lueskelin A4000:n opaskirjaa löytääkseni vian.  Guide  ilmoitti,  että
+Commodoren A2091-ohjaimella siirrettynä nelitonniseen olisi  ongelmia  lukemisen
+kanssa,  sillä  kortti  käyttää  DMA:ta   osoitteissa,   joista   uudet   koneet
+(A1200/A3000(T)/A4000(T))  eivät  selviä,  jolloin  ne  ovat  todella   hitaita;
+68040-prosessorilla varustetussa nelitonnisessakin vain  luokkaa  yksi  megatavu
+sekunnissa.
+
+Arvelin, olisiko syy sama, mutta ilmeisesti ei. Lisäksi saa  olla  aika  veikko,
+joka tunkee A3000(T):een kortin, joka on luultavasti hitaampi  kuin  koneen  oma
+SCSI-väylä. Aikani ihmeteltyäni tuumin, onko edes järkevää pitää levyä, joka vie
+tehoja enemmän kuin isommalla kapasiteetilla ja muutenkin paremmalla  hinta/laa-
+tu-suhteella varustetut IDE-levyt. Päätin kuitenkin pitää kortin, sillä SCSI  on
+aina SCSI.
+
++ SCSI-2
++ todella nopeat validoinnit
++ nopeat dir-skannaukset
++ helpot asemien kytkennät
++ 7 laitetta
++ nopea levyn optimointi (de-fraggaus)
+
+- liian hidas
+- vie prosessoritehon kokonaan 68030:lla (uusien koneiden ongelma?)
+- bootatessa täytyy sulkea levy ship-komennolla
+- Zorro II
+
+
+{3Loppu hyvin, kaikki huonosti
+{3----------------------------
+
+Jos haluaisi kortista todellisen hyödyn, olisi ostettava uudempi SCSI-2-levy  ja
+uusi prosessori, mikä  parantaisi  muutenkin  järjestelmän  toimivuutta.  Taikka
+hankkii 32-bittiseen koneeseensa FastLanen, niin ongelmat ovat kaukana takana!
+
+Myöhemmin havaitsin ohjelmistopäivityksen auttavan hieman oktagonistinkin arkea.
+Kortilla on normaalisti version 3.3 ROM-piiri, joka antaa  siirtonopeudeksi  181
+kt/s. Ohjelmallinen päivitys tuo lisänopeutta kortin luku- ja kirjoitustilantei-
+siin, kuten muihinkin toimintoihin. DTA:lla mitattuna version 9.7 kortti siirte-
+li parhaimmillaan 1,7 Mt/s 68030-koneessani, eli nopeus  on  noin  9,4-kertainen
+alkuperäiseen verrattuna! 68040/060-koneilla ja uudemmilla levyillä on  varmasti
+huomattavasti tätäkin suurempi nopeus, arvatenkin 6,0 Mt/s luokkaa, mikä on Ami-
+ga-käytössä aivan riittävä.

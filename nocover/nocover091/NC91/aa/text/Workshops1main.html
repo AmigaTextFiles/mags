@@ -1,0 +1,294 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Workshops / Hintergrundberichte / Buchvorstellungen
+---------------------------------------------------
+
+1. Workshop: Verteilte Dateisysteme - Teil 1 (von Uwe Pannecke)
+
+Der Amiga als NFS-Client und -Server
+
+Teil 1 NFS-Client Amiga
+
+Das der Amiga in einem Netzwerk eine durchaus brauchbares Mitglied sein
+kann, habe ich in diesem Magazin bereits mehrfach mit Beitr&auml;gen versucht,
+zu verdeutlichen. Auch in dieser Ausgabe soll ein weiteres Beispiel folgen.
+Ist Euer Amiga &uuml;ber einen TCP/IP-Stack mit einem oder mehreren Linux-
+Rechnern verbunden, bietet das von SUN Microsystems entwickelte 'Network
+File System, kurz NFS, eine elegante M&ouml;glichkeit, Dateien in diesem Netz
+zur Verf&uuml;gung zu stellen. Dabei sind mindestens ein NFS-Server und ein
+NFS-Client beteiligt, wobei ein Rechner in solch einem 'Network File
+System' durchaus gleichzeitig sowohl als Server als auch Client auftreten
+kann. Der Dateizugriff &uuml;ber das NFS erfolgt v&ouml;llig transparent. Ihr k&ouml;nnt
+auf die freigegebenen Laufwerke, Partitionen und Dateien der beteiligten
+Rechner zugreifen, als w&auml;ren sie lokal auf dem jeweiligen Netzwerkrechner
+vorhanden.
+So k&ouml;nnt Ihr etwa f&uuml;r Euren Amiga die Festplattenkapazit&auml;t des Linux-
+Rechners anzapfen, indem Ihr ein Linux-Laufwerk oder -verzeichnis als
+Amiga-Partition mountet. Texte, Musikst&uuml;cke und Bilder k&ouml;nnen auf nur einem
+Rechner vorgehalten und allen Netzwerkteilnehmern zentral zur Verf&uuml;gung
+gestellt werden. Backups &uuml;ber NFS lassen den Datengau weniger dramatisch
+erscheinen. In diesem Szenario kann der Amiga neben einer passiven Rolle
+als Client auch die Aufgabe eines NFS-Servers &uuml;bernehmen. Auf beide Aspekte
+soll nachfolgend eingegangen werden.
+
+
+1. Systemvoraussetzungen
+
+Neben dem/den Linux-Rechner(n) kann jeder Amiga mit einem TCP/IP-Stack
+Verwendung finden. Dabei spielt es keine Rolle, ob Miami, AmiTCP oder
+Genesis zum Einsatz kommen. Um eine angenehm hohe Zugriffsgeschwindigkeit
+zu realisieren, empfiehlt sich die Anbindung des Amiga ans Netzwerk &uuml;ber
+eine Ethernet-Karte. Aber prinzipiell funktioniert das Ganze auch &uuml;ber eine
+serielle oder parallele Nullmodem-Verbindung. Und demzufolge ist es ebenso
+m&ouml;glich, nicht nur im LAN ein Network File System aufzusetzen, sondern das
+Internet als Basis f&uuml;r mittels NFS miteinander vernetzte Rechner zu nutzen.
+Ein Beispiel f&uuml;r letzteres ist der internetbasierte SuSE-NFS-Server, dessen
+Verzeichnisse Ihr auf Eurem heimischen Rechner mounten k&ouml;nnt.
+
+F&uuml;r diesen Workshop wurden ein Desktop-PC sowie ein Notebook mit jeweils
+SuSE 7.2 und ein Amiga 3000 mit der Ethernet-Karte XSurf und dem TCP/IP-
+Stack Miami aufeinander losgelassen.
+
+
+2. NFS Client Amiga
+
+2.1 Die Linux-Seite
+
+Software und Dienste
+
+Da der Linux-Rechner in diesem Fall als Server dienen soll, muss die
+passende Software installiert sein. Jede Linux-Distribution sollte die
+notwendigen Pakete mitliefern. Unter SuSE 7.2 findet Ihr selbige im
+Verzeichnis 'n' der Installations-CDs. Linux-Kernel ab Version 2.1
+enthalten bereits NFS-Support. In diesem Fall ist unter SuSE zus&auml;tzlich das
+Paket 'nfs-utils' mittels YAST zu installieren.
+Au&szlig;erdem muss ein RPC (Remote Procedure Calls)-Portmapper gestartet werden.
+In YAST setzt Ihr die Variablen 'START_PORTMAP' und 'NFS_SERVER' auf 'yes'
+und schon passt YAST f&uuml;r Euch die Eintr&auml;ge in /etc/rc.config entsprechend
+an.
+
+
+Freigabe von Laufwerken und Verzeichnissen
+
+Jetzt ist es an der Zeit, die gew&uuml;nschten Laufwerke bzw. Verzeichnisse auf
+dem NFS-Server freizugeben. Zu diesem Zweck ediert Ihr die Datei
+'/etc/exports' in einem beliebigen Editor. F&uuml;r jedes zu exportierende
+Verzeichnis wird eine eigene Zeile angelegt. In dieser Zeile k&ouml;nnt Ihr die
+Rechner und ihre jeweiligen Berechtigungen f&uuml;r den Zugriff auf die
+freigegebenen Verzeichnisse festlegen. Dies schlie&szlig;t gleichzeitig auch alle
+Unterverzeichnisse mit ein.
+Die Syntax der 'exports'-Datei folgt dem Schema
+
+'freizugendes_Verzeichnis   berechtigter_Rechner(Zugriffsrechte)'.
+
+Wir wollen das an eigigen Beispielen verdeutlichen. Nehmen wir an, das
+lokale Netzwerk der verwendeten Rechner liegt im Adressbereich 192.168.1.x
+und besitzt die Domain '.xwing.de'. Auf dem Linux-NFS-Server haben wir in
+der Datei 'etc/hosts' im Vorfeld die am Netzwerk beteiligten Rechner mit
+folgenden Eintr&auml;gen festgelegt:
+
+192.168.1.101   linux.xwing.de          linux           # Linux-Desktop
+192.168.1.102   amiga.xwing.de          amiga           # Amiga 3000
+192.168.1.103   bbs-linux-nb.xwing.de   bbs-linux-nb    # Notebook-Desktop
+
+Auf eben diesem Linux-Rechner existieren die Verzeichnisse '/ablage',
+'/daten' und '/opt/texte'. Diese sollen exportiert werden. Alle am Netzwerk
+beteiligten Rechner sollen Lese- und Schreibrechte f&uuml;r das Verzeichnis
+'/ablage' bekommen, auf '/daten' soll das Linux-Notebook nur lesend, der
+Amiga jedoch lesend und schreibend zugreifen k&ouml;nnen. Das Verzeichnis
+'/opt/texte' wiederum soll lediglich dem Amiga und diesem nur mit Lese-
+rechten zur Verf&uuml;gung stehen.
+Die Datei '/etc/exports' k&ouml;nnte dann wie folgt aussehen:
+
+# See exports(5) for a description.
+# This file contains a list of all directories exported to other computers.
+# It is used by rpc.nfsd and rpc.mountd.
+
+/ablage         192.168.1.*(rw)
+/daten          bbs-linux-nb(ro) amiga(rw)
+/opt/texte      amiga.xwing.de(ro)
+
+Wie Ihr sicherlich bemerkt habt, ist sowohl der Rechnername, der
+Rechnername einschlie&szlig;lich Domain oder die IP-Nummer als Angabe zur
+Identifikation m&ouml;glich. Als Jokerzeichen sind '*' und '?' einsetzbar. So
+erm&ouml;glicht die IP-ID-Eingabe 192.168.1.* allen im Adressbereich 192.168.1.0
+bis 192.168.1.255 befindlichen  Rechnern den Zugriff.
+Das Dateisystem wird durch 'rw' mit Schreib- und Leserechten, durch 'ro'
+nur mit Leserechten exportiert. Weitere Berechtigungen sind m&ouml;glich, sollen
+aber an dieser Stelle ausgelassen werden. Bei Interesse kl&auml;rt Euch ein 'man
+exports' &uuml;ber Einzelheiten auf.
+
+Habt Ihr alle gew&uuml;nschten &Auml;nderungen an 'etc/exports' vorgenommen, startet
+Ihr den NFS-Daemon mit 'rcnfsserver restart' neu.
+
+
+Testphase
+
+Testet anschlie&szlig;end als 'root' oder 'su' mit der Shell-Eingabe 'rpcinfo -
+p', ob Portmapper, NFS-Daemon und mountd auch wirklich laufen.
+
+Screenshot:
+<IMG SRC="../extra/nfs1_portmap.png" ALT="Screenshot">
+
+Ob die Verzeichnisse tats&auml;chlich entsprechend unserer Vorgaben exportiert
+wurden, verr&auml;t ein anschlie&szlig;endes 'exportfs'.
+
+Screenshot:
+<IMG SRC="../extra/nfs1_export.png" ALT="Screenshot">
+
+Damit ist die Linux-Server-Konfiguration abgeschlossen. Wir wechseln die
+Tastatur und wenden uns dem Amiga zu.
+
+
+2.2 Die Amiga-Seite
+
+AmiTCP und Genesis
+
+Alle diejenigen, die AmiTCP oder Genesis installiert haben, besitzen
+bereits alle notwendigen Voraussetzungen f&uuml;r das NFS-Clienten-Daseins ihres
+Amigas. Im '/bin'-Verzeichnis beider Programmpakete finden sich die f&uuml;r den
+NFS-Client-Einsatz ben&ouml;tigten Programme. Sie wurden von Carsten Heyl
+erstellt und tragen wohl auch deshalb als Namensbeginn ein 'ch_' (&uuml;brigens
+erwies sich Carsten Heyl in Vorbereitung dieses Workshops als sehr
+hilfsbereiter und netter Kommunikationspartner).
+Die f&uuml;r das Einbinden der gew&uuml;nschten Laufwerke entscheidende
+Konfigurationsdatei 'ch_nfstab' befindet in 'AmiTCP:db'.
+
+
+Miami
+
+Miami-Anh&auml;nger m&uuml;ssen zuvor ein wenig mehr Aufwand betreiben, da ihr
+TCP/IP-Stack ohne integrierte NFS-Unterst&uuml;tzung daherkommt. Dies stellt
+aber kein wirkliches Problem dar. In den Demoversionen von AmiTCP [1] und
+Genesis [2] sind die bereits genannten Programme ebenso enthalten und
+k&ouml;nnen ohne weiteres gemeinsam mit Miami genutzt werden. Um die &Auml;hnlichkeit
+zur AmiTCP/Genesis-Installation herzustellen, k&ouml;nnt Ihr im Miami-
+Verzeichnis eine '/bin'-Schublade erstellen und alle mit 'ch_' beginnenden
+Programme aus dem 'AmiTCP:bin'-Verzeichnis dorthin kopieren. Dann muss aber
+dieses neu erstellt 'Bin'-Verzeichnis dem Suchpfad hinzugef&uuml;gt werden. Oder
+Ihr kopiert die genannten Programme einfach nach 'Sys:C'. Die Datei
+'db/ch_nfstab' kann wiederum in ein zuvor erstelltes Verzeichnis 'Miami:db'
+oder z.B. nach "Devs:", dem Amiga-eigenen Mountlist-Verzeichnis,
+transferiert werden.
+
+
+Konfiguration
+
+Dem NFS-Clienten 'ch_nfsc' muss mit seinem Start nat&uuml;rlich auch mitgeteilt
+werden, welche Laufwerke oder Verzeichnisse in das Amiga-Dateisystem
+einzubinden sind. Diese Aufgabe &uuml;bernimmt die bereits genannte Datei
+'ch_nfstab'. Selbige laden wir deshalb in einen Texteditor und passen den
+Inhalt unseren Bed&uuml;rfnissen an.
+Die Syntax der Eintr&auml;ge folgt dem Schema
+
+NFS-Server:/export_Verzeichnis import_Verzeichnis: USER user_name UMASK XXX
+
+F&uuml;r die Angabe des NFS-Servers sind sowohl die IP-ID als auch der
+Rechnername m&ouml;glich.
+
+
+User-ID (UID) und Group-ID (GID)
+
+Mit dem Parameter 'USER user_name' kann dem NFS-Server jeder im TCP/IP-
+Stack angemeldete User untergeschoben werden. Besitzt ein Linux-User etwa
+bestimmte Dateirechte auf dem zu exportierenden Laufwerk/Verzeichnis, kann
+in der Standardeinstellung des NFS-Servers nur ein Client-User mit gleicher
+UID/GID diese Dateirechte erlangen. (Serverseitig l&auml;sst sich &uuml;ber den
+Parameter 'map_identity' in '/etc/exports' dieses Verhalten ebenso
+beeinflussen.)
+Sind User- sowie Group-ID der Linux-Seite bekannt, kann ich diesen User mit
+passender UID/GID im Amiga-TCP/IP-Stack anlegen und mit dem User-Parameter
+in 'ch_nfstab' die gleichen Dateirechte im importierten
+Laufwerk/Verzeichnis erhalten.
+Da in unserem Workshop alle Dateien im Linux-Verzeichnis '/daten' dem User
+'uwep' mit der UID 500 geh&ouml;ren, und dieser User zur Gruppe 'users' mit der
+GID 100 angeh&ouml;rt, legen wir einen solchen User auch in unserem TCP/IP-Stack
+an. Nachfolgend ein Beispiel f&uuml;r Miami, sinngem&auml;&szlig; ebenso in AmiTCP bzw.
+Genesis.
+
+Screenshot:
+<IMG SRC="../extra/nfs1_miami_user.png" ALT="Screenshot">
+Screenshot:
+<IMG SRC="../extra/nfs1_miami_group.png" ALT="Screenshot">
+
+
+Dateirechte
+
+Mit dem Parameter 'UMASK XXX' k&ouml;nnt Ihr jeder Datei, die im importierten
+Verzeichnis von Euch erzeugt/angelegt wird, bestimmte Datei-Rechte mit auf
+den Weg geben.
+So k&ouml;nnt Ihr in der dreistelligen Ziffernmaske die Rechte f&uuml;r User (also
+Eigner der Datei), Gruppe und Sonstige festlegen. Im Gegensatz zu 'chmod'
+ist die Bedeutung der Bits jedoch genau umgekehrt. Die Rechte (4 f&uuml;r Lesen,
+2 f&uuml;r Schreiben und 1 f&uuml;r Ausf&uuml;hren) sind von f&uuml;r die einzelne
+Ziffernstelle von 7 zu subtrahieren.
+Ein kurzes Beispiel: der User (Eigner) der Datei soll alle Rechte besitzen,
+die Gruppe dagegen nur Lese- und Ausf&uuml;hrberechtigung (z.B. f&uuml;r ein
+Programm) und Sonstige sollen gar keinen Zugriff erhalten. Dies erg&auml;be dann
+UMASK '027'.
+
+
+Konfigurationsbeispiel der 'ch_nfstab'
+
+Auf dem NFS-Server mit der IP-ID 192.168.1.101 und dem Rechner/Domainnamen
+'linux.xwing.de' haben wir das Verzeichnis '/daten' f&uuml;r den Amiga mit
+Schreib- und Leserechten freigegeben. Die Dateien in diesem Verzeichnis
+geh&ouml;ren dem Linux-User 'uwep', das Verzeichnis soll auf dem Amiga als
+'LinuxDaten:' gemountet werden. Somit erstellen wir in der 'ch_nfstab' den
+nachfolgenden Eintrag:
+
+linux.xwing.de:/daten  LinuxDaten: USER uwep
+
+Alle in dem vom NFS-Server exportierten Verzeichnis '/ablage' zu
+erstellenden Dateien sollen alle Dateirechte f&uuml;r den User 'uwep' aufweisen,
+die Gruppe und Sonstige sollen lediglich Lese- und Ausf&uuml;hrrechte erhalten.
+Das Verzeichnis soll als 'Ablage' importiert werden. Der Eintrag lautet:
+
+linux.xwing.de:/ablage   Ablage: USER uwep UMASK 022
+
+
+Die so pr&auml;parierte Datei 'ch_nfstab' in unserem Fall nach 'Miami:db/'
+kopiert. In der Shell sorgt nun die Eingabe von
+
+'ch_nfsmount LinuxDaten: from Miami:db/ch_nfstab USER uwep'
+
+augenblicklich f&uuml;r ein 'neues' Laufwerk 'LinuxDaten' auf dem Amiga.
+
+Screenshot:
+<IMG SRC="../extra/nfs1_mount.png" ALT="Screenshot">
+
+Analog kann nach
+
+'ch_nfsmount Ablage: from Miami:db/ch_nfstab USER uwep'
+
+auf das neue Verzeichnis 'Ablage' zugegriffen werden.
+Um das Mounten der Verzeichnisse bequem &uuml;ber die Workbench per Mausklick zu
+erm&ouml;glichen, k&ouml;nnt Ihr den Befehl 'ch_nfsmount xxx' auch als Datei
+abspeichern, mit einem Projekt-Icon versehen und als dessen
+Standardwerkzeug 'IconX' eingetragen.
+Die auf dem Amiga gemounteten Verzeichnisse lassen sich jederzeit mit dem
+Befehl 'ch_die Verzeichnisname:' aus dem Amiga-Dateisystem aush&auml;ngen.
+
+
+Ausblick
+
+Im n&auml;chsten Monat wird im 2. Teil des NFS-Workshops der Amiga als NFS-
+Server konfiguriert. Bis dahin viel Spa&szlig; beim Einsatz des NFS-Clienten
+Amiga.
+
+
+[1] ftp://de.aminet.net/pub/aminet/comm/tcp/AmiTCP-demo-40.lha
+[2] ftp://de.aminet.net/pub/aminet/comm/tcp/gendemo104.lha
+
+Uwe Pannecke &lt;Uwe.Pannecke@t-online.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

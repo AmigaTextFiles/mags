@@ -1,0 +1,412 @@
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WOA
+
+[1mARexx - Part 1
+[0m
+
+Each of us who has the slightest inkling to do more than oscillate a
+joystick with our Amigas has an obligation to develop our programming
+interests into programming abilities.  There are no rules about who can
+and cannot be a programmer.  I've been programming an Amiga since I was
+12 years old (1987).  I learned from a friend at the Lysator Computer Club
+in Sweden that in elementary school there, children are writing programs
+in C.  Will Harvey, who wrote the world-famous Marble Madness from
+Electronic Arts was 16 years old at the time.  On the other side of youth,
+I used to work with a mother of 3 adult children, and she wanted to learn
+how to be a programmer, and make it her career, now that her life-long
+duties as mother are not so demanding.  Don't feel you are too old or too
+young to step into the excitement of programming, just be prepared for the
+impending exhilaration.  And for the historians out there, programming
+languages were originally something that all computer users were expected
+to learn and use.
+
+My column for the WOA newsletter will be something of a training camp for
+Amiga: NG programmers, and as of today, it assumes that you can use your
+existing Amiga comfortably.  That is all it assumes, for today.  If you are
+an experienced programmer, you should find the example discussed to be
+entertaining and creative, maybe even useful.  If you don't, please get in
+touch with my editor. (woa@trogsoft.freeserve.co.uk)
+
+I'm going to start with ARexx, because I believe something similar to ARexx
+will exist on the new Amigas, plus it is a language everyone should have
+with their Amigas, as it ships with the Operating System, and it is a
+standard for application extensibility on the Amiga.  Before I tell you
+where it is, I would like to tell you what it is.  ARexx is a port of IBM's
+Rexx language, which is on OS/2 and IBM's RS 6000 systems, among other
+flavors of IBM hardware, past and present.  Rexx is older than the personal
+computer.  IBM Global Services (the computer consulting arm of IBM) has
+entire legions of Rexx programmers, and some of them have been using Rexx
+for far too long, and a few of those consultants that I've met are obsessed
+with it.  ARexx started out as shareware written by William S. Hawes.
+Commodore bought the rights to include it with this version of the
+Operating System.  Since then, almost every Amiga application has ARexx
+support in it, although some offer more support than others.  I use ARexx
+with Lightwave 3D, and I also have several small tools I have written to
+take some of the tedium out of computer use.
+
+I mentioned that ARexx is an interpreted language.  What that means is there
+is an interpreter application that reads ARexx programs, and executes the
+programs by parsing the written source code of an ARexx program.  The
+interpreter for ARexx is called RexxMast.  A compiler, which is different
+from an interpreter, reads the source code and with the help of other tools,
+makes actual executable programs that, unlike an ARexx program, do not
+require an interpreter.  Many popular languages are interpreted.  Carl
+Sassenrath's REBOL is interpreted, which I understand will be on the next
+Amiga.  The Amiga Installer language is interpreted (it is actually a Lisp
+variant, which is even older than Rexx, and also popular at IBM).  AmigaDOS
+scripts are interpreted.  Interpreted languages are slower than compiled
+languages, but not insanely slower, much of the time.
+
+Here's an advantage to interpreted languages: the programs written in
+interpreted languages are often more or less portable between computer
+hardware and computer Operating Systems.  Java and REBOL are healthy
+examples of portability.  Most of Microsoft's Basic versions (VBA, VB 1-6,
+VB for Access, Macro Basic) are not portable, from one version of their
+interpreter to the next.  This has more to do with Microsoft's efforts to
+rule the universe, and it has little to do with the fact that interpreted
+languages are supposed to be portable.  ARexx is quite portable, and will
+run on your mid-80's era Amiga just as well as it will run on your
+late-model AGA Amiga, and there is no inherent requirement for code
+modifications between the two hardware devices.
+
+The one really swell thing about ARexx is its ability to use libraries and
+application ports.  Without this, it would be less interesting.  I sometimes
+use the Lightwave3D port in conjunction with the math library in some of my
+ARexx scripts, for spline interpolation and complex geometric operations.
+Today, we will be writing a program that takes advantage of the "Command"
+port for ARexx, which is the standard port of ARexx.
+
+I'm rather fond of writing programs just to amuse myself.  One thing about
+the Amiga which I have always felt is underplayed a bit is the built-in
+speech synthesizer.  Technically, it has the potential to be just as useful
+as any other part of the user interface, but for the most part, people write
+productivity programs that are display only, or possibly have a beep or two
+at most.  Most of my ARexx programs end up using the speech synthesizer for
+all the error messages.  The program we are going to write in ARexx will
+sing "Happy Birthday to you" in the speech synthesizer, a popular American
+tune sung as part of the American birthday ritual.  I've made an effort to
+get the notes right, but my wife swears it's a little flat at times, so if
+you are musically inclined, please feel free to send a revision, and it will
+be included in the next issue.
+
+I am inept when it comes to music, so hopefully my Amiga can do a little
+better. Before we plunge into reams of source code, let's talk about what
+we are going to do.  ARexx as a language is iterative, which is to say it
+executes instructions in an order, just as in sheet music, where a person
+would play the "Happy Birthday to you" song by reading the first measure,
+playing the notes displayed, continuing to the next measure, playing those
+notes, and so on, until the song or script ends.  If ARexx wasn't iterative,
+it would be closer to Lisp, which isn't a good choice as an introductory
+language.  Our ARexx program has to sing, and so we need to do two things:
+we need to define the song, and we need to write a routine to sing the words
+of the song.
+
+It is very important to spend time planing what you will do when you
+program, before you actually do it.  It is equally important to document
+these plans.  The time spent on performing the problem-solving ahead of
+time unravels problems before they occur.  The other advantage of planning
+ahead is that often, it is possible to create a solution which is reusable
+in other programs.  For example, in our birthday song program, creating a
+solution which will work for any song is much more fun, and it makes
+writing the next song so much easier.  For example, after I wrote the
+"Happy Birthday to you" song, I wrote "100 Bottles of Beer," which is an
+absolute atrocity of music.
+
+In the article entitled "Plan," you will find the plan for writing the song
+program.  Notice that the plan makes absolutely no references to the
+programming language, and examines the process without confining the
+solution to an iterative language or a definition language (Lisp, REBOL),
+nor to an interpreted language or a compiled language.  Plans are formally
+called specifications; a description of the applied solution, as well as
+the program itself is called a design.  All good programmers will write a
+specification as well as a design.  The ones that think they are talented
+and above these rules write programs that work "most of the time."
+Discipline, not talent, is the only measure of quality in programming.
+
+Once the plan is written, the design can begin.  Now, this is where I
+should probably start explaining how to program, or you will get lost if
+you are not already a programmer.  Programming is essentially an art of
+expression.  The heart of the program is its source code.  This is where
+the programmer (that's you) makes all the definitions that are unique to
+the program.  The source code does not include the speech library that came
+with your Amiga, nor does it include any of the hardware.  It is simply a
+big text file written in a very precise syntax with lots of cryptic
+punctuation.  Often, large programs are actually a series of source code
+files, as well as what are called "resources," which might include pictures,
+animations, audio samples, or any number of data files that may change
+easily.
+
+Source code is meant to be read by both humans and computers.  Considering
+that humans and computers don't read the same way, you can imagine that
+there is a significant compromise any time a programming language is
+written.  In fact, part of the reason why there are so horribly many
+programming languages is because there are so horribly many different
+opinions on how this compromise should be made.  I, for example, consider
+REBOL to be a very cryptic language, which suffers from making the syntax
+invisible.  The author vehemently disagrees with me, and thinks his
+language is as plain as the spoken tongue, but REBOL is far more complex
+than the spoken language I know, and not nearly as easy to learn.
+
+ARexx is a simple language, and because it is simple, the computer and the
+human both can understand it with relative ease.  It reads like a list of
+instructions, in the imperative voice of English.  In ARexx, most of the
+instructions are nothing more than "Do this" or "Do this until X equals ten"
+or "If X equals ten, do something else."  Like almost every programming
+language, ARexx borrows heavily from mathematics for some of its syntax and
+grammar.  For example, the word "equals" is always the "=" sign.  The
+trouble with some programming languages is that often, the word "equals" is
+either the action of setting a variable to a value, or the observation of
+whether a variable equals a given value or not.  For that reason, you may
+see two cryptic symbols that both mean "equals," but in different context,
+either testing or setting a value.  This is because computers have trouble
+understanding which you may mean.
+
+Because most people who write programming languages know that there is no
+replacement for a natural language such as English, and they realize that
+the syntax of their language can easily create confusion, almost every
+language supports what are called comments.  Think of comments like
+footnotes in a document, or a glossary of terms.  Comments separate text
+from what is "visible" to the computer, and therefore are only visible to
+the human readers.  As an example, I have been making reference to some
+variable "X" so far.  I haven't really specified what X represents.  It
+could be a position on an axis of a graph, or some unknown quantity of
+money in a banking formula.  If I wrote a computer program and I used "X"
+as a variable, I would be obliged to you, the reader, to write a comment
+down explaining what X stood for.  I recall several times in math class
+where I wished the professor would write notes on the corner of the board
+explaining what each of his various variables with nasty subscripts were
+for; it was so hard to keep track.  Comments in ARexx begin with a forward
+slash and the asterisk character "/*" and end with an asterisk character
+and the forward slash, "*/" in the reverse order.  If you wonder why this
+cryptic pattern is used, the best I can tell you is that the pattern is
+unlikely to occur on its own.  Several programming languages use this
+pattern for comments.
+
+Please don't believe that programming languages limit you to single letters,
+or even 8 characters.  Most programming languages only have the limitation
+that your variables are only one word (no spaces, tabs, etc. between them)
+on one line, and many allow the use of limited punctuation marks and numbers
+for added flexibility.  This is important because in computer programs,
+variables can become quite numerous indeed.  So, in the end, it doesn't
+matter too much whether you use "X" or "X_Coordinate" as a variable name,
+just so long as you make a comment explaining what the variable stands for
+and how it is to be used.  If you find yourself losing track of your what
+your variables stand for, you may want to change your variables to something
+a little bit more self-evident.
+
+By now, you may have picked up that computer programming is easily explained
+in terms of mathematics.  There's some sense in this.  Computers were
+originally designed to perform mathematical calculations.  They were, for
+lack of an unrelated synonym, calculators.  These calculators would compute
+a trajectory formula, so the armies could fire cannons and hit their
+targets accurately, using fewer cannon balls, and having less of a chance
+of accidentally destroying a hospital or the Chinese embassy.  Anyway,
+formulas were set in a special place, and all the operator would have to do
+is pass in the numbers in the right order and wait for an answer.  This was
+the essential function of these calculators.  When the calculators became
+more advanced, and a single calculator performed multiple formulas
+(probably also related to war), this process of building the formulas into
+the calculator and establishing a place to input the variables was
+automated.  The name for this was a function, or a procedure.
+
+Today's programming languages allow for functions to be more advanced than
+a simple math formula, and this makes sense because today's computers often
+do more than calculate.  Additionally, programming languages allow for data
+to be more complex than numbers; they even allow for a level of organization
+to the data, sometimes called a structure.  In ARexx, one of the structures
+we will be using is called a stem.  A stem is a fairly open-ended data
+structure.  It starts with a base variable name, is followed by the period
+key, and can be used to hold sequential data, such as the frequency of the
+musical notes available in a song.  In the article entitled "Source Code,"
+the stem "tone." represents a sequence of musical notes that we can use in
+singing a song.  The entire contents of the stem "tone." can be addressed
+as a single variable by simply using the notation for the entire stem, and
+setting it equal to a value.  In the program source code, you will notice
+that the first thing I do is address the entire stem, and set it equal to
+65.  Note that the number 65 is within single quotes, and not just the
+number itself.  The reason behind that is to set it equal to a character
+value, containing the character 6 followed by the character 5. In ARexx,
+it just so happens that character values and numeric values are often
+interchangeable.  Single quotes and double quotes have roughly the same
+effect, I might add.   The point of addressing the stem as one value is to
+first create the stem variable.  Once I have created the stem, I can now
+fill its elements with values.
+
+The next reference I make to the stem "tone." is to "tone.0," which is also
+set to 65.  This time, it is set to the number 65, but again, ARexx treats
+it the same.  Technically, I could have removed this line, and if you
+experiment with this program, you will see that it works the same way
+without this one line.  Why is that?  Because when we set the stem "tone."
+equal to '65,' it set "tone.0" already, just as it would have set
+"tone.9999" for us, although that would be a very high frequency indeed.  I
+left it in there for clarity, because "tone.0" is referenced a few lines
+later, in the middle of a loop.  The loop begins at the word "do," and ends
+at the word "end."  This is what is called an iterative loop.  Notice the
+letter "i" in the line with the word "do."  That is another variable, and
+as commented on the line previous to the "do" statement, it is a counting
+variable.  There really is no need to define "i" equal to zero, since in
+ARexx, simple variables do not need to be defined ahead of time.  Until you
+know the syntax, however, the variable "i" is hard to recognize as a
+variable.  The letters of the alphabet are often used for counting
+variables.  Think of "i" as being short for iterator.  As you will see
+further on, I also use the letter "j" as a counting variable.  By using an
+alphabetic order, I can better remember which loop I am referencing,
+especially when I have a loop within a loop.  The do loop will count from 1
+to 36, changing the value of "i" to keep track of the count, and it will
+perform all the instructions between "do" and "end" in order, from top to
+bottom.  I've never run across an iterative language which did not read
+from top to bottom, and I don't believe I want to.  Like I said before,
+some languages are definition-based, such as LISP, and are not executed
+from top to bottom.
+
+Inside the loop, I am performing a mathematical operation, and setting the
+result into the "tone." stem, in order from "tone.1" to "tone.36," as you
+may have guessed.  The formula itself uses "tone.0," which we know is equal
+to 65, and that value is multiplied by a number to the power of "i," which
+changes as the loop progresses.  The single asterisk "*" is a multiplication
+symbol.  You will find this common in programming languages.  The
+double-asterisk "**" is an exponential operator, and you will not find this
+notation very often, I might add.  If I wrote "X = 5 ** 2," that would set
+X equal to 25. You will also note the use of parentheses.  This helps make
+the formula a bit easier to read.  Without them, it's not clear whether it
+will be that long decimal to the exponent of the value "i," or whether it
+is "tone.0" (65) multiplied by the decimal, and then to the "i" exponent.
+The rules for how ARexx understands this notation are called operator
+precedence, but since there aren't rules for humans to understand this, it
+makes more sense to use the parentheses.  By the way, that formula I used
+came from a really old Amiga programming book, and that is the only place I
+have ever seen musical notes represented in terms of a formula based on
+frequencies.
+
+After that loop, I write the song itself, in a very interesting notation.
+The words of the song are stored in a row of syllables, in the stem
+"mywords," and the notes, which reference the numbers stored in the "tones."
+stem, are stored in "mynotes."  The stem "myspeed." holds the duration of
+the notes, and is used later on in a formula, and is the divisor of the
+variable "speed."  The song is 4 lines long, and so there are four sets of
+these stems, numbered from zero to 3.  I could have just as easily numbered
+them from 1 to 4, but it doesn't make any difference.  The variable
+"songlength" indicates the last index into the stem is 3, counting from
+zero.  You will see this often in programming, so be prepared for it.
+Humans count from 1, and computers count from zero, although computers
+never care where they start counting, just so long as there is an end in
+sight.  Each of the three stems that make up the song are simply a long
+string of characters, ordered by spaces.  ARexx fortunately can detect the
+end of a word within a string of characters rather easily, so this lets us
+put a whole line of the song into one index on the stem, instead of trying
+to index each note in a more complex data structure.  You may have noticed
+that my spelling for the syllables is horrid.  I have experimented with the
+built-in speech translator on the Amiga to get sounds just right, and these
+spellings indicate the best choice of syllables per note.  Real music is a
+whole lot more advanced than this, and one syllable can often be held for a
+long time, over several different notes.
+
+Perhaps a more complex program could address this issue.  By the way, my
+son's name is Jacob, so I made this song for him.  Feel free to modify the
+last two syllables as you see fit (keep it within the quotes), but do not
+replace with more than two syllables/words separated by spaces, unless you
+plan on adding to the "mynotes" and the "myspeed" stems.  If you don't do
+this, the computer gets upset, because it doesn't understand what you meant.
+Remember, I mentioned that it will be counting the words, which are
+separated by spaces.
+
+Now that I have written up my song, and have created it in a reusable
+format, I can check that as complete from my plan.  This may not be the
+best implementation of a singing Amiga, but I didn't have the words
+"opera-quality" or even "pleasant-sounding" in my plan, so I don't feel
+obligated to shoot for that.  The next part of the plan is to write a
+routine that understands this song format.  Notice that again, I am
+iterating through the stems of the song structure with a "do" loop.  I have
+a second "do" loop within the first, which iterates through each note of
+the song.  By the way, ARexx is smart enough to figure out which "end" goes
+with which "do," so there is no need in this language to identify which
+goes where.  Other languages are more strict.  It's a good habit to leave
+comments after each "end" to identify which "do" it belongs to.  I always
+do this if I nest loops.
+
+Note that rather than counting in the second loop from 1 to some other
+number, I'm counting to "words(mynotes.i)," which doesn't look like a
+number at all.  Technically, it isn't.  Words() is a function, with one
+parameter, which is "mynotes.i."  Parameters of functions in ARexx follow
+the name of the function itself, and in this fashion, must also be placed
+within parentheses.  The contents of "mynotes.i" is the text holding all
+the notes of the current line in the song, since "i" is keeping track of
+which line we are on.  Just as before, "i" holds the count for the iterative
+"do" loop.  The function Words() counts the number of words in a string,
+with a very liberal definition of what a word is.  In this sense, a word
+could be any combination of characters not including tabs or spaces.  Tabs
+and spaces are between words, in this way.  In English, this is common.
+I know in Latin, words are separated by periods, or not at all.  Other
+languages may also separate words differently.  The Words() function always
+returns a number.
+
+Another function in ARexx we are using is called "word," which is different
+from "words."  Word () takes two parameters, and like all functions, it
+takes the parameters in a specified order.  The first parameter is the text
+where all the words are stored, which in our case, could be either the
+notes, the syllables, or the speed.  The second parameter is a numeric
+reference to which word in the text.  Once we have established the text and
+which word we are after, we can use the Word() function to return a specific
+word in the text.  This is something that ARexx is very good at, and is
+called parsing.  With parsing, we can go through each line of the song and
+match up the notes and the speed and the syllable, without having to declare
+them separately.  It makes our program much easier to change.
+
+The last function we are using appears just after the two single quotes.
+The two single quotes is a special notation in ARexx to indicate that the
+function or command "say" is external.  It ties to the line in the very
+beginning of the program that reads "address command."  This makes ARexx
+send these external commands to the Command Line Interface, or AmigaDos.
+The text messages stored in "curnoise" could be typed in a command line on
+the Amiga, after the "say" command, and it would yield the same results as
+if it were called within the ARexx program; note that curnoise contains the
+value of several variables, as well as a few string constants, which hold
+command codes for the "say" command.  Say is essentially an AmigaDos program
+that interfaces to the speech synthesizer of the Amiga, by feeding it
+command codes (such as -n, -m, -p, and -s) and text.  The call to "say" will
+immediately begin the speech synthesizer program, and then that program will
+exit once it has finished saying the specified text.  This way, we can feed
+the song a line at a time.
+
+To review how the function works, it iterates through each line specified
+in the song, and then parses the "mywords." "mynotes." and "myspeed." stems
+word by word (or syllable), building a message in curnoise which is fed to
+the external program "say."  This external program uses the "-p" option
+followed by a number to set the pitch, and the "-s" option followed by a
+number to set the rate.  We calculate the rate in a formula based on
+contents from the "myspeed." stem, and use that as a divisor of a large
+number.  The pitch is set in the stem "tone." early on, and the notes in
+"mynotes." reference an index within the "tone." stem.
+
+Now that we have all of the code developed for the application, it is very
+important for us to test it.  I've already tested it myself, and as a
+result, I've had to change the spelling of the syllables I use in the song,
+because the results of the speech synthesizer were somewhat unexpected.
+Proper testing would involve testing the application on several Amigas.
+This is where you come in.  Try the program out.  If your Amiga startup
+sequence hasn't been manually adjusted, you should be able to type in the
+command rx, followed by "sing.rexx," including path information for the file
+"sing.rexx" if necessary.  Make certain your audio is working and the volume
+is up before testing, as this is the only means of output for this program.
+
+It is a very good idea for all programs you write to be tested by someone
+else, if possible.  Often, the process of explaining the program to someone
+else, and letting them run the program on their own, discovers problems or
+things that need to be changed.  That's why you see people looking for
+beta-testers.
+
+This should get you on your way to becoming a skilled programmer.  Your
+Amiga shipped with an ARexx manual when new, or at least mine did.  This
+manual will cover every aspect of programming in ARexx that you could
+possibly find interesting.  I strongly suggest reading it and spending a
+considerable amount of time experimenting with it.  Remember that many of
+your Amiga software programs will support ARexx to some degree, and they
+are all accessible through the "address" statement.
+
+You have a while until the next issue of World of Amiga.  That should be
+plenty of time to take this example a step further, or experiment with the
+ARexx ports of your Amiga software.  I couldn't imagine it being too
+difficult to take this example program and integrate it with an email
+client.  Next issue, we will discuss more advanced ARexx programming, as
+well as more advanced programming concepts.
+
+Joe Solinsky

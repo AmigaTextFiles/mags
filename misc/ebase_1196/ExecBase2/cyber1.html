@@ -1,0 +1,625 @@
+<HTML>
+<HEAD>
+<TITLE> Cyber1.c
+</TITLE>
+</HEAD>
+
+<BODY>
+<PRE>
+/*
+AI Code for Invasion Force - an Explore/Conquer Strategic Wargame
+Copyright (C) 1996  Brannen Hough
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+/*
+	cyber1.c -- artificial intelligence module for Empire II
+
+*/
+
+/* This file contains all the routines associated with AI Type #1.
+*/
+
+#include "global.h"
+
+
+/***************************************************************
+*************** Production Routines  ***************************
+***************************************************************/
+
+struct GovNode*  AI1_locate_gov( struct City* metro )
+{
+    struct GovNode *Gov = (struct GovNode *)GovList.mlh_Head;
+    struct GovNode *NewGov = NULL;
+
+    for ( ; Gov->gnode.mln_Succ; Gov = (struct GovNode *)Gov->gnode.mln_Succ) {
+	if ((Gov->owner == player) && 
+	    ((Gov->type == GOV_CITY) || (Gov->type == GOV_PORT))
+	    && (Gov->x == metro->col) && (Gov->y == metro->row)) {
+	    /* We found the right city governor. */
+	    return( Gov );
+	}  /* End if */
+    } /* End for loop */
+
+    /* Never found it */
+    NewGov = AI1_add_gov( metro );
+    /* And, let's set up the governors area of interest */
+    AI1_setup_area_of_interest (NewGov);
+    return (NewGov);
+}
+
+
+struct GovNode*  AI1_add_gov( struct City* metro )
+{
+    struct GovNode *new_gov = AllocVec((int)sizeof(*new_gov),MEMF_CLEAR);
+
+    new_gov->x = metro->col;
+    new_gov->y = metro->row;
+    new_gov->targx = -1;
+    new_gov->targy = -1;
+    new_gov->searchx = -1;
+    new_gov->searchy = -1;
+    new_gov->mode = GOV_SEARCH;
+    new_gov->flags = 0;
+    new_gov->owner = player;
+    if (port_cityP(metro))  new_gov->type = GOV_PORT;
+    else  new_gov->type = GOV_CITY;
+    new_gov->ID = NewGov++;
+
+    sprintf (outbuf, "Creating Governor %ld at %ld,%ld",
+	     new_gov->ID, new_gov->x, new_gov->y);
+    DEBUG_AI(outbuf)
+    
+
+    /* Add the new governor to the list of governors */
+    AddTail((struct List *)&GovList,(struct Node *)new_gov);
+    return( new_gov );
+}
+
+
+void  AI1_set_gov_prod (struct City *metro, struct GovNode *CityOwner)
+{    
+    CityOwner->req.type = RIFLE;
+    CityOwner->req.req_gov = CityOwner->ID;
+    CityOwner->req.priority = 9;
+    /* And we set the city itself to produce this */
+    if (metro->unit_type != CityOwner->req.type) {  /*making a new type */
+        metro->unit_type = CityOwner->req.type;
+        /* Tooling up penalty */
+        metro->unit_wip = -1 * wishbook[metro->unit_type].build/5;
+        /*sprintf (outbuf, "Tooling Up the city to build a %s",
+        	UnitString[metro->unit_type]);
+        DEBUG_AI(outbuf) */
+    }
+    /* unit->wip has been set to zero elsewhere.  Don't zero out production
+       that has already been started when we haven't changed the type.
+       We have enough handicaps as it is. */
+    
+    return;
+}
+
+
+void  AI1_play_turn ( int new_units )
+{
+    int   MaxLooping = 1000;
+    /* Here we may want to look around, give out some orders to units,
+       and execute orders to units in a loop until we have done all the 
+       moves possible for the units.
+       */
+    AI1_do_all_histograms();
+    AI1_give_orders();
+    /* We'll add a little failsafe so we don't spend eternity here */
+    while( (MaxLooping > 0) && (!AI1_do_unit_actions()) )  MaxLooping--;
+    if( MaxLooping <= 0 ) 
+	DEBUG_AI("Exitting AI player's turn - out of actions")
+    return;
+}
+
+
+void  AI1_setup_area_of_interest( struct GovNode* Gov )
+{
+    /* Set up the immediate area of interest */
+    Gov->startx = Gov->x - GOVERNOR_RADIUS;
+    Gov->starty = Gov->y - GOVERNOR_RADIUS;
+    Gov->endx = Gov->x + GOVERNOR_RADIUS;
+    Gov->endy = Gov->y + GOVERNOR_RADIUS;
+    if (!wrap) {
+        if (Gov->startx < 0) Gov->startx = 0;
+        if (Gov->starty < 0) Gov->starty = 0;
+        if (Gov->endx > width - 1) Gov->endx = width - 1;
+        if (Gov->endy > height - 1) Gov->endy = height - 1;
+    }
+    else {
+	if (Gov->startx < 0) Gov->startx += width;
+	if (Gov->starty < 0) Gov->starty += height;
+	if (Gov->endx > width - 1) Gov->endx -= width;
+	if (Gov->endy > height - 1) Gov->endy -= height;
+    }
+    /* Set up the Extended area of interest */
+    Gov->Estartx = Gov->x - EXTENDED_RADIUS;
+    Gov->Estarty = Gov->y - EXTENDED_RADIUS;
+    Gov->Eendx = Gov->x + EXTENDED_RADIUS;
+    Gov->Eendy = Gov->y + EXTENDED_RADIUS;
+    if (!wrap) {
+        if (Gov->Estartx < 0) Gov->Estartx = 0;
+        if (Gov->Estarty < 0) Gov->Estarty = 0;
+        if (Gov->Eendx > width - 1) Gov->Eendx = width - 1;
+        if (Gov->Eendy > height - 1) Gov->Eendy = height - 1;
+    }
+    else {
+	if (Gov->Estartx < 0) Gov->Estartx += width;
+	if (Gov->Estarty < 0) Gov->Estarty += height;
+	if (Gov->Eendx > width - 1) Gov->Eendx -= width;
+	if (Gov->Eendy > height - 1) Gov->Eendy -= height;
+    }
+		  
+    /* sprintf (outbuf,
+       "For Gov %ld, Startx:%ld, Starty:%ld, Endx:%ld, Endy:%ld",
+       Gov->ID, Gov->startx, Gov->starty, Gov->endx, Gov->endy);
+       DEBUG_AI(outbuf)
+       */
+    return;
+}
+
+
+void  AI1_do_all_histograms()
+{
+    struct GovNode *Gov = (struct GovNode *)GovList.mlh_Head;
+    /* First we update the picture for all the Governors */
+    for ( ; Gov->gnode.mln_Succ; Gov = (struct GovNode *)Gov->gnode.mln_Succ)
+	if (Gov->owner == player) {
+	    AI1_do_one_histogram (Gov);
+        AI1_set_gov_mode (Gov);
+	}
+    /* End for loop */
+
+}
+
+
+void  AI1_do_one_histogram( struct GovNode* Gov)
+{
+    int   j, k;
+    struct MapIcon *icon = (struct MapIcon *)PLAYER.icons.mlh_Head;
+    struct Unit *unit = (struct Unit *)unit_list.mlh_Head;
+    
+    /* Zero out the histogram for the governor */
+    for (j = 0; j < 16; j++)  {
+        Gov->hist.TerrainCounts[j] = 0;
+        Gov->hist.UnitCounts[j] = 0;
+        Gov->hist.EnemyCounts[j] = 0;
+    }
+    Gov->hist.TotalEUnits = 0;
+    Gov->hist.TotalMyUnits = 0;
+    Gov->hist.TotalCities = 0;
+    Gov->hist.TotalMyCities = 0;
+    
+    for (j = Gov->startx; j <= Gov->endx ; j++) {
+        for (k = Gov->starty; k <= Gov->endy; k++) {
+            Gov->hist.TerrainCounts[get(PLAYER.map,j,k)]++;
+        } /* End for k */
+    } /* End for j */
+            
+    SetNeutralCity (Gov);
+    for (; icon->inode.mln_Succ; icon = (struct MapIcon *)
+      icon->inode.mln_Succ) {
+        if ((icon->owner != player) && (icon->col >= Gov->Estartx)
+            && (icon->col <= Gov->Eendx) && (icon->row >= Gov->Estarty)
+            && (icon->row <= Gov->Eendy)) {
+	    Gov->hist.EnemyCounts[icon->type]++;
+	    if (icon->type != CITY)  Gov->hist.TotalEUnits++;
+	    /*sprintf (outbuf, "City %ld found enemy %s at %ld,%ld", 
+	      Gov->ID, UnitString[icon->type],icon->col, icon->row);
+	      DEBUG_AI(outbuf)
+	      */
+	    if ((icon->owner != 0) && (icon->type == CITY)) 
+		ClearNeutralCity (Gov);
+        }  /* End if enemy unit detected in our area */
+    } /* End for loop for icons */
+
+    for (; unit->unode.mln_Succ; unit = (struct Unit *)unit->unode.mln_Succ) {
+        if ((unit->owner == player) &&
+	    (Gov->ID == atoi(unit->name))) {
+	    Gov->hist.UnitCounts[unit->type]++;
+	    Gov->hist.TotalMyUnits++;
+        }  /* End if we own it and it is owned by this governor */
+    } /* End for looking at friendly units */
+}
+
+
+void  AI1_set_gov_mode( struct GovNode* Gov )
+{
+    if ((Gov->type == GOV_CITY) || (Gov->type == GOV_PORT)) {
+	/* Check to see if we still own our city */
+	    if (hex_owner(Gov->x, Gov->y) == player) ClearCityTaken(Gov);
+	    else {
+            SetCityTaken(Gov);
+            // clear all orders
+            AI1_clear_all_orders(Gov);
+        }
+    }
+
+    return;
+}
+
+
+void  AI1_clear_all_orders( struct GovNode* Gov )
+{
+    struct Unit* unit = (struct Unit*) unit_list.mlh_Head;
+    // Mode has changed - clear all orders for all units owned by gov
+    for (; unit->unode.mln_Succ; unit = (struct Unit *)
+        unit->unode.mln_Succ) 
+            if ((unit->owner == player) && (atoi(unit->name) 
+                == Gov->ID))  clear_orders(unit);
+            // End if all that stuff
+    // End for loop
+    return;
+}
+
+
+void  AI1_give_orders()
+{
+    struct  Unit   *unit = (struct Unit *)unit_list.mlh_Head;
+    struct GovNode *Gov = NULL;
+   
+    for (;unit->unode.mln_Succ; unit = (struct Unit *)unit->unode.mln_Succ) 
+        if ((unit->owner == player) && (unit->move > 0) && 
+            (unit->orders == NULL)) {
+            /* No orders yet, let's set some
+	       Ok, we own the unit, and it has moves left, and has a Governor
+	       owner, and has no standing orders
+	       Don't just stand there, do something!
+	       */
+	    /* sprintf(outbuf, "Giving initial orders to unit named %s at %ld,%ld", 
+               unit->name, unit->col, unit->row);
+               DEBUG_AI(outbuf)
+	       */
+            Gov = AI1_FindOwner (unit);
+            if (Gov != NULL) {
+		if( IsCityTaken( Gov ) ) {
+		    /* Have the unit move to the city's location */
+		    AI1_computer_give_orders (unit, C_ORDER_GOTO, Gov->x, 
+					      Gov->y, -1, -1, -1);
+		}
+		else {
+		    /* Have the unit wander randomly */
+		    AI1_computer_give_orders (unit, C_ORDER_RANDOM, -1, -1, 
+					      -1,-1, -1);
+		}
+	    }
+	} /* end if owner and has moves left */
+    /* End For */
+}
+
+struct GovNode* AI1_FindOwner (struct Unit *unit)
+{
+    int owner;
+    struct GovNode *Gov = (struct GovNode *)GovList.mlh_Head;
+    
+    if (unit->name == NULL)  {
+        DEBUG_AI("Unit name is NULL")
+	return (NULL);
+    }
+
+    owner = atoi(unit->name);
+
+    for ( ; Gov->gnode.mln_Succ; Gov = (struct GovNode *)Gov->gnode.mln_Succ)
+        /* We have two checks and three fail safes here.
+	   We must make sure we don't cheat and that the names are
+	   not NULL (strcmp is not defined in that case)
+	   */
+	if ((Gov->owner == unit->owner) && (Gov->owner == player) 
+	    && (Gov->ID == owner))
+	    return (Gov);
+    /* End For, If */
+    sprintf (outbuf,"Unable to find owning Governor for unit %s", unit->name);
+    DEBUG_AI(outbuf)
+
+    return (NULL);
+}
+
+
+void AI1_computer_give_orders(struct Unit *unit,int suborder,short destx,
+    short desty,short orgx,short orgy,int etc)
+{
+   struct Order *order=AllocVec((long)sizeof(*order),MEMF_CLEAR);
+
+   clear_orders(unit);
+   if (order) {
+      order->destx = destx;
+      order->desty = desty;
+      unit->orders = order;
+      order->type = ORDER_NONE;
+      if (orgx == -1)  order->orgx = unit->col;
+      else  order->orgx = orgx;
+      if (orgy == -1)  order->orgy = unit->row;
+      else  order->orgy = orgy;
+      order->processed = FALSE;
+      order->etc = etc;
+      order->reserved = suborder;       /* using reserved for computer
+                                  orders so I don't tread on the human
+                                  player's tokens. */
+                                        
+      /* This is set up to be in the order they are used most often,
+         and set up so that more order types can be added as needed.
+	 */
+      switch (suborder) {
+      case C_ORDER_GOTO:
+	  /* sprintf (outbuf, "%s %s C_ORDER_GOTO from %ld,%ld to %ld,%ld",
+	     UnitString[unit->type], unit->name, order->orgx, 
+	     order->orgy, order->destx, order->desty);
+	     DEBUG_AI(outbuf)
+	     */
+	  break;
+      case C_ORDER_RANDOM:
+	  /* Standard stuff only */
+	  break;
+      }
+   }
+}
+
+int  AI1_do_unit_actions()
+{
+    struct Unit *unit = (struct Unit *)unit_list.mlh_Head;
+    struct GovNode *Gov = NULL;
+    int         Done = TRUE;
+   
+
+    for ( ; unit->unode.mln_Succ; unit = (struct Unit *) unit->unode.mln_Succ)
+        if ((unit->owner==player) && (unit->move > 0)) {
+            /* Skip Sentry units */
+            if ((unit->orders == NULL) || 
+		(unit->orders->reserved != C_ORDER_SENTRY))   Done = FALSE;
+	    
+	    /* Take a look around us and react to enemy units + cities */
+	    if( AI1_look_around ( unit ) )   return (FALSE);
+
+            /* if we have orders, execute them */
+            if (unit->orders != NULL) {
+                AI1_execute_standing_order(unit);
+                return (Done);
+            }
+
+            else {
+                Gov = AI1_FindOwner (unit);
+                if (Gov != NULL) {
+		    DEBUG_AI("No orders, no enemy around. Huh?")
+		    unit->move = 0;
+		    return (Done);
+                } /* End if Gov != NULL */
+                else {
+		    DEBUG_AI("Cannot find unit owner to ad lib turn")
+                    DEBUG_AI("For Now, Forget IT!")
+                    sprintf (outbuf, "%s Unit %s at %ld,%ld",
+			     UnitString[unit->type], unit->name, unit->col,
+			     unit->row);
+		    DEBUG_AI(outbuf)
+                    unit->move = 0;
+		    return (Done);
+                } /* End else Gov == NULL */
+	    } /* End else figure something out */
+        } /* End if we own unit and it has moves left */
+    /* End for loop */
+    
+    return (Done);
+}
+
+
+int  AI1_look_around( struct Unit* unit)
+{
+    int          i, k;
+    short        targx, targy;
+    struct City* metro;
+
+    for (i = 0; i < 6; i++) {
+	if (AI1_calc_dir (i, unit->col, unit->row, &targx, &targy) != -1) {
+	    if ((metro = city_hereP (targx, targy)) && 
+		(metro->owner != player)) {
+		/* if there is a city here and we don't own it */
+		if ((unit->type == RIFLE) || (unit->type == ARMOR)
+		    || (unit->type == AIRCAV)) {
+		    /* Go for it! */
+		    /* DEBUG_AI("Jumping enemy city") */
+		    (void) move_unit_xy (unit, targx, targy);
+		    return (1);
+		} /* End if can take city */
+	    } /* End if city here and it ain't ours! */
+	} /* End if hex here */
+    } /* End For loop */
+    for (i = 0; i < 6; i++) {
+	if (AI1_calc_dir (i, unit->col, unit->row, &targx, &targy) != -1) {
+	    if (((k = hex_owner(targx,targy)) > 0)&&(k!=player)) {
+		/* Somebody there - for now just jump 'em */
+		/*DEBUG_AI("Jumping enemy unit") */
+		(void) move_unit_xy (unit, targx, targy);
+		return (1);
+	    }  /* End if bad guy here */
+	} /* End if hex here */
+    } /* End for loop */
+    return (0);
+}
+
+
+/* This routine calculates the new coordinates resulting from heading in
+   a particular direction from given coordinates.  Returns -1 for not
+   possible, and a 1 for OK.
+   */
+int AI1_calc_dir (enum Direction dir, short orgx, short orgy, 
+short *x, short *y)
+{
+   int  targx = orgx;
+   int  targy = orgy;
+   
+   switch (dir) {
+      case EAST:
+         targx++;
+         break;
+      case WEST:
+         targx--;
+         break;
+      case NORTHEAST:
+         targy--;
+         if (orgy%2) /* odd number */
+            targx++;
+         break;
+      case NORTHWEST:
+         targy--;
+         if (!(orgy%2)) /* even number */
+            targx--;
+         break;
+      case SOUTHEAST:
+         targy++;
+         if (orgy%2) /* odd number */
+            targx++;
+         break;
+      case SOUTHWEST:
+         targy++;
+         if (!(orgy%2)) /* even number */
+            targx--;
+         break;
+      default:
+            return (-1);
+    }
+
+   /* correct values for wrap, if it's active */
+   if (wrap) {
+      if (targx<0)
+         targx += width;
+      if (targx>=width)
+         targx -= width;
+      if (targy<0)
+         targy += height;
+      if (targy>=height)
+         targy -= height;
+   }
+
+   /* he certainly can't move off the map! */
+   if (targx<0 || targx>=width || targy<0 || targy>=height) {
+        DEBUG_AI("Moving Off Map")
+   		return(-1);
+   }
+
+   *x = targx;
+   *y = targy;
+   
+   return (1);
+}
+
+void  AI1_execute_standing_order( struct Unit* unit)
+{
+    int		result;
+
+    if ((unit->orders == NULL) || (unit->orders->type != ORDER_NONE)) {
+	DEBUG_AI("Big problem in execute_standing_order - no orders!")
+	sprintf (outbuf, "%s %s has no standing orders to execute - aborting",
+		 UnitString[unit->type], unit->name);
+	DEBUG_AI(outbuf)
+	return;
+    }
+    
+    switch (unit->orders->reserved) {
+        case  C_ORDER_GOTO:
+            result = AI1_command_headto(unit);
+            if (result < 0) clear_orders(unit);   /* problem */
+            if (result == 0) clear_orders(unit);  /* done */
+            break;
+        case  C_ORDER_RANDOM:
+            AI1_command_random(unit);
+            break;
+        default:
+            DEBUG_AI("Unknown command type found in execute_standing_order!")
+            break;
+    }
+    return;
+}
+
+
+void  AI1_command_random( struct Unit* unit )
+{
+    enum	Direction Randdir = RangeRand(6L);
+    int     i;
+
+    /* About as simple as it gets! We'll try 10 times to make a valid move.*/
+    for( i=0; i < 10; i++ ) {
+	if(  move_unit_dir(unit, Randdir) != -1 )  return;
+	Randdir = RangeRand(6L);
+    }
+    return;
+}
+
+
+int   AI1_command_headto( struct Unit* unit )
+{
+    int  i, j;
+    int  result;
+
+    /* Check to see if we have arrived */
+    if ((unit->col == unit->orders->destx) && 
+        (unit->row == unit->orders->desty))  {
+        /* We have arrived! */
+        /* DEBUG_AI("We have arrived!") */
+        return (0);
+    }
+
+    /* Select the correct direction to look in */
+    i = 0;
+    if (unit->orders->destx - unit->col < 0)  i = 3;
+    if (unit->orders->destx == unit->col)     i = 6;
+    if (unit->orders->desty - unit->row < 0)  i += 1;
+    if (unit->orders->desty == unit->row)     i += 2;
+    
+    /* Let's move in the three most likely directions only */
+    for (j = 0; j < 3; j++) {
+        /* -1 is the only return value where a move might still be possible
+	   We must be sure we only do ONE move - ever */
+	if ((result = move_unit_dir(unit, DirArray[i][j])) != -1) {
+            /*sprintf (outbuf, "Moved %s, result %ld", 
+	      DirString[DirArray[i][j]], result);
+	      DEBUG_AI(outbuf)
+	      */
+            if (result > -3) {
+                /* We didn't die in an attack, and we didn't crash, so 
+		   let's check for destination again
+		   */
+                /*DEBUG_AI("Checking for Destination") */
+                if ((unit->col == unit->orders->destx) && 
+                    (unit->row == unit->orders->desty))  {
+                    /* We have arrived! */
+                    /* DEBUG_AI("We have arrived!") */
+                    return (0);
+                }
+                unit->orders->etc--;
+                if (unit->orders->etc < 0)  {
+                    DEBUG_AI("Watchdog on HeadTo ran out")
+		    return (-2);
+                }
+            }
+            return (1);
+        }
+        else {
+            sprintf (outbuf, "%s %s Tried to move in direction %s, result %ld",
+                UnitString[unit->type], unit->name, DirString[DirArray[i][j]], 
+                result);
+            DEBUG_AI(outbuf)
+        }
+    } /* End for loop */
+    
+    /* No luck at all */
+    DEBUG_AI ("Cannot move towards - clearing orders")
+    return (-1);
+}
+</PRE>
+</BODY>
+
+</HTML>

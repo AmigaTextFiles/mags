@@ -1,0 +1,1969 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Workshops.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops2.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Workshops
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="Inhalt"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H1>Workshops / Hintergrundberichte / Buchvorstellungen</H1>
+<H2>1. Workshop: Programmierung in C++ - Teil 4 (von Thomas Richter)</H2>
+<P>
+Nachdem wir im letzten Kurs Objekte eingef&uuml;hrt haben, die auch wirklich etwas
+auf dem Bildschirm anstellen, werden wir dieses Mal die Kenntnisse der
+Objektorientierung weiter ausbauen: Genauer gesagt, diesmal geht es um Vererbung
+von Eigenschaften, virtuellen Klassen und Zugriffsberechtigungen auf Member
+der Objekte; ferner machen wir einen Schlenker in das wichtige Kapitel des
+Programmdesigns, und wir werden uns mit einer Basisstruktur auseinandersetzen,
+der linearen Liste.
+</P>
+<P><B>Der Erz&auml;hlung erster Teil: Das Design</B></P>
+<P>
+Unter dem Programmdesign versteht man die Philosophie, die dem Aufbau des
+Programmes zugrunde liegt. Im Hobbybereich werden Programme oft &quot;ohne Design&quot;,
+man sagt auch &quot;ad hoc&quot;, geschrieben, so auch das Programm der letzten Folge.
+Dies f&uuml;hrt oft dazu, dass der Quellcode nach einigen Programmversionen recht
+vermurkst aussieht, so dass es schwer ist, ihn zu erweitern und zu pflegen,
+und dass man fr&uuml;her oder sp&auml;ter &uuml;ber die eigenen Fehler stolpert. Ein
+kommerzielles Programm muss man oft &uuml;ber viele Programmversionen pflegen, und
+darum sollte man sich schon vorher &uuml;berlegen, wie man seine Programmidee
+umsetzt. C++ ist eine Programmiersprache, die Autoren in dieser
+konzeptionellen Arbeit unterst&uuml;tzt - ganz im Gegensatz zu anderen Sprachen wie
+etwa BASIC, in denen man nur zu leicht Spaghetticode produziert. Der
+Programmfluss ist dann &auml;hnlich leicht zu verfolgen wie das italienische
+Nudelprodukt auf einem Teller, und entsprechend schwer zu entheddern.
+</P>
+<P>
+Schauen wir uns unter diesem Gesichtspunkt einmal den Code vom dritten Teil
+an: Wir haben einerseits eine Klasse f&uuml;r Fenster, die die Zeichenfl&auml;che des
+geplanten Zeichenprogrammes bildet. Das Fenster selbst wei&szlig; aber nicht, welche
+Objekte in ihm leben. Dann gibt es zwei Objekte, von denen das eine ein Punkt-
+und das andere ein Linienobjekt ist. Ein Punkt hat zwei Koordinaten, eine
+Zeichenfl&auml;che, sprich, &quot;das Fenster&quot;, und eine Farbe. Eine Linie hat auch eine
+Zeichenfl&auml;che, und zwei Punkte, von denen wiederum jeder eine Zeichenfl&auml;che
+und eine Farbe hat. Hier gibt's einiges doppelt! Ferner, welche Farbe hat
+denn nun eine Linie, die des Anfangs- oder die des Endpunktes?
+</P>
+<P>
+Wie man schon sieht - hier stimmt was nicht!
+</P>
+<P>
+Formulieren wir also, was wir genau brauchen, und &uuml;berlegen wir uns dann, wie
+man das am besten umsetzt. Kurz gesagt: Machen wir ein Design!
+</P>
+<P>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">1)&nbsp;</TD><TD VALIGN="TOP">Ein Fenster sollte dar&uuml;ber informiert sein, welche Objekte in ihm sind..</TD></TR>
+<TR><TD VALIGN="TOP">2)&nbsp;</TD><TD VALIGN="TOP">Ein grafisches Objekt sollte irgendwie zeichenbar sein. Wie das genau
+   geschieht, darf dem Fenster eigentlich egal sein.</TD></TR>
+<TR><TD VALIGN="TOP">3)&nbsp;</TD><TD VALIGN="TOP">Ein grafisches Objekt sollte eine Farbe haben.</TD></TR>
+<TR><TD VALIGN="TOP">4)&nbsp;</TD><TD VALIGN="TOP">Es muss M&ouml;glichkeiten geben, die Koordinaten von Objekten anzugeben.
+Dazu brauchen wir ein Objekt, dass Koordinaten vermittelt. Wir hatten
+im dritten Teil dazu einfach nur die &quot;Punkt&quot;-Klasse verwendet, aber
+eigentlich stimmt hier was nicht: Das grafische Objekt eines einzelnen
+Punktes hat zwar Koordinaten und kann auch gemalt werden, aber wir
+br&auml;uchten eigentlich f&uuml;r die Linie nur die Koordinaten, und w&uuml;rden
+diese Koordinatenpaare dann mit zus&auml;tzlichen Eigenschaften ausr&uuml;sten,
+etwa einer Farbe. Ein &quot;zeichenbarer Punkt&quot;, sagen wir ein Pixel,
+besteht dann auch aus einem Koordinatenpaar, und einer Farbe.&nbsp;</TD></TR>
+</TABLE>
+<P>
+Diese &quot;Designziele&quot; werden wir im folgenden umsetzen: F&uuml;r Punkt 1) brauchen
+wir pro Fenster ein &quot;Inhaltsverzeichnis&quot; aller Objekte darin. Wir werden
+hierzu sogenannte &quot;einfach verkettete Listen&quot; verwenden, damit der Leser
+auch ein wenig von den Grundlagen der Informatik mitnimmt. Die Objekte
+werden auf einer solchen Liste aufgereiht wie Perlen auf einer Kette.
+</P>
+<P>
+Weiterhin ben&ouml;tigen wir noch ein neues Konzept von C++, n&auml;mlich die so genannte
+&quot;Vererbung&quot; oder &quot;Inheritance&quot;. Man kann n&auml;mlich auf der Grundlage von
+bereits definierten Klassen weitere, neue Klassen aufbauen, oder wie man auch
+sagt, &quot;neue Klassen ableiten&quot;. Diesen neuen Klassen werden dann die Methoden
+und Member der &quot;Basisklasse&quot; &quot;vererbt&quot;. In unserem Falle k&ouml;nnten wir
+beispielsweise wie folgt vorgehen: Ein grafisches Objekt hat 1) eine
+Zeichenfl&auml;che, 2) eine Farbe und 3) eine Methode, sich zu zeichnen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class GraphikObjekt {
+        RastPort        *rp;
+        int              farbe;
+public:
+        GraphikObjekt(RastPort *port,int f = 1)
+        : rp(port), farbe(f)
+        { }
+        //
+        void Zeichne(void)
+        {
+                // Da wir nicht wissen, welches Objekt das
+                // hier ist, k&ouml;nnen wir nat&uuml;rlich auch nichts
+                // zeichnen....
+                cout&lt;&lt;&quot;Dieses Objekt ist nicht zeichenbar.\n&quot;;
+        }
+}
+</PRE></TD></TR></TABLE>
+<P>
+&quot;RastPort&quot; ist wie im dritten Teil erl&auml;utert die Zeichenfl&auml;che, die vom OS
+f&uuml;r alle m&ouml;glichen Grafikoperationen ben&ouml;tigt wird; es ist das Interface der
+Grafikbibliothek des AmigaOS, das Zeichenoperationen erm&ouml;glicht. Wir bekommen
+immer nur Zeiger darauf, deshalb das Sternchen vor dem &quot;rp&quot;. &quot;farbe&quot; ist der
+Farbstift des jeweiligen Objektes. Der Konstruktor des Objektes muss nat&uuml;rlich
+die Zeichenfl&auml;che und den Farbstift &uuml;bergeben bekommen, wobei wir hier mit
+&quot;int f = 1&quot; dem Aufrufer erlauben, Objekte auch ohne Farbstift zu definieren
+und als Vorgabe dann &quot;Farbe eins&quot; anzunehmen.
+</P>
+<P>
+Die Methode &quot;Zeichne&quot; ist noch etwas sonderbar: Sie tut - nichts. Kann sie
+nat&uuml;rlich nicht, denn mit der Klasse &quot;Graphikobjekt&quot; ist ja noch nicht mal
+klar, welche Sorte von grafischem Objekt wir &uuml;berhaupt haben wollen. Also
+warum schreiben wir sie dann? Das wird erst ein St&uuml;ckchen sp&auml;ter klar, also
+noch etwas Geduld, bitte...
+</P>
+<P>
+Kommen wir zum zweiten Objekt, einem Punkt. Im Gegensatz zum dritten Teil soll
+diesmal klar unterschieden werden zwischen einem Koordinatenpaar als solchem
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+struct Punkt {
+        int x,y;
+        //
+        Punkt(int x0,int y0)
+        : x(x0), y(y0)
+        { }
+};
+</PRE></TD></TR></TABLE>
+<P>
+und einem farbigen Pixel, das sich an der Stelle eines solchen
+Koordinatenpaares befindet. K&uuml;mmern wir uns zun&auml;chst um den Punkt: Er ist hier
+als &quot;Struktur&quot; und nicht als &quot;Klasse&quot; definiert. Der einzige Unterschied
+zwischen beiden ist der, dass man auf die Member einer Struktur ohne weiteres
+&quot;von au&szlig;en&quot;, also nicht nur von Methoden der Klasse aus, darauf zugreifen kann.
+Alternativ h&auml;tte man auch:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class Punkt {
+public:
+        int x,y;
+        //
+        Punkt(int x0,int y0)
+        : x(x0), y(y0)
+        { }
+};
+</PRE></TD></TR></TABLE>
+<P>
+schreiben k&ouml;nnen, um &quot;x&quot; und &quot;y&quot; &ouml;ffentlich zu machen.
+</P>
+<P>
+Die Philosophie - das Design - ist hier die folgende: In C++ sollte man immer
+dann Strukturen statt Klassen verwenden, wenn die jeweiligen Objekte nur Daten
+sammeln und nicht gen&uuml;gend Eigenleben haben, um eine eigene Klasse zu
+rechtfertigen. Das ist nat&uuml;rlich keine klare Definition und bleibt der Willk&uuml;r
+des Programmierers &uuml;berlassen, aber im obigen Fall des Koordiantenpaares &quot;Punkt&quot;
+sehe ich die Struktur &quot;Punkt&quot; nur als eine Zusammenfassung zweier Zahlen,
+und nicht als ein &quot;Ding mit Eigenleben&quot; an. Aus diesem Grunde finde ich die
+obere M&ouml;glichkeit, explizit hier &quot;struct&quot; statt &quot;class&quot; zu verwenden, als
+diejenige an, die meiner Intention n&auml;her liegt. Ob &quot;struct&quot; oder &quot;class&quot; ist
+damit eine Frage des Designs und keine Frage, die innerhalb der C++ Syntax
+beantwortet werden kann. Wir werden noch viele solche &quot;Designentscheidungen&quot; in
+dieser Folge kennenlernen.
+</P>
+<P>
+Familienangelegenheiten: Vererbung von Eigenschaften.
+</P>
+<P>
+Ebenso wie der Familiennachwuchs die Augen der Gro&szlig;mutter oder die Ohren des
+Onkels hat, bekommen Klassen auch die Methoden und Member ihrer Basisklasse
+vererbt. Wir bauen nun auf den beiden obigen Klassen &quot;Punkt&quot; und
+&quot;GraphikObjekt&quot; ein &quot;Pixel&quot; auf: Dazu &quot;leiten wir die Pixelklasse vom
+Graphikobjekt ab&quot;.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class Pixel : public GraphikObjekt {
+        struct Punkt    position;       // Ort des Pixels
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Position.
+        Pixel(RastPort *port, int f, int x, int y)
+        : GraphikObjekt(port,f), position(x,y)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Position als Referenz &uuml;bergeben
+        Pixel(RastPort *port, int farbe, Punkt &amp;pos)
+        : GraphikObjekt(port, farbe), position(pos)
+        { }
+        //
+        // Mach' 'nen Punkt!
+        void Zeichne(void)
+        {
+                // Farbe holen und setzen: Dies ist
+                // eine Betriebssystemfunktion
+                SetAPen(rp,farbe);
+                WritePixel(rp,position.x,position.y);
+        }
+};
+</PRE></TD></TR></TABLE>
+<P>
+Dazu nat&uuml;rlich einige Erl&auml;uterungen (Vorsicht, das kompiliert noch nicht!):
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class Pixel : public GraphikObjekt {
+</PRE></TD></TR></TABLE>
+<P>
+Mittels des &quot;public GraphikObjekt&quot; hinter dem Doppelpunkt sagen wir, dass wir
+&quot;Pixel&quot; von der Klasse &quot;GraphikObjekt&quot; ableiten. &quot;public&quot; beschreibt die Art
+der Ableitung, es gibt noch &quot;private&quot; und &quot;protected&quot;. Wir werden im Folgenden
+aber nur &quot;public&quot; verwenden, ich m&ouml;chte auf diese Details hier auch zun&auml;chst
+nicht eingehen. Damit ist jedes Objekt vom Typ &quot;Pixel&quot; automatisch auch ein
+Objekt vom Typ &quot;GraphikObjekt&quot; und hat als solches automatisch eine
+Zeichenfl&auml;che, bzw. einen Zeiger auf eine solche, sowie eine Farbe. Diese
+Member treten, wie man sieht, in der Definition der Punktklasse gar nicht mehr
+explizit auf, sondern stammen vom Elternteil &quot;GraphikObjekt&quot;.
+</P>
+<P>
+Ferner bringt das Pixel noch ein weiteres Member von sich aus mit, n&auml;mlich
+seine Position - das ist ein Objekt vom Typ &quot;Punkt&quot;, wie oben definiert. An
+dieser Stelle darf man sich fragen, warum wir nicht auch &quot;Pixel&quot; vom &quot;Punkt&quot;
+abgeleitet haben. Auch dies w&auml;re m&ouml;glich gewesen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class Pixel : public GraphikObjekt, public Punkt {
+</PRE></TD></TR></TABLE>
+<P>
+nebst einigen kleineren zus&auml;tzlichen &Auml;nderungen, die jetzt nicht sonderlich
+relevant sind. Die Pixelklasse h&auml;tte dann (wie ja in der Biologie eher
+typisch) zwei Elternteile statt einem. C++ erlaubt dies - man nennt dieses
+vornehm auch &quot;multiple inheritance&quot;, also &quot;mehrfache Vererbung&quot;. Ob man nun
+die obere oder die untere L&ouml;sung bevorzugt, ist erneut eine Frage des Designs.
+In der oben verwendeten Definition &quot;hat ein Pixel ein Zahlenpaar&quot;, in der
+unteren &quot;ist ein Pixel auch ein Zahlenpaar&quot;. Von meinem Empfinden her erscheint
+mir die Position eines Pixels eine Eigenschaft &auml;hnlich seiner Farbe, wo
+hingegen ein Pixel nicht selbst ein Koordinatenpaar &quot;ist&quot;. Man darf durchaus
+anderer Meinung sein, sollte aber darauf achten, dass das Design so nat&uuml;rlich
+und intuitiv wie m&ouml;glich ist - man will ja seine Programme sp&auml;ter auch noch
+verstehen.
+</P>
+<P>
+Weiter im Text: Die Pixelklasse hat zwei Konstruktoren bekommen, eine, bei der
+die Position mittels zweier Zahlen, und noch eine, bei der die Position mittels
+der Punktstruktur angegeben wird. Je nachdem welche Parameter man bei der
+Erzeugung von Pixelobjekten &uuml;bergibt, wird entweder der eine oder der andere
+Konstruktor verwendet. Und wieder ein Fachausdruck f&uuml;r Angeber, der genau
+das meint: &quot;C++ unterst&uuml;tzt Polymorphie&quot;, d.h. gleichnamige Methoden werden
+auch aufgrund unterschiedlicher Argumente auseinandergehalten. F&uuml;r den zweiten
+Fall &uuml;bergeben wir die Koordinaten als &quot;Referenz&quot; - das wurde das letzte Mal
+erl&auml;utert.
+</P>
+<P>
+Schauen wir uns den ersten Konstruktor einmal genauer an:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Position.
+        Pixel(RastPort *port, int f, int x, int y)
+        : GraphikObjekt(port,f), position(x,y)
+        { }
+</PRE></TD></TR></TABLE>
+<P>
+hinter dem Doppelpunkt stehen diesmal nicht nur die Namen von Membern, sondern
+auch ein Typenname: &quot;GraphikObjekt&quot; ist kein Member von &quot;Punkt&quot;, sondern der
+Typ des Elternteils. Diese Basisklasse ist eben nicht als &quot;Member&quot; Teil des
+Pixels, sondern das Pixel bekommt die Member von &quot;GraphikObjekt&quot; per
+Vererbung.
+</P>
+<P>
+Trotz alledem muss zur Konstruktion der abgeleiteten Klasse &quot;Pixel&quot; die
+Basisklasse auch konstruiert werden, und dies geschieht in C++ &uuml;ber die Angabe
+des Typennamens der Basisklasse. Das Member &quot;position&quot; wird hingegen klassisch
+&uuml;ber seinen Konstruktor zusammengebaut.
+</P>
+<P><B>Beim zweiten Konstruktor sieht das ganz genauso aus:</B></P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Position als Referenz &uuml;bergeben
+        Pixel(RastPort *port, int farbe, Punkt &amp;pos)
+        : GraphikObjekt(port, farbe), position(pos)
+        { }
+</PRE></TD></TR></TABLE>
+<P>
+Man entsinne sich nur daran, dass ein Objekt automatisch immer einen Copy-
+Konstruktor mitbekommt, der hier mittels &quot;position(pos)&quot; bem&uuml;ht wird. Er
+braucht nicht - aber kann - explizit definiert werden. Dies hatten wir im
+zweiten Teil dieses Kurses gesehen.
+</P>
+<P><B>Letztendlich sollen Punkte auch gezeichnet werden:</B></P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        // Mach' 'nen Punkt!
+        void Zeichne(void)
+        {
+                // Farbe holen und setzen: Dies ist
+                // eine Betriebssystemfunktion
+                SetAPen(rp,farbe);
+                WritePixel(rp,position.x,position.y);
+        }
+</PRE></TD></TR></TABLE>
+<P>
+Dies setzt mittels der Betriebssystemroutine &quot;SetAPen()&quot;  den Farbstift
+innerhalb der Zeichenfl&auml;che &quot;rp&quot; auf &quot;farbe&quot; und zeichnet dann mittels einer
+zweiten OS-Funktion &quot;WritePixel()&quot; das Pixel an der gew&uuml;nschten Position. Man
+beachte, dass wir hier auf die Member &quot;rp&quot; und &quot;farbe&quot; einfach so zugreifen
+k&ouml;nnen, obwohl sie im Pixel selbst gar nicht definiert wurden - das sind die
+Eigenschaften, die von der Basisklasse vererbt wurden!
+</P>
+<P><B>Kleine Probleme mit dem Nachwuchs: Das Zusammenbauen</B></P>
+<P>
+Wir basteln jetzt aus den oben erstellten Klassen ein erstes kleines Programm
+zusammen, das zun&auml;chst nur ein einzelnes Pixel auf den Schirm zaubert. Linien
+malen wir gleich darauf.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+#include &lt;iostream.h&gt;
+
+extern &quot;C&quot; {
+#include &lt;intuition/intuition.h&gt;
+#include &lt;graphics/rastport.h&gt;
+#include &lt;proto/intuition.h&gt;
+#include &lt;proto/graphics.h&gt;
+#include &lt;proto/exec.h&gt;
+}
+
+class Fenster {
+        Window *window;         // Das Intuition-Fenster davon
+        int breite,hoehe;       // Dimensionen
+public:
+        Fenster(int b,int h)
+        : window(NULL), breite(b), hoehe(h)
+        {
+                window = OpenWindowTags(NULL,
+                                WA_GimmeZeroZero,TRUE, // Ursprung ist im Zeichenbereich
+                                WA_SmartRefresh,TRUE,  // Automatisch wiederherstellen wenn verdeckt
+                                WA_InnerWidth,b,
+                                WA_InnerHeight,h,
+                                WA_CloseGadget,TRUE,   // Fenster hat Schlie&szlig;knopf
+                                WA_DragBar,TRUE,       // Fenster kann verschoben werden
+                                WA_DepthGadget,TRUE,   // Fenster kann nach vorne/hinten gebracht werden
+                                WA_IDCMP,IDCMP_CLOSEWINDOW,
+                                TAG_DONE);
+        }
+        //
+        // Der Destruktor l&ouml;scht auch wieder das Fenster davon, falls offen.
+        ~Fenster(void)
+        {
+                if (window) {
+                        CloseWindow(window);
+                }
+        }
+        //
+        // Liefere die Zeichenfl&auml;che des Fensters. Dies nennt sich RastPort
+        RastPort *RastPort_Hiervon(void) const
+        {
+                return window-&gt;RPort;
+        }
+        //
+        // Warte, bis der Benutzer das Close-Gadget dr&uuml;ckt.
+        void WarteAufSchliessen(void) const
+        {
+                struct Message *msg;
+
+                msg = WaitPort(window-&gt;UserPort);
+                msg = GetMsg(window-&gt;UserPort);
+                ReplyMsg(msg);
+        }
+};
+
+class GraphikObjekt {
+        RastPort        *rp;
+        int              farbe;
+public:
+        GraphikObjekt(RastPort *port,int f = 1)
+        : rp(port), farbe(f)
+        { }
+        //
+        void Zeichne(void)
+        {
+                // Da wir nicht wissen, welches Objekt das
+                // hier ist, k&ouml;nnen wir nat&uuml;rlich auch nichts
+                // zeichnen....
+                cout&lt;&lt;&quot;Dieses Objekt ist nicht zeichenbar.\n&quot;;
+        }
+};
+
+struct Punkt {
+        int x,y;
+        //
+        Punkt(int x0,int y0)
+        : x(x0), y(y0)
+        { }
+};
+
+class Pixel : public GraphikObjekt {
+        struct Punkt    position;       // Ort des Pixels
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Position.
+        Pixel(RastPort *port, int f, int x, int y)
+        : GraphikObjekt(port,f), position(x,y)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Position als Referenz &uuml;bergeben
+        Pixel(RastPort *port, int farbe, Punkt &amp;pos)
+        : GraphikObjekt(port, farbe), position(pos)
+        { }
+        //
+        // Mach' 'nen Punkt!
+        void Zeichne(void)
+        {
+                // Farbe holen und setzen: Dies ist
+                // eine Betriebssystemfunktion
+                SetAPen(rp,farbe);
+                WritePixel(rp,position.x,position.y);
+        }
+};
+
+
+int main(int argc, char **argv)
+{
+Fenster f(200,200);             // baue ein Fenster der Gr&ouml;&szlig;e 200x200
+Pixel p(f.RastPort_Hiervon(),1,50,50);
+
+        p.Zeichne();
+        f.WarteAufSchliessen();
+
+        return 0;
+}
+</PRE></TD></TR></TABLE>
+<P>
+Die Fensterklasse habe ich dabei unver&auml;ndert vom letzen Teil &uuml;bernommen, und
+das Hauptprogramm ist leicht abgewandelt.
+</P>
+<P>
+Nur, etwas stimmt noch nicht: Bei Versuch, das Programm zu kompilieren, gibt
+es folgende und &auml;hnliche Fehlermeldungen:
+</P>
+<P>
+Error: No access to member &quot;rp&quot; of class &quot;GraphikObjekt&quot;.
+</P>
+<P>
+Warum das? Die Klasse &quot;Pixel&quot; versucht auf das Member &quot;rp&quot; von
+&quot;GraphikObjekt&quot; zur&uuml;ckzugreifen, aber darf dies offenbar nicht. Das liegt
+daran, dass &quot;rp&quot; ein privates Member von &quot;GraphikObjekt&quot; ist, wie dies bei
+Klassen immer voreingestellt ist.
+</P>
+<P>
+Eine M&ouml;glichkeit, dies zu beheben w&auml;re etwa die, &quot;rp&quot; innerhalb von Graphik-
+Objekt als &quot;public&quot; zu deklarieren; leider k&ouml;nnte dann auch jeder andere von
+au&szlig;en einsehen. Eine andere M&ouml;glichkeit w&auml;re, wie im dritten Teil gesehen,
+Zugriffsfunktionen auf die Member zu schreiben.
+</P>
+<P>
+In diesem Falle gibt es aber eine bessere Methode: Es gibt neben &quot;public&quot; und
+&quot;private&quot; noch eine dritte Zugriffsberechtigung namens &quot;protected&quot;, die die
+entsprechenden Member nur f&uuml;r abgeleitete Klassen, aber nicht von au&szlig;erhalb
+zugreifbar macht. Folgendes ist zu modifizieren:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class GraphikObjekt {
+protected:
+        RastPort        *rp;
+        int              farbe;
+public:
+        ....
+</PRE></TD></TR></TABLE>
+<P>
+Das so modifizierte Programm kompiliert und l&auml;uft einwandfrei.
+</P>
+<P>
+Vielleicht ist aber doch noch einiges beklagenswert: Wir haben n&auml;mlich f&uuml;r das
+Pixel eine Farbe angeben m&uuml;ssen, obwohl dies beim GraphikObjekt noch optional
+war. Man w&uuml;rde meinen, die offensichtliche L&ouml;sung dieses Problems w&auml;re das
+&Auml;ndern der Konstruktoren des Pixels wie folgt:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        Pixel(RastPort *port, int f = 1, int x, int y)
+        : GraphikObjekt(port,f), position(x,y)
+        { }
+</PRE></TD></TR></TABLE>
+<P>
+aber leider widerspricht das der Syntax von C++: Optionale Argumente m&uuml;ssen
+immer am Ende der Argumentenliste stehen. Es ergeben sich wiederum mehrere
+M&ouml;glichkeiten zur L&ouml;sung dieses Problems:
+</P>
+<P><B>1) Wir sortieren die Argumentenliste um:</B></P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        Pixel(RastPort *port, int x, int y, int f = 1)
+        : GraphikObjekt(port,f), position(x,y)
+        { }
+</PRE></TD></TR></TABLE>
+<P>
+womit dann C++ ausgetrickst w&uuml;rde, wir aber &uuml;berall sonst im Programm auch
+darauf achten m&uuml;ssten, bei der Konstruktion des Punktes die Argumente ebenso
+zu vertauschen - ansonsten w&uuml;rde aus Versehen die y-Position des Punktes nun
+als Farbe missverstanden werden. Ferner haben wir das Problem, dass die
+voreingestellte Farbe ja eigentlich die Privatangelegenheit des GraphikObjektes
+sein sollte, und eben nicht die des Pixels. Klarer Fall von schlechtem Design
+also!
+</P>
+<P>
+2) Wir f&uuml;gen einige Konstruktoren hinzu, die keine Farbe ben&ouml;tigen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        Pixel(RastPort *port, int x, int y)
+        : GraphikObjekt(port), position(x,y)
+        { }
+</PRE></TD></TR></TABLE>
+<P>
+Da nun GraphikObjekt ebenso ohne Farbe konstruiert werden kann, entf&auml;llt das
+Argument &quot;f&quot; damit komplett.
+</P>
+<P>
+Ein weiterer Punkt ist am Pixel noch auszusetzen: Warum setzen wir die Farbe
+innerhalb der Zeichenfl&auml;che, des RastPorts, eigentlich in der &quot;Pixel&quot; Klasse,
+wo es doch schon Aufgabe der Basisklasse &quot;GraphikObjekt&quot; ist, die Farbe und
+die Zeichenfl&auml;che aufzuheben?
+</P>
+<P>
+Auch das l&auml;sst sich &auml;ndern: Das &quot;GraphikObjekt&quot; bekommt eine neue Methode,
+mittels der seine Farbe im RastPort ausgew&auml;hlt wird. Da nur abgeleitete
+Objekte &uuml;ber diese Methode verf&uuml;gen m&uuml;ssen, wenn sie sich selbst zeichnen,
+wollen wir sie gar nicht erst &ouml;ffentlich machen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class GraphikObjekt {
+protected:
+        RastPort        *rp;
+        int              farbe;
+        //
+        // W&auml;hle unsere Farbe im RastPort
+        void SetzeFarbe(void) const
+        {
+                SetAPen(rp,farbe);
+        }
+        //
+        ...
+</PRE></TD></TR></TABLE>
+<P>
+und dementsprechend &auml;ndert sich im &quot;Punkt&quot;-Objekt die &quot;Zeichne&quot;-Methode:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        // Mach' 'nen Punkt!
+        void Zeichne(void)
+        {
+                SetzeFarbe();   // Bitte die Basisklasse
+                WritePixel(rp,position.x,position.y);
+        }
+</PRE></TD></TR></TABLE>
+<P>
+An dieser Stelle erkennt man, denke ich, eine grundlegende Designvorschrift:
+Das &quot;interne&quot; Wissen einer Klasse sollte so wenig wie m&ouml;glich nach au&szlig;en
+dringen. Stattdessen sollte eine Klasse &uuml;ber Methoden verf&uuml;gen, die die
+notwendige Funktionalit&auml;t nach au&szlig;en tragen. Oder noch anders ausgedr&uuml;ckt,
+eine Klasse sollte sich dadurch definieren, was sie kann - und nicht dadurch,
+aus welchen Komponenten sie besteht.
+</P>
+<P>
+Warum dies? Nun, knapp gesagt, &quot;was man nicht dokumentiert hat, kann man
+&auml;ndern&quot;. Bei kleineren Programmen, von Einzelpersonen geschrieben, ist dieser
+Punkt vielleicht nicht sonderlich relevant, aber sobald Programme etwas gr&ouml;&szlig;er
+werden und auch gepflegt - sprich: erg&auml;nzt, korrigiert, gewartet - werden
+m&uuml;ssen, wird man fr&uuml;her oder sp&auml;ter Teile der Programmablaufes &auml;ndern m&uuml;ssen.
+Solcherlei &Auml;nderungen lassen sich leichter durchf&uuml;hren, wenn sich Programmteile
+so wenig wie m&ouml;glich auf die internen Abl&auml;ufe anderer, eventuell zu &auml;ndernder
+Programmteile verlassen m&uuml;ssen. Bei einem korrekten Design sollte man also so
+wenig Information aus dem Innenleben einer Klasse nach au&szlig;en dringen lassen;
+ein weiteres Schlagwort f&uuml;r Angeber: &quot;Information Hiding&quot;
+</P>
+<P>
+Teile des AmigaOS sind leider ohne diese Designvorschrift entwickelt worden
+und h&auml;ngen teilweise deswegen so sehr von der zugrunde liegenden Hardware ab,
+dass eine &Auml;nderung im Nachhinein sehr schwierig ist. Dies betrifft etwa den
+Aufbau des gesamten Grafiksystems, der schwer an diesen Fehlentscheidungen
+krankt und der die Integration von Grafikkarten zu einem Hack-Abenteuer
+macht. &quot;Hack&quot; deswegen, weil man sich zwangsl&auml;ufig auf interne Abl&auml;ufe
+verlassen muss, die mit der eigentlich zu erreichenden Funktionalit&auml;t nicht
+viel zu tun haben.
+</P>
+<P>Punkt, Punkt, Komma, Strich:  Der Ausbau des Programmes</P>
+<P>
+Nachdem wir im letzten Teil auch ein Linienobjekt eingef&uuml;hrt hatten, soll das
+in dieser Folge nat&uuml;rlich nicht fehlen. Im Gegensatz zum letzen Mal wird eine
+Linie jetzt durch ein &quot;GraphikObjekt&quot; sowie zwei Punkte definiert - und nicht
+zwei Pixel. Die Linie hat damit die Farbe des &quot;GraphikObjektes&quot;, sowie einen
+Anfangs- und einen Endpunkt.
+</P>
+<P>
+Sehr viel mehr gibt es zur Linienklasse nicht zu sagen. Damit diesmal auch
+noch etwas neues passiert, habe ich eine weitere Klasse eingef&uuml;gt, die
+Ellipse. Sie hat eine Farbe, vermittelt durch das GraphikObjekt, dann einen
+Mittelpunkt und zwei Radien. Die Klasse ist zun&auml;chst so angelegt, dass man
+immer beide Radien angeben muss - eventuell findet es der Leser ja reizvoll,
+die Ellipsenklasse etwas auszubauen und Konstruktoren einzuf&uuml;gen, die nur
+einen Radius ben&ouml;tigen und somit auch einfach Kreise zeichnen k&ouml;nnen. Oder,
+alternativ, vielleicht k&ouml;nnte man auch eine Kreisklasse durch Ableiten
+von der Ellipsenklasse erzeugen?
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+#include &lt;iostream.h&gt;
+
+extern &quot;C&quot; {
+#include &lt;intuition/intuition.h&gt;
+#include &lt;graphics/rastport.h&gt;
+#include &lt;proto/intuition.h&gt;
+#include &lt;proto/graphics.h&gt;
+#include &lt;proto/exec.h&gt;
+}
+
+class Fenster {
+        Window *window;                         // Das Intuition-Fenster davon
+        int breite,hoehe;       // Dimensionen
+public:
+        Fenster(int b,int h)
+        :       window(NULL), breite(b), hoehe(h)
+        {
+                window = OpenWindowTags(NULL,
+                        WA_GimmeZeroZero,TRUE, // Ursprung ist im Zeichenbereich
+                        WA_SmartRefresh,TRUE,  // Automatisch wiederherstellen wenn verdeckt
+                        WA_InnerWidth,b,
+                        WA_InnerHeight,h,
+                        WA_CloseGadget,TRUE,   // Fenster hat Schlie&szlig;knopf
+                        WA_DragBar,TRUE,       // Fenster kann verschoben werden
+                        WA_DepthGadget,TRUE,   // Fenster kann nach vorne/hinten gebracht werden
+                        WA_IDCMP,IDCMP_CLOSEWINDOW,
+                        TAG_DONE);
+        }
+        //
+        // Der Destruktor l&ouml;scht auch wieder das Fenster davon, falls offen.
+        ~Fenster(void)
+        {
+                if (window) {
+                        CloseWindow(window);
+                }
+        }
+        //
+        // Liefere die Zeichenfl&auml;che des Fensters. Dies nennt sich RastPort
+        RastPort *RastPort_Hiervon(void) const
+        {
+                return window-&gt;RPort;
+        }
+        //
+        // Warte, bis der Benutzer das Close-Gadget dr&uuml;ckt.
+        void WarteAufSchliessen(void) const
+        {
+                struct Message *msg;
+
+                msg = WaitPort(window-&gt;UserPort);
+                msg = GetMsg(window-&gt;UserPort);
+                ReplyMsg(msg);
+        }
+};
+
+class GraphikObjekt {
+protected:
+        RastPort        *rp;
+        int              farbe;
+        //
+        // W&auml;hle unsere Farbe im RastPort
+        void SetzeFarbe(void) const
+        {
+                SetAPen(rp,farbe);
+        }
+        //
+public:
+        GraphikObjekt(RastPort *port,int f = 1)
+        : rp(port), farbe(f)
+        { }
+        //
+        void Zeichne(void)
+        {
+                // Da wir nicht wissen, welches Objekt das
+                // hier ist, k&ouml;nnen wir nat&uuml;rlich auch nichts
+                // zeichnen....
+                cout&lt;&lt;&quot;Dieses Objekt ist nicht zeichenbar.\n&quot;;
+        }
+};
+
+struct Punkt {
+        int x,y;
+        //
+        Punkt(int x0,int y0)
+        : x(x0), y(y0)
+        { }
+};
+
+class Pixel : public GraphikObjekt {
+        struct Punkt    position;       // Ort des Pixels
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Position.
+        Pixel(RastPort *port, int f, int x, int y)
+        : GraphikObjekt(port,f), position(x,y)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Position als Referenz &uuml;bergeben
+        Pixel(RastPort *port, int farbe, Punkt &amp;pos)
+        : GraphikObjekt(port, farbe), position(pos)
+        { }
+        //
+        // Ein &quot;farbloser&quot; Konstruktor
+        Pixel(RastPort *port, int x, int y)
+        : GraphikObjekt(port), position(x,y)
+        { }
+        //
+        // und noch mal das gleiche, jedoch mit einer
+        // Punktstruktur
+        Pixel(RastPort *port, Punkt &amp;pos)
+        : GraphikObjekt(port), position(pos)
+        { }
+        //
+        //
+        // Mach' 'nen Punkt!
+        void Zeichne(void)
+        {
+                SetzeFarbe();
+                WritePixel(rp,position.x,position.y);
+        }
+};
+
+//
+// von Punkten zu Linien:
+//
+class Linie : public GraphikObjekt {
+        struct Punkt    anfang,ende;    // wo beginnt und wo endet die Linie?
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Start/Endpunkte
+        Linie(RastPort *port, int f, int x0, int y0, int x1, int y1)
+        : GraphikObjekt(port,f), anfang(x0,y0), ende(x1,y1)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Positionen als Referenzen &uuml;bergeben
+        Linie(RastPort *port, int farbe, Punkt &amp;von, Punkt &amp;bis)
+        : GraphikObjekt(port, farbe), anfang(von), ende(bis)
+        { }
+        //
+        // Ein &quot;farbloser&quot; Konstruktor
+        Linie(RastPort *port, int x0, int y0, int x1, int y1)
+        : GraphikObjekt(port), anfang(x0,y0), ende(x1,y1)
+        { }
+        //
+        // und noch mal das gleiche, jedoch mit einer
+        // Punktstruktur
+        Linie(RastPort *port, Punkt &amp;von, Punkt &amp;bis)
+        : GraphikObjekt(port), anfang(von), ende(bis)
+        { }
+        //
+        //
+        // Mach' 'nen Strich
+        void Zeichne(void)
+        {
+                SetzeFarbe();
+                Move(rp,anfang.x,anfang.y);
+                Draw(rp,ende.x,ende.y);
+        }
+};
+
+//
+// von Linien zu Ellipsen:
+//
+class Ellipse : public GraphikObjekt {
+        struct Punkt    mittelpunkt;    // wo ist die Ellipse zentriert?
+        int                             radiusx,radiusy; // Radien in x- und y-Richtung
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Mittelpunkt, Radien
+        Ellipse(RastPort *port, int f, int x, int y, int rx, int ry)
+        : GraphikObjekt(port,f), mittelpunkt(x,y),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Position als Referenz &uuml;bergeben
+        Ellipse(RastPort *port, int farbe, Punkt &amp;zentrum, int rx, int ry)
+        : GraphikObjekt(port, farbe), mittelpunkt(zentrum),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        // Ein &quot;farbloser&quot; Konstruktor
+        Ellipse(RastPort *port, int x, int y, int rx, int ry)
+        : GraphikObjekt(port), mittelpunkt(x,y),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        // und noch mal das gleiche, jedoch mit einer
+        // Punktstruktur
+        Ellipse(RastPort *port, Punkt &amp;zentrum, int rx, int ry)
+        : GraphikObjekt(port), mittelpunkt(zentrum),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        //
+        // Mach' 'nen Kreis
+        void Zeichne(void)
+        {
+                SetzeFarbe();
+                DrawEllipse(rp,mittelpunkt.x,mittelpunkt.y,radiusx,radiusy);
+        }
+};
+
+
+int main(int argc, char **argv)
+{
+Fenster f(200,200);             // baue ein Fenster der Gr&ouml;&szlig;e 200x200
+Pixel p(f.RastPort_Hiervon(),1,50,50);
+Linie l(f.RastPort_Hiervon(),Punkt(30,40),Punkt(50,70));
+Ellipse e(f.RastPort_Hiervon(),70,70,20,50);
+
+                p.Zeichne();
+                l.Zeichne();
+                e.Zeichne();
+
+                f.WarteAufSchliessen();
+
+      return 0;
+}
+</PRE></TD></TR></TABLE>
+<P><B>Die Zeile</B></P>
+<PRE>
+DrawEllipse(rp,mittelpunkt.x,mittelpunkt.y,radiusx,radiusy);
+</PRE>
+<P>
+ist nun der OS-Aufruf zum Zeichnen einer Ellipse - er macht die eigentliche
+Arbeit f&uuml;r uns. In der Zeile
+</P>
+<PRE>Linie l(f.RastPort_Hiervon(),Punkt(30,40),Punkt(50,70));</PRE>
+<P>
+habe ich einmal das Objekt &quot;l&quot; vom Typ &quot;Linie&quot; nicht durch Angabe der
+Koordinaten konstruiert, sondern - weil ja bekanntlich Abwechslung das Leben
+bereichert - durch die Konstruktion zweier tempor&auml;rer &quot;Punkt&quot;-Objekte, die
+durch Angaben ihrer Koordinaten erzeugt werden. Mit anderen Worten, diese
+Zeile benutzt den Konstruktor
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        Linie(RastPort *port, Punkt &amp;von, Punkt &amp;bis)
+        : GraphikObjekt(port), anfang(von), ende(bis)
+        { }
+</PRE></TD></TR></TABLE>
+<P>
+der Linienklasse.
+</P>
+<P>
+Von Knoten und listigen Listen: Die Verkn&uuml;pfung von Objekten
+</P>
+<P>
+Nachdem wir nun zun&auml;chst einige grundlegende grafische Objekte erzeugt haben,
+sollen diese nun so verwaltet werden, dass das Fenster immer wei&szlig;, welche
+Objekte sich in ihm befinden. Hierzu werden wir die im letzten Teil
+eingef&uuml;hrten Pointer verwenden, um eine sogenannte &quot;einfach verkettete Liste&quot;
+zu bilden. Eine solche &quot;Liste&quot; kann man sich &auml;hnlich wie eine &quot;Schnitzeljagd&quot;
+vorstellen: Jedes Objekt bekommt einen Pointer - vorzustellen als ein kleines
+Pfeilchen - mit, das auf das jeweils n&auml;chste Objekt verweist.
+</P>
+<P>
+Da wir lauter grafische Objekte hintereinander aufreihen wollen, bringt man
+diesen Pointer am besten im &quot;GraphikObjekt&quot; unter:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class GraphikObjekt {
+        // Der Zeiger auf den Nachfolger dieses Graphikobjektes
+        GraphikObjekt    *nachfolger;
+        //
+protected:
+        RastPort        *rp;
+        int              farbe;
+</PRE></TD></TR></TABLE>
+<P>
+Die von GraphikObjekt abgeleiteten Klassen braucht es wirklich nicht zu
+interessieren, was der Nachfolger eines GraphikObjektes ist, insofern
+lassen wir diesen Member einmal &quot;private&quot;, und nicht &quot;protected&quot;.
+</P>
+<P>
+Ferner m&uuml;ssen wir bei einer Schnitzeljagd auch wissen, wo diese anfangen
+soll. Nun denn, da die Fensterklasse ja wissen soll, welche Objekte sich in
+ihr befinden, bringen wir dort am einfachsten einen Pointer auf das erste
+GraphikObjekt unter. Dies ist der Startpunkt der Schnitzeljagd - oder genauer,
+ein Pfeilchen auf das erste Objekt.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class Fenster {
+        Window *window;         // Das Intuition-Fenster davon
+        int breite,hoehe;       // Dimensionen
+        //
+        // Hier beginnt die Liste aller grafischen Objekte dieses Fensters
+        GraphikObjekt *erstesobjekt;
+        //
+</PRE></TD></TR></TABLE>
+<P>
+und zu guter Letzt braucht eine Schnitzeljagd auch ein Ziel - man muss ja
+wissen, wann man das letzte Element dieser Liste erreicht hat und man keine
+weiteren Objekte erwarten darf.
+</P>
+<P>
+Hierzu gibt es einen ganz speziellen Pointerwert, den eine Pointervariable
+haben darf - und das ist 0. In diesem einen Ausnahmefall darf also eine Zahl
+einem Zeiger zugewiesen werden - dies geht aber nur f&uuml;r die Zahl 0 und sonst
+keine andere. &Uuml;blicherweise wird mit dem C++-Pr&auml;prozessor - diesen Teil haben
+wir noch nicht genauer besprochen - ein Makro definiert, welches NULL hei&szlig;t,
+aber auch nur die Zahl 0 repr&auml;sentiert. Dies geschieht schon automatisch in
+den C++-#include-Dateien. Im Grunde genommen ist es dann egal, ob man 0 oder
+NULL schreibt, aber letzteres gibt dem Experten klar zu erkennen, dass man
+eigentlich einen besonderen Pointer, und nicht die Zahl 0 meint. C++ macht
+f&uuml;r die Null keine Unterschiede.
+</P>
+<P>
+Damit die Pfeilchen niemanden in die Irre weisen k&ouml;nnen, und dies geschieht in
+C++ bei fehlerhaften Programmen nur zu leicht, geh&ouml;rt es zu einem defensiven
+Programmierstil, alle solche Zeiger bei der Erzeugung von Objekten lieber auf
+NULL zu setzen. Dies habe ich stillschweigend beim Konstruktor der
+Fensterklasse schon mit dem &quot;window&quot;-Zeiger gemacht. Mittels &quot;if (window)&quot; kann
+man dann abfragen, ob der Pointer irgendwohin zeigt - dann ist die Bedingung
+wahr - oder ob es der NULL-Pointer ist - dann ist die Bedingung falsch. Die
+Zeilen
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        if (window) {
+                CloseWindow(window);
+        }
+</PRE></TD></TR></TABLE>
+<P>
+im Destruktor der Fensterklasse rufen also nur dann die Betriebssystemroutine
+&quot;CloseWindow()&quot; auf, falls der window-Zeiger auch wirklich &quot;wohin&quot;, n&auml;mlich
+auf eine Window-Struktur zeigt.
+</P>
+<P>
+Initialisieren wir also die beiden neuen Zeiger in der Fenster- und der
+GraphikObjekt-Klasse auf NULL:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+public:
+        Fenster(int b,int h)
+        : window(NULL), breite(b), hoehe(h), erstesobjekt(NULL)
+        {
+</PRE></TD></TR></TABLE>
+<P>
+ist der neue Konstruktor des Fensters und
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+public:
+        GraphikObjekt(RastPort *port,int f = 1)
+        : nachfolger(NULL), rp(port), farbe(f)
+        { }
+</PRE></TD></TR></TABLE>
+<P>
+der des GraphikObjekt. Der Grund, warum ich einmal den Pointer am Ende, und
+einmal am Anfang der Member initialisiere, ist folgender: Nach C++ Richtlinien
+muss ein Compiler sowieso die nach dem &quot;:&quot; stehenden Initialisierungen
+in der Reihenfolge der Member innerhalb der Klasse umsortieren - die Gr&uuml;nde
+hierf&uuml;r kann ich im Augenblick noch nicht klarmachen. Ein guter Compiler
+sollte eine Warnmeldung erzeugen, wenn die Reihenfolge der Initialisierungen
+nicht mit der wirklichen Ausf&uuml;hrungsreihenfolge &uuml;bereinstimmt, weil der
+Programmierer ja eventuell etwas Anderes im Sinn gehabt haben k&ouml;nnte.
+Schreiben wir also die Initialisierungen gleich in der Reihenfolge auf, in der
+die Member-Variablen in der Klasse auftreten! Diese seltsame Regel gilt
+nat&uuml;rlich nur f&uuml;r die Initialisierungsliste nach dem Doppelpunkt, nicht f&uuml;r
+eventuellen Programmcode in den geschweiften Klammern!
+</P>
+<P>
+Wenn wir nun versuchen, den wie oben dargestellt modifizierten Programmcode zu
+kompilieren, gibt es zun&auml;chst ein Problem:
+</P>
+<P>
+Error: Declaration expected.
+</P>
+<P>
+meldet der Compiler in der Zeile
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        // Hier beginnt die Liste aller grafischen Objekte...
+        GraphikObjekt *erstesobjekt;
+</PRE></TD></TR></TABLE>
+<P>
+Diese Fehlermeldung ist leider recht unverst&auml;ndlich, und es bedarf einigen
+Nachdenkens, was damit gemeint sein k&ouml;nnte.
+</P>
+<P>
+Das Problem hier ist das folgende: Zu dem Zeitpunkt, zu dem der Compiler
+diese Zeile bearbeitet, ist die &quot;GraphikObjekt&quot;-Klasse noch gar nicht
+definiert, also k&ouml;nnen wir auch keine Zeiger auf diese Klasse deklarieren.
+W&uuml;rden wir nun einfach die GraphikObjekt-Klasse im Text nach vorne schieben,
+so w&auml;re dieses Problem gel&ouml;st. Gar nicht zu selten braucht man allerdings
+im hinteren Element einen weiteren Zeiger auf die erste Klasse - in unserem
+Fall tritt das zum Gl&uuml;ck nicht auf - und dann w&auml;re mit einer einfachen
+Verschiebung niemandem geholfen. C++ hat f&uuml;r diesen Fall aber eine L&ouml;sung
+parat: Man kann dem Compiler schon mal vor der Definition der Fensterklasse
+einen Hinweis geben, dass man sp&auml;ter eine Klasse &quot;GraphikObjekt&quot; einf&uuml;hren
+wird. Das ist solange erlaubt, wie man nur Zeiger auf diese bislang
+undefinierte Klasse verwendet. Dies sieht im Quellcode dann so aus:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+//
+// Vorw&auml;rtsdeklaration der GraphikObjekt-Klasse
+class GraphikObjekt;
+
+class Fenster {
+        ...
+</PRE></TD></TR></TABLE>
+<P>
+Hinter dem Semikolon ist dann erst mal Schluss - f&uuml;r den Compiler ein
+Hinweis auf &quot;mehr &uuml;ber diese Klasse weiter unten&quot;. Klar, dass man mit einer
+so deklarierten Klasse nicht sehr viel anderes anfangen kann, als gerade mal
+Pfeilchen - sprich Pointer - auf solche Objekte aufzustellen.
+</P>
+<P>
+Der so modifizierte Quellcode kompiliert erst mal, aber verwendet die Zeiger
+nat&uuml;rlich noch nicht - das m&uuml;ssen wir schon selbst tun. Eine der wichtigsten
+elementaren Operationen f&uuml;r Listen ist das Einf&uuml;gen eines Elementes in eine
+Liste: Ist &quot;F&quot; das Fensterobjekt und &quot;g,h&quot; die GraphikObjekte dieses Fensters,
+so k&ouml;nnte eine Konstellation vor dem Einf&uuml;gen eines Objektes etwa so
+veranschaulicht werden:
+</P>
+<PRE>
+        F --&gt; g --&gt; h
+</PRE>
+<P>
+Dies bedeutet, &quot;erstesobjekt&quot; des Fensters zeigt auf das Objekt g,
+&quot;nachfolger&quot; von g zeigt auf h, und &quot;nachfolger&quot; von &quot;h&quot; bleibt leer -
+also ist NULL. Wollen wir nun ein Element &quot;i&quot; einf&uuml;gen, so macht man dies am
+einfachsten so, indem man zun&auml;chst den Nachfolger von &quot;i&quot; auf das bislang
+erste Listenelement &quot;g&quot; zeigen l&auml;sst:
+</P>
+<PRE>
+              i
+              |
+              V
+        F --&gt; g --&gt; h
+</PRE>
+<P>
+und dann in einem zweiten Schritt den &quot;erstesobjekt&quot;-Zeiger des Fensters auf
+&quot;i&quot; umbiegt. Damit macht die Liste zwar grafisch einen Schlenker, aber alle
+Elemente sind wieder h&uuml;bsch aufgereiht:
+</P>
+<PRE>
+          _  i
+          /| |
+         /   V
+        F    g --&gt; h
+</PRE>
+<P>
+Dieses Einf&uuml;gen eines Elementes geschieht in einer Liste, die der Fensterklasse
+geh&ouml;rt, und sollte dementsprechend auch dort als Methode aufgenommen werden:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        // Einf&uuml;gen eines GraphikObjekt in das Fenster
+        void ReiheEin(GraphikObjekt *obj)
+        {
+                // nachfolger dieses Objektes auf das
+                // erste Objekt setzen:
+                obj-&gt;nachfolger = erstesobjekt;
+                // das erste Objekt ist dann dieses hier
+                erstesobjekt    = obj;
+        }
+</PRE></TD></TR></TABLE>
+<P>
+Diese Methode funktioniert sogar dann - der Leser m&ouml;ge einmal scharf nachdenken -
+wenn die Liste am Anfang leer ist, also &quot;erstesobjekt&quot; noch auf NULL steht. Zur
+Erinnerung: &quot;-&gt;&quot; bedeutet &quot;folge dem Pfeil, dann werte das Member rechts vom
+Pfeil aus&quot;. &quot;obj-&gt;nachfolger&quot; ist das gleiche wie &quot;(*obj).nachfolger&quot;, siehe den
+letzten Teil.
+</P>
+<P>
+Nur leider gibt's wieder zwei Probleme: Erstens, GraphikObjekt ist an dieser
+Stelle nicht definiert, sondern nur &uuml;ber eine Vorw&auml;rtsreferenz deklariert, der
+Compiler kann also noch gar nicht wissen, dass es eine Member &quot;nachfolger&quot;
+eines GraphikObjekt gibt. Zweitens ist der auch noch &quot;privat&quot;, also darf die
+Fensterklasse nicht darauf zugreifen - sollte sie aber k&ouml;nnen!
+</P>
+<P>
+Das erste Problem ist leicht gel&ouml;st: Wir verschieben die Definition dieser
+Methode nach unten:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        // Einf&uuml;gen eines GraphikObjekt in das Fenster
+        void ReiheEin(GraphikObjekt *obj);
+</PRE></TD></TR></TABLE>
+<P>
+In der Klasse selbst gibt es also wieder nur eine Vorw&auml;rtsreferenz auf die
+noch zu definierten Methode, und direkt &uuml;ber &quot;main&quot; f&uuml;gen wir die noch
+fehlende Definition ein:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+// Einf&uuml;gen eines GraphikObjekt in das Fenster
+void Fenster::ReiheEin(GraphikObjekt *obj)
+{
+        // nachfolger dieses Objektes auf das
+        // erste Objekt setzen:
+        obj-&gt;nachfolger = erstesobjekt;
+        // das erste Objekt ist dann dieses hier
+        erstesobjekt    = obj;
+}
+</PRE></TD></TR></TABLE>
+<P>
+Das &quot;Fenster::&quot; besagt: Hier kommt eine Methode der Klasse &quot;Fenster&quot;. Ohne
+den &quot;::&quot;-Operator, der auch &quot;Scope-Operator&quot; hei&szlig;t, w&uuml;rde der Compiler dies
+als eine globale Funktion interpretieren, die nichts mit dem Fensterobjekt
+gemein hat.
+</P>
+<P>
+Fehlt noch die L&ouml;sung des zweiten Problems: Wie erlaubt man den Zugriff auf
+das &quot;nachfolger&quot;-Member der GraphikObjekt-Klasse vom Fenster aus? Eine
+M&ouml;glichkeit w&auml;re wieder, eine Zugriffsfunktion zu bauen, doch diese w&uuml;rde auch
+allen anderen Objekten einen Zugriff auf diese eigentlich zum Fenster geh&ouml;rende
+Liste gestatten. Darum m&ouml;chte ich Zugriff auf dieses Member exklusiv f&uuml;r die
+ReiheEin-Methode des Fensters gestatten; dies erkl&auml;rt man dem C++ Compiler
+mittels:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class GraphikObjekt {
+        friend void Fenster::ReiheEin(GraphikObjekt *);
+        //
+        // Der Zeiger auf den Nachfolger dieses Graphikobjektes
+        GraphikObjekt    *nachfolger;
+</PRE></TD></TR></TABLE>
+<P>
+womit diese eine Funktion mit dem &quot;GraphikObjekt&quot; befreundet wird.
+</P>
+<P>
+Nach diesen Ausbauarbeiten k&ouml;nnen wir problemlos die Linien, Punkte, und
+Ellipsenobjekte in das Fenster einf&uuml;gen: In &quot;main&quot; sieht das dann so aus:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+        f.ReiheEin(&amp;p);
+        f.ReiheEin(&amp;l);
+        f.ReiheEin(&amp;e);
+</PRE></TD></TR></TABLE>
+<P>
+Man entsinne sich, &quot;&amp;&quot; liefert einen Pointer auf das dahinterstehende Objekt.
+</P>
+<P><B>Das gesamte Programm sieht damit wie folgt aus:</B></P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+#include &lt;iostream.h&gt;
+
+extern &quot;C&quot; {
+#include &lt;intuition/intuition.h&gt;
+#include &lt;graphics/rastport.h&gt;
+#include &lt;proto/intuition.h&gt;
+#include &lt;proto/graphics.h&gt;
+#include &lt;proto/exec.h&gt;
+}
+
+
+//
+// Vorw&auml;rtsdeklaration der GraphikObjekt-Klasse
+class GraphikObjekt;
+
+class Fenster {
+        Window *window;         // Das Intuition-Fenster davon
+        int breite,hoehe;       // Dimensionen
+        //
+        // Hier beginnt die Liste aller grafischen Objekte dieses Fensters
+        GraphikObjekt *erstesobjekt;
+        //
+public:
+        Fenster(int b,int h)
+        :       window(NULL), breite(b), hoehe(h), erstesobjekt(NULL)
+        {
+                window = OpenWindowTags(NULL,
+                        WA_GimmeZeroZero,TRUE,  // Ursprung ist im Zeichenbereich
+                        WA_SmartRefresh,TRUE,   // Automatisch wiederherstellen wenn verdeckt
+                        WA_InnerWidth,b,
+                        WA_InnerHeight,h,
+                        WA_CloseGadget,TRUE,    // Fenster hat Schlie&szlig;knopf
+                        WA_DragBar,TRUE,        // Fenster kann verschoben werden
+                        WA_DepthGadget,TRUE,    // Fenster kann nach vorne/hinten gebracht werden
+                        WA_IDCMP,IDCMP_CLOSEWINDOW,
+                        TAG_DONE);
+        }
+        //
+        // Der Destruktor l&ouml;scht auch wieder das Fenster davon, falls offen.
+        ~Fenster(void)
+        {
+                if (window) {
+                        CloseWindow(window);
+                }
+        }
+        //
+        // Liefere die Zeichenfl&auml;che des Fensters. Dies nennt sich RastPort
+        RastPort *RastPort_Hiervon(void) const
+        {
+                return window-&gt;RPort;
+        }
+        //
+        // Warte, bis der Benutzer das Close-Gadget dr&uuml;ckt.
+        void WarteAufSchliessen(void) const
+        {
+                struct Message *msg;
+
+                msg = WaitPort(window-&gt;UserPort);
+                msg = GetMsg(window-&gt;UserPort);
+                ReplyMsg(msg);
+        }
+        //
+        // Einf&uuml;gen eines GraphikObjekt in das Fenster
+           void ReiheEin(GraphikObjekt *obj);
+};
+
+class GraphikObjekt {
+        friend void Fenster::ReiheEin(GraphikObjekt *);
+        //
+        // Der Zeiger auf den Nachfolger dieses Graphikobjektes
+        GraphikObjekt    *nachfolger;
+        //
+protected:
+        RastPort        *rp;
+        int              farbe;
+        //
+        // W&auml;hle unsere Farbe im RastPort
+        void SetzeFarbe(void) const
+        {
+                SetAPen(rp,farbe);
+        }
+        //
+public:
+        GraphikObjekt(RastPort *port,int f = 1)
+        : nachfolger(NULL), rp(port), farbe(f)
+        { }
+        //
+        void Zeichne(void)
+        {
+                // Da wir nicht wissen, welches Objekt das
+                // hier ist, k&ouml;nnen wir nat&uuml;rlich auch nichts
+                // zeichnen....
+                cout&lt;&lt;&quot;Dieses Objekt ist nicht zeichenbar.\n&quot;;
+        }
+};
+
+struct Punkt {
+        int x,y;
+        //
+        Punkt(int x0,int y0)
+        : x(x0), y(y0)
+        { }
+};
+
+class Pixel : public GraphikObjekt {
+        struct Punkt    position;       // Ort des Pixels
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Position.
+        Pixel(RastPort *port, int f, int x, int y)
+        : GraphikObjekt(port,f), position(x,y)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Position als Referenz &uuml;bergeben
+        Pixel(RastPort *port, int farbe, Punkt &amp;pos)
+        : GraphikObjekt(port, farbe), position(pos)
+        { }
+        //
+        // Ein &quot;farbloser&quot; Konstruktor
+        Pixel(RastPort *port, int x, int y)
+        : GraphikObjekt(port), position(x,y)
+        { }
+        //
+        // und noch mal das gleiche, jedoch mit einer
+        // Punktstruktur
+        Pixel(RastPort *port, Punkt &amp;pos)
+        : GraphikObjekt(port), position(pos)
+        { }
+        //
+        //
+        // Mach' 'nen Punkt!
+        void Zeichne(void)
+        {
+                SetzeFarbe();
+                WritePixel(rp,position.x,position.y);
+        }
+};
+
+//
+// von Punkten zu Linien:
+//
+class Linie : public GraphikObjekt {
+        struct Punkt    anfang,ende;    // wo beginnt und wo endet die Linie?
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Start/Endpunkte
+        Linie(RastPort *port, int f, int x0, int y0, int x1, int y1)
+        : GraphikObjekt(port,f), anfang(x0,y0), ende(x1,y1)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Positionen als Referenzen &uuml;bergeben
+        Linie(RastPort *port, int farbe, Punkt &amp;von, Punkt &amp;bis)
+        : GraphikObjekt(port, farbe), anfang(von), ende(bis)
+        { }
+        //
+        // Ein &quot;farbloser&quot; Konstruktor
+        Linie(RastPort *port, int x0, int y0, int x1, int y1)
+        : GraphikObjekt(port), anfang(x0,y0), ende(x1,y1)
+        { }
+        //
+        // und noch mal das gleiche, jedoch mit einer
+        // Punktstruktur
+        Linie(RastPort *port, Punkt &amp;von, Punkt &amp;bis)
+        : GraphikObjekt(port), anfang(von), ende(bis)
+        { }
+        //
+        //
+        // Mach' 'nen Strich
+        void Zeichne(void)
+        {
+                SetzeFarbe();
+                Move(rp,anfang.x,anfang.y);
+                Draw(rp,ende.x,ende.y);
+        }
+};
+
+//
+// von Linien zu Ellipsen:
+//
+class Ellipse : public GraphikObjekt {
+        struct Punkt    mittelpunkt;    // wo ist die Ellipse zentriert?
+        int                             radiusx,radiusy; // Radien in x- und y-Richtung
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Mittelpunkt, Radien
+        Ellipse(RastPort *port, int f, int x, int y, int rx, int ry)
+        : GraphikObjekt(port,f), mittelpunkt(x,y),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Position als Referenz &uuml;bergeben
+        Ellipse(RastPort *port, int farbe, Punkt &amp;zentrum, int rx, int ry)
+        : GraphikObjekt(port, farbe), mittelpunkt(zentrum),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        // Ein &quot;farbloser&quot; Konstruktor
+        Ellipse(RastPort *port, int x, int y, int rx, int ry)
+        : GraphikObjekt(port), mittelpunkt(x,y),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        // und noch mal das gleiche, jedoch mit einer
+        // Punktstruktur
+        Ellipse(RastPort *port, Punkt &amp;zentrum, int rx, int ry)
+        : GraphikObjekt(port), mittelpunkt(zentrum),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        //
+        // Mach' 'nen Kreis
+        void Zeichne(void)
+        {
+                SetzeFarbe();
+                DrawEllipse(rp,mittelpunkt.x,mittelpunkt.y,radiusx,radiusy);
+        }
+};
+
+// Einf&uuml;gen eines GraphikObjekt in das Fenster
+void Fenster::ReiheEin(GraphikObjekt *obj)
+{
+        // nachfolger dieses Objektes auf das
+        // erste Objekt setzen:
+        obj-&gt;nachfolger = erstesobjekt;
+        // das erste Objekt ist dann dieses hier
+        erstesobjekt    = obj;
+}
+
+int main(int argc, char **argv)
+{
+Fenster f(200,200);             // baue ein Fenster der Gr&ouml;&szlig;e 200x200
+Pixel p(f.RastPort_Hiervon(),1,50,50);
+Linie l(f.RastPort_Hiervon(),Punkt(30,40),Punkt(50,70));
+Ellipse e(f.RastPort_Hiervon(),70,70,20,50);
+
+                f.ReiheEin(&amp;p);
+                f.ReiheEin(&amp;l);
+                f.ReiheEin(&amp;e);
+
+                p.Zeichne();
+                l.Zeichne();
+                e.Zeichne();
+
+                f.WarteAufSchliessen();
+
+      return 0;
+}
+</PRE></TD></TR></TABLE>
+<P><B>Virtuelle Methoden, abstrakte Klassen und reale Probleme</B></P>
+<P>
+Das Anlegen einer linearen Liste mag ja eine interessante Programmieraufgabe
+sein, aber nur zum Selbstzweck ist diese &Uuml;bung doch etwas zu aufwendig. Die
+Liste soll jetzt also auch praktisch verwendet werden:
+</P>
+<P>
+Da wir nun jedes der zu zeichnenden Objekte in das Fensterobjekt eingeh&auml;ngt
+haben - es ist ja Teil seiner Objektliste geworden - m&uuml;ssen wir eigentlich die
+Objekte nicht mehr alle einzeln zeichnen. Stattdessen k&ouml;nnen wir das dem
+Fensterobjekt selbst &uuml;berlassen, da es ja wei&szlig;, welche Objekte in ihm
+stecken. Insofern sollen die drei Zeilen
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+                p.Zeichne();
+                l.Zeichne();
+                e.Zeichne();
+</PRE></TD></TR></TABLE>
+<P>
+in main() entfallen, und stattdessen durch einen Aufruf einer noch zu
+schreibenden Methode
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+                f.ZeichneObjekte();
+</PRE></TD></TR></TABLE>
+<P>
+ersetzt werden, wobei diese Methode des Fensters eben alle in dem Fenster
+verwalteten Objekte auf den Schirm zaubern soll. F&uuml;gen wir also in der
+Fensterklasse noch folgende Deklaration ein:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class Fenster {
+        ...
+        // Einf&uuml;gen eines GraphikObjekt in das Fenster
+        void ReiheEin(GraphikObjekt *obj);
+        //
+        // Zeichne alle Objekte des Fensters
+        void ZeichneObjekte(void);
+};
+</PRE></TD></TR></TABLE>
+<P>
+Da wir innerhalb von ZeichneObjekte() sicherlich auf die GraphikObjekt-Klasse
+zur&uuml;ckgreifen m&uuml;ssen - diese Klasse beschreibt ja die zu zeichnenden Objekte -
+k&ouml;nnen wir die Methode ZeichneObjekte() nicht direkt im Rumpf der Fensterklasse
+definieren. Dieses Problem hatten wir oben bei &quot;ReiheEin()&quot; bereits schon
+einmal. Stattdessen f&uuml;gen wir die Definition von ZeichneObjekte() direkt &uuml;ber
+der Definition von main() ein:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+// Malen aller Objekte des Fensters
+void Fenster::ZeichneObjekte(void)
+{
+GraphikObjekt *objekt;
+
+        //
+        // hole das erste Element der Liste
+        objekt = erstesobjekt;
+        // wiederhole das Folgende solange, wie
+        // wir das Ende der Liste noch nicht
+        // erreicht haben.
+        while(objekt) {
+                // Zeichne dieses Objekt
+                objekt-&gt;Zeichne();
+                // hole das n&auml;chste Objekt
+                // dieser Liste
+                objekt = objekt-&gt;nachfolger;
+        }
+        // das war's.
+}
+</PRE></TD></TR></TABLE>
+<P>
+Was geschieht hier? Zun&auml;chst deklarieren wir einen Zeiger auf ein
+GraphikObjekt. Dieser Zeiger wird dann initialisiert mit dem Zeiger auf das
+erste Element der Objektliste, die wir im Fenster im Member &quot;erstesobjekt&quot;
+aufheben. Sieht diese Liste wie folgt aus:
+</P>
+<PRE>
+        F--&gt;i--&gt;h--&gt;g
+</PRE>
+<P>
+wobei &quot;F&quot; das Fensterobjekt und damit &quot;erstesobjekt&quot; auf &quot;i&quot; zeigt, so ist
+nach diesem Schritt &quot;objekt&quot; ein Zeiger auf &quot;i&quot;. Wir gehen dann in die
+folgende while()-Liste hinein: Sie f&uuml;hrt die Anweisungen im Schleifenrumpf
+solange aus, wie die Bedingung in den Klammern hinter dem
+while()-Schl&uuml;sselwort erf&uuml;llt ist, also - man vergleiche noch mal mit oben -
+solange &quot;objekt&quot; nicht der NULL-Zeiger ist. Ist er in diesem Beispiel nicht,
+denn &quot;objekt&quot; zeigt ja auf &quot;i&quot;. Innerhalb der Schleife wird dann &quot;i&quot;
+gezeichnet: &quot;i-&gt;Zeichne()&quot;, wobei man sich nochmals &uuml;ber die Bedeutung des
+&quot;-&gt;&quot; Pfeilchens klar sein sollte. In der Zeile darunter
+</P>
+<PRE>
+&quot;objekt = objekt-&gt;nachfolger&quot;
+</PRE>
+<P>
+wird der Objektzeiger umgesetzt, n&auml;mlich auf das Objekt, auf den der
+Nachfolgerzeiger des bisherigen Objektes zeigt. Zeigt also &quot;objekt&quot; wie in
+unserem Beispiel zun&auml;chst auf &quot;i&quot;, so zeigt es danach auf &quot;h&quot;. Die Schleife
+kehrt zur Abfrage zur&uuml;ck: h ist nicht NULL - also weiter! Danach wird &quot;h&quot;
+gezeichnet, und der Zeiger weitergeschaltet, und zwar auf &quot;g&quot;. &quot;g&quot; ist nicht
+NULL, also wird die Schleife nochmals ausgef&uuml;hrt: g zeichnen, danach
+weiterschalten. Der Nachfolger von &quot;g&quot; ist niemand - sein Nachfolgerzeiger
+steht auf NULL. Also wird jetzt &quot;objekt&quot; auf NULL gesetzt, und die Schleife
+wird abgebrochen. Damit sind ja nun auch alle Objekte gezeichnet.
+</P>
+<P>
+Es bleibt noch eine offensichtliche Schwierigkeit: Wir m&uuml;ssen der Methode
+&quot;ZeichneObjekte&quot; ja noch den Zugriff auf das private Member &quot;nachfolger&quot;
+von GraphikObjekt erm&ouml;glichen! Das ist leicht erledigt:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class GraphikObjekt {
+        friend void Fenster::ReiheEin(GraphikObjekt *);
+        friend void Fenster::ZeichneObjekte(void);
+        //
+        ...
+};
+</PRE></TD></TR></TABLE>
+<P>
+&Auml;ndern wir nun main() wie besprochen ab und kompilieren den Code:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+int main(int argc, char **argv)
+{
+Fenster f(200,200);             // baue ein Fenster der Gr&ouml;&szlig;e 200x200
+Pixel p(f.RastPort_Hiervon(),1,50,50);
+Linie l(f.RastPort_Hiervon(),Punkt(30,40),Punkt(50,70));
+Ellipse e(f.RastPort_Hiervon(),70,70,20,50);
+
+                f.ReiheEin(&amp;p);
+                f.ReiheEin(&amp;l);
+                f.ReiheEin(&amp;e);
+
+                f.ZeichneObjekte();
+                f.WarteAufSchliessen();
+
+      return 0;
+}
+</PRE></TD></TR></TABLE>
+<P>
+Wird dieses Programm gestartet, so wird man allerdings entt&auml;uscht:
+</P>
+<P>
+Zun&auml;chst erscheint ein leeres Fenster, ganz ohne Objekte. Schlie&szlig;t man das
+Fenster, erscheint ein Konsolenfenster, in dem nur dreimal der Text:
+&quot;Dieses Objekt ist nicht zeichenbar.&quot; steht. Na nu, bel&uuml;gt uns der Compiler?
+Die Objekte Punkt, Linie und Ellipse sind doch zeichenbar? Wo kommt also der
+Text her? Nun, eine kleine Suche im Quelltext zeigt folgendes:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class GraphikObjekt {
+        ...
+        void Zeichne(void)
+        {
+                // Da wir nicht wissen, welches Objekt das
+                // hier ist, k&ouml;nnen wir nat&uuml;rlich auch nichts
+                // zeichnen....
+                cout&lt;&lt;&quot;Dieses Objekt ist nicht zeichenbar.\n&quot;;
+        }
+}
+</PRE></TD></TR></TABLE>
+<P>
+Der Code hat also die Methode &quot;Zeichne&quot; des GraphikObjekt aufgerufen, und
+nicht die der Punkte, Linien oder Ellipsen. Das liegt nun daran, dass
+innerhalb von Fenster::ZeichneObjekte() wir objekt-&gt;Zeichne() aufrufen,
+und &quot;objekt&quot; ist ein Zeiger auf ein GraphikObjekt. Dass es sich hierbei
+&quot;in Wirklichkeit&quot; um einen Punkt, eine Linie und eine Ellipse handelt, wei&szlig;
+der Compiler zum Zeitpunkt des Kompilierens nicht! Und genau *hier* ist das
+Problem!
+Die Bindung der Methode &quot;Zeichne&quot; an ein Objekt - also die Feststellung, zu
+welchem Objekt denn nun &quot;Zeichne&quot; geh&ouml;rt, findet zur Kompilationszeit statt!
+Und das ist falsch - stattdessen wollen wir erreichen, dass dasjenige
+&quot;Zeichne&quot; aufgerufen wird, das wirklich zu dem jeweiligen Objekt geh&ouml;rt.
+Die Bindung muss, wie man sagt, zur Laufzeit aufgel&ouml;st werden.
+</P>
+<P>
+Man kann genau das dem C++-Compiler mitteilen, indem man vor die
+entsprechende Methode der Basisklasse das Schl&uuml;sselwort &quot;virtual&quot; setzt. Dies
+ist ein Hinweis f&uuml;r den Compiler, einen Aufruf dieser Methode erst zur
+Laufzeit aufzul&ouml;sen. &Auml;ndern wir also
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class GraphikObjekt {
+        ...
+        virtual void Zeichne(void)
+        {
+                // Da wir nicht wissen, welches Objekt das
+                // hier ist, k&ouml;nnen wir nat&uuml;rlich auch nichts
+                // zeichnen....
+                cout&lt;&lt;&quot;Dieses Objekt ist nicht zeichenbar.\n&quot;;
+        }
+}
+</PRE></TD></TR></TABLE>
+<P>
+Konsequenterweise sollte man nun auch alle Zeichne-Methoden der vom
+GraphikObjekt abgeleiteten Klassen als &quot;virtuell&quot; deklarieren, aber dies ist
+nicht notwendig: Das macht der Compiler von selbst.
+</P>
+<P>
+Kompiliert und startet man dieses Programm, so erh&auml;lt man wieder den
+gew&uuml;nschten Effekt: Ein modernes Kunstwerk, bestehend aus einer Linie, einem
+Punkt und einem Kreis in einem Fenster.
+</P>
+<P>
+An dieser Stelle wieder eine Designfrage: Brauchen wir eigentlich eine
+Zeichne-Methode des GraphikObjekt?
+Eigentlich nicht, denn dieses Objekt dient ja quasi nur als &quot;Container&quot; f&uuml;r
+daf&uuml;r abgeleitete Klassen und &quot;existiert nie wirklich&quot;, sondern nur in der
+Form eines seiner Kinder. Es gibt nun in C++ eine M&ouml;glichkeit, genau diesen
+Willen auszudr&uuml;cken, n&auml;mlich eine Klasse nur als eine reine Interface-
+Spezifikation zu verstehen, die man erst ableiten muss, um konkret damit
+arbeiten zu k&ouml;nnen. Dies geschieht durch folgende &Auml;nderung:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+class GraphikObjekt {
+        ..
+        virtual void Zeichne(void) = 0;
+        //
+}
+</PRE></TD></TR></TABLE>
+<P>
+Das &quot;=0;&quot; sagt dem Compiler: Diese Methode ist gar nicht da! Versucht man jetzt
+etwa ein GraphikObjekt in main mit dem Konstruktur
+</P>
+<P><B>GraphikObjekt g(f.RastPort_Hiervon(),1);</B></P>
+<P>
+zu erstellen, so meldet der Compiler einen Fehler:
+</P>
+<P>
+Error: Class &quot;GraphikObjekt&quot; is abstract (pure virtual function &quot;Zeichne&quot;).
+</P>
+<P>
+Die Klasse &quot;GraphikObjekt&quot; ist als sie selbst gar nicht mehr erzeugbar, da
+die Methode Zeichne() gar nicht da ist! Solche Methoden nennt man &quot;pure
+virtual&quot;, also &quot;rein virtuell&quot;, aus verst&auml;ndlichen Gr&uuml;nden, und derartige
+Klassen hei&szlig;en &quot;abstrakt&quot;.
+</P>
+<P><B>Das ganze Programm sieht damit so aus:</B></P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+extern &quot;C&quot; {
+#include &lt;intuition/intuition.h&gt;
+#include &lt;graphics/rastport.h&gt;
+#include &lt;proto/intuition.h&gt;
+#include &lt;proto/graphics.h&gt;
+#include &lt;proto/exec.h&gt;
+}
+
+
+//
+// Vorw&auml;rtsdeklaration der GraphikObjekt-Klasse
+class GraphikObjekt;
+
+class Fenster {
+        Window *window;                         // Das Intuition-Fenster davon
+        int breite,hoehe;       // Dimensionen
+        //
+        // Hier beginnt die Liste aller grafischen Objekte dieses Fensters
+        GraphikObjekt *erstesobjekt;
+        //
+public:
+        Fenster(int b,int h)
+        :       window(NULL), breite(b), hoehe(h), erstesobjekt(NULL)
+        {
+                window = OpenWindowTags(NULL,
+                                WA_GimmeZeroZero,TRUE, // Ursprung ist im Zeichenbereich
+                                WA_SmartRefresh,TRUE,  // Automatisch wiederherstellen wenn verdeckt
+                                WA_InnerWidth,b,
+                                WA_InnerHeight,h,
+                                WA_CloseGadget,TRUE,   // Fenster hat Schlie&szlig;knopf
+                                WA_DragBar,TRUE,       // Fenster kann verschoben werden
+                                WA_DepthGadget,TRUE,   // Fenster kann nach vorne/hinten gebracht werden
+                                WA_IDCMP,IDCMP_CLOSEWINDOW,
+                                TAG_DONE);
+        }
+        //
+        // Der Destruktor l&ouml;scht auch wieder das Fenster davon, falls offen.
+        ~Fenster(void)
+        {
+                if (window) {
+                        CloseWindow(window);
+                }
+        }
+        //
+        // Liefere die Zeichenfl&auml;che des Fensters. Dies nennt sich RastPort
+        RastPort *RastPort_Hiervon(void) const
+        {
+                return window-&gt;RPort;
+        }
+        //
+        // Warte, bis der Benutzer das Close-Gadget dr&uuml;ckt.
+                void WarteAufSchliessen(void) const
+        {
+                struct Message *msg;
+
+                msg = WaitPort(window-&gt;UserPort);
+                msg = GetMsg(window-&gt;UserPort);
+                ReplyMsg(msg);
+        }
+        //
+        // Einf&uuml;gen eines GraphikObjekt in das Fenster
+        void ReiheEin(GraphikObjekt *obj);
+        //
+        // Zeichne alle Objekte des Fensters
+        void ZeichneObjekte(void);
+};
+
+class GraphikObjekt {
+        friend void Fenster::ReiheEin(GraphikObjekt *);
+        friend void Fenster::ZeichneObjekte(void);
+        //
+        // Der Zeiger auf den Nachfolger dieses Graphikobjektes
+        GraphikObjekt    *nachfolger;
+        //
+protected:
+        RastPort        *rp;
+        int              farbe;
+        //
+        // W&auml;hle unsere Farbe im RastPort
+        void SetzeFarbe(void) const
+        {
+                SetAPen(rp,farbe);
+        }
+        //
+public:
+        GraphikObjekt(RastPort *port,int f = 1)
+        : nachfolger(NULL), rp(port), farbe(f)
+        { }
+        //
+        virtual void Zeichne(void) = 0;
+        //
+};
+
+struct Punkt {
+        int x,y;
+        //
+        Punkt(int x0,int y0)
+        : x(x0), y(y0)
+        { }
+};
+
+class Pixel : public GraphikObjekt {
+        struct Punkt    position;       // Ort des Pixels
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Position.
+        Pixel(RastPort *port, int f, int x, int y)
+        : GraphikObjekt(port,f), position(x,y)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Position als Referenz &uuml;bergeben
+        Pixel(RastPort *port, int farbe, Punkt &amp;pos)
+        : GraphikObjekt(port, farbe), position(pos)
+        { }
+        //
+        // Ein &quot;farbloser&quot; Konstruktor
+        Pixel(RastPort *port, int x, int y)
+        : GraphikObjekt(port), position(x,y)
+        { }
+        //
+        // und noch mal das gleiche, jedoch mit einer
+        // Punktstruktur
+        Pixel(RastPort *port, Punkt &amp;pos)
+        : GraphikObjekt(port), position(pos)
+        { }
+        //
+        //
+        // Mach' 'nen Punkt!
+        void Zeichne(void)
+        {
+                SetzeFarbe();
+                WritePixel(rp,position.x,position.y);
+        }
+};
+
+//
+// von Punkten zu Linien:
+//
+class Linie : public GraphikObjekt {
+        struct Punkt    anfang,ende;    // wo beginnt und wo endet die Linie?
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Start/Endpunkte
+        Linie(RastPort *port, int f, int x0, int y0, int x1, int y1)
+        : GraphikObjekt(port,f), anfang(x0,y0), ende(x1,y1)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Positionen als Referenzen &uuml;bergeben
+        Linie(RastPort *port, int farbe, Punkt &amp;von, Punkt &amp;bis)
+        : GraphikObjekt(port, farbe), anfang(von), ende(bis)
+        { }
+        //
+        // Ein &quot;farbloser&quot; Konstruktor
+        Linie(RastPort *port, int x0, int y0, int x1, int y1)
+        : GraphikObjekt(port), anfang(x0,y0), ende(x1,y1)
+        { }
+        //
+        // und noch mal das gleiche, jedoch mit einer
+        // Punktstruktur
+        Linie(RastPort *port, Punkt &amp;von, Punkt &amp;bis)
+        : GraphikObjekt(port), anfang(von), ende(bis)
+        { }
+        //
+        //
+        // Mach' 'nen Strich
+        void Zeichne(void)
+        {
+                SetzeFarbe();
+                Move(rp,anfang.x,anfang.y);
+                Draw(rp,ende.x,ende.y);
+        }
+};
+
+//
+// von Linien zu Ellipsen:
+//
+class Ellipse : public GraphikObjekt {
+        struct Punkt    mittelpunkt;    // wo ist die Ellipse zentriert?
+        int                             radiusx,radiusy; // Radien in x- und y-Richtung
+        //
+public:
+        // Konstruktor des Objektes: Zeichenfl&auml;che, Farbe,
+        // Mittelpunkt, Radien
+        Ellipse(RastPort *port, int f, int x, int y, int rx, int ry)
+        : GraphikObjekt(port,f), mittelpunkt(x,y),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        // Noch ein Konstruktor: Dieser bekommt die
+        // Position als Referenz &uuml;bergeben
+        Ellipse(RastPort *port, int farbe, Punkt &amp;zentrum, int rx, int ry)
+        : GraphikObjekt(port, farbe), mittelpunkt(zentrum),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        // Ein &quot;farbloser&quot; Konstruktor
+        Ellipse(RastPort *port, int x, int y, int rx, int ry)
+        : GraphikObjekt(port), mittelpunkt(x,y),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        // und noch mal das gleiche, jedoch mit einer
+        // Punktstruktur
+        Ellipse(RastPort *port, Punkt &amp;zentrum, int rx, int ry)
+        : GraphikObjekt(port), mittelpunkt(zentrum),
+          radiusx(rx), radiusy(ry)
+        { }
+        //
+        //
+        // Mach' 'nen Kreis
+        void Zeichne(void)
+        {
+                SetzeFarbe();
+                DrawEllipse(rp,mittelpunkt.x,mittelpunkt.y,radiusx,radiusy);
+        }
+};
+
+// Einf&uuml;gen eines GraphikObjekt in das Fenster
+void Fenster::ReiheEin(GraphikObjekt *obj)
+{
+        // nachfolger dieses Objektes auf das
+        // erste Objekt setzen:
+        obj-&gt;nachfolger = erstesobjekt;
+        // das erste Objekt ist dann dieses hier
+        erstesobjekt    = obj;
+}
+
+// Malen aller Objekte des Fensters
+void Fenster::ZeichneObjekte(void)
+{
+GraphikObjekt *objekt;
+
+        //
+        // hole das erste Element der Liste
+        objekt = erstesobjekt;
+        // wiederhole das folgende solange wie
+        // wir das Ende der Liste noch nicht
+        // erreicht haben.
+        while(objekt) {
+                // Zeichne dieses Objekt
+                objekt-&gt;Zeichne();
+                // hole das n&auml;chste Objekt
+                // dieser Liste
+                objekt = objekt-&gt;nachfolger;
+        }
+        // das war's.
+}
+
+int main(int argc, char **argv)
+{
+Fenster f(200,200);             // baue ein Fenster der Gr&ouml;&szlig;e 200x200
+Pixel p(f.RastPort_Hiervon(),1,50,50);
+Linie l(f.RastPort_Hiervon(),Punkt(30,40),Punkt(50,70));
+Ellipse e(f.RastPort_Hiervon(),70,70,20,50);
+
+                f.ReiheEin(&amp;p);
+                f.ReiheEin(&amp;l);
+                f.ReiheEin(&amp;e);
+
+                f.ZeichneObjekte();
+
+                f.WarteAufSchliessen();
+
+      return 0;
+}
+</PRE></TD></TR></TABLE>
+<P>
+Halten wir also fest: Mittels des Schl&uuml;sselwortes &quot;virtual&quot; erfolgt die
+Bindung einer Methode an ein Objekt zur Laufzeit, und nicht zur Compilerzeit.
+Dass dies durchaus etwas Unterschiedliches sein kann, haben wir oben gesehen:
+Mit &quot;virtual&quot; ruft man diejenige Methode auf, die &quot;wirklich zu dem einzelnen
+Objekt&quot; geh&ouml;rt, ohne &quot;virtual&quot; diejenige, die zur Klasse geh&ouml;rt, die der
+Compiler zur Compilezeit feststellen kann.
+</P>
+<P>
+Warum macht man also nicht gleich alles &quot;virtual&quot;, denn damit werden doch
+offenbar Methoden &quot;gleich richtig&quot; an die wirklichen Objekte gebunden, und
+nicht an das, was der Compiler f&uuml;r richtig h&auml;lt&quot;?
+</P>
+<P>
+Auf diese Frage gibt es zwei Anworten: Erstens, eventuell will man genau das
+nicht. In bestimmten Anwendungen kann es durchaus sinnvoll sein, eine bestimmte
+Methode nur zur Compilezeit an das Objekt zu binden. Die zweite Antwort ist
+eine rein praktische: &quot;virtuelle&quot; Bindungen sind langsamer. Ein Funktionsaufruf
+einer &quot;virtuellen&quot; Methode dauert - abh&auml;ngig vom Compiler - ein klein wenig
+l&auml;nger. Virtuelle Methoden sind auch schlechter optimierbar. F&uuml;r normale
+Anwendungen mag dies unwesentlich sein, f&uuml;r bestimmte zeitkritische Probleme
+aber sollte man dann auf &quot;virtual&quot; verzichten.
+</P>
+<P>
+Ein Blick &uuml;ber den Tellerrand: In der mit C++ verwandten Sprache &quot;Java&quot;
+sind Methoden immer virtuell, es sei denn man deklariert sie als &quot;final&quot;.
+Abstrakte Klassen hei&szlig;en dort auch &quot;interfaces&quot;, was eine etwas treffendere
+Namengebung ist.
+</P>
+<P><B>Ausblicke:</B></P>
+<P>
+Dies war eine ganze Menge Holz f&uuml;r diesen Kurs: Wir haben uns mit
+Designproblemen besch&auml;ftigt, mit linearen Listen und mit virtuellen Methoden
+vererbter Klassen. Der Leser ist nat&uuml;rlich herzlich dazu aufgefordert, das
+bisherige Programm etwas aufzubohren und zu erg&auml;nzen.
+</P>
+<P>
+Demn&auml;chst auf diesem Kanal: Wir werden uns weiterhin mit einigen Design-
+Problemchen besch&auml;ftigen, insbesondere mit Konstruktoren und Destruktoren
+abgeleiteter und abstrakter Klassen, mit dynamischer Speicherverwaltung
+und, letztendlich, mit einem klarer strukturiertem Programmaufbau, mit der
+Einteilung eines Programmes in Module. Inhaltlich werden wir uns mehr mit
+dem Nachrichtensystem von Intuition auseinandersetzen, um mit dem Programm
+auch etwas Praktisches anfangen zu k&ouml;nnen.
+</P>
+<P><B>Thomas Richter &lt;<A HREF="mailto:thor@math.TU-Berlin.DE">thor@math.TU-Berlin.DE</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops2.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

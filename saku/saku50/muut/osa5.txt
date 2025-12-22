@@ -1,0 +1,104 @@
+// Osa 5. Tekijä: Juha-Pekka Jokela <jpjokela@gmail.com>
+#include <assert.h>
+#include <stdlib.h>
+#include <math.h>
+#include <GL/glut.h>
+#include <GL/gl.h>
+
+#define FLOATS_VERTEX 3
+#define VERTICES_LINE 2
+
+struct MyModel *model;
+
+struct MyModel
+{
+	GLenum primitive; /* Tyyppi, mina piirretaan */
+	GLfloat *vertices;/* Taulukko, jossa verteksit */
+	GLuint *indexes;  /* Taulukko, jossa indeksit */
+	GLsizei count;    /* Indeksien lukumaara */
+};
+
+static void DeleteModel(struct MyModel *m)
+{
+	if(m)
+	{
+		free(m->vertices);
+		free(m->indexes);
+		free(m);
+	}
+}
+/* Tekee esimerkkimallin argumenttien perusteella */
+static struct MyModel *CreateModel(unsigned int numlines, GLfloat size)
+{
+	struct MyModel *m=malloc(sizeof(struct MyModel));
+	if(m)
+	{
+		m->primitive=GL_LINES;
+		m->indexes=NULL;
+		m->vertices=malloc(sizeof(float[FLOATS_VERTEX*(numlines+1)]));
+		if(m->vertices)
+		{
+			unsigned int l;
+			// Keskusta
+			m->vertices[0*FLOATS_VERTEX+0]=0.0f;
+			m->vertices[0*FLOATS_VERTEX+1]=0.0f;
+			m->vertices[0*FLOATS_VERTEX+2]=0.0f;
+			for(l=1; l<=numlines; ++l)
+			{
+				float angle=(float)l/(float)numlines*M_PI*2;
+				m->vertices[l*FLOATS_VERTEX+0]=size/2.0f*sinf(angle);
+				m->vertices[l*FLOATS_VERTEX+1]=size/2.0f*cosf(angle);
+				m->vertices[l*FLOATS_VERTEX+2]=0.0f;
+			}
+			m->count=numlines*VERTICES_LINE;
+			m->indexes=malloc(sizeof(GLuint[m->count]));
+			if(m->indexes)
+			{
+				unsigned int l;
+				for(l=0; l<numlines; ++l)
+				{
+					m->indexes[l*VERTICES_LINE+0]=0;
+					m->indexes[l*VERTICES_LINE+1]=l+1;
+				}
+				return m;
+			}
+		}
+	}
+	DeleteModel(m);
+	return m;
+}
+
+static void DrawModel(const struct MyModel *m)
+{
+	if(m)
+	{
+		/* Maaritellaan verteksitaulukko kayttoon */
+		glEnableClientState(GL_VERTEX_ARRAY);
+		/* Maaritellaan verteksitaulukon sijainti */
+		glVertexPointer(3, GL_FLOAT, 0, m->vertices);
+		/* Piirretaan indeksitaulukon maarittamat verteksit */
+		glDrawElements(m->primitive, m->count, GL_UNSIGNED_INT, m->indexes);
+	}
+}
+
+static void Display(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	DrawModel(model);
+	glutSwapBuffers();
+	/* Varmistetaan, ettei ole tullut ajonaikaisia OpenGL virheita */
+	assert(!glGetError());
+}
+
+int main(int argc, char *argv[])
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+	glutInitWindowSize(640, 480);
+	glutCreateWindow("Saku");
+	glutDisplayFunc(Display);
+	model=CreateModel(40, 2.0f);
+	glutMainLoop();
+	DeleteModel(model);
+	return 0;
+}

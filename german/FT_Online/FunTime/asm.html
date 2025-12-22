@@ -1,0 +1,594 @@
+<HTML>
+<HEAD>
+<TITLE>Assembler Workshop Teil 3</TITLE>
+</HEAD>
+<BODY BACKGROUND="funrelif3.gif">
+<P>
+<HR>
+                     <H1 Align=Center>Assembler Workshop Teil 3</H1>
+<P><HR><PRE>
+
+                        Programmierung des Coppers
+
+
+  Der Amiga sollte mal ein Spielcomputer werden und das  war  er  auch
+  eine  zeitlang,  aber  inzwischen hat sich das ganz stark verändert.
+  Aus diesem Grund spendierte man dem Amiga zusätzliche Chips, die ihm
+  viel Arbeit abnehmen sollten. Einer dieser Chips ist der Copper, der
+  die ganze Grafik steuert. Der Copper besitzt nur  drei  Befehle  und
+  verzichtet ganz auf die Unterstützung des Prozessors.
+
+  Das  erste,  was  wir  mit  dem  Copper  machen  werden,  ist   eine
+  Copperliste  erstellen. In der Copperliste werden die ganzen Farben,
+  die wir auf dem Bildschirm sehen,  festgelegt.  Es  gibt  eigentlich
+  nichts  einfacheres,  als  eine Copperliste zu schreiben. Wir wollen
+  das Ganze aber ein bißchen schwieriger machen, indem  wir  die  alte
+  Copperliste,   in   diesem  Fall  die  des  Betriebssystems,  vorher
+  abspeichern und durch unsere ersetzen. Später  ersetzen  wir  wieder
+  unsere Copperliste durch die abgespeicherte.
+
+  Mit  dem  Copper  kann  man  sehr einfach viele wunderschöne Effekte
+  hervorzaubern. Leider wissen wir am Anfang nicht mal,  wo  sich  die
+  Copperliste  des  Betriebssystems  befindet. Deswegen müssen wir das
+  mit Hilfe  der  Libraries  (Systembibliotheken)  herausfinden.  Dazu
+  müssen  wir  erst  die Library, die uns diese Funktion zur Verfügung
+  stellt, öffnen. Auch das ist einfacher, als  Ihr  vielleicht  denkt.
+  Die  Entwickler  des  Betriebssystems  und  des Amigas waren einfach
+  echte Genies und haben sich damals wirklich Gedanken gemacht. Schade
+  nur,  daß  die  Marketing-Leute  nicht so weit entwickelt waren. Ich
+  werde Euch zuerst zeigen, wie man eine Bibliothek (Library) öffnet.
+
+
+                          <STRONG>Das Öffnen der Libraries</STRONG>
+
+
+  Eine Library können wir nur dann öffnen, wenn wir  auch  wissen,  wo
+  sie liegt und hier kommt schon die erste Frage. Wie kommt man an die
+  Adresse der Library? Als erstes sollte ich Euch noch sagen, daß  wir
+  die graphics.library brauchen und um sie zu öffnen, benutzen wir die
+  exec.library. Die einzige  Adresse  die  wir  kennen,  ist  die  der
+  Exec.l.  Die  befindet  sich immer in der Speicherzelle $4, egal mit
+  welchem Amiga-Modell wir es zu tun haben. Die exec.library ist immer
+  geöffnet  und  wir  können sie sofort benutzen. Die Adresse, genannt
+  auch Basisadresse, wird immer  in  a6  (Adreßregister)  eingetragen.
+  Dafür benutzen wir den meist benutzten Befehl Move.
+
+     move.l 4,a6
+
+  Ab jetzt haben wir die Möglichkeit,  die  Routinen  der  Library  zu
+  benutzen.  Eine  Routine  wird  immer  mit  Hilfe  des  Befehls  jsr
+  aufgerufen. Das ganze sieht so aus:
+
+     jsr Offset(a6)
+
+  Ein Offset ist die Nummer, unter der  sich  die  gewünschte  Routine
+  befindet.  Das  Besondere  an  dem  Offset  ist,  daß  er immer eine
+  negative Zahl ist. Das a6 ist das Adreßregister. Es steht  in  einer
+  Klammer, weil wir hier die Adressierungsart Indirekt benutzen. In a6
+  befindet sich zur Zeit die Adresse der exec.library und mittels  der
+  Adressierungsart   Indirekt  erreichen  wir  die  Routine,  die  wir
+  brauchen. Alles was in der Klammer steht, bezieht sich nicht auf die
+  Adresse,  die  sich  in  a6 befindet, sondern auf das, was unter der
+  Adresse zu finden  ist.
+
+  Mit dem jsr-Befehl werden die  Routinen  angesprungen.  Die  Offsets
+  sind  immer  gleich,  einziges  Problem ist es, daß dem Amiga leider
+  kein brauchbares Buch zum Programmieren beigelegt wurde, in dem  die
+  Zahlen  mit Erklärungen drin stehen. Ihr müßt Euch aber keine Sorgen
+  machen, weil Ihr die Offsets am Ende im Anhang  finden  werdet.  Die
+  exec.library   hält  für  uns  eine  Routine  bereit,  die  uns  die
+  graphics.library öffnet. Diese Routine erwartet aber  von  uns,  daß
+  wir  in  das  Adreßregister  a1  den  Namen  der  library eintragen.
+  Normalerweise müßten wir auch  in  dem  Datenregister  d0  noch  die
+  gewünschte  Version  der Library eintragen. Das ist aber erst ab dem
+  Zeitpunkt sinnvoll, wenn wir Routinen  brauchen,  die  noch  in  den
+  älteren  Libraries  nicht  zu finden waren. Bei uns ist das ja nicht
+  der Fall, sodaß wir das  ruhig  vergessen  können.  Der  Offset  der
+  Routine, die unsere Bibliothek öffnet, hat die Zahl -$198.
+
+       jsr -$198(a6)
+
+  Damit könnten wir jetzt unsere Library öffnen, aber wir  haben  noch
+  den  Namen nicht in a1 und wie das aussieht, möchte ich hier erstmal
+  an einem Beispiel zeigen.
+
+       move.l   4,a6   ;Die Adresse der Exec wird in a6 gelegt
+
+       lea LibName,a1  ;Mit dem Befehl wird der Name der Library
+                       ;in a1 gelegt. LibName ist hier das Label
+
+       jsr -$198(a6)   ;Unser Offset, der die Routine OpenLibrary
+                       ;aufruft. Verwendete Adreßierungsart Indirekt
+
+       LibName:
+
+       dc.b "graphics.library",0 ;Der Name der Library wird direkt in
+                                 ;den Speicher gelegt
+
+  Mit diesem kleinen Listing kann man schon eine Library öffnen,  aber
+  damit  könnten  wir  noch  nicht  viel  machen.  Ich  möchte erstmal
+  erklären, was ein Label ist, und wie wir den Namen in  den  Speicher
+  geben.  Normalerweise kennt der Computer überhaupt keine Labels, das
+  einzige, was er kennt sind Adressen. Für einen Menschen wäre es aber
+  sehr  schwer,  die  ganzen Adressen im Kopf zu behalten und außerdem
+  wäre das Ganze nicht gerade  übersichtlich.  Doch  das  ist  weniger
+  wichtig,  wichtiger ist es, daß jedes Programm bei jedem Start immer
+  woanders landet als vorher.  Wenn  wir  jetzt  also  von  Anfang  an
+  Adressen  festgelegt  hätten,  dann  könnte es sein, daß wir dadurch
+  andere Programmteile löschen würden. Durch die Verwendung der Labels
+  kommt  das  nicht vor, weil dann vom Betriebssystem festgelegt wird,
+  wo ein Programm jetzt hinkommt.
+
+  Ganz anders ist das, wenn wir betriebssystemunabhängig programmieren
+  wollen,  aber  dazu  werden wir später kommen (hoffe ich zumindest).
+  Ein Label ist  also  eine  Sprungmarke,  die  wir  genauso  wie  die
+  Routinen  anspringen  können.  Unter  unserem Label LibName befindet
+  sich der Name der graphics.library. Der Name der Library wird  immer
+  direkt  in  den  Speicher  geladen,  deswegen verwenden wir hier das
+  dc.b. Dieser Befehl ist eigentlich kein richtiger  Befehl,  denn  er
+  wird ja nur von dem Übersetzungsprogramm verstanden (Compiler), aber
+  nicht von dem Prozessor. Mit dem Befehl lea wird die Adresse,  unter
+  der  sich  der  Name (graphics.library) befindet, in a1 geladen. Das
+  wäre  das  Wichtigste,  was  Ihr  dazu  wissen  müßt.  Die   Routine
+  OpenLibrary   (-$198)   liefert  uns,  nachdem  die  graphic.library
+  geöffnet wurde, die Adresse der graphics.library in d0. Die ist  für
+  uns  sehr wichtig, wenn wir Routinen aus der Library aufrufen wollen
+  und deshalb speichern wir die Adresse unter einem Label.
+
+       move.l d0, LibBase  ;Die Adresse der Library, die uns
+                           ;in d0 eingetragen wurde, speichern
+                           ;wir jetzt unter LibBase
+       LibBase:
+
+       dc.l  0             ;Hier wird die Adresse der Library
+                           ;gespeichert
+
+
+  Mit dem LibBase reservieren wir Speicherplatz für  die  Adresse  der
+  Library. Viele werden sich jetzt fragen, wieso wir die Adresse nicht
+  einfach in d0 lassen.  Das  machen  wir  deswegen  nicht,  weil  die
+  Datenregister  und  Adreßregister  ständig  von  anderen  Programmen
+  benutzt werden, sodaß früher oder  später  unsere  Adresse  gelöscht
+  werden würde. Wir speichern die Adresse also nur zur Sicherheit. Wir
+  wollen jetzt das ganze Listing zusammensetzen  und  dann  sehen  wir
+  weiter, was uns noch fehlt.
+
+       move.l   4,a6   ;Die Adresse der Exec wird in a6 gelegt
+
+       lea LibName,a1  ;Mit dem Befehl wird der Name der Library
+                       ;in a1 gelegt. LibName ist hier das Label
+
+       jsr -$198(a6)   ;Unser Offset, der die Routine OpenLibrary
+                       ;aufruft. Verwendete Adreßierungsart Indirekt
+       
+       move.l d0, LibBase  ;Die Adresse der Library, die uns
+                           ;in d0 eingetragen wurde, speichern
+                           ;wir jetzt unter LibBase
+       LibName:
+
+       dc.b "graphics.library",0 ;Der Name der Library wird direkt in
+                                 ;den Speicher gelegt
+       LibBase:
+
+       dc.l  0    ;Hier wird die Adresse der Library gespeichert
+
+  Mit diesem kleinem Listing sind wir in der  Lage,  jede  Library  zu
+  öffnen,  die  wir  nur wollen. Aus diesem Grund solltet Ihr Euch das
+  Ganze hier sehr genau einprägen, denn mit  den  Libraries  kann  man
+  viele  tolle  Dinge  machen.  Sehr oft kommen wir gar nicht ohne die
+  Libraries weiter. Wir gehen aber weiter mit unserer Copperliste. Ich
+  habe  Euch  schon  gezeigt,  wie  man an die Adresse der gewünschten
+  Library kommt, aber  wir  wissen  noch  immer  nicht,  wo  sich  die
+  Copperliste  des  Betriebssystems befindet; oder doch? Wir wissen es
+  schon, denn die Adresse der Copperliste liegt immer auf $26,  gleich
+  nach  LibBase.  Wir  müssen  also  durch  Verwendung  der Indirekten
+  Adreßierungsart an die Adresse kommen. So würde dann  das  Ganze  in
+  unserem Fall aussehen:
+               
+       move.l  LibBase,a6 ;Die Adresse der graphics.library
+                          ;tragen wir in a6, weil wir von
+                          ;da aus auf die Library zugreifen
+                          ;müssen. Die Adresse der Library,
+                          ;auf die wir zugreifen wollen, kommt
+                          ;immer in a6.
+
+       move.l $26(a6),AltCopp ;Wir holen nun die Adresse
+                              ;der jetzigen Copperliste aus
+                              ;der graphics.library und
+                              ;speichern sie für später unter
+                              ;AltCopp.
+
+       AltCopp:
+
+       dc.l    0  ;Speicherplatz für die Adresse der alten
+                  ;Copperliste.
+
+  Erklärung: Hier wurde die Adresse der graphics.library, die  wir  ja
+             vorher unter LibBase gespeichert haben, in a6 gelegt. Das
+             ist  nötig, weil man  nur dann problemlos auf die Biblio-
+             thek  zugreifen  kann. Danach kopieren (bewegen)  wir die
+             Adresse der  aktuellen Copperliste, die sich zur Zeit auf
+             der Adresse $26 befindet, in unseren angelegten  Speicher
+             (AltCopp).
+
+  Hier habe ich Euch also gezeigt, wie man eine Library öffnet und wie
+  man  an  die  nötigen Routinen kommt. Mit den Libraries ist das aber
+  so, wie mit einer Tür, denn jede Tür müssen wir auch  schließen  und
+  das  ist auch bei den Libraries der Fall. In der Tat könnten wir sie
+  auch offen lassen, doch das machen nur sehr schlechte  Programmierer
+  und außerdem geht dadurch immer viel Speicher verloren. Die Routine,
+  die das Schließen übernimmt, erwartet in a1 die Adresse der Library.
+  Danach  rufen  wir  noch  die  benötigte Routine auf, in diesem Fall
+  CloseLibrary -$19E. Vergessen darf man dabei  aber  nicht,  daß  man
+  vorher  wieder  die  Adresse  der  exec.library in a6 laden muß. Das
+  ganze sieht dann so aus:
+
+       move.l  4,a6         ;Exec.library in a6
+
+       move.l  LibBase,a1   ;Adresse der zu schließenden Library in a1
+
+       jsr     -19e(a6)     ;Routine, die das Schließen der Library
+                            ;übernimmt.
+
+  Das wäre jetzt also alles, was man zum Öffnen oder  Schließen  einer
+  Library  wissen  muß.  Hier folgt erstmal das ganze Listing und noch
+  paar Vorschläge und später fahren wir mit dem Copper fort.
+
+  ;Öffnen einer Library, hier der graphics.library:
+
+       move.l   4,a6   ;Die Adresse der Exec wird in a6 gelegt
+
+       lea LibName,a1  ;Mit dem Befehl wird der Name der Library
+                       ;in a1 gelegt. LibName ist hier das Label
+
+       jsr -$198(a6)   ;Unser Offset, der die Routine OpenLibrary
+                       ;aufruft. Verwendete Adreßierungsart Indirekt
+       
+       move.l d0,LibBase  ;Die Adresse der Library, die uns
+                          ;in d0 eingetragen wurde, speichern
+                          ;wir jetzt unter LibBase
+
+       move.l  LibBase,a6 ;Die Adresse der graphics.library
+                          ;tragen wir in a6, weil wir von 
+                          ;da aus auf die Library zugreifen
+                          ;müssen. Die Adresse der Library,
+                          ;auf die wir zugreifen wollen kommt
+                          ;immer in a6.
+
+       move.l $26(a6),AltCopp ;Wir holen nun die Adresse
+                              ;der jetzigen Copperliste aus
+                              ;der graphics.library und
+                              ;speichern sie für später unter
+                              ;AltCopp.
+
+       move.l  4,a6         ;Exec.library in a6
+
+       move.l  LibBase,a1   ;Adresse der zu schließenden Library in a1
+
+       jsr     -$19e(a6)    ;Routine, die das Schließen der Library
+                            ;übernimmt.
+
+   ;Datenfelder sollte man immer ans Ende anhängen.
+  
+       LibName:
+
+       dc.b "graphics.library",0 ;Der Name der Library wird direkt in
+                                 ;den
+
+       LibBase:
+
+       dc.l  0    ;Hier wird die Adresse der Library gespeichert
+
+       AltCopp:
+
+       dc.l    0  ;Speicherplatz für die Adresse der alten
+                  ;Copperliste.
+
+  Das wäre jetzt das Listing, das uns  die  Library  öffnet.  Ganz  am
+  Anfang  habe  ich  die  Adresse  der  graphics.library unter LibBase
+  gespeichert. Gleich danach habe  ich  es  wieder  aus  dem  Speicher
+  rausgeholt,  um  an  die  Adresse  der Copperliste zu kommen. Bei so
+  einem kleinen Programm wäre es  aber  sinnvoller,  die  Adresse  der
+  Library  sofort  aus  dem  Register  zu  nehmen,  erst  bei größeren
+  Programmen ist diese Art empfehlenswerter. An  dem  Programm  ändert
+  sich  aber  nichts.  Ich bin mir sicher, daß auch Ihr Probleme haben
+  werdet, Euch diese Zahlen der Offsets zu merken,  deswegen  gibt  es
+  eine  Möglichkeit, die Euch das Ganze einfacher macht. Ihr könnt den
+  Zahlen einfach einen  Namen  zuweisen,  sodaß  Ihr  dann  später  im
+  Verlauf  des  Programms  den Namen der Funktion eingebt, anstatt der
+  Zahl. Das Ganze sieht dann so aus:
+
+
+       ExecBase     =  4
+       OpenLibrary  =  -$198
+       CloseLibrary =  -$19e
+
+  Danach könnt Ihr anstatt der Zahlen immer den  Namen  eingeben.  Das
+  ist  bestimmt einfacher, als sich die Zahlen zu merken. Es gibt auch
+  CD's, auf denen die Listen mit diesen Zuweisungen schon vorgefertigt
+  sind, sodaß Ihr Euch dann die Teile ausschneiden könnt, die von Euch
+  benutzt werden.  Nachdem  wir  uns  sehr  weit  von  unserem  Copper
+  entfernt haben, kommen wir jetzt wieder zurück.
+
+
+                      <STRONG>Der Copper und seine Befehle</STRONG>
+
+  Wie ich schon früher erwähnte, versteht der Copper nur drei Befehle:
+
+       Move, Wait und Skip
+
+       "MOVE"
+
+  Mit dem Move-Befehl ist es uns möglich, die Register des Coppers  zu
+  beschreiben.  Im  Gegenstz  zum Prozessor müssen die Befehle für den
+  Copper in einer für ihn verständlichen Form geschrieben werden.
+
+  Ein Beispiel: Die Normalform des Move-Befehls würde so aussehen:
+
+       Move.w  #000,dff180  ;Mit diesem Befehl könnten wir jetzt
+                            ;das Register Color0 (dff180) beschreiben.
+                            ;Die ersten drei Zahlen legen die Farbe
+                            ;fest, hier wäre das schwarz.
+
+  Für die Copperliste müssen wir das aber anders  schreiben,  und  das
+  würde dann so aussehen:
+
+       dc.w  $180,$000   ;Mit dem dc schreiben wir die Zahlen
+                         ;direkt in den Speicher.
+
+  Bei diesem Befehl tragen wir zuerst die Adresse  des  Registers  und
+  danach erst die Werte. Das dff können wir uns hier sparen.
+
+       "WAIT"
+
+  Den Befehl Wait werden wir sehr häufig benutzen. Er wartet eine  von
+  uns  vorgegebene  Position  ab. Der Copper erlaubt uns nämlich, jede
+  beliebige Position des Bildschirms zu verändern. Wenn wir den Befehl
+  Wait  nicht  hätten,  dann  würde sich der Bildschirm immer von oben
+  nach unten mit einer Farbe füllen. Mit dem Befehl Wait sind  wir  in
+  der Lage, darauf Einfluß zu nehmen. So sieht unser Befehl dann aus:
+
+       dc.w   $0105,$FFFE
+
+  Die erste Zahl sind  die  beiden  Bildschirm-Koordinaten.  Die  Zahl
+  $FFFE ist unser Befehl Wait. Die Koordinaten sehen so aus:
+
+       dc.w $0105,$FFFE
+             | |
+             | |__________X=$05
+             |
+             |______Y=01
+
+  Bei diesem Befehl würde er jetzt die horizontale Linie $01 ab  Punkt
+  $05  warten.  Die Zahlen sollte man jetzt nicht so ernst nehmen denn
+  es wäre nicht sehr sinnvoll, so eine düne Linie zu zeichnen.
+
+       "SKIP"
+
+  Dieser Befehl wird von uns so selten benutzt, daß  ich  mir  erstmal
+  die  Erklärung  des Befehls hier ersparen werde. Sollten wir mal auf
+  den Befehl zugreifen dann werde ich es erklären.
+
+
+                           <STRONG>Die erste Copperliste</STRONG>
+
+  Wir wollen uns  endlich  eine  einfache  Copperliste  erstellen.  Am
+  Anfang  wollen  wir  einen  grünen  Rasen  und blauen Himmel auf den
+  Bildschirm zaubern. Als erstes zeige ich Euch einfach, wie das ganze
+  aussehen würde und später erkläre ich Euch, wie das funktioniert.
+
+
+  Copperliste:
+
+       dc.w    $100,$200    ;Damit schalten wir das Bitplane ab,
+                            ;weil wir ja noch keine Bilder darstellen
+                            ;wollen.
+
+       dc.w    $180,$00f    ;Hiermit färben wir den Hintergrund blau.
+
+       dc.w    $9601,$FFFE  ;Hier wird auf der 127=$7f Linie abgewartet.
+
+       dc.w    $180,$4f4    ;Nach der 127 Linie ändern wir die Farbe,
+                            ;hier grün.
+
+       dc.w    $FFFF,$FFFE  ;Mit diesem Befehl teilen wir dem Copper
+                            ;das Ende der Copperliste mit.
+
+  So sieht also die Copperliste für den Copper aus. Natürlich kann man
+  die  Liste  jetzt  nicht  so einfach nehmen und sie gleich benutzen.
+  Vorher müssen wir erst die Copperliste  in  den  Copper  laden.  Der
+  erste  Befehl  in  dieser Copperliste veranlaßt den Copper dazu, die
+  Bitplane auszuschalten. Denn wir brauchen die nicht,  wenn  wir  nur
+  mit  dem Hintergrund arbeiten. Die anderen Befehle solltet Ihr schon
+  kennen. Am Ende wird  nur  noch  eine  Kennung  an  die  Copperliste
+  gegeben,  wodurch  das Ende der Liste markiert wird. Es ist auch ein
+  Wait-Befehl mit dem Unterschied, daß  er  eine  unmögliche  Position
+  festlegt,  dadurch  wird  das  Ende  markiert. Damit der Copper aber
+  unsere Liste ausführt, müssen wir erst die Adresse  der  Copperliste
+  in  das  COP1LC Register laden $dff080. Danach sind wir nur noch ein
+  Befehl vom Start der Copperliste entfernt.  Um  die  Copperliste  zu
+  starten,   müssen  wir  in  das  COPJMP1  ($dff088)  Register  etwas
+  reinschreiben. Was wir da reinschreiben ist egal, denn das  ist  ein
+  sogenannter  Strobe  Register.  Das  Register  kann  man  mit  einer
+  Alarmanlage vergleichen, die man nur kurz  berühren  muß  und  schon
+  heulen  die  Sirenen. So sehen jetzt also unsere beiden Befehle aus,
+  mit denen wir die Copperliste starten können.
+
+       move.l #Copperliste,$dff080 ;Zeigt auf die Copperliste
+
+       move.w d0,$dff088           ;Startet die Copperliste
+
+  Natürlich wäre es falsch, nur die beiden Befehle und die Copperliste
+  zu  verwenden,  denn  damit  könnte  man  leider  nichts  Sinnvolles
+  anfangen. Deshalb müssen wir den ersten Teil mit den Libraries damit
+  verbinden.
+
+    ;Öffnen einer Library, hier der graphics.library
+
+       ExecBase       =            4
+       OpenLib        =        -$198
+       CloseLib       =        -$19e
+       Disable        =        -$78
+       Enable         =        -$7e
+
+       move.l   ExecBase,a6   ;Die Adresse der Exec wird in a6 gelegt
+
+       jsr      Disable(a6)   ;Schaltet Multitasking ab
+
+       lea LibName,a1         ;Mit dem Befehl wird der Name der
+                              ;Library in a1 gelegt. LibName ist hier 
+                              ;das Label.
+       jsr OpenLib(a6)        ;Unser Offset, der die Routine
+                              ;OpenLibrary aufruft.
+                              ;Verwendete Adreßierungsart Indirekt
+       
+       move.l d0,LibBase      ;Die Adresse der Library, die uns
+                              ;in d0 eingetragen wurde speichern
+                              ;wir jetzt unter LibBase
+
+       move.l  LibBase,a6     ;Die Adresse der graphics.library
+                              ;tragen wir in a6, weil wir von
+                              ;da aus auf die Library zugreifen
+                              ;müssen. Die Adresse der Library,
+                              ;auf die wir zugreifen wollen, kommt
+                              ;immer in a6.
+
+       move.l $26(a6),AltCopp ;Wir holen jetzt die Adresse
+                              ;der jetzigen Copperliste aus
+                              ;der graphics.library uns 
+                              ;speichern die für später unter
+                              ;AltCopp.
+
+       move.l #Copperliste,$dff080  ;COP1LC-Die Copperliste in das
+                                    ;Register laden.
+
+       move.w d0,$dff088            ;COPJMP1-Starten der Copperliste
+
+
+ ;Das ist jetzt neu für Euch und wird gleich unten erklärt.
+
+    maus:
+  
+       btst   #6,$bfe001   ;Es testet, ob die linke Maustaste gedrückt
+                           ;wurde.
+
+       bne.s maus          ;Wenn die linke Maustaste nicht gedrückt
+                           ;wurde, dann geht das wieder zur Maus und
+                           ;wartet so lange, bis die Maus endlich
+                           ;gedrückt wird.
+
+       move.l  AltCopp,$dff080 ;Die alte Copperliste wird wieder
+                               ;geladen.
+
+       move.w d0,$dff088   ;Die alte Copperliste wird gestartet.
+
+
+       move.l  ExecBase,a6 ;Exec.library in a6
+
+       jsr      Enable(a6) ;Schaltet Multitasking wieder ein.
+
+       move.l  LibBase,a1  ;Adresse der zu schließenden Library in
+                           ;a1
+
+       jsr     CloseLib(a6);Routine, die das Schließen der Library
+                           ;übernimmt.
+
+       rts
+
+    ;Datenfelder sollte man immer ans Ende anhängen.
+   
+       LibName:
+
+       dc.b     "graphics.library",0,0 ;Der Name der Library wird 
+                                       ;direkt in den
+        
+       LibBase:
+
+       dc.l    0  ;Hier wird die Adresse der Library gespeichert
+
+       AltCopp:
+
+       dc.L    0  ;Speicherplatz für die Adresse der alten
+                  ;Copperliste.
+
+       SECTION GRAPHIC,DATA_C     ;Diese Daten werden ins Chip Ram
+                                  ;geladen.
+
+    Copperliste:
+
+       dc.w    $100,$200    ;Damit schalten wir das Bitplane ab,
+                            ;weil wir ja noch keine Bilder darstellen
+                            ;wollen.
+       dc.w    $180,$00f    ;Hiermit färben wir den Hintergrund blau.
+
+       dc.w    $7f01,$FFFE  ;Hier wird auf der 127=$7f Linie
+                            ;abgewartet.
+
+       dc.w    $180,$4f4    ;Nach der 127 Linie ändern wir die Farbe,
+                            ;hier grün.
+
+       dc.w    $FFFF,$FFFE  ;Mit diesem Befehl teilen wir dem Copper
+                            ;das Ende der Copperliste.
+
+
+  ;-------------------------------------------------------------------
+
+  Hier folgt jetzt die Erklärung zum Listing:
+
+  Am Anfang habe ich den  Offsets  und  der  Adresse  der  Exec  Namen
+  zugewiesen,  die  wir uns leichter merken können. Gleich danach habe
+  ich die Adresse der Exec.library in a6 eingetragen, damit wir von da
+  aus  auf  die Routinen der Exec zugreifen können. Mit dem Befehl jsr
+  Disable(a6) habe ich eine Routine aus der Exec aufgerufen,  die  das
+  Multitasking  abschaltet.  Das in diesem Fall sehr praktisch, da wir
+  uns ja nur unserem Programm widmen wollen. Mit  dem  lea  LibName,a1
+  tragen  wir den Namen oder besser gesagt die Adresse, unter der sich
+  der Name befindet, in a1. Das ist sehr wichtig, weil die OpenLibrary
+  Routine  das  von uns erwartet. Nach dem das getan wurde, bleibt uns
+  jetzt nichts anderes  als  die  Library  zu  öffnen.  Gleich  danach
+  speichern  wir  die  Adresse  der  geöffneten Library unter LibBase.
+  Natürlich müssen wir die Adresse jetzt wieder aus dem Speicher  nach
+  a6 holen, da wir ja die Adresse der Copperliste herausfinden wollen.
+  Die Adresse der gerade gebrauchten Library finden wir immer auf  der
+  Adresse  $26  der  graphics.library.  Von  da  aus  kopieren wir die
+  Adresse ins AltCopp. Normalerweise wäre das nicht so  wichtig,  aber
+  wir  wollen  nach  Beendigung  des  Programms wieder sauber in unser
+  Betriebssystem zurückkehren.
+
+  Jetzt laden wir die Copperliste ins Register COP1LC  ($dff080).  Wir
+  haben  jetzt  also  unsere Copperliste da, wo wir sie haben wollten,
+  aber noch startet sie nicht, denn vorher müssen wir noch irgendetwas
+  in   das  COPJMP1  ($dff088)  Register  reinschreiben.  Was  wir  da
+  reinschreiben, ist egal, denn man muß es nur berühren. Gleich danach
+  kommen  wir  zu  etwas Neuem. Das ist eine sogenannte loop Schleife.
+  Die beiden Befehle, die sich unter dem Label "Maus" befinden, werden
+  solange laufen, bis jemand die linke Maustaste drückt. Ich werde die
+  beiden Befehle ein bißchen genauer erklären.
+
+    maus:
+         
+       btst    #6,$bfe001
+
+       bne.s   maus
+
+  Mit dem Befehl btst testen wir, ob das 6 Bit des  Registers  $bfe001
+  an  ist.  Sollte das der Fall sein, dann bedeutet das, daß die linke
+  Maustaste gedrückt ist. Solange niemand die linke Maustaste  drückt,
+  fängt  die  Prozedur  wieder  bei  maus  an. Wenn wir dann die linke
+  Maustaste drücken, dann geht  es  weiter  im  Programm.  Was  danach
+  folgt,  sollte  jedem bekannt sein. Es wird nur die alte Copperliste
+  gestartet, das Multitasking aktiviert und die  Library  geschlossen.
+  Das einzig Neue für Euch ist dieser Befehl:
+
+       Section Graphic,Data_C
+
+  Er veranlaßt das Betriebssystem, die nachfolgenden Daten in den Chip
+  Ram  zu  laden. Merkt Euch für immer, daß Grafik und Sound immer ins
+  Chip Ram kommen müssen. Inzwischen gibt es auch Programme,  die  das
+  Laden der Samples ins Fast Ram erlauben, aber da wird das Ganze viel
+  komplizierter. Das wäre jetzt also unser Listing,  das  einen  Rasen
+  und blauen Himmel zaubert.
+
+<HR>
+<p align=center><A href="index.html">Zurück zum Inhalt</a>
+</BODY></HTML>

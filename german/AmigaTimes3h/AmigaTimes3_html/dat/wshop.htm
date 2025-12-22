@@ -1,0 +1,448 @@
+<HTML>
+<HEAD>
+<TITLE>AMIGA TIMES 03/97 - Workshop: Programmierkurs Assembler (Teil 2)</TITLE>
+</HEAD>
+
+<BODY  BACKGROUND="../images/bg.gif" BGCOLOR="#C4C4C4" TEXT="#000000" LINK="#FF0000" ALINK="#F00000" VLINK="#AA0000">
+
+<CENTER>
+<IMG SRC="../images/wshop2.gif" ALT="Workshop" BORDER=0 WIDTH=307 HIGHT=61>
+</CENTER>
+
+<H1>Programmieren in Assembler - Kurs Teil 2</H1>
+
+<H2>Richtigstellung</H2>
+
+<P>
+Im ersten Teil dieses Kurses (Ausgabe 2/97) wurde auf den Assembler AsmOne
+v1.29 von TFA hingewiesen. Dieser Assembler ist nun in der Version 1.30 im
+Aminet unter /dev/asm/ASM-One_v1.30.lha zu finden. Allerdings braucht ihr
+noch das Archiv /dev/asm/Asm-One_REGSDA.lha, dieses enth&auml;lt die Datei
+REGSDATA, die im ASM-One-Archiv vergessen wurde. Ein ebenfalls guter Freeware-
+Assembler ist PhxAs (/dev/asm/PhxAss4.36.lha) und der dazugeh&ouml;rige
+Linker PhxLnk (/dev/asm/PhxLnk431.lha).
+
+<P>
+<H2>Software</H2>
+
+<P>
+F&uuml;r diesen Teil brauchen wir noch ArtPRO, ein Grafikkonvertierprogramm. Es
+ist im Aminet unter /gfx/conv/ArtPRO1.03.lha zu finden. Installiert dieses
+Programm also erstmal.
+
+<P>
+<H2>Thema</H2>
+
+<P>
+Thema dieses Teils ist das Anzeigen und Bewegen von Grafiken. Aber bevor
+wir damit loslegen, erstmal Theorie.
+
+<P>
+<H3>Alles im Speicher</H3>
+
+<P>
+Wenn wir ein sch&ouml;nes buntes Bild auf dem Bildschirm sehen, mu&szlig; es ja auch
+irgendwie im Amiga sein. Es befindet sich nat&uuml;rlich im Speicher. Um zu
+wissen wie es im Speicher abgelegt ist, m&uuml;&szlig;t ihr erstmal wissen wie ein
+Bild beim Amiga aufgebaut ist.
+
+<P>
+<H3>Aufbau eines Bildes</H3>
+
+<P>
+Ein Bild besteht aus Bitplanes. Ihr k&ouml;nnt euch eine Bitplane als wei&szlig;es
+Blatt Papier vorstellen. Wenn wir nun keinen Punkt auf unser Blatt malen
+w&uuml;rden, w&auml;re unser Bildschirm schwarz (kommt drauf an welche Hintergrund-
+farbe gesetzt ist, standardm&auml;&szlig;ig aber schwarz). Auf eine Bitplane bezogen
+bedeutet das: sind alle Bits in der Bitplane 0, sehen wir auf dem Bild-
+schirm die gesetzte Hintergrundfarbe. Setzen wir aber ein Bit auf 1, sehen
+wir einen Punkt mit der Farbe 1 auf dem Bildschirm. Wir k&ouml;nnen mit einer
+Bitplane also nur zwei Farben verwenden: Farbe 0 (Hintergrund) und Farbe 1.
+Im Prinzip k&ouml;nnten wir so schon "malen", indem wir nur Bits in einer Bitplane
+setzen. Und genau das werden wir nacher auch mal tun. Nun wollen wir aber nicht
+nur einfarbige Bilder anzeigen (ist ja auf Dauer ziemlich eint&ouml;nig), sondern auch
+welche mit mehr Farben. Und wie k&ouml;nnen wir nun mehrere Farben verwenden? Ganz
+einfach: wir benutzen mehrere Bitplanes. Die einzelnen Bitplanes "liegen" dann
+&uuml;bereinander. Wie das dann mit dem Farben geht erkl&auml;re ich hier mal ein einem
+Punkt mit zwei Bitplanes:
+
+<P>
+<TABLE BORDER BGCOLOR=#FFFFFF ALIGN=CENTER>
+<TR><TH>Bitplane 1</TH><TH>Bitplane 2</TH><TH>Farbe</TH></TR>
+<TR ALIGN=CENTER><TD>0</TD><TD>0</TD><TD>0</TD></TR>
+<TR ALIGN=CENTER><TD>1</TD><TD>0</TD><TD>1</TD></TR>
+<TR ALIGN=CENTER><TD>0</TD><TD>1</TD><TD>2</TD></TR>
+<TR ALIGN=CENTER><TD>1</TD><TD>1</TD><TD>3</TD></TR>
+</TABLE>
+
+<BR>
+<P>
+Ist ein Punkt in Bitplane 1 und Bitplanes 2 nicht gesetzt, sehen wir die
+Farbe 0 an dieser Stelle. Ist der Punkt in Bitplane 1 gesetzt, jedoch nicht
+in Bitplane 2, sehen wir Farbe 1 an dieser Stelle. Umgekehrt sehen wir
+Farbe 2. Ist der Punkt in beiden Bitplanes gesetzt, kommt Farbe 3 zum Ein-
+satz. Hier noch eine &Uuml;bersicht, wie viele Farben mit wie vielen Bitplanes
+m&ouml;glich sind:
+
+<P>
+<TABLE BORDER BGCOLOR=#FFFFFF ALIGN=CENTER>
+<TR><TH>Bitplanes</TH><TH>Farben</TH></TR>
+<TR ALIGN=CENTER><TD>0</TD><TD>1</TD></TR>
+<TR ALIGN=CENTER><TD>1</TD><TD>2</TD></TR>
+<TR ALIGN=CENTER><TD>2</TD><TD>4</TD></TR>
+<TR ALIGN=CENTER><TD>3</TD><TD>8</TD></TR>
+<TR ALIGN=CENTER><TD>4</TD><TD>16</TD></TR>
+<TR ALIGN=CENTER><TD>5</TD><TD>32</TD></TR>
+<TR ALIGN=CENTER><TD>6</TD><TD>64</TD></TR>
+<TR ALIGN=CENTER><TD>7</TD><TD>128</TD></TR>
+<TR ALIGN=CENTER><TD>8</TD><TD>256</TD></TR>
+</TABLE>
+
+<BR>
+<P>
+Auf Amigas mit OCS- und ECS-Chipset k&ouml;nnen wir 5 Bitplanes verwenden, also
+32 Farben. Mit AGA-Amigas also dann 8 Bitplanes - 256 Farben. Das es aber
+dennoch m&ouml;glich ist, mehr Farben darzustellen, werde ich nachher zeigen.
+Und genau so wie ein Bild aufgebaut ist, befindet es sich auch im Speicher.
+Erst "liegt" die Bitplane 1 im Speicher, dann die 2., dann die 3. usw. ...
+Das Format, wie die Bilder im Speicher liegen, hat nat&uuml;rlich auch einen
+Namen: RAW-Format. Und genau das Format m&uuml;ssen unsere Bilder nachher haben
+bevor wie sie in den Speicher laden und anzeigen.
+
+<P>
+<H3>Anzeigen eines Bildes</H3>
+
+<P>
+Und wie wird das Bild nun auf dem Bildschirm angezeigt? Der uns bekannte
+Copper macht mal wieder die ganze Arbeit. Wir setzen nur einige Register
+auf die gew&uuml;nschten Werte, z.B. Aufl&ouml;sung, Anzahl der Bitplanes und die
+RGB-Werte der Farben, "sagen" dem Copper noch wo sich unsere Bitplanes im
+Speicher befinden und schon und wird unser Bild angezeigt.
+
+<P>
+<H3>Einstellen der Aufl&ouml;sung und Anzahl der Bitplanes (kein AGA)</H3>
+
+<P>
+Die Aufl&ouml;sung und Anzahl der Bitplanes des Bildschirmes stellen wir im
+Register BPLCON0 ($dff100) ein. Sehen wir uns mal die einzelnen Bits
+genauer an:
+
+<P>
+<TABLE BORDER=0>
+<TR><TH>Bit</TH><TH>Name</TH><TH>Funktion</TH></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>15</TD><TD VALIGN=TOP>HIRES</TD><TD>Ist dieses Bit auf 1 gesetzt, so
+wird der hochaufl&ouml;sende Modus (640 Punkte pro Zeile) eingeschaltet.</TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>14</TD><TD VALIGN=TOP>BPU2</TD><TD>Die Bits BPU2, BPU1 und BPU0 ergeben
+zusammen eine 3-Bit Zahl, die angibt wieviele Planes eingeschaltet sind.</TD></TR>
+</TABLE>
+
+<BR>
+<P>
+<TABLE BORDER BGCOLOR=#FFFFFF ALIGN=CENTER>
+<TR><TH>BPU2</TH><TH>BPU1</TH><TH>BPU0</TH><TH>Bitplanes</TH><TH>Farben</TH></TR>
+<TR><TD>0</TD><TD>0</TD><TD>0</TD><TD>0</TD><TD>nur Hintergrund</TD></TR>
+<TR><TD>0</TD><TD>0</TD><TD>1</TD><TD>1</TD><TD>2</TD></TR>
+<TR><TD>0</TD><TD>1</TD><TD>0</TD><TD>2</TD><TD>4</TD></TR>
+<TR><TD>0</TD><TD>1</TD><TD>1</TD><TD>3</TD><TD>8</TD></TR>
+<TR><TD>1</TD><TD>0</TD><TD>0</TD><TD>4</TD><TD>16</TD></TR>
+<TR><TD>1</TD><TD>0</TD><TD>1</TD><TD>5</TD><TD>32</TD></TR>
+<TR><TD>1</TD><TD>1</TD><TD>0</TD><TD>6</TD><TD>64 (Extra-Half-Bright)</TD></TR>
+</TABLE>
+
+<BR>
+<P>
+<TABLE BORDER=0>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>13</TD><TD VALIGN=TOP>BPU1</TD><TD>siehe BPU2</TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>12</TD><TD VALIGN=TOP>BPU0</TD><TD>siehe BPU2</TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>11</TD><TD VALIGN=TOP>HMOD</TD><TD>Will man den Hold-and-Modify Modus
+aktivieren, so ist dieses Bit auf 1 zu setzen. In diesem Modus ist es m&ouml;glich alle
+4096 Farben des Amiga gleichzeitig darzustellen.</TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>10</TD><TD VALIGN=TOP>DBPLF</TD><TD>Ist dieses Bit auf 1, so ist der
+Dual-Playfield-Modus aktiviert, und es werden die geraden und ungeraden Planes
+wie zwei unterschiedliche Bildschirme behandelt. Die Bits 10 und 11 d&uuml;rfen nicht
+gemeinsam aktiv sein. Will man jedoch den Extra-Half-Bright-Modus (64 Farben)
+aktivieren, so m&uuml;ssen die Bits 10 und 11 auf 0 gesetzt und alle 6 Planes
+eingeschaltet sein.</TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>9</TD><TD VALIGN=TOP>COLOR</TD><TD>Dieses Bit schaltet den Videofarbausgang
+von Agnus ein.</TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>8</TD><TD VALIGN=TOP>GAUD</TD><TD>Mit diesem Bit wird das Genlock Audio
+eingeschaltet.</TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>7</TD><TD VALIGN=TOP>unbenutzt</TD><TD></TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>6</TD><TD VALIGN=TOP>unbenutzt</TD><TD></TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>5</TD><TD VALIGN=TOP>unbenutzt</TD><TD></TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>4</TD><TD VALIGN=TOP>unbenutzt</TD><TD></TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>3</TD><TD VALIGN=TOP>LPEN</TD><TD>Will man einen Lightpen abfragen, so
+ist dieses Bit auf 1 zu setzen.</TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>2</TD><TD VALIGN=TOP>LACE</TD><TD>Um den Interlace Modus zu benutzen, mu&szlig;
+dieses Bit auf 1 gesetzt werden.</TD></TR>
+<TR><TD ALIGN=RIGHT VALIGN=TOP>1</TD><TD VALIGN=TOP>ERSY</TD><TD>Hat dieses Bit den Wert 1, werden die
+Anschl&uuml;sse f&uuml;r horizontale und vertikale Synchronisation von Ausgang auf Eingang
+umgeschaltet. Dadurch kann das Amigabild durch externe Signale synchronisiert und
+zu jedem beliebigen Fernsehbild gemischt werden. Dieses Bit wird vor allem von
+Genlock-Interfaces benutzt.</TD></TR>
+<TR><TD ALIGN=RIGHT>0</TD><TD VALIGN=TOP>unbenutzt</TD><TD></TD></TR>
+</TABLE>
+
+<BR>
+<P>
+<H3>Einstellen des sichtbaren Bereichs (Fenster)</H3>
+
+<P>
+Die Startposition des Fensters wird im Register DIWSTRT ($dff08e) eingestellt.
+
+<P>
+<TABLE BORDER=0>
+<TR><TD>Bits:</TD><TD>15</TD><TD>14</TD><TD>13</TD><TD>12</TD><TD>11</TD><TD>10</TD><TD>9</TD><TD>8</TD><TD>7</TD><TD>6</TD><TD>5</TD><TD>4</TD><TD>3</TD><TD>2</TD><TD>1</TD><TD>0</TD></TR>
+<TR><TD></TD><TD>V7</TD><TD>V6</TD><TD>V5</TD><TD>V4</TD><TD>V3</TD><TD>V2</TD><TD>V1</TD><TD>V0</TD><TD>H7</TD><TD>H6</TD><TD>H5</TD><TD>H4</TD><TD>H3</TD><TD>H2</TD><TD>H1</TD><TD>H0</TD></TR>
+</TABLE>
+
+<BR>
+<P>
+Die Bits H0-H7 bestimmen die horizontale Startposition und die Bits V0-V7
+die vertikale. F&uuml;r unsere Copperliste nehmen wir eine Startposition von
+vertikal 44 und horizontal 129, in hexadezimal umgerechnet ergibts das
+einen Wert von $2c81.
+
+<P>
+Die Endposition des Fensters tragen wir im Register DIWSTOP ($dff090) ein.
+
+<P>
+<TABLE BORDER=0>
+<TR><TD>Bits:</TD><TD>15</TD><TD>14</TD><TD>13</TD><TD>12</TD><TD>11</TD><TD>10</TD><TD>9</TD><TD>8</TD><TD>7</TD><TD>6</TD><TD>5</TD><TD>4</TD><TD>3</TD><TD>2</TD><TD>1</TD><TD>0</TD></TR>
+<TR><TD></TD><TD>V7</TD><TD>V6</TD><TD>V5</TD><TD>V4</TD><TD>V3</TD><TD>V2</TD><TD>V1</TD><TD>V0</TD><TD>H7</TD><TD>H6</TD><TD>H5</TD><TD>H4</TD><TD>H3</TD><TD>H2</TD><TD>H1</TD><TD>H0</TD></TR>
+</TABLE>
+
+<BR>
+<P>
+In diesem Register wird Bit H8 als 1 angenommen, wobei die Endposition im
+Bereich 256 bis 458 liegen kann. Um nun eine vertikale Endposition gr&ouml;&szlig;er
+als auch kleiner als 256 zu erhalten, hat man zu einem kleinen Trick gegriffen:
+
+<P>
+Um das V8-Bit auf 0 zu setzen, schreibt man eine 1 in V7, will man V8 auf
+1 setzen l&ouml;scht man V7. Damit sind Positionen von 128 bis 312 m&ouml;glich.
+
+<P>
+<TABLE BORDER BGCOLOR=#FFFFFF ALIGN=CENTER>
+<TR><TD ROWSPAN=3>Standardwerte f&uuml;r DIWSTRT und DIWSTOP:</TD><TD></TD><TH>DIWSTRT</TH><TH>DIWSTOP</TH></TR>
+<TR><TH>NTSC</TH><TD>$2c81</TD><TD>$f4c1</TD></TR>
+<TR><TH>PAL</TH><TD>$2c81</TD><TD>$2cc1</TH></TR>
+</TABLE>
+
+<BR>
+<H3>DDFSTRT ($dff092) und DDFSTOP ($dff094)</H3>
+
+<P>
+Die Display-Data-Fetch-Start- und Display-Window-Start-Register sind
+voneinander anh&auml;ngig. Da jede Bitplane im Lores-Modus alle 8 Zyklen eingelesen
+wird (im Hires-Modus 4 Zyklen), die Hardware aber noch einen halben Buszyklus
+zum Darstellen der Daten ben&ouml;tigt, besteht eine Differenz von 8.5 Zyklen.
+DDFSTRT errechnet sich dann wie folgt:
+
+<P>
+DDFSTRT: $81 / 2 - 8.5 = $38 (statt $81 ist der Wert aus DIWSTRT zu nehmen)
+
+<P>
+Um den Display-Data-Fetch-Stop-Wert zu berechnen, nimmt man die horizontale
+Aufl&ouml;sung, teilt diese durch 2, subtrahiert 8 und addiert den Wert aus
+DDFSTRT.
+
+<P>
+DDFSTOP: $38 + (320 / 2 - 8) = $d0 ($38 entspricht den DDFSTRT-Wert und 320
+                                    die horizontale Aufl&ouml;sung in Punkten)
+
+<P>
+<TABLE BORDER BGCOLOR=#FFFFFF ALIGN=CENTER>
+<TR><TD ROWSPAN=3>Standardwerte f&uuml;r DDFSTRT und DDFSTOP:</TD><TH>Aufl&ouml;sung</TH><TH>DDFSTRT</TH><TH>DDFSTOP</TH></TR>
+<TR><TD>LoRes</TD><TD>$0038</TD><TD>$00d0</TD></TR>
+<TR><TH>HiRes</TD><TD>$003c</TD><TD>$00d4</TH></TR>
+</TABLE>
+
+<BR>
+<P>
+<H3>Woher die Daten nehmen ?</H3>
+
+<P>
+Hat man dem Amiga nun mitgeteilt, wie gro&szlig; unser Fenster sein soll, mu&szlig; er
+noch wissen woher er die Daten aus dem Speicher holen soll. Dazu bedienen
+wir uns der Register BPL1PTH - BPL6PTL ($dff0e0 - $dff0f8). Je nachdem
+wieviele Bitplanes verwenden werden sollen, m&uuml;ssen die BPLxPTH / BPLxPTL
+Pointer verwendet werden.
+
+<P>
+<H3>Modulo-Werte</H3>
+
+<P>
+Um zu verstehen was die Modulo-Werte sind, solltet ihr wissen, da&szlig; unsere
+Bitplanes nicht rechteckig im Speicher vorliegen. Die einzelnen Bytes einer
+Bitplane befinden sich alle nacheinander im Speicher. Um nun das Bild an-
+zuzeigen, mu&szlig; der Copper die Bytes lesen und nach einer bestimmten Anzahl
+gelesender Bytes eine neue Zeile am Bildschirm anfangen. Bei einer horizontalen
+Aufl&ouml;sung von 320 Punkten passen genau 40 Bytes in eine Zeile. Nach 40 Bytes mu&szlig;
+der Copper also eine neue Zeile anfangen. Der Modulo-Wert betr&auml;gt also 40.
+Den Modulo-Wert f&uuml;r die ungeraden Bitplanes (1, 3 und 5) tragen wir im Register
+BPL1MOD ($dff108) ein, und f&uuml;r die geraden Bitplanes (2, 4 und 6) im Register
+BPL2MOD ($dff10a). Allerdings brauchen wir bei einer horizontalen Aufl&ouml;sung von
+320 keine 40 in die Register eintragen, da&szlig; wei&szlig; der Copper n&auml;mlich automatisch.
+Der Wert in den Modulo-Registern wird immer zu 40 hinzuaddiert, und das ist dann
+der Modulo-Wert. Bei einer horizontalen Aufl&ouml;sung von 640 m&uuml;ssten wir also 40 in
+die Modulo-Register eintragen, da der richtige Modulo-Wert bei dieser Aufl&ouml;sung
+80 betr&auml;gt.
+
+<P>
+<H3>Unsere erste Bitplane</H3>
+
+<P>
+Eine Bitplane ist nur ein St&uuml;ck Speicher mit dem Bildinformationen. Da wir
+nur eine leere Bitplane haben m&ouml;chten, m&uuml;ssen wir uns nur ein entsprechend
+gr&ouml;&szlig;es St&uuml;ck Speicher l&ouml;schen. Die Gr&ouml;&szlig;e des Speichers
+wird in Byte angegeben und errechnet sich wie folgt:
+
+<PRE>
+Gr&ouml;&szlig;e = horizontale Punkte / 8 * vertikale Punkte
+</PRE>
+
+<P>
+F&uuml;r eine Bitplane in der Gr&ouml;&szlig;e 320 x 256 Punkte brauchen wir eine Speicher-Gr&ouml;&szlig;e
+von: 320 / 8 * 256 = 10240 Bytes.
+
+<P>
+Speicher f&uuml;r eine Bitplane erzeugen wir im Programm mit der Anweisung
+
+<PRE>
+plane: ds.b 10240  ;&uuml;ber die symbolische Adresse "plane" k&ouml;nnen wir
+                   ;auf dem Speicher zugreifen
+</PRE>
+
+<P>
+Nun m&uuml;ssen wir nur noch die Adresse der Bitplane in die Bitplanepointer
+BPL1PTH und BPL1PTL eintragen. Da aber unser Programm und unsere Bitplane
+sich immer an einer anderen Stelle im Speicher befinden kann, k&ouml;nnen wir
+keine fixe Adresse in die Bitplanepointer eintragen. Also setzen wir die
+Zeiger in der Copperliste auf Null und tragen die richtige Adresse beim
+Start des Programms ein.
+
+<A NAME="res1"></A>
+<P>
+Wie das nun alles in der Praxis funktioniert, k&ouml;nnt ihr <A HREF="list05.htm">hier</A>
+in Erfahrung bringen.
+
+<P>
+<H3>Eine Bitplane mit Muster</H3>
+
+<A NAME="res2"></A>
+<P>
+Nun werden wir mal unsere Bitplane mit einem Schachbrett-Muster versehen.
+Das Einzige was wir tun m&uuml;ssen besteht darin, nur einige Bits in der Bitplane
+auf 1 zu setzen (an dieser Stelle ist dann die Farbe in COLOR01 sichtbar.
+Schaut mal <A HREF="list06.htm">hier</A> hinein, um zu sehen wir das funktioniert.
+
+<P>
+<H3>Unser erstes Bild</H3>
+
+<P>
+Nun wird es mal Zeit ein Bild anzuzeigen. Nehmt also ein Malprogramm das
+IFF-ILBM-Bilder speichern kann (z.B. Deluxe Paint) und malt ein Bild in der
+Aufl&ouml;sung von 320 x 256 Punkten mit 32 Farben. Wer kein Bild malen m&ouml;chte,
+kann das Bild <A HREF="../images/bild.iff">bild.iff</A> nutzen das dem Kurs beiliegt.
+Wenn ihr damit fertig seit, startet das Programm ArtPRO.
+
+<P>
+<H3>Konvertieren ins RAW-Format</H3>
+
+<P>
+In der linken H&auml;lfte im mittleren Drittel des Fenster von ArtPRO seht ihr
+das Feld "File Operation". Rechts neben dem "Load"-Button sollte UNIVERSAL
+stehen. Ist das nicht der Fall, klickt die 1 rechts daneben an und w&auml;hlt
+UNIVERSAL aus. Mit einem Klick auf "Ok" beendet ihr die Eingabe. Nun habt
+ihr den Lader f&uuml;r Bilder eingestellt. UNIVERSAL l&auml;dt alle Format die ArtPRO
+kennt. Jetzt wollen wir noch einstellen welches Format wir speichern
+wollen. Klickt die 2 unter der 1 an. W&auml;hlt RAW aus und klickt anschlie&szlig;end
+auf den "Config"-Button. Bei "Save Format" sollte bei "Output" "Binary"
+stehen, bei "BlitWord" "None". Die Checkbox-Gadgets darunter m&uuml;ssen alle
+ausgeschalten (ohne H&auml;ckchen) sein. Klickt nun auf "Ok". Nun klickt auf
+"Save" um unsere Einstellungen zu speichern. Jetzt k&ouml;nnt ihr auf "Load"
+klicken um euer Bild zu laden. Anschlie&szlig;en klickt ihr noch auf "Save" um
+euer Bild im RAW-Format zu speichern. Jetzt habe wir zwar die Bilddaten im
+RAW-Format vorliegen, aber keine Farbpalette. Diese k&ouml;nnen wir ebenfalls mit
+ArtPRO speichern, und sogar schon als Ausschnitt einer Copperliste. Klickt wieder
+auf die 2 unter der 1 und w&auml;hlt anschlie&szlig;end PALETTE an. &Uuml;ber "Config" gelangt
+ihr wieder ins Konfigurations-Menu. Bei "Save Format" sollte bei "Output" "Source"
+stehen, bei "Type" "Copper" und bei "Depth" "4 Bit". Bei "Source Format" sollt
+bei "Language" "Asm" stehen, bei "Width" "Words", bei "Tabs" "2" und bei "Line entries"
+"2". Klickt "Ok" an und anschlie&szlig;end "Save" um die Einstellungen zu speichern. Nun
+noch einmal auf "Save" klicken, und unsere Palette wird gespeichert.
+
+<P>
+<H3>Anzeigen des Bildes</H3>
+
+<A NAME="res3"></A>
+<P>
+Im Prinzip funktioniert das Ganze wie bisher, nur werden wir uns keine
+Bitplanes anlegen. Wir setzen die Bitplanepointer auf unser Bild, und schon
+wird es angezeigt. Klick <A HREF="list07.htm">hier</A> drauf um das fertige Programm
+zu sehen.
+
+<P>
+<H3>Vertikales Scrolling</H3>
+
+<A NAME="res4"></A>
+<P>
+Nun wollen wir mal Bewegung in die Sache bringen. Der Fachausdruck daf&uuml;r
+hei&szlig;t "Scrolling". Zuerst schauen wir uns die einfachere Art des Scrolling
+an, die vertikale Richtung. Beim Scrolling bewegen wir nicht die Bitplanes
+selber, sonder &auml;ndern nur die Bitplanepointer. Normalerweise zeigen die
+Bitplanepointer auf die erste Zeile einer Bitplane. Setzen wir nun die
+Pointer eine Zeile tiefer, so bewegt sich der Bildschirminhalt nach
+oben. Umgekehrt bewegt sich der Inhalt nach unten. Bei einer horizontalen
+Aufl&ouml;sung von 320 Punkten m&uuml;ssen die Pointer also immer um 40 Bytes versetzt
+werden. <A HREF="list08.htm">Hier</A> k&ouml;nnt ihr ein Beispielprogramm dazu sehen.
+
+<P>
+<H3>Horizontales Scrolling</H3>
+
+<P>
+Wenn wir horizontales Scrolling realisieren m&ouml;chten, bedarf es einiger
+&Uuml;berlegungen. Verschieben wir die Startadresse der Bitplane, so ist das
+leider nur um ein Word, das sind 16 Punkte, m&ouml;glich. Das bedeutet unser
+Scrolling ruckelt f&uuml;rchterlich. Mit Hilfe des Registers BPLCON1 ($dff102)
+k&ouml;nnen wir die Bitplane um 15 Punkte verschieben.
+
+<P>
+<TABLE BORDER=0>
+<TR><TD>Bits:</TD><TD>15</TD><TD>14</TD><TD>13</TD><TD>12</TD><TD>11</TD><TD>10</TD><TD>9</TD><TD>8</TD><TD>7</TD><TD>6</TD><TD>5</TD><TD>4</TD><TD>3</TD><TD>2</TD><TD>1</TD><TD>0</TD></TR>
+<TR><TD></TD><TD>--</TD><TD>--</TD><TD>--</TD><TD>--</TD><TD>--</TD><TD>--</TD><TD>--</TD><TD>--</TD><TD>P2</TD><TD>P2</TD><TD>P2</TD><TD>P2</TD><TD>P1</TD><TD>P1</TD><TD>P1</TD><TD>P1</TD></TR>
+</TABLE>
+
+<BR>
+<A NAME="res5"></A>
+<P>
+Die Bits 8 - 15 sind frei. Die verbleibenden 8 Bits teilen sich die geraden
+und ungeraden Bitplanes, wobei P1 die geraden und P2 die ungeraden Planes
+darstellen. Das Einzige was wir nun tun m&uuml;ssen, ist die Bitplane mit Hilfe
+von BPLCON1 solange zu verschieben bis die 15 Punkte erreicht sind, danach
+ein Word auf die Stardadresse der Plane zu addieren und BPLCON1 auf Null
+setzen. Au&szlig;erdem mu&szlig; der Data-Fetch ein Word fr&uuml;her starten, also
+ist f&uuml;r DDFSTRT der Wert $30 statt des Standardwertes $38 einzutragen.
+Die Modulo-Werte in BPL1MOD und BPL2MOD m&uuml;ssen ebenfalls um 2 Byte weniger
+ge&auml;ndert werden. Wie das in der Praxis funktioniert, seht ihr
+<A HREF="list09.htm">hier</A>.
+
+<P>
+So, das war es mal wieder. Schlu&szlig; f&uuml;r heute. Und wie immer am Schlu&szlig;: Viel
+Gl&uuml;ck beim Programmieren.
+
+<P><SMALL>(c) 1997 by Enrico Bauermeister</SMALL>
+                                           
+<P>
+<TABLE BORDER=0 ALIGN=CENTER>
+<TR>
+<TD><A HREF="softw03.htm"><IMG SRC="../images/back2.gif" ALT="Zur&uuml;ck" BORDER=0 WIDTH=32 HIGHT=32></A></TD>
+<TD><A HREF="talk01.htm"><IMG SRC="../images/next2.gif" ALT="Weiter" BORDER=0 WIDTH=32 HIGHT=32></A></TD>
+</TR></TABLE>
+
+<HR>
+
+</BODY>
+</HTML>
+

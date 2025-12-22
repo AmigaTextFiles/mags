@@ -1,0 +1,223 @@
+\T
+
+   =========================
+    --> EN PRATIQUE : AREXX par Grendel                                  Cours No 2
+   ========================= 
+
+(retrouvez ce script et l'executable sur la disquette dans Obligement20/Arexx/Cours-2)
+
+~ \ Les librairies de fonctions - Premier programme termin_ (Fdir)
+
+  Nous voici donc arriv_ a la deuxi_me lecons, les librairies de fonctions ARexx, il en
+existe d_ja pas mal, entre autre :
+
+- RexxSupport (Fourni avec L'AmigaDOS)
+- Rexxreqtools (Permet d'utiliser reqtools pour les requ_tes " Excellent ")
+- RexxArpLib (Permet d'utiliser la librairie ARP)
+- RxAsl (Permet d'utiliser la librairie ASL, je pr_f_re Reqtools)
+- RexxHost (?, je n'ai pas la doc " r_cup_r_e avec dans un  programme ")
+- Rexxapplib (Pas besoin de la charger, utilis_e par ExecRexx "Compileur")
+- RexxRMF (?, pas encore test_)
+- RxWiz (Utilisation de Wizard.library)
+- RexxExtra (?, pas encore essay_)
+- RexxMathLib (Librairies de fonctions math_matiques)
+
+Il en existe surement d'autres, mais je ne les poss_de pas.
+
+Pour notre programme nous allons utiliser rexxreqtools :
+
+rtfilerequest("Disk/R_pertoire",," Titre requester ",,"Flags",variable)
+
+ö
+
+\T
+
+   Infos:
+
+   La variable n'est utilis_e que lorsque l'on d_sire s_lectionner
+   plusieurs fichier (on verra cela plus tard).
+  
+Pour avoir une requ_te de r_pertoire nous allons mettre
+rtfi flags=freqf nofiles a la place du mot Flags.
+(Pas de s_lection de fichier.)
+
+rtezrequest(" Texte ",," Bouton 1 I Etc. "," Titre Requ_te ","Flags")
+
+C'est parti.
+
+/* Fdir v1.0 */
+call close(stdout) /* On n'utilisera pas la fen_tre de sortie par d_faut */
+
+/* On ouvre notre propre fen_tre */
+call open(stdout,"con:0/14/640/200/ fdir v1.0 ** Premier programme ARexx
+**/Close/Wait")
+
+/*************************************************************
+On cr_e un syst_me qui regarde si la librairie est charg_e, si elle ne
+l'est pas on la charge. Sinon on continue (If Then Else).
+R_utilisez cette routine lorsque vous d_sirez utilisez rexxreqtools.
+**************************************************************/
+
+If "show("l","rexxreqtools.library") Then /* " = Not */
+
+
+ö
+
+\T
+
+   /**********************************************************
+    Explication: (Fonction ARexx int_gr_e Show - Voir in French)
+    Show("option","Bidule que l'on cherche")
+    l'option l = library.
+          p = ports.
+          f = noms de fichiers logiques ouverts
+          c = noms de la liste clip
+   ***********************************************************/
+
+Call continuer /* On devra cr_er la sous-routine continuer */
+Else           /* Sinon                                    */
+Call charger   /* Idem continuer                           */
+
+charger: /* Routine de chargement, peut-_tre r_utilis_e. */
+call addlib("rexxreqtools.library",-5,-30)
+
+/*************************************************************
+ Explication: (Fonction ARexx int_gr_e Addlib - Charge une librairie)
+ addlib("librairie",priorit_,offset)
+
+ Une fois la routine termin_e le programme continue avec la ligne
+ suivante.
+**************************************************************/
+
+continuer:
+nl="0a"x /* x=hexad_cimal donc : 0a en hexad_cimal (Retour chariot) */ 
+
+ö
+
+\T
+
+call rtezrequest(" Fdir v1.0 "IInlII,
+                 ""IInlII,
+                 " Version sp_ciale pour l'E-zine : "IInlII,
+                 " Obligement "IInlII,
+                 ""IInlII,
+                 " Contactez : "IInlII,
+                 " Brunet David "IInlII,
+                 " Rue de Bellevue, 11e "IInlII,
+                 " 21000 Dijon "IInlII,
+                 ""IInlII,
+                 " T_l: 03.80.45.43.90 ",
+                 ,," Fdir v1.0 (C) Grendel Soft 1999 ",)
+
+/*************************************************************
+ Si vous d_sirez centrer votre texte, il suffit de mettre dans flags :
+ rtez flags=ezreqf centertext.
+**************************************************************/
+
+/* Cr_ation du menu avec rtezrequest */
+menu:
+call rtezrequest(" Fdir v1.0 Options "IInlII,
+                 ""IInlII,
+                 " 1 = Toutes les options "IInlII,
+                 " 2 = Pas de dates "IInlII,
+                 " 3 = Pas d'ent_te "IInlII,
+                 " 4 = Taille en blocks"IInlII,
+                 " 5 = Uniquement nom de fichiers "IInlII,
+                 " 6 = Choix d'un Pattern (#?) ",
+                 ," 1 I 2 I 3 I 4 I 5 I 6 I Quitter "," Fdir v1.0 (C) MOa ",)
+
+ö
+
+\T
+
+   if rtresult==0 then /* Si on clique sur Quitter ou on presse Escape */
+   exit                /* On quitte le programme                       */
+   if rtresult==1 then /* Bouton 1 */
+   call list opt1
+   if rtresult==2 then /* Bouton 2 */
+   call list opt2
+if rtresult==3 then /* Bouton 3 */
+call list opt3
+if rtresult==4 then /* Bouton 4 */
+call list opt4
+if rtresult==5 then /* Bouton 5 */
+call list opt5
+if rtresult==6 then /* Bouton 6 */
+call list opt6
+
+list opt1:
+call set dir
+address command "list all "dir
+exit
+list opt2:
+call set dir
+address command "list nodates "dir
+exit
+list opt3:
+call set dir
+address command "list nohead "dir
+exit
+list opt4:
+
+ö
+
+\T
+
+
+
+
+   call set dir
+address command "list block "dir
+exit
+list opt5:
+call set dir
+address command "list files "dir
+exit
+list opt6:
+call set dir
+call set pattern
+address command "list "dir" pat="pattern 
+exit
+ 
+set dir:
+dir=rtfilerequest("ram:",," Fdir v1.0 S_lection du r_pertoire ",
+,"rtfi flags=freqf nofiles")
+if dir=" " then /* pas de s_lection */
+exit            /* on quitte        */
+else
+Return /******************************************************
+         on retourne a l'endroit du script ou l'on se trouvait avant
+         l'appel de la fonction
+       *******************************************************/ 
+
+ö
+
+\T
+
+
+
+
+
+
+set pattern:
+/* rtgetstring = requ_te de chaine de caract_res */
+
+pattern = rtgetstring("#?"," Ins_rez le pattern d_sir_ : ",,
+                      " Fdir v1.0 s_lection de pattern ",,)
+if pattern = " " then
+exit
+else
+Return
+
+/** Fin de notre premier utilitaire ARexx **/
+
+  Voila notre commande List munie d'une interface graphique, beaucoup plus agr_able
+a utiliser qu'une commande lanc_e du Shell.
+
+  Obligement Votre :
+  Gerday Johan (Grendel)
+  Rue St Roch,42a
+  6760 Virton
+  Belgique.
+
+ö

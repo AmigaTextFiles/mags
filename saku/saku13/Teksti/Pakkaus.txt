@@ -1,0 +1,454 @@
+5
+1*
+
+{3                             Lis‰tilaa pakkaamalla
+{3                             ---------------------
+
+                                  Sami Klemola
+
+
+Uusi kovalevy tuntuu aina eritt‰in suurelta, vaikka se ei niin suuri  olisikaan.
+Ennen pitk‰‰ se tulee t‰yteen, oli sen kapasiteetti sitten kuinka suuri tahansa.
+Aina ei voi ostaa uutta kovalevy‰, kun se tapahtuu, mutta  halvempikin  ratkaisu
+on olemassa. Pakkaamalla tiedostot voidaan saada jopa kolmannes lis‰‰ tallennus-
+tilaa levylle. Rahaa se ei maksa ollenkaan, mutta aivan ilmaiseksi  uutta  tilaa
+ei saa. Lis‰tila tuo tullessaan hitautta.
+
+
+{3Tiedonpakkauksen tarpeet
+{3------------------------
+
+Useimmat ovat olleet tekemisiss‰ pakkauksen kanssa suoranaisesti tai v‰lillises-
+ti. Uudet modeemit k‰ytt‰v‰t yhteyksiss‰ MNP- tai BTLZ-pakkausta, monet ohjelmat
+toimitetaan pakattuina LH5-paketteihin, monet erityisesti vanhat ohjelmat  kuten
+demot on pakattu esimerkiksi TetraCruncherilla.  Myˆs  pakkaamattomat  tiedostot
+voivat sis‰lt‰‰ pakattuja osia. Esimerkiksi ILBM-kuvaformaatissa bittikartat  on
+(yleens‰) kompressoitu byteRun1-metodilla.
+
+N‰m‰  kaikki  eroavat  toisistaan  merkitt‰v‰sti  niin  ominaisuuksiltaan   kuin
+k‰ytˆlt‰‰n. Esimerkiksi modeemien k‰ytt‰m‰ tiedonpakkaus  on  reaaliaikaista  ja
+dynaamista. Pakattu tieto ei j‰‰ olemaan minnek‰‰n, vaan  se  puretaan  lennossa
+vastaanottavassa p‰‰ss‰. T‰ss‰ yhteydess‰ k‰sittelemme kuitenkin l‰hinn‰  staat-
+tista pakkausta, jossa tieto j‰‰ pakattuun muotoon.
+
+Tietoa voidaan  pakata  joko  k‰sin  tai  automoidusti.  K‰sin  pakattua  tietoa
+sis‰lt‰v‰t esimerkiksi LhA-ohjelman tai vastaavan tuottamat paketit, jotka koos-
+tuvat useista pakatuista tiedostoista. Toki paketteja voidaan tuottaa  ohjelmal-
+lisestikin, ja esimerkiksi viestien et‰luvussa tieto siirtyy  t‰llaisissa  pake-
+teissa. Levynpakkaaja toimii  reaaliaikaisesti  ja  tiedontuottajasta  erill‰‰n.
+Tallentavan ohjelman ei tarvitse tiet‰‰, ett‰ sen tallentama tieto pakataan  en-
+nen sen kirjoittamista levylle.
+
+Toinen vaihtoehto on, ett‰ ohjelma itse tukee pakkausta, jolloin  ulkoista  pak-
+kausj‰rjestelm‰‰ ei tarvita. T‰ss‰ tapauksessa kuitenkin kaikkien muidenkin  sa-
+maa tietoa k‰ytt‰vien ohjelmien tulee tukea samaa  pakkausta.  Keskitetty  malli
+onkin parempi, koska silloin riitt‰‰, ett‰ on olemassa esimerkiksi pakattu levy,
+jota voidaan k‰ytt‰‰ kuten tavallista pakkaamatonta massamuistia.
+
+
+{3Pakkaustavat
+{3------------
+
+Maailmassa on varmaan tuhansia tapoja pakata tietoa. Jotta idea tulisi selv‰ksi,
+teemme nyt oman pakkaustavan. Tietoa pakataan niin, ett‰ toistuvat jaksot  pois-
+tetaan ja korvataan lyhyill‰ koodeilla, jotka purkamisvaiheessa muutetaan takai-
+sin alkuper‰isiksi jaksoiksi. T‰llˆin monta  kertaa  esiintyv‰  tieto  esitet‰‰n
+vain kerran ja toistetaan sitten purettaessa joka paikassa, jossa se alun  perin
+esiintyi. Vastaavasti myˆs useat per‰kk‰iset samat jaksot voidaan  supistaa  yh-
+teen.
+
+Oma yksinkertainen pakkauksemme typist‰‰ per‰kk‰iset  samat  kirjaimet.  Voidaan
+sopia esimerkiksi, ett‰ huutomerkki aloittaa pakatun jakson. Huutomerkki‰ seuraa
+tieto siit‰, kuinka monta kertaa seuraava merkki toistetaan. T‰ss‰ on  esimerkki
+t‰ll‰ tavalla pakatusta tiedosta: 
+
+         ********* SUOMI VOITTI! JEEEE... *********
+
+         !9* SUOMI VOITTI! J!4E!3. !9*
+
+Eli aluksi huutomerkki ilmoittaa, ett‰ aletaan toistaa, mink‰ j‰lkeen tulee  yh-
+deks‰n t‰hte‰. Vastaavasti pakataan myˆs E-kirjaimet, jotka lyhenev‰t yhden  ta-
+vun, sek‰ pisteet,  jotka  eiv‰t  lyhene  yht‰‰n,  joten  voitaisiin  oikeastaan
+p‰‰tt‰‰, ett‰ vain yli kolmen tavun mittaiset sarjat pakataan. Edistyneempi ver-
+sio osaa pakata myˆs toisistaan erill‰‰n olevat sek‰ pidemm‰t jaksot: 
+
+         ------ Suomi on uusi maailmanmestari, maailmanmestari... ------
+
+         #1!6-$ Suomi on uusi #2maailmanmestari$, %2... %1
+
+Risuaita aloittaa jakson m‰‰rittelyn. Sit‰ seuraa  jakson  numero,  ja  dollarin
+merkki p‰‰tt‰‰ jakson. Prosenttimerkki toistaa  m‰‰ritellyn  jakson.  N‰m‰  ovat
+varsin alkeellisia tapoja pakata tietoa. Nyt tarkastelemme  kehittyneemp‰‰  pak-
+kaustapaa.
+
+
+{3Huffman-koodaus
+{3---------------
+
+Yksi k‰ytetyist‰ pakkaustavoista  k‰ytt‰‰  Huffman-koodausta.  Ideana  on,  ett‰
+usein pakattavassa tiedossa esiintyv‰ tavu lyhennet‰‰n  esimerkiksi  viisibitti-
+seksi koodiksi. T‰llˆin se vie luonnollisesti v‰hemm‰n tilaa. Kunkin tavun opti-
+mikoodin lˆyt‰miseksi rakennetaan nk. Huffman-puu. On olemassa  kolme  erilaista
+tapaa Huffman-koodauksen toteuttamiseksi: staattinen, dynaaminen ja mukautuva.
+Staattinen koodaus k‰ytt‰‰ kiinte‰‰ taulukkoa pakattavassa tiedossa esiintyville
+tavuille.  Hyv‰n  pakkaustehokkuuden  saavuttamineen  staattisella  koodauksella
+edellytt‰‰ pakattavan tiedon tuntemusta etuk‰teen.  Tietynlaista  tietoa  varten
+rakennetulla taulukolla pakattaessa toisenlainen tieto pakkautuu huonommin.  Dy-
+naaminen koodaus korjaa asiaa. Siin‰ ensiksi otetaan selv‰‰, mit‰ tavuja  pakat-
+tavassa tiedossa on, ja rakennetaan saatujen tietojen pohjalta erityinen tauluk-
+ko juuri t‰t‰ tietoa varten.
+
+Mukautuva koodaus ei implementoi mink‰‰nlaista tiedon esitutkintaa tai  taulukon
+tekemist‰ ennen pakkausta. Huffman-puu rakennetaan pakkauksen aikana, ja se  voi
+olla aivan erin‰kˆinen pakkauksen eri vaiheissa, koska se  mukautuu  pakattavaan
+tietoon koko ajan. T‰ll‰ tavalla saadaan paras mahdollinen pakkaus kussakin koh-
+taa pakattavaa tietoa. Mukautuvan koodauksen hyˆtyn‰ on  viel‰  se,  ett‰  koska
+taulukkoa ja puuta ei ole olemassa ennen pakkausta, ei myˆsk‰‰n tarvita valmista
+puuta purkamista varten, vaan se luodaan samalla tavalla purkamisen aikana.  Mu-
+kautuva Huffman-koodaus onkin kaikista koodaustavoista tehokkain.
+
+
+{3XPK
+{3---
+
+T‰m‰n artikkelin p‰‰aihe on XPK-pakkausj‰rjestelm‰, jonka on suunnitellut ja to-
+teuttanut Urban Dominik M¸ller. Sen idea on, ett‰ tukemalla yht‰ liittym‰‰  voi-
+daan k‰ytt‰‰ useita pakkaustapoja.  J‰rjestelm‰‰n  kuuluu  keskuskirjasto,  jota
+k‰ytt‰m‰ll‰ voidaan pakata ja purkaa tietoa k‰ytt‰en jotakin  alakirjastoa.  Jo-
+kainen alakirjasto sis‰lt‰‰ omanlaisensa pakkaus- tai salaustavan.  XPK:ta  voi-
+daan k‰ytt‰‰ myˆs tiedon salaamiseen.
+
+J‰rjestelm‰ sis‰lt‰‰ paitsi yksinkertaisen liittym‰n ohjelmille myˆs joukon CLI-
+ja WorkBench-ohjelmia, joiden avulla tiedostojen pakkaaminen onnistuu  helposti.
+Monet ohjelmat tukevat suoraan XPK:ta, joten ne osaavat suoraan tallentaa tietoa
+pakattuna. XPK:ta varten on kuitenkin saatavilla viel‰ ohjelmia,  joiden  avulla
+ohjelmat, jotka eiv‰t XPK:ta suoraan tue, saadaan hyˆdynt‰m‰‰n sit‰,  sek‰  voi-
+daan suorittaa ohjelmia, jotka on pakattu XPK:lla!
+
+Erityisen mielenkiinnon kohteena on italialaisen Nicola Salmorian alulle  panema
+ja saksalaisen Matthias Schelerin nyky‰‰n kehitt‰m‰ erityissovellus XFH-Handler,
+joka toimii DOSin ja oikean tiedostoj‰rjestelm‰n v‰lill‰  luomalla  virtuaalisen
+aseman, jolle kirjoitetut tiedostot pakkautuvat automaattisesti. Pakatut tiedos-
+tot tallennetaan jollekin olemassa olevalle levylle, mutta ne n‰kyv‰t pakkaamat-
+tomina omassa kuvitteellisessa asemassaan, josta ladattaessa XFH purkaa ne.
+
+XFH on t‰ysin l‰pin‰kyv‰ levynpakkaaja. XFH hyˆdynt‰‰ XPK:ta, ja  tiedostot  voi
+pakata mill‰ tahansa XPK:n alakirjastolla. Yksinkertaistaen kaikki t‰m‰ tarkoit-
+taa sit‰, ett‰ on parasta m‰‰ritell‰ XFH-asema,  ja  unohtaa  XPK:n  k‰ytt‰minen
+suoraan. XFH-asema siis on kuvitteellinen asema, joka  heijastaa  jonkin  oikean
+hakemiston tai kovalevyosion. Oikeassa hakemistossa tiedostot  ovat  pakattuina,
+mutta XFH:n l‰pi sen asemassa ne n‰kyv‰t niin kuin niit‰ ei olisikaan pakattu.
+
+Eli kun luetaan ja kirjoitetaan normaaleja tiedostoja XFH-asemalla,  todellisuu-
+dessa luetaankin ja kirjoitetaan pakattuja tiedostoja sill‰ asemalla,  jota  XFH
+k‰ytt‰‰. XFH pakkaa ja purkaa tiedostot lennossa niin, ett‰ XFH-asemaa  k‰ytt‰v‰
+ohjelma ei tied‰ mit‰‰n siit‰, ett‰ tiedostot  s‰ilytet‰‰n  levyll‰  pakattuina.
+Ainoa seikka, josta k‰ytt‰j‰ havaitsee pakkauksen, on levyoperaatioiden hidastu-
+minen. XFH:n k‰yttˆˆn pit‰‰ ehdottomasti valita riitt‰v‰n nopea pakkeri.
+
+XPK:ta voi kyll‰ k‰ytt‰‰ k‰sinkin: 
+
+K‰yttˆ: XPK [-frsux] [-p salasana] [-m pakkaustapa] tiedostonnimet
+       -m = nelikirjaiminen pakkaustavan nimi
+       -f = pakataan jo pakatut tiedostot
+       -s = lis‰t‰‰n p‰‰te eik‰ kirjoiteta pakattua alkuper‰isen p‰‰lle
+       -r = pakataan kaikki hakemiston tiedostot
+       -e = puretaan eik‰ pakata
+       -p = salasana
+       -x = pakataan vain ohjelmat
+
+Pakkaminen:
+
+XPK -m RDCN.50 Tiedosto
+
+Purkaminen:
+
+XPK -m RDCN Tiedosto
+
+N‰iss‰ esimerkeiss‰ tiedosto pakataan ja puretaan paikallaan eli aikaisempi ver-
+sio korvataan uudella. XPK-ohjelmalla voidaan myˆs salata tiedostoja k‰ytt‰m‰ll‰
+salaajaa pakkerin sijaan. Salaamisesta lis‰‰ myˆhemmin, ja pakkereista ja niiden
+nimist‰ seuraavassa.
+
+
+{3XPK-alakirjastot
+{3----------------
+
+Varsinaiset  pakkerit  sijaitsevat  LIBS:Compressors-hakemistossa,  josta  niit‰
+k‰ytet‰‰n xpkmaster.libraryn kautta. CLI:st‰  k‰ytett‰ess‰  pakkerikirjasto  eli
+pakkaustapa valitaan esimerkiksi antamalla XPK-ohjelmalle kirjaston nimess‰ ole-
+van nelikirjaiminen nimi. XPK-kirjastojen  nimet  ovat  muotoa  xpk????.library,
+jossa olevat nelj‰ kysymysmerkki‰ korvaa pakkerin nimi. Omasta  j‰rjestelm‰st‰ni
+lˆytyv‰t t‰llaiset XPK-kirjastot: 
+
+  xpkBLZW.library                  xpkCBR0.library
+  xpkDLTA.library                  xpkFAST.library
+  xpkFEAL.library                  xpkHFMN.library
+  xpkHUFF.library                  xpkIDEA.library
+  xpkIMPL.library                  xpkLZSS.library
+  xpkMASH.library                  xpkNONE.library
+  xpkNUKE.library                  xpkRAKE.library
+  xpkRDCN.library                  xpkRLEN.library
+  xpkSHRI.library                  xpkSMPL.library
+  xpkSQSH.library
+
+Osa n‰ist‰ tulee vakiona XPK:n mukana, ja loput saa  erill‰‰n  tai  kokoamassani
+XPKExtra-paketissa. T‰rkeimm‰t alakirjastot  k‰sitell‰‰n  yksitellen  myˆhemmin.
+Jokainen kirjasto edustaa omaa pakkaustapaansa. Poikkeuksena ovat HUFF ja  HFMN,
+jotka k‰ytt‰v‰t Huffman-koodausta. Jokainen kirjasto sis‰lt‰‰  itest‰‰n  tietoa,
+jonka saa n‰ht‰v‰kseen komennolla xQuery. Tietoa tulee myˆs pakkerien nopeuksis-
+ta, mutta ne ovat kunkin tekij‰n itsens‰ mittaamia, eiv‰tk‰ ne v‰ltt‰m‰tt‰  aina
+ole kesken‰‰n vertailukelpoisia, vaikka XPK-pakkereille  onkin  m‰‰r‰tty  tietty
+nopeustestikokoonpano eli static column -muistilla varustettu A3000/25.
+
+Monet pakkerit antavat valita pakkausmoodin. Sill‰  voidaan  valita  esimerkiksi
+nopeampi tai tehokkaampi pakkaus. Yleens‰  pakkerit  toimivat  niin,  ett‰  mit‰
+kauemmin ne pakkaavat, sit‰  paremmin  tieto  pakkautuu.  Seuraavassa  esittelen
+k‰yttˆkelpoisimpia XPK-pakkereita. Tiedot ovat tekijˆiden antamia.
+
+BLZW (Bryan's turbo-charged LZW)
+
+Kohtalaisen nopea pakkaus ja nopea purku. Pakkaa 24-33 prosenttia. K‰ytt‰‰ Comp-
+ress- ja Zoo-ohjelmienkin k‰ytt‰m‰‰ LZW-pakkausta.
+
+FAST (WOOP / LZRW++)
+
+Pakkaa eritt‰in nopeasti 32 prosenttia tai eritt‰in hitaasti 39 prosenttia. Pur-
+kunopeus on huippuluokkaa, jopa yli megatavu sekunnissa!
+
+HFMN
+
+Pakkaa ja purkaa aika nopeasti k‰ytt‰en Huffman-koodausta. Tehokkuus 24 prosent-
+tia. HUFF:ia selv‰sti nopeampi samalla tehokkuudella.
+
+IMPL (Turbo Implode 1.0)
+
+Pakkaa aivan j‰rjettˆm‰n hitaasti (tehokkaimmillaan kuusi kilotavua sekunnissa),
+mutta purkaa nopeasti ja pakkaa jopa 44 prosenttia.
+
+LZSS
+
+Pakkaa hitaasti, mutta purkaa eritt‰in nopeasti. Tehokkuus 33 tai 46  prosenttia
+riippuen siit‰, kuinka kauan jaksaa odotella pakkausta. Kummankin purkaminen  on
+yht‰ nopeaa.
+
+MASH
+
+Pakkaa todella hitaasti, mutta purkaa nopeasti, ja tehokkuus on 47 prosenttia.
+
+NUKE
+
+Tehokas pakkeri, 45 prosenttia, mutta pakkaa eritt‰in hitaasti. Purku on nopeaa.
+
+RAKE
+
+Aika hidas pakkaus, nopea purku, tehokkuus 46 prosenttia.
+
+RDCN (Ross Data Compression)
+
+Melko nopea pakkaus, todella nopea purku, tehokkuus 32 prosenttia.
+
+SHRI (Shrink 0.2)
+
+Pakkaa eritt‰in hyvin, jopa 52 prosenttia, mutta on sairaan hidas. Sek‰ pakkaus-
+ett‰ purkunopeus on alle 10 kilotavua sekunnissa.
+
+SMPL (Sample packer 1.0)
+
+ƒ‰nitiedon pakkaukseen tarkoitettu nopea pakkeri. Ei ole kuitenkaan kovin  teho-
+kas, kuusi prosenttia. Ensin deltakoodaa datan, ja sitten pakkaa k‰ytt‰en  Huff-
+man-koodausta.
+
+SQSH (Squash 1.10)
+
+LZ-pohjainen pakkeri. Tarkoitettu myˆs ‰‰nitietoa varten. Hidas  pakkaus,  nopea
+purku, pakkaa tehokkaasti, 42 prosenttia.
+
+
+{3Tiedon salaaminen
+{3-----------------
+
+XPK-pakettiin kuuluu kaksi kirjastoa, jotka eiv‰t ole pakkereita, vaan salaajia.
+Niit‰ voidaan k‰ytt‰‰ esimerkiksi salakirjoituksen tekemiseen.  N‰m‰  ovat  FEAL
+(Fast Encryprion Algorithm) ja IDEA (International Data  Encryption  Algorithm).
+J‰lkimm‰inen on patentoitu, ja sen kaupallista k‰yttˆ‰ varten tulee ottaa yhteys
+Ascom Tech AG:een. Tiedoston salaaminen  tapahtuu  samoin  kuin  pakkaaminenkin,
+mutta nyt tarvitaan salasana. Salasin koemieless‰ aiemmin k‰ytt‰m‰ni  esimerkki-
+merkkijonon salasanalla SUOMI: 
+
+0000: 2A2A2A2A 2A2A2A2A 2A205355 4F4D4920    ********* SUOMI
+0010: 564F4954 54492120 4A454545 452E2E2E    VOITTI! JEEEE...
+0020: 202A2A2A 2A2A2A2A 2A2A0A                *********.
+
+0000: 58504B46 00000060 4645414C 0000002B    XPKF...`FEAL...+
+0010: FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF    ................
+0020: 02420000 01C85A8C 0034002B 40420110    .B...»Z..4.+@B..
+0030: F53511EA 3C5C5474 D0F9A932 B5AFB0F5    ı5.Í<\Tt–˘©2µØ∞ı
+0040: 03B2FC59 12E376C7 170E852C 5C8572B8    .≤¸Y.„v«...,\.r∏
+0050: F51050DA 38E1B616 D6D82904 2F14379D    ı.P⁄8·∂.÷ÿ)./.7.
+0060: 0F0F0000 00000000                      ........
+
+0000: 58504B46 00000068 49444541 0000002B    XPKF...hIDEA...+
+0010: FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF    ................
+0020: 024D0000 015D3B76 003A002B 0000004C    .M...];v.:.+...L
+0030: 0000002B A94EEAE7 0F4EAF7F 2D2F0A1F    ...+©NÍÁ.NØ.-/..
+0040: 3C845875 5221C64D 24B2E22D 4ABB047F    <.XuR!∆M$≤‚-Jª..
+0050: A0B00028 A142E2C6 DEAE0EB0 60AF64C4    †∞.(°B‚∆ﬁÆ.∞`Ødƒ
+0060: 00BCDFE8 6F420000 0F0F0000 00000000    .ºﬂËoB..........
+
+Salaaminen tapahtuu varsin tehokkaasti. Salattua teksti‰ on eritt‰in vaikea  lu-
+kea. Viel‰ vaikeampaa on sen ymm‰rt‰minen.  Annetusta  salasanasta  muodostetaan
+salausavain, jota k‰ytt‰m‰ll‰ tiedosto salataan. Salasana annetaan  XPK-ohjelman
+optiolla -p. Sit‰ tarvitaan luonnollisesti myˆs salausta purettaessa. Nyt tutus-
+tumme l‰hemmin n‰iden salaajien toimintaperiaatteisiin.
+
+FEAL
+
+T‰m‰ kirjasto implementoi FEAL-N-koodauksen CBC 1 -moodissa. FEAL-N-koodaus  ke-
+hitettiin NTT Communication and Information -laboratorioissa vuonna 1988. FEAL-N
+koodaa 64-bittisi‰ blokkeja 64-bittisiksi  koodiblokeiksi  k‰ytt‰en  64-bittist‰
+avainta.   FEAL   on   DES-koodauksen   korvaava   erityisesti   ohjelmallisesti
+k‰ytett‰v‰ksi tarkoitettu koodaus.
+
+IDEA
+
+T‰m‰n koodauksen ovat kehitt‰neet Xuejia Lai ja professoritohtori J.  L.  Massey
+Sveitsin kansallisessa  teknologiainstituutissa.  T‰m‰n  XPK-implementaation  on
+tehnyt AndrÈ Beck  Dresdenin  teknisen  yliopiston  tietokonetieteen  osastolta.
+IDEA:n  toiminta  perustuu  funktioon,  joka  ottaa  blokki   kerrallaan   dataa
+syˆtteen‰, kasvattaa siin‰ entropiaa (nk. White Noise) ja tuottaa varsin  satun-
+naisen tuloksen. Eih‰n se tietysti todellisuudessa satunnainen ole, mutta ideana
+on, ett‰ se vaikuttaa silt‰.
+
+Myˆs IDEA:n blokit ovat 64-bittisi‰, mutta avain on 128-bittinen. IDEA:n  perus-
+funktiota voidaan k‰ytt‰‰ eri tavoin. Yksinkertaisin tapa on kuljettaa data ker-
+ran blokki kerrallaan sen l‰pi. T‰t‰ yksinkertaista koodausta kutsutaan  nimell‰
+Electronic Code Book (ECB). Koodauksen saa varmemmaksi, kun tieto ennen pakkaus-
+ta muutetaan. Voidaan k‰ytt‰‰ esimerkiksi yksinkertaista inkrementointia,  jossa
+jokaisen merkin arvoa kasvatetaan yhdell‰. T‰llˆin esimerkiksi  sanasta  KOODAUS
+tulee LPPEBVT.
+
+T‰llainen koodaus on helposti murrettavissa.  Kryptologit,  jotka  tekev‰t  sit‰
+tyˆkseen, tiet‰v‰t esimerkiksi,  ett‰  indoeurooppalaisissa  kieliss‰  E-kirjain
+esiintyy useasti. N‰in ollen kirjain, oli se mik‰ tahansa, joka esiintyy  kooda-
+tussa tekstiss‰ useasti, on todenn‰kˆisesti kirjain  E.  T‰llaisen  koodaustavan
+murtaminen perustuu juuri  eri  kirjaimien  keskim‰‰r‰iseen  esiintymistiheyteen
+tekstiss‰. Sanasta LPPEBVT ei ensi silm‰yksell‰ kukaan tied‰, ett‰  se  on  KOO-
+DAUS, mutta sen selvitt‰minen ei varmasti ole vaikeaa.
+
+Koodauksen murtamista voidaan vaikeuttaa monimutkaistamalla  esikoodausta.  Yksi
+tapa on lis‰ksi lis‰t‰ jokaiseen merkkiin  edellisen  ulostulleen  merkin  arvo.
+Kirjaimet kierr‰tet‰‰n lopun kautta ymp‰ri niin, ett‰ Z:n j‰lkeen tulee A. Edel-
+liselle merkille tarvitaan alkuarvo, jota k‰ytet‰‰n ensimm‰ist‰ merkki‰  koodat-
+taessa. Otetaan alkuarvoksi vaikkapa I. Ensimm‰inen K koodautuu siis I + K  +  1
+eli siit‰ tulee seuraavan taulukon mukaisten arvojen mukaan 9 + 11 + 1 = 20  eli
+T. 
+
+A B C D E F G H I J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
+
+Taulukko 1. Kirjaimien arvot merkkikoodauksessa.
+
+Sana KOODAUS on t‰ll‰ tavalla koodattuna TJZEGCW. Siit‰ ei  en‰‰  niin  helposti
+ole selvitett‰viss‰ alkuper‰ist‰ sanaa, eik‰ kaksois-O:kaan en‰‰ ole  n‰kyviss‰.
+T‰m‰ koodaustapa on hyvin l‰hell‰ FEAL-koodauksen  k‰ytt‰m‰‰  CBC  1  -koodausta
+(Cipher Block Chaining). Numero 1 tarkoittaa, ett‰ arvoa muutetaan viimeksi ulos
+tulleen merkin arvolla. Jos t‰m‰ nk. state of remember -arvo on  esimerkiksi  5,
+k‰ytet‰‰n silloin viidenneksi viimeisen merkin arvoa, ja silloin tarvitaan  tie-
+tysti viisi alkuarvoakin.
+
+
+
+
+{3Nopeustesti
+{3-----------
+
+Tein kaksi testi‰ saadakseni selville muutaman k‰yttˆkelpoisimman  pakkerin  no-
+peuden ja pakkaustehokkuuden. Ensimm‰isess‰ testiss‰  k‰ytin  hakemistoa,  jossa
+oli paljon alihakemistoja ja lyhyit‰ tiedostoja.  T‰llaiset  eiv‰t  tietystik‰‰n
+paljoa pakkaudu, koska suurin osa  levytilasta  kuluu  tiedostojen  headereihin.
+T‰ss‰ ovat kuitenkin testin tulokset: 
+
+                               FFS     RDCN     NUKE     FAST     RAKE
+
+Lukeminen                   25.860   37.120   38.020   37.439   76.840
+Kirjoittaminen              23.260   66.980   77.759   63.360   96.319
+Hakemistolistaus             2.999    8.500    8.699    8.699   26.079
+Tuhoaminen                   4.119   16.980   17.440   17.139   45.460
+
+Tilankulutus                  3473     3262     3248     3289     3246
+
+Taulukko 2. Nopeustesti 227 tiedostolla 91 hakemistossa.
+
+Ensimm‰inen sarake kertoo suoran kopioinnin nopeuden levylt‰ toiselle sek‰ levy-
+tilan kulutuksen pakkaamattomana. Ajat ovat sekunteja tuhannesosien  tarkkuudel-
+la, ja tilankulutus on ilmaistu 512 tavun blokkeina. T‰ss‰kin on n‰ht‰viss‰ joi-
+takin seikkoja, mutta ne tulevat  selvemmin  ilmi  seuraavassa  testiss‰,  jossa
+k‰ytin yhdess‰ hakemistossa olevia pitki‰ tiedostoja. Kopioin noin  puolentoista
+megatavun verran teksti‰, moduuleja ja ILBM-kuvia. T‰ss‰ testiss‰  erot  tulevat
+selvemmin esille: 
+
+                               FFS     RDCN     NUKE     FAST     RAKE
+
+Lukeminen                   17.980   21.619   23.420   21.699   25.620
+Kirjoittaminen               7.180   23.740   49.940   19.000   53.240
+Hakemistolistaus             0.179    0.739    0.639    0.759    1.979
+Tuhoaminen                   0.820    1.860    1.700    1.860    3.740
+
+Tilankulutus                  3285     2588     2213     2593     2206
+
+Taulukko 3. Nopeustesti 13 tiedostolla 1 hakemistossa.
+
+Parhaiten pakkasi RAKE, joka sai puristettua tiedostot kolmannekseen  pakkaamat-
+tomasta muodosta. Se on kuitenkin hidas pakkaamaan, samoin  kuin  NUKE.  Parhaat
+pakkerit levynpakkausk‰yttˆˆn ovatkin RDCN ja FAST,  jotka  sek‰  purkavat  ett‰
+pakkaavat nopeasti. Hitaasti pakkaavat RAKE ja NUKE  sopivat  arkistointiin  eli
+tiedostoille, jotka kirjoitetaan kerran, mutta luetaan  usein.  Kaikki  testatut
+pakkerit ovat sopivia XFH:n kanssa k‰ytett‰viksi.
+
+Lukemiseen kuluneista ajoista voi pudottaa puolet pois, koska levy,  jolle  kir-
+joitettiin, oli miltei viimeist‰ sektoria myˆten t‰ynn‰. T‰m‰  onkin  n‰ht‰viss‰
+FFS-testiss‰, jossa siis tiedostot kopioitiin suoraan levylt‰ toiselle.  Lukemi-
+nen on selv‰sti hitaampaa, vaikka sen pit‰isi olla yht‰ nopeaa. Pakattujen  tie-
+dostojen lukuajoista voi siis ottaa samassa suhteessa aikaa pois.  Joka  tapauk-
+sessa ne ovat kesken‰‰n vertailukelpoisia, ja n‰emmekin,  ett‰  kaikki  pakkerit
+purkavat suunnilleen yht‰ nopeasti.
+
+
+{3XFH:n k‰yttˆˆnotto
+{3------------------
+
+Kun olet asentanut XPK:n k‰yttˆˆn eli tarpeelliset kirjastot (ja ohjelmat)  pai-
+koilleen, voi asentaa XFH:n. Se on helppoa. Tarvitset vain  L-hakemistoosi  XFH-
+Handler-nimisen tiedoston ja sopivat m‰‰rittelyt  DEVS:MountList-tiedostoon  tai
+DEVS:DosDrivers-hakemistoon. T‰m‰n j‰lkeen asema on valmis  k‰ytett‰v‰ksi  anta-
+malla komento Mount FH0: (tai mink‰ sitten haluatkin aseman tunnukseksi).  T‰ss‰
+on esimerkki XFH-aseman m‰‰rittelyst‰: 
+
+FH0:
+  Handler = L:XFH-Handler
+  Startup =  "!ROOTDIR&DH0:!XPKPRIORITY&0!FAILONEXNEXT&OFF!KILLSTARTUP&ON"
+  Stacksize = 4000
+  Priority = 10
+  GlobVec = -1
+  Mount = 1
+#
+
+Startup-merkkijonossa m‰‰ritell‰‰n ensin asema,  jota  XFH  k‰ytt‰‰.  T‰ss‰  nyt
+FH0-asemalle kirjoitettavat tiedostot menisiv‰t pakattuina  DH0-aseman  juureen.
+Startup-voidaan ottaa myˆs tiedostosta, ja siin‰ voidaan m‰‰r‰t‰ mm.  pakkausta-
+pa, aseman nimi, salasana ja monia muita  asioita.  Aseman  nimi  voidaan  pit‰‰
+.xfhrc-tiedostossa k‰ytetyss‰ hakemistossa. Pakettiin kuuluu myˆs XFH-commodity,
+jolla pakkeriasetukset voidaan myˆs k‰tev‰sti tehd‰. Lis‰ksi  j‰rjestelm‰  tukee
+ARexxia, ja esimerkiksi komennolla SetAutocompress voidaan asettaa CLI:st‰ k‰sin
+pakkaus p‰‰lle ja pois, tai l‰hett‰m‰ll‰ omasta Rexx-ohjelmasta  XFH:lle  SetOp-
+tion-komento.
+
+Yksi mielenkiintoinen seikka liittyy viel‰ t‰h‰n. Startupissa k‰‰nnet‰‰n  FAILO-
+NEXNEXT pois p‰‰lt‰. Kyseess‰ on toiminto, joka est‰‰ virheen tapahtumisen hake-
+mistoon, jos vastaan tulee esimerkiksi tiedosto, johon jollakulla on poissulkeva
+lukko. T‰llˆin normaalisti tulisi virhe, mutta useat hakemistoja l‰pik‰yv‰t  oh-
+jelmat eiv‰t tyhm‰n‰ tarkista, tapahtuiko virhe vai  oliko  kyseess‰  hakemiston
+loppu, vaan idioottimaisina olettavat j‰lkimm‰ist‰. T‰m‰ on todella  paha  virhe
+ohjelmoijalta ja osoittaa kykenem‰ttˆmyytt‰ touhuun, joten on pakko j‰lleen ker-
+ran tehd‰ kiertotie, jotta huonot ohjelmat toimisivat. 

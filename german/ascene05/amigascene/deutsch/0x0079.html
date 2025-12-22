@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+	<TITLE>AmigaScene 0x05 - Effizientes Programmieren</TITLE>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="TEXT/HTML;CHARSET=iso8859-1">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#101010" LINK="#BF0000" VLINK="#101010" ALINK="#E04040">
+	<TABLE WIDTH="100%" CELLPADDING=3 CELLSPACING=0 BORDER=0>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP WIDTH="80%" HEIGHT=75>
+				<A NAME="00" HREF="welcome.html"><IMG SRC="../images/_amiga.gif" WIDTH=125 HEIGHT=48 ALT="[Amiga]" ALIGN=RIGHT BORDER=0></A><A HREF="#99"><IMG SRC="../images/_krumm_lo.gif" WIDTH=37 HEIGHT=29 ALT="[Down]" ALIGN=LEFT BORDER=0></A>
+				<BR CLEAR=ALL><BR>
+				<TABLE ALIGN=CENTER WIDTH=170 BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD ALIGN=CENTER>
+					<A HREF="../deutsch/0x0079.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" BORDER=1></A>
+				</TD></TR></TABLE>
+ 			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=RIGHT WIDTH=175>
+				<A HREF="welcome.html"><IMG SRC="../images/_scene.gif" WIDTH=110 HEIGHT=47 ALT="[Scene]" ALIGN=LEFT BORDER=0></A>
+				<A HREF="0x0078.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x007A.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=CENTER>
+				<CENTER>&nbsp;<BR>
+
+					<IMG WIDTH=155 HEIGHT=25 SRC="../images/_workshop_.gif" ALT="[Workshop]">&nbsp;<BR><BR>
+
+					<TABLE WIDTH="90%" BORDER=0>
+						<TR><TD ALIGN=CENTER><FONT SIZE="-1">
+
+| <A HREF="0x0078.html">WGet</A> | <A HREF="0x0079.html">Programmieren</A> | <A HREF="0x007A.html">TCP/IP: AmiTCP</A> | <A HREF="0x007B.html">TCP/IP: I-Net 225</A> | <A HREF="0x007C.html">Tunnel-Anims</A> |
+
+						</FONT></TD></TR>
+					</TABLE>&nbsp;<BR>
+				</CENTER>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER WIDTH=175 ROWSPAN=2>
+				<CENTER>&nbsp;<BR>
+					<IMG SRC="../images/__.gif" HEIGHT=1 WIDTH=175 ALT=" "><BR> 
+					<A HREF="0x006F.html"><IMG WIDTH=77  HEIGHT=25 SRC="../images/_cover.gif"     ALT="[Cover]"     BORDER=0></A><BR>
+					<A HREF="0x0070.html"><IMG WIDTH=117 HEIGHT=25 SRC="../images/_editorial.gif" ALT="[Editorial]" BORDER=0></A><BR>
+					<A HREF="0x0071.html"><IMG WIDTH=85  HEIGHT=25 SRC="../images/_inhalt.gif"    ALT="[Inhalt]"    BORDER=0></A><BR>
+					<A HREF="0x0072.html"><IMG WIDTH=70  HEIGHT=25 SRC="../images/_news.gif"      ALT="[News]"      BORDER=0></A><BR>
+					<A HREF="0x0073.html"><IMG WIDTH=131 HEIGHT=25 SRC="../images/_hardware.gif"  ALT="[Hardware]"  BORDER=0></A><BR>
+					<A HREF="0x0074.html"><IMG WIDTH=121 HEIGHT=25 SRC="../images/_software.gif"  ALT="[Software]"  BORDER=0></A><BR>
+					<A HREF="0x0078.html"><IMG WIDTH=135 HEIGHT=25 SRC="../images/_workshop.gif"  ALT="[Workshop]"  BORDER=0></A><BR>
+					<A HREF="0x007D.html"><IMG WIDTH=73  HEIGHT=25 SRC="../images/_spiele.gif"    ALT="[Spiele]"    BORDER=0></A><BR>
+					<A HREF="0x007E.html"><IMG WIDTH=91  HEIGHT=25 SRC="../images/_special.gif"   ALT="[Special]"   BORDER=0></A><BR>
+					<A HREF="0x007F.html"><IMG WIDTH=112 HEIGHT=25 SRC="../images/_feedback.gif"  ALT="[Feedback]"  BORDER=0></A><BR>
+					<A HREF="0x0080.html"><IMG WIDTH=46  HEIGHT=25 SRC="../images/_etc.gif"       ALT="[Etc]"       BORDER=0></A><BR>
+				<BR></CENTER>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+
+<BR><H1 ALIGN=LEFT><FONT FACE="Arial"><B>Effizientes Programmieren - Kurs 4</B></FONT></H1>&nbsp;
+
+<BR><FONT SIZE="+1">Diesmal wollen wir auf eine weitere wichtige Anwendung
+von B&auml;umen eingehen: das Codieren. Hier k&ouml;nnen sie uns dabei
+helfen, Dateien zu packen und anschlie&szlig;end wieder zu entpacken.
+Anschlie&szlig;end besch&auml;ftigen wir uns mit dem Suchen in Textstrings.
+Zuerst wollen wir uns aber mit einer speziellen Baumspeicherung befassen.
+</FONT><BR>
+
+<BR><CENTER><A NAME="01" HREF="#00"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>F&uuml;r das Sortieren mit B&auml;umen kommt eine Abart eines Baumes
+zum Einsatz, die auf den ersten Blick oft gar nicht als solcher erkannt
+wird. Der Heap (dt. Halde) l&auml;&szlig;t sich am besten als
+Bin&auml;rbaum veranschaulichen, der eine spezielle Art der Sortierung
+aufweist. So mu&szlig; f&uuml;r einen Heap immer gelten, da&szlig; der
+Wert eines jeden Knotens immer kleiner ist als der seiner S&ouml;hne. Der
+Grund, warum der Heap von vielen nicht mit B&auml;umen in Verbindung
+gebracht wird, ist, da&szlig; er selten in der f&uuml;r
+&quot;normale&quot; B&auml;ume &uuml;blichen Standardspeicherung (Zeiger
+auf linken und rechten Sohn) vorkommt, sondern meist in einem Array
+gespeichert wird. Sie werden jedoch sehen, da&szlig; man auch alle anderen
+&uuml;blichen Bin&auml;rb&auml;ume in Arrays abspeichern kann, was oft
+sogar von Vorteil ist.<BR>
+
+<BR>Die Speicherung in einem Feld erfolgt beim Heap nach einem ganz
+bestimmten Schema. Das erste Element des Feldes enth&auml;lt dabei immer
+die Wurzel. Die S&ouml;hne eines Knotens an der Position i stehen
+au&szlig;erdem immer in den Feldelementen 2i und 2i+1. Ein Beispiel
+f&uuml;r einen Bin&auml;rbaum und dessen Repr&auml;sentation in Form eines
+Feldes zeigt Abbildung 1. Dieser Baum bzw. das dazugeh&ouml;rige Feld
+stellen au&szlig;erdem einen Heap dar, da alle S&ouml;hne
+gr&ouml;&szlig;er sind als ihr Vater.<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 CELLPADDING=0 CELLSPACING=2>
+<TR><TD ALIGN=CENTER><IMG WIDTH=246 HEIGHT=224 SRC="../images_05/abb_4-1.gif" ALT="[Abb.1]"></TD></TR>
+<TR><TD ALIGN=CENTER><TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 WIDTH=246>
+<TR><TD ALIGN=LEFT BGCOLOR="#FFFFFF"><FONT SIZE="-1" COLOR="#000000">
+Abbildung 1: Ein Heap in beiden Speicherarten
+</FONT></TD></TR></TABLE></TD></TR></TABLE>&nbsp;
+
+<BR>Betrachtet man einen solchen Heap, bemerkt man sofort, da&szlig; der
+kleinste Knoten immer die Wurzel des Heaps darstellt. Will man nun das
+Feld aufsteigend sortiert ausgeben, braucht man immer nur das erste
+Element im Feld ausgeben und anschlie&szlig;end die restlichen Elemente
+wieder in einen Heap umwandeln. Das Verfahren, das nach dieser Methode
+funktioniert, hei&szlig;t Heapsort.<BR>
+
+<BR><CENTER><A NAME="02" HREF="#01"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Unser Problem bleibt nun noch einen geeigneten Algorithmus zu finden,
+der nach dem Entfernen der Wurzel den Rest wieder in einen Heap
+zur&uuml;ckverwandelt. Dazu geht man folgenderma&szlig;en vor: man zieht
+das allerletzte Element im Array an die erste Stelle (also an die Wurzel
+des Baumes). Danach vertauscht man es solange mit dem kleineren seiner
+S&ouml;hne bis entweder beide S&ouml;hne gr&ouml;&szlig;er sind oder das
+Ende des Baumes erreicht wurde. Wenn wir nach dieser Vorschrift vorgehen,
+erhalten wir anschlie&szlig;end wieder einen Heap. In Listing 1 sehen Sie
+ein Beispielprogramm f&uuml;r Heapsort.<BR>
+
+<BR>Diesen zuletzt besprochenen Algorithmus zur Bewahrung der
+Heapeigenschaften nach dem Entfernen der Wurzel k&ouml;nnen wir auch bei
+unserer n&auml;chsten Anwendung von B&auml;umen brauchen, dem schon
+anfangs angesprochenen Codieren. Was versteht man eigentlich unter
+&quot;Codieren&quot;? Nun, jeder von uns hat bestimmt schon einmal mit dem
+ASCII-Code zu tun gehabt. Dabei handelt es sich um eine standardisierte
+Darstellung von Buchstaben und Zeichen im Bin&auml;rcode.<BR>
+
+<BR>Obwohl vielen Computer-Besitzern der ASCII-Code heilig ist, stellt er
+nur eine m&ouml;gliche Codierung von Zeichen als 7-bit-Zahl oder
+8-bit-Zahl dar. F&uuml;r normale Zwecke ist er durchaus ausreichend.
+Manchmal kann es jedoch n&ouml;tig sein, ihn durch einen anderen,
+vielleicht platzsparenderen Code zu ersetzen. Beispiele daf&uuml;r
+w&auml;ren bei der &Uuml;bertragung &uuml;ber Telefonnetze, bei denen
+k&uuml;rzere Dateien billiger sind, oder wenn besonders viele Daten auf
+einer Diskette Platz finden sollen. Prinzipiell arbeiten auch alle
+bekannten Packer mit solchen Methoden.<BR>
+
+<BR><CENTER><A NAME="03" HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wie Sie sicherlich schon vermutet haben, werden uns auch hierbei die
+B&auml;ume wertvolle Dienste erweisen. Sie werden in diesem Fall
+Code-B&auml;ume genannt. Speziell wollen wir uns hier mit dem sogenannten
+Huffmann-Baum besch&auml;ftigen. Damit ist es m&ouml;glich, einen stets
+optimalen Code f&uuml;r eine bestimmte Datei zu erhalten.<BR>
+
+<BR>Veranschaulichen wir uns zuerst einmal die Methode der
+Huffmann-Codierung an einem Beispiel. Dabei gehen wir von dem Fall aus,
+da&szlig; unsere zu codierende Datei nur aus den ersten sechs Buchstaben
+des Alphabets besteht. Wir nehmen beispielweise an, da&szlig; sie 3 A, 4
+B, 1 C, 2 D, 5 E und 2 F enth&auml;lt. Nun m&uuml;ssen wir den einzelnen
+Buchstaben bestimmte Codes zuordnen. Im ASCII-Code h&auml;tte A den Code
+65, B h&auml;tte 66 usw. Es hat nat&uuml;rlich keinen Sinn, den einzelnen
+Buchstaben einfach nur andere Codes zuzuordnen. Vielmehr geht man dabei so
+vor, da&szlig; den Zeichen Codes verschiedener L&auml;nge zugewiesen
+werden. Dabei liegt es nahe, den h&auml;ufiger vorkommenden Buchstaben
+k&uuml;rzere Codes zu geben auf Kosten der seltener auftretenden
+Buchstaben. Das wirft nat&uuml;rlich die berechtigte Frage auf, wie man
+erkennen soll, wo der Code des einen Zeichens endet und der des
+n&auml;chsten beginnt, wenn die L&auml;nge der Codes nicht eindeutig
+ist.<BR>
+
+<BR>Dieses Problem umgeht die Idee des pr&auml;fixfreien Codes. Ein Code
+ist dann pr&auml;fixfrei, wenn kein Code ein Anfangsst&uuml;ck eines
+anderen darstellt. Der Codesatz 01, 110, 111 ist beispielsweise
+pr&auml;fixfrei. Ist aber auch der Code 11 Teil des Codesatzes, geht die
+Pr&auml;fixeigenschaft verloren, da 11 ein Anfangsst&uuml;ck der Codes 110
+und 111 darstellt. Bei Ben&uuml;tzung pr&auml;fixfreier Codes ist eine
+codierte Datei wieder eindeutig zu dekodieren. Es bleibt das Problem,
+welche Codes man den einzelnen Buchstaben nun genau zuweist. Wie schon
+vorhin erw&auml;hnt, spielt die H&auml;ufigkeit des Auftretens eines
+Buchstabens eine gro&szlig;e Rolle. Betrachten wir nocheinmal unser
+Beispiel von vorhin mit den ersten sechs Buchstaben. Um diese optimal zu
+codieren, schreiben wir sie nebeneinander und darunter vermerken wir, wie
+oft sie aufgetreten sind (s. Abbildung 2). Von diesen Zahlen w&auml;hlen
+wir die beiden niedrigsten und z&auml;hlen sie zusammen. Das Ergebnis
+notieren wir uns darunter und verbinden es mit den beiden addierten Zahlen
+durch zwei Striche. Anschlie&szlig;end streichen wir die eben addierten
+Zahlen durch.<BR>
+
+<BR><CENTER><A NAME="04" HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>In unserem Beispiel in Abbildung 2 werden also zuerst die Buchstaben C
+und D herangezogen und deren H&auml;ufigkeiten addiert. Die sich daraus
+ergebende Drei wird darunter notiert, die beiden Linien gezogen und die
+Eins und die Zwei unter dem C bzw. dem D durchgestrichen. Nun wird
+dasselbe auch auf die restlichen Zahlen, inklusive der eben erzeugten Drei
+angewandt. Wieder werden die kleinsten Zahlen addiert, verbunden und
+anschlie&szlig;end durchgestrichen bis nur mehr eine Zahl &uuml;brig ist.
+Wenn Sie nun das eben entstandene Kunstwerk umdrehen, k&ouml;nnen Sie
+vielleicht mit etwas Phantasie einen Baum erkennen.<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 CELLPADDING=0 CELLSPACING=2>
+<TR><TD ALIGN=CENTER><IMG WIDTH=251 HEIGHT=308 SRC="../images_05/abb_4-2.gif" ALT="[Abb. 2]"></TD></TR>
+<TR><TD ALIGN=CENTER><TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 WIDTH=251>
+<TR><TD ALIGN=LEFT BGCOLOR="#FFFFFF"><FONT SIZE="-1" COLOR="#000000">
+Abbildung 2: Huffmann-Baum und seine Speicherung
+</FONT></TD></TR></TABLE></TD></TR></TABLE>&nbsp;
+
+<BR>Um diesen Bin&auml;rbaum nun endg&uuml;ltig in einen Huffmann-Baum zu
+verwandeln, bleibt f&uuml;r uns nur mehr eine Kleinigkeit zu tun. Wir
+f&uuml;gen zu allen linken &Auml;sten eine 0 dazu und zu allen rechten
+&Auml;sten eine 1. Schlie&szlig;lich brauchen wir nur den Code eines jeden
+Buchstabens abzulesen. Dazu gehen wir von der Wurzel unten aus und wandern
+den Pfad bis zu dem jeweiligen Buchstaben entlang. Dabei schreiben wir
+eine Null nieder, wenn wir uns auf einem mit 0 bezeichneten Ast bewegen,
+und eine Eins sonst. Der Buchstabe A aus Abbildung 2 erh&auml;lt also den
+Code 00, B wird zu 01, C erh&auml;lt entsprechend 1000 usw.<BR>
+
+<BR><CENTER><A NAME="05" HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wie Sie sehen wird dadurch der Code f&uuml;r die h&auml;ufiger
+vorkommenden Buchstaben A, B und E nur 2 Bits lang, w&auml;hrend der Code
+f&uuml;r F schon 3 und jener f&uuml;r C und D gar 4 Bits ben&ouml;tigt.
+Wir wissen nun also, welchen Code wir welchem Buchstaben zuordnen sollen -
+der Codierung steht also nichts mehr im Wege. Nun wollen wir den Code aber
+anschlie&szlig;end auch wieder decodieren, um ihn in seiner
+urspr&uuml;nglichen Form wieder verwenden zu k&ouml;nnen.<BR>
+
+<BR>Dazu lesen wir von der codierten Datei immer nur ein Bit ein. Erhalten
+wir eine Null, dann steigen wir den linken Ast des Huffmann-Baumes rauf,
+ansonsten rechts. Erreichen wir dabei ein Blatt, dann haben wir einen
+Buchstaben fertig decodiert und beginnen f&uuml;r den n&auml;chsten
+abermals bei der Wurzel ganz unten. So k&ouml;nnen wir die Daten Zeichen
+f&uuml;r Zeichen wieder decodieren.<BR>
+
+<BR>Wie immer gibt es auch zu den Huffmann-B&auml;umen ein kleines
+Programm zum Abtippen (Listing 2). Es erwartet das zu codierende Quellfile
+und das Zielfile als Parameter und f&uuml;hrt anschlie&szlig;end eine
+Codierung durch. Danach wird das soeben codierte Listing wieder decodiert
+und das Ergebnis angezeigt.<BR>
+
+<BR>Die Codierung erfolgt in zwei Durchl&auml;ufen. Zuerst wird
+gez&auml;hlt, wie oft jedes Zeichen in der zu codierenden Datei vorkommt.
+Die Anzahl wird dabei in einem Heap gespeichert. Anschlie&szlig;end werden
+immer die kleinsten Elemente des Heaps zusammengefa&szlig;t, wie oben
+beschrieben, bis der Heap nur mehr ein Element enth&auml;lt.
+Anschlie&szlig;end ermittelt die Routine Code_erstellen die Codes f&uuml;r
+jedes einzelne Zeichen. Baum_aufbauen erzeugt schlie&szlig;lich daraus den
+dazugeh&ouml;rigen Huffmann-Baum. Danach nimmt die Routine Codierung die
+eigentliche Codierung vor. Dabei mu&szlig; nat&uuml;rlich auch der
+erzeugte Huffmann- Baum mitgespeichert werden, um eine Decodierung zu
+erm&ouml;glichen. Das verringert nat&uuml;rlich den Platzgewinn einer
+Huffmann-Codierung wieder. Aus diesem Grund werden sehr kurze Dateien
+durch die Codierung l&auml;nger als das Original. Bei l&auml;ngeren
+Dateien macht sie sich aber schon stark bemerkbar. Die Decodierung ist
+vergleichsweise einfach. Nachdem der Huffmann-Baum in ein Array eingelesen
+wurde, wird mit seiner Hilfe eine zeichenweise Decodierung
+durchgef&uuml;hrt und das Ergebnis auf das Zielfile geschrieben.
+Interessant ist lediglich noch die Art der Speicherung des Huffmann-Baumes
+in den Beispielprogrammen. Wie erw&auml;hnt wird er als Array gespeichert,
+die Art der darin enthaltenen Informationen unterscheidet sich aber von
+der beim Heap verwendeten Speicherweise. Prinzipiell geh&ouml;ren jeweils
+zwei und zwei Eintr&auml;ge zusammen. Dabei wird immer der erste von
+beiden der Null zugeordnet und der zweite der Eins.<BR>
+
+<BR><CENTER><A NAME="06" HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wir beginnen bei der Decodierarbeit am Anfang des Arrays und lesen das
+erste Bit vom File. Ist es eine Null, lesen wir das 0. Element des Feldes,
+bei einer Eins das 1. Element. Hier unterscheiden wir dann zwischen einem
+positiven und einem negativen Feldelement. Wurde eine postitive Zahl
+ausgelesen, gibt sie das Element im Feld an, an dem mit der Decodierung
+fortgefahren werden soll. War es ein negativer Wert, dann wissen wir,
+da&szlig; wir ein Blatt erreicht und somit ein Zeichen fertig decodiert
+haben. In diesem Fall beginnen wir f&uuml;r das n&auml;chste Zeichen
+wieder am Anfang des Feldes.<BR>
+
+<BR>In Abbildung 2 sehen Sie ganz unten wie der dar&uuml;ber gezeichnete
+Huffmann- Baum in einem Array gespeichert aussieht. Wenn Sie nun die
+Bitfolge 101 decodieren wollen, dann w&auml;hlen Sie erstmals das Element
+1 aus dem Feld (wegen Bit 1 am Anfang des Codes 101). Dieses hat den Wert
+4, also setzen Sie Ihre Arbeit beim 4. Feldelement fort. Wir lesen nun das
+n&auml;chste Bit, eine Null. Somit lesen wir Element 4+0=4 aus dem Feld.
+Hier finden wir eine 6 als n&auml;chste Ausgangsposition vor. Wir holen
+nun das n&auml;chste Bit und erhalten wieder eine Eins. Aus diesem Grund
+lesen wir das Element Nummer 6+1=7 aus. Hier zeigt die negative Zahl -71
+an, das wir am Ende des Baumes angelangt sind. Wenn wir diesen Wert
+negieren, erhalten wir 71, den ASCII- Code f&uuml;r F. Die
+urspr&uuml;ngliche Bitfolge 101 steht also f&uuml;r das F. So einfach ist
+das. Gehen wir nun aber zum letzten Thema der heutigen Folge &uuml;ber.
+Mit den Suchb&auml;umen haben wir ja schon recht m&auml;chtige
+Datenstrukturen kennengelernt, die das Auffinden eines bestimmten
+Schl&uuml;ssels in sehr kurzer Zeit erm&ouml;glichen. Leider sind sie
+jedoch auch nicht universell zum Suchen geeignet. Deshalb wollen wir uns
+einmal mit einem Suchproblem besch&auml;ftigen, bei dem wir mangels
+Flexibilit&auml;t auf die Verwendung von B&auml;umen verzichten
+m&uuml;ssen: das Auffinden von Textbausteinen in einem gr&ouml;&szlig;eren
+Text. Stellen Sie sich vor, Sie m&uuml;&szlig;ten eine Textverarbeitung
+oder auch nur einen einfachen Editor schreiben. Da geh&ouml;rt eine
+Suchfunktion schon zum Standardrepertoire. Nat&uuml;rlich gibt es auch
+hier eine triviale L&ouml;sung, auf die jeder leicht kommt, der nur ein
+bi&szlig;chen programmieren kann. Listing 3 zeigt eine solche brutale
+Methode, bei der einfach der zu durchsuchende String ab jedem Zeichen mit
+dem Muster verglichen wird. Dieser Algorithmus ist jedoch sehr langsam, da
+viele Zeichen &ouml;fter als einmal inspiziert werden m&uuml;ssen. Wenn
+wir zum Beispiel im String &quot;halihalo&quot; das Muster
+&quot;halo&quot; suchen, dann wird das naive Verfahren beim Vergleich des
+ersten Teilstrings &quot;hali&quot; mit dem Muster &quot;halo&quot; erst
+beim vierten Zeichen eine Abweichung feststellen. Danach beginnt es den
+Textstring ab dem zweiten Zeichen mit dem Muster zu vergleichen. Hier
+stellt es schon beim ersten Buchstaben einen Unterschied fest. Also wird
+der Vergleich ab dem dritten Zeichen in &quot;halihalo&quot; fortgesetzt.
+Erst wenn sich der Algorithmus auf diese Weise bis zum f&uuml;nften
+Buchstaben in &quot;halihalo&quot; durchgearbeitet hat, kann er eine
+&Uuml;bereinstimmung feststellen und bricht ab. Wenn Sie sich jedoch die
+Vorgangsweise des Programmes genauer ansehen, dann werden Sie feststellen,
+da&szlig; sowohl das 'a', also auch das 'l' und das nachfolgende 'i' aus
+&quot;halihalo&quot; mehrfach zum Vergleich herangezogen wurden. Der
+primitive Algorithmus ist also insofern dumm, als er nicht merkt, welche
+Zeichen im gerade betrachteten Text mit dem Muster schon
+&uuml;bereingestimmt haben. Wir wollen nun eine bessere Variante
+besprechen, die Knuth-Morris-Pratt- Methode. Wo dessen St&auml;rken
+liegen, betrachten wir am besten anhand eines Beispiels. Es soll das Wort
+&quot;halihalo&quot; im String &quot;halihalihalo&quot; gesucht
+werden.<BR>
+
+<BR><CENTER><A NAME="07" HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>Text:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalihalo
+<BR>Muster:&nbsp;&nbsp;&nbsp;halihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-------
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Hier wird erst beim achten Zeichen eine Abweichung festgestellt. Das naive 
+Verfahren f&auml;hrt dann so fort:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>Text:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalihalo
+<BR>Muster:&nbsp;&nbsp;&nbsp;halihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-------
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--------
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Hier werden sehr viele Vergleiche umsonst gemacht, die eingespart werden
+k&ouml;nnten, wenn das Programm w&uuml;&szlig;te, wo es im Falle einer
+Nicht&uuml;bereinstimmung (Mismatch) mit dem Vergleich fortfahren soll.
+Genau dies wird im Verfahren von Knuth-Morris-Pratt verbessert. Bevor
+n&auml;mlich mit dem Vergleich selbst begonnen wird, f&uuml;hrt das
+Programm eine (einmalige) Analyse des Musterstrings durch. Dabei wird nach
+allf&auml;lligen Pr&auml;fixst&uuml;cken in dem Muster gesucht.
+Pr&auml;fixstrings sind Strings, die Anfangsst&uuml;cke der Muster selbst
+sind. In unserem Beispiel ist z.B. der Teilstring &quot;hal&quot; ab dem
+f&uuml;nften Zeichen ein Pr&auml;fixstring von &quot;halihalo&quot;. Diese
+Information wird in einem Feld abgelegt. Dabei wird aus
+Geschwindigkeitsgr&uuml;nden jedem einzelnen Buchstaben ein Wert
+zugewiesen, der angibt, der wievielte Buchstabe er in einem
+(allf&auml;lligen) Pr&auml;fixstring ist. F&uuml;r unsere Beispielmuster
+gilt:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>Muster:&nbsp;&nbsp;&nbsp;halihalo
+<BR>next:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;00001230
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Das Feld tr&auml;gt (analog zum Beispielprogramm in Listing 4) den Namen
+next, da es f&uuml;r die Berechnung der n&auml;chsten zu vergleichenden
+Position verwendet wird.<BR>
+
+<BR><CENTER><A NAME="08" HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wenn nun beim zeichenweisen Durchsuchen eines Textes ein Mismatch
+auftritt, gibt die entsprechende Zahl davor an, beim wievielten Zeichen im
+Muster mit dem Vergleich fortgesetzt werden soll. Betrachten wir dieses
+Verhalten wieder anhand unseres Beispieltextes:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>Text:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalihalo
+<BR>Muster:&nbsp;&nbsp;&nbsp;halihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-------
+<BR>next:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;00001230
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Der Mismatch tritt beim achten Buchstaben auf, da hier ein 'i' anstatt des
+geforderten 'o' gefunden wurde. Das Programm untersucht nun das
+next-Element davor und findet dort eine Drei. Diese Drei bedeutet,
+da&szlig; die letzten drei Buchstaben vor dem 'i' mit den ersten drei im
+Muster &uuml;bereinstimmen. Wir haben also einen neuen Vergleichsanfang
+gefunden und fahren mit der Suche fort, indem wir den achten Buchstaben
+des Textes (wo ja der Mismatch auftrat) mit dem vierten im Muster
+vergleichen.<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>Text:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalihalo
+<BR>Muster:&nbsp;&nbsp;&nbsp;halihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--------
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Auf diese Weise konnte eine &Uuml;bereinstimmung festgestellt werden und
+der Algorithmus bricht ab. W&auml;re auch hier wieder ein Mismatch
+aufgetreten, m&uuml;&szlig;ten wir nocheinmal nach eben derselben Methode
+verfahren. Betrachten wir dazu einen etwas modifizierten Text:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>Text:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalohalihalihalohalihalo
+<BR>Muster:&nbsp;&nbsp;&nbsp;halihalohalihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---------------
+<BR>next:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0000123012345678
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalohalihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-------
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0000123012345678
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;halihalohalihalo
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----------------
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR><CENTER><A NAME="09" HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#99"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Beim ersten Vergleich tritt ein Mismatch im letzten Zeichen des Musters
+mit dem 16. Zeichen im Text auf. Eine Untersuchung des next-Feldes davor
+ergibt eine Sieben. Das bedeutet, die sieben Zeichen vor dem Mismatch
+stellen wieder einen Musteranfang dar (&quot;halihal&quot;). Wir wissen
+nun, da&szlig; wir beim n&auml;chsten Vergleich mit dem achten Zeichen im
+Muster fortfahren m&uuml;ssen. Wie aus obiger Darstellung aber leicht
+ersichtlich, kommt es aber auch hier zu einem Mismatch, und zwar gleich
+beim achten Zeichen im Muster. Das next- Feld davor ergibt hier eine Drei.
+Aus diesem Grund versuchen wir das Muster ab dem vierten Zeichen mit dem
+Text zu vergleichen, und siehe da, es klappt! Im Falle eines Mismatches
+mu&szlig; also das next-Feld sooft ausgelesen werden, bis entweder eine
+&Uuml;bereinstimmung festgestellt werden kann oder der Anfang des
+next-Feldes erreicht wird.<BR>
+
+<BR>Beachten Sie bitte, da&szlig; die unterstrichenen Texte in der obigen
+Darstellung nicht nocheinmal mit dem vorgegebenen Text verglichen werden
+m&uuml;ssen, da das next-Feld schon angibt, da&szlig; sie
+&uuml;bereinstimmen. Sie sehen also, da&szlig; beim
+Knuth-Morris-Pratt-Verfahren &uuml;bereinstimmende Zeichen im Text niemals
+&ouml;fter als einmal untersucht werden m&uuml;ssen. Hier besteht auch der
+Geschwindigkeitsvoteil gegen&uuml;ber der in Listing 3 verwendeten
+Methode. In Listing 4 finden Sie nun die bisher besprochene Theorie in ein
+Programm umgesetzt. Nehmen Sie es ruhig in ihre Bibliothekssammlung auf.
+Nat&uuml;rlich k&ouml;nnen Sie die Routinen auch in ihren Programmen
+verwenden, wenn Sie nicht wissen, wie der Algorithmus nun im Detail
+arbeitet. Wie man mit den einzelnen Funktionen umgeht, zeigt das
+Beispielprogramm. Damit w&auml;ren wir am Ende des heutigen Kursteiles.
+Das n&auml;chste mal kommen wir zu einem v&ouml;llig neuen Suchverfahren,
+den Hashtabellen.<BR>
+
+			<BR>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+				<P ALIGN=RIGHT>
+
+					<A HREF="as-redax.html#markus">Markus &Ouml;llinger</A>
+					&nbsp;&nbsp;&nbsp;
+					<A HREF="../deutsch/0x0079.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" VSPACE=0 HSPACE=0 BORDER=1></A>
+					&nbsp;&nbsp;&nbsp;
+					<BR>
+
+				</P>
+				<BR><TABLE BORDER=0 CELLPADDING=8 CELLSPACING=0 ALIGN=CENTER WIDTH="90%">
+				<TR VALIGN=TOP ALIGN=LEFT><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x0033.html">Workshop Teil 1</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x0065.html">Workshop Teil 3</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_05/list_4-1.c">Listing 4-1</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_05/list_4-2.c">Listing 4-2</A><BR>
+
+				</TD><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x004D.html">Workshop Teil 2</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_05/abb_4-1.gif">Abb. 1</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_05/abb_4-2.gif">Abb. 2</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_05/list_4-3.c">Listing 4-3</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_05/list_4-4.c">Listing 4-4</A><BR>
+
+				</TD></TR>
+				</TABLE>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER> &nbsp; 
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=LEFT>
+				<A HREF="#00"><IMG SRC="../images/_krumm_hi.gif" WIDTH=37 HEIGHT=29 BORDER=0 ALT="[Up]"></A>
+				<A NAME="99"><FONT COLOR="#FFFFFF">&nbsp;</FONT></A>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=BOTTOM ALIGN=RIGHT>
+				<A HREF="0x0078.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x007A.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+	</TABLE>
+</BODY>
+</HTML>

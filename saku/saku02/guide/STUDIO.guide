@@ -1,0 +1,597 @@
+@database STUDIO
+
+@node MAIN
+@title "Studio Printer Software · Kari Ahonniska"
+
+           @{" Kirjoittimien tulostusjälki / johdanto " link johdanto  }
+           @{" Studio Printer Software on saatavilla " link myynti}
+           @{" Ongelman ratkaisu " link ratkaisu  }
+           @{" Luettelo ominaisuuksista eli ohjelman kuvaus " link studio  }
+           @{" Luettelo Studion tukemista kirjoittimista " link PRINTERS}
+
+@endnode
+
+@node Johdanto
+
+Kirjoittimet ja niiden aikaansaama tulostusjälki ovat yksi turhauttavimpia
+ongelmia jonka kanssa tietokoneen käyttäjä joutuu "painiskelemaan".
+Erityisesti jos halutaan samalle paperille sekä tekstiä että kuvia. Tällöin
+julkaisuohjelmaa käyttäessä joutuu tekemään kompromisseja jotka heikentävät
+joko kuvien tai tekstin tasoa, erityiseti jos käyttää matriisikirjoitinta.
+Mikäli kirjoittimen resoluutio on suuri tulee teksti selvänä mutta kuvat
+tummina ja joskus melkein mustina koska pisteet joista se muodostuu ovat
+limittäin toistensa päällä ja ditheroinnilla simuloidut värierot katoavat.
+Kirjoittimen resoluutiota pienentämällä kuvat selvenevät koska pisteiden
+määrä vähenee eikä päällekkäisyyttä ilmene mutta yksivärinen teksti 
+menettää yleensä luettavuutensa tai ei ole ainakaan esityskelpoista.
+Suurin syyllinen on Amigan kirjoitinajurit jotka pystyvät esittämään
+vain 16 harmaavärisävyä jolloin käytettävä ditherointi on liian pieni
+suurille printterin resoluutioille ( Density ).
+
+@endnode
+
+@node ratkaisu
+
+PageStream julkaisuohjelmaa käyttämällä asia on ratkaistu tuomalla 
+Postscriptkirjoittimista tuttu lpi ( lines per inch ) määritys myös 
+matriisikirjoittimiin. Tosin PageStream käyttää siitä nimitystä Screen 
+Frequency vaikka sillä ei ole mitään tekemistä näytön kanssa eli TV:n tai
+monitorin. Lpi tulee vanhasta tavasta muodostaa muodostaa kuva mustista 
+pisteistä laittamalla tiheä verkko kuvan päälle sitä kuvattaessa 
+( screening ),tällöin ditherointi muodostui verkon silmistä näkyvästä 
+osasta. Luku viivaa per tuuma tuli tällöin siis verkon tiheydestä. 
+Jotta asia selviäsi kunnolla ja ei sekoaisi dpi:in ( dots per inch ) 
+kanssa on pieni esimerkki paikallaan.
+
+Oletetaan että PageStream ohjelmaa käyttäen tulostetaan kuva, jonka Screen
+Frequency on 100 lpi, kirjoittimelle jonka density on 300 dpi. Tällöin 
+jokaista tuumaa kohti pysty- ja vaakasuoraan on 100 mahdollisuutta muodos-
+taa pieni ditherointi joka simuloi harmaata värisävyä. Koska kirjoittimemme
+kykenee tulostamaan 300 pistettä tuumalle pysty- ja vaakasuoraan niin 
+ditherointi muodostuu ( 300 / 100 ) 3 * 3 pisteen kokoisista kuviosta.
+Näin ollen käytössämme on 9 värisävyä. Jos Screen frequency olisi ollut 
+60 lpi saisimme samalla kirjoittimella 25 värisävyä ( 300/60=5 ; 5*5=25 ).
+PageStream sallii jokaiselle kuvalle oman Screen frequency arvonsa kun taas
+Postscript kirjoittimien lpi koskee koko dokumenttia ei pelkästään kuvia.
+
+Tämän suhteellisen pitkän johdannon jälkeen päästään varsinaiseen asiaan 
+eli siihen mitä muiden ohjelmien käyttäjät voivat tehdä parantaakseen
+tulostuksiaan. Vastaus on hankkia ohjelma joka korvaa Amigan omat kirjoitin
+ajurit kuten Studio Printer Software. 
+
+@endnode
+
+@node studio
+
+Studio printer Software tulee yhdellä lerpulla ja mukana on installointi
+ohjelma joka purkaa datan ja "valmistaa" sinulle oikean kirjoitinajurin ja
+kuvien tulostamisohjelman.
+
+Studio printer Softwaren ominaisuuksien luettelo:
+
+- tukee kirjoittimien korkeimpia tulostustarkkuuksia (jopa 600 dpi)
+- tulostaa 16.7 miljoonalla värillä tai 256 harmaasävyllä (Amigan tavalliset
+  ajurit kykenevät vain 4096 väriin ja 16 harmaasävyyn.)
+- Värit ovat samoja monitorin näytöllä ja paperilla kiitos 32 bittisen
+  tarkkuuden 256 sävyn jokaista väriä kohti.
+- Ink compensation. 
+- säädettävät kirkkaus- ( brightness ), kontrasti- ( contrast )ja gamma-
+  korjaukset.
+- Useita eri ditherointimenetrelmiä kuten; Floyd-Steinberg,Jarvis,Stucki,
+  Blue Noise,Halftone,Orderd,Spiral,Horizontal,Vertical,Fwd-Brick ja 
+  Bck-brick. 
+- Omien ditherointi menetelmien määritys ja käyttö.
+- Erikoisominaisuus matriisimirjoitinten tulostusjäljen "raidoituksen"
+  ( banding ) korjaukseen.
+- paperin koko ja "tulostusala" täysin määritettävissä esim koko A4 käy-
+  tettävissä DeskJeteillä.
+- nelivärierottelu ( tämä PageSetter 3sta puuttuikin.)
+- kirjoitinten sisäisten fonttien "hallinta"
+- "pakattu" grafiikan tulostus nopeuttamaan tulostusta kirjoittimilla jotka
+  tukevat kyseistä ominaisuutta.
+- PJL ( Printer Job Language ) tuki
+- käyttää kaikkia neljää väriä HP Deskjet 550C ja 1200C kirjoittimissa
+- Preferens kirjoitinajurina kaikkien Amigan ohjelmien käytettävissä.
+
+Lisäksi Mukana tuleva kuvientulostusohjelman ominaisuuksia:
+
+- toimii kaikissa Amigamalleissa ja jopa amigan omilla kirjoitinajureilla
+  silti mahdollistaen kaikki yllämainitut ominaisuudet
+- Tulostaa kuvia jotka eivät mahdu koneen muistiin esim. 512 kt Amiga voi
+  tulostaa useiden megojen kokoisia kuvia esim. HAM8, IFF24, IFF8 ja EHB
+- ohjelmassa sisäinen Printer Spooler.
+- kuva voidaan tulostaa useille paperiarkeille tehden julistekokoisia
+  tulostuksia.
+- Arexx tuki
+
+Ohjelman mukana tulee myös erikoiskirjoitinajurit PageStream julkaisuohjel-
+maa varten HP PCL 5 ( LaseJet III ja IV )ja PCL5C ( DeskJet 550C ja 1200C 
+sekä Paintjet 300 XL )kirjoittimia varten. 
+
+Studion käyttö edellyttää että sinulla on vähintää 24 neulainen matriikir-
+joitin, mustesuihku tai Laserkirjoitin. Tosin kuvien tulostusohjelma toimii
+myös 9 neulaisten matriisikirjoittimien kanssa mutta näihin ei saa Studion 
+omaa kirjoitinajuria.
+
+Studio Printer Softwaren mukana tulee 100 sivuinen A 5 kokoinen kierresel-
+käinen manuaali jossa eri kirjoitinajureiden ominaisuudet on selvitetty 
+erittäin yksityiskohtaisesti. 
+Studio Printer Software vaatii Kickstart 2.x:n toimiakseen.
+
+@endnode
+
+@node myynti
+
+Studio Printer Software maksaa £ 49.95 ja sitä myy
+
+Just Amiga Monthly
+75 Greatfields Drive 
+Uxbridge, UB8 3QN
+Great Britain
+
+
+Ohjelmasta on myös oma versio Canonin mustesuihkua käyttäville 
+( Canon Studio ), joka maksaa £ 15.00 ja on saatavilla samasta
+paikasta ja varsinaisen Studio Printer Softwaren mukana ei tule
+ajureita Canonin musteruiskuihin.
+
+J.A.M toimitti ohjelman viikon sisällä sekin postittamisesta.
+
+           @{" Luettelo Studion tukemista kirjoittimista " link PRINTERS}
+
+@endnode
+
+@node PRINTERS "Studio Printer Softwaren tukemat kirjoittimet"
+
+-------------------------------------------------------------------
+
+Now a list of printers that should work with the Studio Printer
+Software (according manufacturer specification:  + ; verified:
+*).  Note that the Studio IFF printing program works with every
+well written KS 2.04 Workbench driver (even non-striping drivers
+are supported if they are well done!).
+
+-------------------------------------------------------------------
+
+                                 succ.     possible driver(s)
+Manufacturer    Model            tested    for your printer
+------------    -----            ------    ------------------------
+AMS             ProTracer A2,A3,A4  +
+Amstrad         5000                *
+ASI             DP-1185Jet          +      (Epson Emulation)
+ASI             DP1185F             +      (Epson Emulation)
+Bezier          BP4040              +      (HP Emulation)
+Brother         HL-4 Laser As       +      (HP IIP Emulation)
+Brother         HL-4V Laser As      +      (HP IIP Emulation)
+Brother         HL-4Ve Laser As     +      (HP PCL 5 Emulation)
+Brother         HL-4PS              +      (HP IIP Emulation)
+Brother         HL-6 Laser As       +      (HP IIP Emulation)
+Brother         HL-8 Laser As       +      (HP PCL 5 Emulation)
+Brother         HL-8PS              +      (HP PCL 3 Emulation)
+Brother         HL-10V Laser As     +      (HP PCL 5 Emulation)
+Brother         HL-10PS             +      (HP PCL 5 Emulation)
+Brother         M-1324              +
+Brother         M-1324L             +
+Brother         M-1724L             *
+Brother         M-1824L             *
+Brother         M-1924L             +
+Brother         M-1524L             +
+Brother         M-2524L             +
+Brother         HJ400               +      (Epson)
+Brother         HJ770               *      (Epson 48pin/Deskjet)
+Brother         M-2024L             +
+Bull            CompuPrint 4/14     +      (Epson Emulation)
+Bull            CompuPrint 4/54     +      (Epson Emulation)
+Bull            CompuPrint 924      +      (Epson Emulation)
+Bull            CompuPrint 924N     +      (Epson Emulation)
+Bull            4/14                +
+Bull            924N                +
+Bull            924                 +
+Bull            4/54                +
+Bull            VP110               +      (HP PCL Emulation)
+Bull            VP81                +      (HP PCL Emulation)
+Bull            VP570               +     
+Bull            VP580               +     
+Bull            Pagemaster 201      +     
+Bull            Pagemaster 1021     +      (HP PCL Emulation)
+Bull            Pagemaster 413      +      (HP PCL Emulation)
+Bull            Pagemaster 721      +      (HP PCL Emulation)
+C.Itoh          C-610 II            +      (Epson Emulation)
+C.Itoh          C-615 II            +      (Epson Emulation)
+C.Itoh          C-715F
+CalComp         CCL600              +      (HP IV Emulation)
+Canon           LBP 4 SX            *
+Canon           LBP 8 SX            *
+ChipSet         Wenger 9T Tempest   +      (HP Emulation)
+Citizen         Swift 24            *
+Citizen         Swift 24e           +
+Citizen         Swift 24X           +
+Citizen         Swift 200           +
+Citizen         Swift 224           +
+Citizen         Swift 240           +
+Citizen         Swift 240C          +
+Citizen         GSX 140             *
+Citizen         ProDot 24           *
+Citizen         ProJet              *      (Deskjet Emulation)
+Citizen         PN48                +     
+Citizen         ProLaser  12        +      (HP PCL Emulation)
+Citizen         ProScript 12        +      (HP PCL Emulation)
+Compaq          Pagemarq 15         +      (HP PCL Emulation)
+Compaq          Pagemarq 20         +      (HP PCL Emulation)
+Craft           OP-115              +      (HP PCL Emulation)
+Craft           SL92Plus            +      (Epson Emulation)
+Craft           SL 532              +      (Epson Emulation)
+Dataproducts    LZR 1555            +      (HP PCL Emulation)
+Dataproducts    LZR 1560            +      (HP PCL Emulation)
+Dataproducts    LZR 2450            +      (HP PCL Emulation)
+Dataproducts    LZR 2455            +      (HP PCL Emulation)
+Dataproducts    LZR 650             +      (HP PCL Emulation)
+Dataproducts    LZR 660             +      (HP PCL Emulation)
+Dataproducts    LZR 950             +      (HP PCL Emulation)
+Dataproducts    LZR 960             +      (HP PCL Emulation)
+Dataproducts    LZR 965             +      (HP PCL Emulation)
+Datatrade       DataScribe P12      +      (HP PCL Emulation)
+Datatrade       DataScribe P17      +      (HP PCL Emulation)
+Datatrade       DataScribe P20      +      (HP PCL Emulation)
+Datatrade       DataScribe P22      +      (HP PCL Emulation)
+Datatrade       DataScribe P45      +      (HP PCL Emulation)
+Datatrade       DataScribe P6       +      (HP PCL Emulation)
+DEC             Declaser 1100       +      (with opt. HP PCL Emulation)
+DEC             Declaser 1150       +      (with opt. HP PCL Emulation)
+DEC             Declaser 1152       +      (with opt. HP PCL Emulation)
+DEC             Declaser 1555       +      (HP PCL 5 Emulation)
+DEC             Declaser 1560       +      (HP PCL 4 Emulation)
+DEC             Declaser 2150       +      (with opt. HP PCL Emulation)
+DEC             Declaser 2200Plus   +      (with opt. HP PCL Emulation)
+DEC             Declaser 2250Plus   +      (with opt. HP PCL Emulation)
+DEC             Declaser 2100Plus   +      (with opt. HP PCL Emulation)
+DEC             Declaser 3200Plus   +      (HP PCL Emulation)
+DEC             Declaser 3250Plus   +      (HP PCL 4 Emulation)
+DEC             Multijet1000        +      (Deskjet Emulation)
+DEC             Multijet2000        +      (Deskjet Emulation)
+Epson           EPL 5200            +      (HP PCL 5 Emulation)
+Epson           EPL 5000            +      (HP PCL 3 Emulation)
+Epson           EPL 4300            +      (HP PCL 3 Emulation)
+Epson           EPL 4100            *      (HP PCL 3 Emulation)
+Epson           EPL 4000            +      (HP PCL 3 Emulation)
+Epson           EPL 7500            *      (HP PCL 3 Emulation)
+Epson           EPL 8100            *      (HP PCL 5 Emulation)
+Epson           L-1000              +
+Epson           L-750               +
+Epson           LQ-1000             *
+Epson           LQ-1050             *      (100% Optimise)
+Epson           LQ-1050+            *      (100% Optimise)
+Epson           LQ-1060             *      (100% Optimise)
+Epson           LQ-1070             *      (100% Optimise)
+Epson           LQ-1170             +
+Epson           LQ-1500             *
+Epson           LQ-2500             *      (100% Optimise)
+Epson           DLQ-2000            +
+Epson           LQ-2550             *
+Epson           LQ-500              *      (100% Optimise)
+Epson           LQ-510              *
+Epson           LQ-570              *
+Epson           LQ-570+             *
+Epson           LQ-800              *
+Epson           LQ-850              *      (100% Optimise)
+Epson           LQ-850+             *      (100% Optimise)
+Epson           LQ-860              *      (100% Optimise)
+Epson           LQ-870              *      (100% Optimise)
+Epson           LQ-950              +
+Epson           LQ-570              +
+Epson           LQ-100              +
+Epson           Stylus              +
+Epson           SQ-850              *
+Epson           SQ-870              +
+Epson           SQ-1170             +
+Epson           SQ-2000             *
+Epson           SQ-2550             *
+Epson           EPI200              +
+Facit           P8040               +      (HP PCL Emulation)
+Facit           P8045               +      (HP PCL Emulation)
+Facit           P8085E              +      (HP PCL Emulation)
+Facit           P8085S              +      (HP PCL Emulation)
+Facit           P8160               +      (HP PCL Emulation)
+Facit           E-690               +      (Epson Emulation)
+Facit           E-580               +      (Epson Emulation)
+Facit           E-590               +      (Epson Emulation)
+Facit           E-950               +      (Epson Emulation)
+Fordata         HPIII               +      (HP PCL Emulation)
+Fordata         OGS 305 Stywrt. 0   +      (HP PCL Emulation)
+Fordata         OGS 305 Stywrt. 1   +      (HP PCL Emulation)
+Fordata         OGS 305 Stywrt. 2   +      (HP PCL Emulation)
+Fordata         OGS 305 Stywrt. 3   +      (HP PCL Emulation)
+Fordata         OGS 30D Stywrt. 0   +      (HP PCL Emulation)
+Fordata         OGS 30D Stywrt. 1   +      (HP PCL Emulation)
+Fordata         OGS 30D Stywrt. 2   +      (HP PCL Emulation)
+Fordata         OGS 30D Stywrt. 3   +      (HP PCL Emulation)
+Fordata         OGS 16 Scrollwriter +      (HP PCL Emulation)
+Fujitsu         VM2200              +      (HP PCL Emulation)
+Fujitsu         VM600               +      (HP PCL 5 Emulation)
+Fujitsu         VM600E              +      (HP PCL 5 Emulation)
+Fujitsu         VM800               +      (HP PCL 5 Emulation)
+Fujitsu         DL900               +
+Fujitsu         DL1100              *
+Fujitsu         DL1150              +
+Fujitsu         DL1200              +
+Fujitsu         DL1250              +
+Fujitsu         DL3300              +
+Fujitsu         DL3600              +
+Fujitsu         DL4600C             +
+Fujitsu         DL5800              +
+Fujitsu         BJ100               *      (Deskjet+ Emulation)
+Fujitsu         BJ200               *      (Deskjet+ Emulation)
+GCC             BLP II              +      (with opt. HP Emulation)
+GCC             BLP IIs             +      (with opt. HP Emulation)
+Genicom         7040EC              +      (HP PCL Emulation)
+Genicom         7080EC              +      (HP PCL Emulation)
+Genicom         7080RP              +      (HP PCL Emulation)
+Genicom         7150                +      (HP PCL Emulation)
+Genicom         7170                +      (HP PCL Emulation)
+Genicom         1040                +      (Epson Emulation)
+Genicom         GeniPrint 20        +      (Epson Emulation)
+Genicom         GeniPrint 25        +      (Epson Emulation)
+HP              Laserjet 4MX        *
+HP              Laserjet 4Si        *
+HP              Laserjet 4M         *
+HP              Laserjet 4          *
+HP              Laserjet 4L         *
+HP              Laserjet 4Si        *
+HP              Laserjet 3D         *
+HP              Laserjet 3          *
+HP              Laserjet 3SI        *
+HP              Laserjet 3P         *
+HP              Laserjet 2P         *
+HP              Laserjet 2P+        *
+HP              Laserjet 2          *
+HP              Laserjet            +
+HP              Laserjet Plus       +
+HP              Laserjet 500        +
+HP              Laserjet 2000       +
+HP              Deskjet             *
+HP              Deskjet Plus        *
+HP              Deskjet Portable    *
+HP              Deskjet 500         *
+HP              Deskjet 510         *
+HP              Deskjet 500C        *
+HP              Deskjet 550C        *
+HP              Deskjet 1200C       *
+HP              Paintjet 300XL      *
+Kodak           Diconix 701         +      (Deskjet Emulation)
+Kodak           Diconix P00SI       +      (Epson Emulation)
+Kodak           Ektaplus 7016       +      (HP PCL 3 Emulation)
+Kodak           Ektaplus 7016PS     +      (HP PCL 3 Emulation)
+Kyocera         F800T               +      (HP PCL 3 Emulation)
+Kyocera         F820                +      (HP PCL 3 Emulation)
+Kyocera         F1200S              +      (HP PCL 3 Emulation)
+Kyocera         F1800               +      (HP PCL Emulation)
+Kyocera         F2200S              +      (HP PCL 3 Emulation)
+Kyocera         F3300               +      (HP PCL Emulation)
+Kyocera         F5000               +      (HP PCL Emulation)
+Kyocera         FS850               +      (HP PCL 5 Emulation)
+Kyocera         FS1500              +      (HP PCL 5 Emulation)
+Kyocera         FS3500              +      (HP PCL 5 Emulation)
+Kyocera         FS5000              +      (HP PCL 3 Emulation)
+Kyocera         FS5500              +      (HP PCL 5 Emulation)
+LaserMaster     LM7200LX-TX
+LaserMaster     Unity 1000          +
+LaserMaster     Unity 1200XL        +
+LaserMaster     WinPrinter 600XL    +
+LaserMaster     WinPrinter 800      +
+Mannesmann      MT911               +      (HP PCL 3 Emulation)
+Mannesmann      MT908               +      (HP PCL 5 Emulation)
+Mannesmann      MT906               +      (HP PCL 3 Emulation)
+Mannesmann      MT904               +      (HP IIP Emulation)
+Mannesmann      MT904plus           +      (HP PCL 5 Emulation)
+Mannesmann      MT735 Compact       +      (HP PCL 3 Emulation)
+Mannesmann      MT730 Compact       +      (HP PCL 3 Emulation)
+Mannesmann      MT330               *      (Epson Mode)
+Mannesmann      MT350               +      (Epson Mode)
+Mannesmann      MT360               +      (Epson Mode)
+Mannesmann      MT151/24            +      (Epson Mode)
+Mannesmann      MT150/24            +      (Epson Mode)
+Mannesmann      MT131/24            +      (Nec/Epson Mode)
+Mannesmann      MT130/24            +      (Nec/Epson Mode)
+Mannesmann      MT99                +      (Deskjet Emulation)
+Mannesmann      MT94                +      (Epson Mode)
+Mannesmann      MT93                +      (Epson Mode)
+Mannesmann      MT92                +      (Deskjet Emulation)
+Mannesmann      MT82                +      (Epson Mode)
+MicroPlex       Solid 20-2                 (HP PCL 3 Emulation)
+MicroPlex       Solid 30                   (HP PCL 3 Emulation)
+MicroPlex       Solid 45                   (HP PCL 3 Emulation)
+Minolta         SP101               +      (HP PCL 3 Emulation)
+Minolta         SP101PS             +
+Minolta         SP101S              +      (HP PCL 3 Emulation)
+Minolta         SP3000              +      (HP PCL 5 Emulation)
+Minolta         SP3500              +      (HP PCL 5 Emulation)
+Minolta         WinLaser SP1000     +      (HP PCL 5 Emulation)
+Minolta         WinLaser SP1500     +      (HP PCL 5 Emulation)
+Nec             JetMate 400         +      (Deskjet Emulation)
+Nec             JetMate 800         +      (Deskjet Emulation)
+Nec             Silentwriter S102   +      (HP PCL 5 Emulation)
+Nec             Silentwriter S62P   +      (HP PCL 5 Emulation)
+Nec             Silentwriter 90     +
+Nec             CP6                 *
+Nec             CP7                 *
+Nec             P2+                 +
+Nec             P6                  *      (100% Optimise)
+Nec             P6+                 *      (100% Optimise)
+Nec             P7                  *      (100% Optimise)
+Nec             P7+                 *      (100% Optimise)
+Nec             P20                 *
+Nec             P22Q                +
+Nec             P30                 *
+Nec             P32Q                +
+Nec             P42Q                +
+Nec             P52Q                +
+Nec             P565XL              *
+Nec             P60                 *
+Nec             P62                 +
+Nec             P70                 *
+Nec             P72                 +
+Nec             P90                 *      (100% Optimise)
+Nec             P2200               *
+Nec             P5200               *
+Nec             P5300               +
+NewGen          TurboPS             +      (PCL 3)
+Oce             6121                +      (HP PCL Emulation)
+Oce             6122                +
+Oce             6123                +
+Oce             6141
+Oce             6142                +
+Oce             6143                +
+Oce             6450                +
+Oce             6500                +      (HP PCL Emulation)
+Oce             6600                +      (HP PCL Emulation)
+Okidata         ML-380Elite         *      (Epson)
+Okidata         ML-390Elite         *
+Okidata         ML-390FB            *      (Epson)
+Okidata         ML-391Elite         *
+Okidata         ML-393Elite         *
+Okidata         ML-393C Elite       *
+Okidata         ML-395              +      (Epson)
+Okidata         ML-395C             +      (Epson)
+Okidata         ML-590              +      (Epson)
+Okidata         ML-591              +
+Okidata         OL400               *      (HP PCL 3 Emulation)
+Okidata         OL400e              +      (HP IIP Emulation)
+Okidata         OL410               *      (HP PCL 5 Emulation)
+Okidata         OL800               +      (HP PCL 3 Emulation)
+Okidata         OL810               +      (HP PCL 5 Emulation)
+Okidata         OL830               +      (opt. HP PCL 3)
+Okidata         OL840               +
+Okidata         OL850               +      (HP PCL 3)
+Olivetti        DM124               +      (Epson Mode)
+Olivetti        DM124C              +      (Epson Mode)
+Olivetti        DM124L              +      (Epson Mode)
+Olivetti        DM324               +      (Epson Mode)
+Olivetti        DM324SL             +      (Epson Mode)
+Olivetti        DM624               +      (Epson Mode)
+Olivetti        PG404               +      (HP PCL Emulation)
+Olivetti        PG408               +      (HP PCL Emulation)
+Olivetti        PG417               +      (HP PCL Emulation)
+Olivetti        JP150               +      (Deskjet Emulation)
+Olivetti        JP350S              +      (Deskjet Emulation)
+Panasonic       224
+Panasonic       KX-P1123            *      (100% Optimise ok, but not good)
+Panasonic       KX-P1124            *      (100% Optimise ok, but not good)
+Panasonic       KX-P1540            +
+Panasonic       KX-P1624            +
+Panasonic       KX-P1654            +
+Panasonic       KX-P2023            *      (100% Optimise ok, but not good)
+Panasonic       KX-P2123            *      (100% Optimise ok, but not good)
+Panasonic       KX-P2124            *      (100% Optimise ok, but not good)
+Panasonic       KX-P2624            *      (100% Optimise ok, but not good)
+Panasonic       KX-P4410            *      (HP IIP Emulation)
+Panasonic       KX-P4420            +      (HP PCL Emulation)
+Panasonic       KX-P4430            +      (HP PCL 5)
+Panasonic       KX-P4440            +      (HP PCL 5)
+Panasonic       KX-P4451            +      (HP PCL 5)
+Panasonic       KX-P4455            +
+Panasonic       KX-P5410            +      (HP IIP)
+Philips         PP402               +
+Philips         PP402S              +
+Philips         PP405               +
+PrePress        Newgen TurboPS1200T +
+PrePress        Newgen TurboPS300P  +
+PrePress        Newgen TurboPS400P  +
+PrePress        Newgen TurboPS440N  +
+PrePress        Newgen TurboPS440ND +
+PrePress        Newgen TurboPS660B  +
+PrePress        Newgen TurboPS660BE +
+PrePress        Newgen TurboPS880   +
+QMS             PS-815              +      (PCL 3)
+QMS             PS-815MR            +      (PCL 3)
+QMS             PS-825              +      (PCL 3)
+QMS             PS-825MR            +      (PCL 3)
+QMS             PS-860              +      (HP Laserjet II)
+QMS             PS-1700             +      (HP Laserjet II)
+QMS             PS-1725             +      (HP Laserjet II)
+QMS             PS-2000             +      (HP Laserjet II)
+QMS             PS-3200             +      (HP Laserjet II)
+QMS             PS-410              +      (PCL 3)
+Qume            CrystalPrint Expr.  +
+Qume            CrystalPrint Pub.II +
+Ricoh           1200LP              *      (HP PCL 5 Emulation)
+Samsung         SP2421              +      (Epson Emulation)
+Samsung         SP2422              +      (Epson Emulation)
+Samsung         SL1081A             +      (HP PCL Emulation)
+Samsung         SL1081P             +      (HP PCL Emulation)
+Samsung         SL1082A             +      (HP PCL Emulation)
+Samsung         SL1082P             +      (HP PCL Emulation)
+Sanyo           SPX 508V            +      (HP PCL 5 Emulation)
+Sanyo           SPX 612             +      (HP PCL 4 Emulation)
+Seikosha        BP7800              +     
+Seikosha        SL-80AI             *     
+Seikosha        SL-80IP             *     
+Seikosha        SL-90               *     
+Seikosha        SL-92               *     
+Seikosha        SL-92+              +     
+Seikosha        SL-95               +     
+Seikosha        SL-130              +     
+Seikosha        SL-150              +     
+Seikosha        SL-210              +     
+Seikosha        SL-230              *     
+Seikosha        SL-270              +     
+Seikosha        SL-532              +     
+Seikosha        Speedjet 300        +      (Deskjet 500 Emulation)
+Seikosha        LT20                +     
+Seikosha        OP 104              +      (HP IIP Emulation)
+Seikosha        OP 108              +      (HP PCL 5 Emulation)
+Seikosha        OP 115              +      (HP PCL 3 Emulation)
+Sharp           JX 9500H            +      (HP PCL Emulation)
+Sharp           JX 9600             +      (HP PCL Emulation)
+Siemens         Highprint 4009N60   +      (Epson Emulation)
+Siemens         Highprint 4812-I10  +      (Deskjet Emulation)
+Siemens         Highprint 4813-I60  +      (Epson Emulation)
+Siemens         Highprint 4819-P10  *      (HP PCL Emulation)
+Siemens         Highprint 4820-P10  *      (HP PCL Emulation)
+Siemens         Highprint 9014      +      (Epson Emulation)
+Star            LaserPrinter 4      +      (HP IIP Emulation)
+Star            LaserPrinter 4III   +      (HP PCL 5 Emulation)
+Star            LaserPrt. 4 StarScr.+      (HP IIP Emulation)
+Star            LaserPrinter 8III   +      (HP PCL 5 Emulation)
+Star            LS 5                +      (HP IIP Emulation)
+Star            LS 5EX              +      (HP PCL 5 Emulation)
+Star            LS 5TT              +      (HP PCL 5 Emulation)
+Star            NB-15               +
+Star            NB24-10             *
+Star            NB24-15             *
+Star            NX-24-00            +
+Star            XB-24-10            *
+Star            XB-24-15            *
+Star            XB-24-200           *
+Star            XB-24-250           *
+Star            SJ-48               *
+Star            SJ-144              *
+Star            LC-24-10            *
+Star            LC-24-15            *
+Star            LC-24-20            *
+Star            LC-24-100           +
+Star            LC-24-200           *
+Star            LC-24-200C          *
+Texas           microLaser+         +      (HP PCL Emulation)
+Texas           microLaser+ PS17    +
+Texas           microLaser+ PS35    +
+Texas           microLaser Turbo    +      (PCL 3)
+Texas           microLaser XL       +      (PCL 3)
+Texas           microLaser XL PS17  +
+Texas           microLaser XL PS35  +
+Texas           microLaser XL Turbo +      (PCL 3)
+Triumph Adler   7825                +      (Deskjet Emulation)
+Triumph Adler   JPR 7850            +      (Deskjet Emulation)
+Triumph Adler   MPR 7314            +
+Triumph Adler   MPR 7324S           +
+Triumph Adler   MPR 7325S           +
+Triumph Adler   SDR 7706            +      (HP PCL 3 Emulation)
+Vobis           Highscreen Comp.CL9 +      (HP PCL 3 Emulation)
+Unisys          AP1324              +      (Epson Emulation)
+Unisys          AP1337              +      (Epson Emulation)
+Unisys          AP1339              +      (Epson Emulation)
+Unisys          AP9205              +      (HP PCL Emulation)
+Unisys          AP9210              +      (HP PCL Emulation)
+Zygal           Luna 22             +      (HP PCL Emulation)
+Zygal           Luna 8              +      (HP PCL Emulation)
+---------------------------------------------------------------------------
+@endnode

@@ -1,0 +1,312 @@
+
+Cours n°4:
+
+ Dans cette leçon, nous allons créer un viewer de fichier ASCII et un timer.
+
+ On ouvre la librairie rexxreqtools.library © Rafaël d'Halleweyn.
+
+ On commence par demander à l'utilisateur de choisir un fichier, s'il ne le fait pas on quitte
+le programme.
+
+ Si un fichier est choisi on ouvre une fenêtre et on affiche les lignes que contient le fichier.
+
+/* Ascii view v1.0 */
+
+/* ouverture rexxreqtools ( rtfilerequest() ) */
+if ~show("l","rexxreqtools.library") then
+call ouvrir_rexxreqtools
+else
+call commencer
+
+ouvrir_rexxreqtools:
+call addlib("rexxreqtools.library",-5,-30)
+
+commencer:
+/* Sélection du fichier */
+fichier = rtfilerequest("ram:",," Choix du fichier texte ? ",,)
+if fichier = " " then /* si aucun fichier n'est sélectionné     */
+exit                  /* on quitte le programme                 */
+else                  /* si le fichier à été sélectionné        */
+call affichetexte     /* on affiche le contenu dans une fenêtre */
+
+affichetexte:
+call close(stdout)    /* on n'utilisera pas de sortie par défaut */
+call open(stdout,"con:0/14/640/200/ Ascii view v1.0 © Grendel Soft 1999 /close/wait")
+
+/* Ouverture du fichier en lecture */
+call open(f,fichier,"r")
+ do
+  i=1                          /* loop init                                          */
+  do while ~eof(f)             /* tant que la fin du fichier n'est pas atteinte      */
+   ligne=readln(f)             /* on met la fonction readln() dans la variable ligne */
+                               /* readln(variable_fichier) - Lire une ligne          */
+    call writeln(stdout,ligne) /* on affiche la ligne courante                       */
+  i=i+1                        /* on passe à la ligne suivante ( incrémente i )      */
+  end
+ end
+call close(f)                  /* on ferme le fichier ouvert en lecture */
+call writeln(stdout," ")
+call writeln(stdout," Veuillez fermez cette fenêtre s.v.p ")
+exit
+
+ Nous allons maintenant créer une routine qui va nous indiquer le temps écoulé lors de l'affichage du
+contenu du fichier sélectionné.
+
+ On va utiliser de nouvelles fonctions et des opérateurs arithmétique.
+
+ La fonction time()
+ ------------------
+ time(r) /* time reset - time()=0       */
+ time(e) /* temps écoulé depuis time(r) */
+
+ Les opérateurs arithmétique
+ ---------------------------
+ +   addition
+ -   soustraction
+ /   division
+ //  reste d'une division ( modulo )
+ %   division de nombre entier
+ *   multiplication
+ **  élévation à une puissance
+
+ La fonction index()
+ -------------------
+ index(chaîne,configuration,début) /* début facultatif */
+
+ Cherche la première apparition de l'argument configuration dans la chaîne à partir de la position
+début. La position début par défaut est 1.
+
+ La fonction delstr()
+ --------------------
+ delstr(chaîne,n,longueur) /* longueur facultatif */
+
+ Efface la sous-chaîne de l'argument chaîne à partir du n ième caractère sur la longueur spécifiée
+en caracactères. La longueur par défaut correspond à la longueur du reste de la chaîne.
+
+ La fonction strip()
+ -------------------
+ strip(chaîne,"L,B,ou T",remplissage) /* l,b,t et remplissage facultatifs */
+
+ S'il n'existe aucun paramètre facultatif, la fonction supprime les espaces situés au début ou à la
+fin de l'argument chaîne. Le deuxième argument indique si les caractères de début L, de fin T ou les
+deux B doivent être supprimés. L'argument remplissage ( ou de vidage ) facultatif correspond au
+caractère à supprimer.
+
+ Ces nouvelles fonctions vont nous permettre d'afficher les heures, secondes et centièmes dans un
+requester.
+
+ C'est parti.
+
+time_check:
+/**********************************
+
+ Timer Routine © Grendel Soft 1999
+ 
+ Créée par :
+ Gerday Johan
+ Rue St-Rock, 42a
+ 6760 virton
+ Belgique
+
+***********************************/
+
+posnum = index(time(e),".")            /* Répère l'endroit où se trouve la décimale */
+sec = delstr(time(e),posnum,"3")       /* Enleve la partie décimale de time(e)      */
+centieme = strip(time(e),'l',sec||".") /* Enleve la partie entière et la décimale   */
+if centieme = " " then                 /* Pas de centièmes (00)                     */
+centieme = "00"                        /* On écrit 00 dans les centièmes            */
+else                                   /* Il y a des centièmes on continue          */
+
+cent = time(e) * 100                /* on multiple time(e) par 100 ( tout en centièmes         */
+heures = cent % 360000              /* 1 heure = 3600 secondes donc 360000 centièmes           */
+delheures = 3600 * heures           /* si 1 heures on enlevera le(s) heure(s) des centièmes    */
+minutes = cent % 6000 - delheures   /* 1 minutes = 60 seconds donc 6000 centièmes - les heures */
+delmin = 60 * minutes               /* si 1 minutes on enlevera le(s) minute(s) des centièmes  */ 
+secondes = cent % 100 - delmin      /* 1 secondes = 100 centièmes                              */
+
+
+NL='0a'x
+call rtezrequest(""||NL||,
+                 "Temps écoulé "||NL||,
+                 " Heure, minutes, secondes et centièmes de secondes "||NL||,
+                 " ( "heures" : "minutes" : "secondes" : "centieme" )"||NL||,
+                 "",
+                ," Mega Cool le timer !!! "," ARexx Timer © Grendel Soft 1999 ",)
+
+ Tout est prêt, il ne reste plus qu'à ajouter la routine time_check: au premier listing. Le résultat
+vous surprendra.
+
+ C'est parti.
+
+/* Ascii view v1.0 */
+
+/* ouverture rexxreqtools ( rtfilerequest() ) */
+if ~show("l","rexxreqtools.library") then
+call ouvrir_rexxreqtools
+else
+call commencer
+
+ouvrir_rexxreqtools:
+call addlib("rexxreqtools.library",-5,-30)
+
+commencer:
+/* Sélection du fichier */
+fichier = rtfilerequest("ram:",," Choix du fichier texte ? ",,)
+if fichier = " " then /* si aucun fichier n'est sélectionné     */
+exit                  /* on quitte le programme                 */
+else                  /* si le fichier à été sélectionné        */
+call affichetexte     /* on affiche le contenu dans une fenêtre */
+
+affichetexte:
+call close(stdout)    /* on n'utilisera pas de sortie par défaut */
+call open(stdout,"con:0/14/640/200/ Ascii view v1.0 © Grendel Soft 1999 /close/wait")
+
+/* Ouverture du fichier en lecture */
+call open(f,fichier,"r")
+ call time(r) /* init timer */
+ do
+  i=1                          /* loop init                                          */
+  do while ~eof(f)             /* tant que la fin du fichier n'est pas atteinte      */
+   ligne=readln(f)             /* on met la fonction readln() dans la variable ligne */
+    call writeln(stdout,ligne) /* on affiche la ligne courante */
+  i=i+1                        /* on passe à la ligne suivante */
+  end
+ end
+call close(f)                  /* on ferme le fichier ouvert en lecture */
+call time_check                /* appel routine timer check */
+call writeln(stdout," ")
+call writeln(stdout,"Veuillez fermer cette fenêtre s.v.p")
+exit
+
+time_check:
+/**********************************
+
+ Timer Routine © Grendel Soft 1999
+ 
+ Créée par :
+ Gerday Johan
+ Rue St-Rock, 42a
+ 6760 virton
+ Belgique
+
+***********************************/
+
+posnum = index(time(e),".")            /* Répère l'endroit où se trouve la décimale */
+sec = delstr(time(e),posnum,"3")       /* Enleve la partie décimale de time(e)      */
+centieme = strip(time(e),'l',sec||".") /* Enleve la partie entière et la décimale   */
+if centieme = " " then                 /* Pas de centièmes (00)                     */
+centieme = "00"                        /* On écrit 00 dans les centièmes            */
+else                                   /* Il y a des centièmes on continue          */
+
+cent = time(e) * 100                /* on multiple time(e) par 100 ( tout en centièmes         */
+heures = cent % 360000              /* 1 heure = 3600 secondes donc 360000 centièmes           */
+delheures = 3600 * heures           /* si 1 heures on enlevera le(s) heure(s) des centièmes    */
+minutes = cent % 6000 - delheures   /* 1 minutes = 60 seconds donc 6000 centièmes - les heures */
+delmin = 60 * minutes               /* si 1 minutes on enlevera le(s) minute(s) des centièmes  */ 
+secondes = cent % 100 - delmin      /* 1 secondes = 100 centièmes                              */
+
+
+NL='0a'x
+call rtezrequest(""||NL||,
+                 "Temps écoulé "||NL||,
+                 " Heure, minutes, secondes et centièmes de secondes "||NL||,
+                 " ( "heures" : "minutes" : "secondes" : "centieme" )"||NL||,
+                 "",
+                ," Mega Cool le timer !!! "," ARexx Timer © Grendel Soft 1999 ",)
+
+ dans cette version, le programme effectue la lecture à partir du disque où le fichier se trouve.
+Il y a un accès au disque à chaque ligne. La solution pour accélérer le programme est de faire
+une copie du fichier ( ram:t/temp.ascview )
+
+ La modification se fait en ajoutant une commande AmigaDOS et en ouvrant le fichier
+"ram:t/temp.ascview" à la place du fichier sélectionné
+
+ A la fin du programme on ajoutera encore une commande AmigaDOS pour effacer le fichier
+"ram:t/temp.ascview" et le tour est joué.
+
+ C'est parti.
+
+/* Ascii view v1.1 */
+
+/* ouverture rexxreqtools ( rtfilerequest() ) */
+if ~show("l","rexxreqtools.library") then
+call ouvrir_rexxreqtools
+else
+call commencer
+
+ouvrir_rexxreqtools:
+call addlib("rexxreqtools.library",-5,-30)
+
+commencer:
+/* Sélection du fichier */
+fichier = rtfilerequest("ram:",," Choix du fichier texte ? ",,)
+if fichier = " " then /* si aucun fichier n'est sélectionné     */
+exit                  /* on quitte le programme                 */
+else                  /* si le fichier à été sélectionné        */
+call affichetexte     /* on affiche le contenu dans une fenêtre */
+
+affichetexte:
+call close(stdout)    /* on n'utilisera pas de sortie par défaut */
+call open(stdout,"con:0/14/640/200/ Ascii view v1.0 © Grendel Soft 1999 /close/wait")
+
+/* Ouverture du fichier en lecture */
+address command "copy "fichier" ram:t/temp.ascview quiet"  /* modif v1.0 -> v1.1 */
+call open(f,"ram:t/temp.ascview","r")                      /* modif v1.0 -> v1.1 */
+ call time(r) /* init timer */
+ do
+  i=1                          /* loop init                                          */
+  do while ~eof(f)             /* tant que la fin du fichier n'est pas atteinte      */
+   ligne=readln(f)             /* on met la fonction readln() dans la variable ligne */
+    call writeln(stdout,ligne) /* on affiche la ligne courante */
+  i=i+1                        /* on passe à la ligne suivante */
+  end
+ end
+call close(f)                  /* on ferme le fichier ouvert en lecture */
+call time_check /* appel routine timer check */
+call writeln(stdout," ")
+call writeln(stdout,"Veuillez fermer cette fenêtre s.v.p")
+Address command "delete ram:t/temp.ascview >nil:"          /* modif v1.0 -> v1.1 */
+exit
+
+time_check:
+/**********************************
+
+ Timer Routine © Grendel Soft 1999
+ 
+ Créée par :
+ Gerday Johan
+ Rue St-Rock, 42a
+ 6760 virton
+ Belgique
+
+***********************************/
+
+posnum = index(time(e),".")            /* Répère l'endroit où se trouve la décimale */
+sec = delstr(time(e),posnum,"3")       /* Enleve la partie décimale de time(e)      */
+centieme = strip(time(e),'l',sec||".") /* Enleve la partie entière et la décimale   */
+if centieme = " " then                 /* Pas de centièmes (00)                     */
+centieme = "00"                        /* On écrit 00 dans les centièmes            */
+else                                   /* Il y a des centièmes on continue          */
+
+cent = time(e) * 100                /* on multiple time(e) par 100 ( tout en centièmes         */
+heures = cent % 360000              /* 1 heure = 3600 secondes donc 360000 centièmes           */
+delheures = 3600 * heures           /* si 1 heures on enlevera le(s) heure(s) des centièmes    */
+minutes = cent % 6000 - delheures   /* 1 minutes = 60 seconds donc 6000 centièmes - les heures */
+delmin = 60 * minutes               /* si 1 minutes on enlevera le(s) minute(s) des centièmes  */ 
+secondes = cent % 100 - delmin      /* 1 secondes = 100 centièmes                              */
+
+
+NL='0a'x
+call rtezrequest(""||NL||,
+                 "Temps écoulé "||NL||,
+                 " Heure, minutes, secondes et centièmes de secondes "||NL||,
+                 " ( "heures" : "minutes" : "secondes" : "centieme" )"||NL||,
+                 "",
+                ," Mega Cool le timer !!! "," ARexx Timer © Grendel Soft 1999 ",)
+
+/** Fin de notre troisième utilitaire ARexx **/
+
+ Gerday Johan (Grendel)
+ Rue St-Roch, 42a
+ 6760 Virton
+ Belgique.

@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 06/98 - Installer-Kurs 2/6</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Installer-Kurs 2/6</H1>von<BR><A HREF="mailto:A.Wyrwa@BBrandes.in-brb.de">Andr&#233; Wyrwa</A></DIV>
+
+
+Hier eine &Uuml;bersicht &uuml;ber die Inhalte der einzelnen Kursteile:
+
+<B>
+<OL>
+<LI>Einf&uuml;hrung, &Uuml;berblick, Grundlagen</LI>
+<LI>Kommunikation mit dem User, grundlegende Kommandos</LI>
+<LI>Dateioperationen</LI>
+<LI>weiterf&uuml;hrende Funktionen und Statements</LI>
+<LI>Scriptoptimierung, Lokalisierung</LI>
+<LI>Tricks f&uuml;r Fortgeschrittene, Tools</LI>
+</OL></B>
+
+<B>Teil 2:</B>
+
+<P>Im letzten Kursteil haben wir uns mit den allgemeinen Grundlagen der
+Installer-Programmierung vertraut gemacht. Nun sollen die ersten Befehle
+und vor allem die Kommunikation mit dem User eine Rolle spielen.</P><P>
+Bevor wir uns der Kommunikation mit dem User widmen, wollen wir uns
+zun&auml;chst das (SET )-Statement ansehen, das dazu dient, Variablen
+einzurichten und mit Inhalt zu f&uuml;llen.</P><P>
+
+
+<A HREF="9806in2.htm#SET">(SET )</A></P>
+
+
+<DL>
+<DT><I>Schablone:</I></DT>
+<DD> (set &lt;variable&gt; &lt;inhalt&gt; [&lt;variable&gt; &lt;inhalt&gt; ...])</DD>
+
+<DT><I>Funktion:</I></DT>
+<DD>Das (SET )-Statement weist der Variablen &lt;variable&gt; den Wert
+&lt;inhalt&gt; zu. Existiert die Variable noch nicht, so wird sie
+erstellt (deklariert). Es k&ouml;nnen auch mehrere Variablen
+durch ein (SET )-Statements auf einmal belegt werden.</DD>
+<DT><I>R&uuml;ckgabe:</I></DT>
+<DD>(SET ) liefert den zuvor enthaltenen Inhalt der Variablen. </DD>
+<DT><I>Bemerkung:</I></DT>
+<DD> Das (SET )-Statement kann auch dazu benutzt werden, Variablen
+vom Typ STRING in solche vom Typ INTEGER zu wandeln:<BR><BR>
+(set &lt;integer-var&gt; (+ &lt;string-var&gt;))<BR><BR>
+Um diese Konvertierung umgekehrt auszuf&uuml;hren, benutzt man (CAT ).</DD>
+</DL>
+
+<P>Im folgenden werden die Beschreibungen der Kommandos hier nicht mehr
+auftauchen, sondern k&ouml;nnen unter <A HREF="9806in2.htm">Befehle</A> eingesehen werden.
+</P><P>Nachdem wir uns diesem grundlegenden Statement zugewandt haben, wollen wir
+nun gleich den Kontakt zum User aufnehmen. Dies tut f&uuml;rs erste folgendes
+Beispiel-Script (<I>Achtung: Bei Ausf&uuml;hrung dieser Beispiele immer einen
+anderen Userlevel als NOVICE w&auml;hlen!</I>):</P>
+
+<P><B>Bsp.1</B></P>
+
+(set #string &quot;Der AmZeiger ist einfach Klasse.&quot;)<BR>
+(message #string)<BR>
+(message &quot;Aber das wu&szlig;ten wir ja schon.&quot;)<BR>
+
+<P>Das hier verwendete Kommando <A HREF="9806in2.htm#MESSAGE">(MESSAGE )</A> dient der einfachen Ausgabe von
+Text, ist also f&uuml;r Hinweise an den User recht n&uuml;tzlich. Wie man hier sieht,
+kann entweder eine Variable oder aber direkt ein String angegeben werden.
+Der Installer behandelt Strings (und ebenso auch Zahlen) also wie Variablen.
+</P><P>Nun ist das blo&szlig;e Ausgeben von Text nat&uuml;rlich eine ziemlich langweilige
+Form von Interaktion, weswegen wir uns im folgenden eine Reihe von Kommandos
+ansehen wollen, bei denen der User etwas mehr zum Zuge kommt. Sie entsprechen
+in ihrer Funktion in etwa den verschiedenen Requestern, die man vom Amiga-OS
+her kennt.</P><P>
+Damit das ganze aber nicht zu langweilig wird, machen wir zuvor noch einen
+kleinen Exkurs zu den wichtigsten Control-Statements, also solchen Statements,
+die den Programmablauf beeinflussen. Sie lassen sich grob in zwei Klassen
+einteilen: die Verzweigungen und die Schleifen.</P><P>
+Verzweigungen dienen dazu, anhand verschiedener gegebener Bedingungen
+verschiedene Programmteile (Kommandosequenzen) abzuarbeiten.
+Zu den Verzweigungen geh&ouml;ren <A HREF="9806in2.htm#IF">(IF )</A> und <A HREF="9806in2.htm#SELECT">(SELECT )</A>.
+</P><P>Schleifen dienen dazu, eine Kommandosequenz mehrfach abzuarbeiten, wobei
+nat&uuml;rlich Variableninhalte ver&auml;ndert werden k&ouml;nnen. Der Installer verf&uuml;gt
+&uuml;ber die Schleifen <A HREF="9806in2.htm#WHILE">(WHILE )</A>, <A HREF="9806in2.htm#UNTIL">(UNTIL )</A>
+und (FOREACH ). Mit letzterer befassen wir uns erst in einem sp&auml;teren Kursteil.</P><P>
+Da wir nun die Theorie der Verzweigungen und Schleifen kennen, st&uuml;rzen wir
+uns als n&auml;chstes gleich in die Praxis und lernen anhand des folgenden
+Beispiels die Control-Statements zu gebrauchen und die oben bereits
+angesprochenen Funktionen zur Interaktion mit dem User kennen.</P>
+
+<B>Bsp.2</B>
+
+<PRE>
+    (set #i 1)
+    (while (= #i 1)
+     (
+      (set #auswahl
+       (askchoice
+        (prompt &quot;Bitte w&auml;hlen Sie eine Funktion aus, die Sie testen m&ouml;chten.&quot;)
+        (help @askchoice-help)
+        (choices &quot;Verzeichnis erfragen (askdir)&quot;
+                 &quot;Datei erfragen (askfile)&quot;
+                 &quot;Texteingabe (askstring)&quot;
+                 &quot;Zifferneingabe (asknumber)&quot;
+                 &quot;Optionswahl (askoptions)&quot;
+                 &quot;Diskette erbitten (askdisk)&quot;
+        )
+        (default 2)
+       )
+      )
+      (select #auswahl
+       (set #ergebnis
+        (askdir
+         (prompt &quot;Bitte w&auml;hlen Sie ein Verzeichnis aus.&quot;)
+         (help @askdir-help)
+         (default @default-dest)
+        )
+       )
+       (set #ergebnis
+        (askfile
+         (prompt &quot;Bitte w&auml;hlen Sie eine Datei aus.&quot;)
+         (help @askfile-help)
+         (default @icon)
+        )
+       )
+       (set #ergebnis
+        (askstring
+         (prompt &quot;Wenn Sie etwas loswerden m&ouml;chten, so haben Sie jetzt &quot;
+                 &quot;Gelegenheit dazu.&quot;)
+         (help @askstring-help)
+         (default &quot;Sie m&uuml;ssen nat&uuml;rlich nicht.&quot;)
+        )
+       )
+       (set #ergebnis
+        (asknumber
+         (prompt &quot;Wie alt sind Sie? (nur Zahlen von 3 bis 100 zul&auml;ssig)&quot;)
+         (help @asknumber-help)
+         (range 3 100)
+         (default 20)
+        )
+       )
+       (set #ergebnis
+        (askoptions
+         (prompt &quot;Zutreffendes bitte ankreuzen.&quot;)
+         (help @askoptions-help)
+         (choices &quot;Ich mag den AmZeiger.&quot;
+                  &quot;Ich hab die Nase voll!&quot;
+                  &quot;Elvis ist tot.&quot;
+                  &quot;Bei mir darf jeder machen was ich will.&quot;
+         )
+         (default %1011)
+        )
+       )
+       (
+        (set #diskname
+         (askstring
+          (prompt &quot;Bitte geben Sie den exakten Namen einer Diskette an, &quot;
+                  &quot;die sie zur Hand haben. (Ohne ':'!)&quot;)
+          (help @askstring-help)
+          (default &quot;Workbench3.0&quot;)
+         )
+        )
+        (askdisk
+         (prompt &quot;Bitte legen Sie die Diskette &quot; #diskname &quot; ein.&quot;)
+         (help @askdisk-help)
+         (dest #diskname)
+        )
+        (set #ergebnis &quot;Diskette erfolgreich eingelegt.&quot;)
+       )
+      )
+      (message &quot;Das Ergebnis der von Ihnen gew&auml;hlten Aktion ist:\n&quot; #ergebnis)
+      (set #i
+       (askbool
+        (prompt &quot;M&ouml;chten Sie noch einen Durchlauf starten?&quot;)
+        (help @askbool-help)
+        (choices &quot;Ja&quot; &quot;Nein&quot;)
+        (default 1)
+       )
+      )
+     )
+    )
+</PRE>
+
+<P>In diesem Beispiel stecken nat&uuml;rlich einige neue Kommandos, weswegen es
+etwas verwirren mag, aber wenn wir es etwas unter die Lupe nehmen, d&uuml;rfte
+die Funktionsweise schnell klar werden.</P><P>
+Zun&auml;chst einmal erinnern wir uns wieder an unsere Control-Statements und
+betrachten einmal den Aufbau des Scripts. Wenn wir die uns noch unbekannten
+Bl&ouml;cke einmal ignorieren, ergibt sich folgendes Schema:</P>
+
+<PRE>
+    ;Voreinstellen der Schleifenbedingung
+    (set #i 1)
+
+    ;Schleifendefinition
+    (while (= #i 1)
+
+     ;alle Anweisungen innerhalb dieser Klammer geh&ouml;ren zur Schleife
+     (
+
+      ;Es wird eine Auswahl getroffen und ein Wert von 0-5 entsprechend
+       dieser Wahl in der Variablen #auswahl abgelegt.
+      (set #auswahl (askchoice ...))
+
+      ;Mittels der (SELECT )-Anweisung wird die Variable #auswahl
+       ausgewertet und in den entsprechenden Anweisungsblock verzweigt.
+      (select #auswahl
+
+       ;#auswahl=0
+       (set #ergebnis (askdir ...))
+
+       ;#auswahl=1
+       (set #ergebnis (askfile ...))
+
+       ;#auswahl=2
+       (set #ergebnis (askstring ...))
+
+       ;#auswahl=3
+       (set #ergebnis (asknumber ...))
+
+       ;#auswahl=4
+       (set #ergebnis (askoptions ...))
+
+       ;#auswahl=5
+       (
+        (set #diskname (askstring ...))        )
+        (askdisk ...)
+        (set #ergebnis &quot;Diskette erfolgreich eingelegt.&quot;)
+       )
+
+      ;Ende der (SELECT )-Anweisung
+      )
+
+      ;Ausgabe des Ergebnisses
+      (message &quot;Das Ergebnis der von Ihnen gew&auml;hlten Aktion ist:\n&quot; #ergebnis)
+
+      ;Hier wird die Schleifenbedingung #i (durch den User) neu gesetzt.
+       M&ouml;chte er fortfahren, so wird #i=1, ansonsten #i=0 gesetzt.
+      (set #i (askbool ...))
+
+     ;Ende des Anweisungsblockes, der in der Schleife (mehrfach) abgearbeitet
+      wird
+     )
+
+    ;Ende der (WHILE )-Anweisung
+    )</PRE>
+
+<P>Ich denke, da&szlig; die Funktionsweisen von (WHILE ) und (SELECT ) in diesem
+Beispiel nun deutlich geworden sein m&uuml;&szlig;ten.</P><P>
+Ebenso sieht man hier die Wirkung von Klammern in Bezug auf das
+Zusammenfassen von Kommandos zu Bl&ouml;cken. Diese Klammern sind ein recht
+wichtiges Element bei der Installer-Programmierung und oft mu&szlig; man erst
+einige Klammerfehler beseitigen, bevor der Installer ein Script
+akzeptiert und es so abarbeitet, wie man sich dies gedacht hat.</P><P>
+In der Bedingung f&uuml;r die (WHILE )-Schleife wurde ein bisher noch nicht
+genauer behandeltes Element verwendet, der Operator (= ). Wie schon
+erw&auml;hnt, behandelt der Installer Operatoren nicht anders als Funktionen,
+daher auch diese etwas ungew&ouml;hnliche Schreibweise. Die Operatoren werden
+im weiteren Verlauf daher auch nicht n&auml;her behandelt, ihre Funktionsweise
+d&uuml;rfte intuitiv verst&auml;ndlich sein. Sie haben alle die Schablone</P><P>
+
+    (Operator &lt;wert&gt; [&lt;wert&gt; ...]),</P><P>
+
+wobei wert nat&uuml;rlich auch eine Variable sein kann. Der Installer kennt
+die Operatoren (= ), (&gt; ), (&gt;= ), (&lt;= ), (&lt; ), (&lt;&gt; ); (+ ), (- ), (* ),
+(/ ); (AND ), (OR ), (XOR ), (NOT ), wobei f&uuml;r (AND ), (OR ) und (XOR )
+die Angabe von mehr als zwei Werten erlaubt ist. Die Bedeutung dieser
+Operatoren sollte bekannt sein.</P><P>
+Etwas Verwirrung m&ouml;gen vielleicht noch die Zeilen (set #ergebnis (askdir ...))
+etc. stiften, wenn man sie mit der Schablone f&uuml;r das (SET )-Statement
+vergleicht. Offenbar ersetzt hier (askdir ...) die Angabe eines Wertes, der
+der Variablen zugeordnet wird. Tats&auml;chlich erm&ouml;glicht der Installer es,
+Statements und Funktionen, die Werte zur&uuml;ckgeben, wie Variablen bzw. eben
+Werte selbst zu behandeln. Dies ist zugleich auch die Art und Weise, in der
+diese R&uuml;ckgabewerte an Variablen &uuml;bergeben werden.</P><P>
+<I>Achtung: Dies gilt nicht f&uuml;r die Anwendung innerhalb von Parametern.
+Hier d&uuml;rfen nur Variablen oder direkt Werte angegeben werden.</I></P><P>
+Die Funktionsweise der Funktionen zur Interaktion mit dem User geht aus
+der jeweiligen <A HREF="9806in2.htm">Kommandobeschreibung</A> und dem Beispiel hervor. Es ist
+darauf zu achten, da&szlig; der User immer gut informiert ist, was das Script
+gerade von ihm wissen m&ouml;chte. Au&szlig;erdem empfiehlt es sich, ein wenig mit
+den Parametern herumzuexperimentieren, da diese bei umfangreicheren
+Scripts eine tragende Rolle spielen k&ouml;nnen.</P>
+      
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="wb_tun5.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0698/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9806in2.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

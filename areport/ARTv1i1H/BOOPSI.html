@@ -1,0 +1,255 @@
+<HTML>
+<TITLE>Methods into Madness:  Part 1</TITLE>
+<HEAD><H1>Methods into Madness:  Part 1</H1>
+</HEAD>
+<BODY>
+<H2>BOOPSI OVERVIEW</H2>
+<p>
+This article is designed to provide the novice BOOPSI programmer
+information to aid in writing a custom gadget class for an application.
+The reader is assumed to be familiar with some basic BOOPSI and/or
+OOP concepts. I recommend reading the BOOPSI chapter of the RKM:Libraries
+Manual, 3rd Edition, then perhaps come back and read this overview again
+and it should start to make more sence.</p><p>
+
+In BOOPSI, everything is an "Object". Each object is a distinct entity.
+Certain objects have common characteristics and can be classified
+in to different groups called classes. As objects, "Mehdi Ali" and
+"Irving Gould" are all distinct objects, but they all have something in
+common; a year ago they can all could have been classified as
+"Over Payed", today, I guess you would classify them as "Unemployed".
+A specific object is an "instance" of a particular class, for
+example, "Dork" is an instance of "Medhi Ali".</p><p>
+
+Classes may be divided in to subclasses. A fruit object can have
+several subclasses such as apple, orange, grapefruit, etc. The inverse
+relation is also true, fruit is a superclass of apple. Additionally,
+"Over Payed" and "fruit" are infact subclasses themselves of a universal
+catagory typically called root.</p>
+
+<H3>BOOPSI CLASS HIERARCHY</H3>
+
+<pre>
+                               rootclass
+                              /    |    \
+                             /     |     \
+                            /   icclass   \
+                           /       |       \
+                  imageclass   modelclass  gadgetclass
+                  /  |  |  \               /  |   |  \
+        frameiclass  |  |   \     propgclass  |   |  groupclass
+                     |  |   sysiclass         |   |
+            itexticlass |              strgclass buttongclass
+                        fillrectclass               \
+                                                    frbuttongclass
+</pre>
+<p>
+In BOOPSI the root catagory is called "rootclass". Intuition has three
+subclasses of the rootclass: gadgetclass, imageclass, and icclass.
+All boopsi gadgets in the system are an instance of gadgetclass, and
+all boopsi images are an instance of imageclass. A new concept to
+Intuition is that of interconnection, or the icclass. Interconnection
+allows a group of gadgets to "talk" to one another, to notify another
+obect when some specific even occurs. For example, a scroller gadget
+might be interconnected to a listview gadget such that the scroller
+gadget controls the position of the listview.</p><p>
+
+Under imageclass, we have "frameiclass" which does your standard
+raised or recessed bevel box. Under V39 or greater there are a number
+of bevel styles available. The "sysiclass" contains a number of
+standard images mostly used by Intuition, specifically, the front/back
+gadget, close gadget, arrows, and checkmark imagery to name a few.
+The fillrectclass is often underused, it does what its name implies,
+it renders fill rectangles. I suspect a direct call to graphics.library's
+RectFill() or EraseRect() would be significatly faster.</p><p>
+
+Under gadgetclass, propgclass creates proportional scrollbars, 
+strgclass creates a string gadget and buttongclass creates a button
+gadget as you might have already guessed. At this point, these classes
+are not important to us and will not be discussed.</p>
+
+<H2>DESIGN DESISIONS</H2>
+<p>
+When designing class, you must first decide which "superclass" is
+suitable for your needs. When creating an image class, the "superclass"
+will be eitther "imageclass" or some subclass of "imageclass".
+When creating a gadget class, the superclass will typically be
+"gadgetclass", or one of its subclasses. The example provided will
+concentrate on creating simple subclass of "gadgetclass".</p><p>
+
+Your custom classes may be public or private. Any application can access
+a public class, and typically a public class will take the form of image
+or gadget shared library. A public class has a name associated with it,
+such as "listview.gadget".  Private classes are typically compiled and
+linked with an application. A private class has no name associated
+with it, so without a pointer to the class, it can not be used.
+As you read on, you find it is possible to create private classes that
+are publically accessable shared libraries by using a simple function you
+can supply in your class library. The advantage the later approach is that
+you do not have to worry about finding a unused name for the public class.
+Currently, there isn't any means by which you can register a public class
+name, and it wouldn't be good if two incompatible classes used the same
+public class name.</p>
+<HR>
+<p>
+<H2>OBJECT METHODS</H2>
+In an OOP system, an application requests an object to perform some
+method (read function/action) by sending the object a message.
+BOOPSI also passes methods via a message passing system. This is not
+the same as the Exec message passing system, so do not get them confused.</p><p>
+
+The follow methods are common for all classes of objects;</p>
+
+<H3>OM_NEW</H3><p>
+Similar to calling CreateGadget() for a GadTools gadget, in BOOPSI
+you call the NewObject() function to create an instance of a
+pariticular gadget class. At this point the OM_NEW object method will
+be invoked on that class. In turn the class will pass this method to
+its supermethod (via DoSupperMethod()) which eventually will works its
+way to rootclass which will allocate memory for an instance of the
+object. The instance data is usually some structure whose fields hold
+per instance data for a given class. After calling the supermethod
+to allocate an instance of your class, the class can set defaults, parse
+any special creation tags and prepare the object to be used.</p><p>
+
+From within OM_NEW, your class might also NewObject() other objects
+to make some type of composite gadget, or perhaps just use an image
+class to render various bevel or group boxes. A listview is an example
+of a composite gadget. Its made up of the scroller area, a proportional
+scroller and two buttons with arrow images.</p><p>
+
+Should you fail to allocate the classes you need, you must make sure
+the OM_NEW method to your class returns NULL. But before doing so, you
+must use CoerceMethod() in a manner simular to calling DoSuperMethod() in
+order cause an OM_DISPOSE method to be invoked on yourself so the
+previously allocated instance data will be released.</p>
+
+<H3>OM_DISPOSE</H3><p>
+In GadTools, you call FreeGadgets to free all gadgets created with
+CreateGadget(). In BOOPSI, you call DisposeObject() ON EACH INSTANCE
+of any classes that have successfully returned from NewObject().
+This will invoke the OM_DISPOSE method on the class, for most class
+writers you can safly pass the OM_DISPOSE message to your super method
+directly. However, if you have any extra memory, or classes
+to close you must do proper clean up first, then pass the message
+on to DoSuperMethod() which will free your instance data allocated
+thru the rootclass.</p>
+
+<H3>OM_SET</H3><p>
+Once a gadget is created via OM_NEW, you may wish to change certain
+certain aspects, text labels, pen selection, etc. This cna be
+accomplished via SetAttrs() for images and gadgets or SetGadgetAttrs()
+gadgets only. SetGadgetAttrs() is usually the perfered function
+for most any gadget class, and the differences will not be discussed
+here. Either of theses calls will invoke an OM_SET message on the
+specified gadget instance. The gadget should aways pass this message
+to its super class first, then if ops_GInfo field in the 
+(struct opSet *) method message is non-null, you may check any
+special tags you allow to be altered after the gadget is created.
+If you requier that your gadget be rendered again after OM_SET,
+you must return a 1, otherwise return 0. </p>
+
+<H3>OM_UPDATE</H3><p>
+Very much the same as OM_SET, infact many classes reuse the same
+sections of code for OM_SET and OM_UPDATE. The main difference being
+that OM_UPDATE typically causes an object to update various values
+and in the case of a gadgetclass, you might cause the gadgets
+visual appearance to update to reflect the new settings.</p><p>
+A class typically receives OM_UPDATE methods when another object
+is interconnected via notification, such as a scroller updating
+the position of a scrolling list.</p>
+
+<H3>OM_NOTIFY</H3><p>
+
+I don't know what the heck this is good for in terms of images and
+gadgets. I send an OM_NOTIFY from within GM_RENDER (see below) which
+in turn should OM_UPDATE the interconnected objects.</p>
+<HR>
+<H2>GADGET METHODS</H2><p>
+
+The follow methods are common for all classes of gadget objects;</p>
+
+<H3>GM_HITTEST</H3><p>
+
+For rectangular box gadgets all you have to do is return the value
+GMR_GADGETHIT as defined in <intuition/gadgetclass.h> which
+verifies the mouse click is indeed within your gadget's "hitbox"
+dimension. For a simple button, the hitbox is the clickable area
+which makes up the button including any outer bevel box.</p><p>
+If your gadget is not a box, you will have to test the mouse X/Y
+position of the mouse click provided in the GM_HITTEST message to
+determin if it is inside your clickable region of the hitbox.
+If it is, return GMR_GADGETHIT, if not return a 0. Remember a
+hitbox is always rectangular areas, if you choose to make a round
+button the round area must be contained within the bounds of the
+hitbox rectangle.</p>
+
+<H3>GM_GOACTIVE</H3><p>
+
+Assuming you returned GMR_GADGETHIT from GM_HITTEST, this is the
+next method you should receive. This method allows the gadget
+to become the active gadget, ie, the gadget that will gain the
+input focus. This method should return GMR_NOREUSE if it does not
+want to become the active gadget, or GMR_MEACTIVE if it does.</p><p>
+
+In the case of a listview, you might test the mouse position for
+a hit on a particular node in the list, and/or cause an update the
+visual state of the gadget in to a selected mode by sending yourself
+a GM_RENDER method via the DoMethod() function.</p>
+
+<H3>GM_HANDLEINPUT</H3><p>
+
+Once you have become the active gadget, you will receive
+all mouse, keyboard and intuitick input. Based on the mouse location
+you can update your gadget settings and cause a visual render update
+to occur by sending yourself a GM_RENDER method via the DoMethod()
+function.</p>
+
+<H3>GM_GOINACTIVE</H3><p>
+
+This gives the gadget an opertunity to do any final calculation
+or rendering after the gadget has lost the input focus, such as
+rendering the gadget in the non-selected state via sending yourself
+a GM_RENDER method via the DoMethod() function.</p>
+
+
+<H3>GM_LAYOUT</H3><p>
+
+This method was introduced in V39 (AmigaOS 3.x). It is invoked when
+a GREL gadget is first added to a window either with AddGList() or
+gadgets present in a window at window open time via the WA_Gadgets 
+window attribute tag. It will also occur when window resize takes place.</p><p>
+This allows the gadget to lay itself out based on the new window or
+requester size found in the GadgetInfo structure present in the layout
+method message.  You must be careful not to do any rendering inside
+this method or a C= engineer will personally come to your house and
+beat you silly. Instead, Intuition will send a GM_RENDER when it is
+time to (re)render the gadget. If you wish to remain V37/V38
+compatible you should not rely on this method.</p>
+
+<H3>GM_DOMAIN</H3><p>
+
+A somewhat brain-dead means by which a gadget layout/group class can
+determin a gadget object's minimum, nominal, and maximum sizes.
+Typically, only minimum needs to be implemented for a good layout.
+Infact, to date, I'm not aware of many public classes that requiers it.
+This is a method that is new to V39 (AmigaOS 3.x) and higher.</p><p>
+Intuition does not make use of it and the current AmigaOS 4.0 effort
+may not make use of it either, but instead provide an alternative method
+to layout font sensitive GUI.</p>
+
+<H3>GM_RENDER</H3><p>
+
+Here, you are to render the imagery for your gadget by using the various
+image subclasses of imageclass, and/or some of the simpler graphics
+rendering functions. Keep it simple in here too!</p>
+
+<HR>
+<H2>BEAM ME UP SCOTTY</H2>
+<p>
+By now either I totally confused you, or you have a basic feel for how
+the BOOPSI system works. Next month we will expand on the information
+provided here and create a working public gadget class as well as
+a test program to demostrate the function of the gadget.</p>
+</body>
+</html>

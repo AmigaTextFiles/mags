@@ -1,0 +1,37 @@
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+                 G R E E T I N G S
+
+ HELLO,
+
+ MY ENGLISH IS NOT SO GOOD,BUT I WANT TO GREETS ALL THE AMOS & AMIGA-USER
+
+ ALL OVER THE WORLD.
+
+ SURPRISE-GREETINGS TO :
+
+ FRANÇOIS LIONET        FOR THE VERY GOOD  AMOSPRO_2.0
+
+ MEL CROUCHER         / FOR THE GOOD
+                     <
+ STEPHAN HILL         \ USER-GUIDE
+
+ ALL PEOPLES FROM THE AMOS-PD
+
+ MANY THANKS TO ALL THE USER FOR THE MANY GOOD TIPS IN THE LISTINGS.
+
+ I SAY AT LAST
+
+               IT'S NOT A TRICK , IT'S AMOS-PROFESSIONAL
+
+ PEACE FOR THE WORLD
+
+
+ KALLE
+
+
+
+
+
+

@@ -1,0 +1,258 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+2. Workshop: Samba und der Amiga - Teil 1 (von Werner Brennecke)
+
+»Zum Vorwort: 
+
+Nachdem ich gl&uuml;cklicherweise ein paar Amiga-Netzwerkkarten 
+ergattert hatte, stand ich vor dem Problem meinen A4000 und
+A2000 irgendwie zu verbinden. Eine Linux Rechner sollte 
+da auch noch mit rein.
+
+Der Linux Rechner sollte Newsserver/Proxy und gleichzeitig
+File und Printserver spielen. Auf das Thema Newsserver/Proxy gehe 
+ich hier nicht ein, da helfen die Linux HOWTOs zu einem schnellem
+Erfolgserlebnis :-)
+Wenn da Handlungsbedarf besteht, kann man ja mal dr&uuml;ber reden.
+
+Anf&auml;nglich expirimentierte ich mit NFS, verwarf es aber wieder,
+da es sehr viel &Auml;rger macht, der nicht oder nur sehr Zeitaufwendig
+nachzuvollziehen ist.
+Das Hauptproblem waren sporadische "Bitkipper" in Files,
+die mich zum fast zum Wahnsinn brachten.
+Aus den Amiga-Newsgroups erfuhr ich, das ich damit nicht alleine
+war. Eine L&ouml;sung war nicht in Sicht, also schwenkte ich um auf Samba. 
+
+Da es bei Samba keine leichtverst&auml;ndliche Doku zum amigaspezifischen 
+Teil gibt, hatte ich es mir stichpunkartig mitnotiert. Da mehreren 
+Leute die gleichen Startschwierigkeiten hatten, entschloss ich mich
+diese Notizen in einem Text zu verfassen und zu ver&ouml;ffentlichen.
+
+Den ersten Teil (die reine Installation von Samba) ist fertig,
+der zweite Teil wird a.s.a.p. nachgereicht.
+Dort wird dann der SMB-Handler und das Drucken unter Samba
+behandelt.
+
+Wer Verbesserungen oder W&uuml;nsche hat, immer her damit. Meine
+E-Mail ist "wb@pag.mayn.de". Flames bitte nach /dev/null :-)
+
+Mein eigentlicher Job ist in der Entwicklung von Hardware,
+den Amiga betreibe ich als Hobby. Sozusagen als 
+Entspannung zu Win9x und WinNT tags&uuml;ber. :-) Dashalb kann 
+ich mich nicht als Sambaprofi bezeichnen und bitte deshalb 
+mir eventuelle Fehler zu mailen.
+Wer Tippfehler findet, kann sie behalten ;-) 
+
+
+1.Was ist Samba??
+
+Samba ist eine Sammlung von Programmen, um Freigaben von Laufwerken
+und Druckern in einem Netzwerk mittels dem SMB Protokoll nutzen zu k&ouml;nnen.
+Die M&ouml;glichkeit besteht, selbst Laufwerke und Drucker freizugeben.
+Urspr&uuml;nglich kommt es aus der Unix Welt um Windows-Resourcen mit nutzen zu 
+k&ouml;nnen und umgekeht eigene Resouren freizugeben. F&uuml;r die verschiedensten 
+Betriebssysteme ist SAMBA schon portiert worden -&gt; Amiga, Netware, OS/2 
+u.s.w. 
+
+Ben&ouml;tigt wird Samba, ixemul und sp&auml;ter sambahandler
+
+Um Samba nutzten zu k&ouml;nnen muss ein laufender TCP/IP Stack 
+installiert sein. Wenn also ein Ping versagt, ist man mit
+Samba zu fr&uuml;h dran :-)
+
+
+2. Woher bekomme ich es?
+
+Aus dem Aminet, unter comm/net/samba*****.lha)
+
+
+3. Installation
+
+Ich kann hier nur zur Installation unter AmiTCP schreiben, da ich mit 
+Miami keine grossen Erfahrungen habe. Sollte aber auch nicht viel 
+anders sein.
+Wer da ein paar Tips geben kann, nur her damit. Ich lasse es gerne 
+in den Text mit einflie&szlig;en.
+
+3.1 Auspacken und Zusatzprogramme installieren
+----------------------------------------------
+Als erstes Samba in das Verzeichniss AmiTCP:samba auspacken.
+
+Die Verzeichnisse AMiTCP:samba/var AMiTCP:samba/var/locks m&uuml;ssen
+von Hand angelegt werden, da sie beim Auspacken nicht erstellt 
+werden.
+
+3.2 inetd.conf
+--------------
+Folgende Zeile muss in AmiTCP:db/inetd.conf mit eingetragen
+werden:
+
+       netbios-ssn stream tcp nowait root AmiTCP:samba/bin/smbd smbd 
+
+Sie kann direkt aus AmiTCP:samba/inetd.conf.addon kopiert werden.
+
+
+3.3 services
+------------
+Diese Zeilen bitte in AmiTCP:db/services eintragen:
+
+   netbios-ssn     139/tcp
+   netbios-ns      137/udp
+
+Sie k&ouml;nnen direkt aus AmiTCP:samba/services.addon kopiert werden.
+
+
+3.4 startnet
+------------
+Um den Samba-Server zu starten, muss folgende Zeile in AmiTCP:bin/startnet
+eingetragen werden:  
+
+     Run &lt;&gt;NIL: AmiTCP:samba/bin/nmbd &lt;&gt;NIL: nmbd -D -n Rechnername
+
+Achtung, hinter dem Parameter "-n" wird der Rechnername eingetragen,
+dieser wird dann sp&auml;ter in Verbindung mit den Freigaben benutzt.
+Dieser Name erscheint dann in den Browserlisten.
+
+
+3.5 Gastuser erstellen
+---------------------
+
+Es muss ein Gastuser mit passender Gruppe vorhanden sein oder erstellt 
+werden. Am einfachsten ist es die ADDON Files hinzuzuf&uuml;gen.
+"passwd.addon" zu "AmiTCP:db/passwd"
+"group.addon" zu  "AmiTCP:db/group"
+
+
+3.6 Assigns
+----------
+ETC muss nun zu Amitcp:db assigned werden. Einfach ein
+"Assign ETC: AmiTCP:db" in der User-Startup hinzuf&uuml;gen
+
+ 
+3.7 Ixemul.library installeren
+-----------------------------
+Ixemul.library in der Mindestversion 45.0 installieren.
+Hier muss ich auf die begleitende Installationsanweisung 
+verweisen. :-)
+
+
+3.8 Enviroment Variablen
+-----------------------
+Die env variable TMPDIR muss gesetzt sein damit nmbd funktioniert,
+Vorgabe ist T:
+
+
+4. Konfigurieren
+-----------------
+Nur der abschliessende Teil :-) Die Konfiguration erfolgt in
+AmiTCP:samba/lib/smb.conf.
+
+Diese Datei ist in mehreren Sektionen unterteilt, diese Sektionen
+werden mit der Zeichen [] eingeleitet. [global] steht f&uuml;r
+allgemein g&uuml;ltige Parameter. Was hier eingetragen wird,
+gilt f&uuml;r alle Abschnitte. Zum Gl&uuml;ck ist hier sehr viel
+vordefiniert (mit Kommentartext). Wichtig ist, das man seine
+Arbeitsgruppe in der Zeile "workgroup=" eintr&auml;gt. Nur
+Rechner der gleichen Arbeitsgruppe k&ouml;nnen Freigaben 
+gegenseiting nutzen.  
+
+Nun erfolgen die eigentlichen Freigaben. Jede Freigabe 
+wird mit [Freigabenamen] definiert.
+Danach erfolgen die Parameter, die fast selbsterkl&auml;rend sind.
+
+
+
+Hier ein Beispiel aus meiner smb.conf:
+
+[Daten]
+  comment = Platte DH2
+  path = /DH2/
+  read only = no
+  public = yes
+  browsable = yes
+  
+
+Freigabenamen ist "Daten". 
+"comment" ist der Text, der im Browser als Begleittext erscheint 
+
+"path" zeigt auf die eigentliche Freigabe. Hier ist mein
+       Laufwerk DH2 freigegeben.
+
+"read only" ist selbsterkl&auml;rend, "read only = no" bedeutet das
+            auch geschrieben werden kann. 
+ 
+"public" bedeutet, ob ein Benutzer/passwort abgefragt werden soll.
+         Bei "public=yes" kann jeder Rechner in der Arbeitsgruppe
+         hierauf zugreifen.
+
+"browsable" meint, ob die Freigabe im Browser mitgef&uuml;hrt wird.
+         Wenn "browsable" auf "no" steht, muss man die Freigabe 
+         zum Verbinden kennen!
+         
+Wenn nun alle definiert sind, AmiTCP starten mit Startnet.
+
+5.testen :-)
+-------------
+
+Mit dem smbclient in AmiTCP:samba/bin kann ich nun auf Freigaben
+anderer Rechner zugreifen. Zum ersten Testen lassen wir
+uns unsere eigenen auflisten mit:
+ 
+   AmiTCP:samba/bin/smbclient -L Rechername
+
+Rechnername steht f&uuml;r den Namen, der in Startnet eingetragen ist.
+Bei mir A4000.
+
+Jetzt sollte so was in der Art erscheinen:
+
+
+
+ Added interface ip=192.168.174.4 bcast=192.168.174.7 nmask=255.255.255.248
+ Server time is Sat Oct 30 19:45:55 1999
+ Timezone is UTC+0.0
+ Domain=[MEINE] OS=[Unix] Server=[Samba 1.9.16p9]
+
+ Server=[a4000] User=[wb] Workgroup=[MEINE] Domain=[MEINE]
+
+	Sharename      Type      Comment
+	---------      ----      -------
+	Daten          Disk      Platte DH2
+	homes          Disk      Home directories
+	IPC$           IPC       IPC Service (My Amiga)
+	wb             Disk      Home directories
+
+
+   This machine has a browse list:
+
+	Server               Comment
+	---------            -------
+	A4000                My Amiga
+
+
+   This machine has a workgroup list:
+
+	Workgroup            Master
+	---------            -------
+	MEINE                A4000
+
+
+
+Gl&uuml;ckwunsch :-) Samba l&auml;uft schon mal. Wenn nicht, noch mal alles 
+Schritt f&uuml;r Schritt durchgehen. 
+
+Alles weitere im zweiten Teil.
+
+to by continued......
+
+Werner Brennecke &lt;wb@pag.mayn.de&gt;«
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

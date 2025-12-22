@@ -1,0 +1,433 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Workshops.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops2.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Workshops
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="Inhalt"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H1>Workshops / Hintergrundberichte / Buchvorstellungen</H1>
+<H2>1. Einf&uuml;hrung in die Reaction-Programmierung (von Martin R. Elsner)</H2>
+<P><B>Sechster und letzter Teil: Eigene Klassen</B></P>
+<P>
+Die gr&ouml;&szlig;ten Probleme sollten jetzt schon gel&ouml;st sein, vielleicht ein
+eigenes Programm fertiggestellt, das ausgiebig Reaction-Objekte benutzt.
+Aber vielleicht ist der Eine oder Andere irgendwo auf eine Idee gesto&szlig;en,
+die er mit den Standard-Objekten nicht l&ouml;sen konnte. Aber auch daf&uuml;r gibt
+es eine L&ouml;sung: Man programmiert einfach eine eigene Klasse!
+</P>
+<P>
+Zun&auml;chst ein kleiner Hinweis: Man sollte sich zun&auml;chst &uuml;berlegen, ob die
+Idee wirklich nicht mit den schon vorhandenen Objekten umgesetzt werden
+k&ouml;nnte. Manchmal findet man in den Autodocs Klassen oder Tags, die man noch
+nicht genau kennt und bisher untersch&auml;tzt hat. Z.B. kann ein Label nicht
+nur eine einfache Beschriftung, sondern mehrere Zeilen Text und Grafiken
+darstellen.
+</P>
+<P>
+Au&szlig;erdem ist es empfehlenswert, Standardklassen zu verwenden, da diese
+meist gut getestet sind, weiterentwickelt werden und f&uuml;r einheitliche
+Oberfl&auml;che und Funktionsweise der Programme sorgen.
+</P>
+<P>
+Falls man trotzdem nicht f&uuml;ndig wird, kann auch im Aminet recherchiert
+werden. Hier muss man aber auf die eben erw&auml;hnten Vorteile verzichten und
+hat meist auch keinen Zugriff auf die Quelltexte. Dann bleibt keine Wahl:
+Man muss selber ran!
+</P>
+<P>
+Eine eigene Klasse wird immer von einer schon bestehenden abgeleitet. Dazu
+bietet sich eine Klasse an, die m&ouml;glichst viele der gew&uuml;nschten
+Eigenschaften schon mitbringt, sodass nur die Differenzen neu programmiert
+werden m&uuml;ssen. Man entscheidet sich z.B. daf&uuml;r, den Button als Basisklasse
+zu nutzen und eine neue - private - Klasse zu entwickeln.
+</P>
+<P>
+Eine umfassende Einf&uuml;hrung in die Erzeugung eigener Klassen findet man im
+Kurs von Michael Christoph (<A HREF="http://www.meicky-soft.de/amiga-magazin/reaction.html" TARGET="_top">http://www.meicky-soft.de/amiga-magazin/reaction.html</A>
+oder direkt bei <A HREF="http://www.amiga-magazin.de/magazin/a02-00/programmieren.html" TARGET="_top">http://www.amiga-magazin.de/magazin/a02-00/programmieren.html</A>).
+Hier m&ouml;chte ich deswegen nur als Beispiel eine Klasse auff&uuml;hren, die mir
+Stephan Rupprecht zur Verf&uuml;gung gestellt hat, und die ich f&uuml;r den Einsatz
+in ClassAction etwas modifiziert habe: eine Icon-Klasse, basierend auf
+Gadgetclass (also der Basisklasse f&uuml;r alle Gadgets), die ein Icon als
+Grafik verwendet und auf Mausklicks wie ein Button reagiert.
+</P>
+<P>
+Zum Vergleich: Ein Button kann nat&uuml;rlich mit GA_Image auch mit einer
+beliebigen Grafik gef&uuml;ttert werden, die man z.B. &uuml;ber ein Penmap- oder
+Bitmap-Objekt aus einem Icon (bzw. der .info-Datei) erzeugt hat,
+vorausgesetzt, ein entsprechender DataType existiert im System. Allerdings
+ist der aktuelle Icon-Datatype nicht in der Lage, den Hintergrund der
+Grafik transparent zu zeichnen, und nicht auf allen Systemen ist ein Icon-
+Datatype installiert. Unser Icon-Button soll dagegen immer funktionieren
+und das Icon wie auf der Workbench anzeigen. Der Einfachheit halber soll
+die Klasse nicht extern, sondern im Quellcode des Programms selbst
+enthalten sein.
+</P>
+<P><B>Was ben&ouml;tigt man f&uuml;r eine eigene Klasse?</B></P>
+<P>
+Nun, au&szlig;er der Festlegung auf eine Basisklasse wird haupts&auml;chlich eine
+Ereignisbehandlungsfunktion ben&ouml;tigt, und zwar in Form eines Hooks. Diese
+kann dann mit DoSuperMethod auf die geerbten Methoden zur&uuml;ckgreifen (falls
+sie existieren), kann aber auch (und das ist ja der Sinn der Sache) neue
+Funktionen einf&uuml;hren. Bei Gadgets kann dies haupts&auml;chlich die Darstellung
+oder die Reaktion auf Ereignisse betreffen.
+</P>
+<P>
+F&uuml;r unseren Icon-Button m&uuml;ssen zwei Dinge geregelt werden: das Zeichen des
+Icons, f&uuml;r das wir DrawIconState verwenden, und die Reaktion auf einen
+Mausklick. Dazu existieren die Methoden GM_RENDER und GM_HANDLEINPUT, die
+wir in unserer Behandlungsroutine butclass_DISPATCH abfangen und in
+butclass_RENDER und butclass_HANDLEINPUT bearbeiten. Wir m&uuml;ssen nat&uuml;rlich
+das Icon selbst (d.h. einen Zeiger auf ein DiskObject) irgendwo speichern;
+dazu verwenden wir einfach GA_UserData. Wenn wir aber auch einen BackFill-
+Hook unterst&uuml;tzen und auf einen Doppelklick pr&uuml;fen wollen, brauchen wir
+zus&auml;tzliche Eigenschaften in unserem Objekt: Dazu definieren wir eine
+Struktur InstanceData, die von Intuition angelegt und freigegeben wird,
+aber von uns genutzt werden kann. Diese muss bei OM_NEW bzw.
+</P>
+<P>
+OM_SET/OM_UPDATE gef&uuml;llt werden und kann dann in den sonstigen Routinen mit
+Hilfe des Makros INST_DATA verwendet werden. Au&szlig;erdem muss bei GM_DOMAIN
+die Gr&ouml;&szlig;e unseres Buttons ausgerechnet werden, damit die &uuml;bergeordneten
+Objekte den n&ouml;tigen Platz reservieren k&ouml;nnen.
+</P>
+<P><B>Zun&auml;chst die n&ouml;tigen Includes, Abk&uuml;rzungen und Bibliotheken:</B></P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  #include &lt;intuition/intuition.h&gt;
+  #include &lt;intuition/classusr.h&gt;
+  #include &lt;intuition/classes.h&gt;
+  #include &lt;intuition/gadgetclass.h&gt;
+  #include &lt;intuition/cghooks.h&gt;
+  #include &lt;workbench/icon.h&gt;
+  #include &lt;workbench/workbench.h&gt;
+  #include &lt;gadgets/layout.h&gt;
+  #include &lt;libraries/gadtools.h&gt;
+  #include &lt;clib/intuition_protos.h&gt;
+  #include &lt;clib/alib_protos.h&gt;
+  #include &lt;clib/icon_protos.h&gt;
+  #include &lt;clib/layers_protos.h&gt;
+  #include &lt;clib/utility_protos.h&gt;
+  #include &lt;clib/dos_protos.h&gt;
+
+  #define REG(reg,arg)    register __##reg arg
+  #define G(x)            ((struct Gadget *)x)
+
+  extern struct Library
+    *IconBase,
+    *DOSBase,
+    *IntuitionBase,
+    *UtilityBase,
+    *LayersBase,
+    *GfxBase;
+</PRE></TD></TR></TABLE>
+<P>
+Nun unsere zus&auml;tzlichen Daten pro Objekt, und die ben&ouml;tigten Funktionen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  struct InstanceData{
+    ULONG                    secs;      /* nur zur Pr&uuml;fung ...   */
+    ULONG                    micro;     /* ...   auf Doppelklick */
+    struct Hook             *backfill;  /* siehe butclass_RENDER */
+    Object                  *parent;    /* siehe butclass_SET    */
+  };
+
+  ULONG butclass_DISPATCH( REG( a0, Class *cl ), REG( a2, Object *o ), REG( a1, Msg msg ) );
+  ULONG butclass_DOMAIN( Class *cl, Object *o, struct gpDomain *gpd );
+  ULONG butclass_HANDLEINPUT( Class *cl, Object *o, struct gpInput *gpi );
+  ULONG butclass_RENDER( Class *cl, Object *o, struct gpRender *gpr );
+  ULONG butclass_SET( Class *cl, Object *o, struct opSet *ops );
+</PRE></TD></TR></TABLE>
+<P>
+Zwei Funktionen erlauben das Anlegen und Freigeben unserer Klasse:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  IClass *MakeIconClass(){
+    IClass   *cl;
+
+    if( cl = MakeClass( NULL,
+              &quot;gadgetclass&quot;,                 /* die Basisklasse */
+              NULL,
+              sizeof( struct InstanceData ), /* Gr&ouml;&szlig;e unserer Zusatzdaten */
+              0L ) )
+      cl-&gt;cl_Dispatcher.h_Entry = (HOOKFUNC) butclass_DISPATCH;
+      /* Einzige Initialisierung: Einsetzen unseres Dispatchers */
+    return cl;
+  }
+
+  BOOL RemoveIconClass( IClass *cl ){
+    if( cl ) return FreeClass(cl);
+    else return FALSE;
+  }
+</PRE></TD></TR></TABLE>
+<P>
+D.h. wir speichern den Zeiger (cl=MakeIconClass()). um ihn beim Erzeugen
+von Gadgets zu verwenden (gadget=(Object*)NewObject( cl,NULL,...)), und
+geben die Klasse zuletzt mit RemoveIconClass(cl) wieder frei.
+</P>
+<P><B>Und jetzt der ganze Rest:</B></P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  ULONG butclass_DISPATCH( REG( a0, Class *cl ), REG( a2, Object *o ), REG( a1, Msg msg ) ){
+    /* allgemeine Ereignisbehandlungroutine */
+    ULONG ret = 0L;
+
+    switch( msg-&gt;MethodID ){
+      case GM_HANDLEINPUT:
+      case GM_GOACTIVE: ret = butclass_HANDLEINPUT( cl, o, (struct gpInput *) msg ); break;
+
+      case OM_SET:
+      case OM_UPDATE:   ret = butclass_SET( cl, o, (struct opSet *) msg ); break;
+
+      case GM_RENDER:   ret = butclass_RENDER( cl, o, (struct gpRender *) msg ); break;
+
+      case GM_DOMAIN:   ret = butclass_DOMAIN( cl, o, (struct gpDomain *) msg ); break;
+
+      case OM_NEW:{
+        if( ret = DoSuperMethodA( cl, o, msg ) ){
+          /* zus&auml;tzlich zum Erzeugen des Objekts m&uuml;ssen Eigenschaften gesetzt werden */
+          butclass_SET( cl, (Object *) ret, (struct opSet *) msg );
+        }
+        break;
+      }
+      default: ret = DoSuperMethodA( cl, o, msg );
+      /* in JEDEM Fall alle anderen Methoden an die Mutterklasse &uuml;bergeben! */
+    }
+    return ret;
+  }
+
+  /****************************************************************************/
+
+  void butclass_redraw( Object *o, struct GadgetInfo *gi ){
+    /* siehe butclass_HANDLEINPUT */
+    struct RastPort *rp;
+
+    if( rp = ObtainGIRPort( gi ) ){
+      DoMethod( o, GM_RENDER, (ULONG) gi, (ULONG) rp, GREDRAW_REDRAW );
+      ReleaseGIRPort( rp );
+    }
+  }
+
+  /****************************************************************************/
+
+  ULONG butclass_HANDLEINPUT( Class *cl, Object *o, struct gpInput *gpi ){
+    /* Reaktion auf Eingaben (Mausklicks) des Benutzers */
+    InputEvent *ie = gpi-&gt;gpi_IEvent;
+    ULONG retval = GMR_MEACTIVE;
+
+    if( ie ){
+      switch( ie-&gt;ie_Class ){
+        case IECLASS_RAWMOUSE:{
+          switch( ie-&gt;ie_Code ){
+            case SELECTUP: retval = GMR_NOREUSE; break;
+
+            case SELECTDOWN:{
+              InstanceData     *id = (InstanceData*)INST_DATA( cl, o );
+
+  #ifdef DOUBLECLICK
+              /* Falls das Icon eine GADGETUP-Botschaft nur nach einem  */
+              /* Doppelklick liefern soll, m&uuml;ssen wir den Zeitpunkt des */
+              /* letzten Klicks pr&uuml;fen:                                 */
+              if( DoubleClick( id-&gt;secs, id-&gt;micro, ie-&gt;ie_TimeStamp.tv_secs,
+                               ie-&gt;ie_TimeStamp.tv_micro ) ){
+                G(o)-&gt;Flags |= GFLG_SELECTED;
+                butclass_redraw( o, gpi-&gt;gpi_GInfo );
+                retval = GMR_NOREUSE | GMR_VERIFY;
+
+                id-&gt;secs = id-&gt;micro = 0UL;
+              }else{
+                id-&gt;secs  = ie-&gt;ie_TimeStamp.tv_secs;
+                 id-&gt;micro = ie-&gt;ie_TimeStamp.tv_micro;
+                G(o)-&gt;Flags ^= GFLG_SELECTED;
+                butclass_redraw( o, gpi-&gt;gpi_GInfo );
+                retval = GMR_NOREUSE;
+              }
+  #else
+              /* GADGETUP nach einfachem Klick */
+              G(o)-&gt;Flags |= GFLG_SELECTED;
+              butclass_redraw( o, gpi-&gt;gpi_GInfo );
+              retval = GMR_NOREUSE | GMR_VERIFY;
+  #endif
+            }
+            break;
+
+            case MENUDOWN: retval = GMR_REUSE; break;
+          }
+          break;
+        }
+      }
+    }
+    return retval;
+  }
+
+  /****************************************************************************/
+
+  BOOL IsIconFrameless( struct DiskObject *icon ){
+    /* Pr&uuml;ft, ob das Icon ohne Rahmen dargestellt werden muss */
+    /* siehe butclass_RENDER*/
+    ULONG frameless;
+
+    IconControl( icon,ICONCTRLA_GetFrameless, (ULONG) &amp;frameless,TAG_DONE );
+
+    if( frameless == FALSE ){
+      ULONG   globalfl;
+      if( IconControl( NULL,ICONCTRLA_GetGlobalFrameless, (ULONG) &amp;globalfl,TAG_DONE ) )
+        frameless = globalfl;
+    }
+
+    return frameless;
+  }
+
+  /****************************************************************************/
+
+  ULONG butclass_RENDER( Class *cl, Object *o, struct gpRender *gpr ){
+    /* Zeichnen des Icons */
+    RastPort         *rp = gpr-&gt;gpr_RPort;
+    DiskObject       *icon = (struct DiskObject *) G(o)-&gt;UserData;
+    Hook             *hook;
+    InstanceData     *id = (InstanceData*)INST_DATA( cl, o );
+    Layer            *layer = gpr-&gt;gpr_GInfo-&gt;gi_Layer;
+    WORD             x = G(o)-&gt;LeftEdge, y = G(o)-&gt;TopEdge;
+
+    /* Unter unserem Icon muss der richtige Hintergrund dargestellt werden: */
+    hook = InstallLayerHook( layer, id-&gt;backfill );
+
+    DrawIconState(rp, icon, NULL, x,y,
+      (G(o)-&gt;Flags &amp; GFLG_SELECTED) != 0L,
+      ICONDRAWA_DrawInfo, (ULONG) gpr-&gt;gpr_GInfo-&gt;gi_DrInfo,
+      ICONDRAWA_Frameless, IsIconFrameless( icon ),
+      TAG_DONE );
+
+    InstallLayerHook( layer, hook );
+
+    return 0L;   }
+
+  /****************************************************************************/
+
+  ULONG butclass_SET( Class *cl, Object *o, struct opSet *ops ){
+    /* Setzen der Eigenschaften */
+    InstanceData     *id = (InstanceData*)INST_DATA( cl, o );     TagItem          *ti, *tlist = ops-&gt;ops_AttrList;
+    DiskObject       *icon = NULL;
+
+    while( ti = NextTagItem( &amp;tlist ) ){
+      switch( ti-&gt;ti_Tag ){
+        case GA_BackFill:
+          id-&gt;backfill = (Hook*) ti-&gt;ti_Data;
+          break;
+        case LAYOUT_Parent:
+          id-&gt;parent = (Object *) ti-&gt;ti_Data;
+          break;
+
+        case GA_UserData:
+          icon = (struct DiskObject *) ti-&gt;ti_Data;
+          break;
+      }
+    }
+
+    if( id-&gt;parent &amp;&amp; icon ){
+      /* Berechnen der Icongr&ouml;&szlig;e und Mitteilung an das Parent-Objekt */
+      Rectangle rect;
+      UWORD     w,h;
+
+      GetIconRectangle( NULL, icon, NULL, &amp;rect,
+        ICONDRAWA_Borderless, FALSE, TAG_DONE );
+      /* Wir z&auml;hlen also den Rand mit */
+
+      w = ( rect.MaxX - rect.MinX ) + 1;
+      h = ( rect.MaxY - rect.MinY ) + 1;
+
+      SetAttrs( id-&gt;parent,
+        LAYOUT_ModifyChild, (ULONG) o,
+        CHILD_MinWidth, w,
+        CHILD_MinHeight, h,
+        CHILD_MaxWidth, w,
+        CHILD_MaxHeight, h,
+        TAG_DONE );
+      /* Dies war die einzige Stelle, f&uuml;r die wir id-&gt;Parent brauchten. */
+      /* Da das Icon nachtr&auml;glich ge&auml;ndert werden kann, m&uuml;ssen wir es   */
+      /* im Objekt speichern.                                           */
+    }
+
+    return (ops-&gt;MethodID != OM_NEW) ? DoSuperMethodA( cl, o, (Msg) ops ) : 1L;
+    /* bei OM_NEW wurde die SuperMethod schon in HANDLEINPUT aufgerufen! */
+  }
+
+  /****************************************************************************/
+
+  ULONG butclass_DOMAIN( Class *cl, Object *o, struct gpDomain *gpd ){
+    /* Berechnen der Gadget-Ausma&szlig;e */
+    InstanceData *id = (InstanceData*)INST_DATA( cl, o );
+    DiskObject   *icon = (struct DiskObject *) G(o)-&gt;UserData;
+
+    if( icon ){
+      /* nur wenn das Icon schon geladen wurde, steht die Gr&ouml;&szlig;e des Buttons fest */
+      struct Rectangle rect;
+      UWORD            w,h;
+
+      GetIconRectangle( NULL, icon, NULL, &amp;rect,
+        ICONDRAWA_Borderless, FALSE,
+        TAG_DONE );
+
+      w = rect.MaxX - rect.MinX + 1;
+      h = rect.MaxY - rect.MinY + 1;
+
+      switch( gpd-&gt;gpd_Which ){
+        case GDOMAIN_MINIMUM:
+          gpd-&gt;gpd_Domain.Width = w;
+          gpd-&gt;gpd_Domain.Height = h;
+          break;
+
+        case GDOMAIN_NOMINAL:
+        case GDOMAIN_MAXIMUM:
+          gpd-&gt;gpd_Domain.Width = w;
+          gpd-&gt;gpd_Domain.Height = h;
+          break;
+      }
+      return 1L;
+    }
+
+    return 0L;
+  }
+</PRE></TD></TR></TABLE>
+<P>
+Mit dieser Klasse k&ouml;nnen nun Objekte erzeugt und in Layouts eingef&uuml;gt
+werden, wobei mit GA_UserData ein Zeiger auf das Icon &uuml;bergeben werden
+muss, das man mit GetIconTags bei gegebenem Dateinamen laden kann.
+</P>
+<P>
+Nat&uuml;rlich ist diese Klasse weder besonders trickreich noch v&ouml;llig
+ausgereift - man k&ouml;nnte noch weitere Eigenschaften hinzuf&uuml;gen, die die
+Reaktion auf Doppelklick oder einfachen Klick steuern etc. Aber ich hoffe,
+sie hat die grundlegende Funktionsweise eigener Klassen verst&auml;ndlich
+gemacht.
+</P>
+<P>
+So, das soll's erst mal gewesen sein - wer mehr &uuml;ber Reaction wissen will,
+findet in den schon erw&auml;hnten Dokumenten und im Kurs von Michael Christoph
+noch viel mehr Informationen.
+</P>
+<P>
+Ansonsten stehe ich nat&uuml;rlich weiterhin mit meinem beschr&auml;nkten Wissen zur
+Verf&uuml;gung ;)
+</P>
+<P>
+euer
+</P>
+<P><B>Martin R. Elsner &lt;<A HREF="mailto:email@martin-elsner.de">email@martin-elsner.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops2.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

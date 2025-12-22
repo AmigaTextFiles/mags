@@ -1,0 +1,329 @@
+{backimage bg.iff}
+{def}
+{left}
+Here's an example with working syntax:
+{pp}{fixed}
+[begin 2.4.0_malloc-free.c]
+#include <stdio.h>
+
+int main(void)
+{{
+  int * pointer1 = NULL;
+  int * pointer2 = NULL;
+
+  pointer1 = (int *) malloc(100 * sizeof(int)); /* allocate 100 * sizeof(int) bytes */
+  pointer2 = (int *) calloc(100, sizeof(int));  /* allocate 100 ints */
+  if (pointer1) free(pointer1);    /* if pointer1 is non-zero, free it again */
+  else printf("Couldn't allocate memory for pointer1.\n"); /* otherwise an error occurred */
+  if (pointer2) free(pointer2);    /* if pointer2 is non-zero, free it again */
+  else printf("Couldn't allocate memory for pointer2.\n"); /* otherwise an error occurred */
+
+  return 0;
+}}
+[end 2.4.0_malloc-free.c]
+{def}{pp}
+The program above doesn't actually do anything useful but demonstrates the syntax.
+{pp}
+{bold}2.5 - A hand-made array is born{nobold}
+{pp}
+Finally all the tools required for a hand-made array are complete. Let's dive into an example:
+{pp}{fixed}
+[begin 2.5_lotto-alloc.c]
+/*****************************************/
+/*                                       */
+/* 1. Calc element size                  */
+/* 2. Calc array size                    */
+/* 3. Alloc memory of size array_size    */
+/* 4. Check if alloc was successful      */
+/* 5. Enter & re-display numbers         */
+/* 6. Free memory                        */
+/* 7. Finish                             */
+/*                                       */
+/*****************************************/
+
+#include <stdio.h>
+
+int main(void)
+{{
+  int i = 0;               /* <- This variable used for keeping track of which element in the array is being used */
+  int returnval = 0;       /* <- main() returns returnval. Zero on success, -1 on memory alloc failure */
+  size_t element_size = 0; /* <- Used to hold how many bytes each element is */
+  size_t array_size = 0;   /* <- Used to hold how many bytes the array is */
+  long int *pArray = NULL; /* <- Creates a variable pArray that holds a memory address for int */
+  long int *pAlias = NULL; /* <- Also holds a memory address for int, just like pArray */
+
+  element_size = sizeof(int);               /* <- Calc element size, in bytes, for ints */
+  array_size = 10 * element_size;           /* <- Calc array size, in bytes, for 10 ints */
+  pArray = (long int *) malloc(array_size); /* <- Alloc memory of size array_size, using a function called malloc(). */
+                                            /* malloc() returns a memory address in the form of a void pointer. We   */
+                                            /* cast that void address to a long int address, and assign it to pArray */
+  if (pArray) /* <- Check if alloc was successful. non-zero evaluates to true. If pArray == NULL, it evaluates to false */
+  {{
+    printf("\n10 elements of %i bytes each.", sizeof(long int) );
+    printf("\nArray_size == %i bytes.", array_size);
+    printf("\nAddress of allocated memory: %p.", pArray);
+    printf("\nAddress of pArray, the variable holding \nthe address of the allocated memory: %p.", &pArray);
+    pAlias = pArray;         /* <- Here, we make the contents of pAlias = pArray. So they both hold the */
+                             /* same address and hence can both be used to access/manipulate the same   */
+                             /* memory. Just because pArray was used to allocate the memory doesn't      */
+                             /* somehow make it more "important" than pAlias; only the address counts.  */
+    for (i = 0; i <= 9; i++)                    /* <- Our hand-made array is array_size big. We're stepping through it  */
+    {{                                           /* sizeof(long int) bytes at a time, even though i is being incremented */
+      printf("\nEnter secret number %i: ", i);  /* by 1 each time. The compiler "knows" that each i is actually         */
+      scanf("%i", pArray + i);                  /* sizeof(long int) bytes further along from the address pArray.        */
+    }}
+    printf("All done. The secret numbers were (from address %p):\n", pArray);
+    for (i = 0; i <= 9; i++)
+    {{
+      printf("\nElement %i had address %p and it's contents was: %i.", i, pAlias, *pAlias); /* <- the asterix in this */
+      pAlias++; /* context "dereferences", ie. evaluates to the *value* at the address it holds, rather than the      */
+    }}           /* *address* it holds.                                                                                  */
+    free(pArray); /* <- Free memory. ALWAYS, always free memory when you're finished with it. */
+    pArray = NULL;
+    pAlias = NULL; /* <- NULL the pointers. Not really necessary in this example, but stray pointers are very bad.. */
+  }}
+  else
+  {{
+    printf("\nError: Memory allocation failed. Aborting.\n"); /* Print error message if pArray == NULL */
+    returnval = -1; /* <- Return -1 if there was an error allocating memory */
+  }}
+
+  return returnval; /* <- returnval should be zero if everything went ok */
+}}
+[end 2.5_lotto-alloc.c]
+{def}{pp}
+This example looks a lot more daunting than previous examples. It's not really anything special, however; remove the commenting, the error handling, the printf()s at the 
+start, and there really isn't anything to it except the two for(){{}} loops, one for entry and the other for display.
+{pp}
+The first for loop puts the data the user enters into the correct element, by giving scanf() the appropriate address. Since the array is at location pArray, then we just add to 
+this pointer which element we want. The compiler does the rest. If array zero is needed, then scanf() gets just the address pArray. If element one is needed, then scanf()'s 
+parameter we give evaluates to pArray + 1 - the actual address is calculated by the compiler.
+{pp}
+In the second for loop, we could have done the exact same thing again, but I wanted to demonstrate the idea of an alias. In this loop, we've used pAlias as the address of 
+the element being displayed. To move to the next element, the pointer is now itself being modified. On each iteration, pAlias is incremented by "one". The actual 
+calculation, again, is done by the compiler.
+{pp}
+{bold}2.6 - An array is a pointer is a.. string?{nobold}
+{pp}
+There is just one more thing to clear up about arrays. Here's 2.2.1_var-address.c again:
+{pp}{fixed}
+[begin 2.2.1_var-address.c]
+#include <stdio.h>
+int main(void)
+{{
+  int i = 0;
+  char j = 0;
+  long int aardvark[100];
+
+  printf("Memory addresses in hex.\n");
+  printf("Var name, Address, sizeof():\n");
+  printf("       i: %p   %i\n", &i, sizeof(int));
+  printf("       j: %p   %i\n", &j, sizeof(int));
+  printf("aardvark: %p   %i\n", aardvark, sizeof(long int));
+
+  return 0;
+}}
+[end 2.2.1_var-sizes.c]
+{def}{pp}
+All this program does is prints the address of variables. It does this by using the %p format specifier in the printf() string to denote a memory address (pointer). It passes 
+memory addresses in the parameter list, by giving variables preceded by an ampersand; instead of i evaluating to zero, &i evaluates to it's address. But hang on - what 
+about aardvark?
+{pp}
+There is no ampersand in front of aardvark. This line only makes sense if the array identifier, aardvark, is treated as a pointer. But it's not a pointer, it's an array. So how is 
+the address being printed?
+{pp}
+AN ARRAY IS A POINTER. A POINTER CAN BE AN ARRAY.
+{pp}
+Take a look at the array declaration:
+{pp}
+{fixed}long int aardvark[100];{def}
+{pp}
+What does this line actually do? Here's some code that does the same thing:
+{pp}{fixed}
+[begin..]
+int * aardvark = NULL;
+aardvark = (int *) calloc( 100, sizeof(int) );
+
+...
+
+free(aardvark); /* on exit */
+[..end]
+{def}{pp}
+Wait - this implies some important things. It implies that the following code is valid:
+{pp}{fixed}
+[begin..]
+long int aardvark[100];
+aardvark++;
+[..end]
+{def}{pp}
+Which is in fact wrong. This will code segment will not compile. Although aardvark is a pointer in it's own right, just like the pointers we have recently been experimenting 
+with, it is not modifiable. It's a "fixed" pointer you can't change.
+{pp}
+But it also implies this:
+{pp}{fixed}
+[begin..]
+long int aardvark[100];
+*aardvark = 5;
+printf("aardvark[0] == %i.", *aardvark);
+[..end]
+{def}{pp}
+Which IS valid. aardvark the identifier is treated as a pointer, and can be used in a similar way, as long as no attempt is made to change the value, or address, held by 
+aardvark.
+{pp}{fixed}
+[begin..]
+int * aardvark = NULL;
+aardvark = (int *) calloc( 100, sizeof(int) );
+aardvark[4] = 34;
+printf("aardvark[4] == %i.", aardvark[4]);
+[..end]
+{def}{pp}
+This is also valid code. Below is a demonstration of these new facts.
+{pp}{fixed}
+[begin 2.6_evenodd.c]
+#include <stdio.h>
+
+int main(void)
+{{
+  int i = 0;
+  int even_array[100];    /* create an array with the compiler */
+  int * odd_array = NULL; /* int pointer for a "hand-made" array */
+  int * odd_array_alias = NULL; /* will be modifying odd_array pointer, but still have to free() the original address. Remember original address with odd_array_alias */
+
+  odd_array = (int *) calloc(100, sizeof(int) ); /* alloc mem for the "hand-made" pointer, 100 elements */
+  odd_array_alias = odd_array;                   /* remember the original calloc()'d address with odd_array_alias */
+  if (odd_array) /* error checking */
+  {{
+    odd_array[0] = 1;  /* make first element the first odd number, 1 */
+    even_array[0] = 2; /* make first element the first even number, 2 */
+    for (i = 1; i <= 99; i++) /* loop 99 times (element 0 for both arrays are done), fill arrays */
+    {{
+      odd_array[i] = odd_array[i - 1] + 2; /* fill odd array with odd numbers. This line shows a "hand-made" array can be used like a "compiler" one. */
+      even_array[i] = even_array[i -1] + 2; /* fill even array with even numbers */
+    }}
+    for (i = 0; i <= 99; i++) /* loop 100 times, display array contents */
+    {{
+      printf("\n#:%i. Odd: %i. Even: %i.", i, *odd_array, even_array[i]);
+      odd_array++; /* Move pointer to next element. Can't do this with even_array since it's a "fixed" pointer */
+    }}
+    printf("\n\nFirst elements again: Odd: %i Even %i.\n", *odd_array_alias, *even_array); /* This line shows you can still dereference a "fixed" pointer in a "compiler" 
+array */
+    free(odd_array_alias); /* Can't use odd_array, since odd_array doesn't point to originally calloc'd address anymore. */
+  }} /* NB: In your own programming, try to use pointer aliases when you want to modifiable pointer, so you can use the same pointer used for calloc() with free() */
+  else printf("\nMemory alloc failed.\n"); /* if odd_array failed on alloc */
+
+  return 0;
+}}
+[end 2.6_evenodd.c]
+{def}{pp}
+And below is a version of the above which will not compile. It won't compile because it assumes that a "compiler" array is a modifiable pointer. See if you can guess which 
+line the error will occur, and then try and compile it. Take a look at what the error messages your compiler actually gives.
+{pp}{fixed}
+[begin 2.6_evenodd_bad.c]
+/**************************************************/
+/* This code will not compile.                    */
+/* It assumes even_array is a modifiable pointer. */
+/* See if you can guess which line the error will */
+/* occur.                                         */
+/**************************************************/
+#include <stdio.h>
+
+int main(void)
+{{
+  int i = 0;
+  int even_array[100];    /* create an array with the compiler */
+  int * odd_array = NULL; /* int pointer for a "hand-made" array */
+  int * odd_array_alias = NULL; /* will be modifying odd_array pointer, but still have to free() the original address. Remember original address with odd_array_alias */
+
+  odd_array = (int *) calloc(100, sizeof(int) ); /* alloc mem for the "hand-made" pointer, 100 elements */
+  odd_array_alias = odd_array;                   /* remember the original calloc()'d address with odd_array_alias */
+  if (odd_array) /* error checking */
+  {{
+    odd_array[0] = 1;  /* make first element the first odd number, 1 */
+    even_array[0] = 2; /* make first element the first even number, 2 */
+    for (i = 1; i <= 99; i++) /* loop 99 times (element 0 for both arrays are done), fill arrays */
+    {{
+      odd_array[i] = odd_array[i - 1] + 2; /* fill odd array with odd numbers. This line shows a "hand-made" array can be used like a "compiler" one. */
+      even_array[i] = even_array[i -1] + 2; /* fill even array with even numbers */
+    }}
+    for (i = 0; i <= 99; i++) /* loop 100 times, display array contents */
+    {{
+      printf("\n#:%i. Odd: %i. Even: %i.", i, *odd_array, *even_array);
+      odd_array++; /* Move pointer to next element. */
+      even_array++; /* Move pointer to next element. */
+    }}
+    printf("\n\nFirst elements again: Odd: %i Even %i.\n", *odd_array_alias, *even_array); /* This line shows you can still dereference a "fixed" pointer in a "compiler" 
+array */
+    free(odd_array_alias); /* Can't use odd_array, since odd_array doesn't point to originally calloc'd address anymore. */
+  }} /* NB: In your own programming, try to use pointer aliases when you want to modifiable pointer, so you can use the same pointer used for calloc() with free() */
+  else printf("\nMemory alloc failed.\n"); /* if odd_array failed on alloc */
+
+  return 0;
+}}
+[end 2.6_evenodd_bad.c]
+{def}{pp}
+There's still the business of strings. These tutorials have now totaled over 100KB of raw text and still there is no mention of strings. By strings, of course, I mean a string of 
+ASCII characters.
+{pp}
+Strings are useful for text - displaying it, and reading user input. But, unlike other languages, C has no specific string data type. Unfortunately, strings must be dealt with like 
+any other array - there is no discrimination. However, there are string specific functions - many of these can be found in string.h. Take a look at your compiler's 
+documentation for an overview of the ANSI string functions.
+{pp}
+So far the only function available for user input that has been described is scanf().
+{pp}
+Recall at the beginning of this tutorial:
+{pp}
+"Remember that scanf() requires an ADDRESS, rather than the contents of a variable. If the ampersand is ignored, the value of the variable is being passed to scanf, rather 
+than the address, and scanf() has no way of modifying the variable. It will also cause your computer to crash; if the variable held the value 5, scanf() will try to shove user 
+input into address 5, which is probably not the desired destination..."
+{pp}
+scanf() can indeed accept strings of characters from the keyboard as input. But if this input is to be stored anywhere, an address has to be given. What's needed, is an array 
+of char.
+{pp}
+Take a look at the next example. It takes your name, tells you how many characters it is, and, just for fun, prints it out backwards. There is nothing new here except the 
+memset() function. The rest is plain old pointer juggling, just like what has been demonstrated in earlier examples.
+{pp}{fixed}
+[begin 2.6_string.c]
+#include <stdio.h>
+
+int main(void)
+{{
+  int name_len = 0;           /* Holds the length of the name */
+  int i = 0;
+  char pString[100];          /* Create a "string"; an array of 100 char */
+  char *pAlias = pString;     /* Create an alias for pString */
+
+  memset(pString, 0, 100); /* init the first 100 chars of the string to all zeroes */
+  printf("\nEnter your first name (max 100 chars): ");
+  scanf("%s", pString); /* scanf will only accept one word; any characters after the first space, tab etc will be ignored */
+  while ( (*pAlias != 0) && (name_len < 100) ) /* Loop is designed to step through the string until the end of the name */
+  {{                                            /* (char @ pAlias == NULL), or the string, is reached */
+    name_len++;
+    pAlias++;
+  }}
+  /* Right now, pAlias is pointing just after the last character in the string. */
+  printf("\nName is %i characters long. Name spelt backwards: ", name_len);
+  while (pAlias >= pString) /* Loop until pAlias points to pString again */
+  {{     /* The job for this loop is to step through the string backwards, printing each character as it goes. */
+    printf("%c", *pAlias); /* "%c" displays whatever the parameter evaluates to as an ASCII character, hence dereference */
+    pAlias--;              /* Move back one character. */
+  }}
+
+  return 0;
+}}
+[end 2.6_string.c]
+{def}{pp}
+Syntax for memset():
+{pp}
+{fixed}memset(<pointer_var>, <char>, <size>){def}
+{pp}
+This function will fill an address range beginning with <pointer_var> up with <char>, for <size> bytes. Usually this function is used for zeroing a newly allocated chunk 
+of memory, but it could be used to fill memory with any ASCII character.
+{pp}
+That concludes arrays for the moment. Next tutorial will get more interesting with structures and passing arrays of structures between functions. If you've read this far I 
+would appreciate any feedback you have - these articles take a lot of my time and it's your feedback that will keep me motivated to continue or help me improve if you 
+can't follow my writing, or even help me decide if I should be doing something more useful for AIO. 
+{pp}
+Happy coding!
+{pp}
+- Paul
+{pp}

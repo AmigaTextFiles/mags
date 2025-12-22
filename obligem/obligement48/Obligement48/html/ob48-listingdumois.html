@@ -1,0 +1,198 @@
+<html>
+ <head>
+  <title>Listing du mois&nbsp;: crypteur/décrypeur en Blitz Basic</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Le listing du mois&nbsp;: crypteur/décrypteur en Blitz Basic </font>par&nbsp;<a href="mailto:tme@mail.com">Sylvain&nbsp;Terret</a></div><br><br><br>
+
+
+Hop, de retour avec un nouveau listing&nbsp;! Ce mois-ci, on attaque un crypteur/décrypteur de fichiers texte pour AmigaOS 3.x.
+Il fonctionne sous Workbench et dispose d'une GUI basée sur GadTools. L'algorithme de cryptage est très simple, en fait,
+il est carrément élémentaire&nbsp;: pour crypter, on incrémente la valeur ASCII de chaque caractère du texte de 1.
+Visuellement, ça devient illisible, donc l'objectif premier est atteint.<br><br>
+
+Je rappelle, à ceux qui hésiteraient encore à se lancer, que l'archive LHA d'AmiBlitz 2 est disponible sur
+<a href="http://www.blitz-2000.co.uk/" target="_blank">www.blitz-2000.co.uk</a>. C'est gratuit, légal et ça permet de programmer sur tout
+Amiga Classic équipé d'une FPU. Même si ce langage de programmation n'a pas l'aura du C ou de l'assembleur,
+sachez qu'il permet de passer de bons moments à coder tranquille de petites applications ou de grands jeux.<br><br>
+
+OK, assez parlé, on code maintenant&nbsp;!<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+<pre>-- DEBUT SOURCE DU PROGRAMME --
+WBStartup
+WbToScreen 3
+Use Screen 3
+
+LoadFont 2,"topaz.font",8
+Use IntuiFont 2
+
+DosBuffLen 8192
+MaxLen chemin_source$=192
+MaxLen nom_source$=192
+MaxLen chemin_target$=192
+MaxLen nom_target$=192
+
+GTButton 0,1,75,0,160,15,"Choose source",$10
+GTButton 0,2,235,0,160,15,"Choose target",$10
+GTButton 0,3,75,15,160,15,"Crypt",$10
+GTButton 0,4,235,15,160,15,"Uncrypt",$10
+
+Window 0,0,14,480,105,$140e,"NCrypt v1.0 - A simple text file trasher",-1,-1
+DefaultOutput
+
+AttachGTList 0,0
+
+Use Window 0
+
+WLocate 10,60
+Print "Source :"
+WLocate 10,70
+Print "Target :"
+
+;Boucle principale du programme
+While ev.l<>$200
+
+  ;On recupere les evenements qui se produisent dans la fenetre du logiciel
+  ev.l=Event
+
+  WindowOutput 0
+
+  ;Si on clique sur un bouton
+  If ev.l=64
+    ;Si on clique sur le bouton CHOOSE SOURCE
+    If GadgetHit=1
+      chemin_source$=""
+      nom_source$=""
+      source$=""
+      source$=ASLFileRequest$("Select SOURCE file",chemin_source$,
+nom_source$,0,14,320,256)
+      If nom_source$=""
+        WLocate 80,60
+        Print "No file selected           "
+      EndIf
+      If nom_source$<>""
+        WLocate 80,60
+        Print nom_source$+"          "
+      EndIf
+    EndIf
+    ;Si on clique sur le bouton CHOOSE TARGET
+    If GadgetHit=2
+      chemin_target$=""
+      nom_target$=""
+      target$=""
+      target$=ASLFileRequest$("Select TARGET file",chemin_target$,
+nom_target$,0,14,320,256)
+      If nom_target$=""
+        WLocate 80,70
+        Print "No file selected          "
+      EndIf
+      If nom_target$<>""
+        WLocate 80,70
+        Print nom_target$+"          "
+      EndIf
+    EndIf
+    ;Si on clique sur le bouton CRYPT
+    If GadgetHit=3
+      If nom_source$<>"" AND nom_target$<>"" AND nom_source$<>nom_target$
+        WLocate 30,80
+        Print "Crypting...          "
+        KillFile target$
+        If ReadFile(0,source$)
+          FileInput 0
+          If WriteFile(1,target$)
+            FileOutput 1
+            While NOT Eof(0)
+              Print Chr$(Asc(Inkey$)+1)
+            Wend
+            CloseFile 1
+          EndIf
+          CloseFile 0
+        EndIf
+        WindowOutput 0
+        WLocate 30,80
+        Print "OK              "
+      EndIf
+    EndIf
+    ;Si on clique sur le bouton UNCRYPT
+    If GadgetHit=4
+      If nom_source$<>"" AND nom_target$<>"" AND nom_source$<>nom_target$
+        WLocate 30,80
+        Print "Uncrypting...          "
+        KillFile target$
+        If ReadFile(0,source$)
+          FileInput 0
+          If WriteFile(1,target$)
+            FileOutput 1
+            While NOT Eof(0)
+              Print Chr$(Asc(Inkey$)-1)
+            Wend
+            CloseFile 1
+          EndIf
+          CloseFile 0
+        EndIf
+        WindowOutput 0
+        WLocate 30,80
+        Print "OK              "
+      EndIf
+    EndIf
+  EndIf
+
+Wend
+
+DetachGTList 0
+Free Window 0
+
+End
+-- FIN SOURCE DU PROGRAMME --
+</pre></font>
+</td></tr></table>
+<br>
+
+Pour ceux qui ont la flemme de recopier le code source, il est à disposition dans
+<a href="../files/ncrypter.txt">ce fichier texte</a> ou en <a href="../files/ncrypter.bb2">version Blitz Basic (.bb2).<br><br><br>
+
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

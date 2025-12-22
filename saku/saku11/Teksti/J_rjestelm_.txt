@@ -1,0 +1,1970 @@
+5
+1*
+
+{3                  J‰rjestelm‰ohjelmoinnin alkeiskurssi - Osa 2
+{3                  --------------------------------------------
+
+{3                         System Executive - ohjelmointi
+{3                         ------------------------------
+
+                                  Sami Klemola
+
+
+Kurssin ensimm‰isess‰ osassa tutustuttiin tietokoneen toimintaan  yleisell‰  ta-
+solla sek‰ alustavasti Execin teht‰viin. T‰ss‰ ainakin toistaiseksi  viimeisess‰
+osassa selvi‰‰, miten ohjelmia tehd‰‰n Amiga-ymp‰ristˆˆn. Artikkelissa  sivutaan
+myˆs konekieliohjelmointia, mutta p‰‰paino on C-kieless‰. T‰ss‰  osassa  k‰yd‰‰n
+myˆs l‰pi Execin osat yksi kerrallaan, ja jokaisesta tulee esimerkkikoodia.  En-
+siksi kuitenkin katsotaan ohjelmoinnin vaiheita. 
+
+
+{3Ohjelmoinnin tyˆkalut ja k‰‰nt‰minen
+{3------------------------------------
+ 
+Tarvitset k‰‰nt‰j‰n ja linkkerin. Jos ohjelmoit konekielell‰, tarvitset makroas-
+semblerin. Jos kirjoitat C-koodia, tarvitset  lis‰ksi  C-k‰‰nt‰j‰n,  mutta  myˆs
+edelleen makroassemblerin, koska C-k‰‰nt‰j‰ ei tuota valmista koodia,  vaan  AS-
+CII-muotoista assembly‰ eli konekielen l‰hdekoodia. C-k‰‰nt‰j‰n mukana voi tulla
+erityisesti sen tuottamaa koodia k‰‰nt‰m‰‰n tarkoitettu makroassembleri.  Sitten
+k‰‰nnet‰‰n viel‰ makroassemblerilla  eli  konekielik‰‰nt‰j‰ll‰,  aivan  kuin  C-
+k‰‰nt‰j‰n tuottama tiedosto olisi itse kirjoittamaasi konekielil‰hdekoodia. Mak-
+roassembleri ei sek‰‰n tuota viel‰ ajettavaa ohjelmaa, vaan  objektikooditiedos-
+ton. T‰m‰n j‰lkeen tulee viel‰ yksi vaihe, linkkaus. Linkkeri tulee  usein  mak-
+roassemblerin mukana, mutta niit‰ on saatavilla erillisin‰kin.
+
+Linkkeri yhdist‰‰ makroassemblerin  tuottaman  objektikoodin  sek‰  tarvittaessa
+linkkerikirjastosta mukaan rutiineja, joita se kutsuu. Linkkeri hakee myˆs  kir-
+jastokutsujen osoituksien arvot koodiin ja C-koodin tapauksessa  liitt‰‰  mukaan
+tarvittavan startup-koodin, joka mm. tulkitsee komentorivin valmiiksi ja alustaa
+I/O:n. Kaikki n‰m‰ ajetaan usein yhdell‰ komennolla, joka voi ajaa skriptin  tai
+frontend-ohjelman. Esimerkki t‰llaisesta tulee  myˆhemmin.  Ohjelmaan  voi  myˆs
+kuulua useita l‰hdekoodeja, joista jokainen k‰‰nnet‰‰n  omaksi  objektikooditie-
+dostokseen. Linkkeri yhdist‰‰ silloin n‰m‰kin tiedostot ja asettaa  niist‰  toi-
+siinsa tehdyt osoitukset eli cross referencet, ristiviittaukset.
+
+Muuta tarpeellista
+
+Includet ovat olennainen osa ohjelmointia. Ne ovat tiedostoja,  jotka  m‰‰ritte-
+lev‰t k‰yttˆj‰rjestelm‰n sek‰ muiden ohjelmien k‰ytt‰mi‰ datarakenteita ym.  Au-
+todocit  ovat  kuvauksia  esimerkiksi  k‰yttˆj‰rjestelm‰n   kirjastofunktioista.
+Niist‰ k‰y ilmi kullekin funktiolle annettavat parametrit, mit‰ funktio tekee ja
+mit‰ se palauttaa. Myˆs rekisterit, joihin parametrit sijoitetaan, n‰kyv‰t auto-
+doceissa. Tieto siit‰ hyˆdytt‰‰ erityisesti  konekieliohjelmoijaa.  Palautusarvo
+tulee aina D0:ssa. Jotkin funktiot voivat palauttaa kaksikin arvoa, jolloin toi-
+nen palautetaan yleens‰  D1:ss‰,  ja  sen  saa  myˆs  DOS:n  kautta  kyselem‰ll‰
+j‰lkik‰teen.
+
+Lis‰ksi tarvitaan amiga.lib, joka on nk. linker library. T‰h‰n asti  on  puhuttu
+vain ajonaikaisista kirjastoista, jotka ohjelma avaa  kutsuakseen  niiden  funk-
+tioita. Ajonaikaiset kirjastot sijaitsevat LIBS:-hakemistossa. Linker library on
+aivan erilainen kirjasto. Ohjelman k‰ytt‰m‰t rutiinit, jotka sijaitsevat kirjas-
+tossa, linkataan ohjelmatiedostoon mukaan, joten kirjastoa ei  tarvita  ohjelmaa
+ajettaessa. T‰llaisten funktioiden k‰ytt‰minen tietysti pident‰‰  ohjelmaa  huo-
+mattavasti. Siksi onkin aina syyt‰ k‰ytt‰‰ vastaavaa ajonaikaisen kirjaston  ru-
+tiinia, jos sellainen vain on olemassa.
+
+Lis‰ksi amiga.lib sis‰lt‰‰ ajonaikaisten kirjastojen offset-arvot. N‰it‰  arvoja
+tarvitaan kutsuttaessa kirjaston funktioita. Offset lis‰t‰‰n  kirjaston  kantao-
+soitteeseen, jolloin saadaan hyppyosoite funktioon. Osoite on tosin vain  hyppy-
+taulukkoon, jossa on yleens‰ suoraan hyppy  varsinaiseen  koodiin.  Offset-arvot
+ovat negatiivisia, koska hyppytaulukko sijaitsee ja kasvaa kirjaston kantaosoit-
+teesta alasp‰in. Kirjastofunktioiden k‰ytt‰misest‰ tulee  esimerkkej‰  ja  lis‰‰
+tietoa myˆhemmin.
+
+Ohjelman k‰‰nt‰minen
+
+Kuten on jo mainittu, ohjelma k‰‰nnet‰‰n yleens‰ frontendilla. Itsell‰ni on oma-
+tekoinen cc-ohjelma, joka ajaa edelleen dcc:n, joka on varsinainen DICE:n  fron-
+tend. K‰yt‰n cc:t‰ yksinkertaistamaan k‰‰nt‰mist‰  entisest‰‰n.  Kirjoitan  vain
+"cc ohjelma", jolloin source-hakemistossa oleva l‰hdekoodi ohjelma.c  k‰‰nnet‰‰n
+ja linkitet‰‰n valmiiksi ajettavaksi ohjelmaksi Progs-hakemistoon. Konekielipuo-
+lella k‰ytˆss‰ni on niin ik‰‰n itse kirjoittamani Compile-ohjelma, joka ajaa en-
+sin makroassemblerin, joka k‰‰nt‰‰ source-hakemistossa (luonnollisesti pid‰n  C-
+ja konekielikoodit eri hakemistoissa, n‰m‰ ovat c/source ja  asm/source)  olevan
+l‰hdekoodin object-hakemistoon objektikoodiksi, ja sen j‰lkeen  linkkerin,  joka
+edelleen linkkaa t‰m‰n objektikoodin  ajettavaksi  ohjelmaksi.  Sek‰  konekieli-
+ett‰ C-ohjelman tapauksessa linkataan mukaan amiga.lib:ss‰ m‰‰riteltyj‰  arvoja,
+joihin tehd‰‰n ristiviittaus ohjelmassa. Lis‰ksi mukaan linkataan  mahdollisesti
+muuta objektikoodia sek‰ rutiineja omista kirjastoistani.
+
+K‰‰nnˆstyˆn ohjelmat
+
+Olen jo maininnutkin DICE:n. Se on Matthew Dillonin C-ymp‰ristˆ,  joka  on  er‰s
+t‰m‰n hetken varteenotettavimmista Amigalla. Toinen suosittu paketti on gcc  eli
+GNU C, mutta se on massiivinen niin olemukseltaan (kaikkiaan yli kahdeksan mega-
+tavua viel‰p‰ pakattuna) kuin muistinkulutukseltaankin (4-8 megatavua). SAS  C:n
+eli entisen Latticen tuki on lopetettu. Myˆs DICE on kaupallinen,  mutta  se  ei
+ole ollenkaan niin hinnakas kuin SAS C oli. DICE maksaa $150  normaalille  ihmi-
+selle ja $90 opiskelijalle. GNU C:n hyv‰ puoli on se, ett‰ se on ilmainen!  DICE
+ja gcc ovat kattavia paketteja, ja niiden mukana tulee kaikki  tarpeellinen  oh-
+jelmisto ja kaikkea ylim‰‰r‰ist‰ viel‰ lis‰ksi. Myˆs makroassembleri ja linkkeri
+kuuluvat kauppaan.
+
+Konekielt‰ ohjelmoidessa kiinnitet‰‰n tietysti  suurempi  huomio  makroassemble-
+riin. Aikansa hyvin palvelleet MC ja a68k on jo syyt‰ unohtaa.  Markkinoilla  on
+monia hyvi‰ moderneja k‰‰nt‰ji‰, jotka  osaavat  myˆs  uusimpien  prosessoreiden
+osoitusmuodot ja erikoisuudet. Itse olen varsin mieltynyt suomalaiseen SNMA:aan,
+joka on eritt‰in nopea ja tehokas. Assemblerin kanssa  joutuu  myˆs  itse  kiin-
+nitt‰m‰‰n huomiota linkkeriin. Vanhat alink ja blink ovat historiaa.  Itse  olen
+k‰ytt‰nyt varsin menestyksekk‰‰sti DICE:n mukana tulevaa dlink:i‰ myˆs omien ko-
+nekieliohjelmieni k‰‰nt‰miseen. Ainakaan SNMA:n tuottaman  koodin  kanssa  dlin-
+kill‰ ei ole ollut mit‰‰n ongelmia, kun taas blink kaatuili aika  ajoin,  samoin
+kuin MC. Dlink on hoidellut esimerkillisesti myˆs omat kirjastoni.
+
+K‰‰nt‰minen k‰yt‰nnˆss‰
+
+C-kielinen ohjelma k‰‰ntyy n‰in:
+
+dcc source/prg.c -o Progs/prg -2.0
+
+V‰livaiheet eli konekielinen l‰hdekoodi ja objektikoodi kirjoitetaan tilap‰isha-
+kemistoon, joka on normaalisti RAM-asemalla sijaitseva T:. Optio  "-2.0"  m‰‰r‰‰
+k‰‰nt‰j‰n k‰ytt‰m‰‰n k‰yttˆj‰rjestelm‰version 2.0 includeja.
+
+Konekielinen ohjelma prg k‰‰ntyy seuraavasti:
+
+SNMA source/prg.asm OBJ /object/prg.o INCLUDE /include
+dlink object/mystartup.o object/prg.o lib/amiga.lib -o Progs/prg
+
+SNMA haluaa v‰ltt‰m‰tt‰ asettaa current diriksi sen hakemiston, jossa l‰hdekoodi
+on, joten  object-  ja  include-hakemistoihin  on  viitattava  taaksep‰in.  SNMA
+k‰ytt‰‰ AmigaDOS-tyylist‰ komentorivitekniikkaa, kun taas dlink  soveltaa  Unix-
+tyylisi‰ "-"-merkill‰ alkavia yksimerkkisi‰ "avainsanoja". 
+
+
+{3Ohjelmointi k‰yt‰nnˆss‰
+{3----------------------- 
+
+T‰ss‰ luvussa k‰sittelen yleisesti ohjelmointia Amigalla. Otan puheeksi joitakin
+asioita, jotka jokaisen ohjelmoijan tulee tiet‰‰.
+
+Ohjelman rakenne, C-ohjelma
+
+C-ohjelman pituus on heti ainakin viisi kilotavua. Se johtuu siit‰, ett‰  ohjel-
+malle tehd‰‰n kaikkea pient‰ valmiiksi. C-ohjelma saa  valmiina  parsetun  argu-
+menttijonon ja alustetut I/O-streamit stdin, stdout ja stderr. Alustuskoodi myˆs
+avaa kirjastoja valmiiksi. Ainakin DOS avataan aina, mutta esimerkiksi DICE osaa
+avata  myˆs  monet  muut  kirjastot  riippuen  siit‰,  mit‰  niist‰   ohjelmassa
+k‰ytet‰‰n! Usein kuitenkin on parasta avata ne itse ohjelmassa, koska esimerkik-
+si koodi voidaan k‰‰nt‰‰ toisella k‰‰nt‰j‰ll‰, sellaisella, joka ei  automaatti-
+sesti avaa kirjastoja, jolloin tuloksena olisi ohjelma, joka ei avaa k‰ytt‰mi‰‰n
+kirjastoja!
+
+Lis‰ksi startup-koodi alustaa DATA- ja BSS-alueet. T‰m‰ tulee  l‰hinn‰  kysymyk-
+seen residentattavan ohjelman kanssa, koska dos.libraryn LoadSeg() huolehtii  jo
+niiden alustuksesta ladattaessa ohjelma DOS-asemalta. Residentattu ohjelma lada-
+taan muistiin kiinte‰sti, ja kaikki prosessit, jotka  sit‰  ajavat,  suorittavat
+samaa koodia muistissa. T‰llˆin data-alueet joudutaan alustamaan itse  ohjelmas-
+sa, mutta C-k‰‰nt‰j‰t osaavat ottaa sen  huomioon.  C-k‰‰nt‰j‰t  tarjoavat  myˆs
+muita k‰tevi‰ toimintoja, kuten pinon seurannan. Jos se on  p‰‰ll‰,  kun  vapaan
+pinon m‰‰r‰ laskee liian pieneksi, ohjelmaan sis‰llytetty koodi varaa lis‰‰  pi-
+nomuistia!
+
+Ohjelman rakenne, konekieliohjelma
+
+Konekieliohjelmalle ei tehd‰ mit‰‰n valmiiksi, vaan se ajetaan aivan suoraan DO-
+Sista. Konekieliohjelma saa osoittimen argumenttijonoon A0:ssa ja  sen  pituuden
+D0:ssa.  Useimmiten  sen  joutuu  viel‰p‰  itse  p‰‰tt‰m‰‰n   komennolla   clr.b
+-1(a0,d0.l). Jos ohjelma haluaa k‰ytt‰‰ jotakin muuta kirjastoa kuin Execi‰,  on
+se avattava. Jos se haluaa tulostaa tai lukea tietoa esimerkiksi n‰pp‰imistˆlt‰,
+on filehandle haettava itse.
+
+Konekieliohjelman tekeminen onkin huomattavasti hankalampaa kuin C-kielisen. Sen
+lis‰ksi, ett‰ konekielell‰ ohjelmointi  on  hitaampaa  sen  yksityiskohtaisemman
+luonteen takia, on teht‰v‰ enemm‰n tyˆt‰. Tietysti on mahdollista kirjoittaa ge-
+neerinen  oma  startup-koodi  k‰ytett‰v‰ksi  konekieliohjelman  kanssa,  jolloin
+tyˆm‰‰r‰ pienenee ratkaisevasti. Konekieli tulee  kysymykseen  eritt‰in  pienien
+ohjelmien kanssa sek‰ C-kielisen ohjelman  funktioiden  kirjoituskielen‰.  Usein
+C-kieliset ohjelmat sis‰lt‰v‰t konekielisi‰ osia. Jotkin osat on k‰tev‰‰ ja tar-
+koituksenmukaista kirjoittaa konekielell‰  C:n  sijaan.  Kaikkea  ei  C:ll‰  voi
+tehd‰k‰‰n. Esimerkiksi keskeytykset edellytt‰v‰t  konekielen  k‰yttˆ‰,  ja  myˆs
+kirjastot on parasta kirjoittaa konekielell‰.
+
+Yleist‰ ohjelmista
+
+Ohjelma saa k‰ytt‰‰ kaikkia prosessorin rekisterej‰, mutta pinoa  ja  pino-osoi-
+tinta ei saa sotkea. Ohjelman tulee palauttaa validi arvo (katso  alla).  Alioh-
+jelmat saavat k‰ytt‰‰ rekisterej‰ D0/D1/A0/A1. T‰m‰ p‰tee myˆs kirjastofunktioi-
+hin sek‰  C-ohjelman  omiin  konekielialiohjelmiin.  K‰ytt‰j‰  odottaa  saavansa
+tiet‰‰ ohjelmasta sen versionumeron. Tiedon saa Version-komennolla, mutta  vain,
+jos se on sis‰llytetty ohjelmaan. Versiotieto annetaan erityisell‰  merkkijonol-
+la, joka alkaa "$VER:".
+
+C-kielell‰:
+
+unsigned char versionstring[] = "$VER: Ohjelma 1.00";
+
+Konekielell‰: 
+
+         dc.b     "$VER: Ohjelma 1.00",0
+
+Nyt Version-komento osaa lˆyt‰‰ versiotiedon ja tulostaa  "Ohjelma  1.00".  Ver-
+siostringin tulisi olla juuri t‰ss‰ formaatissa eik‰  siin‰  saisi  olla  mit‰‰n
+ylim‰‰r‰ist‰. Jotkut ohjelmoijat laittavat siihen itsekeskeisyydess‰‰n omia  ni-
+mi‰‰n, copyrighteja ja muuta siihen kuulumatonta roskaa, mik‰ voi olla harmitta-
+vaa.
+
+Lis‰ksi k‰ytt‰j‰ odottaa voivansa breikata ohjelman <CTRL>-C:ll‰. C-k‰‰nt‰j‰ voi
+tarjota automaattisen breikkisysteeminkin, mutta mielest‰ni se  kannattaa  tehd‰
+itse: 
+
+         if(SetSignal(0,0) & SIGBREAKF_CTRL_C) error("user break");
+
+T‰m‰n kun laittaa sellaiseen paikkaan, ett‰ se suoritetaan tarpeeksi usein,  voi
+k‰ytt‰j‰ keskeytt‰‰ halutessaan ohjelman suorituksen.
+
+Esimerkkej‰ konekielell‰
+
+T‰ss‰ on lyhyt konekieliohjelma: 
+
+         moveq    #18,d0
+         addq.l   #2,d0
+         rts
+
+Ohjelma ei tee muuta kuin laskee yhteen 18 ja 2 ja palauttaa arvon. Palautusarvo
+20 vastaa FAIL-tilaa, joten ajettaessa t‰m‰ ohjelma saadaan ilmoitus  sen  "fai-
+laamisesta" eli jokin olisi mennyt vakavasti pieleen, jos kyseess‰  olisi  ollut
+oikea ohjelma.  Ohjelman  tulee  onnistuessaan  palauttaa  arvo  0.  T‰ss‰  ovat
+t‰rkeimm‰t arvot: 
+
+         0        OK       Kaikki meni kuten suunniteltua
+         5        WARN     Varoitus, jotain pient‰ meni vikaan
+         10       ERROR    Virhe, kaikki ei onnistunut
+         20       FAIL     Ep‰onnistuminen, kaikki meni p‰in seini‰
+
+T‰ss‰ on v‰h‰n j‰rkev‰mpi ohjelma, mutta vain v‰h‰n: 
+
+         include  "exec/types.i"             ; yleisi‰ m‰‰rittelyj‰
+         include  "exec/libraries.i"         ; kirjastojen m‰‰rittelyj‰
+
+         SECTION  prg_code,CODE
+
+         movea.l  4,a6                       ; Haetaan Execin kantaosoite
+         movea.l  a0,a2                      ; Argumenttijonon osoitin
+         move.l   d0,d3                      ; ja pituus talteen
+         lea      Dos(pc),a1                 ; Osoitin dos.libraryn nimeen
+         moveq    #LIBRARY_VERSION,d0        ; kirjastoversio, mik‰ tahansa
+         Lib      OpenLibrary                ; versio kelpaa meille t‰ss‰
+         tst.l    d0                         ; testataan, saatiinko
+         bne      DosOK                      ; kirjasto auki
+         moveq    #20,d0                     ; failataan, jos ei saatu
+         rts
+DosOK    movea.l  d0,a6                      ; DOSBase a6:een
+         Lib      Output                     ; Haetaan "stdout"
+         move.l   d0,d1                      ; annetaan sen fh Writelle
+         move.l   a2,d2                      ; argumenttijonon osoitin
+         Lib      Write                      ; pituus on valmiiksi d3:ssa
+         movea.l  a6,a1                      ; DOSBase a1:een, josta
+         movea.l  4,a6                       ; kirjasto
+         Lib      CloseLibrary               ; suljetaan
+         clr.l    d0                         ; ja poistutaan, kaikki OK
+         rts
+
+         SECTION  prg_data,DATA
+
+Dos      dc.b     "dos.library",0
+
+         END
+
+Ohjelma tulostaa sille annetun argumenttijonon,  mutta  ilman  LF-koodia,  joten
+prompti tulostuu sen per‰‰n. Ohjelma kaivannee  selvennyst‰.  A6  on  rekisteri,
+jossa tulee olla aina kulloinkin kutsuttavan kirjaston kantaosoite,  koska  sit‰
+kutsutaan sen kautta. Lis‰ksi kirjaston rutiinit saattavat myˆs hyˆdynt‰‰ sit‰ -
+Execin tapauksessa harvemmin, mutta varsinkin Intuition k‰ytt‰‰ sit‰ usein. Kir-
+jastot k‰sitell‰‰n yksityiskohtaisesti myˆhemmin.
+
+LIBRARY_VERSION on exec/libraries.h-includetiedostossa m‰‰ritelty kiinte‰  muut-
+tuja,  jonka  arvo  t‰ll‰  hetkell‰  on  33.  Se  tarkoittaa  vanhinta   tuettua
+k‰yttˆj‰rjestelm‰versiota, ja suositus on avata kirjasto sill‰,  ellei  tarvitse
+uudemman kirjaston ominaisuuksia. Kaikki  merkkijonot  tulee  p‰‰tt‰‰  nollalla.
+Output palauttaa filehandlen (fh) tulostuskanavaan, joka on normaalisti Shellin,
+josta ohjelma k‰ynnistettiin, ikkuna. Se annetaan Writelle, kuin  myˆs  ohjelman
+parametrein‰ saamat argumenttijonon osoitin ja pituus.
+
+T‰ss‰ tapauksessa merkkijonoa ei tarvitse p‰‰tt‰‰ nollaan, koska Write  kirjoit-
+taa tietyn m‰‰r‰n merkkej‰ sen sijaan, ett‰ se tulostaisi  niit‰  nollaan  asti,
+kuten esimerkiksi C-kielen printf(). Pituus Writelle annetaan D3:ssa,  johon  se
+siirret‰‰n D0:sta jo heti ohjelman alussa. T‰m‰ on yksi syy, miksi  konekielell‰
+ohjelmointi on C:t‰ tehokkaampaa. Siin‰ on mahdollista tehd‰ tuollaisia ennakoi-
+via toimenpiteit‰, jotka lyhent‰v‰t ohjelmaa. C-k‰‰nt‰j‰n  tuottamassa  koodissa
+pituus olisi kirjoitettu ties minne ja  sitten  vasta  D3:een,  kun  sit‰  olisi
+siell‰ tarvittu, mutta me osaamme laittaa sen sinne jo valmiiksi.
+
+Ohjelmassa k‰ytetty Lib on makro, joka kutsuu kirjastofunktiota: 
+
+Lib MACRO * routinename[,basereg]
+      xref _LVO\1                   ; _LVO#? eli offset-arvo haetaan
+      ifnc '\2',''                  ; jostain muualta eli amiga.lib:st‰
+      movea.l \2,a6                 ; jos basereg on m‰‰ritelty, siirret‰‰n
+      endc                          ; base sielt‰ A6:een, kuten kuuluu
+      jsr _LVO\1(a6)                ; ja kutsutaan itse funktiota
+      ENDM
+
+LVO eli Library Offset Vector on arvo, jonka mukaan funktiota kutsutaan.  Writen
+tapauksessa offsetin nimi on _LVOWrite. Se asetetaan xref:ll‰ ulkoiseksi muuttu-
+jaksi. Linkkeri t‰ytt‰‰ muuttujan arvon hakemalla sen amiga.lib:st‰.  Ohjelmassa
+tarkistetaan OpenLibraryn palauttama arvo, joka  on  kirjaston  kantaosoite  tai
+nolla, jos kirjasto ei jostain syyst‰ auennut, jolloin emme voi jatkaa ja ohjel-
+man tulee failata. Kaikki palautusarvot pit‰‰ aina tarkistaa. Jos  funktio  vain
+voi failata, on mahdollinen  virhekoodi  lˆydett‰v‰,  koska  useimmiten  virheen
+j‰lkeen ei voida tehd‰ sit‰, mit‰ pit‰isi ja sen yritt‰minen ehk‰ kaataa  koneen
+tai ainakin saa aikaan suuria vaikeuksia.
+
+Esimerkkej‰ C-kielell‰
+
+T‰ss‰ tulee ‰skeist‰ konekieliohjelmaa pidemm‰lle viety C-kielinen ohjelma: 
+
+#include "proto/exec_protos.h"
+#include "exec/types.h"
+#include "dos/dos.h"
+
+main(ac,char*av[]);
+
+main(ac,char*av[]) {
+    printf("Ensimm‰inen parametri on \"%s\".\n",av[1]);
+    return(RETURN_OK);
+};
+
+Ohjelma on huomattavasti yksinkertaisempi, vaikka se tulostaa jopa johdannon  ja
+rivinvaihdon sek‰ nimenomaisesti ensimm‰isen parametrin. RETURN_OK vastaa  arvoa
+0. Paluuarvojen m‰‰rittelyt ovat dos.h-tiedostossa. Itse asiassa edellisess‰ ko-
+nekieliohjelmassakin olisi pit‰nyt failauskohdassa olla RETURN_FAIL. Ensimm‰inen
+include, "exec_protos.h", sis‰lt‰‰ prototyypit kaikille Execin  funktioille.  Se
+on syyt‰ aina ladata, samoin kuin muidenkin k‰ytett‰vien  kirjastojen  prototyy-
+pit, jottei tulisi hankaluuksia.
+
+T‰ss‰ tulee uusi versio: 
+
+#include "proto/exec_protos.h"
+#include "proto/dos_protos.h"
+#include "exec/types.h"
+#include "dos/dos.h"
+
+_main(void);
+
+unsigned char *as;
+
+_main(void) {
+    as=GetArgStr();
+    Write(Output(),as,strlen(as));
+    return(RETURN_OK);
+};
+
+Nyt  k‰yt‰n  _main()-entrypointia.  Normaalisti  _main():ksi  tulee  DICE:n  oma
+_main()-funktio, mutta nyt korvaan sen omallani. Varsinainen _main()  tekee  oh-
+jelman alustukset, joita olen jo muutamaan kertaan luetellut, mink‰  j‰lkeen  se
+kutsuu main()-funktiota, joka on normaalisti ohjelman p‰‰funktio. Nyt se kuiten-
+kin on _main(). Hyˆty on se, ett‰ t‰ss‰ tapauksessa tarpeeton alustus  j‰‰  pois
+ja ohjelman pituudeksi tuli  vain  616  tavua.  T‰llˆin  kuitenkin  printf()  on
+k‰yttˆkelvoton, samoin argc ja argv,  mutta  yll‰  kuvatuilla  tavoilla  ne  voi
+kiert‰‰. Tosin argumenttijonon parseamisen joutuu tekem‰‰n itse, mutta usein  se
+itse tehd‰‰nkin. T‰m‰ ei kuitenkaan ole suotava tapa toimia. DICE on hyvin riip-
+puvainen omasta alustuskoodistaan, joten sit‰ ei pid‰ menn‰ j‰tt‰m‰‰n pois, jol-
+lei tied‰ varmasti, mit‰ tekee.
+
+T‰h‰n loppuu artikkelin yleinen ohjelmointiosuus. Uusia asioita ohjelmien  teke-
+miseen liittyen voi tulla viel‰ esille, mutta nyt aletaan k‰yd‰ l‰pi Execin osia
+yksi kerrallaan. Jokainen osa kuvataan  yksityiskohtaisesti  ja  esimerkkikoodia
+tulee, t‰st‰ l‰htien kaikki C-kielell‰, joka on *se* kieli, jolla ohjelmat tulee
+kirjoittaa, paitsi erityisesti konekielist‰ koodia  edellytt‰viss‰  tilanteissa.
+Mukana on myˆs edistyneemp‰‰ ohjelmointia. 
+
+
+{3Signaalit
+{3---------
+
+Signaalit ovat Execin tarjoama keino v‰litt‰‰ yksinkertaista tietoa  esimerkiksi
+teht‰vien v‰lill‰. Signaalit ovat teht‰vienv‰lisen kommunikaation kaikkein  alin
+taso, jonka varassa lep‰‰v‰t kaikki muut j‰rjestelm‰t.  Useat  signaalit  voivat
+olla aktiivisia yht‰ aikaa. Jokaisella teht‰v‰ll‰ on 32  signaalibitti‰,  joista
+16 on varattu k‰yttˆj‰rjestelm‰n k‰yttˆˆn. Loput 16  ovat  vapaasti  ohjelmoijan
+k‰ytett‰viss‰. Harvemmin niit‰ kuitenkin tarvitsee suoraan itse  k‰ytt‰‰,  joten
+voit hyp‰t‰ t‰m‰n kappaleen yli. P‰‰asia on,  ett‰  tied‰t,  mit‰  signaalibitit
+ovat,  koska  et  todenn‰kˆisesti  tule  koskaan  tarvitsemaan   niiden   suoraa
+hyˆdynt‰mist‰.
+
+Viestiportin k‰yttˆˆn voidaan signaalibitti varata  automaattisesti,  mutta  jos
+sit‰ tarvitaan johonkin muuhun tarkoitukseen, se tehd‰‰n n‰in: 
+
+UBYTE signal;
+
+if((signal = AllocSignal(-1)) < 0 )
+    printf("Ei vapaita signaalibittej‰"); else {
+    printf("Varatun signaalibitin numero on %ld.\n",signal);
+    FreeSignal(signal);
+}
+
+Signaalia odotetaan Wait()-funktiolla. Sille ei kuitenkaan anneta  signaalibitin
+numeroa vaan maski, joka muodostetaan kaikista  odotettavista  signaalibiteist‰.
+Wait() odottaa, kunnes yksi signaaleista saadaan ja palauttaa maskin,  josta  on
+saatavissa selville aktivoitunut signaali. Usea signaali voi aktivoitua  samalla
+kertaa, joten kaikki odotetut signaalit tulee tutkia: 
+
+firstsigmask = 1L << firstsigbit;
+secondsigmask = 1L << secondsigbit;
+
+signalmask = Wait(firstsigmask | secondsignalmask | SIGBREAKF_CTRL_C);
+
+if(signals & firstsigmask)
+    printf("Ensimm‰inen signaali tuli aktiiviseksi\n");
+if(signals & secondsigmask)
+    printf("Toinen signaali tuli aktiiviseksi\n");
+if(signals & SIBREAKF_CTRL_C)
+    printf("User break\n");
+ 
+T‰ss‰ odotamme kahta signaalia, joiden bittinumerot ovat muuttujissa firstsigbit
+ja secondsigbit. Niist‰  muodostetaan  maskit,  jotka  yhdistet‰‰n  ja  annetaan
+Wait():lle, joka sitten aikanaan palauttaa maskin, jossa ovat p‰‰ll‰ kaikki  ak-
+tiiviset signaalit. T‰m‰n j‰lkeen ne  kaikki  tutkitaan  yksitellen.  Mukana  on
+viel‰ SIGBREAKF_CTRL_C, joka on yksi k‰yttˆj‰rjestelm‰lle kuuluvista  kiinteist‰
+signaalibiteist‰.  Teht‰v‰  saa  t‰llaisen  signaalin,   kun   k‰ytt‰j‰   painaa
+<CTRL>-C:t‰.
+
+Signaalibittej‰ voi itse manipuloida funktiolla SetSignal(). Sen k‰ytt‰miseen on
+kiinnitett‰v‰ erityist‰ huomiota, koska se suorittaa eritt‰in matalan tason toi-
+mintoja. SetSignal():lle annetaan kaksi parametri‰,  signaalibittien  ja  maskin
+uudet arvot. Maski on luku, jossa ovat ne  signaaleja  vastaavat  bitit  p‰‰ll‰,
+joiden arvo asetetaan arvoluvun vastaavien bittien mukaisesti. T‰m‰ ei ole  eri-
+tyisen yksinkertainen asia, joten t‰ss‰ on muutama esimerkki: 
+
+SetSignal(0,-1)   nollaa kaikki signaalit
+SetSignal(6,3)    nollaa nollabitin ja asettaa ykkˆsbitin
+SetSignal(0,0)    ei muuta mit‰‰n, vaan ainoastaan palauttaa signaalit
+ 
+N‰ist‰ viimeist‰ voidaan k‰ytt‰‰ signaalien tilan tarkistamiseen. Se  ei  nollaa
+mahdollista aktiivista signaalibitti‰, kuten Wait(), joten se on  teht‰v‰  k‰sin
+signaalin saamisen j‰lkeen. Parhaiten SetSignal():n toimintaa  selvent‰nee  kes-
+kimm‰inen esimerkki. Arvosta 6 ei k‰ytet‰ ollenkaan bitti‰ 2, arvoltaan 4, koska
+maskissa ovat p‰‰ll‰ bitit 0 ja 1, joten vain ne asetetaan arvon mukaisesti. Ar-
+vossa bitti 0 on pois p‰‰lt‰ ja bitti 1 p‰‰ll‰, joten myˆs  vastaavat  signaalit
+saavat n‰m‰ tilat. 
+
+Exec tarjoaa viisi funktiota signaalien hyˆdynt‰miseen:
+
+ULONG SetSignal( unsigned long newSignals, unsigned long signalSet );
+ 
+Asettaa ja/tai tarkistaa halutut signaalibitit. T‰st‰ olikin jo esimerkki aikai-
+semmin <CTRL>-C:n tunnistamisessa. T‰ll‰ funktiolla voidaan tutkia teht‰v‰n sig-
+naalien tilaa antamalla kummaksikin parametriksi nolla, mutta yleens‰ signaaleja
+tulisi odottaa Wait()-funktiolla. 
+
+ULONG Wait( unsigned long signalSet );
+ 
+Odottaa haluttuja signaalibittej‰ ja palauttaa aktiiviset  signaalit  ja  nollaa
+kaikki aktivoituneet signaalit. T‰st‰ syyst‰ on ehdottomasti tarkistettava kaik-
+ki palautetut bitit, jotta signaali ei p‰‰sisi livahtamaan ohi huomaamatta, kos-
+ka seuraavalla kerralla se ei en‰‰ ole p‰‰ll‰. Wait(0) aiheuttaisi loppumattoman
+odottamisen. 
+
+void Signal( struct Task *task, unsigned long signalSet );
+ 
+Signaloi toista teht‰v‰‰. Signaalibitti  tulee  t‰llˆin  signaloitavan  teht‰v‰n
+signaaleista. T‰llaista toimintatapaa ei voi hyˆdynt‰‰ tiet‰m‰tt‰, mit‰  signaa-
+lia toinen teht‰v‰ odottaa. Kyseeseen tuleekin l‰hinn‰ ohjelman alateht‰v‰, joka
+on varannut signaalibitin ja kertonut p‰‰teht‰v‰lle sen numeron, jotta  se  osaa
+aktivoida oikean signaalin. 
+
+BYTE AllocSignal( long signalNum );
+
+Varaa signaalin k‰yttˆ‰ varten. Numero voi olla -1,  jolloin  varataan  seuraava
+vapaana oleva. Signaalit eiv‰t ole globaaleja, vaan jokaisella teht‰v‰ll‰ on oma
+joukkonsa signaaleita. 
+
+void FreeSignal( long signalNum );
+
+Vapauttaa varatun signaalin. 
+
+
+{3Listat ja jonot
+{3---------------
+
+Amigan ymp‰ristˆn olennainen ominaisuus on dynaamisuus.  Myˆs  j‰rjestelm‰n  da-
+tastruktuurit ovat dynaamisia rakenteeltaan. J‰rjestelm‰ on joustava eik‰ rajoja
+juuri ole. Dataa tallennetaan dynaamisesti luotaviin struktuureihin (joukko tie-
+toa ennalta m‰‰r‰tyss‰ muodossa),  joita  pidet‰‰n  listoissa.  Lista  voi  olla
+tyhj‰, mutta ei koskaan t‰ysi. Lista voi myˆs  olla  j‰rjestetty,  jolloin  sit‰
+kutsutaan jonoksi (queue). K‰yt‰n siit‰ h‰m‰‰nnyksen  v‰hent‰miseksi  vastaisuu-
+dessa englanninkielist‰ nime‰.
+
+Exec pit‰‰ kaiken j‰rjestelm‰‰n liittyv‰n tiedon listoissa. Lista koostuu heade-
+rista ja kaksoislinkatusta ketjusta elementtej‰, joita kutsutaan nodeiksi.  Hea-
+der sis‰lt‰‰ osoittimen listan ensimm‰iseen ja viimeiseen nodeen. Header  toimii
+handlena koko listaan. Listoihin voidaan liitt‰‰ nodeja ja niit‰ voidaan poistaa
+niist‰. Listaa k‰sitelless‰ ei tarvitse tiet‰‰, millaista  tietoa  se  sis‰lt‰‰.
+Exec tarjoaa listojen k‰sittelyyn joukon funktioita, joita voidaan k‰ytt‰‰ kaik-
+kien listojen kanssa.
+
+Node on ryhm‰ toisiinsa liittyv‰‰ tietoa, joka kuvaa jonkin asian. Itse  asiassa
+nodet ovat erilaisia struktuureja, jotka alkavat Node-struktuurilla, jonka avul-
+la listaa yll‰pidet‰‰n. Nodet voivat sijaita miss‰ tahansa muistissa  toisistaan
+riippumatta. Ne pit‰v‰t kiinni toisistaan kahden osoittimen avulla.  Kaksoislin-
+kattu lista tarkoittaa sit‰, ett‰ jokaisessa nodessa on osoitin sit‰  edelt‰v‰‰n
+ja seuraavaan nodeen listassa. N‰it‰ kutsutaan nimill‰ predecessor ja successor.
+Listan ensimm‰isen noden eli Head-noden edelt‰j‰ on listan  header.  Vastaavasti
+listan viimeisen noden eli Tail-noden j‰ljitt‰j‰ on niin  ik‰‰n  listan  header.
+Kuten sanottu, headerissa on osoittimet listan Head-  ja  Tail-nodeen.  Tyhj‰ss‰
+listassa n‰m‰ osoittavat toisiinsa. Listasta on olemassa myˆs supistettu versio,
+MinList. Nodejen m‰‰rittelyt tulevat t‰ss‰: 
+
+struct Node {
+    struct  Node *ln_Succ;  /* Osoitin seuraavaan nodeen (successor) */
+    struct  Node *ln_Pred;  /* Osoitin edelliseen nodeen (predecessor) */
+    UBYTE   ln_Type;        /* Noden tyyppi, sama kuin listan tyyppi */
+    BYTE    ln_Pri;         /* Prioriteetti, listan j‰rjest‰mist‰ varten */
+    char    *ln_Name;       /* ID-stringi, p‰‰ttyy nollaan */
+};
+
+struct MinNode {
+    struct MinNode *mln_Succ;
+    struct MinNode *mln_Pred;
+};
+
+Tyyppej‰ on monia. Listassa voi olla vain kesken‰‰n samantyyppisi‰ nodeja. Lista
+voidaan j‰rjest‰‰ nodejen prioriteettien mukaiseen j‰rjestykseen.  T‰llˆin  sit‰
+kutsutaan jonoksi eli queueksi. Nime‰ harvemmin  k‰ytet‰‰n.  Yleisimm‰t  nodejen
+tyypit ovat NT_TASK, NT_INTERRUPT, NT_MSGPORT ja NT_MESSAGE. Yksi esimerkki  ni-
+men hyˆdynt‰misest‰ on kirjasto. Kirjastot alkavat nodella, jolloin nimi on kir-
+jaston nimi, esim. exec.library. T‰llˆin noden tyyppi on vastaavasti NT_LIBRARY.
+Exec pit‰‰ kirjastot kirjastolistassa, josta ne voidaan helposti  lˆyt‰‰.  T‰ss‰
+tulevat headerien m‰‰rittelyt: 
+
+struct List {
+   struct  Node *lh_Head;           /* Head-node */
+   struct  Node *lh_Tail;           /* Nolla */
+   struct  Node *lh_TailPred;       /* Tail-node */
+   UBYTE   lh_Type;
+   UBYTE   l_pad;
+};
+
+struct MinList {
+   struct  MinNode *mlh_Head;
+   struct  MinNode *mlh_Tail;
+   struct  MinNode *mlh_TailPred;
+};
+  
+Minimaalinen lista k‰y yksiin t‰yden listan alun kanssa, mutta  sen  tyyppi‰  ei
+voida testata. T‰ss‰ on kaavio, joka selvent‰‰ headerin rakennetta: 
+
+         Head-node         Tail-node         Headeri
+
+         ln_Succ                             lh_Head
+
+         ln_Pred = 0       ln_Succ = 0       lh_Tail = 0
+
+                           ln_Pred           lh_TailPred
+
+Header on siis tavallaan listan Head- ja Tail-nodejen yhteensulautuma, kun  nii-
+den ajatellaan menev‰n lomittain p‰‰llekk‰in. Header alustetaan kuvaamaan tyhj‰‰
+listaa asettamalla lh_Head osoittamaan lh_Tailiin ja lh_TailPred lh_Headiin sek‰
+nollaamalla lh_Tail. Myˆs tyyppi tulee asettaa oikeaksi,  jos  k‰ytet‰‰n  t‰ytt‰
+headeria. Amiga.lib sis‰lt‰‰ rutiinin listan alustamiseen - C:ll‰  NewList()  ja
+konekielell‰ NEWLIST, joka on lists.i-tiedostossa  m‰‰ritelty  makro.  T‰ss‰  on
+kuitenkin vastaava koodi kummallakin kielell‰: 
+
+/* c */
+
+struct List list;
+
+list.lh_Head = (struct Node *) &list.lh_Tail;
+list.lh_Tail = 0;
+list.lh_TailPred = (struct Node *) &list.lh_Head;
+
+; assembly (a0 = osoitin alustettavaan headeriin)
+
+         move.l   a0,LH_HEAD(a0)
+         addq.l   #4,LH_HEAD(a0)
+         clr.l    LH_TAIL(a0)
+         move.l   a0,LH_TAILPRED(a0)
+
+Listan tyhjyyden voi tarkistaa. Siihen on monia tapoja, mutta t‰ss‰ on er‰s kum-
+mallakin kielell‰: 
+
+/* c */
+
+if(list->lh_TailPred == (struct Node *)list) printf("Lista on tyhj‰\n");
+
+; assembly
+
+         cmp.l    LH_TAILPRED(a0),a0
+         beq      List_is_empty
+
+Lista skannataan helposti ottamalla aina seuraavan noden osoitin:
+
+struct List *list;
+struct Node *node;
+
+for(node = list->lh_Head; node->ln_Succ; node = node->ln_Succ)
+    printf("Node nimelt‰ %s on osoitteessa %lx.\n",node->ln_Name,node);
+
+T‰ss‰ ovat Execin listojen k‰sittelyyn tarjoamat funktiot:
+
+void Insert( struct List *list, struct Node *node, struct Node *pred );
+
+Lis‰‰ noden listaan haluttuun paikkaan. T‰ss‰  list  on  tietysti  lista,  johon
+lis‰t‰‰n, ja node on node, joka lis‰t‰‰n. Lis‰ksi pred on osoitin nodeen,  jonka
+j‰lkeen  listassa  uusi  node  sijoitetaan.  Uuden  noden  predecessor  osoittaa
+lis‰‰misen j‰lkeen siihen ja successor siihen, joka  ennen  lis‰‰mist‰  oli  sen
+per‰ss‰ listassa. Insert():ll‰ voidaan lis‰t‰ node myˆs listan alkuun  tai  lop-
+puun, mutta se ei ole tehokasta. Siihen kannattaa k‰ytt‰‰ alla  olevia  erityis-
+funktioita, ja Insert():i‰ vain silloin, kun node sijoitetaan tiettyyn  paikkaan
+keskelle listaa. 
+
+void AddHead( struct List *list, struct Node *node );
+
+Lis‰‰ noden listan alkuun eli siit‰ tulee sen Head-node. Lis‰‰misen j‰lkeen hea-
+derin lh_Head osoittaa t‰h‰n nodeen. 
+
+void AddTail( struct List *list, struct Node *node );
+
+Lis‰‰ noden listan loppuun eli siit‰ tulee  sen  Tail-node.  Lis‰‰misen  j‰lkeen
+headerin lh_TailPred osoittaa t‰h‰n nodeen. 
+
+void Remove( struct Node *node );
+
+Poistaa noden listasta. Poistamisen j‰lkeen noden successor ja predecessor  ovat
+invalideja. 
+
+struct Node *RemHead( struct List *list );
+
+Poistaa listan Head-noden.
+
+struct Node *RemTail( struct List *list );
+
+Poistaa listan Tail-noden.
+
+void Enqueue( struct List *list, struct Node *node );
+
+Lis‰‰ noden listaan kuten Insert(), mutta sen paikka listassa m‰‰r‰ytyy  priori-
+teettien mukaan. Listan ensimm‰inen node on suuriprioriteettisin, ja prioriteet-
+ti laskee loppua kohden. Samanprioriteettiset nodet laitetaan  listaan  FIFO-pe-
+riaatteella eli node lis‰t‰‰n viimeisen samanprioriteettisen noden per‰‰n.  Lis-
+ta, johon nodet lis‰t‰‰n Enqueue():lla on jono eli queue. 
+
+struct Node *FindName( struct List *list, UBYTE *name );
+
+Etsii listasta halutunnimisen noden ja palauttaa osoittimen ensimm‰iseen nodeen,
+jonka nimi t‰sm‰‰ annetun merkkijonon kanssa. Erikoisuutena on se, ett‰ funktion
+avulla voidaan etsi‰ kaikki listassa olevat tietynnimiset  nodet,  vaikka  niit‰
+olisi useita. T‰llˆin headerin sijaan funktiolle annetaankin sen palauttaman no-
+den osoitin, jolloin se jatkaa etsimist‰ eteenp‰in listassa ja palauttaa mahdol-
+lisesti seuraavan t‰sm‰‰v‰n noden: 
+
+struct List *list;
+struct Node *node;
+
+unsigned char name[];
+
+if(node = FindName(list,name)) while(node) {
+    printf("Node nimelt‰ %s lˆytyi osoitteesta %lx.\n",node->ln_Name,node);
+    node = FindName((struct List *)node,name);
+} else printf("Nodea ei lˆytynyt nimell‰ %s.\n",name);
+
+
+
+{3Portit ja viestit
+{3-----------------
+ 
+Seuraava askel syvemm‰lle Execin toimintaan on "interprocess communication"  eli
+teht‰vienv‰linen kommunikaatio. T‰st‰ olikin puhetta  jo  kurssin  ensimm‰isess‰
+osassa. Nyt katsotaan, miten tieto siirtyy ohjelmien v‰lill‰ k‰yt‰nnˆss‰.
+
+Ideana on, ett‰ teht‰v‰t l‰hett‰v‰t viestej‰ toisilleen. Viestit ovat samoja dy-
+naamisesti varattavia struktuureja, joista oli puhetta edellisess‰ luvussa. Myˆs
+keskeytys voi l‰hett‰‰ viestin teht‰v‰lle tai p‰in vastoin. Viesti on kaksiosai-
+nen. Ensimm‰inen osa on vakio kaikilla  viesteill‰  ja  pit‰‰  sis‰ll‰‰n  tietoa
+viestist‰, mm. sen koon. Edelleen, se alkaa nodella, joihin tutustuttiin edelli-
+sess‰ luvussa. Toinen osa on viestin sis‰ltˆ, data, joka  siirret‰‰n.  Sit‰  voi
+olla jopa melkein 64 kilotavua.
+
+Viesti l‰hetet‰‰n aina kohdeporttiin. Siihen kuuluu viestilista, johon  saapuvat
+viestit niiden noden avulla lis‰t‰‰n. Kun viesti otetaan vastaan, se  poistetaan
+portin listasta. Myˆs porttistruktuuriin kuuluu node. Sen avulla Exec pit‰‰ por-
+tit listassa. N‰in tietty portti voidaan helposti etsi‰ edellisess‰ luvussa  ku-
+vatuin keinoin.
+
+Viesti‰ ei kopioida, vaan se sijaitsee staattisesti muistissa. K‰yt‰nnˆss‰  vain
+osoitin viestiin siirret‰‰n, mutta teoriassa katsotaan myˆs  k‰yttˆoikeus  vies-
+tistruktuuriin siirtyv‰ksi viestin vastaanottajalle. Kun  viesti  on  l‰hetetty,
+l‰hett‰j‰ ei saa koskea siihen, ennen kuin  saa  viestin  takaisin  vastauksena,
+mink‰ j‰lkeen se taas kuuluu l‰hett‰j‰lle.
+
+Kun viesti saapuu viestiporttiin, se lis‰t‰‰n sen viestilistan per‰‰n. Kun vies-
+ti vastaanotetaan portista, se otetaan listan alusta. N‰in viestit saadaan  aina
+saapumisj‰rjestyksess‰. Viestin saapuminen viestiporttiin voi  aikaansaada  sig-
+naalin sen omistajalle tai aiheuttaa ohjelmallisen keskeytyksen.
+
+T‰ss‰ tulevat m‰‰rittelyt viestiportille ja viestille: 
+
+struct MsgPort {
+    struct  Node mp_Node;       /* Node */
+    UBYTE   mp_Flags;           /* liput */
+    UBYTE   mp_SigBit;          /* signaalibitin numero */
+    void   *mp_SigTask;         /* kohde, jota signaloidaan */
+    struct  List mp_MsgList;    /* viestilista  */
+};
+
+struct Message {
+    struct  Node mn_Node;           /* Node */
+    struct  MsgPort *mn_ReplyPort;  /* vastausportti */
+    UWORD   mn_Length;              /* viestin pituus */
+};
+
+SigTask sis‰lt‰‰ osoittimeen  ohjelman,  jota  signaloidaan,  Task-struktuuriin.
+Mik‰li tarkoitus on aiheuttaa keskeytys, se  onkin  osoitin  Interrupt-struktuu-
+riin. N‰m‰ k‰sitell‰‰n myˆhemmin. ReplyPort on osoitin l‰hett‰j‰n omaan  viesti-
+porttiin. Viesti linkataan t‰m‰n portin viestilistaan, kun vastaanottaja  vastaa
+siihen. Pituus on Message-struktuurin pituus plus datablokin koko.
+
+Viestiportin voi luoda varaamalla tarpeeksi muistia ja alustamalla  sen  kent‰t.
+Viestilista tulee ehdottomasti alustaa NewList()-funktiolla tai  NEWLIST-makrol-
+la. V36 tarjoaa myˆs funktion CreateMsgPort(), jolla portin voi luoda  automaat-
+tisesti. T‰m‰n j‰lkeen portin voi tehd‰ julkiseksi, mutta usein se ei  ole  tar-
+peen. Julkinen portista tulee silloin, kun  se  lis‰t‰‰n  Execin  porttilistaan,
+josta toiset teht‰v‰t voivat saada  osoittimen  siihen  ja  l‰hett‰‰  teht‰v‰lle
+viestej‰.
+
+V36:lla portti tehd‰‰n ja tuhotaan n‰in: 
+
+struct MsgPort *mp;
+
+if(mp = CreateMsgPort()) {
+    mp->mp_Node.ln_Name = "Portin nimi";   /* tarpeen vain julkisissa */
+    mp->mp_Node.ln_Pri = 2;                /* erityisen t‰rke‰ portti */
+    AddPort(mp);                           /* lis‰t‰‰n portti listaan */
+
+    /* Portin k‰yttˆ‰ */
+
+    RemPort(mp);                           /* poistetaan portti listasta */
+    DeleteMsgPort(mp);                     /* ja tuhotaan se */
+
+} else printf("Porttia ei saatu tehty‰.\n");
+
+Nime‰ ja prioriteettia tarvitaan vain, jos  portista  tehd‰‰n  julkinen  eli  se
+lis‰t‰‰n Execin porttilistaan. Porttilistaan lis‰tty portti pit‰‰  aina  muistaa
+myˆs poistaa ennen sen tuhoamista. T‰llaiseen porttiin l‰hetet‰‰n  toisesta  oh-
+jelmasta viesti n‰in: 
+
+struct MsgPort *port;
+struct Message *msg;
+
+if(port = FindPort("Portin nimi")) PutMsg(port,msg);
+
+Portin lˆytyminen t‰ytyy aina tarkistaa,  eik‰  antaa  FindPort():n  palauttamaa
+osoitinta suoraan PutMsg():lle. Nyt siirryt‰‰n taas  vastaanottavaan  ohjelmaan.
+Viesti otetaan vastaan ja siihen vastataan seuraavasti: 
+
+struct MsgPort *mp;
+struct Message *msg;
+
+while(!(port = GetMsg(mp))) WaitPort(mp);
+
+/* viestin k‰sittely‰ */
+
+ReplyMsg(msg);
+
+T‰ss‰ viesti‰ odotetaan WaitPort()-funktiolla. Mik‰li tarvitsee odottaa  jotakin
+muutakin, joudutaan k‰ytt‰m‰‰n Wait()-funktiota, kuten yleens‰ on  asian  laita.
+T‰llˆin kyseeseen tuleva toimintatapa on selvitetty aiemmin t‰ss‰  artikkelissa,
+mutta t‰ss‰ on viel‰ esimerkki, jossa odotetaan viesti‰ ja breikki‰: 
+
+portsigmask = 1L << mp->mp_SigBit;
+
+Wait(portsigmask | SIGBREAKF_CTRL_C);
+
+Lopuksi t‰ss‰ ovat viel‰ Execin viesteihin liittyv‰t funktiot:
+
+void AddPort( struct MsgPort *port );
+
+Lis‰‰ viestiportin porttilistaan tehden siit‰  julkisen,  jolloin  mik‰  tahansa
+j‰rjestelm‰ss‰ ajettava ohjelma voi etsi‰ sen ja l‰hett‰‰ siihen viestin. 
+
+void RemPort( struct MsgPort *port );
+
+Poistaa julkisen portin Execin porttilistasta. T‰m‰ on toimenpide, joka on muis-
+tettava aina tehd‰ ennen portin tuhoamista tai poistumista ohjelmasta. 
+
+void PutMsg( struct MsgPort *port, struct Message *message );
+
+L‰hett‰‰ viestin eli laittaa sen kohdeporttiin.
+
+struct Message *GetMsg( struct MsgPort *port );
+
+Vastaanottaa viestin portista.
+
+void ReplyMsg( struct Message *message );
+
+Vastaa viestiin eli l‰hett‰‰ vastaanotetun viestin takaisin l‰hett‰j‰lle.
+
+struct Message *WaitPort( struct MsgPort *port );
+
+Odottaa viesti‰ saapuvaksi porttiin ja palaa vasta sitten, kun sellainen  tulee.
+Yleens‰  on  kuitenkin  tarve  odottaa  useita  signaaleja,  jolloin   joudutaan
+k‰ytt‰m‰‰n WaitPort():n sijasta Wait():ia, jolle on silloin  rakennettava  maski
+portin signaalibitist‰. 
+
+struct MsgPort *FindPort( UBYTE *name );
+
+Etsii porttia porttilistasta ja palauttaa osoittimen porttiin, jonka nimi t‰sm‰‰
+annettuun merkkijonoon, tai nollan, jos halutunnimist‰ porttia ei ollut  listal-
+la. 
+
+
+
+
+{3Kirjastot
+{3---------
+
+Moneen otteeseen on jo ollut puhetta kirjastoista.  Ne  ovat  funktiokasautumia,
+jotka  liittyv‰t  tiettyyn  osa-alueeseen.  Kirjastojen   funktioita   kutsutaan
+k‰ytt‰en niiden kantaosoitetta, joka saadaan  avaamalla  kirjastot.  K‰ytett‰v‰t
+kirjastot on aina avattava ja lopuksi suljettava.  DICE  osaa  avata  t‰rkeimm‰t
+kirjastot automaattisesti, kun se havaitsee  viittauksen  niiden  kantaosoitteen
+nimeen.
+
+T‰ss‰ on t‰rkeimpien kirjastojen osoittimien (library base pointer) nimi‰: 
+
+         asl.library                AslBase
+         commodities.library        CxBase
+         dos.library                DOSBase
+         exec.library               SysBase
+         expansion.library          ExpansionBase
+         graphics.library           GfxBase
+         icon.library               IconBase
+         iffparse.library           IFFParseBase
+         intuition.library          IntuitionBase
+         layers.library             LayersBase
+         utility.library            UtilityBase
+         version.library            <salainen>
+         workbench.library          WorkbenchBase
+
+Kirjasto koostuu funktioiden hyppyk‰skytaulukosta ja kirjastostruktuurista:
+
+         Kantaosoite + sizeof Lib   kirjastokohtaista tietoa
+         Kantaosoite                struct Library
+         Kantaosoite - 6            JMP Func1
+         Kantaosoite - 12           JMP Func2
+         Kantaosoite - 18           JMP Func3
+         ...
+
+Kantaosoitteessa on  siis  kirjaston  node,  Library-struktuuri,  jonka  per‰ss‰
+yleens‰ tulee lis‰‰ kirjastokohtaista tietoa. Hyppytaulukko, kuten jo  mainittu,
+on kantaosoitteesta taaksep‰in. Ensimm‰iseen funktioon hypp‰‰v‰ k‰sky on -6:ssa,
+joka on sen LVO eli vektorioffset. Funktiota kutsutaan hypp‰‰m‰ll‰ t‰h‰n  osoit-
+teeseen: 
+
+         jsr      -6(a6)
+
+Kantaosoitteen tulee olla a6:ssa. Ensimm‰iset nelj‰ funktiota on varattu:
+
+         LVO      Funktio  Tarkoitus
+
+         -6       Open     Avaa kirjaston (OpenLibrary() kutsuu)
+         -12      Close    Sulkee kirjaston (CloseLibrary() kutsuu)
+         -18      Expunge  Poistaa kirjaston muistista, jos ei k‰ytt‰ji‰
+         -24      Res.     Ei toimintoa, varattu paikka, palauttaa nollan
+
+N‰it‰ funktioita ohjelman ei tavallisesti tarvitse koskaan kutsua.  Exec  kutsuu
+niit‰ (lis‰‰ tietoa myˆhemmin). Ensimm‰inen varsinainen  funktio  on  offsetiss‰
+-30, seuraava on -36 ja niin edelleen. C-kielell‰ ohjelmoitaessa n‰ist‰ asioista
+ei tarvitse huolehtia ollenkaan. Kirjasto avataan n‰in: 
+
+struct Library *IntuitionBase;
+
+if(!(IntuitionBase = OpenLibrary("intuition.library",LIBRARY_VERSION))) {
+    printf("Intuition ei auennut\n");
+    exit(RETURN_FAIL);
+}
+
+Rakenteellisesti parempi tapa olisi:
+
+if(IntuitionBase = OpenLibrary("intuition.library",LIBRARY_VERSION)) {
+
+    ...<Intuitionin k‰yttˆ‰>...
+
+} else printf("Intuition ei auennut\n");
+
+Intuition on siin‰ m‰‰rin keskeinen kirjasto, ett‰ jos se ei aukea,  on  j‰rjes-
+telm‰ jo aika nurin. Kirjasto suljetaan lopuksi n‰in: 
+
+CloseLibrary(IntuitionBase);
+
+Jos kutsut cleanup-koodia myˆs virhetilanteissa, on tarkistus tarpeen:
+
+if(IntuitionBase) CloseLibrary(IntuitionBase);
+
+Jos et ole kiinnostunut kirjastojen tekemisest‰, katso luvun lopusta kirjastojen
+k‰yttˆˆn liittyvien funktioiden selitykset ja hypp‰‰ seuraavaan lukuun.
+
+Kirjastojen tekeminen
+
+Jos olet kirjoittanut joukon funktioita,  joita  k‰ytet‰‰n  useissa  ohjelmissa,
+kannattaa harkita niiden sijoittamista kirjastoon. Kerron  nyt  lyhyesti,  miten
+kirjasto tehd‰‰n. Ensin katsotaan kantaosoitteessa olevaa struktuuria: 
+
+struct Library {
+    struct  Node lib_Node;
+    UBYTE   lib_Flags;
+    UBYTE   lib_pad;
+    UWORD   lib_NegSize;            /* Kirjaston koko alas p‰in */
+    UWORD   lib_PosSize;            /* Kirjaston koko ylˆs p‰in */
+    UWORD   lib_Version;            /* versionumero */
+    UWORD   lib_Revision;           /* merkityksettˆm‰mpi revisionumero */
+    APTR    lib_IdString;           /* Kirjaston tunniste */
+    ULONG   lib_Sum;                /* Kirjaston tarkistussumma */
+    UWORD   lib_OpenCnt;            /* K‰ytt‰jien m‰‰r‰ */
+};
+
+T‰t‰ kirjastonodea ei sis‰llytet‰ segmenttiin, vaan se tehd‰‰n lennossa  kirjas-
+toa ladattaessa. Tiedot toki saadaan kirjastotiedostosta. IdString on  kirjaston
+tunniste, joka on muodossa "nimi versio.revisio (p‰iv‰ys)". Lopussa  tulee  olla
+ensin CR ja sitten LF. Merkkijonon tulee p‰‰tty‰ nollatavuun. T‰ss‰ on esimerkki
+kirjaston idauksesta: 
+
+graphics 40.8 (15.3.93)
+
+T‰ss‰ tapauksessa kirjaston  versionumero  on  40  (lib_Version)  ja  revisio  8
+(lib_Revision). Exec yll‰pit‰‰ kirjastosta tarkistussummaa (lib_Sum).  Kirjaston
+koko pidet‰‰n kahdessa  muuttujassa,  erikseen  koko  kantaosoitteesta  alasp‰in
+(hyppytaulukko) ja ylˆsp‰in (datastruktuuri). Kirjaston koodi on  eri  paikassa.
+Kirjasto on aina teht‰v‰ konekielell‰ - ainakin sen runko. T‰ss‰  on  l‰htˆkohta
+siihen: 
+
+ STRUCTURE RT,0
+    UWORD RT_MATCHWORD              ; tunniste
+    APTR  RT_MATCHTAG               ; osoitin siihen...
+    APTR  RT_ENDSKIP                ; lopun osoitin
+    UBYTE RT_FLAGS                  ; lippuja
+    UBYTE RT_VERSION                ; versionumero
+    UBYTE RT_TYPE                   ; moduulin tyyppi (kirjasto)
+    BYTE  RT_PRI                    ; prioriteetti
+    APTR  RT_NAME                   ; osoitin moduulin nimeen
+    APTR  RT_IDSTRING               ; osoitin moduulin idaukseen
+    APTR  RT_INIT                   ; alustusosoitin
+    LABEL RT_SIZE
+
+T‰m‰ Resident-struktuuri m‰‰ritt‰‰ moduulin. Moduuli on t‰ss‰  tapauksessa  kir-
+jasto, mutta se voi olla muukin,  esimerkiksi  laiteohjain.  RomTag  (RT)  alkaa
+matchwordilla, jonka arvon tulee olla $4AFC. Siit‰ se tunnistetaan.  Seuraavaksi
+tulee osoitin tuohon sanaan ja sitten osoitin, jota k‰ytet‰‰n l‰hinn‰  moduulien
+skannaukseen ROMissa. Sen tulisi osoittaa koodin loppuun. Muut kent‰t ovat itse-
+kuvaavia.
+
+Liput ovat yleens‰ RTF_AUTOINIT. T‰m‰ on erityinen alustusmoodi.  Jos  AUTOINIT-
+lippu ei ole p‰‰ll‰, Exec ei alusta kirjastoasi automaattisesti. Sen sijaan kut-
+sutaan funktiota, jonka osoitin  on  RT_INIT:ss‰.  T‰m‰n  funktion  tulee  tehd‰
+myˆhemmin kerrottavat alustustoimenpiteet. Kannattaa kuitenkin hyˆdynt‰‰  AUTOI-
+NIT-toimintoa. Kun se on p‰‰ll‰, onkin RT_INIT:ss‰ osoitin taulukkoon: 
+
+         dataSize          Kirjaston data-alueen koko
+         vectors           Osoitin funktiotaulukkoon
+         structure         Osoitin InitStruct()-dataan
+         initFunction      Osoitin alustusfunktioon
+
+Data-alueen koko k‰sitt‰‰ Library-struktuurin sek‰ mahdolliset omat lis‰t. Funk-
+tiotaulukko koostuu joko longword-osoitteista  kirjaston  funktioihin,  tai  en-
+simm‰isen wordin ollessa -1, word-offseteista funktioiden  alkuun  suhteellisina
+taulukon alkuun. J‰lkimm‰inen tapa voi  olla  hieman  hankalampi  implementoida,
+mutta se on tehokkaampi.
+
+Exec kutsuu myˆs InitStruct()-funktiota, jolla alustetaan Library-node  ja  muut
+mahdolliset omat datat. Alustusfunktiota kutsutaan sen j‰lkeen, kun kirjasto  on
+kunnossa. Sill‰ ei ole en‰‰ paljon teht‰v‰‰, sille j‰‰ l‰hinn‰ vain kirjanpidol-
+lisia teht‰vi‰ sek‰ tietysti tarvittaessa alustettavat kirjaston omat datat.
+
+Aikaisemmin mainitut nelj‰ ensimm‰ist‰ funktiota ovat pakollisia jokaisessa kir-
+jastossa. Open():n teht‰v‰ on l‰hinn‰ kasvattaa opencountia ja varata  avaajalle
+k‰ytt‰j‰kohtaisia data-alueita, jos niille on  tarvetta  tms.  Close()  v‰hent‰‰
+opencountia ja vapauttaa varaukset ym. Expunge()  poistaa  kirjaston  muistista.
+Sit‰ varten pit‰‰ vapauttaa muistialueet ja poistaa kirjaston segmentit muistis-
+ta.
+
+Reserved()-funktio on myˆs pakko implementoida. Sen tulee palauttaa nolla.  Olen
+n‰hnyt kirjaston l‰hdekoodin, jossa Reserved()-funktion paikalle hyppytaulukkoon
+laitettiin nolla. Tuloksena on varmuudella koneen kaatuminen tai  muu  h‰iriˆti-
+lanne, kun t‰lle funktiolle keksit‰‰n k‰yttˆ‰,  ja  tulevaisuuden  k‰yttˆj‰rjes-
+telm‰ kutsuu sit‰ - ja t‰llaisilla kirjastoilla hypp‰‰ tuohon osoitteeseen.
+
+Kirjaston tekeminen ei v‰ltt‰m‰tt‰ ole helppoa, joten laitan t‰h‰n hieman koodia
+esimerkiksi. T‰m‰ tulee suoraan sh.libraryn l‰hdekoodista. Poistin  tosin  funk-
+tiom‰‰rittelyt - laitoin vain  muutaman  esimerkiksi,  jotta  ne  eiv‰t  sotkisi
+t‰ss‰. Segmentti alkaa pienell‰ koodinp‰tk‰ll‰, jonka tarkoitus on est‰‰ kirjas-
+ton ajaminen ohjelmana. RTC_MATCHWORD on laiton k‰sky, jolloin sen ollessa  tie-
+doston alussa kone vain kaatuisi n‰tisti,  mutta  pienell‰  ylim‰‰r‰isell‰  koo-
+dinp‰tk‰ll‰ sekin voidaan v‰ltt‰‰. 
+
+VER   equ   10    ; versionumero
+REV   equ   297   ; revisionumero
+
+start moveq #-1,d0
+      rts
+
+RTAG  DC.W RTC_MATCHWORD
+      DC.L RTAG,FINAL
+      DC.B RTF_AUTOINIT,VER,NT_LIBRARY,0
+      DC.L LNAME,IDSTR,INITD
+
+INITD DC.L sh_base_sizeof,funcs,datat,initc
+
+funcs dc.w -1,open-funcs,close-funcs,expunge-funcs,extfunc-funcs
+      dc.w func1-funcs,func2-funcs,-1
+
+; T‰m‰ on InitStruct():n datataulukko. INIT#?-makroilla tehd‰‰n sille
+; "komentojono", jolla alustetaan noden kent‰t. Lis‰‰ tietoa InitStruct():n
+; toiminnasta on include-tiedostossa "exec/initializers.i". Se k‰sitell‰‰n
+; ehk‰ joskus.
+
+datat INITBYTE LN_TYPE,NT_LIBRARY
+      INITLONG LN_NAME,LNAME
+      INITBYTE LIB_FLAGS,LIBF_SUMUSED!LIBF_CHANGED
+      INITWORD LIB_VERSION,VER
+      INITWORD LIB_REVISION,REV
+      INITLONG LIB_IDSTRING,IDSTR
+      DC.W 0
+
+; T‰m‰ on alustusfunktio, jota OpenLibrary() kutsuu sen j‰lkeen, kun
+; kirjasto on pantu pystyyn. Tallennan segmentin osoitteen (BCPL-muodossa)
+; sek‰ avaan tarvittavat kirjastot. OpenLib on yksinkertainen makro,
+; joka kutsuu OpenLibrary():‰ ja moveaa basepointterin data-alueelle
+; kirjastonoden per‰‰n (sh-struktuuri pit‰‰ sis‰ll‰‰n Library-noden
+; sek‰ kirjaston omia muuttujia). ASL:sta ja Commoditiesista edellytet‰‰n
+; versio 37 tai suurempi.
+
+initc movem.l a4/a6,-(sp)
+      movea.l d0,a4
+      move.l a0,sh_SegList(a4)
+      movea.l 4,a6
+      move.l a6,sh_SysBase(a4)
+      OpenLib Dos,sh_DosBase(a4)             ; DOS
+      OpenLib intuition,sh_IntuitionBase(a4) ; Intuition
+      OpenLib AName,sh_AslBase(a4),37        ; ASL
+      OpenLib CName,sh_CxBase(a4),37         ; Commodities
+      move.l a4,d0
+      movem.l (sp)+,a4/a6
+      rts
+
+; N‰m‰ ovat Open() ja Close(). Ne vain p‰ivitt‰v‰t opencountin. Open()
+; palauttaa kirjaston kantaosoitteen, joka on sit‰ kutsuttaessa a6:ssa.
+; Close() tarkistaa lis‰ksi DELEXP-bitin arvon. Se tarkoittaa, ett‰
+; "delayed expunge" on p‰‰ll‰, eli joku on kutsunut Expunge():a sill‰
+; aikaa, kuin kirjastoa on k‰ytetty (katso alla). Jos DELEXP on p‰‰ll‰,
+; suoritus lasketaan l‰pi Expunge()-funktioon.
+
+open  addq.w #1,LIB_OPENCNT(a6)
+      bclr.b #LIBB_DELEXP,LIB_FLAGS(a6)
+      move.l a6,d0
+      rts
+
+close subq.w #1,LIB_OPENCNT(a6)
+      btst.b #LIBB_DELEXP,LIB_FLAGS(a6)
+      beq extfunc
+
+; Expunge() poistaa kirjaston muistista. Ensin varmistetaan, ett‰ kirjasto
+; ei ole kenell‰k‰‰n auki. Jos n‰in on, ei sit‰ tietenk‰‰n poisteta, vaan
+; asetetaan DELEXP-lippu viiv‰stetyn expungen merkiksi. Kirjasto expungetaan
+; heti, kun viimeinen sen k‰ytt‰j‰ sulkee sen. Muussa tapauksessa suljetaan
+; kirjastot, vapautetaan data-alueen k‰ytt‰m‰t muistialueet ja poistetaan
+; segmentti muistista. Minun mielest‰ni t‰m‰ on kyll‰ hieman vaarallista,
+; mutta n‰in se neuvotaan tekem‰‰n.
+
+expunge
+
+      movem.l d2/a5/a6,-(sp)
+      clr.l d2
+      movea.l a6,a5
+      movea.l 4,a6
+      tst.w LIB_OPENCNT(a5)
+      beq expu0
+      bset.b #LIBB_DELEXP,LIB_FLAGS(a5)
+      bra expu2
+expu0 CloseLib sh_DosBase(a5)
+      CloseLib sh_IntuitionBase(a5)
+      move.l sh_CxBase(a5),d0
+      beq expu3
+      movea.l d0,a1
+      Lib CloseLibrary
+expu3 move.l sh_AslBase(a5),d0
+      beq expu1
+      movea.l d0,a1
+      Lib CloseLibrary
+expu1 move.l sh_SegList(a5),d2
+      movea.l a5,a1
+      Lib Remove
+      clr.l d0
+      movea.l a5,a1
+      move.w LIB_NEGSIZE(a5),d0
+      suba.l d0,a1
+      add.w LIB_POSSIZE(a5),d0
+      Lib FreeMem
+expu2 move.l d2,d0
+      movem.l (sp)+,d2/a5/a6
+      rts
+
+extfunc
+
+      clr.l d0
+      rts
+
+Kirjaston lataaminen
+
+Kirjaston voi ottaa k‰yttˆˆn k‰sin lataamalla segmentin LoadSeg():ll‰ (DOS-funk-
+tio), valmistelemalla sen MakeLibrary():ll‰ ja lis‰‰m‰ll‰ sen  Execin  kirjasto-
+listaan AddLibrary():ll‰. Helpompaa on kuitenkin k‰ytt‰‰ yll‰ kuvattua  RomTagia
+(Resident-struktuuria), jolloin OS osaa ladata segmentin automaattisesti, kun se
+on sijoitettu LIBS:-hakemistoon, aina kun joku sit‰ haluaa k‰ytt‰‰ (kutsuu Open-
+Library():‰).
+
+Kirjasto voi liitty‰ myˆs Zorro-korttiin tai muuhun  laajennukseen,  jolloin  se
+voidaan sijoittaa SYS:Expansion-hakemistoon. T‰llˆin startup-sequencessa ajetta-
+va BindDrivers-komento lataa sen. Kortin toiminnasta huolehtiva kirjasto voidaan
+myˆs sijoittaa kortilla olevaan ROMiin. Mutta  t‰m‰  kuuluu  Expansion-kirjaston
+toimialaan, joten siit‰ ei enemp‰‰ t‰ss‰.
+
+N‰m‰ ovat Execin tarjoamat kirjastofunktiot: 
+
+void AddLibrary( struct Library *library );
+ 
+Lis‰‰ kirjaston Execin kirjastolistaan. Normaalisti Exec itse kutsuu t‰t‰  funk-
+tiota, kun joku haluaa avata levyll‰ olevan sen j‰lkeen, kun se on ensin  kutsu-
+nut MakeLibrary():‰. Viimeksi mainittua en k‰sittele t‰ss‰ ollenkaan,  koska  se
+kuuluu moduulinluontifunktioihin. N‰ihin palataan ehk‰ myˆhemmin kurssin aikana.
+
+void RemLibrary( struct Library *library );
+ 
+Poistaa kirjaston Execin kirjastolistasta. 
+
+struct Library *OldOpenLibrary( UBYTE *libName );
+ 
+Vanha avaamisfunktio. Ei tule k‰ytt‰‰. 
+
+struct Library *OpenLibrary( UBYTE *libName, unsigned long version );
+ 
+Avaa kirjaston. Parametrein‰ annetaan kirjaston nimi ja versionumero.  Versionu-
+meron tulee olla sellainen, ett‰ kirjastossa varmasti on kaikki funktiot,  joita
+tullaan kutsumaan. Mik‰li kyseess‰ on k‰yttˆj‰rjestelm‰n kirjasto, tulee versio-
+numeron olla LIBRARY_VERSION, joka on t‰t‰ nyky‰ 33. Se on  vanhin  virallisesti
+tuettu versionumero. 
+
+void CloseLibrary( struct Library *library );
+
+Sulkee kirjaston. Parametrin‰ annetaan kirjaston basepointer.
+
+APTR SetFunction( struct Library *library, long funcOffset,
+    unsigned long (*newFunction)() );
+ 
+Vaihtaa kirjaston funktion osoittimen. T‰ll‰ funktiolla voidaan kirjaston  alku-
+per‰inen funktiokoodi korvata omalla koodilla.  Vektori  vaihdetaan  niin,  ett‰
+tarkistussumma on aina oikein (katso alla).  T‰ll‰  funktiolla  ei  voi  vaihtaa
+ep‰standardien kirjastojen (esimerkiksi dos.library) vektoreita.
+
+Funktiolle annetaan osoitin uuteen funktiokoodiin, ja sen j‰lkeen, kun  kyseist‰
+funktiota kutsutaan, suoritetaan uusi koodi. Mik‰li uusi koodi ei j‰‰  muistiin,
+vaan l‰htee pois esimerkiksi ohjelman suorituksen loputtua,  tulee  alkuper‰inen
+vektori palauttaa. SetFuntion() palauttaa vanhan koodin osoitteen, joten  se  on
+helppo toteuttaa. 
+
+void SumLibrary( struct Library *library );
+ 
+Laskee kirjaston noden tarkistussumman. Funktio p‰ivitt‰‰  tarkistussumman  kir-
+jaston nodestruktuuriin. Funktio myˆs tarkistaa vanhan summan, ja mik‰li  se  ei
+t‰sm‰‰, n‰ytt‰‰ alertin. Aiheettomien alertien v‰ltt‰miseksi  kirjasto  on  mer-
+kitt‰v‰ muutetuksi aina, kun sit‰ muutetaan. T‰t‰ varten on lippu  CHANGED.  Oh-
+jelmat eiv‰t yleens‰ kutsu t‰t‰ funktiota. 
+
+
+{3Laiteohjaimet ja Execin I/O-toiminnot
+{3-------------------------------------
+ 
+Amigassa I/O-toiminnoista vastaavat Execin laiteohjaimet eli  devicet.  Laiteoh-
+jaimet ovat suoraan tekemisiss‰ hardwaren kanssa. Ohjelmat  k‰ytt‰v‰t  hardwarea
+laiteohjaimien kautta. Exec tarjoaa helpon liittym‰n laiteohjaimien  hyˆdynt‰mi-
+seen. I/O-toiminnot tehd‰‰n l‰hett‰m‰ll‰ laiteohjaimelle komentoja ja  mahdolli-
+sesti dataa sek‰ otetaan niit‰ vastaan silt‰.
+
+K‰yttˆj‰rjestelm‰‰n kuuluu 14 laiteohjainta: 
+
+         audio.device               ‰‰net
+         clipboard.device           leikkuulauta
+         console.device             konsoli (n‰ppis ja n‰ytin)
+         gameport.device            ilotikku, paddlet ja hiiri
+         input.device               syˆte (monista l‰hteist‰)
+         keyboard.device            n‰ppis (matalalla tasolla)
+         narrator.device            puhe, selostus
+         parallel.device            rinnakkaisportti
+         printer.device             kirjoitin
+         scsi.device                Commodoren SCSI-v‰yl‰
+         serial.device              sarjaportti
+         timer.device               ajastin
+         trackdisk.device           sis‰‰nrakennettu MFM-levyasemav‰yl‰
+
+Laiteohjaimiin tutustutaan tarkemmin joskus muulloin. T‰ss‰  on  tarkoitus  vain
+nopeasti katsoa, miten niit‰ k‰ytet‰‰n. Laiteohjain on  avattava  ennen  k‰yttˆ‰
+aivan kuin kirjastokin. Laiteohjaimen k‰yttˆ‰ varten tarvitsemme viestiportin ja
+IORequestin: 
+
+struct IORequest {
+    struct  Message io_Message;
+    struct  Device  *io_Device;     /* Device-struktuuri            */
+    struct  Unit    *io_Unit;       /* Unit-struktuuri (privaatti)  */
+    UWORD   io_Command;             /* I/O-komento                  */
+    UBYTE   io_Flags;               /* Liput (IOF_QUICK)            */
+    BYTE    io_Error;               /* Virhenumero                  */
+};
+
+T‰ll‰ struktuurilla voidaan l‰hett‰‰  vain  komentoja,  joihin  ei  liity  datan
+l‰hett‰mist‰ tai vastaanottamista. Jos dataakin liikkuu, tarvitaan pidempi  ver-
+sio: 
+
+struct IOStdReq {
+    struct  Message io_Message;
+    struct  Device  *io_Device;     /* Device-struktuuri            */
+    struct  Unit    *io_Unit;       /* Unit-struktuuri (privaatti)  */
+    UWORD   io_Command;             /* I/O-komento                  */
+    UBYTE   io_Flags;               /* Liput (IOF_QUICK)            */
+    BYTE    io_Error;               /* Virhenumero                  */
+    ULONG   io_Actual;              /* Siirtyneiden tavujen m‰‰r‰   */
+    ULONG   io_Length;              /* Tavujen m‰‰r‰                */
+    APTR    io_Data;                /* Osoittaa dataan              */
+    ULONG   io_Offset;              /* Offset laitteella            */
+};
+
+Laiteohjainta avatessa tarvitsee huolehtia vain siit‰, ett‰  viestiosuus  struk-
+tuurista on alustettu kunnolla. Tietysti kenttien tulee olla nollattu.  Laiteoh-
+jain alustaa Device- ja Unit-kent‰t,  ja  muut  alustetaan  myˆhemmin  komentoja
+l‰hetett‰ess‰. K‰yttis V36 tarjoaa k‰tevi‰ apufunktioita viestiportin  ja  IORe-
+questin tekemiseen. Laiteohjain aukeaa n‰in: 
+
+struct MsgPort *port;
+struct IOStdReq *request;
+
+if(!(request = CreateIORequest(port = CreateMsgPort(),
+    sizeof(struct IOStdReq)))) {
+    printf("IORequestin tekeminen ep‰onnistui\n");
+    DeleteMsgPort(port);
+}
+
+if(OpenDevice("trackdisk.device",0,request,0)) printf("Ei auennut\n");
+    else {
+
+    ....<trackdisk.devicen k‰yttˆ‰>...
+
+}
+
+Huomattavaa t‰ss‰ on erityisesti se, ett‰ OpenDevice() palauttaa nollan silloin,
+kun laiteohjaimen avaaminen onnistui. Yleens‰h‰n nolla tarkoittaa virhett‰, mut-
+ta t‰ss‰ se on toisin p‰in. Virheen tapauksessa palautetaan laiteohjainkohtainen
+virhenumero. Toinen parametri on yksikˆn numero. T‰ss‰ tapauksessa se tarkoittaa
+levyasemaa, nolla on (ensimm‰inen) sis‰inen  levari.  Viimeisen‰  voidaan  antaa
+lippuja. Lopuksi laiteohjain pit‰‰ sulkea: 
+
+CloseDevice(request);
+DeleteIORequest(request);
+DeleteMsgPort(port);
+
+Jokainen laiteohjain tunnistaa kahdeksan vakiokomentoa:
+
+         CMD_RESET         Resetoi laitteen alkutilaansa
+         CMD_READ          Lukee dataa laitteelta
+         CMD_WRITE         Kirjoittaa dataa laitteelle
+         CMD_UPDATE        P‰ivitt‰‰ tietoja
+         CMD_CLEAR         Tyhjent‰‰ laiteohjaimen puskurit
+         CMD_STOP          Pys‰ytt‰‰ laitteen
+         CMD_START         K‰ynnist‰‰ laitteen
+         CMD_FLUSH         Puhdistaa komentojonon
+
+Kaikki laiteohjaimet eiv‰t v‰ltt‰m‰tt‰ tue kaikkia n‰it‰, mik‰ on minusta varsin
+kummallista. Tuntemattoman laiteohjaimen k‰ytt‰minen voi olla  vaarallista.  Ko-
+mennon l‰hett‰minen laiteohjaimelle on helppoa: 
+
+request->io_Command = CMD_CLEAR;
+DoIO(request);
+
+N‰m‰ peruskomennot  toteuttavat  yksinkertaisia  toimintoja.  Esimerkiksi  FLUSH
+abortoi kaikki laiteohjaimella jonossa olevat I/O-toimintopyynnˆt - myˆs  muiden
+ohjelmien, joten sen kanssa kannattaa olla varovainen. CLEAR tyhjent‰‰ sarjapor-
+tin puskurit. UPDATE p‰ivitt‰‰ levylle trackdisk.devicen muistissa olevan  uran,
+jos sit‰ on muutettu. STOP pys‰ytt‰‰ laitteen  toiminnan.  Laiteohjain  lopettaa
+kyseisen yksikˆn jonossa olevien pyyntˆjen  k‰sittelyn  ja  jatkaa  toimintaansa
+vasta, kun saa START-komennon. Moniyksikkˆisess‰ laitteessa komennot vaikuttavat
+vain siihen yksikkˆˆn (esimerkiksi nimenomaiseen  levyasemaan),  jolle  komennot
+annetaan.
+
+Kun halutaan esimerkiksi kirjoittaa dataa, t‰ytyy requestiin liitt‰‰ tiedot kir-
+joitettavasta datasta, miss‰ se on ja paljonko sit‰  on.  Levykkeen  tapauksessa
+pit‰‰ myˆs ilmoittaa, minne se kirjoitetaan. Kun kyseess‰  on  massamuistiasema,
+muuttuja Offset kertoo datan sijaintipaikan levyll‰: 
+
+APTR data;
+
+request->io_Data = data;            /* osoitin dataan */
+request->io_Length = 0x200;         /* kirjoitetaan vain yksi sektori */
+request->io_Offset = 0x20000;       /* paikka levyll‰ tavuina */
+request->io_Command = CMD_WRITE;
+DoIO(request);
+
+T‰m‰ koodi kirjoittaa 512 tavua dataa levyll‰ kohtaan $20000.  Sektorin  numero,
+jonka sis‰ltˆ korvautuu uudella datalla, saadaan jakamalla Offset 512:lla.  Off-
+setin ja pituuden tulee olla jaollisia sektorin koolla, joka t‰ss‰ oletuksena on
+512 tavua. Otin t‰ss‰ trackdisk.devicen vain yksinkertaiseksi esimerkiksi - mas-
+samuistin k‰ytt‰minen laiteohjaintasolla ei ole suotavaa.
+
+DoIO() on synkroninen funktio. Se j‰‰ odottamaan vastausta ja ottaa viestin sit-
+ten portista. SendIO() vain l‰hett‰‰ viestin, joten vastausta on itse odotettava
+ja otettava viesti vastausportista. Sit‰  odotellessa  voi  myˆs  kysell‰,  onko
+pyyntˆ jo k‰sitelty. Komennon voi myˆs abortoida. T‰ss‰ on esimerkki: 
+
+SendIO(request);
+
+while(TRUE) {
+
+        ...<muuta juttua, jossa kuluu hieman aikaa>...
+
+    if(CheckIO(request)) {
+        GetMsg(port);
+        break;
+}
+
+Voisihan tuota GetMsg():t‰ tietysti kutsua suoraankin, mutta n‰in se n‰ytt‰‰ ki-
+vemmalta... Jos on tarve keskeytt‰‰ operaatio: 
+
+if(!(CheckIO(request))) {
+    AbortIO(request);
+    WaitIO(request);
+}
+
+T‰m‰ koodinp‰tk‰ tutkii, viel‰kˆ komento on kesken. Jos se on, abortoidaan se ja
+odotetaan, ett‰ se todellakin on abortoitu.
+
+Laiteohjaimen tekeminen
+
+T‰h‰n asiaan en paneudu nyt t‰ss‰.  Laiteohjaimet  tullaan  k‰sittelem‰‰n  omana
+osanaan t‰ll‰ kurssilla. Siin‰ yhteydess‰ teemme myˆs oman  laiteohjaimen.  Voin
+t‰ss‰ kuitenkin johdantona valottaa prosessia hieman. Laiteohjain on  toiminnal-
+taan melko lailla samanlainen kuin kirjasto. Myˆs sill‰ on kantaosoite, io_Devi-
+ce osoittaa Device-struktuuriin, joka on aivan samanlainen  kuin  Library-struk-
+tuuri.
+
+Myˆs laiteohjaimilla on hyppytaulukko, ja jotkin laiteohjaimet tarjoavat kirjas-
+tojentyylisen funktioliittym‰n. P‰‰asiassa toimet kuitenkin hoidetaan  IOReques-
+tien avulla. Laiteohjaimen on yleens‰ tarpeen  laukaista  lapsiteht‰v‰  erikseen
+jokaista yksikkˆ‰ varten. Laiteohjaimen tekeminen on hankalampaa kuin kirjaston.
+Perehdymme siihen hamassa tulevaisuudessa.
+
+N‰m‰ ovat Execin I/O-funktiot: 
+
+void AddDevice( struct Device *device );
+
+Lis‰‰ laiteohjaimen Execin listaan.
+
+void RemDevice( struct Device *device );
+
+Poistaa laiteohjaimen.
+
+BYTE OpenDevice( UBYTE *devName, unsigned long unit,
+    struct IORequest *ioRequest, unsigned long flags );
+
+Avaa laiteohjaimen. Parametrein‰ annetaan sen nimi ja yksikkˆ, osoitin  asianmu-
+kaisesti alustettuun requestblokkiin ja liput. 
+
+void CloseDevice( struct IORequest *ioRequest );
+
+Sulkee laiteohjaimen.
+
+BYTE DoIO( struct IORequest *ioRequest );
+
+L‰hett‰‰ komennon laiteohjaimelle synkronisesti.
+
+void SendIO( struct IORequest *ioRequest );
+
+L‰hett‰‰ komennon laiteohjaimelle asynkronisesti.
+
+BOOL CheckIO( struct IORequest *ioRequest );
+ 
+Tarkistaa komennon suorituksen. Palauttaa nollan, jos komento ei ole viel‰  val-
+mis. 
+
+BYTE WaitIO( struct IORequest *ioRequest );
+
+Odottaa komennon valmistumista. Voidaan kutsua esimerkiksi  AbortIO():n  j‰lkeen
+tai suoraan SendIO():n j‰lkeen toiminnan synkronoimiseksi. Huomaa, ett‰ WaitIO()
+myˆs ottaa viestin vastausportista. Sit‰ voidaankin k‰ytt‰‰  myˆs  jo  valmiiksi
+tiedetyn I/O-requestin valmisteluun seuraavaa teht‰v‰‰ varten. WaitIO()  odottaa
+viesti‰ porttiin kutsumalla Wait():i‰. Mik‰li komento on jo valmis, ei Wait():i‰
+kutsuta, vaan Wait() ottaa viestin portista ja palaa v‰littˆm‰sti.
+
+Yleens‰ paras vaihtoehto I/O-toiminnan p‰‰ttymisen odottamiseen on  kutsua  itse
+Wait():i‰. Silloin voidaan odottaa myˆs esimerkiksi breakia ja ajastinta toteut-
+taen I/O:lle timeout-featuren. Jos aikaa kuluu liikaa, voi olla, ett‰ I/O:ssa on
+jotain vikaa, joten se abortoitaisiin. Syyn‰ voisi olla  vaikkapa,  ett‰  kahden
+tietokoneen keskin‰isess‰ tiedonsiirrossa toinen kone ei l‰het‰  mit‰‰n,  vaikka
+sen pit‰isi. Mik‰li k‰ytet‰‰n WaitIO():ta odottamiseen (tai DoIO:ta),  koko  oh-
+jelma jumittuu, koska pyyntˆ ei koskaan t‰yty eik‰ funktio palaa. 
+
+void AbortIO( struct IORequest *ioRequest );
+
+Abortoi komennon. Ei odota abortin tapahtumista.
+
+
+{3Muisti
+{3------
+ 
+Muistinvaraukseen on olemassa monimutkaisia funktioita,  joita  on  myˆs  muissa
+kirjastoissa kuin Execiss‰. K‰sittelen t‰ss‰ kuitenkin vain  Execin  muistinhal-
+lintafunktiot. Yksinkertaisimmillaan muistia varataan n‰in: 
+
+APTR mem;
+
+if(!(mem=AllocMem(BUFFER_SIZE,MEMF_ANY))) printf("Ei saatu muistia\n");
+
+Muisti vapautetaan lopuksi n‰in:
+
+if(mem) FreeMem(mem,BUFFER_SIZE);
+
+Halutun muistin tyypin m‰‰r‰‰v‰t AllocMem():lle annettavat liput:
+
+         MEMF_ANY          Mik‰ vain k‰y
+         MEMF_PUBLIC       Julkinen muisti
+         MEMF_CHIP         CHIP RAM
+         MEMF_FAST         FAST RAM
+         MEMF_LOCAL        Paikallista muistia, ei laajennuskortilla
+         MEMF_24BITDMA     24-bittisen DMA:n ulottuvissa oleva muisti
+
+         MEMF_CLEAR        Tyhjenn‰ alue ennen palaamista
+         MEMF_LARGEST      Suurin alue (katso alla)
+         MEMF_REVERSE      Etsi sopiva alue muistin yl‰p‰‰st‰
+         MEMF_TOTAL        Koko muisti (katso alla)
+
+Jos ei ole mit‰‰n  tarvetta  pyyt‰‰  mit‰‰n  erityist‰  muistia,  tulee  k‰ytt‰‰
+MEMF_ANY:‰. T‰llˆin varataan ensin FAST-muistia, jos  sit‰  on  vapaana,  ellei,
+saat CHIPi‰. PUBLIC tarkoittaa muistia, joka on  toisten  teht‰vien  saatavilla.
+Kaikkiin systeemistruktuureihin (esimerkiksi julkisiin viestiportteihin) k‰ytet-
+ty muisti tulee varata PUBLIC:lla. PUBLIC-lipulla ei ole viel‰ merkityst‰, mutta
+tulevaisuuden laajennuksiin tulee varautua k‰ytt‰m‰ll‰ sit‰.  K‰yttˆj‰rjestelm‰n
+ulkopuoliset virtuaalimuistiohjelmat tosin k‰ytt‰v‰t PUBLIC-lippua  -  ne  eiv‰t
+hukkaa  PUBLIC-muistia  levylle,  mutta  se  ei  ole  t‰m‰n  lipun   suunniteltu
+k‰yttˆtarkoitus.
+
+LOCAL on muistia, joka on suoraan prosessorin v‰yl‰ll‰, yleens‰ emolevyll‰. Laa-
+jennuskorteilla oleva muisti menetet‰‰n  resetin  yhteydess‰,  eik‰  sit‰  voida
+k‰ytt‰‰ resetintakaisiin viritelmiin. 24BITDMA-lippu  pyyt‰‰  muistia,  joka  on
+Zorro II -muistiavaruudessa. T‰m‰  lippu  on  tarkoitettu  ainoastaan  Zorro  II
+-korttien ohjaimien k‰ytett‰v‰ksi. Ohjelmien ei  tulisi  k‰ytt‰‰  sit‰  koskaan.
+CLEAR-lipulla muistialue voidaan pyyt‰‰ nollattavaksi  ennen  palaamista  Alloc-
+Mem():st‰. Normaalisti halutun suuruista  aluetta  etsit‰‰n  muistin  alap‰‰st‰,
+mutta REVERSE muuttaa toiminnan niin, ett‰ aluetta aletaankin hakea muistilistan
+lopusta.
+
+LARGEST ja TOTAL ovat lippuja, joita ei koskaan k‰ytet‰  muistia  varatessa.  Ne
+voidaan antaa AvailMem():lle, joka kertoo vapaan muistin m‰‰r‰n: 
+
+printf("Vapaata CHIP-muistia on %ld tavua\n",AvailMem(MEMF_CHIP));
+
+T‰t‰ funktiota ei yleens‰ tarvitse k‰ytt‰‰, ellei halua kertoa k‰ytt‰j‰lle  tie-
+toa muistista. Muistin riitt‰vyys selvi‰‰  kyll‰,  kun  sit‰  yritet‰‰n  varata.
+AvailMem():n palauttama arvo ei v‰ltt‰m‰tt‰ ole oikein. On hyvin  todenn‰kˆist‰,
+ett‰ muistia on jo varattu ja vapautettu monta kertaa, ennen kuin  palautusarvoa
+p‰‰st‰‰n tutkimaan. Sen tarkkuuteen ei pid‰ luottaa liikaa.
+
+AvailMem() osaa kertoa vapaan muistin kokonaism‰‰r‰n, jonka  se  palauttaa,  kun
+sille annetaan lippu MEMF_TOTAL.  Suurimman  yhten‰isen  vapaan  tietyntyyppisen
+muistialueen koon saa n‰in: 
+
+printf("Suurin yhten‰inen CHIP-muistin palanen on kooltaan %ld tavua\n",
+    AvailMem(MEMF_CHIP|MEMF_LARGEST));
+
+Exec tarjoaa versiosta 37 alkaen lis‰ksi funktiot AllocVec()  ja  FreeVec().  Ne
+toimivat aivan kuin AllocMem() ja FreeMem(),  mutta  lis‰ksi  AllocVec()  s‰ilˆˆ
+alueen pituuden, joten sit‰ ei tarvitse antaa ollenkaan aluetta  vapautettaessa.
+AllocVec() varaa aina nelj‰ tavua enemm‰n kuin pyydet‰‰n ja tallentaa alueen en-
+simm‰iseen longwordiin sen pituuden. 
+
+Muistin varaaminen ja vapauttaminen AllocVec():i‰ ja FreeVec():i‰ k‰ytt‰en
+k‰y n‰in:
+
+APTR mem;
+
+if(!(mem=AllocVec(BUFFER_SIZE,MEMF_ANY))) printf("Ei saatu muistia\n");
+
+if(mem) FreeVec(mem);
+
+N‰ill‰ funktioilla p‰rj‰‰ hyvin. K‰sittelen viel‰ lis‰‰ muistifunktioita,  mutta
+voit hyp‰t‰ suoraan luvun loppuun, jossa on kooste aihepiirin funktioista.
+
+Muistin siirt‰minen paikasta toiseen
+
+Joskus tulee tarve siirt‰‰ dataa paikasta toiseen. Siihen on olemassa  funktioi-
+ta: 
+
+void CopyMem(source,dest,size);
+void CopyMemQuick(source,dest,size);
+
+Funktioiden toiminta on identtinen, mutta CopyMemQuick() on optimoitu versio, ja
+sit‰ k‰ytett‰ess‰ kaikkien parametrien on oltava jaollisia  nelj‰ll‰  (data  ko-
+pioidaan longwordeja siirtelem‰ll‰). CopyMem() ja CopyMemQuick() ovat tehokkaita
+funktioita datan siirt‰miseen, vaikka ne eiv‰t tuekaan  p‰‰llekk‰isten  alueiden
+siirtoa. Toisin sanoen kohdealue ja l‰hdealue eiv‰t saa  olla  osittain  samassa
+paikassa. Osittain p‰‰llekk‰in sijaitsevien alueiden kopioimiseen  k‰yvi‰  funk-
+tiota on esimerkiksi omassa kirjastossani.
+
+Useat yht‰aikaiset muistinvaraukset
+
+Jos tarvitset useita viel‰p‰ erityyppisi‰ muistialueita, voit varata ja  vapaut-
+taa ne helposti kerralla. Siihen tarkoitukseen ovat olemassa funktiot  AllocEnt-
+ry() ja FreeEntry(). N‰it‰ k‰ytt‰m‰ll‰ muisti myˆs  pysyy  hyvin  j‰rjestyksess‰
+omassa listassaan. Jokaisella teht‰v‰ll‰ on matalalla tasolla  t‰llainen  lista,
+mutta on kuitenkin syyt‰ tehd‰ oma, koska  se  on  l‰hinn‰  systeemin  sis‰iseen
+k‰yttˆˆn. Tosin sit‰ voidaan hyˆdynt‰‰ automaattisen muistinvapautuksen  aikaan-
+saamiseksi. Teht‰v‰t-luvussa on lis‰‰ tietoa t‰st‰.
+
+Muistilista ei ole standardi Execin lista, vaan noden  sis‰lt‰v‰  yksinkertainen
+struktuuri, johon kuuluu yksi tai useampi MemEntry: 
+
+struct  MemList {
+    struct  Node ml_Node;
+    UWORD   ml_NumEntries;      /* Listassa olevien entryjen lukum‰‰r‰ */
+    struct  MemEntry ml_ME[1];  /* ensimm‰inen entry */
+};
+
+struct  MemEntry {
+union {
+    ULONG   meu_Reqs;           /* AllocMem()-liput */
+    APTR    meu_Addr;           /* T‰m‰n alueen osoite */
+    } me_Un;
+    ULONG   me_Length;          /* T‰m‰n alueen pituus */
+};
+
+Varsinkin MemEntry vaatinee selvitt‰mist‰. Sen pituus siis on  kahdeksan  tavua.
+Ensimm‰isen‰ on longword, joka sis‰lt‰‰ AllocMem():lle annettavat liput -  t‰m‰n
+alueen vaatimukset, mik‰li kyseess‰ on vasta muistinvaraus, joka  tullaan  anta-
+maan AllocEntry():lle. Seuraavana on toinen longword, joka sis‰lt‰‰  alueen  pi-
+tuuden. Osoitin MemListiin annetaan AllocEntry():lle.
+
+Mit‰ seuraavaksi tapahtuu, onkin hieman erikoista. T‰lle alkuper‰iselle  muisti-
+listalle ei tehd‰ mit‰‰n, vaan AllocEntry() varaa uuden, johon se kopioi  tiedot
+t‰st‰ listasta. Kuitenkaan t‰ss‰ uudessa listassa MemEntryn ensimm‰inen muuttuja
+ei sis‰ll‰ lippuja, vaan se korvataan  osoittimella  varattuun  muistialueeseen!
+AllocEntry() palauttaa osoittimen t‰h‰n uuteen listaan, ja se annetaan vapautet-
+taessa FreeEntry():lle.
+
+Virhetilanteessa kaikki jo mahdollisesti varatut  muistialueet  vapautetaan,  ja
+AllocEntry() palauttaa ep‰onnistuneen varauksen liput bitti 31 asetettuna,  joka
+testaamaalla saadaan tiet‰‰ onnistuiko varaus. Varaus, sen onnistumisen  tarkis-
+tus ja alueiden vapauttaminen onnistuu n‰in: 
+
+#define ALLOCERROR 0x80000000
+struct MemList *ml;             /* valmiiksi alustettu MemList + MemEntryt */
+struct MemList *memlist;        /* t‰ss‰ vaiheessa viel‰ NULL */
+
+memlist = AllocEntry(ml);
+
+if(memlist & ALLOCERROR) printf("Ei saatu muistia\n"); else {
+
+    ...<muistin k‰yttˆ‰>...
+
+FreeEntry(memlist);
+}
+
+Teht‰v‰‰  vaikeuttaa  MemEntry-struktuurissa  k‰ytetty  unioni.  Sen  saamiseksi
+m‰‰ritelty‰ oikein tai yleens‰ ollenkaan kannattaa lukea lehden C-kurssi!
+
+Lis‰‰ muistifunktioita
+
+Muistia voi varata myˆs absoluuttisesta osoitteesta, mutta se ei miss‰‰n nimess‰
+ole suotavaa. ƒl‰ tee niin kuin ehdottomasta pakosta.  AllocAbs()  toimii  kuten
+AllocMem(), ensimm‰isen‰  parametrin‰  annetaan  alueen  pituus,  mutta  toisena
+alueen osoite: 
+
+APTR mem;
+
+if(!(mem=AllocAbs(0x10000,0x40000))) printf("Ei saatu muistia\n");
+
+Muisti vapautetaan aivan normaalisti  FreeMem()-funktiolla.  AllocAbs():lle  voi
+olla k‰yttˆ‰ joillakin erityissovelluksilla, esimerkiksi j‰rjestelm‰n toimintaan
+liittyvill‰ ohjelmilla tms. Normaalien ohjelmien ei tulisi koskaan k‰ytt‰‰  t‰t‰
+funktiota.
+
+Edelleen lˆytyy viel‰ yksi  pari  funktioita,  Allocate()  ja  Deallocate().  Ne
+k‰ytt‰v‰t MemHeaderia ja MemChunkia: 
+
+struct  MemHeader {
+    struct  Node mh_Node;
+    UWORD   mh_Attributes;      /* ei k‰ytet‰                   */
+    struct  MemChunk *mh_First; /* ensimm‰inen vapaa alue       */
+    APTR    mh_Lower;           /* muistin alaraja              */
+    APTR    mh_Upper;           /* muistin yl‰raja + 1          */
+    ULONG   mh_Free;            /* vapaiden tavujen m‰‰r‰       */
+};
+
+struct  MemChunk {
+    struct  MemChunk *mc_Next;  /* osoitin seuraavaan chunkiin  */
+    ULONG   mc_Bytes;           /* tavujen m‰‰r‰ chunkissa      */
+};
+
+K‰yttˆj‰rjestelm‰ pit‰‰ kirjaa vapaasta muistista k‰ytt‰en  n‰it‰  struktuureja.
+Execin muistilistan lis‰ksi  muistia  voidaan  manageroida  myˆs  paikallisesti.
+Ideana on alustaa ensin MemHeader- ja MemChunk-struktuurit kuvaamaan  k‰ytˆss‰si
+olevaa muistialuetta. T‰m‰n j‰lkeen t‰st‰ paikallisesti yll‰pidetyst‰ muistilam-
+mikosta voidaan  varata  muistia  Allocate():lla  ja  vapauttaa  sit‰  Dealloca-
+te():lla.
+
+Tarvetta t‰lle ei juuri ole - itse en ole hyˆdynt‰nyt sit‰ koskaan. Yksi mahdol-
+linen sovellus on se, ett‰ ohjelmasi laukaisee muita teht‰vi‰, ja haluat seurata
+niiden muistink‰yttˆ‰ ja yll‰pit‰‰ omaa muistij‰rjestelm‰‰. Mielenkiintoinen yk-
+sityiskohta systeemin muistinhallinnassa on, ett‰ kirjaa pidet‰‰n vain  vapaista
+muistialueista - kun muistialue varataan, Execill‰ ei ole hajuakaan, kenell‰  se
+on!
+
+Execin muistifunktiot ovat t‰ss‰: 
+
+APTR Allocate( struct MemHeader *freeList, unsigned long byteSize );
+
+Varaa muistia yksityisesti yll‰pidetyst‰  muistilammikosta.  Parametrein‰  funk-
+tiolle annetaan osoitin MemHeaderiin ja varattavan alueen koko. 
+
+void Deallocate( struct MemHeader *freeList, APTR memoryBlock,
+    unsigned long byteSize );
+
+Vapauttaa yksityisesti yll‰pidetyst‰ muistilammikosta varatun muistialueen.  Pa-
+rametrit ovat osoitin MemHeaderiin, muistialueen osoite ja koko. 
+
+APTR AllocMem( unsigned long byteSize, unsigned long requirements );
+
+Varaa muistia, parametrein‰ annetaan alueen koko ja vaatimukset.
+
+APTR AllocAbs( unsigned long byteSize, APTR location );
+
+Varaa muistia absoluuttisesta osoitteesta. Parametrein‰ annetaan alueen koko  ja
+osoite, josta muistia halutaan. 
+
+void FreeMem( APTR memoryBlock, unsigned long byteSize );
+
+Vapauttaa AllocMem():ll‰ tai AllocAbs():lla varatun muistialueen. Funktiolle an-
+netaan osoitin alueeseen sek‰ sen koko. 
+
+ULONG AvailMem( unsigned long requirements );
+
+Kertoo, kuinka paljon m‰‰ritellyntyyppist‰ muistia on vapaana. Voi  myˆs  kertoa
+kokonaismuistin m‰‰r‰n sek‰ suurimman yhten‰isen alueen koon. 
+
+struct MemList *AllocEntry( struct MemList *entry );
+
+Varaa yhden tai useita muistialueita k‰ytt‰en muistilistaa. Palauttaa osoittimen
+uuteen muistilistaan, jossa on osoittimet varattuihin  alueisiin,  tai  yhdenkin
+varauksen ep‰onnistuessa, ep‰onnistuneen varauksen vaatimukset bitti 31  asetet-
+tuna. 
+
+void FreeEntry( struct MemList *entry );
+
+Vapauttaa yhden tai useamman muistialueen, jotka ovat muistilistassa. Listan tu-
+lee olla AllocEntry():n palauttama - ei alkuper‰inen lista, jossa on osoittimien
+sijaan vaatimukset. 
+
+
+{3Teht‰v‰t
+{3--------
+ 
+Amiga ajaa ohjelmakoodia prosesseina ja teht‰vin‰. Myˆs prosessit ovat teht‰vi‰,
+mutta ne ovat laajempia kokonaisuuksia. K‰sittelen  t‰ss‰  nyt  teht‰vi‰  Execin
+n‰kˆkulmasta. Teht‰v‰t  pidet‰‰n  teht‰v‰listoissa  t‰llaisten  datastruktuurien
+avulla: 
+
+struct Task {
+    struct  Node tc_Node;
+    UBYTE   tc_Flags;               /* Liput                        */
+    UBYTE   tc_State;               /* Teht‰v‰n tila                */
+    BYTE    tc_IDNestCnt;           /* Keskeytysestot               */
+    BYTE    tc_TDNestCnt;           /* Teht‰v‰nvaihtoestot          */
+    ULONG   tc_SigAlloc;            /* Varatut signaalit            */
+    ULONG   tc_SigWait;             /* Signaalit, joita odotetaan   */
+    ULONG   tc_SigRecvd;            /* Saadut signaalit             */
+    ULONG   tc_SigExcept;           /* Poikkeuttavat signaalit      */
+    UWORD   tc_TrapAlloc;           /* Varatut ansat                */
+    UWORD   tc_TrapAble;            /* Sallitut ansat               */
+    APTR    tc_ExceptData;          /* Poikkeustiladataosoitin      */
+    APTR    tc_ExceptCode;          /* Poikkeustilakoodi            */
+    APTR    tc_TrapData;            /* Ansadataosoitin              */
+    APTR    tc_TrapCode;            /* Ansakoodi                    */
+    APTR    tc_SPReg;               /* Pinorekisteri                */
+    APTR    tc_SPLower;             /* Pinon alaraja                */
+    APTR    tc_SPUpper;             /* Pinon yl‰raja + 1            */
+    VOID    (*tc_Switch)();         /* Kun CPU l‰htee...            */
+    VOID    (*tc_Launch)();         /* Kun CPU tulee...             */
+    struct  List tc_MemEntry;       /* Varattu muisti               */
+    APTR    tc_UserData;            /* K‰ytt‰j‰n dataosoitin        */
+};
+
+Teht‰v‰‰n liittyy paljon tietoa. N‰ist‰ t‰rkeimm‰t ovat tuolla lopussa. Teht‰v‰‰
+vaihdettaessa on syyt‰ tiet‰‰, miss‰ sen pino on ja miss‰ kohtaa  siin‰  menn‰‰n
+(SPReg ladataan SP-rekisteriin). Switch ja Launch osoittavat koodiin niihin koh-
+tiin, joihin hypit‰‰n, kun teht‰vi‰ vaihdetaan. Ne tietysti vaihtuvat koko ajan,
+kun  koodia  ajetaan.  Seuraavalla  kerralla  jatketaan  siit‰,  mihin  viimeksi
+j‰‰tiin.
+
+T‰m‰n enemp‰‰ ei v‰ltt‰m‰tt‰ ohjelmoijan tarvitse teht‰vien teknisest‰ toteutuk-
+sesta tiet‰‰. K‰sittelen t‰ss‰ luvussa viel‰ lis‰‰ teht‰viin liittyvi‰ toiminto-
+ja, mutta en usko, ett‰ niit‰ koskaan tarvitset. Kiinnostuksesta voit toki lukea
+loppuunkin... 
+
+Teht‰v‰nhallintafunktiot Execiss‰ ovat n‰m‰:
+
+APTR AddTask( struct Task *task, APTR initPC, APTR finalPC );
+
+Lis‰‰ taskin Execin ajovalmiiden teht‰vien listaan.  Teht‰v‰‰  ruvetaan  ajamaan
+joko heti, jos sen prioriteetti on suurempi kuin teht‰v‰, jota jo  ajetaan,  tai
+sitten, kun sen aika tulee. Parameterin‰ annetaan osoitin  alustettuun  Task-st-
+ruktuuriin, teht‰v‰n koodin osoite ja teht‰v‰n cleanup-koodin osoite. 
+
+void RemTask( struct Task *task );
+
+Poistaa teht‰v‰n. Keskeytt‰‰ teht‰v‰n ajamisen, vapauttaa sen  varaaman  muistin
+ja poistaa kaiken siihen liittyv‰n tiedon muistista. 
+
+struct Task *FindTask( UBYTE *name );
+
+Etsii teht‰v‰n teht‰v‰listoista. Teht‰v‰ voi ottaa selville oman  Task-struktuu-
+rinsa osoitteen kutsumalla FindTask(NULL):ia. 
+
+BYTE SetTaskPri( struct Task *task, long priority );
+
+Asettaa teht‰v‰n prioriteetin.
+
+ULONG SetExcept( unsigned long newSignals, unsigned long signalSet );
+
+Asettaa signaalit, joiden halutaan aiheuttavan poikkeustila.
+
+
+{3Task Creation
+{3-------------
+ 
+Teht‰vi‰ voi tehd‰ itsekin. Monet ohjelmat laukaisevat  lapsiteht‰v‰n  tai  jopa
+useita. Myˆs laiteohjaimet ajavat jokaiselle yksikˆlle oman  teht‰v‰n  huolehti-
+maan erikseen sille tulevista komennoista. Teht‰v‰n voi  tehd‰  joko  k‰sin  tai
+k‰ytt‰m‰ll‰ apufunktioita.  Eritt‰in  tehokas  teht‰v‰nk‰ynnistysfunktio  lˆytyy
+omasta sh.libraryst‰ni. Operaatio ei ole kovinkaan monimutkikas. Meid‰n  tarvit-
+see alustaa Task-struktuuri ja varata teht‰v‰lle muistia pinoa varten.
+
+Teht‰v‰‰ k‰ynnistett‰ess‰ Exec t‰ytt‰‰ alustamattomat kent‰t oletusarvoilla esi-
+merkiksi tuoden sis‰‰n oletuskoodin poikkeustiloista  selvi‰miseen  ja  ansoihin
+joutumiseen ym. Alustettavia kentti‰ ovat vain pinomuuttujat ja node sek‰  muis-
+tilista, jota kannattaa t‰ss‰ ehdottomasti hyˆdynt‰‰. Kaikki teht‰v‰‰n  liittyv‰
+muisti (Task-struktuuri itse, pinoalue tms.) kannattaa  varata  AllocEntry():ll‰
+ja liitt‰‰ muistilista tc_MemEntryyn,  jolloin  Exec  vapauttaa  automaattisesti
+kaikki muistialueet, kun teht‰v‰n ajaminen p‰‰ttyy!
+
+Laitan t‰h‰n nyt lyhyen konekielisen ohjelman, joka tekee meille  teht‰v‰n.  En-
+siksi se varaa muistialueet valmiina olevan MemListin mukaan ja alustaa teht‰v‰n
+listan, jossa se pit‰‰ MemEntryt, ja  lis‰‰  AllocEntry():n  palauttaman  listan
+siihen. Pinoa teht‰v‰lle varataan huimat 256 tavua, joka riit‰‰, kun se  ei  tee
+mit‰‰n. Oikealle ohjelmalle pinoa tarvitaan 4000 tavua.
+
+Ohjelma myˆs kopioi teht‰v‰n nimen Task-struktuurin per‰‰n  sek‰  koodin  pinoa-
+lueen per‰‰n! N‰in t‰m‰ is‰nt‰ohjelma voi exitoida ja j‰tt‰‰ lapsensa pyˆrim‰‰n.
+Jos lapsen koodia ajettaisiin is‰nn‰n sis‰ll‰, ei sit‰ voitaisi  lopettaa  ennen
+lapsen tappamista. Tietysti t‰ll‰ tavalla kopioitava koodi on oltava PC-relatii-
+vista. Kirjastossani oleva teht‰v‰nk‰ynnistysfunktio toimii samaan tapaan, ja se
+osaa myˆs varata data-alueen teht‰v‰lle.
+
+Lopuksi teht‰v‰ k‰ynnistet‰‰n  kutsumalla  AddTask()-funktiota.  Sille  annetaan
+osoitin Task-struktuuriin sek‰ initialPC ja finalPC. N‰ist‰ ensimm‰inen osoittaa
+teht‰v‰n koodin alkuun, ensimm‰iseen  k‰skyyn,  jonka  uusi  teht‰v‰  suorittaa.
+J‰lkimm‰inen osoite tyˆnnet‰‰n pinoon eli siihen hyp‰t‰‰n,  jos  teht‰v‰  joskus
+suorittaa RTS-komennon. Jos se on nolla, Exec tuo siihen oletuskoodin osoitteen.
+Oletuskoodi vain kutsuu RemTask()-funktiota, joka poistaa teht‰v‰n, mutta  fina-
+lisaatiokoodi voi suorittaa muitakin cleanup-toimenpiteit‰.
+
+Ohjelma on kauan sitten opetustarkoituksessa kirjoittamani esimerkki. 
+
+;
+; Task v1.02! Written by Sami Klemola.
+;             Finished on Sunday the 3rd of March at 19:40.
+;             Commented on Sat 25-May-91 at 12:40.
+;             Final adjustments made on Mon 17-Jun-91 at 13:00.
+;
+; Copyright 1991 by Sami Klemola. All Rights Reserved.
+;
+
+      include "Macros"
+      include "exec/memory.i"
+      include "exec/tasks.i"
+
+      movea.l 4,a6
+      cmpi.b #'0',(a0)
+      beq.s RTask
+      cmpi.b #'1',(a0)
+      bne.s exit
+      lea MList(pc),a0
+      Lib AllocEntry                    ; varataan muisti
+      bmi.s exit                        ; pois, jos ei saatu
+      movea.l d0,a4
+      movea.l ML_ME(a4),a5
+      move.l ML_ME+ME_LENGTH(a4),d2
+      lea TC_MEMENTRY(a5),a0            ; alustetaan tc_MemEntry
+      NEWLIST a0
+      movea.l a4,a1                     ; ja lis‰t‰‰n MemList siihen
+      Lib Enqueue
+      move.l d2,TC_SPLOWER(a5)          ; pinon alaraja (varatun muistin
+      addi.l #$100,d2                   ; alkuosoite, pino kasvaa alasp‰in)
+      move.l d2,TC_SPUPPER(a5)          ; pinon yl‰raja (alkuosoite + 256)
+      move.l d2,TC_SPREG(a5)            ; pino-osoitin (sama kuin yl‰raja)
+      lea Start(pc),a0                  ; teht‰v‰n koodi
+      movea.l d2,a1
+      movea.l d2,a2                     ; koodin osoite a2:een AddTaskille
+      moveq #MList-Start-1,d2
+tcopy move.b (a0)+,(a1)+                ; kopioidaan koodi pinoalueen per‰‰n
+      dbf d2,tcopy
+      move.b #NT_TASK,LN_TYPE(a5)       ; nodetyyppi task
+      move.b #$80,LN_PRI(a5)            ; prioriteetti -128
+      lea TName(pc),a0
+      lea TC_SIZE(a5),a1
+      move.l a1,LN_NAME(a5)
+ncopy move.b (a0)+,(a1)+                ; kopioidaan teht‰v‰n nimi
+      bne.s ncopy                       ; struktuurin per‰‰n
+      movea.l a5,a1                     ; task-struktuurin osoite
+      suba.l a3,a3                      ; oletuslopetuskoodi
+      Lib AddTask                       ; lis‰‰t‰n teht‰v‰ teht‰v‰listaan
+exit  rts
+RTask lea TName(pc),a1                  ; etsit‰‰n teht‰v‰
+      Lib FindTask
+      movea.l d0,a1
+      beq.s error
+      Lib RemTask                       ; ja lopetetaan sen ajaminen
+error rts
+
+Start clr.l d0                          ; teht‰v‰n ohjelmakoodi
+Cont  move.w d0,$dff180                 ; kirjoitetaan d0 COLOR00:aan
+      addi.w #$1,d0                     ; lis‰t‰‰n d0:aan 1
+      bra.s Cont                        ; ja uudestaan
+
+MList dc.l 0,0                          ; MemList
+      dc.b NT_MEMORY,0
+      dc.l TName
+      dc.w 2                            ; MemEntryjen m‰‰r‰
+
+      dc.l MEMF_PUBLIC!MEMF_CLEAR       ; Task-struktuuri + tila nimelle
+      dc.l TC_SIZE+10
+
+      dc.l MEMF_CLEAR                   ; Pino + koodi
+      dc.l $100+MList-Start
+
+TName dc.b 'ExtraTask',0                ; teht‰v‰n nimi
+
+
+{3Task Exclusion
+{3--------------
+ 
+Edistynyt j‰rjestelm‰ohjelma voi joskus havaita  tarvitsevansa  p‰‰sy‰  johonkin
+globaaliin datastruktuuriin. Moniajosta johtuen datat voivat  kuitenkin  muuttua
+kesken kaiken. Tarvitaan jonkinlainen keino sen est‰miseksi. Teht‰v‰ voi hetkel-
+lisesti est‰‰ moniajon, mutta se tulee  palauttaa  v‰littˆm‰sti,  kun  datat  on
+luettu.
+
+Moniajo estet‰‰n kutsumalla funkiota Forbid(). Muita  teht‰vi‰  ei  ajeta,  enen
+kuin kutsut funktiota Permit(), joka  j‰lleen  sallii  moniajon.  Mik‰li  kutsut
+Wait()-funktiota suoraan tai ep‰suorasti Forbid():n j‰lkeen, odottaminen katkai-
+see eston, ja muita teht‰vi‰ ajetaan odottaessasi. Kun  odotettu  signaali  saa-
+daan, Wait() palaa ja moniajo estet‰‰n uudelleen. Keskeytykset  ajetaan  normaa-
+listi myˆs moniajon ollessa kiellettyn‰.
+
+Toinen mahdollisuus on disablointi  kutsumalla  funktiota  Disable().  Disable()
+kielt‰‰ keskeytykset, joten moniajokaan ei toimi. Keskeytykset sallitaan j‰lleen
+funktiolla Enable(). Keskeytyksi‰ ei pit‰isi kielt‰‰ yli 250 mikrosekunnin ajak-
+si kerrallaan, koska Amigan k‰yttˆj‰rjestelm‰ on hyvin riippuvainen ajallaan ta-
+pahtuvista keskeytyksist‰. Erityisesti serial.device tykk‰‰ kyttyr‰‰,  ellei  se
+p‰‰se lukemaan merkkej‰ ajoissa - ne menetet‰‰n ikuisesti.
+
+Forbid() ja Disable() ovat kasaantuvia funktiota. Jos kutsut niit‰ useamman ker-
+ran, joudut kutsumaan myˆs Permit():i‰ tai Enable():a yht‰  monta  kertaa.  Kut-
+suista pidet‰‰n kirjaa Task-struktuurin NestCount-muuttujissa.  Koskaan  ei  ole
+tarvetta kutsua sek‰ Forbid():i‰ ett‰ Disable():a. Disable() est‰‰ keskeytykset,
+joten se kielt‰‰ myˆs moniajon, koska Execin teht‰v‰nvaihto tapahtuu  keskeytyk-
+sess‰.
+
+Joskus on tarpeen k‰ytt‰‰ n‰it‰ funktiota, mutta  ne  tilanteet  ovat  harvassa.
+Normaaleilla ohjelmilla niit‰ ei pit‰isi  tulla  ollenkaan.  Useimmat  kirjastot
+tarjoavat erityisi‰ funktioita  toisten  teht‰vien  sulkemiseksi  pois  tietyst‰
+j‰rjestelm‰st‰. N‰it‰ ovat #?Lock#?()-funktiot, jotka  hetkellisesti  lukitsevat
+halutun datan, jotta se voidaan rauhassa lukea, est‰m‰tt‰ moniajoa  tai  keskey-
+tyksi‰ ja n‰in ollen systeemiyst‰v‰llisemmin.
+
+On olemassa viel‰ yksi tapa, jota voidaan k‰ytt‰‰, kun kyseess‰ ei ole systeemi-
+data, vaan jonkin ohjelman omat datat.  Jos  jotkin  muutkin  teht‰v‰t  haluavat
+p‰‰st‰ k‰siksi dataan, voidaan k‰ytt‰‰ opastimia. Semaphoret ovat k‰tevi‰ ohjel-
+mien kesken tapahtuvaan tiedon ristiosoitukseen. En kuitenkaan  k‰sittele  niit‰
+t‰ss‰, koska niille ei yleens‰ ole tarvetta. 
+
+
+{3Task Exceptions
+{3---------------
+ 
+Poikkeustilat ovat ohjelmallisia keskeytyksi‰, jotka aiheutuvat  tiettyjen  sig-
+naalien aktivoituessa. Execin "exception":lla ei ole mit‰‰n tekemist‰  Motorolan
+"exception":n kanssa. T‰ll‰ tasolla  j‰lkimm‰iset  tunnetaan  "Task  Trap":eina.
+Normaalisti  ohjelma  odottaa   signaaleja   Wait()-funktiolla,   mutta   SetEx-
+cept()-funktiolla voidaan asettaa tietyt signaalit aikaansaamaan poikkeustila.
+
+T‰ll‰ tavalla toimiessa signaaleja ei tarvitse odottaa,  vaan  suoritus  siirtyy
+automaattisesti poikkeustilakoodiin, kun haluttu signaali aktivoituu. T‰t‰  tar-
+koitusta varten tulee  toimittaa  erityinen  poikkeustilakoodi  (tc_ExceptCode).
+T‰h‰n koodiin hyp‰t‰‰n poikkeustilan sattuessa. Koodille annetaan D0:ssa signaa-
+limaski, jossa ovat p‰‰ll‰ saatuja signaaleja vastaavat bitit. N‰m‰  tulee  myˆs
+palauttaa D0:ssa. A6:ssa on SysBase ja A1  osoittaa  poikkeustiladataan  (tc_Ex-
+ceptData).
+
+Varsinainen keskeytys poikkeustila ei ole. ExceptCode ajetaan normaalissa tilas-
+sa ja teht‰v‰n pinoa k‰ytt‰en. Ennen koodiin hypp‰‰mist‰ Exec tyˆnt‰‰ kaikki re-
+kisterit pinoon. Koodin tulee tarkistaa, mitk‰ signaalit aiheuttivat poikkeusti-
+lan, ja toimia sen mukaan k‰sitellen kaikki saadut signaalit. Poikkeustilakoodin
+ajaminen p‰‰ttyy RTS-k‰skyyn. T‰m‰n j‰lkeen Exec palauttaa  alkuper‰isen  tilan-
+teen, ja teht‰v‰n suoritus jatkuu normaalisti.
+
+Poikkeustilojen k‰ytt‰minen on vaarallista! ExceptCodeen hyp‰t‰‰n  v‰littˆm‰sti,
+kun poikkeustilan aiheuttavaksi m‰‰r‰tty signaali  aktivoituu,  mik‰  tarkoittaa
+sit‰, ett‰ n‰in  voi  k‰yd‰  kesken  kriittisen  koodin.  Seurauksena  voi  olla
+teht‰v‰n virhetoiminta. Mik‰li teht‰v‰ suorittaa juuri esimerkiksi  jotain  sys-
+teemifunktiota, se voi olla lukinnut jonkin resurssin. Jos kutsut samaa tai vas-
+taavaa funktiota myˆs ExceptCodesta, voi tuloksena olla  deadlock.  ExceptCodesi
+odottaa saavansa resurssin, joka on keskeytetyll‰ teht‰v‰ll‰si, joka ei sit‰ si-
+ten voi palauttaa, eik‰ se sit‰ koskaan saa. 
+
+
+{3Task Traps
+{3----------
+ 
+Ansat ovat prosessorin "exception":eja.  Ansat  toimivat  samalla  tavalla  kuin
+poikkeustilatkin. Kun trappi aiheutuu, hyp‰t‰‰n koodiin, johon osoittaa tc_Trap-
+Code. Execin oletustrappikoodi n‰ytt‰‰ alertin kertoen, mik‰ oli trapin  aiheut-
+taja. Mik‰li trappinumeron bitti 31 on asetettu, on kyseess‰ korjaamaton  virhe,
+joka johtaa v‰ist‰m‰tt‰ reboottiin.
+
+Teht‰v‰ voi toimittaa oman koodin hoitamaan trapit,  jolloin  vakavistakin  vir-
+heist‰ voidaan selvit‰. Trapit voivat olla myˆs ohjelmiston virheit‰ tai tarkoi-
+tuksella koodista TRAP-komennolla aikaansaatuja hyppyj‰. Trappikoodi ajetaan Su-
+pervisor-moodissa SysStackissa. Pinoon tyˆnnet‰‰n "exception":n numero sek‰ pro-
+sessorikohtainen "exception frame".
+
+TrapCodesta palataan RTE-k‰skyll‰. Huomaa poistaa trappinumero pinosta ennen pa-
+laamista. Ovelalla manipuloinnilla voidaan trappihandler  tehd‰  niin,  ett‰  se
+siirt‰‰ kontrollin oletushandlerille, jos trappi ei ole se, jota se odottaa. Mi-
+nun mielest‰ni olisi kyll‰ j‰rkevint‰ tehd‰ handler, joka osaa selvit‰  kaikista
+trapeista.
+
+Trapeista selvi‰minen ei v‰ltt‰m‰tt‰ aina ole helppoa, mutta  useimmiten  se  on
+mahdollista. En kuitenkaan t‰ss‰ k‰sittele aihetta enemp‰‰, koska se  ei  varsi-
+naisesti kuulu t‰m‰n alkeiskurssin piiriin. Hardwaretason "exception":t on  mah-
+dollista hoidella myˆs matalammalla tasolla koukkimalla prosessorin vektorit. Se
+ei sitten en‰‰ kuuluu mink‰‰nlaisen j‰rjestelm‰ohjelmointikurssin aiheisiin. 
+
+
+{3Tulevaisuutta kohti
+{3-------------------
+ 
+Kurssin t‰m‰ osa loppuu valitettavasti  jo  t‰h‰n  juuri,  kun  kaikki  alkoivat
+p‰‰st‰ vauhtiin. Aivan kaikkea ei ehditty k‰sitell‰. Tuleviin osiin j‰iv‰t viel‰
+esimerkiksi semaphoret ja keskeytykset, jotka eiv‰t  v‰ltt‰m‰tt‰  aivan  alkeis-
+kurssin asiaa olekaan. Jotkin asiat t‰ss‰ osassa on k‰sitelty aika ylimalkaises-
+ti. Kurssiohjelmaan kuuluu jatkossa t‰ydent‰vi‰ osia.
+
+Kovin v‰h‰lle j‰i l‰hdekoodin osuus. Esimerkkej‰ tuli paljon, mutta  kunnollista
+ohjelmakoodia ei yht‰‰n. Tilaa sille ei oikeastaan j‰‰nyt.  Kannattaa  haeskella
+BBS:ist‰ l‰hdekoodeja ja ohjelmointiohjeita. Ainakin The Spitiss‰ on paljon  oh-
+jelmien l‰hdekoodeja. Ohjelmoinnista on myˆs olemassa ihan  opetusmieless‰  jul-
+kaistuja ohjelmanp‰tki‰, joissa on ohjeita mukana. 

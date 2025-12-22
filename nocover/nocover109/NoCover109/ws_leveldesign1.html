@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+  <HEAD>
+    <META name="generator" content="HTML Tidy, see www.w3.org">
+    <TITLE>Leveldesign 1</TITLE>
+    <META name="author" content="Rainer Wrieden">
+    <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  </HEAD>
+
+  <BODY background="comp005.gif" text="Black">
+    <DIV align="CENTER">
+      <TABLE width="640" border="0" cellspacing="0" cellpadding="8"
+      background="comp005_trans.gif" summary="">
+        <TR>
+          <TD>
+            <P><A href="javascript:history.back()"><FONT size="+1">
+            <B>zur&uuml;ck</B></FONT></A></P>
+
+            <H1 align="center"><FONT face="" color="Green">Leveldesign 1</FONT></H1>
+
+            <P title="" align="JUSTIFY"><FONT face="" size="+2"
+            color="Red">Vorwort:</FONT><BR><BR>
+            Schon seit vielen Jahren bin ich fasziniert von der  M&ouml;glichkeit  sich
+            in diversen Computerspielen in einer 3D-Umgebung zu bewegen. Ob man sich in
+            abgest&uuml;rzten Raumschiffen oder riesigen Aussenbezirken  bewegt,  kommt
+            immer wieder Erstaunen auf was f&uuml;r grafische Feinkost diese virtuellen
+            Welten bieten k&ouml;nnen. Viele dieser Spiele bieten die  M&ouml;glichkeit
+            recht  einfach  zus&auml;tzliche  Level  einzubinden.  Dazu gibt es etliche
+            Leveleditoren. Einer davon ist DEU, der  f&uuml;r  die  ersten  ID-Software
+            3D-Spiele  programmiert  wurde.  F&uuml;r die Amiga-User ist er sogar etwas
+            Besonderes, da es von  ihm  eine  Version  f&uuml;r  den  Amiga  gibt.  Die
+            Amiga-User  k&ouml;nnen  diese Level mit den verschiedenen Portierungen auf
+            den Amiga testen.<BR><BR>
+            Da also nun die M&ouml;glichkeit eigene Level auf dem Amiga zu erstellen
+            und zu erspielen existiert, viele eventuell aber nicht so recht wissen wie
+            es genau geht habe ich mich entschlossen diesen Workshop &uuml;ber die
+            Erstellung eigener Level der ersten Id-Soft 3-D Spiele ins Leben zu rufen.
+            Ich m&ouml;chte noch einmal ausdr&uuml;cklich darauf hinweisen, das es mir
+            nicht um die Verheerlichung dieser Spiele geht, sondern vielmehr um den
+            Hintergrund der Technik und Levelerstellung. Manche haben sich sicherlich
+            schon gefragt wie die das nur machen und ob ich das auch selber kann. Hier
+            soll nun der Workshop ansetzen und Hilfestellung bei der Erstellung eigener
+            Level sowie Hintergrundwissen vermitteln. Ein weiterer Punkt ist auch die
+            Tatsache, dass es zwar jede Menge Anleitungen in dieser Richtung gibt, ich
+            aber noch keine in deutscher Sprache gesehen habe.<BR><BR>
+            <FONT face="" size="+2" color="Red">Grundstrukturen:</FONT><BR><BR>
+            Haupts&auml;chlich bestehen solche Level aus Koordinatenpunke (vertex) und
+            damit verbundene Linien (sidedefs, linedefs) die den sogannten Sektoren
+            zugeordnet sind. Einfaches Beispiel eines rechteckigen Raumes w&auml;ren
+            vier Koordinatenpunte (in jeder Ecke des Raumes einer) und vier Linien
+            (linedefs); eine zwischen den oberen beiden Koordinaten, eine zwischen en
+            unteren beiden Koordinaten, eine zwischen der oberen linken und unteren
+            linken Koordinate und eine zwischen der oberen rechten und unteren rechten
+            Koordinate. Somit h&auml;tten wir einen geschlossen Raum. Dieser Raum wird
+            dann einem Sektor zugeordnet.<BR><BR>
+            Nun m&uuml;ssen wir unseren Raum aber auch noch "tapezieren". Um die
+            W&auml;nde des Raumes zu tapezieren m&uuml;ssen wir eine Tapete (textur)
+            Jeder Wand unseres Raumes (linedef) zuordnen welches dann in der (sidedef)
+            steht. Gleiches gilt auch f&uuml;r den Fussboden und die Decke, welche aber
+            dem zugeh&ouml;rigen Sektor zugeordnet werden. Weiterhin wird auch im
+            Sektor bestimmt welche H&ouml;he der Fussboden und die Decke bekommen. Alle
+            vorkommende L&auml;ngen werden in Pixel angegeben.<BR><BR>
+            Normalerweise werden diese Texturen dem jeweiligen Hauptlevel (Iwad)
+            entnommen. Unser selbst erstellter Level wird PWad (PatchWad) genannt,
+            welcher nur die &Auml;nderungen beinhaltet. Diese sind im allgemeinen der
+            Levelaufbau oder neue Musikst&uuml;cke. Die meisten der W&auml;nde haben
+            eine H&ouml;he von 128 Pixel. Somit w&auml;re ein guter Anfangswert
+            f&uuml;r den Fussboden 0 Pixel (ebenerdig) und f&uuml;r die Decke 128
+            Pixel.<BR><BR>
+            <FONT face="" size="+2" color="Red">Wir erstellen unseren ersten
+            Raum:</FONT><BR><BR>
+            Als erstes muss nat&uuml;rlich DEU auf dem Amiga installiert werden. Dies
+            sollte aber problemlos klappen. Bei der Installation fragt DEU unter
+            anderem auch nach dem Ort wo das Iwad gespeichert ist. Dies sollte
+            nat&uuml;rlich eine kommerzielle Version sein. Mit der Shareware version
+            von D**m funktioniert DEU nicht. Ich habe mein Iwad z. B. in den Ordner von
+            DoomAttack gelegt. Wird DEU &uuml;ber die WB gestartet wird ein Stack von
+            &uuml;ber 500000 automatisch eingerichtet. Wird DEU vom CLI aus gestartet,
+            sollte man vorher einen Stack von 500000 einrichten. Bevor wir nun der
+            Editor entg&uuml;ltig aufgerufen wird, fragt DEU noch was man nun machen
+            will. Entweder man gibt ein ? ein f&uuml;r allen Befehle oder in unserem
+            Fall ein "C 1 1" f&uuml;r Create Episode 1 Level 1, nat&uuml;rlich ohne
+            Anf&uuml;hrungszeichen. Dann sind wir im eigentlichen Editor angelangt.</P>
+            <BR>
+            Als erstes sollten wir die Anzeige skalieren.<BR>
+            Wir dr&uuml;cken einmal auf die G Taste und es erscheint ein
+            Rasterfeld.<BR>
+            Nun wiederholen wir dieses bis unten rechts G=64 erscheint.<BR>
+            Da die mei&szlig;ten Wandtexturen, die wir benutzen eine Breite von 64
+            Pixel haben ist dies ein guter Wert zur Einstellung des Rasterfeldes.<BR>
+            Dann dr&uuml;cken wir die \ Taste so lange bis S=1/2 unten rechts
+            erscheint.<BR>
+            Das ist der Zoomfaktor der Zeichenoberfl&auml;che.<BR><BR>
+             
+
+            <DIV align="center">
+              <IMG src="ScreenD.png" width="640" height="480" border="0" alt="">
+            </DIV>
+            <BR>
+            Da man mit dem Editor auch einige vordefinierte Objekte erzeugen kann,
+            werden wir diese Funktion gleich benutzen.<BR>
+            Um einen Raum zu zeichnen gehen wir im Menu auf Objects und w&auml;hlen
+            Rectangle aus.<BR>
+            Die angegebenen Werte f&uuml;r L&auml;nge und H&ouml;he best&auml;tigen wir
+            einfach mit Return.<BR><BR>
+             
+
+            <DIV align="center">
+              <IMG src="ScreenE.png" width="640" height="480" border="0" alt="">
+            </DIV>
+            <BR>
+            <BR>
+            Der Editor hat vier verschiedene Zeichenebenen:<BR><BR>
+            Things f&uuml;r das ganze Inventar, die Gegner und Startpunkte der
+            Spieler.<BR>
+            Vertecs f&uuml;r die Koordinatenpunkte<BR>
+            Linedefs f&uuml;r die Linien und W&auml;nde<BR>
+            Sectors f&uuml;r die einzelnen Sektoren<BR><BR>
+             
+
+            <DIV align="center">
+              <IMG src="ScreenF.png" width="640" height="480" border="0" alt="">
+            </DIV>
+            <BR>
+            <BR>
+            Wir gehen nun auf die Zeichenebene f&uuml;r die Vektoren (Vertecs) und
+            dr&uuml;cken daf&uuml;r V.<BR>
+            Nun sehen wir die Koordinaten die mit den Linien (Linedefs) verbunden
+            sind.<BR>
+            Wenn wir nun mit dem Mauszeiger &uuml;ber eine Koordinate gehen und D
+            dr&uuml;cken, k&ouml;nnen wir sind verschieben. Ein nochmaliger Druck auf D
+            l&auml;sst sie dann dort stehen. Nun sollten wir alle vier Koordinaten so
+            verschieben, da&szlig; wir ein Rechteck von 6 K&auml;stchen Breite und 12
+            K&auml;stchen L&auml;nge erzeugen.<BR><BR>
+             
+
+            <DIV align="center">
+              <IMG src="ScreenG.png" width="640" height="480" border="0" alt=""><BR>
+              <BR>
+            </DIV>
+            Das es hin und wieder Schwierigkeiten bei Level mit nur einem Sektor gibt,
+            werden wir unseren Raum nun in zwei Sektoren einteilen.<BR>
+            Wir gehen auf die Zeichenebene f&uuml;r die Linien (Linedefs) mit der Taste
+            L.<BR>
+            Nun gehen wir mit dem Mauszeiger auf die untere Linie und markieren sie mit
+            der Taste M. Dann das machen wir auch so mit der oberen Linie.<BR>
+            Danach gehen wir ins Men&uuml; und w&auml;hlen Punkt vier von Misc an (4.
+            Split Linedefs and Sector). Wie man sehen kann ist eine neue Linie
+            enstanden, die unseren Raum genau in der Mitte teilt.<BR><BR>
+             
+
+            <DIV align="center">
+              <IMG src="ScreenH.png" width="640" height="480" border="0" alt=""><BR>
+              <BR>
+            </DIV>
+            Warum man die Linie im Spiel selber aber nicht sehen kann komme ich im
+            n&auml;chsten Teils dieses Workshops. Nun haben wir unseren Raum in zwei
+            Sektoren aufgeteilt.<BR><BR>
+             
+            <DIV align="center">
+              <IMG src="ScreenI.png" width="640" height="480" border="0" alt=""><BR>
+              <BR>
+               <IMG src="ScreenJ.png" width="640" height="480" border="0" alt=""><BR>
+              <BR>
+            </DIV>
+            Da aber ein g&uuml;ltiger Level nicht nur 2 Sektoren sondern auch
+            mindestens einen Startpunkt f&uuml;r den 1. Spieler braucht sollten wir
+            denn nun gleich hinzuf&uuml;gen.<BR>
+            Wir gehen mit der Taste T zur Zeichenebene der Dinge (Things).<BR>
+            Bitte den Mauszeiger innerhalb unseres Raumes plazieren, und zwar dort, wo
+            wir den Startpunkt des 1. Spielers setzen wollen. Nun dr&uuml;cken wir die
+            Taste Einf&uuml;gen und es wird ein Soldat (Trooper) eingef&uuml;gt.<BR><BR>
+
+            <DIV align="center">
+              <IMG src="ScreenK.png" width="640" height="480" border="0" alt=""><BR>
+              <BR>
+            </DIV>
+            Nun m&uuml;ssen wir den Trooper in einem 1. Spieler Startpunkt &auml;ndern.
+            Bitte daf&uuml;r die Returntaste dr&uuml;cken und den Men&uuml;punkt Change
+            Type w&auml;hlen. Nun auf Player und Player1 Start gehen. Wieder die
+            Returntaste gedr&uuml;ckt und schon haben wir unseren Startpunkt f&uuml;r
+            den 1. Spieler gesetzt.<BR><BR>
+             
+
+            <DIV align="center">
+              <IMG src="ScreenN.png" width="640" height="480" border="0" alt=""><BR>
+              <BR>
+            </DIV>
+            Nun ist unser Level auch schon so gut wie fertig. Es bleibt uns nur noch
+            das Speichern. Wir dr&uuml;cken die F2 Taste und bei der darauffolgenden
+            Meldung irgendeine Taste nur nicht die Z Taste. Da dieses Programm eine
+            amerikanisches Tastaturlayout voraussetzt sind nat&uuml;rlich die Z und Y
+            Tasten vertauscht.<BR><BR>
+             
+
+            <DIV align="center">
+              <IMG src="ScreenP.png" width="640" height="480" border="0" alt=""><BR>
+              <BR>
+            </DIV>
+            Nun geben wir im darauf erscheinenden Fenster einen Namen f&uuml;r unseren
+            gerade erstellten Level ein. In diesem Fall test.wad.<BR><BR>
+             
+
+            <DIV align="center">
+              <IMG src="ScreenQ.png" width="640" height="480" border="0" alt=""><BR>
+              <BR>
+            </DIV>
+            Bei der n&auml;chsten Meldung dr&uuml;cken wir die Z Taste, damit die
+            Knoten (Nodes) auch gebildet werden. Sonst w&auml;re der Level f&uuml;r die
+            3D-Engine nicht korrekt.<BR><BR>
+             
+
+            <DIV align="center">
+              <IMG src="ScreenR.png" width="640" height="480" border="0" alt=""><BR>
+              <BR>
+            </DIV>
+            Nun k&ouml;nnen wir mit Escape den Editor verlassen und danach  mit  Q  das
+            Programm beenden.<BR><BR>
+
+             <FONT face="" size="+2" color="Red">Wir testen unseren
+            Level:</FONT><BR>
+            <BR>
+            Nun kommt der spannenste Teil. Wie sieht unser Level denn nun im
+            eigentlichen Spiel aus? Ich habe es mit DoomAttack ausprobiert, weil es bei
+            meiner Konfiguration (A1200 mit Blizzard 1230/3 Turbokarte und 8 MB Ram)
+            die beste Geschwindigkeit hatte. Bitte nun unseren Level test.wad in den
+            Ordner von DoomAttack kopieren.<BR>
+            Dann das Icon DoomAttack_Clickme anw&auml;hlen.<BR>
+            Danach im CLI in den Ordner von DoomAttack.<BR>
+            Einen Stack von 100000 einrichten.<BR>
+            Nun wird DoomAttack im CLI wie folgt aufgerufen: doomattack -file
+            test.wad<BR>
+            Dann ein neues Spiel mit Episode 1 starten und wenn alles geklappt hat
+            sollten wir uns in unserem gerade erstellten Raum befinden.<BR><BR>
+             
+
+            <TABLE align="CENTER" cellspacing="0" cellpadding="0"
+            summary="">
+              <TR>
+                <TD><IMG src="Doom04.png" width="320" height="200" border="0" alt=""></TD>
+
+                <TD><IMG src="Doom05.png" width="320" height="200" border="0" alt=""></TD>
+              </TR>
+            </TABLE>
+            <BR>
+             <FONT face="" size="+2" color="Red">Schlusswort:</FONT><BR>
+            <BR>
+            Ich hoffe das ich mich einigermassen verst&auml;ndlich ausgedr&uuml;ckt
+            habe.<BR>
+            F&uuml;r Anregungen und Fragen bin ich unter meiner E-Mail Adresse
+            spezis@terra.es erreichbar.<BR><BR>
+            DEU sowie auch DoomAttack gibt es im Aminet<BR><BR>
+            Im n&auml;chsten Teil dieses Workshops werden ich unter anderem
+            erkl&auml;ren, wie man in unseren Level eine T&uuml;r einbauen kann.
+            <BR><BR>
+             Euer Spezi<BR><BR>
+
+            <TABLE border="5" cellspacing="1" cellpadding="5" align="CENTER" summary="">
+              <TR>
+                <TD>Rainer Wrieden</TD>
+
+                <TD>E-Mail: <A href="mailto:spezis@terra.es">spezis@terra.es</A></TD>
+              </TR>
+            </TABLE>
+            <A href="javascript:history.back()"><FONT size="+1"><B>zur&uuml;ck</B></FONT></A> 
+          </TD>
+        </TR>
+      </TABLE>
+    </DIV>
+    <BR>
+  </BODY>
+</HTML>
+

@@ -1,0 +1,421 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/98 - Packer-Kurs 2/2</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN="CENTER"><A NAME="Top"><H1>Packer-Kurs 2/2</H1></A>von<BR><A HREF="mailto:A.Schlick@BBrandes.in-brb.de">Andreas Schlick</A>
+</DIV>
+
+<!--Hinweis: Da viele einzeilige Texte existieren, benutze ich mal den PRE Tag ;-( -->
+
+<P><B>Dieser Kurs</B> widmet sich in zwei Teilen den Packern/Archivern. Im
+ersten Teil habe ich die meistverbreitetsten Packer vorgestellt und
+einen Geschwindigkeitsvergleich gemacht.</P><P>
+<B>Im zweiten Teil</B> beschreibe ich die Bedienung der meistbenutzten Packer.
+Ich will und kann hier keine vollst&auml;ndige Beschreibung aller m&ouml;glichen
+Optionen und Funktionen geben, die die einzelnen Packer bieten, sondern
+nur eine &Uuml;bersicht, wie man die wichtigsten Sachen macht. F&uuml;r eine
+genaue Erkl&auml;rung schauen Sie sich bitte die entsprechende Anleitung an.</P>
+<BR>
+<TABLE ALIGN="CENTER" BORDER=0>
+<TR>
+    <TD><A HREF="#LZX">LZX</A></TD>
+    <TD><A HREF="#LhA">LhA</A></TD>
+    <TD><A HREF="#GZip">GZip</A></TD>
+    <TD><A HREF="#tar">tar</A></TD>
+    <TD><A HREF="#UnTGZ">UnTGZ</A></TD>
+    <TD><A HREF="#UnARJ">UnARJ</A></TD>
+    <TD><A HREF="#UnRAR">UnRAR</A></TD>
+    <TD><A HREF="#Ub">&Uuml;bersicht</A></TD>
+</TR></TABLE>
+
+<PRE>
+
+<A NAME="LZX"><HR></A>
+                        <H3>LZX 1.21r</H3>
+
+Endung eines LZX-Archivs: .lzx
+
+Aufruf-Maske:
+
+    <B>LZX [-&lt;Optionen&gt;] &lt;Kommandos&gt; &lt;Archive&gt; [&lt;Datei&gt;...] [&lt;Zielver&gt;]</B>
+
+<B>I. Packen/Archivieren</B>
+
+Das wichtigste Kommando f&uuml;r das Archivieren ist 'a'. Der einfachste
+Aufruf, um ein File in ein Archiv zu &quot;adden&quot; (hinzuf&uuml;gen), lautet
+daher:
+
+    <B>LZX a Archive.LZX DateiA</B>
+
+Damit wird die Datei &quot;DateiA&quot; zu dem Archiv &quot;Archive.LZX&quot; hinzugef&uuml;gt
+(falls das Archiv noch nicht existiert, wird es erstellt).
+
+Es k&ouml;nnen aber auch mehrere Dateien gleich mit&uuml;bergeben werden:
+
+    <B>LZX a Archive.LZX DateiB DateiC Ram:DateiD Work:DateiE</B>
+
+Mit diesem Aufruf w&uuml;rden die Dateien &quot;DateiB&quot;, &quot;DateiC&quot;, &quot;Ram:DateiD&quot; und
+&quot;Work:DateiE&quot; dem Archive hinzugef&uuml;gt werden. Dabei ist zu beachten, da&szlig;
+die Pfadangabe der Dateien DateiD bzw. DateiE *nicht* mit abgespeichert
+wird! Um dies zu erreichen, mu&szlig; eine spezielle Option angegeben werden
+(siehe unten).
+
+[<B>f&uuml;r Fortgeschrittene!</B>]
+Als Abwandlung des 'a'-Kommandos gibt es das <B>'af'</B>-Kommando (add fast).
+Es wird einfach anstelle von 'a' verwendet. Der Unterschied ist, da&szlig; LZX
+nicht &uuml;berpr&uuml;ft, ob die hinzuzuf&uuml;gende Datei schon existiert, dadurch wird
+der Vorgang erheblich schneller. Allerdings sollte diese Option nur
+verwendet werden, wenn man sichergehen kann, da&szlig; kein File zweimal
+&quot;geadded&quot; wird. Als Beispielanwendung wird in der Anleitung eine
+FidoNet-Anwendung erw&auml;hnt, bei der jedes Mailpaket ein anderen Namen
+besitzt. Durch die Verwendung von 'af' kann dieser Bereich einer BBS
+erheblich beschleunigt werden.
+
+Die Kommandos <B>'f'</B> (&quot;freshen&quot;), <B>'r'</B> (&quot;replace&quot;) und <B>'u'</B> (&quot;update&quot;) dienen
+auch dem Hinzuf&uuml;gen von Dateien zu einem Archiv. Bei 'f' werden &auml;ltere
+Dateien durch neuere ersetzt, wobei das letzte &Auml;nderungs-Datum der
+Dateien beachtet wird. Es wird dabei angenommen, da&szlig; ein fr&uuml;heres Datum
+die &auml;ltere Datei angibt. Kommando 'r' ersetzt hingegen einfach nur bereits
+existierende Files. 'u' wirkt fast genauso wie 'f', jedoch f&uuml;gt es auch
+neue Datei hinzu (im Gegensatz zu 'f' und 'r').
+
+<B>II. Entpacken</B>
+
+Ein Archiv wird entweder mit dem Kommando <B>'e'</B> oder mit <B>'x'</B> entpackt.
+
+Der einzige Unterschied ist, da&szlig; bei 'e' keine Dateipfade beachtet werden,
+bei 'x' hingegen werden die Pfade (soweit vorhanden) beachtet und ggfs.
+Unterverzeichnisse angelegt. Wird das Zielverzeichnis beim Aufruf von LZX
+nicht angegeben, wird das aktuelle Verzeichnis benutzt.
+
+<B>III. Weitere Kommandos</B>
+
+Auflisten des Inhalts eines Archivs kann &uuml;ber die zwei Kommandos <B>'l'</B> und
+<B>'v'</B> geschehen.
+
+Der Unterschied ist, da&szlig; 'v' mehr Informationen anzeigt als 'l'. Die
+meisten ausgegebenen Informationen sollte verst&auml;ndlich sein. Die &quot;CRC-32&quot;-
+Spalte gibt die Checksumme der einzelnen Files aus (im Gegensatz zu LhA`s
+16Bit-CRC verwendet LZX eine 32Bit-CRC-Checksumme, was die Sicherheit
+erh&ouml;ht). Die &quot;m&quot;-Spalte gibt den Modus der Kompression von LZX an.
+
+Um sich eine Datei aus einem Archiv heraus anzeigen zu lassen, mu&szlig; man
+LZX mit <B>'p'</B> aufrufen. Damit l&auml;&szlig;t sich z.B. ein schneller Blick in eine
+Readme-Datei werfen, ohne sie extra entpacken zu m&uuml;ssen.
+
+Wenn man zwei Archive zusammenpacken m&ouml;chte, kann man das <B>'c'</B>
+(&quot;concatenate&quot;) Kommando verwenden. Jedoch ist dabei genau wie mit
+'af' Vorsicht walten zu lassen, da LZX keine &Uuml;berpr&uuml;fung vornimmmt,
+ob die Dateien vielleicht schon vorhanden sind.
+
+Falls man testen m&ouml;chte, ob das Archiv korrekt &uuml;bertragen wurde, kann
+man mit dem Kommando <B>'t'</B> einen Test der Archives durchf&uuml;hren.
+
+Es lassen sich zu guter letzt auch einzelne Dateien aus einem Archiv
+l&ouml;schen. Der entsprechnde Aufruf k&ouml;nnte z.B. so aussehen:
+
+    <B>LZX d Archiv.LZX DateiB DateiC</B>
+
+Damit w&uuml;rden die Dateien &quot;DateiB&quot; und &quot;DateiC&quot; aus dem Archiv
+&quot;Archiv.LZX&quot; gel&ouml;scht werden.
+
+<B>IV. wichtige Optionen</B>
+
+Nun noch eine Beschreibung der wichtigsten Optionen. F&uuml;r eine
+vollst&auml;ndige &Uuml;bersicht schauen Sie bitte in der Anleitung nach.
+
+Option   Beschreibung
+
+-e       Archiviert auch leere Unterverzeichnisse.
+
+-F       Mit dieser Option gibt LZX kein Linefeed mehr nach jeder
+         (de-)komprimierten Datei aus. Das ist extrem n&uuml;tzlich, da
+         je nach Rechner und Archiv das Scrolling der Console den
+         Pack- bzw. Entpackvorgang erheblich verlangsamt.
+
+-Qf      Mit dieser Option packt LZX schneller (ohne Effizienzverlust),
+         ben&ouml;tigt aber 32KB mehr Speicher.
+
+-r       Mit dieser Option durchsucht LZX bei Verwendung von Jokern
+         auch Unterverzeichnisse, um passende Dateien zu finden. Durch
+         -r wird normalerweise auch automatisch -x aktiviert.
+
+-w       Hiermit kann ein spezielles Verzeichnis angegeben werden, indem
+         LZX seine tempor&auml;ren Dateien anlegt. Dadurch lassen sich auch
+         bei geringem Speicher gr&ouml;&szlig;ere Dateien packen. Der Pfad mu&szlig; auf
+         einem Semikolon oder Slash enden. Default ist T:
+
+-x       Mit dieser Option speichert LZX auch die Pfadnamen der
+         einzelnen Dateien (au&szlig;er die Device-Namen). Dadurch wird
+         die Verzeichnisstruktur erhalten. Diese Option wird von -r
+         automatisch aktiviert.
+
+-Y       Normalerweise werden Dateien mit bestimmten Endungen nicht
+         gepackt, da diese bereits in komprimierter Form vorliegen (z.B.
+         .lha .rar etc.) Mit der -Y Option werden auch diese von LZX
+         erneut gepackt.
+
+-0       Hiermit wird der Modus von LZX eingestellt. -0 bedeutet keine
+         Komprimierung.
+-1       etwas schlechtere Komprimierung als -2.
+-2       Default-Einstellung
+-3       bessere Komprimierung als -2
+-9       bestm&ouml;gliche Komprimierung von LZX, jedoch extram langsam
+
+<A NAME="LhA"><HR></A>
+                             <H3>LhA</H3>
+
+Aufruf-Maske:
+
+ <B>LhA [-&lt;Optionen&gt;] &lt;Kommandos&gt; &lt;Archiv[.LHA]&gt; [[homedir] &lt;Dateispec&gt;...]
+     [destdir]</B>
+
+Der Klassiker unter den Packer. LhA hat fast die gleichen Kommandos und
+Optionen wie LZX (oder genauer: LZX hat die von LhA, da LZX nach LhA
+programmiert wurde).
+
+Die Bedienung ist im gro&szlig;en und ganzen die gleiche wie bei LZX, jedoch
+unterst&uuml;tzt LhA (unregistriert) einige Optionen nicht bzw. sie haben
+eine andere Bedeutung.
+
+Endung eines LhA Archives: .lha
+
+<B>I. Packen</B>
+
+Die Option zum Packen entspricht der von LZX, der Aufruf ist daher:
+
+    <B>LhA a &lt;Archiv&gt; &lt;File1&gt; &lt;File2..&gt;</B>
+
+Ebenfalls lassen sich mit <B>'c'</B> zwei Archive zusammenfassen, wobei genau
+wie bei LZX nicht &uuml;berpr&uuml;ft wird, ob die Dateien schon im Archiv vorhanden
+sind.
+
+Es lassen sich Dateien auch in ein Archiv verschieben, so da&szlig; die original
+Datei gel&ouml;scht wird (Kommando: <B>'m'</B>).
+
+<B>II. Entpacken</B>
+
+Die Kommandos zum Entpacken <B>'a'</B> bzw. <B>'e'</B> entsprechen genau LZX.
+
+<B>III. weitere Kommandos</B>
+
+Das Auflisten geschieht mit <B>'l'</B> bzw. <B>'v'</B>. Das Testen des Archivs macht
+<B>'t'</B> und eine Datei wird aus dem Archiv mit <B>'d'</B> gel&ouml;scht.
+
+
+<A NAME="GZip"><HR></A>
+                        <H3>GZip</H3>
+
+GZip ist eigentlich nur ein Packer und bietet nur eine umst&auml;ndliche
+M&ouml;glichkeit Dateien zu einem Archiv zusammenzupacken. Er wird meist
+zusammen mit tar, einem reinem Archiver, verwendet. tar bietet eine
+Unterst&uuml;tzung von GZip, so da&szlig; zwei getrennte Aufrufe auch vermieden
+werden.
+
+Endung einer GZip gepackten Datei: .gz
+Endung einer tar/GZip Archives:    .tgz oder .tar.gz
+
+Aufruf-Maske von GZip:
+
+    <B>gzip [-cdfhlLnNrtvV19] [-S Suffix] &lt;Datei ...&gt;</B>
+
+<B>I. Packen</B>
+
+Normalerweise packt GZip einfach die &uuml;bergebenen Dateien, h&auml;ngt die Endung
+.gz daran und l&ouml;scht das Original. Bei dieser Verwendung mu&szlig; keine weitere
+Option angegeben werden.
+
+Durch Angabe einer Zahl zwischen 1 und 9 als Option wird die
+Komprimierungsqualit&auml;t beeinflusst. &quot;-1&quot; ist schnell, aber wenig
+effizient, w&auml;hrend &quot;-9&quot; die beste Effiziens gibt, aber langsamer ist.
+
+Um f&uuml;r jede Datei eine Ausgabezeile mit der Packratio und dem neuem
+Dateinamen zu bekommen, mu&szlig; <B>&quot;v&quot;</B> als Option angegeben werden. Die Option
+<B>&quot;r&quot;</B> sorgt f&uuml;r die bekannte Rekursion.
+
+Damit die urspr&uuml;ngliche Datei unber&uuml;hrt bleibt, kann die Option <B>&quot;c&quot;</B>
+angegeben werden. Dann wird die Ausgabe nach stdout angeleitet. Um das
+dann n&uuml;tzlich zu verwenden kann sie wieder auf gewohne AmigaDOS-weise
+umgeleitet werden.
+
+Beispiel:
+
+    <B>gzip -c TestDatei &gt;RAM:Datei.gz</B>
+
+Damit wird die Datei &quot;TestDatei&quot; gepackt und als Datei &quot;Ram:Datei.gz&quot;
+abgespeichert.
+
+<B>II. Entpacken</B>
+
+GZip entpackt ein gepacktes File mit <B>&quot;-d&quot;</B> und stellt den urspr&uuml;nglichen
+Dateinamen wieder her und l&ouml;scht dann das gepackte File. Ansonsten l&auml;&szlig;t
+sich ebenfalls die Ausgabe mit &quot;-c&quot; umleiten.
+
+<B>III. Sonstige Optionen</B>
+
+Als weitere Optionen kann man mit <B>&quot;-l&quot;</B> bzw. <B>&quot;-lv&quot;</B> einige Informationen &uuml;ber
+eine gepackte Datei abrufen. Mit <B>&quot;-h&quot;</B> erh&auml;lt man einen kurzen Hilfstext.
+Die Option <B>&quot;-t&quot;</B> testet das Archiv. Um eine Ausgabe pro gepr&uuml;fte Datei zu
+erhalten, mu&szlig; wieder die Verbose-Option eingeschaltet sein.
+
+<A NAME="tar"><HR></A>
+<H3>tar</H3>
+
+&quot;tar&quot; ist ein GNU-Programm, das zum Archivieren von Dateien auf &quot;Tapes&quot;
+entwickelt wurde (daher der Name &quot;Tape ARchiver&quot;). Jedoch lassen sich
+die Archive auch auf jedes andere Ger&auml;t umlenken.
+
+Als typisches Un*x-like Programm ist die Bedienung etwas
+gew&ouml;hnungsbed&uuml;rftig und m.E. nicht so komfortabel, wie bei den anderen
+Amiga Tools. Das zeigt sich z.B. daran, da&szlig; zwischen zwei verschiedene
+Optionen unterschieden wird, je nach dem, ob man ein neues Archiv anlegen
+will oder einem bereits bestehenden Dateien hinzuf&uuml;gen will.
+
+Die Kommandos von tar beginnen mit einem &quot;--&quot; (ohne die Anf&uuml;hrungsstriche)
+und sind meist ganze Worte, jedoch gibt es f&uuml;r die wichtigsten Kommandos
+eine verk&uuml;rzte Schreibweise, die mit einem &quot;-&quot; beginnt und nur aus einem
+Buchstaben besteht.
+
+Eine &Uuml;bersicht der Befehle wird mit dem Aufruf &quot;tar --help&quot; angezeigt und
+zeigt auch beide Varianten an. Ich werde daher nicht immer beide Varianten
+angeben. Da tar ein recht komplexes Programm ist, empfehle ich bei h&auml;ufiger
+Benutzung auf jeden Fall die Anleitung zu lesen. Wer lediglich tar ben&ouml;tigt,
+um .tgz Files zu entpacken, sollte dagegen lieber UnTGZ von Oliver Wagner
+benutzen (siehe unten).
+
+Empfohlen wird die Portierung aus dem &quot;GeekGadget&quot;-Projekt. Ich habe
+n&auml;mlich noch eine andere Portierung, die allerdings die Pfade nur im
+Un*x-Stil akzeptiert, was sicherlich unn&ouml;tig gew&ouml;hnungsbed&uuml;rftig ist.
+
+Endung eines tar Archivs:       .tar
+Endung einer tar/GZip Archives: .tgz oder .tar.gz
+
+<B>I. Archivieren</B>
+
+Der Aufruf, um ein neues tar-Archiv anzulegen, lautet:
+
+   <B> tar --create --file &lt;Archiv&gt; &lt;File1&gt; &lt;File2...&gt;</B>
+
+Oder mit den abgek&uuml;rzten Optionen:
+
+    <B>tar -cf &lt;Archiv&gt; &lt;File1&gt; &lt;File2..&gt;</B>
+
+Damit werden die Dateien File1, File2.. zusammen in das Archiv gepackt,
+ohne dabei gepackt zu werden. Allerdings unterst&uuml;tzt tar auch &quot;compress&quot;
+und &quot;GZip&quot; direkt. Soll das Archiv mit GZip gepackt werden, mu&szlig; die
+Option -z mit angegeben werden (sowohl beim Packen also auch beim
+Entpacken).
+
+    <B>tar -czf &lt;Archiv&gt; &lt;File1&gt; &lt;File2..&gt;</B>
+
+Fall das Archiv bereits existiert und nur die Files hinzugef&uuml;gt werden
+sollen, darf die <B>--create</B> (-c) Option nicht angegeben werden, da sonst
+das Archiv &uuml;berschrieben wird. In diesem Fall ist die <B>--append</B> bzw. -r
+Option zu verwenden.
+
+    <B>tar -rf &lt;Archiv&gt; &lt;File1&gt; &lt;File2..&gt;</B>
+
+Dabei ist jedoch zu beachten, da&szlig; tar nicht checkt, ob die Dateien bereits
+im Archiv sind und sie einfach als letzte Dateien hinzuf&uuml;gt. Um bereits
+bestehende Dateien upzudaten, gibt es die Option &quot;<B>--update</B>&quot; ('-u').
+
+<B>II. Entpacken</B>
+
+Um nun das Archiv wieder zu entpacken, gibt es folgenden Aufruf:
+
+    <B>tar -xf &lt;Archiv&gt; &lt;File1&gt; &lt;File2..&gt;</B>
+
+Die <B>'x'</B> Option ist die Kurzfassung von '--extract', womit die angegebenen
+Dateien entsprechend ihres Pfades entpackt werden.
+
+<B>III. Weitere Optionen</B>
+
+Soll tar anzeigen, welche Dateien bearbeitet werden, ist die Option
+<B>--verbose </B>('-v') mitanzugeben. Z.B.:
+
+    <B>tar -cvzf &lt;Archiv&gt; &lt;File1&gt; &lt;File2..&gt;</B>
+
+<A NAME="UnTGZ"><HR></A>
+<H3>UnTGZ 1.5</H3>
+
+&quot;UnTGZ&quot; von Oliver Wagner (zu finden unter ftp.vapor.com) entpackt Dateien,
+die mit tar und GZip zu einem Archiv zusammengepackt sind. Als reines
+Entpacktool ist es einfacher zu bedienen als tar. Die tar/GZip-Archive
+enden auf .tgz oder .tar.gz
+
+Der Aufruf von UnTGZ ist denkbar einfach:
+
+    <B>UnTGZ &lt;Archiv&gt; &lt;Zielverzeichnis&gt;</B>
+
+Zum Anzeigen des Inhaltes besitzt UnTGZ noch die Option -v.
+
+    <B>UnTGZ -v &lt;Archiv&gt;</B>
+
+<A NAME="UnARJ"><HR></A>
+<H3>Unarj</H3>
+
+Unarj ist ein Entpacker f&uuml;r den arj-Packer des PC`s. Die Bedienung ist
+relativ einfach. Es gibt mehrere Portierungen von Unarj f&uuml;r den Amiga.
+Die Bedienung ist jedoch gleich.
+
+    <B>UNARJ &lt;Archiv&gt;</B>
+        Damit wird der Inhalt des arj-Archives angezeigt.
+
+    <B>UNARJ e &lt;Archiv&gt;</B>
+        Damit wird das Archiv in das aktuelle Verzeichnis hinein entpackt.
+
+    <B>UNARJ x &lt;Archiv&gt;</B>
+        Damit wird das Archiv entpackt und die Pfade der Dateien bleiben
+        erhalten.
+
+    <B>UNARJ t &lt;Archiv&gt;</B>
+        Damit wird das Archiv getestet.
+
+<A NAME="UnRAR"><HR></A>
+<H3>Unrar</H3>
+
+Unrar ist ein Entpacker f&uuml;r den PC-Packer rar. Hinweis: Die Version 2.01
+von Amiga-Unrar hat einen Bug, es sollte daher auf jeden Fall Version
+2.02 verwendet werden!
+
+    <B>Unrar x &lt;Archiv&gt; &lt;Pfad_des_Zielverzeichnis&gt;</B>
+        Zum Auspacken des Archivss.
+
+    <B>Unrar l &lt;Archiv&gt;</B>
+        Listet den Inhalt des Archivs.
+
+    <B>Unrar t &lt;Archiv&gt;</B>
+        Checkt den Inhalt des Archivs.
+
+</PRE><BR>
+<A NAME="Ub"><HR></A>
+
+<TABLE ALIGN="CENTER" BORDER=1>
+<CAPTION>&Uuml;bersicht:</CAPTION>
+<TR><TD>Packer</TD><TD>Packen</TD><TD>Entpacken</TD><TD>Auflisten</TD></TR>
+<TR><TD>LhA</TD><TD>a         </TD><TD>x oder e</TD><TD>l oder t   </TD></TR>
+<TR><TD>LZX</TD><TD>a         </TD><TD>x oder e</TD><TD>l oder t   </TD></TR>
+<TR><TD>tar</TD><TD>-c oder -r</TD><TD>-x      </TD><TD>-t         </TD></TR>
+<TR><TD>GZip</TD><TD>         </TD><TD>d       </TD><TD>-l oder -lv</TD></TR>
+<TR><TD>UnTGZ</TD><TD>k.A.    </TD><TD>        </TD><TD>-v         </TD></TR>
+<TR><TD>UnARJ</TD><TD>k.A.    </TD><TD>x oder e</TD><TD>           </TD></TR>
+<TR><TD>UnRAR</TD><TD>k.A.    </TD><TD>x       </TD><TD>l          </TD></TR>
+</TABLE>
+
+<DIV ALIGN="CENTER"><A HREF="#Top">Zur&uuml;ck zum Anfang</A></DIV>
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="wb_tun4.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0398/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9803inst.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

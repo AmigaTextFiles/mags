@@ -1,0 +1,65 @@
+@database 3DTut.html
+@remark Converted with HTML2Guide ©1997 Mark Harman
+@wordwrap
+
+@node MAIN "3DTut.html"
+@{"b"}3D Tutorial@{"ub"}  
+
+In this tutorial, I will show you how to write a (very) simple Doom clone. I'm using AMOS as the language, but you could adapt to others easily enough. The source code is under 'RayCaster.AMOS' - yes I know, it's very slow and blocky, I'm only concerned with the basics here, and you can make it faster by compiling it, at least.  
+
+You may wonder, Why AMOS? Well naturally, any proper 3D engine would want to be done in Assembler, but (a) I can't code in assembler, and (b) this is meant to be a simple tutorial; if it's in AMOS, then coders of all languages should be able to understand, but writing it in assembler would limit it to those who understood assembler.  
+
+Controls? Very similar to Alien Breed 3D2, actually. Don't accuse me of copying, I think it would much better if Doom clones used the same key controls, there's nothing more... annoying than hammering every key to find the 'Shoot' whilst a three headed demon decides to fry your face off. They are:  
+ @{"b"}Key                      Action@{"ub"} 
+ Cursors                  Move! 
+ Shift+Cursors            Move Faster 
+ R Amiga+Cursors          Sidestep 
+ L                        Look Behind 
+ (,),/,* (Numeric Keypad) Change Pixel Size 
+ -,+ (Numeric Keypad)     Change Window Size  
+
+Er, sorry A600 owners, I'm sure you can change the keys from within the program...  
+
+Right, it's best if you look at the source code while reading this tutorial, which brings me to a problem - as this diskmag viewer was written in AMOS, you can't run this and AMOS at the same time. Aaargh! If you have the AmigaGuide version, then you're okay, otherwise, I recommend you load this particular file into a text viewer (it's fairly free from HTML!) You could load it into a Web Browser, also, of course.  
+
+Where was I? Ah yes, the source code. It's got quite a lot of comments in it to help you out, but let me take you through the basics of the engine:  
+
+First of all, we need some tables for sines and cosines. I've also done them for cosec and sec (that is, 1/sine, 1/cosine). You might think that you should just go ahead and do 360 numbers, ie, for each degree, but we really want to keep everything in integers for speed. We therefore have one angle for each vertical line in your view. For example, if the screen width was 160 pixels (ie, 160 vertical lines), and this covered 90 degrees of the playing area, we would need 160x360/90 = 640 angles (ie, 640x4, as we need 4 90 degree views to fill the 360 degree circle). Also, a sine or cosine of an angle will give us a number between -1 and 1, so we multiply by 512 so we can store it as an integer. All this is done in the _CALCTABLES subroutine.  
+
+Next we get the map, basically a 2D array of the area. I've used a 0 for no wall, and any other number represents a wall - the number being the texture to paste on that wall. This all happens in the _GETMAP routine; this sort of code is useful for all sorts of times when you need a map, from Doom clones to strategy games. I find it easier to enter numbers into a string, than a series of numbers separated by commas.  
+
+Now it's time for the main routine. This is what must be done: 
+For each ray (ie, vertical line) in your field of view, 
+    	
+    Cast a ray, to find the shortest distance to a wall 
+    	
+    Work out the height of this bit of wall from the distance 
+    	
+    Work out which texture, and which bit of that texture the wall is from 
+    	
+    Zoom that bit of texture to required size  
+
+And that's it! The key procedure is _NEWCAST. Admittedly, I did this mainly from some code I saw somewhere else, and converted it to AMOS. This procedure casts a ray in a particular direction from your position until a wall is hit, ie, the distance from your position of the nearest wall. This is done in two sections; remember, for each 'wall block' in the map, there are walls that go in both directions, ie, in the x and y directions, hence the x and y casting. The shortest distance is then returned. We can also find which square on the map that the wall is (and so the required texture). We can also find which vertical section of the texture is needed (called a Sliver).  
+
+So returning to the main loop, we now work out the height of the wall as it appears to us by doing: 
+	Apparent_Wall_Height = Unit_Wall_Height / Wall_Distance 
+Where Unit_Wall_Height is the height of the wall as viewed from a unit distance. We then use Zoom to zoom the required sliver of the required texture onto the screen.  
+
+I have implemented some things to speed it up. Working with integers and using arrays from sines, etc are one thing, but there are a few more.  
+
+Think about what happens when you're standing still, and just rotating on the spot - the distance to the walls in any direction will not be changing, so what's the point of updating it each time? There isn't, so when a distance is calculated, it's stored in the _DIST() array. If a value is already in this array for the required angle and at the same position as it was recorded, we use that instead. Of course, this won't work with things like opening doors, but it could still be used with modifcations, and it explains why the frame rate increases as soon as you stop moving forward / backwards. Okay, I know what you are thinking - what use is an increased frame rate if you aren't moving, and the screen isn't changing anyway? Well, remember that this works if you are rotating on the spot, and supossing we have monsters and stuff - then an improved frame rate will be noticeable.  
+
+Also, there is a limit to your visibility. When calculating the distance of a wall in _NEWCAST, it stops after a distance of _LIGHTDIST is reached. If there is no wall before that, then a black line is drawn. This makes it faster because it no longer has to calculate how far the line is going, all the way (which could in places be a long way), and also, drawing a black line is quicker than Zooming a texture. Okay, crap as lighting effects go, but you get the idea.  
+
+Other things to note - the routine that stops you moving through walls - just checks your position against the map array (unfortunately, it doesn't let you 'slide' along walls yet, you just stop dead!) Also a nice little rainbow in the background.  
+	----------------------------------------
+  
+
+So what of next issue? Unfortunately, no How to add Ceilings and Floors, or, Optimisations to make this run at anywhere near decent speed, as this is really all I know on the subject of 3D Doom clones. If there are any readers out there who know more than this, then please write to me! I would greatly like to learn more, as I am sure many other readers would too.  
+
+Don't worry, next issue won't be completely 3D free, as I will  hopefully be doing a tutorial on the more traditional 'polygon 3D' programming.  
+
+@{"b"}Mark@{"ub"}   
+ 
+@endnode
+

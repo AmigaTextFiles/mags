@@ -1,0 +1,372 @@
+@Database SHOAH.s.guide
+@Node MAIN "Optimisations"
+Optimisations.
+
+Here are some ways to speed up your code, I know most of them may be common
+ knowledge but not everyone knows them. I'd also like to point out that I 
+didn't work out many of these sly little speed up routines, alot of them were
+taken from an article by 2-Cool ( In Grapevine 16 ) and from various other
+sources, I've just put them all together ( Who needs the Assassins eh ? ).
+
+Addition/Subtraction
+--------------------
+
+Normally you would use...
+
+	add.l	#1,Rn		;Rn is a data/address register
+
+To speed this up use...
+
+	addq.l	#1,Rn		or		subq.l	#1,Rn
+
+...instead, although you can only add up to a value of 8 using quick addition
+ which is a bit of a bummer but there you go. It you need to add a number
+ greater than 8 then use the Lea command ! ( This only applies to address
+                            registers though )
+
+	lea	10(a0),a0	;Add 10 to a0 fairly quickly
+	lea	-10(a1),a1	;Subtract 10 from a1 fairly quickly
+
+This method also has a down side ( What dosen't ? ) in that the Lea command
+  is limited to a 16bit displacement, so the values can't be greater than
+ +32767/-32767, but 32k should be enough for most additions/subtractions.
+
+
+Multiplication/Division
+-----------------------
+
+There is a way to speed up the Mulu/Divu commands for certain values by using
+shifts ! ( For accuracy you'll still have to use Muls/Divs though, unless you
+use a table, see further down ), but the quickest way to multiply a number by
+                      2 or 4 is to use addition !, ie
+
+Mulu_2		MACRO
+
+		add	\1,\1
+
+		ENDM
+
+Mulu_4		MACRO
+
+		add	\1,\1
+		add 	\1,\1
+
+		ENDM
+
+ I use macros for these 'cause it makes my source look neater, but why use
+              additions ? Well 10*2 = 20 and 10+10 = 20, etc.
+
+To multiply by 8 it is quicker to use Lsl, ie
+
+Mulu_8		MACRO
+
+		lsl	#3,\1
+
+		ENDM
+
+To divide by 8 or any other power of 2 then use Lsr instead, and here's a 
+                      macro for multiplying by 10...
+
+Mulu_10		MACRO
+
+		move	\1,d7
+		add	\1,\1
+		add 	\1,\1
+		add 	d7,\1
+		add 	\1,\1
+
+		ENDM
+
+Tables...
+ You can speed up your very slow Mulu/Divu commands by precalculating the
+              values and storing them in a look up table, eg
+
+	lea	Table,a0		;Point to the table
+	move	#Value,d0		;Value = what we want to multiply
+	Mulu_2				;Double it for looking through table
+	move	(a0,d0),d0		;Get the value
+	rts				;d0 is now the result
+
+mult	equ	100
+Table:
+	dc.b	mult*0,mult*1,mult*2,mult*3	;etc.
+
+I've used 2-Cools way of using an equate, so you can use the same bit of code
+for different values without a load of re-typing. You can also use the same
+                          technique for division.
+
+Instructions
+------------
+
+Here is a list of faster intructions...
+
+	clr	Dn	  >--- should be --->	moveq	#0,Dn
+
+	clr	d0	  >--- should be --->	moveq	#0,d0
+	clr	d1				move	d0,d1
+
+	clr.l	An	  >--- should be --->	sub.l	An,An
+
+	clr.l	a0	  >--- should be --->	sub.l	a0,a0
+	clr.l	a1				move.l	a0,a1
+
+	move.l	a0,a1	  >--- should be --->	lea	80(a0,d0.l),a0
+	add.l	#80,a1
+	add.l	d0,a1
+
+	cmp	#0,Dn	  >--- should be --->	tst	Dn
+
+	swap	Dn	  >--- should be --->	and.l	#$0000ffff,Dn
+	clr	Dn
+	swap	Dn
+
+	move.l	4,a6	  >--- should be --->	move.l	4.w,a6
+
+	bset	#n,Dn	  >--- should be --->	or	#2^n,Dn
+
+	bclr	#n,Dn	  >--- should be --->	and	#~(2^n),Dn
+
+	bchg	#n,Dn	  >--- should be --->	eor	#2^n,Dn
+
+	btst	#n,Dn	  >--- should be --->	and	#2^n,Dn
+
+The following depends on the distance between the current PC value and the
+                                 label, ie
+
+	jsr	label	  >--- should be --->	jsr	label(pc)
+
+	jsr	label(pc) >--- should be --->	bsr	label
+
+	bsr	label	  >--- should be --->	bsr.s	label
+
+	jmp	label	  >--- should be --->	jmp	label(pc)
+
+	jmp	label(pc) >--- should be --->	bra	label
+
+	bra	label	  >--- should be --->	bra.s	label
+
+
+Subroutine trick
+----------------
+
+You don't always have to call a subroutine using a xsr command, eg if you are
+calling a subroutine from another subroutine a couple of times the last xsr
+            command can be replaced with a bra/jmp command, ie
+
+Normal method.
+
+	bsr	Subroutine
+	...
+Subroutine:
+	bsr	Next_Subroutine
+	bsr	Next_Subroutine
+	bsr	Next_Subroutine
+	rts
+Next_Subroutine:
+	...
+	rts
+
+Slightly quicker method.
+
+	bsr	Subroutine
+	...
+Subroutine:
+	bsr	Next_Subroutine
+	bsr	Next_Subroutine
+	bra	Next_Subroutine
+Next_Subroutine:
+	...
+	rts
+
+OK, so it dosen't save much, but every little helps !
+
+The "labels" method
+-------------------
+
+I use this one a lot, I first saw it in the OctaMed Replay routine and it 
+                        goes something like this...
+
+	lea	Labels(pc),a3		;I use a3 out of habit
+	move.l	Test-labels(a3),d0
+	move.b	Test2-labels(a3),d1
+	...
+Labels:
+Test	dc.l	0
+Test2	dc.b	0
+
+It speeds things up quite a bit, and you're not just restricted to the move
+                                command, eg
+
+
+	clr.l	Test-labels(a3)
+	lea	Test2-labels(a3),a0	;etc., etc.
+
+Cutting down on branches
+------------------------
+
+This is a cool little trick which I saw the other day. Branches always take a
+  fair bit of time ( And in most cases it will flush the caches on flash
+   machines ) and this is the best way I've seen to cut down on them...
+
+Normal method
+
+	cmp	#$0001,d0
+	bne.s	.not_equ_to_1
+	...
+.not_equ_to_1
+	cmp	#$0002,d0
+	bne.s	.not_equ_to_2
+	...
+.not_equ_to_2
+	...				;etc.
+
+Now I imagine we have all written a bit of code like this, but we can use a
+                      table to speed it up no end, ie
+
+Quicker method
+
+	move	Table(pc,d0),d0
+	jsr	Table(pc,d0)
+	...
+Table:
+	dc.w	.1-table,.2-table	;etc.
+
+.1	...
+	rts
+.2	...
+	rts
+
+This should save a fair amount of time, and not really take up too much extra
+   memory ( Please note, you can't replace the jsr with a bsr, sorry ).
+
+Multiple Moves
+--------------
+
+Most times when you call a routine you set up a load of registers with values
+                  the routine needs and then call it, ie
+
+	move	#$0a10,d0
+	move	#$00ff,d1
+	move	#$1000,d2
+	move.l	#buffer,a0
+	lea	Screen,a1
+	bsr	Our_flashy_Routine
+	
+But you can use the Movem command ( It's not just useful for putting things
+                       on the stack you know ! ), eg
+
+	movem.l	Values,d0-d2/a0-a1
+	bsr	Our_flashy_Routine
+	...
+Values:
+	dc.l	$0a10			;d0
+	dc.l	$00ff			;d1
+	dc.l	$1000			;d2
+	dc.l	buffer			;a0
+	dc.l	Screen			;a1
+
+And if you are just using word sized values and only data registers you can
+                                 use,	
+
+	movem	Values,d0-d5
+
+which is even quicker again !
+
+Loops
+-----
+
+ When optimising a program don't worry too much about the startup and end
+stuff because that is usually only called once, what you should be looking at
+ is your is your inner loops, and then back tracking to your outer loops.
+Loops take ages and you should always try and cut them down as much as you
+                                   can.
+
+Blitter nasty ?
+---------------
+
+Most people use the blitters nasty mode to speed things up, but I never use
+it myself, I prefer to use the Amiga's cool hardware to my advantage, ie if
+ you use the blitter nasty mode on a Chip RAM only machine then the CPU is
+just sitting there playing with himself whilst Mr.Blitter does his magic, but
+if you allow the CPU to keep running you can fit in some extra calculations
+                 whilst waiting for the blitter to finish.
+
+Use Data Registers !
+--------------------
+
+We all know how RISC machines are as quick as a very quick thing, and they
+  get most of there speed from using lots of registers, so why don't we ?
+
+Normal Method
+
+	moveq	#1,d0
+	moveq	#1,d1
+	moveq	#1,d2
+
+Quicker method
+
+	moveq	#1,d0
+	move	d0,d1
+	move	d0,d2
+
+ Always try and put values into data registers if you are going to use the
+                   same value more than once in a loop.
+
+CLS
+---
+
+If you are clearing the screen it is quicker to use the blitter and the CPU
+together, by getting the blitter clearing from the top right to bottom left
+and the CPU from bottom left to top right, and hopefully they should meet up
+  some where ( You'll have to work out the best place for them to meet up
+                                yourself ).
+
+Speeding up your A1200
+----------------------
+
+Most A1200's only have Chip RAM which has wait states, so for some things it
+ is quicker to call ROM routines ! ( Just think, the ROM is 32bit fast and
+                         with no wait states ! ).
+Although Chip RAM suffers from wait states the CPU can still carry on whilst
+                   stuff is being written to memory, ie
+
+Normal Method
+
+	move.l	d0,(a0)+
+	move.l	d1,(a0)+
+	add.l	d7,d0
+	add.l	d7,d1
+
+Slightly quicker method
+
+	move.l	d0,(a0)+
+	add.l	d7,d0
+	move.l	d1,(a0)+
+	add.l	d7,d1
+
+Remember to section your code to public, just 'cause we can't afford Fast RAM
+                   dosen't mean to say no one else can.
+
+68020 and greater
+-----------------
+
+The nice thing about these little beauties is the cache. On a 68020 ( I'm not
+sure about the others ) the cache is 256 bytes long, so make sure that ALL
+your loops are no greater than that, otherwise you'll lose the advantage of
+                                    it.
+Always try and longword align everything, it will make your code run twice as
+                                  fast !
+These "new" chips have some very handy addressing modes, ie
+
+	68000 Version			68020 > Version
+
+	moveq.l	#$00,d1			move	(a0),d1
+	move	(a0),d1			lea	(a4,d1.w*4),a4
+	Mulu_4	d1
+	lea	(d1,a4),a4
+
+ Nice eh ? I'm sorry I've not really had time to look at all the other new
+  address modes or instructions yet, they may turn up in a future issue.
+@Endnode
+
+

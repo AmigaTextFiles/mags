@@ -1,0 +1,109 @@
+<HTML>
+<HEAD>
+<TITLE>AMOS Programming</TITLE></HEAD><BODY><H6><A href=TOC.html>Contents page</A></H6><P>
+<H6><A href=TOC.html>Index</A></H6><P>
+<H1>AMOS Programming</H1>
+<HR>
+                <B>AMOS PROGRAMMING - PART 4 BOBS AND AMAL</B><P>
+
+Last month we completed our little jukebox program.  It is plain but still
+very functional.  This month we are going to learn a bit about controllable
+objects and how they can work for you.  Also, controlling objects,
+animation, movement patterns, and even screen control on interrupt for
+smooth, unattended work.<P>
+
+There are two types of objects we can manipulate on the Amiga.  Sprites and
+Bobs (or Blitter Object Blocks).  They are two means to an end, but they are
+also very different.<P>
+
+Sprites are hardware controlled and screen independant which means you can
+do things to the screen (like scrolling, clearing, altering) without
+effecting them.  The mouse pointer is the best example of a well known
+sprite.  Sprites have severe limitations, though, such as horizontal
+resolution being limited to 16 pixels, etc.  Their color palette is much
+different from the screen and they use hardware coordinates on the screen
+instead of visible screen coordinates.  So why would you even use these
+things?  Well, they are VERY fast and update independant of the screen which
+gives game programmers much more power when writing games.  There are some
+programming tricks for using what they call COMPUTED SPRITES which combine
+multiple sprites to make larger ones.  This is all very complicated so we
+will cover sprites in more detail in later issues.<P>
+
+Bobs are another story.  Bobs have no size limits and share the screen
+palette which makes them handy.  Unfortunately, they are DIRECTLY tied to
+the screen and will be afffected by changes on the screen; notably screen
+scrolls, screen clears, etc.  In addition, they also must wait to be updated
+with the screen via a VERTICAL BLANK which is basically done every 60th of a
+second (50th for PAL machines).  It might be handy to do some basic
+discussion about screen updates.<P>
+
+Every 60th of a second, an invisible scan line travels from the top to the
+bottom of your screen, refreshing any changes on each line, then returning
+to the top again to repeat the process.  Any screen changes that are made to
+an area of screen that the 'vertical blank' process has passed, must wait
+until the next pass to be updated.  Now I know a 60th of a second may seem
+short, but during program execution, this delay can be disasterous to your
+display.  How about an example?  Try this.  Type this in and run it:<P>
+<PRE>
+ screen open 0,320,200,16,lowres ink 1,0:box 0,0 to 50,25
+ get bob 0,1,0,0 to 50,25: cls 0 :bob 1,100,100,1
+ end<P>
+</PRE>
+Now, the first part may seem a bit alien.  All we are doing is drawing a box
+and grabbing it as Bob #1 so we have a true Bob to work with.  The Bob
+command in line 5 takes bob #1 and displays in at screen location x=100
+y=100.  So why can't we see it?  Well, you may see it; some of the time, but
+chances are you will not.  Since the command was executed after the
+screenwas refreshed and we ended the program before it was updated, the bob
+was not displayed.  After the bob statement above, add this line:<P>
+
+Wait VBL<P>
+
+This will force the program to wait until the screen has been refreshed
+before ending.  Voila'!  Your bob is displayed.  This command can really
+cause your program to drag if used in excess so use it only where you need
+it.<P>
+
+Bobs are relatively easy to use for beginners, so we will stick with that
+for now.  Let's take a look at how we can incoporate bobs into our jukebox.
+One of the most common ways to exploit object movement in demos is to attach
+them to the music and make them dance or animate in time to the music.  The
+is what we are going to do with the jukebox.  First let's make bobs that
+bounce to the music, then we will work on making them animated while we play
+the tune.<P>
+
+Included in this archive is a bob bank that contains four bobs;  one for
+each of the four Amiga voices.  Load up your current jukebox program and
+then enter direct mode by pressing ESC.  Enter this line:<P>
+
+a$=Fsel$(&quot;&quot;):LOAD a$<P>
+
+Use the file selector to highlight and load the file BOBBANK.ABK.  This will
+load in the bob bank.<P>
+
+Alright, let's get the bobs on the screen for the jukebox.  Add the
+following lines to the beginning of your program right after the UNPACK
+command.<P>
+<PRE>
+ b1=0:b2=0:b3=0:b4=184
+ Bob 1,0,0,1:bob 2,304,0,2:bob 3,0,184,3:bob 4,304,184,4:wait vbl<P>
+</PRE>
+This adds the bobs to the screen immediately.<P>
+
+Now in the main loop we need to add something to change the locate/position
+of the bobs.  This will be added to the end of the main loop.  Right before
+your final LOOP command add the following lines:<P>
+<PRE>
+ v0=vumeter(0):v1=vumeter(1):v2=vumeter(2):v3=vumeter(3)
+ Bob 1,b1+v0,0,1:bob 2,304,b2+v1,2
+ bob 3,b3+v2,184,3:bob 4,304,b4+v3,4:wait vbl<P>
+</PRE>
+The VUMETER command reads the volume of each of the four voices and returns
+the value to the v variables.  This is a value of 0 to 63.  By simply adding
+the v variables to the bob's normal positions, it will make them 'dance' to
+the music.  Neat eh?<P>
+
+Sorry so short this issue, but the C= buyout and all my research for the
+other columns has left me a big dry this issue.  We will return next issue
+with some animation techniques to add to the now dancing bobs.  Stay tuned!
+<HR>

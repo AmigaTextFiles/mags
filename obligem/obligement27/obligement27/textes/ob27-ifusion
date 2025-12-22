@@ -1,0 +1,238 @@
+\T
+
+ --> TEST DE IFUSION par Jochen Abitz 
+=====================================
+
+
+~   iFusion - Le PowerMac sur le PowerAmiga
+   Cela a mis du temps, mais il est enfin disponible. IFusion arrive sous la pression des
+utilisateurs car l'_mulateur n'est pas encore termin_.
+
+   Avant d'_num_rer tout ce qui doit _tre implant_, voyons donc ce qui nous a _t_
+livr_. L'emballage est une belle pochette DVD avec un c_d_, ni plus ni moins. Sur
+ce c_d_, il n'y a m_me pas un 1 Mo d'utiliser, mais ca ne nous d_range pas.
+
+   Nous installons le logiciel avec l'installeur livr_ avec. Quelques secondes plus
+tard, iFusion est sur le disque dur et n'attend plus qu'a _tre lanc_. Mais stop :
+il faut d'abord configurer. Ceci peut _tre fait pendant l'installation, des questions
+vous sont alors pos_es pas a pas (en anglais. De toute facon, tout est en anglais.
+Les utilisateurs se doivent donc maitriser cette langue) ou alors, on peut utiliser
+un _diteur de texte.
+
+
+~   Configuration
+   Ma configuration est la suivante :
+
+ö
+
+\T
+
+;---------------------------------------------------
+;       iFUSION NewWorld Emulation Declarations
+;---------------------------------------------------
+
+;Paths to externally loaded drivers
+FirmWare:               drivers/OFDrvr
+Video:                  drivers/VideoDrvr
+Devices:                drivers/BlockDrvr
+
+;---------------------------------------------------
+;       Hardware Configuration
+;---------------------------------------------------
+
+CPUID:    8            ;Processor Version=G3
+RAM:      48
+NVRAM:    NVRAM
+ROM:    ROM/rom_91
+
+;---------------------------------------------------
+;       Amiga Device Configuration
+;---------------------------------------------------
+
+Device:    Macintosh:    -rw    -direct
+Device:    CD0:     -cd
+Device:    DH1:    -rw    -direct
+DisableSCSIDrvr:    yes
+SCSIDEV:    0    scsi.device/1    -hw
+
+ö
+
+\T
+
+;--------------------------------------------------
+;       Video Display Configuration
+;--------------------------------------------------
+
+DisplaySize:    1024/768/75
+Depth:    15
+VideoRefreshRate:    30
+VideoDirectModes:    yes
+VideoRefreshModes:    no
+VideoAmigaModes:    no
+CacheVidMem:    yes
+GammaCorrection:    1.0 1.0 1.0
+
+;--------------------------------------------------
+;       Input Configuration
+;--------------------------------------------------
+
+MouseRes:    400
+HardwareMouse:    no
+KeyboardType:    5
+
+;--------------------------------------------------
+;       Audio Configuration
+;--------------------------------------------------
+
+StartupSnd:    startup-snd
+PlayStartupSnd:   yes
+DisableSnd:    no
+
+ö
+
+\T
+
+
+   Il ne devrait pas _tre trop difficile de modifier ce script soi-m_me.
+
+   La prochaine _tape consiste a _tre en possession du c_d_ MacOS (les versions 8.6
+a 9.1 sont support_es). Il faudra copier le fichier "Mac OS Rom" dans le r_pertoire
+"Rom" du dossier Syst_me de iFusion et le renommer. Chez moi, ce fichier s'appelle
+"rom-9.1".
+
+   Ensuite, quelques r_glages d'environnement :
+
+Dans le r_pertoire Envarc:Powerpc, mettre la variable memprof a 1
+Dans le r_pertoire Envarc:Powerpc, mettre la variable EnAlignExc a 1 (ce fichier
+n'existe pas toujours et il faudra le cr_er manuellement).
+
+   Puis, copier les deux librairies d'iFusion pour WarpOS dans Libs:
+
+Dans le script de configuration, le premier device est aussi le "Boot-Device". Pour
+l'installation, il faudra indiquer le lecteur C_d_rom en premier puis la partition
+du disque dur (qui doit _tre format_e en AmigaDOS). Double cliquer sur Run-iFusion
+et l'_mulation est lanc_e.
+
+   Le Mac d_marre sur le c_d_ et apr_s un certain temps, on peut lancer l'installation
+de MacOS. Si aucune partition Mac n'est trouv_e, le syst_me demandera si le disque
+doit _tre format_. Quelques clics de souris et l'installation continue.
+
+ö
+
+\T
+
+   Chez moi et quelques autres utilisateurs, un _cran noir est apparu. L'installation
+a continu_e tout de m_me dixit le voyant du lecteur c_d_rom, mais il n'y avait rien a
+voir. Peut _tre que le Mac se met dans une esp_ce de veille...
+   Dans tous les cas, il ne faut rien toucher, ne pas appuyer sur Entr_e ou autre,
+mais tout simplement laisser continuer les choses. Pour _teindre le Mac, il suffit 
+d'attendre que toute activit_ cesse et appuyer L-Amiga + Shift + Esc.
+Apr_s l'installation, au red_marrage, il faut modifier a nouveau le fichier de
+configuration. Le volume de d_marrage doit _tre positionn_e sur la partition. Il
+suffit de la placer tout en haut et de red_marrer le Mac.
+
+   Une fois le Finder affich_, il faut r_gler l'_cran sur une r_solution raisonnable,
+puisque par d_faut, il se met sur 640x480x256. C'est pas top, hein ?
+
+   Dans le menu Pomme, aller dans les Pr_ferences/Extensions On/Off et enlever les
+extensions syst_mes inutiles, ce qui permet d'_conomiser de la m_moire. Par exemple :
+r_seau, firewire, c_d_rom, gestion graphique, etc...
+
+~   Compatibilit_ :
+   L'_mulation est incroyablement compatible. Je n'ai pas encore trouv_ de programme
+qui ne fonctionne pas. J'ai test_ : Photoshop 5.5 , Bryce3D, Itunes, IMovie (il
+faudrait du FireWire sur l'Amiga maintenant ;-) , Norton utilities 6, Tech Tools Pro 3,
+Corel Draw, Freehand 9, Actua Soccer, Myth. Tout fonctionne !
+
+~   Vitesse :
+   L'_mulation a quelques freins qui baissent ses performances. Il n'y a pas de pilote
+graphique en mode refresh. Il n'y aurait que ce pilote qui pourrait acc_lerer le
+mode graphique. Les acc_s disque passent par les switchs 68k/PPC. Cela veut dire
+
+ö
+
+\T
+
+
+qu'il y a pas mal de ralentissements. Pour contrer cet inconv_nient, il faut donner
+une m_moire tampon de 2000 buffers a la partition Mac. Ce qui utilise pas mal de
+m_moire chip d'ailleurs.
+
+   La vitesse de calcul est, par contre, tr_s _lev_e lorsqu'on pense que ce n'est
+qu'une carte PowerUp de Phase 5 (sans cache de second niveau). On atteind une vitesse
+presque _quivalente a un PowerMac avec 604e.
+
+
+   Les caract_ristiques suivantes ne sont pas encore d_finies :
+
+
+- Le support SCSI. Pour le moment, seuls les p_rif_riques non-amovibles sont support_s
+(scanner,...), les graveurs et p_riph_riques _quivalents ne peuvent pas _tre utilis_s.
+Par exemple, Toast. (NDLR : logiciel de gravure sur Mac)
+
+- Monter une partition Mac depuis le programme en vue d'un _change de donn_es avec
+l'Amiga. Celui qui poss_de un ZIP doit le faire reconnaitre en tant que p_rif_rique
+non-amovible et ainsi pouvoir _changer les donn_es.
+
+- Le support du son. Le son de d_marrage fonctionne mais il n'y a aucun son dans les
+jeux.
+
+ö
+
+\T
+
+
+
+   Comme c'est Blittersoft qui a acquit la license Amiga d'iFusion et que ce sont eux
+qui en continuent le d_veloppement, il devrait _tre port_ dans peu de temps : une
+version AmigaDE (AmigaOS4 ?) devrait _tre d_velopp_e.
+
+   Ce serait souhaitable, car le mat_riel actuellement au top sur Amiga (604e)
+commence a _tre obsol_te. On aurait plus de plaisir a utiliser ce logiciel avec
+une carte G3/G4.
+
+
+~   Rajout de Christian Aichinger :
+   iFusion a _t_ test_ par Jochen Abitz sur le syst_me Amiga d_crit ci-dessous.
+
+Amiga 4000 avec CyberStormPPC 604e/200, 68060/50, CyberVisionPPC, 100 MB Ram,
+6 GB IDE, 4,5 GB UW, Moniteur 21", souris 4D s_rie, c_d_rom IDE 32x, CDRom
+Teac 32x SCSI, CDRW Philips CDD 3600, OS 3.9, 100 MB Zip SCSI.
+
+
+
+}NDLR : Remerciements a Amiga Aktuell, APS et Jean-Marc Mossu.
+
+ö
+
+\T
+
+                                FICHE RECAPITULATIVE
+                                =====================
+
+Nom : iFusion
+D_veloppeurs : Microcode-Solutions
+Genre : _mulateur PowerMac
+Date : 2001
+Configuration minimale : AmigaPPC sous WarpUP 5, carte graphique, 64 Mo Ram,
+                          partition libre sur disque dur.
+Configuration souhait_e : AmigaPPC sous WarpUP 5, carte graphique, 96 Mo Ram
+                           ou plus, partition libre sur disque dur
+Prix : 1490 frs
+
+NOTE : 60 % (85 % sans les bugs)
+
+
+~ ^ Les points forts :
+
+- un PowerMac sur Amiga !
+- compatibilit_ totale
+
+~ ^ Les points faibles :
+
+- non support de certains p_rifs
+- installation assez d_licate
+- probl_me de son
+- le d_veloppement du logiciel n'est pas termin_
+
+ö

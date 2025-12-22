@@ -1,0 +1,114 @@
+--------- START OF FORWARDED MESSAGE ---------
+
+From System ....: Internet
+From Conference : comp.sys.amiga.misc
+MessageID ......: <33167467.85124893@hermes.jersey.net>
+Originally from : Dave Haynie <dhaynie@jersey.net>
+Subject ........: Re: News on Hardware of PIOS ONE
+
+On Thu, 27 Feb 1997 01:17:14 -0800, Robert Iacullo <eagle@serv.net>
+wrote:
+
+>> Most of what we know as the Amiga is based on the OS only. 
+
+>More and more I am coming around to the idea of a "chip set-less" next
+>generation Amiga.  But there is one thing:  It was my understanding that
+>the chip set handled all the I/O, communicated with the differant chip
+>set chips and pretty much left the cpu alone to do it's own thing. 
+
+That's not entirely true. The only sense of some event generation in
+the Amiga chipset is a copper operation or an interrupt to the CPU.
+Now, you have lots of things that unload the CPU, versus a Mac or PC
+AT THE TIME OF THE A1000. Floppy disk transfers, blits of course,
+audio play, etc. all happened from Chip memory. One transfer, that is;
+you couldn't normally queue anything (a few copper hacks
+notwithstanding). That's still very good. Now, the Mac originally did
+just about everything with the CPU, bad by comparison. The PC had a
+DMA controller, but it had to toss the CPU off the bus (more on that
+later). The PC style DMA was good much in the way the Amiga DMA was
+good -- you don't get a blast of data from a floppy, or to an audio
+output. Rather, it trickles out. But it requires a very deterministic
+behavior -- when a transfer is needed, it has to happen NOW! So either
+you have DMA, or things have to wait.
+
+On the Mac and PC, it really didni't matter. They were single tasking,
+single threaded. There was nothing to do anyway during a transfer. On
+the Amiga, you got CPU time for other tasks. Thus, it kicked the
+others butts, originally. 
+
+There was, however, quite a bit of traditional I/O on the Amiga. The
+floppy transfer ran via DMA, but you still had to bang on I/O chips to
+step the heads, etc. Serial is interrupt driven, without buffering,
+which is why Amigas are limited on serial performance (modern PC
+serial chips work similarly, but have 16 bytes of buffering, while Mac
+serial ports today are DMA driven and handle 200Kb/s+. Big jobs, like
+a 5K blit or a 22K floppy DMA were the best place to spend those
+gates. 
+
+> What
+>I mean, for example is to transfer d/l's from the serial port, to the HD
+>the data would stay within the chip set bus, and do it all itself.  I'm
+>not sure if I'm being clear about what I mean.  
+
+That's not quite how it happens. Hard disks, for one, always ran
+across the CPU bus. Most Amiga HDs ran via DMA, what PC folks call bus
+mastering. This means the HD controller takes over for the CPU and
+runs the transfer itself, but it does kick the CPU off during that
+transfer. The big advantage is that such a transfer happens much
+faster. For a DMA, you might drop a couple of cycles taking over the
+bus, but it's insignificant. For the most part, the time the CPU is
+off the bus is equal to the number of bytes * the length of the bus
+cycle. If the CPU did the transfer, it would take an interrupt, many
+cycles to start with. Then it would take a cycle to read from the I/O
+chip, another to write to main memory. The CPU might also have to wait
+for more I/O, and it's not doing work during that wait.
+
+Thing is, everyone does this now. Apple runs a DMA controller for SCSI
+and serial ports in PowerMacs. EIDE and SCSI on PCs is all done with
+bus mastering. Serial chips on PCs are buffered, floppy and other
+ISA-bus I/O does fairly slow DMA, but that's buffered up by the PCI
+interface chip, which does normal high-speed DMA transfers in PCI
+space. The main difference is that things like floppy and sound, and
+in some cases even graphics blits, can take place in any memory. 
+
+On most systems, graphics memory is separate, like on an Amiga with
+Fast RAM. This allows blitter access in parallel with CPU access on
+the main memory bus, as well as video fetch. But more importantly, the
+needs of a graphics device are different than the needs of a CPU. So
+when you split the buses, each memory bus can be optimized for the
+device that's using it the most. Just like Chip RAM does what the
+Amiga chips demand, and lets the CPU on as necessary, but not
+especially efficiently. 
+
+>Am I right about this, Dave?  And if so, then going to a generic system
+>such as the POne wouldn't we loose this aspect of the multitasking of
+>the Amiga? 
+
+The DMA on the PIOS One is better than on most Amigas. For example,
+you can queue transfers for SCSI and EIDE. That's only possible on the
+SCSI chip we used on the A4000T and A4091, all other DMA on the Amiga
+is one request at a time. Every graphics chip has a blitter, many (not
+all) are much like the Amiga's, only running on 64-bit buses clocked
+many times faster. 
+
+>I'd always assumed that since the chip set did so much on
+>it's own that this was part of what made the Amiga such a good
+>multitasker.
+
+That's true. But realize, it's just how bad the other systems were in
+1985, or how good the Amiga designers were. I don't think you will
+EVER again see as many advanced technologies, never before seen in a
+personal computer, all showing up in one system at once, as they did
+on the A1000. But the PC Industry as a whole, if they're good at
+anything, it's cloning ideas. IBM for years regularly copied a
+technology, changed the name ("fixed disk", "plug and play", "PEL",
+etc. anyone), and made like it was their innovation. Most of the
+aspects of the Amiga live on, in standard hardware, only somewhere
+between 5x and 100x+ faster. 
+
+
+Dave Haynie      V.P. Hardware Engineering    PIOS Computer
+haynie@pios.de     "...no RISC, no fun"
+
+---------- END OF FORWARDED MESSAGE ----------
+

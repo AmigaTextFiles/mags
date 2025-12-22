@@ -1,0 +1,312 @@
+<html>
+ <head>
+  <title>Karate - le color blending</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique&nbsp;: Karate - le color blending </font>par&nbsp;<a href="mailto:l.stephanoni@free.fr">Laurent&nbsp;Stephanoni</a></div><br><br><br>
+
+
+
+
+<b>Note&nbsp;: le script de cet article est fourni <a href="../files/karate_helloworld_chapitre2.k">ici</a>.</b><br><br>
+
+<font size="+1" color="#ccbb33">Colorblendquoi&nbsp;?</font><br><br>
+
+Vous n'avez jamais eu envie de vous la raconter avec des effets de déments bien typés démos, comme des blur,
+des color blending, ou même des effets d'alpha-blending ("light")&nbsp;? Ok, avec Karate, c'est facile&nbsp;! Mais pour
+cela, il va falloir créer des color tables.<br><br>
+
+Déjà, qu'est-ce que le color blending&nbsp;? C'est faire des mélanges de couleurs (en gros). Mélanger la couleur
+de fond déjà posée avec la couleur de l'effet à poser. En gros (encore&nbsp;?), si, en un point, j'ai telle couleur
+en fond, et que je veux poser une autre couleur, je dois trouver la couleur qui résulte de la fusion des deux
+pixels de couleurs précédents.<br><br>
+
+Regardons de plus près. Notre image de fond est en 256 couleurs, notre image à poser est en 256 couleurs également.
+Il suffit donc de mélanger les valeurs pour obtenir une palette pleine de 256x256 couleurs, soit une palette en 16 bits,
+soit 65536 couleurs. Ensuite, on a plus qu'à afficher des images dans cette palette.
+Avec des palettes en 16 bits (hi color) ou 24 bits (true color), c'est très simple, puiqu'on a toutes les couleurs
+disponibles. Seulement voilà, Karate fonctionne en 8 bits, donc avec une palette fixe de 256 couleurs. Il faut donc
+lui donner une table de conversion de 256x256 couleurs vers la palette courante de 256 couleurs.<br><br>
+
+<font size="+1" color="#ccbb33">Colorblending, ah ok...</font><br><br>
+
+Comment faire&nbsp;? C'est simple, Karate est fourni avec une image ("colortablemodel") 24 bits, qu'il ne nous reste plus
+qu'à remapper à la palette utilisée dans notre présentation. Il suffit donc de charger notre palette avec Deluxe Paint ou
+Personnal Paint (load image sur un des sprites utilisé dans la démo), et ensuite de charger cette image sous forme
+de brosse (load brush). Deluxe Paint va alors recalculer cette image avec notre palette. Pour Personnal Paint, il faut
+demander explicitement le recalcul couleur simple (menu brosse -> recalculer). Il suffit ensuite de sauver votre
+colortable où vous voulez (dans le répertoire de votre démo, par exemple). Si toutefois, à l'usage, vous voyez des
+couleurs très bizarres dans votre démo, pensez à répéter l'opération en modifiant les options de recalcul palette
+(avec/sans diffusion, avec/sans floyd steinberg). Il semblerait que le logiciel Brilliance donne d'excellent résultat pour
+ces opérations.<br><br>
+
+Ensuite, il n'y a plus qu'à charger votre colortable.<br><br>
+
+
+<font size="+1" color="#ccbb33">2 colortables&nbsp;? et 2 modes&nbsp;? Ça devient compliqué</font><br><br>
+
+En fait, je vous mens un peu. Karate construit les colortables 2 par 2. Je m'explique. Déjà, Karate gère 2 types de
+colortables, et 2 modes pour chaque type.<br>
+
+<ul>
+<li>Soient les colortables 256x256->256, les colortables pour des opérations mélangeant 2 images de 256 couleurs,
+<ul><li>Avec un effet de transparence de 50%,
+<li>Ou avec un effet de persistance avec affadissement.
+</ul>
+<li>Soient les colortables 256x64->256, les colortables mélangeant une image de 256 couleurs et une image de 64 couleurs (une image "light"),
+<ul><li>Avec un dégradé du noir vers le blanc,
+<li>Ou l'inverse, blanc vers noir.
+</ul>
+</ul>
+
+
+Et toutes ces options se retrouvent dans un seul constructeur dont la syntaxe est&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KCOLORTABLE&gt; nom_colortable | disk:chemin/colortable.iff |
+    type256x256 |
+    R | G | B &lt;/KCOLORTABLE&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Avec type256x256 qui prend la valeur 0 pour 50% de transparence, et 1 pour la persistance avec affadissement, et
+les valeurs R, G, et B qui prennent 255 si vos images light ont une palette qui va du noir au blanc, ou 0 dans le
+cas contraire.<br><br>
+
+Mais il existe un autre constructeur, qui vous évite d'avoir à créer cette ColorTable sous Deluxe Paint ou Personnal
+Paint, il s'agit de ComputeColorTable. Celui-ci calcule la colortable directement sur une image déjà chargée.
+Il faudra que cette image soit suffisamment grande (de la taille de colortablemodel.iff), et
+cette image ne pourra plus être utilisée comme un sprite ensuite. Ou alors, ne soyez pas surpris quand vous l'afficherez
+avec Sprite ou SpritePlain.<br><br>
+
+Le constructeur a donc la syntaxe suivante&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>&lt;COMPUTECOLORTABLE&gt; nom_colortable | nom_image_source |
+    type256x256 |
+    R | G | B &lt;/COMPUTECOLORTABLE&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+
+<font size="+1" color="#ccbb33">Les effets 256x256->256</font><br><br>
+
+Bon, c'est bien mignon toutes ces belles lignes de textes, mais ça nous fait pas des beaux effets&nbsp;! On va rajouter ces
+2-3 effets stylés dans notre ancien script. On va commencer par les effets de blur, très simples.
+Il faut déjà charger la colortable, au début du script, avec les lignes suivantes. On prévoit de faire du 50% de
+transparence pour les effets 256x256->256, et des sprites lights qui vont vers le blanc pour les effets 256x64->256,
+ce qui donne&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KCOLORTABLE&gt; coltab0255 | data/remaptable.iff | 0 | 255 | 255 | 255 &lt;/KCOLORTABLE&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Pensez à varier la valeur de type256x256, et les valeurs R, G, B dans le constructeur pour voir les différents type de blur.<br><br>
+
+<b>Le motionblur</b><br><br>
+
+Pour appliquer un motion blur sur un rectangle (petit rappel&nbsp;: Karate rend tous les effets dans des rectangles), il suffit
+de créer sa colortable, et de poser les lignes suivantes&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+    &lt;FX&gt;
+        &lt;PA&gt; MotionBlur &lt;/PA&gt;
+        &lt;PA&gt; monRectangle &lt;/PA&gt;
+        &lt;PA&gt; maColortable &lt;/PA&gt;
+    &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Avec monRectangle qui prend un nom de rectangle, ou qui est vide pour appliquer le motionblur à tout l'écran.<br><br>
+
+Il est important de noter que la place du motionblur dans la kpart est, justement, importante. En effet, seuls les effets
+placés avant le motionblur seront affectés, ce qui est logique.
+On va y rajouter à la fin de la seconde kpart, après le sprite dans un premier temps, mais avant le &lt;/KPART&gt;, avec
+les paramètres suivants&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>    &lt;FX&gt;
+        &lt;PA&gt; MotionBlur &lt;/PA&gt;
+        &lt;PA&gt; &lt;/PA&gt;
+        &lt;PA&gt; coltab0255 &lt;/PA&gt;
+    &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Vous pourrez aussi regarder ce que ça donne si vous le placez avant le sprite. Le sprite ne sera alors pas affecté par le blur.<br><br>
+
+<b>Le radialblur</b><br><br>
+
+Le radial blur est un peu plus complexe que le motionblur, car il faut spécifier le centre du blur, et sa force.
+Le radialblur se pose ainsi&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>    &lt;FX&gt;
+        &lt;PA&gt; RadialBlur &lt;/PA&gt;
+        &lt;PA&gt; monRectangle &lt;/PA&gt;
+        &lt;PA&gt; maColortable &lt;/PA&gt;
+        &lt;PA&gt; centreX &lt;/PA&gt;
+        &lt;PA&gt; centreY &lt;/PA&gt;
+        &lt;PA&gt; forceX &lt;/PA&gt;
+        &lt;PA&gt; forceY &lt;/PA&gt;
+    &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Vous pouvez essayer de remplacer le motion blur de votre deuxième part par le radial blur suivant par exemple&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>    &lt;FX&gt;
+        &lt;PA&gt; RadialBlur &lt;/PA&gt;
+        &lt;PA&gt; &lt;/PA&gt;
+        &lt;PA&gt; coltab0255 &lt;/PA&gt;
+        &lt;PA&gt; 2CTE | 0.5 | 0.5 &lt;/PA&gt;
+        &lt;PA&gt; SIN | 0.5 | 0.05 | 0.4 &lt;/PA&gt;
+        &lt;PA&gt; SIN | 0.5 | 0.05 | 0.4 &lt;/PA&gt;
+    &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+<b>Les sprites transparents</b><br><br>
+
+Dernière opération de colorblending 256x256->256, il est possible de rendre des sprites transparents&nbsp;!
+Pour cela, la syntaxe est&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>    &lt;FX&gt;
+        &lt;PA&gt; SpriteTable &lt;/PA&gt;
+        &lt;PA&gt; monRectangle &lt;/PA&gt;
+        &lt;PA&gt; monSprite &lt;/PA&gt;
+        &lt;PA&gt; abscisse (X) du coin supérieur gauche &lt;/PA&gt;
+        &lt;PA&gt; ordonnée (Y) du coin supérieur gauche &lt;/PA&gt;
+        &lt;PA&gt; abscisse (X) du coin inférieur droit &lt;/PA&gt;
+        &lt;PA&gt; ordonnée (Y) du coin inférieur droit &lt;/PA&gt;
+        &lt;PA&gt; maColortable &lt;/PA&gt;
+    &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Donc, la seule différence avec un sprite classique, c'est le nom de l'effet (premier paramètre), et un paramètre en
+plus pour donner la table. Vous pouvez donc essayer de modifier le sprite qu'on faisait bouger au centre de l'écran
+en ajoutant votre colortable.<br><br>
+
+<font size="+1" color="#ccbb33">Les effets 256x64->256</font><br><br>
+
+Les effets de "light" sont très impressionnants dans Karate. Ils permettent de faire apparaître des titres, ou des
+dessins en noir et blanc avec pas mal d'efficacité&nbsp;;). Ici par exemple, nous allons faire tourner un fantôme autour
+de notre sprite central sauteur. Je rappelle qu'une image light est une image sans limite de taille, mais en 64
+niveaux de gris (du noir au blanc, ou l'inverse, de toute façon la couleur à l'écran est définie par les trois derniers
+paramètres du constructeur de la colortable).<br><br>
+
+Pour utiliser un sprite light la commande est la suivante&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>    &lt;FX&gt;
+        &lt;PA&gt; SpriteLight &lt;/PA&gt;
+        &lt;PA&gt; monRectangle &lt;/PA&gt;
+        &lt;PA&gt; monSpriteLight &lt;/PA&gt;
+        &lt;PA&gt; abscisse (X) du coin supérieur gauche &lt;/PA&gt;
+        &lt;PA&gt; ordonnée (Y) du coin supérieur gauche &lt;/PA&gt;
+        &lt;PA&gt; abscisse (X) du coin inférieur droit &lt;/PA&gt;
+        &lt;PA&gt; ordonnée (Y) du coin inférieur droit &lt;/PA&gt;
+        &lt;PA&gt; maColortable &lt;/PA&gt;
+        &lt;PA&gt; taux de visibilité &lt;/PA&gt;
+    &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+Le taux de visibilité doit être compris entre 0 et 1. A 0, le sprite light n'est pas du tout visible, à 1, le sprite light
+est totalement visible, et de la couleur désignée par les 3 derniers paramètres du constructeur de 'maColortable'. Dans
+notre cas, il sera blanc. Libre à vous de tester avec 0 | 0 | 0.<br><br>
+
+On va donc ajouter à notre kpart (avant ou après le blur, c'est vous qui voyez)&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>&lt;KIMG&gt; ghost64 | data/lightghost.iff &lt;/KIMG&gt;
+    &lt;FX&gt;
+        &lt;PA&gt; SpriteLight &lt;/PA&gt;
+        &lt;PA&gt; &lt;/PA&gt;
+        &lt;PA&gt; ghost64 &lt;/PA&gt;
+        &lt;PA&gt; COS | 0.45 | 0.1 | 0.4 &lt;/PA&gt;
+        &lt;PA&gt; SIN | 0.45 | 0.1 | 0.4 &lt;/PA&gt;
+        &lt;PA&gt; COS | 0.55 | 0.1 | 0.4 &lt;/PA&gt;
+        &lt;PA&gt; SIN | 0.55 | 0.1 | 0.4 &lt;/PA&gt;
+        &lt;PA&gt; coltab0255 &lt;/PA&gt;
+        &lt;PA&gt; SIN | 0.5 | 1 | 0.4 &lt;/PA&gt;
+    &lt;/FX&gt;
+</pre>
+</font></td></tr></table>
+<br>
+
+
+<font size="+1" color="#ccbb33">Et voilà&nbsp;!</font><br><br>
+
+Bon, maintenant que vous connaissez pas mal de nouveaux effets bien sympathiques, il ne vous reste plus qu'à
+expérimenter, et à faire vos propres démos 2D qui tuent&nbsp;! Et n'oubliez pas de fouiner dans la doc&nbsp;!
+Pour ceux qui veulent une doc complète sur les effets disponibles dans karate, leurs paramètres, les objets concernés,
+allez faire un tour sur <a href="http://lightourfire.free.fr" target="_blank">lightourfire.free.fr</a> sur la page [karate].
+Il y a un joli guide qui contient toutes les infos utiles, et qui propose, pour chaque effet/objet/paramètre, un
+lien direct vers une démo et un lien direct vers les sources des tutoriels officiels.<br><br>
+
+La prochaine fois, on va finir les quelques derniers effets 2D&nbsp;: les scrolltexts et les effets de raycasting
+(pour faire des tunnels et des déformations de textures impressionnantes, mais aussi un super effet qui remplit
+l'écran avec une tonne de sprites ou sprites light)&nbsp;!<br><br>
+
+PS&nbsp;: rappel pour ceux qui l'aurait manqué&nbsp;: Karate 1.0 est disponible sur
+<a href="http://www.k-fighter.net" target="_blank">www.k-fighter.net</a>.<br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

@@ -1,0 +1,418 @@
+<html>
+ <head>
+  <title>MTU - Maximal Transmission Unit</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Labo&nbsp;: MTU </font>par&nbsp;<a href="mailto:bovier@club-internet.fr">Philippe&nbsp;Bovier</a></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">Introduction sur le MTU</font><br><br>
+
+MTU (Maximal Transmission Unit) est la plus grande taille possible d'un
+paquet de données, envoyée en une seule fois à travers le réseau Internet.
+Ce paquet transitera de la source désirée à votre FAI (Fournisseur d'Accès
+Internet) jusqu'à vous à travers de nombreux chemins, en passant par X
+routeurs, X passerelles et X protocoles réseaux.<br><br>
+
+Le MTU maximum théorique est de 1500 (défini pour les plates-formes
+Windows). Cette taille maximale théorique est idéale pour les réseaux TCP
+(local), l'ADSL ou le câble mais pas pour un modem RTC (ancien protocole).<br><br>
+
+Un MTU=1500 ou approchant n'est pas grave en terme de réception avec
+l'ADSL. L'ADSL étant un protocole fiable et récent, un MTU non optimisé
+n'entraînerait pas une grande différence en vitesse de réception des
+données (vu la vitesse de travail de l'ADSL).<br><br>
+
+Principalement en RTC, si vous avez des messages d'erreurs ou des temps
+trop long lors d'accès à certains sites ou des chutes de débit lors de
+téléchargements FTP, il vous faut vérifier et/ou corriger cette valeur car c'est
+le signe d'une fragmentation des paquets de données.<br><br>
+
+Si votre MTU est trop grand, votre FAI scindera le paquet en autant de fois
+que nécessaire ce qui vous donnera une réception lente voire pas de
+réception du tout.<br><br>
+
+<font size="+1" color="#ccbb33">Description et valeurs standards</font><br><br>
+
+Chaque paquet se compose de données, appelé MSS (Maximum Segment Size)
+auquel s'ajoute un en-tête TCP et une en-tête IP.<br><br>
+
+MTU = MSS + en-tête TCP/IP.<br>
+MSS = MTU - 40 (40 = en-tête de 20 bytes TCP + en-tête de 20 bytes IP).<br><br>
+
+<TABLE BORDER="1">
+
+<TR><TD ALIGN=center><b><font color="#ccbb33">Valeur MTU</b></font></TD>
+<TD ALIGN=center><b><font color="#ccbb33">Valeur MSS</b></font></TD>
+<TD ALIGN=center><b><font color="#ccbb33">Utilisation idéale et théorique</b></font></TR>
+
+<TR><TD ALIGN=RIGHT>1500</TD>
+<TD ALIGN=RIGHT>1460</TD>
+<TD ALIGN=LEFT>Internet (câble, ADSL, Num&#233;ris,...)</TR>
+
+<TR><TD ALIGN=RIGHT>1496</TD>
+<TD ALIGN=RIGHT>1456</TD>
+<TD ALIGN=LEFT>Ethernet standard</TR>
+
+<TR><TD ALIGN=RIGHT>1492</TD>
+<TD ALIGN=RIGHT>1452</TD>
+<TD nowrap ALIGN=LEFT>Plus grande valeur possible applicable &#224; PPPoe</TR>
+
+<TR><TD ALIGN=RIGHT>576</TD>
+<TD ALIGN=RIGHT>536</TD>
+<TD ALIGN=LEFT>Modem 56k standard</TR>
+
+<TR><TD ALIGN=right>...</TD>
+<TD></TD>
+<TD></TR>
+
+<TR><TD ALIGN=RIGHT>552</TD>
+<TD></TD>
+<TD></TR>
+
+<TR><TD ALIGN=right>...</TD>
+<TD></TD>
+<TD></TR>
+
+<TR><TD ALIGN=RIGHT>496</TD>
+<TD></TD>
+<TD></TR>
+
+<TR><TD ALIGN=right>...</TD>
+<TD></TD>
+<TD></TR>
+
+<TR><TD ALIGN=RIGHT>296</TD>
+<TD></TD>
+<TD></TR>
+
+</TABLE>
+<br>
+
+<font size="+1" color="#ccbb33">Exemples concrets et théoriques</font><br><br>
+
+<font size="+1" color="#ccbb33">1. Premier exemple</font><br><br>
+
+Cas de transfert avec 1500000 bytes de données à travers une ligne T1.<br>
+Note&nbsp;: le débit d'une ligne T1 est de 1544000 bits/sec.<br><br>
+
+<font size="+1" color="#ccbb33">1.1 Taille des paquets et temps d'attente</font><br><br>
+
+Temps d'attente en ms (milli-secondes) = [(MSS+HEADER) x 8 bits] / 1544000 bits/sec.<br><br>
+
+En utilisant différentes valeurs de MTU, nous pouvons calculer le temps
+d'attente de traversée d'un paquet dans le réseau T1.<br><br>
+
+MTU = 1500&nbsp;: (1460+40) x 8 / 1544000 = 7.772 ms.<br>
+MTU = 576&nbsp;: (536+40) x 8 / 1544000 = 2.924 ms.<br>
+
+Si, par exemple, il faut 10 paquets pour envoyer et recevoir ces données,
+il faudra donc&nbsp;:<br><br>
+
+MTU = 1500&nbsp;: 77.72 ms.<br>
+MTU = 576&nbsp;: 29.24 ms.<br><br>
+
+Un MTU plus petit transmet donc plus vite les données.<br><br>
+
+<font size="+1" color="#ccbb33">1.2 Taille et nombre de paquets</font><br><br>
+
+Reprenons le même exemple que précédemment mais avec juste 1 Mb.
+1 Mb = 1024 Kb = 1048576 bytes.<br><br>
+
+MTU = 1500&nbsp;:<br><br>
+
+(1460+40) x 8 / 1544000 = 7.772 ms.<br>
+1 Mb / MSS = 1048576 bytes / 1460 = 719 paquets pour 1 Mbytes.<br><br>
+
+Pour transférer 1 Mb&nbsp;:<br>
+719 paquets x 7.772 ms = 5588068 ms donc 5.588 secondes.<br><br>
+
+MTU = 576&nbsp;:<br><br>
+
+(536+40) x 8 / 1544000 = 2.924 ms.<br>
+1 Mb / MSS = 1048576 bytes / 536 = 1957 paquets pour 1 Mb.<br><br>
+
+Pour transférer 1 Mb&nbsp;:<br>
+1957 paquets x 2.924 ms = 3722.22 ms donc 3.722 secondes.<br><br>
+
+Un MTU plus petit transmet plus de paquets et toujours plus vite.<br><br>
+
+<font size="+1" color="#ccbb33">1.3 Taille des entêtes TCP/IP</font><br><br>
+
+MTU = 1500&nbsp;: (nombre de paquets x header) = 719 x 40 = 28760 bytes.<br>
+MTU = 576&nbsp;: (nombre de paquets x header) = 1957 x 40 = 78280 bytes.<br><br>
+
+La quantité de données des en-têtes est supérieure avec 576 (78280 bytes).
+Les 49550 bytes supplémentaires en MTU = 576 ne représentent qu'une infime
+fraction du total des données (ici avec un exemple de 1048576 bytes).<br><br>
+
+<font size="+1" color="#ccbb33">1.4 En résumé (pour l'exemple de la ligne T1)</font><br><br>
+
+Un petit MTU transmet plus de paquets et plus vite qu'un gros MTU. La
+différence de taille des en-têtes transmises est infime comparé à la
+taille des données.<br><br>
+
+On peut donc juger par ces calculs qu'il est impérativement important
+d'avoir un bon MTU et pas obligatoirement le plus grand possible. La valeur
+du MTU choisie dépendra du matériel, du FAI et du type de connexion utilisé
+(RTC ou ADSL).<br><br>
+
+La différence de temps d'attente entre un MTU = 1500 et un MTU = 576 est
+visible avec l'exemple précédent avec une ligne T1 rapide. Cette différence
+sera encore plus importante avec une simple connexion par modem RTC (RTC
+étant un ancien protocole moins fiable et régulier en émission et réception
+que l'ADSL).<br><br>
+
+<font size="+1" color="#ccbb33">2. Second exemple</font><br><br>
+
+Cas avec un Amiga et MiamiDX avec modem RTC 56k.<br><br>
+
+Une connexion par défaut, faite par MiamInit, règle le MTU par défaut à
+552. Cette valeur par défaut ne peut être qu'une base de départ qu'il vous
+faut vérifier de chez vous.<br><br>
+
+L'article considère que le lecteur connaît dans son programme TCP/IP où se
+situe la valeur MTU à modifier selon ses besoins.<br><br>
+
+Les exemples suivants existent uniquement avec mon Amiga et son matériel
+(modem, carte série,...). Les résultats que vous allez obtenir seront
+sûrement différents mais au moins ils auront été contrôlés grâce à la suite de
+cet article.<br><br>
+
+<font size="+1" color="#ccbb33">2.1 Programmes complémentaires (exemples RTC ou ADSL)</font><br><br>
+
+Il est possible graphiquement de vérifier vos transferts Internet avec
+votre Amiga de 2 façons bien plus pratiques car visuelles&nbsp;:<br><br>
+
+<b>Miamigraph&nbsp;:</b><br><br>
+
+Disponible sur Aminet. Avec son appel lors de la connexion&nbsp;: MiamiDX -> Evémements -> Démarrer.<br><br>
+
+MiamiGraph PERIOD=50 DIVISIONS=1 BCOL=000000 GCOL=00FF00 DCOL=FF0000
+BORDERLESS INTERFACE=ppp0 (ppp0 à changer selon le nom de votre connexion).<br><br>
+
+<b>GelBesPanel&nbsp;:</b><br><br>
+
+Chargement à partir de MiamiDX -> GUI -> Réglages panneaux de contrôles.
+Disponible sur <a href="http://gelbespanel.amigazeux.net" target="_blank">gelbespanel.amigazeux.net</a>.<br><br>
+
+<div align="center">
+
+<table cellpadding="15" cellspacing="1" border="0">
+ <tr>
+  <td>
+   <center><img src="../gfx/miamigraph.jpg" alt="MiamiGraph" width="80" height="175"></a><font size="-1"><br><br>MiamiGraph.</font></center>
+  </td>
+  <td>
+   <center><img src="../gfx/gelbespanel.jpg" alt="GelBesPanel" width="355" height="33"</a><font size="-1"><br><br>GelBesPanel.</font></center>
+  </td>
+ </tr>
+</table>
+</div>
+<br>
+
+
+<font size="+1" color="#ccbb33">2.2 MiamiPing avec valeur 296, 492, 568, 1492 et modem 56k RTC à 45333</font><br><br>
+
+Pour mesurer le temps de réponse d'un paquet envoyé vers un endroit, il
+nous faut utiliser l'utilitaire MiamiPing fourni dans l'archive de MiamiDX.<br><br>
+
+Cet utilitaire possède la ligne de commande suivante&nbsp;:<br><br>
+
+usage: MiamiPing [-Rdfnqrv] [-c count] [-i wait] [-l preload] [-p pattern] [-s packetsize] host<br><br>
+
+-f = rapide<br>
+-c 10 = nombre d'essais<br>
+-s 492 = MTU<br>
+294.217.300.20 = club-internet.fr (la valeur pour cet article est un exemple).<br><br>
+
+La valeur 294.217.300.20 se trouve dans&nbsp;: Miami -> base de données -> serveurs DNS.<br><br>
+
+<b>296 rapide avec -f&nbsp;:</b><br><br>
+
+MiamiPing -f -c 10 -s 296 294.217.300.20<br>
+PING 294.217.300.20 (294.217.300.20): 296 data bytes<br>
+10 packets transmitted, 10 packets received, 0% packet loss<br>
+round-trip min/avg/max = 182.026/185.238/190.497 ms<br><br>
+
+MiamiPing -f -c 10 -s 296 294.217.300.20<br>
+PING 294.217.300.20 (294.217.300.20): 296 data bytes<br>
+10 packets transmitted, 10 packets received, 0% packet loss<br>
+round-trip min/avg/max = 180.574/184.861/189.658 ms<br><br>
+
+MiamiPing -f -c 10 -s 296 294.217.300.20<br>
+PING 294.217.300.20 (294.217.300.20): 296 data bytes<br>
+10 packets transmitted, 10 packets received, 0% packet loss<br>
+round-trip min/avg/max = 180.959/185.057/190.57 ms<br><br>
+
+Miami/MiamiPing -f -c 10 -s 296 294.217.300.20<br>
+PING 294.217.300.20 (294.217.300.20): 296 data bytes<br>
+10 packets transmitted, 10 packets received, 0% packet loss<br>
+round-trip min/avg/max = 177.682/187.284/198.666 ms<br><br>
+
+<b>492 rapide avec -f&nbsp;:</b><br><br>
+
+MiamiPing -f -c 10 -s 492 294.217.300.20<br>
+PING 294.217.300.20 (294.217.300.20): 492 data bytes<br>
+11 packets transmitted, 10 packets received, 8% packet loss<br>
+round-trip min/avg/max = 253.64/304.9/328.725 ms<br><br>
+
+<b>568 rapide avec -f&nbsp;:</b><br><br>
+
+MiamiPing -f -c 10 -s 568 294.217.300.20<br>
+PING 294.217.300.20 (294.217.300.20): 568 data bytes<br>
+12 packets transmitted, 10 packets received, 16% packet loss<br>
+round-trip min/avg/max = 254.235/312.683/387.104 ms<br><br>
+
+<b>1492 rapide avec -f&nbsp;:</b><br><br>
+
+MiamiPing -f -c 10 -s 1492 294.217.300.20<br>
+PING 294.217.300.20 (294.217.300.20): 1492 data bytes<br>
+13 packets transmitted, 10 packets received, 23% packet loss<br>
+round-trip min/avg/max = 440.244/570.651/671.445 ms<br><br>
+
+<b>1492 normal sans -f&nbsp;:</b><br><br>
+
+Une ligne de commande sans f permet d'avoir une plus grande description de la
+transmission des paquets mais aucun ne sera perdu car MiamiPing attend
+la réception avant d'envoyer un paquet de nouveau.<br><br>
+
+MiamiPing -c 10 -s 1492 294.217.300.20<br>
+PING 294.217.300.20 (294.217.300.20): 1492 data bytes<br>
+1500 bytes from 294.217.300.20: icmp_seq=0 ttl=252 time=437.072 ms<br>
+1500 bytes from 294.217.300.20: icmp_seq=1 ttl=252 time=446.639 ms<br>
+1500 bytes from 294.217.300.20: icmp_seq=2 ttl=252 time=450.65 ms<br>
+1500 bytes from 294.217.300.20: icmp_seq=3 ttl=252 time=444.363 ms<br>
+1500 bytes from 294.217.300.20: icmp_seq=4 ttl=252 time=445.099 ms<br>
+1500 bytes from 294.217.300.20: icmp_seq=5 ttl=252 time=444.067 ms<br>
+1500 bytes from 294.217.300.20: icmp_seq=6 ttl=252 time=435.679 ms<br>
+1500 bytes from 294.217.300.20: icmp_seq=7 ttl=252 time=444.741 ms<br>
+1500 bytes from 294.217.300.20: icmp_seq=8 ttl=252 time=442.912 ms<br>
+1500 bytes from 294.217.300.20: icmp_seq=9 ttl=252 time=442.271 ms<br>
+10 packets transmitted, 10 packets received, 0% packet loss<br>
+round-trip min/avg/max = 435.679/443.349/450.65 ms<br><br>
+
+<font size="+1" color="#ccbb33">2.3 En résumé (pour l'exemple modem 56k à 45333)</font><br><br>
+
+Nous pouvons observer deux choses&nbsp;:<br><br>
+
+Plus le MTU est petit, plus le temps de réception des paquets est petit
+(296 rapide avec -f = 185 ms et 1492 rapide avec -f = 570 ms).<br><br>
+
+Plus le MTU est petit, plus le nombre de paquets est envoyé rapidement,plus
+le nombre de paquets perdus est faible (296 rapide avec -f = 0 de perdu, et 1492
+rapide avec -f = 3 de perdus).<br><br>
+
+<font size="+1" color="#ccbb33">Que faire alors&nbsp;?</font><br><br>
+
+<b>1.</b> Faites des essais avec MiamiPing -f -c xx -s xxxx xxx.xxx.xxx.xx avec
+différentes valeurs et plusieurs fois les mêmes valeurs jusqu'à trouver le
+bon MTU. Un bon MTU sera une commande -f lancée de nombreuses fois sans
+perte de paquets.<br><br>
+
+<b>2.</b> Faites les mêmes essais à d'autres périodes de la journée ou le Week-end
+pour valider votre valeur MTU trouvée.<br><br>
+
+<b>3.</b> Installez Miamigraph et GelBesPanel pour visualiser vos essais
+graphiquement et même en valeur instantanée avec GelBesPanel. Vous allez vous
+rendre compte graphiquement que plus le MTU est petit, plus la valeur
+moyenne de réception des données est grande. Vous constaterez que, avec une
+connexion à 45333 (6000 octets maxi avec les en-têtes TCP + IP)&nbsp;:<br>
+
+<ul>
+<li>Avec un MTU = 1500, vous recevrez 3 ou 4 paquets de 1500 ce qui donnera une
+moyenne basse (1500 x 3 = 4500 + 40 x 3 = 4620).
+<li>Avec un MTU environ 1000, vous recevrez 5 ou 6 paquets de 1000 ce qui
+augmentera votre moyenne (1000 x 5= 5000 + 40 x 5 = 5200).
+<li>Avec un MTU d'environ 500, vous recevrez 10 ou 11 paquets de 500 ce qui
+augmentera votre moyenne vers une moyenne idéale (500 x 10= 5000 + 40 x 10 = 5400).
+<li>Avec un MTU d'environ 250, vous recevrez 20 ou 21 paquets de 500 ce qui va
+faire baisser un peu votre moyenne car le nombre d'en-têtes sera maintenant
+trop important (250 x 20= 5000 + 40 x 20 = 5800).
+</ul>
+<br>
+
+Le résultat pourra être un MTU à 296, 492 ou 568 pour un modem RTC et 1500
+ou approchant pour un modem ADSL ou câble. Ce résultat sera valable pour
+votre installation avec votre modem, vos câbles de liaison jusqu'à votre
+ligne téléphonique et la qualité de votre ligne téléphonique.<br><br>
+
+<b>4.</b> Vérifiez vos résultats en utilisant des sites Internet comme ceux cités
+dans le chapitre suivant (ftpk ou sdv). Ceux-ci vous donneront des
+résultats sous forme graphique avec comparaison avec le RTC, ADSL ou le
+câble.<br><br>
+
+<font size="+1" color="#ccbb33">Sites Internet intéressants</font><br><br>
+
+Pour connaître son taux de download en mode compression ou non&nbsp;:<br><br>
+
+<a href="http://bw.sdv.fr" target="_blank">bw.sdv.fr</a>.<br><br>
+
+Pour connaître son taux de download sans compression avec des infos sur l'adresse
+du premier routeur de chez vous&nbsp;:<br><br>
+
+<a href="http://services.ftpk.net/speedtest/test" target="_blank">services.ftpk.net/speedtest/test</a>.<br>
+<a href="http://mire.ipadsl.net" target="_blank">mire.ipadsl.net</a>.<br><br>
+
+Test complet mais pour les Etats-Unis (pour information)&nbsp;:<br><br>
+
+<a href="http://pcpitstop.com/internet" target="_blank">pcpitstop.com/internet</a>.<br><br>
+
+Bien sûr, il en existe bien d'autres encore.<br><br>
+
+<font size="+1" color="#ccbb33">Conclusion</font><br><br>
+
+J'espère que cet article vous sera utile, d'abord général puis axé plutôt
+sur le côté pratique Amiga en RTC, avec des conseils complémentaires.<br><br>
+
+Le but recherché est de donner une méthode Amiga pour contrôler et vérifier
+la valeur MTU utilisable avec un matériel Amiga et une localisation
+géographique en rapport avec son FAI.<br><br>
+
+La valeur MTU miracle n'existe pas pour tous les cas (sauf en ADSL) mais
+ici, l'utilisateur arrivera à comprendre et à modifier sa valeur MTU vers
+une valeur presque idéale pour lui.<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>
+

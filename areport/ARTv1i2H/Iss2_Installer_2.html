@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 3.0//EN">
+<!-- This document follows the HTML 3.0 standard -->
+
+<html>
+  <head>
+    <title>Installer Basics #2</title>
+  </head>
+  <body>
+    
+    <h1 align="left">Installer Basics - Starting An Installer Script</h1>
+    <h3 align="right">Robert Reiswig &lt;rcr@netcom.com&gt;</h3>
+
+    <hr>
+    
+    <h3 align="left">
+      <IMG SRC="IN_Icon1.gif">
+      <IMG align="top" SRC="IN_Welcome.gif">
+      <IMG SRC="IN_Icon2.gif">
+    </h3> 
+
+    <hr>
+
+    <h2>Introduction:  2 Much E-Mail</h2>
+    
+    <p>Due to the amount of E-Mail that I received over the last
+      article I decided to do a second installment. That and the new
+      ARTech editor, Osma Ahvenlampi (Tau on IRC), asked me if I was
+      interested in doing a second article.</p>
+    
+    <p>I received a total of 2 messages...</p>
+
+    <p>The first message I got was dealing with where to find the
+      installer and more info on it.  If you are looking for the
+      installer binary, it is on the OS Install disk that came with
+      your Amiga on the 'Install Disk'.</p>
+
+
+    <h2>The people behind Installer</h2>
+    
+    <p>The only other message I received turned out to be one of the
+      original programmers of the Installer.  Of course I had many
+      questions for him.  Joe Pearce was very nice in answering my
+      first set of questions that I had left unanswered in the last
+      article.  Also he answered a second set of questions I had
+      twice. (My mailbox had problems and he replyed twice!) </p>
+    
+    <blockquote>
+      <p>"I read your 'Installer Basics #1' article and wanted to answer
+	your question of who programmed the Installer. 'Sylvan Technical
+	Arts' was David 'Talin' Joiner's company. (Talin created Faery
+	Tale Adventure, Music-X, etc.) David and I did the bulk of the
+	development of the Installer, with bits and pieces of
+	Commodore-created code added to get things (mostly) right."</p>
+    </blockquote>
+
+    <p>This is from the follow up set of questions:</p>
+    
+    <dl>
+      <dt><b>RR</b> <dd>So you and David were the 2 key guys behind
+	the installer stuff?
+	
+      <dt><b>JP</b> <dd>Basically, with informal input from a number
+	of people.
+	
+      <dt><b>RR</b> <dd>Did Commodore ask you guys to do it?
+	
+      <dt><b>JP</b> <dd>David came up with the idea of making a
+	configurable installer after all the problems he had with the
+	installation program for Music-X.  Dave mentioned what he was
+	working on to people at Commodore, who thought it was a good
+	idea.
+	
+      <dt><b>RR</b> <dd>Did they contract you guys out to do it?
+	
+      <dt><b>JP</b> <dd>Yep.
+	
+      <dt><b>RR</b> <dd>Do you know the guys at CBM that worked on it?
+	
+      <dt><b>JP</b> <dd>The main people were Paul Higginbottom and
+	David Junod (if I remember correctly).
+	
+      <dt><b>RR</b> <dd>Do you have a better date when you started and
+	finished the project?
+	
+      <dt><b>JP</b> <dd>We started in early 1990. There were actually
+	two Installers. One worked under Kickstart 1.3 and 2.0, and
+	was contracted by CATS. A second version that had extra
+	features, but only worked under 2.0, was contracted by
+	Engineering at CBM.
+	
+      <dt><b>RR</b> <dd>What is the diffs between the 115144 byte and
+	67K installers?
+	
+      <dt><b>JP</b> <dd>I think the bigger installer is the 1.3
+	version, while the 67K version is the 2.0-only version
+	compressed with Imploder.
+    </dl>
+
+    <p>I would like to thank Joe for the above.</p>
+
+
+    <h2>Making an Install script</h2>
+
+    <p>In the last article I was not sure on how to go about giving
+      examples of the installer.  I had suggested picking a program
+      off aminet that did not have an installer and doing a simple
+      installer for it.</p>
+    
+    <p>Jacob Ellis, jacob@nah.oau.org (Jacob on IRC), suggested that I
+      use Play16.  Play16 is 'a versatile soundplayer for the
+      Amiga'. If you have not tried Play16, DO! It can be found on
+      aminet as mus/play/Play16_1_5.lha.</p>
+    
+    
+    <note>NOTE: If you do not already have the "Installer" program in
+      your "c:" directory, it would be a good idea to get your Install
+      Disk (the one that comes with the Operating System Disks), and
+      copy the Installer from there to "c:"! At least place it
+      somewhere in your path. <em>[Ed: Some people prefer another
+	directory.  When you make an installer script, please do not
+	explicitly set the path of the default tool. Use just plain
+	"Installer".]</em></note>
+    
+    
+    <h2>PreScript</h2>
+
+    <p>The very first thing to do is get an Icon for installer and set
+      the tooltypes to values that are needed.  The last Installer
+      Article talked about this. Here is the ones I have set for this
+      example:</p>
+    
+    <code>
+      MINUSER=EXPERT<br> DEFUSER=EXPERT<br> APPNAME=PLAY16<br>
+    </code>
+
+    <p>It is recommended that installer be run from the icon, with the
+      stack set at 10000.  Running it from the CLI is _not_
+      recommended, it was added to the installer for debugging
+      scripts.</p>
+    
+    
+    <h2>Asking The Right Questions</h2>
+    
+    <p>The first thing to do is to look at the archive/program you
+      want to install.  Looking at the Play16 archive these are the
+      steps I will take to install the program.</p>
+    
+    <ol>
+      <li>Show info on the program that is about to be installed</li>
+      <li>Ask If the user wants 'Play16' 'Docs' or 'CyberSound'
+	installed</li> <li>If the user wants the Docs installed, find
+	out if German or English is wanted.</li> <li>Check and Ask what
+	CPU is installed</li> <li>Ask where to copy stuff</li> <li>Copy
+	over the selected file</li> <li>End</li>
+    </ol>
+
+    <p>For this installment I will go over the Displaying of the Intro
+      message and asking what the user wants to be installed.</p>
+
+    <p>To 'print' or display information to the installer window you
+      use the 'message' command.  An example might look like this:
+      <code> (message "Hello") </code> This will print the word
+      'Hello' in the top of the window. The installer will center the
+      line for you.</p>
+    
+    <p>For our example here I want to position the words and add
+      double quotes. In order to do this you need to use a few special
+      sequences of characters to do this , so the installer won't get
+      confused. These have the same syntax as 'C'.</p>
+
+    <code>
+      \\ = backslash<br>
+      \" = double quote<br>
+      \0 = NULL<br>
+      \n = newline<br>
+      \r = return <br>
+      \t = tab<br>
+    </code>
+
+    <p>The information I want to print is the name of the program and
+      the Authors name and email address.  Here is an example:</p>
+    
+    <pre>
+ (message "\n\nPlay16 version 1.5\n\nA versatile soundplayer " 
+          "for the Amiga\n\n\nby\n\n\nThomas Wenzel\n\n"
+          "wenzel@unixserv.rz.fh-hannover.de")
+    </pre>
+    
+    <p>Pay attention to the way several strings are combined to one,
+      and '\n' being used to cut the lines shorter and center
+      them.</p>
+    
+    <p>The window should look like this:<br> <IMG
+      SRC="IN_About.gif"></p>
+
+    <p>Here is how it would look if you could see the '\n' in the
+      window:<br> <IMG SRC="IN_About2.gif"></p>
+
+    <hr>
+    
+    <p>Now to ask the user what parts of the archive to install. There
+      are 3 parts 'Play16', 'Docs' and 'CyberSound'. To do this you
+      can use the 'askoptions' command.</p>
+    
+    <p>Here is the example:</p>
+    
+    <pre>
+ (set Picks (askoptions  (prompt  "What do you wish to install?")
+                         (help    "What do you wish to install?")
+                         (choices " Play16 - Binary"
+                                  " Docs - Information"
+                                  " CyberSound - 14bit Sound"
+                         )
+             (default -1)
+            )
+ )
+    </pre>
+
+    <p>There are a few things going on here. First ... when you use
+      'askoptions' it will give the user as many choices as you give
+      them. In this case 3. What happens is that 'askoptions' returns
+      a bit mask number for the answer. This is a bit like the SCSI ID
+      jumppers on a Hard Drive. Each position or place holder
+      represents a value. Here is an example table:</p>
+    
+    <pre>
+ Option #   Bit Value
+ --------------------
+ 1           1
+ 2           2
+ 3           4
+ 4           8
+ 5          16
+ 6          32
+    </pre>
+
+    <p>In this case the answer/value will be stored in the variable
+      'Picks'. By using the 'set' command you can store the answer in
+      a variable and then use this information later to make
+      decision.</p>
+
+    <p>In our example if the user selected all 3 options you can
+      figure out what they selected by looking at what 'askoptions'
+      has returned. With all 3 selceted a 7 will be returned. It takes
+      the bit mask values for all 3 postitions and adds them up: 1 + 2
+      + 4 = 7</p>
+    
+
+    <p>Back to the 'askoptions' options. There are many options you
+      can use with 'askoptions'.  I have kept it simple here. Here are
+      explainations of the options I used:</p>
+
+
+    <pre>
+ (prompt  "What do you wish to install?")
+
+ ; ^This is what is shown at the top of the window, this tells the
+ ;  user what to do.
+
+ (help    "What do you wish to install?")
+
+ ; ^If the user clicks on 'help' this is what they will see.  If
+ ;  you have time, it would be good to expand on the help section.
+ ;  This way the user can click on 'help' and read the section for info
+ ;  on what there options are in depth.
+
+ (choices " Play16 - Binary"
+          " Docs - Information"
+          " CyberSound - 14bit Sound"
+ )
+    </pre>
+
+    ** OR **
+
+    <pre>
+ (choices " Play16 - Binary" " Docs - Information" " CyberSound - 14bit Sound" )
+
+ ; ^Note the layout of the 2 examples... both will give the same results!
+ ;  You can have as many as will fit in the window. As with all of the installer
+ ;  the text must have "'s around them. NOTE: I added a space at the front-end
+ ;  of the text, this way the text is not butted up aginst the check boxes.
+
+ (default -1)
+
+ ; ^This is what the default check boxes/options are pre-set to. A -1 will
+ ;  select all the choices and a 0 will select none.  If you wish to mix and
+ ;  match what is selected (ie option 1 and 3) again it uses bit masked values,
+ ;  so if 1 and 3 were to be default it would be set to 1 + 4 = 5 (look at the
+ ;  table above)
+</pre>
+
+    <p>The 'askoptions' should look like this:<br> <IMG
+      SRC="IN_Select.gif"></p>
+
+    <p>So far the script looks like this:</p>
+
+<pre>
+ (message "\n\nPlay16 version 1.5\n\nA versatile soundplayer "
+          "for the Amiga\n\n\nby\n\n\nThomas Wenzel\n\n"
+          "wenzel@unixserv.rz.fh-hannover.de")
+
+ (set Picks (askoptions  (prompt  "What do you wish to install?")
+                         (help    "What do you wish to install?")
+                         (choices " Play16 - Binary"
+                                  " Docs - Information"
+                                  " CyberSound - 14bit Sound"
+                         )
+             (default -1)
+           )
+ )
+</pre>
+
+    <p>Well that is about if for now ... hoped you learned
+    something!</p> 
+
+    <p>If you wish to get more detailed information
+    there is an Installer archive in/on the Fred Fish Collection.</p>
+
+    <hr>
+
+    <h5>This article is ©1995 by Robert Reiswig. If you wish to
+    reprint this (all you have to do is ask) or have any questions
+    please let me know! I can be reached at rcr@netcom.com.</h5>
+
+  </body>
+</html>

@@ -1,0 +1,94 @@
+@Database SHOAH.s.guide
+@Node MAIN "Our first ever programs"
+Our first programs.
+
+Example 1.
+	move	#10,d0		;Put 10 into d0
+	add	#20,d0		;add 20 to d0, ie 30
+	rts			;ReTurn from Subroutine
+
+You can type this straight into your assembler, and run it. You should get
+something like...
+
+Error Return code 30
+
+What ?, our first program and an error all ready, yes but this one was meant
+to happen !, here we go...
+
+	move	#10,d0		;You all ready know what this does !
+	add	#20,d0		;This is about as straight forward as you
+				;can get really
+	rts			;In this example, it quits the program
+
+Now, whenever Mr.Amiga runs a program, and you then quit it, it sends any
+error information to d0, so by being sly and using d0 for our maths we will
+get the result because good old AmigaDos thinks we've written a lame bit
+of code, but we know better hey gang ( Try using d1 instead, now we just get
+an error code 1, which just means there's an error somewhere ).
+
+Have you noticed something missing about the move commands ? Where are the
+.b/.w/.l surfixes ? Well most assemblers default to .w, so you don't have
+to bother with it ( It's like keeping both hands on the steering wheel,
+everyone does it when their learning, but once you pass your test... ).
+
+Example 2.
+	clr.l	d0		;CLeaR d0
+	move	Records,d0	;d0 now equals records ( 10 )
+	add	Records+2,d0	;Add the 2nd word ( 50 ) to d0
+	add	Records+4,d0	;Add the 3rd word ( 20 ) to d0
+	rts			;Quit the program
+Records	dc.w	10,50,20
+
+This is a simple little routine to add a table.
+¹The new command clr simply clears things ( It's the same as move.l #0,d0 ).
+You should always to do this before adding things, why ? Well if you started
+a program d0 could equal any old thing, ie
+
+	d0 = $ffff0000		;Pretend d0 had some crap in it
+	move	#$10,d0		;d0 now equals $ffff0010 !
+	add	#$20,d0		;d0 now equals $ffff0030 !
+	d0 = $ffff0030
+
+²The next line just puts the value held in records into d0.
+³We then add Records+2 ( ie the second value ) to d0
+¢Then we add Records+4 ( ie the last value ) to d0, and quit with rts
+
+Why does Records+4 point to the 3rd value ? Well notice how the values are in
+word format but the offset works in bytes...
+
+	dc.w	10,50,20	Always remember that a word is two bytes !
+		^  ^  ^
+		0  |  |
+		   2  |
+		      4
+
+Example 3.
+	moveq.l	#0,d0		;Clear d0
+	lea	Records,a0	;Point to the records
+	move	(a0)+,d0	;Move (a0) into d0 and increment a0
+	add	(a0)+,d0	;Add (a0) to d0	and increment a0
+	add	(a0),d0		;Add (a0) to d0
+	rts			;Quit the program
+Records	dc.w	10,50,20
+
+This does the same as example 2, but better.
+¹This is another variation of the move command. The q stands for quick, so
+this quickly clears d0 ( Quicker than the clr command, and I think it's good
+to learn the quick ways of doing things from the start ).
+²
+	lea	Records,a0	} Both these do the same thing, but the Lea
+	move.l	#Records,a0	} command is quicker and takes less memory.
+³We've seen this addressing mode before. ( See @{"First command" link SHOAH-First} ).
+¢This line is virtually the same as the above one.
+
+On the line
+	add	(a0),d0		;Add (a0) to d0
+Why haven't I used (a0)+ instead ? There's no point, we've all ready read the
+whole table.
+
+
+That's it on the beginners front for this issue, have a look at the list of
+commands and the other source, see how much you understand and just play
+around with things ( Don't worry if it screws up, you'll be lucky if it
+dosen't ! ).
+@Endnode

@@ -1,0 +1,1018 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<a name=1></a><img src="features-1_1.jpg"><br>
+<b>Feature List</b><br>
+<i>Revision 1.0</i><br>
+January 7, 2003<br>
+© 2003 Hyperion Entertainment<br>
+<a name=2></a><a name=3></a><i><b>Introduction</b></i><br>
+The following pages provide a more detailed description of the "new" functionality introduced by<br>
+Amiga OS 4.0.<br>Functionality is considered "new" when it was not present in Amiga OS 3.9 (Boing Bag 2).<br>OS modules which are simply recompiled for PPC (such as Workbench for instance) are not<br>
+mentioned here.<br>
+<b>Note that this document should be considered preliminary and the information it contains is</b><br>
+<b>still subject to change and refinement.<br>Nothing in this document shall be construed as limiting Hyperion's right to modify the</b><br>
+<b>functionality of AmigaOS 4.0 without prior notice.<br>Further revisions of this document will be made available.<br>This document is © (2003) Hyperion Entertainment.<br>Permission is hereby granted to reproduce the content of this document in whole or in part</b><br>
+<b>solely in unmodified form.</b><br>
+3<br>
+<a name=4></a><i><b>Exec SG (second generation)</b></i><br>
+Exec SG is the OS 4.x kernel and as such the heart of the system.<br>
+<i><b>Inherited functionality from older Exec versions:<br></b></i>ExecSG is fully backward compatible to older Exec versions and preserves all of its features<br>
+including, but not limited to:<br>
+·<br>
+Fully pre-emptive multitasking (round-robin)<br>
+·<br>
+Support for shared libraries<br>
+·<br>
+Very fast inter-process communication (IPC - message passing by reference)<br>
+·<br>
+Fast interrupt handling (low latency)<br>
+·<br>
+Low-overhead task switching<br>
+<i><b>New functionality introduced by ExecSG: </b></i><br>
+·<br>
+Fully PPC native: not a single 68k instruction left in ExecSG. <br>
+·<br>
+68k emulation: both interpreting and JIT emulation available (see below), JIT for speed,<br>
+interpreting for compatibility.<br>
+·<br>
+Extremely fast context switching times: 1 microsecond on a 600 MHz G3.<br>
+·<br>
+Extremely low latency for IPC: Signal &quot;roundtrip&quot; times below 4 microseconds.<br>
+<i><b>Clarification: Roundtrip time means the time required for task A to send a signal to</b></i><br>
+<i><b>task B and task B to send a signal back to task A. Roundtrip time is the time needed for</b></i><br>
+<i><b>task A to send the signal and receive the answering signal.</b></i><br>
+·<br>
+Interrupt handler can be in PPC code but can also be emulated, which is useful for old hardware<br>
+drivers.<br>
+·<br>
+New API for DMA drivers: DMA capable drivers can now query the &quot;scattering&quot; of memory<br>
+with just one call instead of repeated CachePreDMA/CachePostDMA calls. This makes DMA<br>
+transfers much more efficient for controllers that support &quot;scatter/gather&quot; interfaces like most<br>
+busmastering IDE controllers. The new API is also much easier to use.<br>
+·<br>
+Hardware Abstraction Layer (HAL): ExecSG itself is machine independent, it sits on an abstract<br>
+&quot;hardware&quot;. Only the abstraction layer itself has to be ported to a new platform thus making the<br>
+transition to other hardware relatively easy. The abstraction layer itself is also divided up into<br>
+different parts: CPU, machine and common. For a transition to another machine with an already<br>
+supported CPU, only the &quot;machine&quot; part has to be ported.<br>
+·<br>
+Resource tracking: Applications can create &quot;trackable&quot; resources, for example memory, message<br>
+ports, messages, semaphores, and have them tracked by ExecSG. When the program exits (either<br>
+normally or abnormally due to a crash) the resources are freed automatically.<br>
+·<br>
+Improved trap handling: Previous incarnations of Exec only allowed one trap handler per task.<br>
+ExecSG allows trap handlers to be installed for different &quot;events&quot;, like illegal instructions,<br>
+address errors, privilege violations, etc.. <br>
+4<br>
+<a name=5></a>·<br>
+Unified MMU interface: ExecSG now offers a special API to access the Memory management<br>
+unit. No custom solutions needed anymore.<br>
+·<br>
+Integration of utility.library: ExecSG integrates the functionality of utility.library to present the<br>
+application programmer with a unified interface throughout the system. This allows Exec<br>
+functions to use hooks and tag lists instead of simple callbacks or variable argument lists. This<br>
+functionality is included in its own interface (see below, &quot;new library model&quot;, for a discussion<br>
+about interfaces). All of these functions can of course still be accessed through utility.library.<br>
+·<br>
+Integration of amiga.lib: ExecSG integrates the &quot;Exec support functions&quot; of amiga.lib. This also<br>
+includes CreateTask, which now has an additional parameter that can take up a taglist, which in<br>
+turn can be used to pass parameters to a task (these parameters are passed like function<br>
+parameters).<br>
+·<br>
+Limited memory protection: Critical memory areas can be protected: Kernel memory areas, all<br>
+code areas, unused memory (also unused free memory). Applications can use the MMU interface<br>
+to protect their memory from others.<br>
+·<br>
+AltiVec.resource: Used to arbitrate access to AltiVec streams.<br>
+·<br>
+WarpUp emulation.<br>
+<b>Planned and already partially implemented functionality:</b><br>
+·<br>
+Symmetric Multi-Processing (SMP): support for multiple CPU's.<br>
+·<br>
+Multithreading: Tasks can consist of multiple threads of execution which are scheduled<br>
+individually on a higher frequency.<br>
+·<br>
+Isolated address spaces: This feature will give each task its own address space so that it appears<br>
+to be the only running task. Communication will still work without copy through shared memory<br>
+areas. This feature is already available in the current ExecSG but not enabled yet due to<br>
+incompatibilities with OS3.x.  It is also only really useful with multithreading.<br>
+·<br>
+Pluggable schedulers<br>
+<b>An in-depth look at some of the more advanced ExecSG features:</b><br>
+<b>New library model<br></b>ExecSG sports a new model for shared libraries. The old model will remain to support 68k libraries.<br>PPC native libraries will be organized slightly different: The library base is still there (and looking<br>
+the same as before) but the jump table only contains 68k functionality (for compatibility). <br>
+PPC native functionality is provided by <br>
+<b>Interfaces</b>:<br>
+·<br>
+An Interface can be thought of as a separate jumptable, containing pointers to the actual library<br>
+functions.<br>
+·<br>
+An Interface can have its own data area in addition to that of the library base.<br>
+·<br>
+An Interface can be shared among tasks (like a library) but may also be created as a private<br>
+instance, allowing instance data to be stored in it (similar to the old SAS/C method of duplicating<br>
+5<br>
+<a name=6></a>the library base). A task can also create multiple instances of the same interface with each<br>
+interface having its own data (essentially like real objects).<br>
+·<br>
+Reference counting is used to work around stale pointer problems.<br>
+·<br>
+A library can export any number of interfaces. For example, ExecSG exports the interfaces<br>
+&quot;main&quot;, &quot;utility&quot; and &quot;mmu&quot;, which represent the main API, the integrated utility.library and the<br>
+special MMU interface.<br>
+·<br>
+A library can export the same interface in multiple versions thus allowing for full backward<br>
+compatibility.<br>
+·<br>
+Interfaces can be modified with SetMethod (like SetFunction), allowing &quot;morphing&quot; interfaces<br>
+that can efficiently adapt to internal state changes. For example, expansion.library uses this in its<br>
+PCI interface to adapt a PCI interface to the actual hardware.<br>
+·<br>
+Interfaces can also be created in such a way that they are protected against patching. This is<br>
+essential for services like SSL (or any security-sensitive service).<br>
+·<br>
+Interfaces can be used to write Object-oriented libraries.<br>
+·<br>
+Interfaces are conceptually similar to component programming models.<br>
+<i><b>New memory system:</b></i><br>
+·<br>
+ExecSG uses a fully virtualised address space. As a result addressable memory can be larger than<br>
+the available physical memory.<br>
+·<br>
+Memory allocation can specifically request physically mapped memory or virtualised memory.<br>
+<i><b>Clarification: virtualised memory is NOT virtual memory in the sense of disk-based</b></i><br>
+<i><b>memory.</b></i><br>
+·<br>
+Memory allocation can be deferred, i.e. virtual addresses are allocated but no physical memory is<br>
+assigned until it is needed (which is then handled automatically and fully transparently to the<br>
+application). If an address range is not referenced, it will never be backed up with physical<br>
+memory so no memory is wasted.<br>
+·<br>
+Memory can be paged-out to disk (virtual memory). This feature can be disabled if required<br>
+(under certain circumstances, this can be switched on or off on-the-fly, no reboot required).<br>
+·<br>
+Memory can be reallocated: This essentially resizes a block of memory without moving it.<br>
+·<br>
+Memory reallocation in conjunction with deferred mapping can be used to load disk-based data<br>
+structures in an extremely memory-efficient manner: Allocate a large block of memory deferred,<br>
+fill it up with data, and reallocate it to the appropriate size. This method will never use more than<br>
+the memory that is actually being accessed and can be used to load e.g. compressed data when<br>
+the uncompressed size is not  known but a rough estimate is nonetheless possible.<br>
+·<br>
+The memory system is now &quot;object-oriented&quot;: The virtual address space is divided into areas<br>
+(similar to the old MemHeader system) but each memory area can be attached to an allocator and<br>
+a fault handler.<br>
+·<br>
+An <br>
+<b>allocator</b> organizes the address space it has been assigned to; <br>
+·<br>
+it handles allocation/deallocation, DMA preparation etc.<br>
+6<br>
+<a name=7></a>·<br>
+it handles allocation of physical memory and binding physical memory<br>
+to virtual addresses<br>
+·<br>
+<b>A fault handler</b> is responsible for handling memory faults in its assigned area:<br>
+·<br>
+it handles deferred memory requests by providing physical memory as<br>
+soon as virtual areas are accessed.<br>
+·<br>
+it handles interaction with the pager to swap memory out to/in from<br>
+disk.<br>
+·<br>
+it handles illegal access (privilege violation, illegal addresses etc).<br>
+·<br>
+Possibilities for allocator/fault handlers:<br>
+·<br>
+&quot;Normal&quot; virtual addressed memory: The default case.<br>
+·<br>
+Stack areas: A stack might underflow (out of stack space), in which case the fault<br>
+handler can use the allocator to provide a new chunk of physical memory, thus<br>
+automatically enlarging the stack. Stack underflows are one of the major problems<br>
+on the Amiga today and account for a significant percentage of crashes.<br>
+·<br>
+Memory mapped files: The fault handler swaps in portions of a file when they are<br>
+accessed in virtual address space. This works exactly like virtual memory but allows<br>
+for normal disk-based files to be accessed as if they were in memory.<br>
+·<br>
+Address space emulation: The system can emulate alien address spaces, for example<br>
+emulate an AGA chipset on a machine that doesn`t have AGA.<br>
+<i><b>Just in Time (JIT) 68K emulation<br></b></i>Dynamic recompilation or JIT compilation is a technique whereby (in this case) 68K machine code<br>
+is translated on the fly to PPC machine code which is stored in a temporary buffer to avoid<br>
+recompilation each time the recompiled code is executed.<br>All 68040 instructions including FPU instructions are fully emulated.<br>Even on a lowly 603e@160 Mhz the recompiled code reaches and in some cases surpasses the<br>
+speed of a 68060@50 Mhz.<br>
+·<br>
+Directly integrated with ExecSG. No "boxed" emulation approach.<br>
+·<br>
+JIT can be switched on/off on a per-task basis<br>
+·<br>
+Different JIT and/or interpreter can be used on a per-task basis ("pluggable" emulation).<br>
+AmigaOS 4 uses a task-based emulation which is directly integrated into ExecSG to emulate legacy<br>
+68k code. Each emulated task is scheduled independently and has its own emulation process and<br>
+interpretation/translation stage independently from other emulated tasks. Hence there is no need for<br>
+virtualization of resources, no delay to build a sandbox mechanism.<br>While this is in theory less compatible than a sandbox or "virtual machine" type approach, it offers<br>
+a few key advantages:<br>
+·<br>
+More responsive; such an approach does not break time-critical/real-time behavior.<br>
+<i><b>Clarification: With a sandbox approach, a separate scheduler runs inside the sandbox</b></i><br>
+<i><b>to schedule 68k tasks, which increases delay times substantially. A task-based scheme</b></i><br>
+<i><b>does not separate 68k and PPC tasks. They are treated equally.</b></i><br>
+7<br>
+<a name=8></a>·<br>
+External interrupts (generated by the hardware or the kernel) as well as some exceptions do not<br>
+have to be emulated, which improves emulation speed.<br>
+·<br>
+Legacy applications may benefit (to some extent) from additional functionality introduced by<br>
+ExecSG (resource tracking and memory protection, for instance), albeit in a limited way.<br>
+<i><b>Generic PCI support available through expansion.library</b></i><br>
+Currently supports Prometheus and Mediator PCI busboards as well as the Articia S on the<br>
+AmigaOne hardware. <br>
+<i><b>Completely re-implemented DOS</b></i><br>
+·<br>
+There are no longer any limits to DOS path length strings for the following functions: Open(),<br>
+Lock(), SetProtection(), SetOwner(), SetFileDate(), DeleteFile(), CreateDir(), SetComment().<br>
+·<br>
+Completely new implementation of all the pattern matching functions, providing far better<br>
+pattern support than the old routines.  <br>
+·<br>
+Includes a suite of Address Tracking Functions to complement DOS to provide a consistent<br>
+interface for various development tools.<br>
+·<br>
+All of active (TripOS) BCPL DOS components from V40, are now defunct resulting in a more<br>
+stable and consistent C-based DOS library.<br>
+·<br>
+Many bugs fixed including memory leaks and &quot;NIL:&quot; filehandle issues as well as a more robust<br>
+RunCommand() function.<br>
+<i><b>New Shell and C: commands</b></i><br>
+·<br>
+Improved shell with pipes, history, output recording, command line editing, file name completion<br>
+and new built-in commands. Detects software implementation problems such as unreleased<br>
+signal bits to help developers to clean up their code.<br>
+·<br>
+New Queue-Handler, implementing the PIPE: device; faster, more memory efficient. No longer<br>
+suffers from the implementation problems of the original Queue-Handler.<br>
+·<br>
+New and improved Aux-Handler, allowing you to run a command line shell on the serial terminal<br>
+instead of a console window.<br>
+·<br>
+New MD5Sum command for calculating and verifying checksums of files; compatible with the<br>
+Unix command of the same name.<br>
+·<br>
+All shell commands now transparently support soft links.<br>
+<i><b>OS 4.x native SCSI drivers for the Symbios SCRIPTS family of SCSI</b></i><br>
+<i><b>controllers</b></i><br>
+Support for the onboard SCSI controllers of the Cyberstorm PPC and BlizzardPPC.<br>
+<i><b>Highly optimised layers.library</b></i><br>
+·<br>
+Many source code improvements and bugfixes leading to a cleaner implementation.<br>
+·<br>
+Improved memory management (less fragmentation and better low-memory handling).<br>
+·<br>
+Ability to hide layers (ie. make them invisible).<br>
+8<br>
+<a name=9></a>·<br>
+Introduction of several speed-ups when moving and resizing of layers.<br>
+·<br>
+Offscreen-layers, allows Intuition windows to be dragged off screen.<br>
+<i><b>Picasso 96 V3 RTG system</b></i><br>
+P96 is a Retargetable Graphics system which redirects graphic output to the monitor and bypasses<br>
+the Amiga`s built in graphics modes (OCS/ECS/AGA).<br>More details (especially on the supported graphics cards) to follow soon.<br>
+<i><b>New Intuition and Reaction</b></i><br>
+·<br>
+The Intuition API has been noticeably extended with 50+ new functions, several new properties<br>
+for screens, windows, gadgets and images and the integration of features previously only<br>
+available through third-party extensions or patches.<br>
+·<br>
+Possibility to drag windows outside of their screen`s boundaries. This feature is optional and can<br>
+also be disabled on-the-fly by way of a qualifier key.<br>
+·<br>
+Intuition offers functions to hide/show windows, useful for instance to easily implement<br>
+iconification in any program.<br>
+·<br>
+Some amiga.lib BOOPSI support functions have been integrated into intuition.library for greater<br>
+efficiency.<br>
+·<br>
+Intuition offers a screen notification system, allowing client applications to be informed in real<br>
+time whenever a specific public screen is opened, closed, depth-arranged, locked or unlocked. It<br>
+is also possible to receive a notification for any window that is opened or closed on that screen.<br>
+·<br>
+Screens can be locked in an Intuition-friendly way, whenever it is needed to directly access their<br>
+bitmap, without having to go through the locking functions of layers.library. This can be done<br>
+both by applications and by  BOOPSI classes.<br>
+·<br>
+The updated API offers functions to set and get attributes of already open screens and windows,<br>
+where applicable.<br>
+·<br>
+A new type of window is available, &quot;toolbox window&quot;, which cannot be activated and is<br>
+therefore very useful to implement floating toolboxes (as commonly used in e.g. drawing<br>
+programs) which don`t take away the focus from the project window when the user clicks on<br>
+their buttons.<br>
+·<br>
+Intuition can optionally remember the last active window and gadget on every screen and<br>
+reactivate them as soon as that screen is brought to front again.<br>
+·<br>
+All memory allocations within Intuition make use of memory pools, which significantly reduces<br>
+system memory fragmentation.<br>
+·<br>
+Intuition windows can be dragged and resized in real time (opaquely) without blocking any<br>
+output occurring within other windows.<br>
+·<br>
+The DrawInfo structure does contain a dri_Screen back-pointer which makes it much easier for<br>
+BOOPSI image classes to obtain information on the layout of the screen they will use for display.<br>
+·<br>
+Some API functions are available which allow to share pictures between different screens and/or<br>
+applications, minimizing the need for reloading and remapping. Usage of these functions greatly<br>
+reduces memory consumption and increases performance.<br>
+·<br>
+An official method has been introduced to add custom gadgets to a window`s titlebar in a legal<br>
+and effortless way. This increases visual consistency and ensures future compatibility.<br>
+9<br>
+<a name=10></a>·<br>
+A new ReAction class has been added which implements pop-up menus.<br>
+·<br>
+A number of long-standing bugs and quirks of Intuition have been finally fixed and code<br>
+optimizations have been applied where possible.<br>
+·<br>
+The look and feel of every element of the Intuition GUI can be configured by way of a<br>
+preferences editor, and all of the user interface settings can at any time be programmatically<br>
+queried with appropriate API functions.<br>
+·<br>
+Greatly increased the number of DrawInfo pens, for a much more refined control over the colors<br>
+of all GUI elements.<br>
+·<br>
+Full-intensity and half-intensity bright/dark pens (used in pseudo-3D effects) can be defined in<br>
+terms of contrast relative to a particular base pen and therefore automatically computed by<br>
+Intuition.<br>
+·<br>
+The style of almost any frame used in the GUI can be set as 3D, XEN-like or flat (thick or thin).<br>
+Each of these styles, in turn, can be fine-tuned by configuring the appropriate DrawInfo pens.<br>
+·<br>
+Virtually every element of the GUI can be textured with a bitmap. The user can select different<br>
+bitmaps for buttons, scrollers, menus, window backgrounds, requester backgrounds, screen<br>
+titlebars, window titlebars and window borders. For most of these elements, a separate texture<br>
+can also be associated to each visual state (selected, inactive, disabled...).<br>
+·<br>
+On hi/truecolor screens, most of the 3D elements having a texture as background can have their<br>
+bright and dark edges drawn as brighter/darker shades of the texture. This spares the user from<br>
+the hassle of finding suitable edges colors every time a different texture is chosen and also<br>
+conveys a more realistic 3D effect.<br>
+·<br>
+The look of scrollers can be configured in every detail, such as the type of background (solid,<br>
+textured or furrow-like), the thickness of the container`sborder, the knob color, the style of the<br>
+arrows and much more. Separate configurations are possible for scrollers in window borders and<br>
+scrollers inside windows.<br>
+·<br>
+Intuition menus can optionally be brought up under the mouse pointer (pop-up) rather than on<br>
+top of the screen (pull-down).<br>
+·<br>
+Intuition menu panels can have an arbitrary shape, be drawn with partial transparency and cast a<br>
+drop shadow. It is also possible to choose the style of their frame, which can be fully 3D, XEN-<br>
+like or simply flat.<br>
+·<br>
+Intuition menus use different symbols for items that can be toggled (checkmark) and mutually<br>
+exclusive items (radio button). They also display a real arrow symbol to mark sub-menus, rather<br>
+than using the &quot;»&quot; character (ASCII 187) for this purpose as done previously.<br>
+·<br>
+Disabled gadget labels and menu items are drawn with a pseudo-3D embossed look on any<br>
+screens with 16 or more colors, rather than being covered with an old-style ghosting pattern.<br>
+·<br>
+GadTools and ReAction interfaces share the exact same look (as configured by the user) in<br>
+almost every detail, for a consistent GUI appearance.<br>
+·<br>
+Window titles can be placed at the left side, centered in the dragbar or centered in the whole<br>
+titlebar.<br>
+·<br>
+The height of screen and window titlebars can be increased without changing the screen font.<br>
+·<br>
+The user can set the exact width of screen and window titlebar gadgets or just make them always<br>
+square, wide (3:2) or narrow (2:3).<br>
+10<br>
+<a name=11></a>·<br>
+The user can freely choose the width and height of window sizing gadgets and border arrow<br>
+gadgets, as well as the thickness of all four window borders.<br>
+·<br>
+For ReAction windows, it is possible to choose the preferred window border (right, bottom or<br>
+both) where the sizing gadget is to be placed.<br>
+·<br>
+The style and geometry of system gadgets in window borders and screen titlebars can be selected<br>
+among a number of pre-defined choices, which can be extended by way of external style plugins.<br>
+·<br>
+It is possible to have individual GUI configurations for specific screens or to allow all screens to<br>
+use common GUI settings.<br>
+·<br>
+External pictures can be used, in the form of &quot;bitmap sets&quot;, to customize the look of<br>
+screen/window system gadgets, menu glyphs, and most symbols used in GadTools and ReAction<br>
+gadgets (arrows, checkmarks, etc.); a small logo can also be displayed at the left side of a<br>
+screen`s titlebar.<br>
+·<br>
+Intuition`ssysiclass (system image class) supports alpha channeling on hi/truecolor screens, thus<br>
+enabling its glyphs to perform effects like anti-aliasing or realistic drop shadows on any<br>
+background. This is possible for both vector glyphs and external bitmaps.<br>
+·<br>
+Intuition`ssysiclass offers an enhanced public API which developers can use to easily implement<br>
+custom vector images taking advantage of all the special rendering features of the class.<br>
+·<br>
+Intuition`ssysiclass features several new image types including those commonly used for titlebar<br>
+gadgets, such as iconify, pop-up, padlock... It also offers a generic frame suitable to implement<br>
+titlebar gadgets with a custom graphic or textual content.<br>
+·<br>
+Introduces Meta-Dragging and Meta-Sizing for windows: Appropriate qualifier keys allow the<br>
+user to drag windows by clicking inside their area and resize them by any border or corner.<br>
+<i><b>Port of Mesa 5.0 (OpenGL 1.4).</b></i><br>
+Mesa is a high-level 3D API with a command set which is nearly identical to that of OpenGL<br>
+1<br>
+, the<br>
+cross-platform 3D API originally developed by Silicon Graphics (SGI ­ <br>
+http://www.sgi.com<br>
+).<br>
+(see: <br>
+http:<br>
+  //mesa3d.sourceforge.net/<br>
+  <br>
+)<br>
+<i><b>Warp3D V4 and Warp3D NOVA</b></i><br>
+The first installment of OS 4 will include the current V4 of the generic Warp3D low-level driver<br>
+system. For the time being, both the Permedia 2 and Voodoo 3 graphics cards will be supported,<br>
+with Radeon support to follow.<br>Warp3D NOVA, the follow-up to Warp3D V4, will be a complete rewrite and all-new design.<br>
+Planned features include:<br>
+·<br>
+Shader-Centric design. All fixed-function pipeline functionality will be treated as a special case.<br>
+·<br>
+High-level shading language support similar to Cg<br>
+TM<br>
+.<br>
+·<br>
+Modular, component-based design<br>
+·<br>
+Support for modern graphics card features like <br>
+·<br>
+Vertex shaders<br>
+·<br>
+Pixel shaders<br>
+·<br>
+AGP texturing<br>
+1 OpenGL is a trademark of SGI<br>
+11<br>
+<a name=12></a>·<br>
+On-board vertex and data buffers<br>
+·<br>
+Environmental and dot-three bump mapping<br>
+·<br>
+Displacement mapping (where available)<br>
+<i><b>OS 4.x native version of AHI v6</b></i><br>
+AHI is the standard Retargetable Audio subsystem for AmigaOS which supports both Zorro and<br>
+PCI based audio hardware.<br>Currently supported audio hardware:<br>
+Aura<br>
+*<br>
+Clarity<br>
+*<br>
+Concierto<br>
+Delfina<br>
+DraCo Motion<br>
+ESS Solo 1<br>
+ForteMedia FM801<br>
+Maestro Pro<br>
+Melody<br>
+Paula (standard Amiga)<br>
+Prelude<br>
+Repulse<br>
+SoundBlaster 128<br>
+SoundBlaster Live!<br>
+Sunrize<br>
+Terratec 128i PCI<br>
+Terratec 512i digital<br>
+Toccata<br>
+VIA AC97<br>
+Vivanco<br>
+Wavetools<br>
+More information can be found here: <br>
+http://www.lysator.liu.se/(all)/~lcs/ahi.html<br>
+<i><b>FT2Engine: new powerful font-engine</b></i><br>
+FT2Engine is an Amiga font engine that allows you to use &quot;alien&quot; font formats with each program<br>
+that either uses diskfont.library or the bullet.library API. <br>Features:<br>
+·<br>
+Supports PostScript Type1 and Type42, TrueType/OpenType (including TrueType collections,<br>
+embedded bitmaps, and OpenType 1.3 with Unicode characters beyond 0xffff), PFR (Truedoc<br>
+dynamic webfonts), BDF&amp;PCF (X11 bitmap fonts) and Windows .fnt/.fon fonts.<br>
+·<br>
+Global font, glyph and charmap cache with adjustable size.<br>
+·<br>
+Support for embedded fonts (raw font from memory without .otag file).<br>
+·<br>
+Includes font manager FT2Manager with localized MUI GUI that allows you to install, modify,<br>
+rename and delete fonts, create bitmap fonts in different charsets, select encoding, adjust metrics,<br>
+select between three types of hinting, view all Unicode3.2 chars, view any text (encoded in UTF-<br>
+7|8|16|32 or plain 8bit) with the selected font, kerning and charset. Has bubble help, selectable<br>
+font smoothing etc.<br>
+·<br>
+diskfont, asl and locale library now support:<br>
+·<br>
+Font names with more than 30 characters<br>
+·<br>
+Fonts and catalogs with different charsets<br>
+·<br>
+Selection of the default system charset (e.g. ISO-8859-15 with Euro)<br>
+·<br>
+Improved &quot;bullet&quot; API (font smoothing, bitmap font support etc)<br>
+<i><b>"Roadshow": TCP/IP stack &amp; PPP drivers </b></i><br>
+·<br>
+Compatible with software written for AmiTCP V4, Miami, Miami Deluxe and Termite TCP.<br>
+* Sampling only<br>
+12<br>
+<a name=13></a>·<br>
+Written from scratch, incorporating the 4.4BSD Lite2 TCP/IP kernel.<br>
+·<br>
+Compact and efficient design; fastest Amiga TCP/IP stack to date.<br>
+·<br>
+Automatic configuration via the Dynamic Host Configuration Protocol (DHCP) supported<br>
+through built-in DHCP client; activate a networking interface and your Amiga automatically<br>
+becomes part of your local network. This enables you to use cable and DSL modems with your<br>
+Amiga.<br>
+·<br>
+Uses a small, but comprehensive set of Amiga specific administration tools and configuration<br>
+files; easier to learn and use than plain Unix style commands and files.<br>
+·<br>
+Just one command required to start up and make your Amiga part of your network; no need to<br>
+configure routes, IP addresses and domain name system servers separately.<br>
+·<br>
+Supports Ethernet (broadcast) and PPP, SLIP, CSLIP (point-to-point) networking.<br>
+·<br>
+Completely localized, with error messages and reports printed in your native language.<br>
+·<br>
+Built-in Internet Superserver (&quot;inetd&quot;) to start server application software in response to client<br>
+requests (e.g. Apache web server, Samba file server, etc.).<br>
+·<br>
+Built-in &quot;TCP:&quot; device handler which makes it possible to use the TCP/IP stack functionality<br>
+from within shell scripts or Arexx programs.<br>
+·<br>
+Integrated IP packet filter (IPF) and network address translation (NAT); build your own firewall<br>
+or use your Amiga as a network gateway.<br>
+·<br>
+Uses the SANA-II standard for networking drivers; supports the release 2, 3 and 4 extensions<br>
+such as for direct memory access and dial-up networking.<br>
+·<br>
+Multicasting supported.<br>
+·<br>
+Built-in support for the Berkeley Packet Filter (BPF); monitor the local networking using your<br>
+Amiga.<br>
+·<br>
+Greatly enhanced application programming interface which gives developers control over the<br>
+networking interfaces, routing and kernel behaviour, allows for data to be filtered, monitored and<br>
+reshaped; create your own firewall, check which requests your Amiga receives from the network,<br>
+deny incoming or outgoing connections. The enhanced application programming interface is still<br>
+backwards compatible with AmiTCP V4.<br>
+·<br>
+Comes with special networking drivers for dial-up networking (asynchronous PPP; for modems<br>
+and ISDN adaptors which behave like modems) and DSL access (PPP over Ethernet).<br>
+·<br>
+Driver for PPP over Ethernet supports the SANA-II standard for networking drivers including the<br>
+release 2, 3 and 4 extensions such for as direct memory access. A special &quot;low overhead&quot; mode<br>
+increases networking performance by cutting the path short which lies between the Ethernet<br>
+driver and the TCP/IP stack.<br>
+·<br>
+Both PPP drivers (asynchronous PPP and PPP over Ethernet) support automatic configuration of<br>
+local and network addresses, routes and domain name system server addresses. Link quality<br>
+monitoring and testing, authentication with plain text and encrypted passwords (CHAP and MS-<br>
+CHAP) are supported.<br>
+·<br>
+Driver for PPP over Ethernet includes security features to discourage password sniffing on the<br>
+network.<br>
+<i><b>AmiSSL V2</b></i><br>
+·<br>
+Port of latest version of OpenSSL.<br>
+13<br>
+<a name=14></a>·<br>
+Implementation of SSLv2, SSLv3, TLSv1 and the required code to support both SSLv2, SSLv3<br>
+and TLSv1 in one server and client.<br>
+·<br>
+Ciphers: Blowfish, CAST, DES, RC2, RC4, RC5 etc. (all with several modes of encryption).<br>
+·<br>
+Message digests: MD2, MD4, MD5, MDC2, RIPEMD-160, SHA (SHA-0), SHA-1<br>
+·<br>
+Public key encryption/decryption/generation: RSA, DSA, Diffie-Hellman key-exchange/key<br>
+generation (no limit on the number of bits)<br>
+·<br>
+X.509v3 certificates: encoding/decoding into/from binary ASN1 and a PEM based ASCII-binary<br>
+encoding which supports encryption with a private key.<br>
+·<br>
+Important design optimization which makes it faster than AmiSSL v1.<br>
+·<br>
+Used as main SSL library in IBrowse. Programs that use AmiSSL v1 (YAM, AWeb, SimpleMail<br>
+etc) will need only minimal modifications to work with AmiSSL v2.<br>
+<i><b>Re-implementation of the Amiga file system (FFS2) </b></i><br>
+·<br>
+Backwards compatible with the original FastFileSystem, including all options such as the<br>
+Directory Caching File System (DCFS) mode.<br>
+·<br>
+Hard links, file record locking and file notification supported.<br>
+·<br>
+More robust support for soft links than was available in the original Fast File System<br>
+implementation.<br>
+·<br>
+Reentrant; code can be shared by several storage devices, reducing memory requirements.<br>
+·<br>
+Enhanced to support file and directory names with up to 107 characters.<br>
+·<br>
+Fast and memory efficient built-in data caching system.<br>
+·<br>
+Multithreaded design: multitasking friendly because directory scanning, reading/writing file data<br>
+and directory manipulation can run in parallel.<br>
+·<br>
+Built-in file system validator.<br>
+·<br>
+ExAll() style directory scanning supported.<br>
+·<br>
+Owner and group IDs can be attached to file and directories; network enabled file systems (e.g.<br>
+Envoy) depend upon this feature.<br>
+·<br>
+Storage media larger than 4GBytes in size supported.<br>
+·<br>
+Variable storage block sizes supported; large data block sizes help to improve file system<br>
+performance.<br>
+·<br>
+More robust storage management which reduces the likelihood of data getting corrupted or<br>
+having to validate a disk`s contents.<br>
+·<br>
+Removable media (floppy, ZIP, JAZ, MOD, etc.) supported.<br>
+·<br>
+New plug-in interface for data caching and on-the-fly encryption.<br>
+<i><b>CD/DVD Filesystem</b></i><br>
+·<br>
+Supports ISO 9960 including RockRidge with Amiga extensions, Joliet and multisession CDs,<br>
+HFS and HFS+, reading Audio CDs (the audio tracks are converted to AIFF files) and reading<br>
+VideoCDs.<br>
+·<br>
+Mount Rainier support:<br>
+With a Mount Rainier (CD-MRW) capable CD-RW drive you can use CD-RWs discs as if they<br>
+14<br>
+<a name=15></a>were large floppies. One can copy files to a CD-RW with the Workbench/Shell, delete them<br>
+again etc. <br>
+(See: <br>
+http://www.mt-rainier.org<br>
+)<br>
+·<br>
+Packet writing support for those CD-RW`s that don`t support Mount Rainier.<br>
+<i><b>USB stack</b></i><br>
+OS4 will include a USB stack to support peripherals using the USB standard for connectivity.<br>As the stack is part of the OS it can be available during boot, allowing the use of USB mice and<br>
+keyboards in the early startup menu.<br>The USB stack has multilanguage support allowing the user to use other languages with USB<br>
+devices which supports this feature for device name, descriptions etc.<br>Some features of the USB stack can be controlled by the user - e.g. whether an attachment<br>
+notification window should be opened when a new USB device is attached, and how long the<br>
+window should stay open. Also the amount of logging the USB stack should perform can be<br>
+controlled by the user.<br>Appropriate drivers exist for hubs, mice and keyboards. Drivers for scanning and printing are also<br>
+available with the stack.<br>Drivers for USB Mass Storage devices (harddisk etc.) and Human Interface Devices (multimedia<br>
+keyboards, scroll-mice etc.) are in the works along with a GUI for viewing attached USB devices<br>
+and their status.<br>Currently supported hardware includes the Highway USB cards as well as the Thylacine Zorro 2<br>
+based card.<br>
+<i><b>"Partition Wizard": Recovery and Salvage tools for FFS2 and SFS</b></i><br>
+·<br>
+Check: Checks FFS and SFS partitions for errors.<br>
+·<br>
+Repair: Fix-in-Place repair of errors on a FFS partition.<br>
+·<br>
+Salvage: Recover-by-Copy, copies files still intact from a damaged FFS or SFS partition to<br>
+another one.<br>
+·<br>
+Undelete: Undeletes deleted files on FFS partitions.<br>
+·<br>
+Unformat: Unformats a 'quick' formated FFS partition.<br>
+·<br>
+Optimize: Optimizes a partition like ReOrg, DiskOptimizer (FFS) or starts the filesystem<br>
+defragmenter (SFS).<br>
+·<br>
+Find Partitions: Scans a HD for lost FFS and SFS partitions, the result can be imported into<br>
+Media ToolBox.<br>
+·<br>
+Convert: Converts Intl. OFS/FFS and DirCache OFS/FFS partitions to the new FFS2 LongName<br>
+format.<br>
+<i><b>"Media Toolbox": HDToolbox replacement</b></i><br>
+Media Toolbox is an advanced and feature-rich partitioning and preparation tool for a wide variety<br>
+of media, with a comprehensive SCSI toolkit thrown in for good measure. <br>Partitioning is made easy by the use of a simple and user-friendly GUI. <br>
+15<br>
+<a name=16></a>Complex operations like setting up partitions for OS installations (OS4, Linux, mixed OS4-Linux)<br>
+are made easy by the use of &quot;layout templates&quot;. Salvage and recovery of disk layouts are handled in<br>
+the same way. <br>One can choose between two modes of operations, "Normal" and "Expert" (power users). In<br>
+"Expert" mode the user can edit almost any value of the RDB.<br>The inbuilt SCSI toolkit sports features such as a rich lowlevel-format (including progress<br>indication and Iomega support), fast disk/partition erase, CD-R brand identification and SCSI mode<br>
+pages visual editing.<br>
+<i><b>InstallerNG (replacement of the Commodore Installer)</b></i><br>
+·<br>
+Enhanced functions: DATABASE, EXISTS<br>
+·<br>
+New functions: BEEP, COMPARE, DELAY, FINDBOARD, LET, NOP, RANDOM, REBOOT,<br>
+SETENV, SIMULATE-ERROR, SWING, GET-PROPERTY, PUT-PROPERTY, REMOVE-<br>
+PROPERTY, SAVE-PROPERTY-OBJECT, READ-PROPERTY-OBJECT, CAST-INT, CAST-<br>
+STRING<br>
+·<br>
+Nice GUI: The built-in GUI is based on a BOOPSI class-collection; these classes allow easy<br>
+font-adaption and resizing. Additionally, you may &quot;plug-in&quot; other GUI-systems (like MUI,<br>
+BGUI, ...) via a shared library called &quot;installergui.library&quot;.<br>
+·<br>
+"Help" window can stay open, while you install your packages; this is a built-in feature and<br>
+should be provided by every GUI.<br>
+·<br>
+Comfortable Workbench Start: if you start InstallerNG from Workbench and provide it with no<br>
+script via tooltypes a requester pops up asking you whether you want to load a script by a file-<br>
+requester or if you want to app-iconify the installer. If you drop a script-file on the application<br>
+icon the InstallerNG is started.<br>
+·<br>
+Flexible interpretation: if an error raises while the interpretation process, InstallerNG allows you<br>
+to continue at the very next function.<br>
+·<br>
+New<br>
+Tooltypes/CLI-Arguments:<br>
+LAZYCOMPILE,<br>
+CREATEUNINSTALL,<br>
+ALWAYSCONFIRM, COPYFILECOMMENT, NOSYSDELETE, DEBUGMODE<br>
+·<br>
+SOOP - Simple Object Oriented Programing: with help of the new functions PUT-PROPERTY,<br>
+GET-PROPERTY and REMOVE-PROPERTY InstallerNG implements LISP-like property-lists<br>
+for symbols.<br>
+·<br>
+Full installation control: If you want to, the InstallerNG asks for confirmation of every action, no<br>
+matter what the script-programmer specified in his installer script.<br>
+<i><b>AmiDock</b></i><br>
+The OS4.0 version of AmiDock is a "from the ground up redesigned" version of OS3.9<br>
+tm<br>
+`s<br>
+AmiDock.<br>The new AmiDock features a much improved icon layout engine together with text- and button<br>
+mode docks.<br>AmiDock is now far more interactive than the old version. A lot of things like the arrangement,<br>
+addition or removal of icons, categories and docks can now be achieved without opening the<br>
+preferences dialog.<br>The visual appearance of AmiDock now supports borderless, dragbar-less and even transparent<br>
+docks to integrate easily into every Workbench setup. <br>
+16<br>
+<a name=17></a>The font- and color-setup is now also fully customizable and each dock can be minimized to a tiny<br>
+bar to save space on the Workbench screen. Every icon or dock can now have its own hotkey for<br>
+easy and quick access of often used items.<br>The most impressive new feature is the possibility to have active content within a dock in the form<br>
+of "plug-ins". An AmiDock plug-in is called a &quot;docky&quot;. Each docky has full access to all of<br>
+AmiDock's internal functions and can cater for a virtually endless number of features. <br>The usage of dockies is very simple - adding a docky (for example by using drag&amp;drop) will add<br>
+and activate the docky and removing it will disable it. A virtually unlimited number of dockies can<br>
+run simultaneously in every dock you want.<br>A number of dockies are included with OS4.0; the most-requested feature - subdocks - was made<br>
+possible using a docky. There is also a docky which minimizes a dock automatically if the mouse<br>
+pointer is not any longer over the dock. Other included dockies allow you to have a clock, a lens,<br>
+animations and other active content within a dock.<br>The most thrilling applications will surely come from third party programmers in the form of third-<br>
+party dockies (the API will be released with OS4.0) - just imagine having the current network<br>
+traffic, the printer status, volume settings, the current rendering process of your raytracer and other<br>
+such things in the form of a small and responsive picture within your dock.<br>
+<i><b>application.library</b></i><br>
+This new library handles a lot of things which were up to now sorely lacking in AmigaOS.<br>Third-party applications can now "introduce themselves" to the system as &quot;application&quot; and can<br>
+benefit by doing so in several ways. <br>By way of example: AmiDock will add the applications to the main dock to provide a taskbar-like<br>
+access to the application. Each application can of course specify if it wants to run invisible in the<br>
+background, with a static icon or even by displaying a docky to provide some advanced control<br>
+features.<br>Applications which make use of this new library provide standard interfaces for opening and<br>
+printing documents, can be quit, iconified, called to front, put to back etc. using a standard interface<br>
+(i.e. AmiDock shows some popup-menus for applications and calls the application to front when it<br>
+was clicked in the dock).<br>There is now also a standard way to access a list of last-used documents and applications to get a<br>
+faster access to your most recently used items.<br>Whats more, application.library finally adds much requested possibility for applications to prevent<br>
+screensavers from starting (for example this is very annoying when watching a movie or working<br>
+with a video application).<br>Even OS4-games can take advantage of this new library as they can tell other applications to "shut<br>
+up" as they need a non-disturbed game-mode where no requester should pop-up, no background<br>
+sounds should be played etc.<br>The application.library finally also makes accessing program preferences as easy as pie by providing<br>
+an advanced XML-based preferences object system which allows storing whatever information is<br>
+required in a very versatile and flexible way. This puts an end to the different proprietary<br>
+preferences-system used by most applications which are unreadable for users and require a lot of<br>
+work on the part of developers.<br>
+17<br>
+<a name=18></a><i><b>Reading and printing of PDF files</b></i><br>
+<i><b>AmiPDF (port of the latest version of xPDF):</b></i><br>
+·<br>
+Supports PDF v1.4 files.<br>
+·<br>
+Uses T1Lib and Freetype2 libraries to support great number of different font types (Type0,<br>
+Type1/1C, Type3, Type42, TrueType, OpenType) with antialiasing.<br>
+·<br>
+The xPDF language support packages can be used with AmiPDF. Currently available packages<br>
+are: Chinese/simplified, Chinese/traditional, Cyrillic, Greek, Hebrew, Japanese, Korean, Latin2,<br>
+Thai and Turkish.<br>
+·<br>
+Fully supports password protected files (owner and user passwords).<br>
+·<br>
+Includes full screen mode (useful for presentations).<br>
+·<br>
+Multiple document windows.<br>
+·<br>
+Integrated direct printing support.<br>
+<i><b>AmiGS:</b></i><br>
+·<br>
+Frontend for new port of Ghostscript.<br>
+·<br>
+Displays Postscript (PS), Encapsulated PostScript (EPS) and PDF files.<br>
+·<br>
+Full antialiasing support.<br>
+·<br>
+Direct printing support.<br>
+<i><b>AmigaInput API</b></i><br>
+AmigaInput unifies the game programmer`sneed to support various input devices like joysticks,<br>
+pads, steering wheels, keyboards and mice using one common API. <br>AmigaInput is primarily aimed at multimedia and game programmers who want to support a wide<br>
+range of input devices, making the various API`s like lowlevel.library, gameport.device and<br>
+PSXport.device a thing of the past. Programmers will not need to care about how a device is<br>
+connected to the system.<br>Supported interfaces include:<br>
+·<br>
+USB ports<br>
+·<br>
+Classic joystick ports<br>
+·<br>
+Catweasel MK3 joystick and keyboard ports (planned)<br>
+·<br>
+Soundcard joystick ports<br>
+Supported device classes include<br>
+·<br>
+Analog and digital joysticks<br>
+·<br>
+Flight-Controller sticks<br>
+·<br>
+Joypads and PSX-Pads<br>
+·<br>
+Steering wheels<br>
+A SDK will also be available to allow hardware vendors to write device drivers for their hardware. <br>Furthermore a rewrite of lowlevel.library in OS 4 will directly map to AmigaInput, making it<br>
+possible to use modern hardware in old, non-AmigaInput aware applications and games.<br>
+18<br>
+<a name=19></a><i><b>Archiving and de-archiving utility</b></i><br>
+DropArc and XAD: Extracts files from all types of archive formats known to XAD (e.g. lha, dms,<br>
+lzx, arj, zip, cab, bzip2, tar, gzip, ...) by dropping files onto an icon. Creates lha and zip archives the<br>
+same way. This also includes archive conversion, image extraction and any combination of the<br>
+extract and compress methods. No GUI is required except the necessary part to change the available<br>
+options.<br>
+<i><b>Highly optimised datatypes</b></i><br>
+JPEG<br>PNG<br>TIFF<br>BMP<br>ILBM<br>GIF<br>(more to follow)<br>
+<i><b>MooVId PPC</b></i><br>
+AmigaOS 4.x native version of the well-know movie-player supporting the following fileformats<br>
+and audio and video codecs:<br><i>Supported file formats:</i><br>
+·<br>
+AVI (Video for Windows) - with and without index<br>
+·<br>
+QuickTime up to QuickTime6<br>
+·<br>
+MPEG4 video (ISO standard)<br>
+<i>Supported codecs</i>:<br>
+<b>Video for Windows (.avi)</b><br>
+<i>Supported Video Codecs</i><br>
+AccuPak<br>
+(PalomaAVI) (CLJR)<br>
+24 bit<br>
+DivX<br>
+(DVI3)<br>
+24 bit<br>
+DivX4/OpenDivX<br>
+(DIVX)<br>
+24 bit<br>
+DivX5.xx<br>
+(DX50)<br>
+24-bit<br>
+Intel Raw<br>
+(YUV9)<br>
+16 bit<br>
+Intel Raw<br>
+(YUV9)<br>
+24 bit<br>
+MPEG4/MPEG4 V1<br>
+(DIV1/MPG4/MP41)<br>
+24 bit<br>
+MPEGV V2<br>
+(MP42)<br>
+24-bit<br>
+MPEG4 V3<br>
+(MP43)<br>
+24 bit<br>
+Microsoft RGB<br>
+(RGB)<br>
+8 bit<br>
+Microsoft RGB<br>
+(RGB)<br>
+16 bit<br>
+Microsoft RGB<br>
+(RGB)<br>
+24 bit<br>
+19<br>
+<a name=20></a>Microsoft Video 1<br>
+(CRAM/MSVC)<br>
+8 bit<br>
+Microsoft Video 1<br>
+(CRAM/MSVC)<br>
+16 bit<br>
+Motion JPEG<br>
+(MJPG)<br>
+24 bit<br>
+Radius Cinepak<br>
+(CVID)<br>
+16 bit<br>
+Radius Cinepak<br>
+(CVID)<br>
+24 bit<br>
+Radius Cinepak<br>
+(CVID)<br>
+32 bit<br>
+Run Length Encoded<br>
+(RLE)<br>
+8 bit<br>
+<i><b>Supported Audio Codecs</b></i><br>
+DVI ADPCM<br>
+MONO/STEREO<br>
+4 bit (16 bit)<br>
+PCM<br>
+MONO/STEREO<br>
+8/16 bit<br>
+MPEGI Layer 2<br>
+MONO/STEREO<br>
+MPEGI Layer 3<br>
+MONO/STEREO<br>
+MS-ADPCM<br>
+MONO/STEREO<br>
+4 bit (16 bit)<br>
+<b>QuickTime (.mov, .qt)</b><br>
+<i><b>Supported Video Codecs</b></i><br>
+3iVX Delta 2<br>
+(3IV1)<br>
+24<br>
+bit<br>
+(req<br>
+codec<br>
+from<br>
+http://www.3ivx.com<br>
+)<br>
+Apple Animation<br>
+(RLE)<br>
+8 bit (color/gray)<br>
+Apple Graphics<br>
+(SMC)<br>
+8 bit (color/gray)<br>
+Apple Video<br>
+(RPZA)<br>
+16 bit<br>
+Intel Indeo 3.1<br>
+(IV31)<br>
+24 bit<br>
+Intel Indeo 3.2<br>
+(IV32)<br>
+24 bit<br>
+Joint Pictures Expert Group<br>
+(JPEG/JFIF)<br>
+24 bit<br>
+Radius Cinepak<br>
+(CVID)<br>
+16 bit<br>
+Radius Cinepak<br>
+(CVID)<br>
+24 bit<br>
+Radius Cinepak<br>
+(CVID)<br>
+32 bit<br>
+Sorenson Video<br>
+(SVQ1)<br>
+24 bit<br>
+MPEG4 video<br>
+(QT6)(MP4V)<br>
+24 bit<br>
+<i><b>Supported Audio Codecs</b></i><br>
+RAW<br>
+MONO/STEREO<br>
+8/16 bit<br>
+TWOS<br>
+MONO/STEREO<br>
+8/16 bit<br>
+IDA-ADPCM<br>
+MONO/STEREO<br>
+4/(16) bit<br>
+20<br>
+<a name=21></a><i><b>Supported Audio Codecs</b></i><br>
+MACE 6:1<br>
+MONO/STEREO<br>
+8 bit<br>
+MACE 3:1<br>
+MONO/STEREO<br>
+8 bit<br>
+MPEG Layer 3<br>
+MONO/STEREO<br>
+<i><b>OS 4.x native MUI</b></i><br>
+As many applications use MUI, the well-known GUI engine, the latest version of MUI will be<br>
+included with OS 4.x.<br>The OS 4.x OEM version of MUI has a predefined look which closely matches the OS 4.x default<br>
+look and which cannot be customised by the user without registering MUI separately.<br>
+<i><b>Web-browser (Ibrowse 2.3 OEM)</b></i><br>
+IBrowse 2.3 is a very versatile MUI-based web browser. Features include HTML 4 support plus<br>
+some Netscape and IE extensions, JavaScript and a customizable GUI layout.<br>Version 2.3 brings IBrowse to a new level - below is a very brief summary of changes since version<br>
+2.2:<br>
+·<br>
+Heavily enhanced JavaScript support, based on JavaScript 1.5 and revision 3 of the ECMAScript<br>
+specification, allowing access to sites which was not possible before.<br>
+·<br>
+Secure connection support is now available via AmiSSL v2, which can be configured extensively<br>
+in the IBrowse preferences.  Importing and exporting of certificates is now also supported.<br>
+·<br>
+Greatly improved general stability and memory leaks plugged<br>
+·<br>
+Improved GUI, including enhanced browser tab functionality (such as drag'n'drop,<br>
+keyboard<br>
+support).<br>
+·<br>
+Issues with the ARexx interface have been fixed and new commands added<br>
+·<br>
+Hundreds of other minor and major bug fixes and improvements and more workarounds added to<br>
+improve compatibility with broken sites<br>
+<i><b>OS 4.x native SFS (SmartFileSystem)</b></i><br>
+Included as contributed Software.<br>
+21<br>
+<a href="http://counter21.bravenet.com/index.php?id=351586&usernum=1731124651&cpv=1" tarpost="_top"><img src="http://counter21.bravenet.com/counter.php?id=351586&usernum=1731124651" alt="Bravenet.com" border="0" /></a>
+</body>
+</html>

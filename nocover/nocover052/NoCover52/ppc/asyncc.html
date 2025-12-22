@@ -1,0 +1,92 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="mixedfat.html">PREV</a> | <a href="switch68k.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Asnychrone Contextswitches </b>
+
+You should first read about <a href="switch68k.html">Calling 68k Code from PPC Code</a>
+and about <a href="switchppc.html">Calling PPC Code from 68k Code</a> and you should
+ALWAYS remember:
+
+There is no way
+to do PPC&#060;-&#062;68k communication WITHOUT Contextswitches in a efficient way,
+even if some people assumed so on the comp.sys.amiga.misc discussions.
+Often in these discussions &quot;Messaging&quot; like the announced Messaging-Concept
+of Phase 5 was described as being superior to Context-Switches. It should
+be once more clarified, that Context-Switching is nothing more than a
+&quot;special case&quot; of Messaging. It was also discussed, that running PPC and
+68k parallel might help. In most cases this is not true. As soon as the
+two use common data there are serious problems coming out of the hardware
+design of the Boards, which will slow down the code below 68060 speed. And
+even in the best cases a speedup of more than 20% is not possible, even
+with a 060. If you really KNOW what you are doing, you COULD still try
+running the two CPUs parallel, like described in
+<a href="asyncc.html">Asynchrone Contextswitches</a>. Don't try it, when you don't
+know EXACTLY what you are doing !!! To clarify it once more: This has nothing
+to do with problems of certain kernel implementations, it is just a problem
+of the existing hardware. It behaves like this on both implementations
+for the current hardware. So only use the asynchrone version, if you
+know that the advantages will be better than the disadvantages in your
+specific coding problem.
+
+A Contextswitch consumes about 0.5 milliseconds, so you should be VERY careful,
+when to use it.
+
+Also note, that other tasks can continue while the context-switch waits
+for the second CPU to complete the Cache-stuff EVEN WITH SYNCHRONE
+CONTEXT-SWITCHES.
+
+The principial way to do asynchrone Contextswitches is:
+
+1. Call the Contextswitch
+2. Now do other stuff (the Contextswitch is asynchrone, so you do not have
+   to wait)
+3. Wait for the Contextswitch to be finished later
+
+There is one limitation: You are not allowed to do a synchrone contextswitch,
+before you waited for the LAST ASYNCHRONE contextswitch.
+
+A Contextswitch is declared asynchrone by setting the ASYNC Bit in the
+flag parameter of the Contextswitch Macro (first Bit, defined in powerpc.i).
+
+The Wait-Functions are:
+
+WAITFORPPC [FPU]
+WAITFORPPC_XL [FPU]
+
+Their only (optional) parameter is FPU, in case the FPU-registers should be
+converted, when the Context-Switch returns. The not-XL-Version only returns
+d0 (fp0/fp1 with FPU-option) and d1/a0/a1 are trashed for the not-XL-version.
+
+WAITFOR68K [FPU]
+WAITFOR68K_XL [FPU]
+
+Their only (optional) parameter is FPU, in case the FPU-registers should be
+converted, when the Context-Switch returns. The XL-Version trashes r7-r10,
+if the RUN68K/RUN68K_XL called a library function, then r31 contains the
+library base. The Not-XL-Version trashes r4-r10, and only d0 (fp0/fp1, if
+FPU was specified) are converted.
+
+RunPPC, WaitForPPC, Run68K and WaitFor68K (and their _XL-versions) also
+support errormessages. They return:
+
+PPERR_SUCCESS   =       0               ;success
+PPERR_ASYNCERR  =       1               ;synchron call after asynchron call
+PPERR_WAITERR   =       2               ;WaitFor[PPC/68K] after synchron call
+
+And ALWAYS remember: NEVER USE ASYNCHRONE CONTEXTSWITCHES unless you know
+exactly what you are doing. You will have to be VERY careful with the caches,
+and even if you do everything 100% correct, it is still very probably, that
+your result will be slower, than if you did not use asynchrone contextswitches
+at all !!!
+
+</pre>
+</body>
+</html>

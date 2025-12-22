@@ -1,0 +1,131 @@
+P?
+           Leyendo ficheros en ensamblador usando
+           Open, Close y Read de Dos.Library.
+
+P:           By The Lawnmover Man
+
+
+
+P8         Hola  a  todos y bienvenidos a mi artículo.  Seguramente muchos de
+     vosotros esteis empezando a dar los primeros pasos  en  ensamblador  y
+     más  de  uno se habrá tirado de los pelos al ver lo coñazo que son las
+     rutinas para cargar desde disco usando la Dos.Library que aparecen  en
+     muchos libros de ensamblador.  Pues bien,  lo que aquí os pongo es una
+     rutina más o menos sencilla que cargará vuestros datos  en  un  buffer
+     que puede ser creado usando BLK/DCB o asignando vuestra propia memoria
+     con la instrucción AllocMem de la Exec.library.  Eso ya  dependerá  de
+     vosotros.  El  ejemplo  está  preparado para cargar un fichero de 1024
+     bytes (1KB) en la etiqueta DATA, que es precisamente donde se cargarán
+     los datos.
+
+         Aquí  os pongo la rutina y posteriormente comentaré como funciona.
+     Se pueden optimizar muchas cosas y  cada  uno  puede  cambiarla  a  su
+     gusto.
+
+
+P<
+     **************************************************
+     * Rutina usando Open,Read y Close de Dos.Library *
+     *                                                *
+     * By The Lawnmover Man/Suicidal Tendencies       *
+     **************************************************
+
+     ExecBase = 4
+     OpenLib  = -408
+     CloseLib = -414
+     Open     = -30
+     Close    = -36
+     Mode_old = 1005
+     Read     = -42
+
+     Init:
+             move.l  ExecBase,a6         ; Base Exec en a6
+             lea     Dosname,a1          ; Nombre de Dos.Lib en a1
+             moveq   #0,d0               ; Version
+             jsr     OpenLib(a6)         ; Abrimos libreria
+             move.l  d0,dosbase          ; Salvamos puntero
+             move.l  #mode_old,d2        ; Modo fichero OLD
+             bsr     openfile            ; Abrimos el fichero
+             move.l  #DATA,d2            ; Direccion donde se cargaran
+                                         ; los datos
+             bsr     readdata            ; Leemos los datos
+             bsr     closefile           ; y cerramos el fichero
+             move.l  ExecBase,a6
+             move.l  dosbase,a1          ; Base Dos.Library en a1
+             jsr     CloseLib(a6)        ; Cerramos Dos.Library
+             rts                         ; FINISH HIM!!
+
+     OpenFile:
+             move.l  dosbase,a6          ; Base Dos.Lib en a6
+             move.l  #nombre_fichero,d1  ; Nombre del fichero en d1
+             jsr     Open(a6)            ; Abrimos fichero
+             move.l  d0,filehd           ; Datos del fichero en filehd
+             rts
+
+     ReadData:
+             move.l  dosbase,a6          ; Base Dos.Lib en a6
+             move.l  filehd,d1           ; Estructura de fichero en d1
+             move.l  #$ffffc,d3          ; Leemos el fichero completo
+             jsr     Read(a6)
+             rts
+
+     CloseFile:
+             move.l  dosbase,a6
+             move.l  filehd,d1           ; Estructura del fichero en d1
+             jsr     Close(a6)           ; Cerramos el fichero
+             rts
+
+     dosname:    dc.b    "dos.library",0,0
+                 even
+
+     dosbase:    dc.l    0
+     DATA:       dcb.b   1024
+     filehd:     dc.l    0
+     nombre_fichero: dc.b    "nombrefichero",0
+
+              END
+
+
+
+P8         Y bien,  vamos a comentar un poco qué es exactamente lo que hace y
+     cómo funciona la rutina.
+
+         En primer lugar abrimos la Dos.Libray y activamos el MODO_OLD.¿por
+     qué?  Porque el modo viejo (mode_old)  es  el  que  nos  permite  leer
+     ficheros que ya han sido creados y esto se hace poniendo un 1005 en el
+     registro d2 justo antes de llamar a Open.  Si en vez de  haber  puesto
+     1005  hubiéramos puesto 1006 el fichero a abrir sería un fichero nuevo
+     que deseáramos crear en ese momento.  Tras decirle  al  ordenador  que
+     queremos  abrir  un  fichero antiguo llamamos a la subrutina OpenFile.
+     Esta subrutina básicamente lo que  hace  es  abrir  el  fichero.  Como
+     siempre la base de la librería DOS irá en A6. El nombre del fichero lo
+     posicionaremos en  D1  después  de  haberlo  declarado  al  final  del
+     programa y tras llamar a Open el ordenador retornará la estructura del
+     fichero en d0,  el cual lo salvaremos  en  FILEHD  para  poder  leerlo
+     posteriormente.  Ahora  que  ya  tenemos  abiero el fichero es hora de
+     leerlo.  Antes de leerlo le decimos al  ordenador  en  dónde  queremos
+     leerlo.   En este caso es en la etiqueta DATA que podrá almacenar como
+     máximo un fichero de 1024 bytes.  Este valor, por supuesto,  podrá ser
+     cambiado para poder leer ficheros de mayor tamaño.  Tras poner data en
+     D2 saltamos a la subrutina de lectura.  En esta subrutina  ponemos  la
+     estructura  que  hemos  obtenido  al abrir el fichero en d1 y en d3 se
+     supone que debe ir la longitud de nuestro  fichero  a  leer,  pero  si
+     ponemos $ffffc como longitud lo leerá completo (a menos que el fichero
+     tenga más de 20 Mb de longitud, cosa rara). Después de dar los valores
+     llamamos  a la función de Read y ya podremos observar cómo se enciende
+     el led de la unidad y comienza a leerse el fichero. Ahora sólo faltará
+     cerrarlo,  porque  en  ensamblador  todo lo que se abre es necesesario
+     cerrarlo.  Primeramente la base de la DOS en a6,  luego la  estructura
+     del fichero (filehd) en d1 y tras eso llamamos a Close. ¿facil no?
+     Para acabar la rutina cerramos la dos.library usando el CloseLib de la
+     Exec y finalizamos con un RTS.
+
+         Otra cosa que hay que recalcar es tener  cuidado  si  utilizais el
+     INTENA o el DMACON, de poner los valores apropiados  y  desactivar los
+     interrupts porque si no el guru que os va a salir va a ser tremendo.
+
+         Espero  que  esta  explicación  le  haya  servido a cualquiera que
+     tuviera dudas.  Como  ya  dije  al  principio  esta  rutina  se  puede
+     optimizar  y  hacer cambios a gusto del programador.  De todas formas,
+     esta es a grandes rasgos la que yo siempre utilizo y que  va  incluída
+     en mi music-disk "Spanish Feeling".

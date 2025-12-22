@@ -1,0 +1,370 @@
+<html>
+<head>
+  <title>Workshops</title>
+  <meta name="Generator" content="GuideML V1.6">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="workshops1.html">PREV</a> | <a href="workshops3.html">NEXT</a>
+<hr>
+<pre>
+
+2. Multitasking-Programmierung mit WarpOS (von Steffen H&auml;user)
+
+&raquo;Dies ist eine Fortsetzung meines Kurses zur PPC-Programmierung. Diesmal 
+geht es wirklich ins Eingemachte. Direkt in den Kern(el) von WarpOS. Im 
+Normalfall d&uuml;rften die beschriebenen Methoden nicht ben&ouml;tigt werden, aber 
+in einigen F&auml;llen ist die Multitasking-Programmierung doch recht n&uuml;tzlich.
+
+Bei R&uuml;ckfragen stehe ich unter <a href="mailto:MagicSN@Birdland.es.bawue.de">MagicSN@Birdland.es.bawue.de</a> oder 
+07021/51787 oder Steffen H&auml;user, Limburgstr. 127, 73265 Dettingen/Teck, 
+gerne zur Verf&uuml;gung. Auch an Software, die ich portieren kann, bin ich 
+interessiert.
+
+Viele Aufgaben bei einer Software k&ouml;nnen bekanntlich auf mehrere Tasks 
+aufgeteilt werden. Nat&uuml;rlich ist dies auch bei PPC-Software erw&uuml;nscht. 
+Dieser Artikel beschreibt, wie man Multitasking-Programmierung auf dem PPC 
+durchf&uuml;hrt, unter Verwendung des StormC oder des vbcc-WarpOS Compilers. Ich 
+gehe dabei nicht im Einzelnen auf die Syntax ein, sondern erl&auml;utere im 
+Wesentlichen die Verfahren. Syntax kann man in der Dokumentation von WarpOS 
+nachlesen.
+
+1. Die zentrale Funktion
+
+Die zentrale Funktion f&uuml;r das PPC-Multitasking ist die Funktion 
+CreateTaskPPC() der powerpc.library. Sie entspricht gewisserma&szlig;en der 
+Funktion CreateTask() der exec.library, nur da&szlig; sie PPC-Tasks, und keine 
+68k-Tasks erzeugt. Dennoch gibt es einige Unterschiede:
+
+- Anstelle einer Task-Struktur wird eine TaskPPC-Struktur erzeugt
+- Jede Task-Struktur enth&auml;lt &uuml;ber task-&#062;tp_Task eine &quot;normale&quot; Task-        
+  Struktur
+- Eigentlich entsprechen PPC-Tasks eher den Prozessen, als den Tasks
+
+Folgende Tags werden beim Erschaffen eines neuen PPC-Tasks eingesetzt:
+
+TASKATTR_CODE:      Zeigt auf die Funktion, die der Task ausf&uuml;hren soll,    
+                    wobei die Funktion mit __saveds deklariert und          
+                    definiert sein sollte
+TASKATTR_EXITCODE:  Falls vorhanden: Exitroutine des Tasks
+TASKATTR_NAME:      Der Name des Tasks, muss angegeben werden
+TASKATTR_PRI:       Falls vorhanden: Die Priorit&auml;t des Tasks
+TASKATTR_STACKSIZE: Die Gr&ouml;&szlig;e des Stacks
+TASKATTR_R3..._R10: Die Parameter f&uuml;r die Funktion
+TASKATTR_R2:        LinkerDB
+
+An dieser Stelle m&ouml;chte ich die Sache mit dem LinkerDB erl&auml;utern. Man kann 
+LinkerDB z.B. so deklarieren:
+
+extern ULONG *LinkerDB;
+
+Falls nun ein Task auf globale Variablen zugreifen soll (__saveds allein 
+gen&uuml;gt nicht !!!), so mu&szlig; man etwa so programmieren:
+
+        ppctags[0].ti_Data=(ULONG)AudioHandlerTask;
+        ppctags[2].ti_Data=(ULONG)&quot;MeinTask&quot;;
+        ppctags[3].ti_Data=(ULONG)-128;
+        ppctags[4].ti_Data=(ULONG)&amp;LinkerDB;
+        MeinTask=(void *)CreateTaskPPC(ppctags2);
+
+Nun kann der Task auch auf globale Variablen zugreifen.
+
+(Ein DeleteTaskPPC gibt es nat&uuml;rlich auch).
+
+2. Ein Wort zum Multiprocessing
+
+Immer wieder kommt im Usenet - meist von Leuten, die keine PowerPC-Karte 
+besitzen und gerne &quot;theoretisieren&quot; - das Stichwort &quot;Multiprocessoring&quot; 
+hervor. Um dies klarzustellen: PowerUP ist *kein* Multiprozessorsystem, 
+auch wenn es oft als solches bezeichnet wird. Der 68k und der PPC teilen 
+sich einen gemeinsamen Bus, und wenn man versucht, beide gleichzeitig 
+massivst auf diesem Arbeiten zu lassen - z.B. indem man einen Frame auf dem 
+PPC berechnet, und den letzten Frame gleichzeitig mit dem 68k darstellt - 
+so bricht die Busgeschwindigkeit MASSIVST zusammen. Man kann davon 
+ausgehen, da&szlig; der Bus auf etwa die halbe Geschwindigkeit gebremst wird. Das 
+Programm l&auml;uft also nur noch halb so schnell.
+
+DIES IST KEINE THEORIE, DIES SIND WERTE AUS DER PRAXIS, DIE VON MEHREREN 
+PROGRAMMIERERN UNABH&Auml;NGIG VONEINANDER GEMESSEN WURDEN.
+
+Es ist &uuml;brigens keine Frage des Kernels. Theoretisch kann man Pseudo-
+Multiprocessoring sowohl mit WarpOS (man w&uuml;rde das AllocXMsg-System 
+einsetzen) als auch mit ppc.library (das Message-System der ppc.library) 
+programmieren. Man erh&auml;lt jedoch in beiden F&auml;llen die gleichen miesen 
+Resultate.
+
+ZU EINEM ECHTEN MULTIPROZESSOR GEH&Ouml;REN ENTWEDER ZWEI BUSSYSTEME ODER 
+LOKALER SPEICHER.
+
+Ich denke, nun k&ouml;nnen wir das Multiprozessor-M&auml;rchen abhaken und uns der 
+Programmierung des Multitaskings weiter widmen.
+
+3. Hilfsfunktionen
+
+Aus der 68k exec.library sind zahllose Hilfsfunktionen f&uuml;r Tasks bekannt, 
+z.B.:
+
+InitSemaphore
+ObtainSemaphore
+ReleaseSemaphore
+Wait
+GetMsg
+Signal
+AllocSignal
+CreateMsgPort
+...
+
+Alle diese Funktionen werden innerhalb von WarpOS PPC-Native (ohne 
+Kontextswitches) angeboten. Dies sind keine exec.library Funktionen mehr, 
+dies sind Funktionen des WarpOS-Kernels:
+
+InitSemaphorePPC
+ObtainSemaphorePPC
+ReleaseSemaphorePPC
+WaitPPC
+GetMsgPPC
+SignalPPC
+AllocSignalPPC
+CreateMsgPortPPC
+...
+
+Ausser dem PPC am Ende des Namens ist der einzige Unterschied zu den exec-
+Funktionen, da&szlig;:
+
+- statt eines Task-Parameters ein TaskPPC-Parameter zum Einsatz kommt
+- statt eines SignalSemaphore-Parameters ein SignalSemaphorePPC-Parameter   
+  zum Einsatz kommt
+- statt eines MsgPort-Parameters ein MsgPortPPC-Parameter zum Einsatz kommt
+...
+
+Die Includes f&uuml;r all diese neuen Datenstrukturen sind im Includepfad 
+powerpc/ zu finden (z.B. powerpc/tasksPPC.h f&uuml;r die TaskPPC-Struktur).
+
+Gemein haben all diese Strukturen, da&szlig; sie jeweils ihr 68k-&Auml;quivalent 
+enthalten, so da&szlig; man, wenn man bei bestimmten Programmkonstrukten 
+unbedingt die 68k-Struktur oder ein Teil von ihr ben&ouml;tigt, auch auf diese 
+zugreifen kann, z.B.:
+
+task=taskppc-&#062;tp_Task;
+mp=mp_ppc-&#062;mp_Port;
+sema=sema_ppc-&#062;ssppc_SS;
+
+Man kann z.B. ohne Probleme einem PPC-Task &uuml;ber die 68k-Funktion GetTaskPri 
+eine neue Priorit&auml;t zuweisen (allerdings ist es sinnvoller, GetTaskPriPPC 
+zu verwenden).
+
+Es sei an dieser Stelle darauf hingewiesen, da&szlig; bei WarpOS Semaphoren eine 
+bedeutsame Stellung einnehmen. Man kann bei WarpOS nicht einfach mit einem 
+Forbid() das Multitasking abschalten.
+
+Es bleibt festzustellen, da&szlig; WarpOS dem AmigaOS eigentlich sehr &auml;hnlich 
+ist. Die Funktionen sind fast die Selben, zumindest im Bereich des 
+Multitaskings. Achtung, nicht alle der angegebenen Funktionen sind auch 
+unter WarpUP V7 zug&auml;nglich. Im Zweifelsfall WarpOS-Dokumentation
+konsultieren.
+
+Zus&auml;tzlich existieren noch:
+
+- Signal68k:  Damit kann ein PPC-Task einem 68k-Task signalisieren
+- WaitFor68K: Hiermit kann ein PPC-Task auf einen asynchronen 68k-Task      
+              warten, wobei erst nach Ende der Funktion erneut etwas        
+              asynchron abgearbeitet werden kann (ist dies nicht gen&uuml;gend   
+              =&#062; AllocXMsg System ansehen !!!)
+
+4. Was sind eigentlich Semaphoren ?
+
+An dieser Stelle m&ouml;chte ich noch einmal den Begriff Semaphore wiederholen, 
+da er Neuland f&uuml;r viele Amiga-Programmierer ohne informatische Vorbildung 
+sein d&uuml;rfte.
+
+Def. Semaphor
+
+Ein Semaphor ist eine Datenstruktur, die von allen Tasks &quot;angetestet&quot; 
+werden kann, ob sie gerade belegt oder frei ist. Ein bestimmter Code kann 
+nur ausgef&uuml;hrt werden, wenn der zust&auml;ndige Semaphor noch frei ist. Ist er 
+belegt, so wartet der Semaphor, bis er wieder frei ist, und macht dann 
+gleich weiter. Beim gleichzeitigen Zugriff mehrerer Tasks auf einen 
+Semaphor gibt es auf KEINEN FALL Probleme.
+
+Beispiel:
+
+1. Task:
+
+extern int a;
+struct SignalSemaphore sema;
+InitSemaphorePPC(&amp;sema);
+while(1)
+{
+ ObtainSemaphorePPC(&amp;sema);
+ a=1;
+ ReleaseSemaphorePPC(&amp;sema);
+}
+
+2. Task:
+
+extern int a;
+struct SignalSemaphore sema2;
+InitSemaphorePPC(&amp;sema2);
+while(1)
+{
+ ObtainSemaphorePPC(&amp;sema2);
+ a=2;
+ ReleaseSemaphorePPC(&amp;sema2);
+}
+
+Der Wert von a ist zu jedem Zeitpunkt exakt definiert. Die beiden Tasks 
+greifen niemals gleichzeitig darauf zu.
+
+Aufpassen sollte man, wenn man mehrere Semaphoren verschachtelt. Eine 
+Situation, in der jeder Task auf das Freiwerden der Resource wartet, die 
+gerade der andere Task belegt, nennt man einen DEADLOCK.
+
+Aber das soll hier gen&uuml;gen. Weitere Informationen &uuml;ber Semaphoren k&ouml;nnen 
+jedem guten Buch &uuml;ber Betriebssysteme entnommen werden. Semaphoren sollten 
+verwendet werden, wann immer eine Resource nicht gleichzeitig von zwei 
+Tasks verwendet werden kann.
+
+Dabei werden Semaphoren erst initialisiert, dann &quot;obtained&quot;, dann 
+&quot;released&quot;. Man sollte jeden &quot;obtainten&quot; Semaphore auch wieder &quot;releasen&quot;, 
+damit die Resource wieder frei wird.
+
+Semaphore sind ein sehr geschicktes Mittel, um Multitasking in einer Weise 
+zu programmieren, da&szlig; Deadlock-Situationen oder auch Situationen, in denen 
+zu oft gewartet wird, vermieden werden.
+
+5. Das AllocXMsg-System
+
+Was nun noch fehlt, ist ein System, Nachrichten zwischen 68k und PPC hin 
+und her zu schicken. Man beachte jedoch die Warnung von oben, dass ein 
+solches Programm, wenn man nicht GENAU wei&szlig;, was man tut, zu gro&szlig;er 
+Ineffizienz f&uuml;hren kann.
+
+a) Anlegen der Message-Ports
+
+F&uuml;r den 68k wird ein MsgPort angelegt, f&uuml;r den PPC ein MsgPortPPC
+
+b) Anlegen der Tasks
+
+wie &uuml;blich
+
+c) Anlegen der Messages
+
+Der 68k verwendet die Funktion AllocXMsg. Hierbei mu&szlig; eine Message-Gr&ouml;&szlig;e 
+angegeben werden, sowie der Reply-Port des 68k-Tasks. F&uuml;r den PPC existiert 
+eine analoge Funktion AllocXMsgPPC. FreeXMsg/FreeXMsgPPC existieren 
+nat&uuml;rlich ebenfalls.
+
+d) &Uuml;bertragen der Messages
+
+Hierzu werden die Funktionen PutXMsg (vom 68k zum PPC) und PutXMsgPPC (vom 
+PPC zum 68k) eingesetzt. Als Parameter werden ein MsgPort(PPC) und die in 
+c) gewonnene Message ben&ouml;tigt (in die zuvor die Nachricht eingetragen 
+wird).
+
+e) Empfangen und Beantworten der Messages
+
+Auf 68k-Seite werden GetMsg, WaitPort und ReplyMsg eingesetzt, auf PPC-
+Seite GetMsgPPC, WaitPortPPC und ReplyMsgPPC. Reply-Messages erhalten 
+hierbei den Nodetype NT_REPLYMSG.
+
+Nachdem die Message verschickt wurde, verliert der entsprechende Prozessor
+SOFORT den Besitz &uuml;ber die Message. Erst wenn sie Replied wurde, darf 
+wieder auf die Message zugegriffen werden. Falls es keinen Replyport gibt, 
+darf die Message - nachdem sie von der anderen Seite gelesen wurde - 
+freigegeben werden. Nachdem die Message beantwortet wurde, kann sie 
+weiterverwendet werden.
+
+Achtung: ReplyMsg sollte nur aufgerufen werden, wenn auch ein ReplyPort 
+existiert.
+
+Achtung: Der empfangende Task darf nur Daten zugreifen, die direkt im 
+Message-K&ouml;rper enthalten sind. Eine Ausnahme ist nur m&ouml;glich, falls sich 
+die beiden Tasks selber um die Cache-Koh&auml;renz k&uuml;mmern. Nur am Messagek&ouml;rper 
+selbst f&uuml;hrt das System Flushing/Invalidation durch.
+
+Achtung: Der empfangende Task hat auch Schreibzugriff auf den Message-
+K&ouml;rper.
+
+Beim Anwenden des AllocXMsg-Systems sind also im wesentlichen zwei Dinge zu
+beachten:
+
+1) Effizienz (&quot;Bus-Hits&quot;)
+2) Cache-Koh&auml;renz (entweder alles, was &uuml;bergeben werden soll, in die        
+   Message packen, d.h. auch keine globalen Variablenzugriffe, oder aber    
+   sich selbst um die Cache-Koher&auml;nz k&uuml;mmern).
+
+Im &uuml;blichen Fall zahlt sich die Verwendung von &quot;Multiprocessoring&quot; bei 
+PowerUP Boards nicht aus. Aber unter Umst&auml;nden kann man das AllocXMsg-
+System schon verwenden, um mal eine kleine Message zwischen den Prozessoren 
+hin und her zu schicken. Zumindest Support daf&uuml;r ist vorhanden. Aber wie 
+gesagt: Wer nicht genau wei&szlig;, was er tut =&#062; Finger weg !!!
+
+6. Andere Elemente der powerpc.library
+
+Des weiteren enth&auml;lt die powerpc.library noch:
+
+- Hilfsfunktionen PPC-Native (z.B. Listen-Handling)
+- Kontextswitch-Funktionen (StormC macht das aber meistens vollautomatisch,
+  braucht man h&ouml;chstens zum aufrufen von 68k Assembler-Funktionen, die der
+  automatische Kontextswitch nicht durchf&uuml;hrt, oder um Mixed Binaries mit
+  vbcc-WarpOS zu erzeugen, der diese (noch ?) nicht direkt unterst&uuml;tzt).
+- Speichermanagement, inklusive fakultatives Memory-Protection (Es sei
+  darauf hingewiesen: &quot;AllocMem considered harmful&quot;. Immer AllocVecPPC
+  verwenden, oder malloc. Und immer sch&ouml;n auf 8 Byte alignen.
+- Lowlevel-Funktionen f&uuml;r MMU, Supervisormodus u.&auml;. (wichtig etwa f&uuml;r       
+  Leute, die einen Mac-Emulator programmieren wollen)
+- PPC Native Timerfunktionen, die direkt die Timerbase-Register des PPC
+  verwenden, dabei aber den Funktionen des timer.device nachempfunden sind
+  (z.B. GetSysTimePPC).
+- Funktionen, um Informationen &uuml;ber das System anzufordern
+- Funktionen, um das Multitasking zu beeinflussen (z.B. die Nice-Values,    
+  die bei einem dynamischen Scheduler wie WarpOS die Rechenzeit f&uuml;r die     
+  Tasks beeinflussen
+- Funktionen, die bei der Programmierung eines Debuggers helfen
+
+7. Hooks
+
+Ein weiterer Abschnitt sei den &quot;Hooks&quot; gewidmet. Ein Hook ist eine 
+n&uuml;tzliche Konstruktion, in der eine Funktion eine andere Funktion als 
+Parameter erh&auml;lt. Systeme wie AHI n&uuml;tzen diese recht extensiv. Leider geht 
+das schief, falls z.B. die Funktion als Parameter PPC ist, die Funktion der 
+Library/des Devices aber 68k. Es klappt einfach nicht, keine Chance. Ein 
+Beispiel w&auml;re AHI_AllocAudioA(), selbst wenn man den Hook-Parameter nicht 
+angibt, geht das schief.
+
+Ein weiterer beliebter Befehl, der dieses Problem hat, ist RawDoFmt(). In 
+Form von SPrintF/SPrintF68k bietet WarpOS Ersatzcode an.
+
+L&ouml;sung:
+
+68k und PPC Code zusammenlinken, das komplette AHI-Handling im 68k-Part 
+erledigen. Es wird stark empfohlen, ein MixedBinary zu verwenden, da StormC 
+innerhalb eines MixedBinary die Handhabung f&uuml;r solche Dinge stark 
+erleichtert. vbcc-WarpOS kann das leider noch nicht automatisch, hier mu&szlig; 
+der Kontextswitch zwischen den beiden Teilen noch manuell programmiert 
+werden. Prinzipiell gilt jedoch das Selbe.
+
+8. Empfehlungen
+
+Es sei im Allgemeinen empfohlen:
+
+- M&ouml;glichst viel (auch m&ouml;glichst viele Tasks PPC-Native machen)
+- Einen Task nur dann zu einem 68k-Task machen, wenn er als PPC-Task        
+  wirklich massivst Kontextswitches enthielte
+- stets synchron arbeiten, asynchrones Arbeiten, wenn immer m&ouml;glich,        
+  vermeiden (aufgrund der Einschr&auml;nkungen der PowerUP-Hardware). 68k/PPC    
+  parallel an einer Aufgabe arbeiten zu lassen, bremst beide Prozessoren    
+  aufgrund von &quot;Bushits&quot; massivst runter.
+- Es lohnt sich nicht, den Video-Refresh von einem 68k-Task erledigen zu    
+  lassen. Hier am Besten 100% PPC-Native vorgehen
+- Netzwerk-Support k&ouml;nnte sich als 68k-Task lohnen
+- Keyboard/Audio bringen evtl. minimale Gewinne, &uuml;blicherweise lohnt es     
+  sich jedoch nicht
+- Falls 68k-Tasks vorkommen, am Besten ein MixedBinary verwenden
+- Bei Zugriffen auf globale Variablen LinkerDB nicht vergessen
+- Die Verwendung von Funktionen des ahi.device mu&szlig; in einem MixedBinary     
+  erfolgen (braucht kein Extra Task sein, kann aber... aber es mu&szlig; in jedem  
+  Fall 68k erfolgen)&laquo;
+</pre>
+</body>
+</html>

@@ -1,0 +1,109 @@
+2
+1*
+
+{3                                 Amiga ja Linux
+{3                                 --------------
+ 
+                               Janne Pikkarainen
+ 
+ 
+Valtavan Linux-hypen painostamana minäkin  päätin  asentaa  sellaisen  kotoiseen
+Amigaani. Monien mielestä Debian on ensikertalaiselle helpoin ja  mukavin  vaih-
+toehto, joten päädyin siihen. En tiedä, onko Debian aidosti  helpoin,  mutta  ei
+sen asentaminen missään nimessä vaikeaa ollut.
+ 
+ 
+{3Pingviiniä synnyttämään
+{3-----------------------
+ 
+Suuntasin selaimeni osoitteeseen www.linux-m68k.org ja ryhdyin selailemaan asen-
+nusohjeita. Näiden opastamana otin paketit Amigainstall.lha ja base_21.tgz. Pura
+Amigainstall.lha jonnekin talteen.
+ 
+Linuxia varten tarvitset vähintään kaksi kiintolevypartitiota, toinen itse Linu-
+xille, toista tarvitaan swappia varten. Jotta asennus sujuisi  helpommin,  tulee
+ennen varsinaista Linuxin asennusta käydä HDToolBoxin  puolella.  Tee  haluamasi
+kokoinen partitio Linuxille (itse annoin sille noin 2 gigatavua) ja napauta  HD-
+ToolBoxin "Advanced Options" -painiketta. Tämän takaa  löytyy  "Change  Filesys-
+tem".
+ 
+Aseta tiedostojärjestelmäksi "Custom  Filesystem"  (joissakin  HDToolBoxin  ver-
+sioissa kulkee nimellä "Reserved  Filesystem")  ja  muuta  Identifierin  arvoksi
+0x4c4e5800. Tämä on heksadesimaalinen vastine kirjainyhdistelmälle "LNX".  Kytke
+liput "Automount this partition" ja  "Custom  bootcode"  pois  päältä.  Varmista
+vielä, että "Reserved blocks" -kohdassa lukee startin kohdalla 0 ja  endin  koh-
+dalla 1. Mikäli näin oli, paina OK.
+ 
+Tee nyt haluamasi kokoinen swappipartitio. Itse annoin sen kooksi sata megatavua
+(tuplasti oman koneeni muistimäärä). Huomaathan, että  maksimikoko  swappiparti-
+tiolle on 127 megatavua. Näin ainakin PC:n Redhatissa, en ole kokeillut Amigalla
+isompaa, mutta en suosittelelisi ketään kokeilemaan. Kun olet luonut  swappipar-
+tition, tee Change Filesystem -valikon takana kuten  varsinaiselle  Linux-parti-
+tiollekin, mutta laita Identifier-arvoksi 0x53575000. Tämä vastaa  heksadesimaa-
+leina kirjainyhdistelmää SWP.
+ 
+Paina taas OK ja poistu HDToolBoxista. HDToolBox varoittaa sinua levyllä  olevia
+tietoja kohtaavasta kadosta - paina OK ja Amigasi uudelleenkäynnistyksen jälkeen
+mene sinne hakemistoon, minne olet  purkanut  Amigainstall.lha-paketin.  Klikkaa
+täällä asennusikonia ja hetken kuluttua Linuxin asennusohjelma valtaakin  konee-
+si. Tämä vaihe asennuksesta on todella helppo, en usko  että  kenelläkään  koke-
+neemmalla amigistilla tulee ongelmia asennuksen suhteen.
+ 
+Ainoastaan Linuxin tyyli ilmoittaa kiintolevyistä saattaa hämätä aluksi  kokema-
+tonta käyttäjää. IDE-levyt näkyvät muodossa hdxy, jossa x on kirjain väliltä a-z
+ja y joku numero. x tarkoittaa SCSI-unitia; jos HDToolBox sanoo,  että  levy  on
+unitissa 0, levy on tällöin Linuxin mielestä hda, jos levy on  HDToolBoxin  mie-
+lestä unitissa 1, levy on Linuxille hdb. Numero perässä puolestaan ilmaisee  le-
+vyn partitiota. Näinpä IDE-väylän unit 0:ssa olevan levyn  ensimmäinen  partitio
+on Linuxissa hda0.
+ 
+Takaisin asennusohjelman pariin. Alussa ohjelma kyselee  monitorisi  tyyppiä  ja
+näppäinkarttaa. Melko pian tämän jälkeen sinun tulee  valita  media,  josta  ba-
+se_2x.tgz löytyy. Itselläni kyseeseen tuli "Already mounted FS" ja tämän jälkeen
+hakemistoksi /hdb0/debian/. Hetken (koneesi prosessorin ja kiintolevyn nopeudes-
+ta riippuen...) pakettia narskuteltuaan ruutuun pätkähtää kysely lisäasetuksista
+ja palikoista, jotka haluat mahdollisesti Linuxin  kerneliin  asentaa.  Itse  en
+tarvinnut juuri muuta  kuin  ajurin  PCMCIA-verkkokortilleni  (net/apne),  jonka
+jälkeen jatkoin asennusta.
+ 
+Seuraavaksi installeri haluaa tietää, onko koneesi kiinni verkossa  ja  jos  on,
+millä tavalla. Itse naputtelin oman alueverkkomme nimipalvelin- ja muut  asetuk-
+set paikoilleen ja jatkoin jälleen asennusta. Pian tämän  jälkeen  Linux  haluaa
+bootata itsensä. Kunhan se käynnistyy taas uudelleen, tulee  aika  valita,  mitä
+kaikkea haluaa asentaa ja mistä haluaa asentaa. Kahden  gigan  partitio  riittää
+täysasennukselle enemmän kuin reilusti, joten en turhaan kursaillut. Asennustyy-
+piksi valitsin verkon yli asentamisen, mitään Linux-romppua kun en omista.
+ 
+Parin tunnin imuroimistuokion jälkeen paketit olivatkin saapuneet. Yllätyksekse-
+ni kaikki paketit asentuivat ja purkautuivat itse, mitä nyt välillä  piti  tehdä
+valintoja eri ohjelmien asetusten kohdalla; postiohjelmat  kyselivät  palvelimia
+ja sen sellaista.  Tämän  jälkeen  jälleen  rebootti.  Seuraavan  käynnistymisen
+jälkeen  oli  aika  valita  root-salasana  ja  luoda  muita   käyttäjätunnuksia.
+Käyttäjätunnusten ideologia ja muokkaaminen on jokaisella  MultiUserFileSystemiä
+käyttäneellä verissä.
+ 
+ 
+{3Toimiiko se?
+{3------------
+ 
+Siinä se on, Linux on nyt asennettu loppuun! Seuraavaksi edessä onkin  melkoinen
+ohjelmien konfigurointirumba. Itse olin malttamaton ja kokeilin ennen tekstipoh-
+jaisten ohjelmien virittämistä, miten hyvin X toimii Amigan Linuxissa.  X,  X11,
+virheellisesti joskus nimellä "X-Windows" on Linuxien graafisempi puoli.
+Kävi kuten odotinkin. Ainakin AGA-koneessa X on  tolkuttoman  hidas,  jos  sille
+tarjoaa käyttöön enemmän kuin 16 väriä ja resoluutioksi  enemmän  kuin  640x480.
+Itselläni hyrrää A1260/50MHz, jossa 50 megatavua muistia ynnä muuta; X  on  kui-
+tenkin  vakavassa  käytössä  melko  käyttökelvoton,   kunnon   näytönohjain   on
+välttämättömyys.
+ 
+Sen sijaan tekstipohjainen Linux vipeltää kerrassaan vikkelästi.  Jopa  MP3:sten
+soittaminen onnistui, kun hain netistä mpg123-nimisen soittelijan. Prosessorite-
+hoa mpg123 vei hieman enemmän kuin Amigan oma MPEGA, mutta irccaaminen, FTP ynnä
+muut onnistuvat ihan hyvin samalla.
+ 
+Voisin kuvitella Linuxin ihan varteenotettavana  vaihtoehtona,  jos  sinulla  on
+useampia Amigoita ja käytössäsi on  kiinteä  Internet-yhteys  -  saat  Linuxista
+lähestulkoon pomminvarman palvelimen. www.linux-m68k.org  sanoo  Amigan  Linuxin
+olevan käytännössä vähintään yhtä vakaa kuin alkuperäinen PC:nkin  Linux.  Tähän
+minun on helppo uskoa, sillä testisessioiden aikana se ei ole  kaatunut  kertaa-
+kaan.

@@ -1,0 +1,86 @@
+@Database SHOAH.s.guide
+@Node MAIN "SEGA joypad reading"
+SEGA joypad reading.
+
+;    Hi there everybody. After some discussion on comp.sys.amiga.games on the
+;subject of multi-button joysticks, I started doing some research on the Sega
+;Genesis joysticks (hereafter referred to as "Sega" sticks; I'm not sure what
+;the Sega Master System joysticks are like...). A post in rec.games.video
+;asking for tech info netted me a pinout of the stick, a description of how to
+;use it, and even a bit of sample code from Sonic the Hedgehog. This info lay
+;dormant for a while until I got the parts together, including a Sega pad.
+;    The Sega joystick, unlike most familiar Amiga-compatible joysticks, is
+;multiplexed. "No problem", you say. "Which pin do I boink to do it?" Well,
+;that's the catch. The pin that toggles between reading (UDLRBC) and reading
+;(A and START) is pin 7, which is the power pin on the Amiga. A quick
+;hacked-up adaptor based on two DB-9 connectors easily solves this problem;
+;just swap pins 5 and 7. Now, when pin 5 on the Amiga side is high, the pad
+;will output (UDLRBC). Clearing pin 5 to a low state gives you (A and START).
+;A reads as button B( the good ol' fire button), and START reads as button C
+;(Y Pot). U and D also come in as normal when 5 is low; however, L and R
+;are set low. One presumes that the way has been left open for two more
+;buttons in future sticks, coming in over the L and R lines.
+;    Now that you've made the adaptor, here's the second catch: Your routine
+;has to be written carefully, as pins 5 and 9 are the pot pins. These two
+;lines can take up to 300 microseconds to change state, so you have to write
+;your joystick-reading routine around this.
+;    Here's one that I've successfully run on my 68000 machine. If you have
+;a faster processor, you'll almost definitely have to re-work it to allow for
+;lines 5 and 9 to change state. If you do this, please post the new version,
+;especially if it works without significant degradation to a 68000 (i.e., no
+;padding with NOPs...) Admittedly, it's nasty direct-to-the-hardware code,
+;but it _does_ work.
+;     [You should probably try and time it off of a couple of copper interrupts
+;- that will probably work like a charm, as long as you control the screen
+;mode.]
+;    Spread this info around as much as you like. And more importantly, if
+;you write games, SUPPORT IT. I'd like to see a game that can be configured
+;to use a 1-button joystick, a 2-button joystick, OR a 3-button joystick,
+;with inceasingly annoying and cryptic controls as the number of buttons is
+;lowered.
+
+;Routine to read a Sega Genesis - type stick in port B
+;Expects to have CUSTOM ($dff000) in A6
+;Returns state of all 8 switches in d0 -> 0=up 1=dn 2=lf 3=rt
+;Stomps on d0-d2, a0                      4=fA 5=fB 6=fC 7=s
+ReadJoyB
+    clr.b   d0                  ;Clear output byte
+    move.w  joy1dat(a6),d1      ;Get UDLR status
+    move.w  d1,d2               ;Decode annoying format
+    add.w   d2,d2
+    eor.w   d1,d2               ;Now d1-> =R 9=L  d2-> 1=D 9=U
+    btst    #7,$bfe001          ;Check B
+    beq.s   .1
+    bset    #5,d0
+.1  btst    #14,potinp(a6)      ;Check C
+    beq.s   .2
+    bset    #6,d0
+.2  move.w  #$e001,potgo(a6)    ;Ask for START A
+    btst    #9,d2               ;Check U
+    bne.s   .3
+    bset    #0,d0
+.3  btst    #1,d2               ;Check D
+    bne.s   .4
+    bset    #1,d0
+.4  btst    #9,d1               ;Check L
+    bne.s   .5
+    bset    #2,d0
+.5  btst    #1,d1               ;Check R
+    bne.s   .6
+    bset    #3,d0
+.6  btst    #7,$bfe001          ;Check A
+    beq.s   .7
+    bset    #4,d0
+.7  btst    #14,potinp(a6)      ;Check START
+    beq.s   .8
+    bset    #7,d0
+.8  move.w  #$f001,potgo(a6)    ;Ask for UDLRBC for next pass
+    rts
+
+;Comments, flames, gifts, etc can be sent to me at:
+;         Fido: paul trauth on 1:396/36.0 (I don't understand Fido addresses
+;               too well. hope this works.)
+;       Usenet: paul_trauth@agwbbs.new-orleans.LA.US
+;    Real Life: Paul Trauth/4752 Press Dr/New Orleans,LA/70126/USA
+@Endnode
+

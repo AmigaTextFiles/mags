@@ -1,0 +1,191 @@
+<HEAD>
+<TITLE>
+Coders1</TITLE>
+</HEAD>
+
+<BODY>
+<PRE>
+
+                     CODE CLINIC #1:    UP THE HILL...
+
+
+ 
+
+-------------------------------------------------------INTRODUCTION
+
+
+
+
+       
+        It seems like only yesterday, I was slaving away at C64  Basic
+ (1983) and knew that someday I would learn to write killer code; Then I
+ bought an A500 (1989) and began rewriting my 64Basic to AmigaBasic, again
+ I knew that someday I would write killer code. 
+ 
+        I now own an A1200 and SAS/C 6.0 (waiting for my upgrade to 6.5). 
+ I own several books with titles such as C by example and Teach yourself 
+ C, and while these books are very helpful in learning the C language, you 
+ will not be writing killer code by the end of the exercises. 
+
+        In this column I will try to guide you "up the hill" to writing
+ killer C code.  This column is not for beginners, it's assumed you have 
+ an understanding of ANSI/C coding.  If you don't, any bookstore will have 
+ books such as the ones I listed above. I myself will be learning new 
+ skills as we go "up the hill."  Oh yeah, our goal is to reach the top.
+
+
+
+ -------------------------------------------------------------PREP
+
+
+
+     #include &lt;stdio.h&gt; 
+        main() 
+        { 
+                printf("HelloWorld\n"); 
+        }
+        
+
+     This is the first code every C programmer will learn. In this first 
+ column we will `Amigatize' this code.  Basically, when I say `amigatize' I
+ mean use Intuition.  Intuition is defined in the ROM Kernel Manual-
+ Libraries as: the collective name for the function libraries, data 
+ structures and other elements needed to create a graphical interface for 
+ Amiga applications, AMIGATIZE!!!
+
+
+
+        How would you `amigatize' this simple program? 
+
+
+
+        Here is a list of things we will do to make this an Amiga program.
+
+        o OPEN A WINDOW IN WORKBENCH WITH A           
+          CLOSEGADGET TO END THE PROGRAM.
+ -----------------------------------------------------------LETS GO-
+
+        This article is intended for NEW Amiga C language coders.
+        Those of you who have genius IQ's, forgive us mere mortals.
+
+        OK, with all that out of the way lets' dive into some code!
+
+
+
+
+                                      
+      *****-------------------------  *****-------------------------     
+      * N *   ALL CODE IS INTENDED |  * N *   I COMPILED THIS CODE |
+      * O *   FOR VERSION 2.0 OR   |  * O *   WITH SAS/C V6.0 AND  |
+      * T *   ABOVE...             |  * T *   HAD NO ERRORS OR     |       
+      * E *                        |  * E *   WARNINGS             |       
+      *****-------------------------  *****-------------------------
+
+.C..C.O.D.E..............................................................
+
+#include &lt;exec/types.h&gt;                 /* THE INCLUDE FILES WE NEED */
+#include &lt;intuition/intuition.h&gt; #include &lt;intuition/intuitionbase.h&gt;
+#include &lt;intuition/screens.h&gt; #include &lt;clib/exec_protos.h&gt; #include
+<clib/dos_protos.h&gt; #include &lt;clib/intuition_protos.h&gt;
+
+#define INTUI_V36_NAMES_ONLY
+
+void handle_window_events(struct Window *); /* FUNCTION PROTOTYPE */ fill}
+
+struct Library *IntuitionBase = NULL;
+
+VOID main (int argc, char *argv[]) { struct Window *window;
+        
+        /**************************************************************** 
+        * Open the intuition.library so that we can access its funtions *
+        * in our program                                                * 
+        ****************************************************************/
+        
+        IntuitionBase = OpenLibrary ( "intuition.library",37); 
+        if (IntuitionBase != NULL) /* did intuition.library open ? */
+        { 
+        /* YES it opened ! */
+                         
+                window = OpenWindowTags(NULL,
+                            WA_Left,      20,  WA_Top, 20,
+                            WA_Width,     400,
+                            WA_Height,    80,  WA_CloseGadget,  TRUE,
+                            WA_IDCMP,  IDCMP_CLOSEWINDOW,
+                            WA_Title,  "Hello",
+                            TAG_DONE);
+   
+                if(window == NULL) /* Window filled? */
+                {
+                        /* NO, Window Failure */
+                }
+                else
+                {
+                        /* YES, do somthing */
+                        handle_window_events(window);
+                        CloseWindow(window); /* Need an explanation? */ 
+                }
+                /* AllWays close the Libraries we opened */
+                CloseLibrary((struct Library *)IntuitionBase);
+        } }
+back}back}/*****************************************************************
+**  
+ * This event loop is very simple they can get complex, but for our   
+ * purpose this works fine....  (I will explain this soon)          *
+ *******************************************************************/
+handle_window_events(struct Window *win) {
+        WaitPort(window-&gt;UserPort); }   
+
+.E.N.D..C..C.O.D.E.......................................................
+        
+        Overview of the code:
+        
+        Included all the include files we needed.
+        Prototyped our functions.
+        Made IntuitionBase a pointer to struct Library.  Called Main().
+        Made window a pointer to struct Window.
+        Opened intuition.library.         
+        if intuition.library opened we tried to open a window.
+        if not we ended.         
+        if the window opened we called  handle_window_events() passing
+         it the window pointer.
+        if not we closed the intuition.library and ended.
+        
+        handle_window_events calls WaitPort
+        and it waits till it gets the CLOSEWINDOW message
+        after CLOSEWINDOW message is received return to next line of
+         code after the call which is CloseWindow() which ends the 
+         program.
+        
+        Well, that should be enough for the first dive into the world 
+        of writing code for the Amiga.
+                 I do urge anyone who wants to know more to do the
+following:
+        
+                1: Get the AMIGA ROM KERNEL MANUAL - Libraries
+                        This book has a wealth of information and you fill}
+will turn to it often.
+                2: Study source code that some Public Domain hacker 
+                        supplies with his/her code.
+                3: Just Do It!!!!
+
+        Next time, I'll show you how to print text to a window...
+
+
+
+                                   **********************************
+                                   *David H. Loeser, Jr. of Sythesis*
+                                   *Software can be reached at:     *  
+                                   * dloeser@iglou.com OR           *  
+                                   *309 Evergreen Court             *
+                                   *Clarksville, IN 47128, USA      *
+                                   *His games Hawk and Knight's     *  
+                                   *Quest can both be found on      *  
+                                   *Aminet!                         *  
+                                   ********************************** fill}
+
+</PRE>
+
+<HR>
+<address>
+converted with guide2html by <a href="http://www-users.informatik.rwth-aachen.de/~ruebe/ich.html">Kochtopf</a></address>
+</BODY>

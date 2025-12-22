@@ -1,0 +1,216 @@
+<HEAD>
+<TITLE>
+Coder's Clinic 2</TITLE>
+</HEAD>
+
+<BODY>
+<PRE>
+
+
+ 
+
+                         Coder's Clinic 2:  Let's Print! 
+
+
+      ******************************  
+      * First of all let me state  *
+      * that last months code was  *
+      * mangled in the proccess of *
+      * translating it to HTML     * 
+      * (for WWW) and AmigaGuide,  *
+      * if anyone would like the   *
+      * c.source just email me     *
+      * TOPIC:need CC1.c           *
+      ******************************  
+        
+        This month, as promised, we will add text to our "AmigaHelloWorld"
+ program.  Programming the Amiga, can be as much fun as playing a game on 
+ your Amiga, if you have the right attitude.  So if you have the tute, 
+ I'm the tutor...
+
+        Printing text to the window is very simple and you have two ways
+ of going about it.
+
+      *****--------------------------------------------------       
+      * N *   I STRONGLY SUGGEST INVESTING IN THE COMPLETE  |
+      * O *   SET OF AMIGA ROM KERNEL MANUALS... AT THE     |
+      * T *   VERY LEAST YOU SHOULD TRY TO GET THE LIBRARIES|       
+      * E *   MANUAL ...THERE ARE MANY EXAMPLES/EXPLANATIONS|       
+      *****--------------------------------------------------
+        
+
+ ==========================================================================
+
+ FIRST WAY: INTUITEXT STRUCTURE
+           To render text using Intuition, you must fill an IntuiText
+           structure:
+           
+           struct IntuiText
+           {
+                UBYTE FrontPen, BackPen;
+                UBYTE DrawMode;
+                WORD  LeftEdge;
+                WORD  TopEdge;
+                struct TextAttr *ITextFont;
+                UBYTE *IText;
+                struct IntuiText *NextText;
+           };     
+
+        After filling the structure  you would call the PrintIText()
+        function....
+        
+        *proto* 
+        void PrintIText(struct RastPort *rp, 
+                        struct IntuiText *iText,
+                        long left, long top);
+        
+        I won't use this method for our simple program, but we will in the
+ future.
+        
+
+ ==========================================================================
+
+                          SECOND WAY: THE TEXT FUNCTION
+                          
+            The Text() function is in the graphics.library and is the
+ method that we will use in our example program.  Since the funtion resides
+ in the graphics.library we must open it.
+            
+       *proto*
+       void Text(struct RastPort *rp,
+                 STRPTR mystring, ULONG count);
+                 
+       ex.   C CODE
+             .
+             .
+             .
+             Text(rp,"Hello World",11);
+             .
+             .
+             .
+             END OF CODE
+             
+       In our example we simply called Text() passed a pointer to our
+ RastPort, passed the string to print, and the number of characters
+ in the string. Simple?
+       
+ ========================================================================
+
+        
+        With this knowledge, lets build on to our "AmigaHelloWorld" code. 
+
+
+      *****-------------------------  *****-------------------------       
+      * N *   ALL CODE IS INTENDED |  * N *   I COMPILED THIS CODE |
+      * O *   FOR VERSION 2.0 OR   |  * O *   WITH SAS/C V6.0 AND  |
+      * T *   ABOVE...             |  * T *   HAD NO ERRORS OR     |       
+      * E *                        |  * E *   WARNINGS             |       
+      *****-------------------------  *****-------------------------
+
+//.C..C.O.D.E..............................................................
+
+
+ #include &lt;exec/types.h&gt;                 /* THE INCLUDE FILES WE NEED */
+ #include &lt;intuition/intuition.h&gt;
+ #include &lt;intuition/intuitionbase.h&gt;
+ #include &lt;graphics/gfxmacros.h&gt;
+ #include &lt;intuition/screens.h&gt;
+ #include &lt;clib/exec_protos.h&gt;
+ #include &lt;clib/dos_protos.h&gt;
+ #include &lt;clib/graphics_protos.h&gt;
+ #include &lt;clib/intuition_protos.h&gt;
+
+ #define INTUI_V36_NAMES_ONLY
+
+ void handle_window_events(struct Window *window); /* FUNCTION PROTOTYPE */
+
+ struct Library *IntuitionBase , *GfxBase = NULL;
+
+ VOID main (int argc, char *argv[])
+ {
+ struct Window *window;
+        
+        /**************************************************************** 
+        * Open the intuition.library so that we can access its funtions *
+        * in our program                                                * 
+        ****************************************************************/
+        
+        IntuitionBase = OpenLibrary ( "intuition.library",37); 
+        if (IntuitionBase != NULL) /* did intuition.library open ? */
+        { 
+        
+                GfxBase = OpenLibrary ( "graphics.library",37); 
+                if (GfxBase != NULL) /* did graphics.library open ? */
+                {
+        /* YES it opened ! */
+                         
+                window = OpenWindowTags(NULL,
+                            WA_Left,      20,
+                            WA_Top,       20,
+                            WA_Width,     400,
+                            WA_Height,    80,
+                            WA_CloseGadget,  TRUE,
+                            WA_DragBar, TRUE,
+                            WA_IDCMP,  IDCMP_CLOSEWINDOW,
+                            WA_Title,  "Hello Amiga World",
+                            TAG_DONE);
+   
+                if(window == NULL) /* Window filled? */
+                {
+                        /* NO, Window Failure */
+                }
+                else
+                {
+                        /* YES, do somthing */
+                        /* LIKE PRINT SOME TEXT !!!!)*/
+                        SetAPen(window-&gt;RPort,1);
+                        Move(window-&gt;RPort,30,30);
+                        Text(window-&gt;RPort,"Hello World",11);
+                        handle_window_events(window);
+                        CloseWindow(window); /* Need an explanation? */ 
+                }
+           CloseLibrary((struct Library *)GfxBase);
+           }
+                
+        /* AllWays close the Libraries we opened */
+        CloseLibrary((struct Library *)IntuitionBase);
+        }
+ }
+ /******************************************************************* 
+ This event loop is very simple they can get complex, but for our   *
+ purpose this works fine....    (I will explain this soon)          *
+ *******************************************************************/
+ void handle_window_events(struct Window *window)
+ {
+        WaitPort(window-&gt;UserPort);
+ }   
+
+
+  
+
+// END OF CODE -----------------------------------------------------------
+
+That should do it ... a nice window with a nice greeting :)
+
+
+
+                  NEXT MONTH: ADD A GADGET TO OUR WINDOW!!
+
+        The gadget is the greatest invention known to man...at least in my
+ book.
+        
+        Please let me know what you think of this column...I had one
+ response to last month's article... one person in the whole world read the
+ column???
+        
+
+
+                                       David Loeser   
+                                    Synthesis Software
+
+</PRE>
+
+<HR>
+<address>
+converted with guide2html by <a href="http://www-users.informatik.rwth-aachen.de/~ruebe/ich.html">Kochtopf</a></address>
+</BODY>

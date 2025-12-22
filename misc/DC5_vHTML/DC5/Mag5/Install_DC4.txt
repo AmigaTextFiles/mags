@@ -1,0 +1,143 @@
+; Hard Disk Installer for DoubleClick!, Full/HTML Version
+;   Issue Four
+   
+(complete 0)
+(set DC4-dest
+   (askdir
+      (prompt "Please Select Where You Wish to Install DoubleClick.\n A New Drawer Will Automatically be Created.")
+         (help ask-dirhelp
+         "\n"
+         "If this is your first issue of DoubleClick, then select the drawer where you want to install DoubleClick; a new drawer will automatically be created.\n\n"
+         "If you own a previous installed issue (ignoring Issue 1), then select the drawer containing the 'DoubleClick!' drawer; do not go into that drawer! See ReadMe for more details.")
+      (default @default-dest)
+   )
+)
+
+(set DC4-dest (tackon DC4-dest "DoubleClick!"))
+(set @default-dest DC4-dest)
+(makedir DC4-dest (infos))
+(makedir (tackon DC4-dest "Mag4") (infos))
+(makedir (tackon DC4-dest "MagTools") (infos))
+
+(complete 10)
+(
+(working "Installing DC4_DISK1:...")
+   (copyfiles
+      (prompt "")
+      (help @copyfiles-help)
+      (source "DC4_DISK1:Mag4/")
+      (dest (tackon DC4-dest "Mag4/"))
+      (pattern "#?")
+      (infos)
+   )
+   (complete 30)
+   (copyfiles
+      (prompt "")
+      (help @copyfiles-help)
+      (source "DC4_DISK1:")
+      (dest DC4-dest)
+      (pattern "Issue4")
+      (infos)
+   )
+   (copyfiles
+      (prompt "")
+      (help @copyfiles-help)
+      (source "DC4_DISK1:")
+      (dest DC4-dest)
+      (pattern "Install_DC4_RAM")
+      (infos)
+   )
+   (complete 40)
+   (copyfiles
+      (prompt "")
+      (help @copyfiles-help)
+      (source "DC4_DISK1:MagTools/")
+      (dest (tackon DC4-dest "MagTools/"))
+      (pattern "#?")
+      (infos)
+   )
+   (complete 45)
+   (if (= (exists "C:OCTAMEDPLAYER" (noreq)) 0)
+   (
+      (copyfiles
+         (prompt "")
+         (help @copyfiles-help)
+         (source "DC4_DISK1:C/")
+         (dest "C:")
+         (pattern "octamedplayer")
+         (infos)
+      )
+   ))
+   (if (= (exists "C:RTDD" (noreq)) 0)
+   (
+      (copyfiles
+         (prompt "")
+         (help @copyfiles-help)
+         (source "DC4_DISK1:C/")
+         (dest "C:")
+         (pattern "rtdd")
+         (infos)
+      )
+   ))
+   (if (= (exists "C:VT" (noreq)) 0)
+   (
+      (copyfiles
+         (prompt "")
+         (help @copyfiles-help)
+         (source "DC4_DISK1:C/")
+         (dest "C:")
+         (pattern "vt")
+         (infos)
+      )
+   ))
+   (if (= (exists "C:PPSHOW" (noreq)) 0)
+   (
+      (copyfiles
+         (prompt "")
+         (help @copyfiles-help)
+         (source "DC4_DISK1:C/")
+         (dest "C:")
+         (pattern "ppshow")
+         (infos)
+      )
+   ))
+   (if (= (exists "LIBS:AMOS.LIBRARY" (noreq)) 0)
+   (
+      (copyfiles
+         (prompt "")
+         (help @copyfiles-help)
+         (source "DC4_DISK1:Libs/")
+         (dest "Libs:")
+         (pattern "amos.library")
+         (infos)
+      )
+   ))
+   (if (= (exists "LIBS:CRM.LIBRARY" (noreq)) 0)
+   (
+      (copyfiles
+         (prompt "")
+         (help @copyfiles-help)
+         (source "DC4_DISK1:Libs/")
+         (dest "Libs:")
+         (pattern "crm.library")
+         (infos)
+      )
+   ))
+)
+
+(complete 55)
+
+(
+
+(working "Installing DC4_DISK2:...")
+   (copyfiles
+      (prompt "")
+      (help @copyfiles-help)
+      (source "DC4_DISK2:Mag4/")
+      (dest (tackon DC4-dest "Mag4/"))
+      (pattern "#?")
+      (infos)
+   )
+)
+(complete 100)
+(exit)

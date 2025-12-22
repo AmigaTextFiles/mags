@@ -1,0 +1,423 @@
+<HTML>
+<HEAD>
+<TITLE>Cyber_Protos.h
+</TITLE>
+</HEAD>
+
+<BODY>
+<PRE>
+/*
+AI Code for Invasion Force - an Explore/Conquer Strategic Wargame
+Copyright (C) 1996  Brannen Hough
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+/* Prototypes for functions defined in
+cyber_xxxx.c files
+ */
+
+/***************************
+****	Externs		****
+***************************/
+extern  struct  GovHist  H;
+
+extern  struct  rtHandlerInfo *AIhandle;
+
+extern  int     NewGov;
+extern  int     NewUnit;
+
+extern  struct  GovReqs         LastReq;
+
+extern struct MinList  GovList;
+
+extern char outbuf[];
+
+extern int *MoveMap;
+
+extern enum Direction DirArray[8][6];
+
+extern char DirString[6][10];
+
+extern char ModeString[9][15];
+
+extern char UnitString[13][15];
+
+/*
+extern struct GovPrefs EXPLORE_PREFS;
+extern struct GovPrefs DEFEND_LAND_PREFS;
+extern struct GovPrefs DEFEND_PORT_PREFS;
+extern struct GovPrefs SEARCH_PORT_PREFS;
+extern struct GovPrefs SEARCH_PREFS;
+extern struct GovPrefs CONQUER_LAND_PREFS;
+extern struct GovPrefs CONQUER_AIR_PREFS;
+extern struct GovPrefs CONQUER_SEA_PREFS;
+extern struct GovPrefs CONQUER_AIR2_PREFS;
+extern struct GovPrefs CONQUER_SEA2_PREFS;
+extern struct GovPrefs OUTNUMBERED_SEA_PREFS;
+extern struct GovPrefs OUTNUMBERED_LAND_PREFS;
+extern struct GovPrefs SUPPORT_SEA_PREFS;
+extern struct GovPrefs SUPPORT_LAND_PREFS;
+extern struct GovPrefs ATTACK_LAND_PREFS;
+extern struct GovPrefs ATTACK_AIR_PREFS;
+extern struct GovPrefs ATTACK_SEA_PREFS;
+extern struct GovPrefs ATTACK_AIR2_PREFS;
+extern struct GovPrefs ATTACK_SEA2_PREFS;
+*/
+
+/***********************************
+****	Defines			****
+***********************************/
+
+/* Do we show AI messages?  Uncomment this if desired */
+//#define SHOW_AI_MSG 1
+
+/* How many characters we'll need for governor names */
+#define GOV_NAME_LEN		8
+
+/* The number of requests that will be collected. Ones
+	in excess of this number will be culled down 
+	by priority.  Only one request will be selected
+	when all are in.
+	*/
+#define MAX_GOV_REQS	        20
+
+/* Superceded, no longer used */
+#define GOVERNOR_AREA           10
+
+/* How far out (in x and y) we will scout in EXPLORE mode
+	As and experiment, I'm changing this to 4.  At 4,
+	we will have a 15 move search triangle instead of
+	17, so will go from 4 turns per leg to 3 per leg.
+	See if this holds up.  Lose coverage of 46 hexes
+	on the four legs - from 151 to 105 (?).
+	*/
+#define GOVERNOR_RADIUS          4  /* Was 5 */
+
+/* The bounds of the larger area of interest for a Governor.
+	Outside this area, Governors don't keep track of
+	what is going on.
+	*/
+#define EXTENDED_RADIUS		10
+
+/* This next is how far the fighter can reach on a full tank */
+#define FIGHTER_REACH		20
+
+/* This is how long a list of unit type preferences we can 
+	make.  Should stay more than we need, especially
+	since there are only 13 types in the game right now.
+	*/
+#define MAX_PREFS               10
+
+/* This next is the bonus percentage for selection given to
+	a unit type that is already in production
+	*/
+#define CURRENT_PRODUCT_BONUS   20
+
+/* Used to break out of loops, large compare value for initial
+	"get the smallest" searches, etc.
+	*/
+#define BIG_NUMBER           30000
+
+/* Mirror the ones in game_play.c */
+#define UNIT_DONE       3
+#define UNIT_LOST       4
+#define INVISIBLE       0
+#define VISIBLE         1
+
+/* One for the gov_find_distance function */
+#define ENEMY           1
+#define FRIENDLY        0
+
+/* No tokens for these orders.  For computer player only.  
+    Hope noone objects!
+    */
+#define C_ORDER_RANDOM	101	/* For just wandering around for a while */
+#define C_ORDER_PATH_TO	102	/* For when a GOTO fails and we need to
+					seek out an indirect path to goal */
+#define C_ORDER_PATROL	103	/* Human players may want this too */
+#define C_ORDER_CIRCLE  104
+#define C_ORDER_GOTO    105
+#define C_ORDER_HEADTO  106     /* We need this as a stopgap */
+#define C_ORDER_SENTRY  107
+#define C_ORDER_LOAD    108
+#define C_ORDER_UNLOAD  109
+#define C_ORDER_FORTIFY 110
+#define C_ORDER_3_PT_GO 111     /* Point A to Point B to home */
+#define C_ORDER_OUT_RET 112     /* Point A to home */
+#define C_ORDER_HOME	113     /* Go home */
+#define C_ORDER_STORAGE 114
+#define C_ORDER_HUNT    115
+#define C_ORDER_RECON   116
+
+
+/* This one is for debugging the computer player */
+#ifdef SHOW_AI_MSG
+#define  DEBUG_AI(string)  if (!rtEZRequestTags(string,"Continue|Abort", \
+     NULL,NULL, RTEZ_Flags,EZREQF_CENTERTEXT,RT_Window,map_window, \
+     RT_ReqPos,REQPOS_CENTERWIN,RT_LockWindow,TRUE,TAG_END )) \
+     { if (AIhandle != NULL)  unpost_it(AIhandle); AIhandle = NULL; \
+     clean_exit(0, NULL); }
+#endif
+#ifndef SHOW_AI_MSG
+#define  DEBUG_AI(string)
+#endif
+
+/**********************************
+****	Definitions		***
+**********************************/
+
+/*
+// These are simply used to make the movement calculations easier
+enum	MoveType {
+	NEW_MOVE_BINGO,
+	NEW_MOVE_POSSIBLE,
+	NEW_MOVE_SHORTEST,
+	NEW_MOVE_DISTANCE,
+	NEW_MOVE_ETA,
+	NEW_MOVE_CLOSEST_ECITY,
+	NEW_MOVE_CLOSEST_MYCITY,
+	MOVE_POSSIBLE,
+	MOVE_SHORTEST,
+	MOVE_DISTANCE,
+	MOVE_ETA,
+	MOVE_CLOSEST_ECITY,
+	MOVE_CLOSEST_MYCITY,
+	MOVE_CLEAR,
+	MOVE_INIT,
+	MOVE_CLEANUP
+};
+
+// And these the terrain cost calculations easier
+enum	CostType {
+	COST_POSSIBLE,
+	COST_FULL
+};
+*/
+
+/* Let's make these values different, so I have a chance to tell if
+  something is wrong
+  */
+#define GOV_TYPE_BASE 201
+enum	GovType {
+	GOV_CITY = GOV_TYPE_BASE,
+	GOV_PORT,
+	GOV_ISLAND,
+	GOV_TRANSPORT,
+	GOV_CARRIER,
+	GOV_BATTLESHIP
+};
+
+/* Let's make these values different, so I have a chance to tell if
+  something is wrong
+  */
+#define GOV_MODE_BASE 301
+enum	GovMode {
+	GOV_NOCITY = GOV_MODE_BASE,
+	GOV_SEARCH,
+	GOV_SUPPORT,        
+	GOV_ATTACK,         
+	GOV_DEFEND,         
+	GOV_OUTNUMBERED,
+	GOV_TAKEN
+};
+
+/* This is used for Governors requests - this records the unit types
+  that it wants to build and the priority it places on each one.
+  A random number from 1 to 100 is rolled and the prefs are gone 
+  through in order until a type is selected - each one is associated
+  with a number and all the types listed will equal 100 or more.
+  For example, if we want a 70% chance to request a RIFLE and a
+  30% chance for a FIGHTER, we would set the structure to 
+      type[0] = RIFLE, type[1] = FIGHTER, priority[0] = 70,
+      priority[1] = 30
+      */
+struct  GovPrefs {
+    short   type[MAX_PREFS];
+    short   priority[MAX_PREFS];
+};
+
+
+struct	GovReqs {
+	int	type;
+	int	req_gov;
+	int	priority;
+};
+
+/* Used to make decisions about what to do.  (48 ints per governor is a lot
+	since we have one governor for each city. We'll see how the memory 
+  usage works out.  Shorts should work fine.)  Only 13 values are used 
+  currently for units - with 11 being a militia (brought into existance 
+  to defend a city from direct attack only) and 12 for cities.
+  But I'll leave both at 16 for growth. */
+struct  GovHist {
+    unsigned short int  TotalCities;
+    unsigned short int  TotalMyCities;
+	unsigned short int	TotalMyUnits;
+	unsigned short int	TotalEUnits;
+	unsigned short int	TerrainCounts[16];
+	unsigned short int	UnitCounts[16];
+	unsigned short int	EnemyCounts[16];
+};
+
+
+/* This structure contains the data needed for the Governors, which
+	will control and fight the computer's units.  The relevant
+	data is the type - City or Carrier, what mode it is in -
+	attacking, defending, exploring, supporting, etc.  For cities,
+	the requests on hand from the top 20 (or whatever) governors. */
+struct  GovNode {
+    struct  MinNode gnode;  // must stay the first item
+    enum    GovType	type;   // must stay the second item - fix SaveAIPlayers
+                            // if either one is changed.
+    enum    GovMode	mode;
+    unsigned  char	flags;  /* Eight flags to be defined after
+				 this declaration. */
+    short   owner;	/* Added to take governors to list entities */
+    short   x;          /* The X and Y of the city's location */
+    short   y;
+    short   targx;
+    short   targy;      /* Target of the governor's attention when 
+                           applicable */
+    short   searchx;
+    short   searchy;    /* Where the Governor is searching to now */
+    
+    short   startx;
+    short   starty;
+    short   endx;
+    short   endy;	/* Contain the coordinates of the area of
+				interest of the governor */
+
+    short   Estartx;
+    short   Estarty;
+    short   Eendx;
+    short   Eendy;	/* Extended are of interest for the governor */
+
+    int     ID;         /* name of the governor - used to tell the
+	                      units apart.  Use more than we'll need. */
+
+    struct  GovHist hist;   /* Histogram of terrain for this governor -
+	  how much is unknown, land, water, etc. - also how many
+          enemy sightings there are and friendly units.  Good for 
+	  recovering from a restore as the data does not have
+	  to be saved, just regenerated. */
+                            
+    struct  GovReqs req;    /* The current request that is being built
+	                  Of course, only meaningful for city governors. */
+};
+
+#define  IsModeChange(gov)  	(gov->flags & 0x01)
+#define  SetModeChange(gov) 	(gov->flags = gov->flags | 0x01)
+#define  ClearModeChange(gov)	(gov->flags = gov->flags & 0xFE)
+
+#define  IsNeutralCity(gov) 	(gov->flags & 0x02)
+#define  SetNeutralCity(gov)	(gov->flags = gov->flags | 0x02)
+#define  ClearNeutralCity(gov)  (gov->flags = gov->flags & 0xFD)
+
+#define  IsCityTaken(gov)	(gov->flags & 0x04)
+#define  SetCityTaken(gov)	(gov->flags = gov->flags | 0x04)
+#define  ClearCityTaken(gov)	(gov->flags = gov->flags & 0xFB)
+
+#define  IsSearchDone(gov)	(gov->flags & 0x08)
+#define  SetSearchDone(gov)	(gov->flags = gov->flags | 0x08)
+#define  ClearSearchDone(gov)   (gov->flags = gov->flags & 0xF7)
+/***************************
+****	Prototypes	****
+***************************/
+/* Interface and Cleanup */
+void	set_automated_production (struct City *);
+void    cleanup_computer (void);
+int     do_computer_city_production(void);
+void    make_new_unit(struct City*);
+void    computer_player_moves (void);
+int     SaveAIPlayers( BPTR, char* );
+int     LoadAIPlayers( BPTR, char* );
+
+/**************************
+****  Cyber #1 Protos  ****
+**************************/
+struct GovNode*  AI1_locate_gov( struct City* );
+struct GovNode*  AI1_add_gov( struct City* );
+void  AI1_set_gov_prod (struct City*, struct GovNode*);
+void  AI1_play_turn ( int );
+void  AI1_setup_area_of_interest( struct GovNode* );
+void  AI1_do_all_histograms(void);
+void  AI1_do_one_histogram( struct GovNode* );
+void  AI1_give_orders(void);
+int   AI1_do_unit_actions(void);
+struct GovNode*  AI1_FindOwner( struct Unit* );
+void  AI1_computer_give_orders(struct Unit*, int, short, short,short,short,int);
+void  AI1_execute_standing_order( struct Unit* );
+int   AI1_look_around( struct Unit* );
+int   AI1_calc_dir (enum Direction , short, short, short*, short*);
+int   AI1_command_headto( struct Unit* );
+void  AI1_command_random( struct Unit* );
+void  AI1_set_gov_mode( struct GovNode* );
+void  AI1_clear_all_orders( struct GovNode* );
+
+/**************************
+****  Cyber #2 Protos  ****
+**************************/
+void  AI2_set_gov_prod (struct City*, struct GovNode*);
+void  AI2_get_gov_req (struct GovNode*, struct City* );
+int   AI2_calc_distance (short, short, short, short );
+void  AI2_play_turn (int);
+struct GovNode*  AI2_locate_gov( struct City* );
+void  AI2_setup_area_of_interest( struct GovNode* );
+void  AI2_do_all_histograms( void );
+void  AI2_set_gov_mode( struct GovNode* );
+void  AI2_give_orders(void);
+int   AI2_do_unit_actions(void);
+void  AI2_computer_give_orders(struct Unit*, int, short, short,
+      short, short, int);
+struct MapIcon* AI2_FindClosestEnemyUnit( short, short, int );
+int   AI2_look_around( struct Unit* );
+void  AI2_execute_standing_order( struct Unit* );
+int   AI2_command_hunt( struct Unit* );
+
+/**************************
+****  Cyber #3 Protos  ****
+**************************/
+void  AI3_set_gov_prod( struct City*, struct GovNode* );
+void  AI3_get_gov_req( struct GovNode*, struct City* );
+void  AI3_setup_area_of_interest( struct GovNode* );
+int   AI3_calc_path( short, short, short, short, short, int);
+int   AI3_calc_access( short, short, short, short, short);
+void  AI3_play_turn (int);
+struct GovNode*  AI3_locate_gov( struct City* );
+void  AI3_do_all_histograms( void );
+void  AI3_set_gov_mode( struct GovNode* );
+void  AI3_give_orders(void);
+void  AI3_taken_orders( struct Unit*, struct GovNode* );
+void  AI3_defend_orders( struct Unit*, struct GovNode* );
+void  AI3_search_orders( struct Unit*, struct GovNode* );
+void  AI3_default_orders( struct Unit*, struct GovNode* );
+int   AI3_do_unit_actions(void);
+void  AI3_computer_give_orders(struct Unit*, int, short, short,
+      short, short, int);
+void  AI3_select_recon_hex( struct Unit*, struct GovNode* );
+int   AI3_look_around( struct Unit* );
+void  AI3_execute_standing_order( struct Unit* );
+struct GovNode*  AI3_add_gov( struct City* );
+struct GovNode*  AI3_FindClosestCityGov( struct Unit*, int );
+struct MapIcon*  AI3_FindClosestEnemyCity( struct Unit*, int );
+int   AI3_command_recon( struct Unit* );
+int   AI3_command_goto( struct Unit* );
+void  AI3_command_random( struct Unit* );
+int   AI3_AssertUnit( struct Unit* );
+</PRE>
+</BODY>
+
+</HTML>

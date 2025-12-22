@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+
+<HTML>
+  <HEAD>
+    <META name="generator" content="HTML Tidy, see www.w3.org">
+    <META name="AUTHOR" content="Thomas Nawroth">
+    <META name="DESCRIPTION" content=
+    "Ein Computer-Magazin von 1984">
+
+    <TITLE>Happy Computer</TITLE>
+  </HEAD>
+
+  <BODY bgcolor="#fffff4" background="Images/mm_hc20b.gif">
+    <TABLE border="0" cellpadding="8">
+      <TR>
+        <TD>
+          <CENTER>
+            <IMG src="Images/mm_hc20a.gif"><BR>
+            <I>Folge 20</I><BR>
+            <BR>
+             Ein spannendes Weltraumspiel f&uuml;r den Laser 210,
+            310 und den VZ 200.
+          </CENTER>
+
+          <H1 align="CENTER">Alarmstufe rot:<BR>
+          Meteore voraus!</H1>
+          <BR>
+           
+
+          <P>Das Programm "Meteore voraus" l&auml;uft auf der
+          Grundversion des VZ 200 und des Laser 210/310. Besitzer
+          eines Laser 110 k&ouml;nnen es durch &Auml;nderung der
+          POKE- (und PEEK-) Befehle auch auf ihrem Computer
+          lauff&auml;hig machen.</P>
+
+          <P>Der Spieler steuert mit den Tasten "N" und "M" ein
+          violettes Rechteck, das am oberen Bildrand erscheint und
+          das "Raumschiff" darstellt. Die Meteore kommen vom
+          unteren Bildrand; ihnen mu&szlig; man so lange wie
+          m&ouml;glich ausweichen. Wird das Raumschiff von einem
+          Meteor getroffen, so ist das Spiel beendet. Mit der
+          RETURN-Taste wird es wieder gestartet. Um das Spiel
+          schneller zu machen, k&ouml;nnen die Zeilen 360 und 370
+          gel&ouml;scht werden.</P>
+
+          <CENTER>
+            <IMG src="Images/mm_hc20c.gif" alt=
+            "Bildschirmfoto des Spiels" width="469" height=
+            "367"><BR>
+          </CENTER>
+
+          <P>In diesem Spiel wurden zum Teil statt der
+          "PRINT"-Befehle "POKE"-Befehle verwendet. Wie die
+          Besitzer eines Laser 210/310 oder VZ 200 sicherlich
+          wissen, lauten die Adressen im Text-Modus f&uuml;r die
+          Bildschirmspeicherpl&auml;tze 28672 bis 29183. In diesem
+          Programm wurden jedoch nur die erste Zeile (Adresse 28672
+          bis 28703) f&uuml;r das Raumschiff und die letzte Zeile
+          (Adresse 29152 bis 29183) f&uuml;r die Meteore
+          benutzt.</P>
+
+          <P>Mit dem "PEEK"-Befehl in Zeile 140 wird
+          &uuml;berpr&uuml;ft, ob sich ein Meteor auf der Position
+          des Raumschiffes befindet, also mit dem Raumschiff
+          zusammenprallt und entsprechend reagiert (Sprung in Zeile
+          150 oder 300). Wie Sie sicherlich gemerkt haben, fehlt in
+          dieser und den &uuml;brigen "IF"-Anweisungen das "THEN".
+          Dieses "THEN" kann jedoch durch ein Komma ersetzt werden,
+          das die gleiche Funktion erf&uuml;llt. Das Spiel wird
+          dadurch etwas schneller.</P>
+
+          <P>Eine Bemerkung f&uuml;r die Besitzer anderer Computer:
+          Beim VZ 200/Laser 210/310 kann der "LET"-Befehl
+          weggelassen werden. Ebenso braucht nach einer
+          "NEXT"-Anweisung nicht die zugeh&ouml;rige Variable zu
+          stehen. Man kann sie ebenfalls weglassen.</P>
+
+          <P>(Wesemann/hg)</P>
+          <BR>
+<PRE>
+1 REM       METEORE
+2 REM  VON  WOLFGANG WESEMANN
+3 REM       FRIEDENSALLEE 176
+4 REM       6078 NEU ISENBURG
+5 CLS
+10 H=0
+20 PRINT"+++++++++++++METEORE++++++++++++";
+30 GOSUB400
+60 INPUT"DRUECKEN SIE RETURN";Q$
+65 CLS
+70 PRINT@500,
+80 X=0
+90 Z=15
+110 X=X+1
+140 IFPEEK(28672+Z)&lt;&gt;42,300
+150 SOUND1,6
+160 CLS
+170 PRINT"SIE HABEN ";X-15;:PRINT" PUNKTE"
+180 IFX-15&gt;H,H=X-15
+190 PRINT"HIGH SCORE ";H
+200 FORL=1TO1000:NEXT
+210 PRINT:PRINT:PRINT
+220 GOTO60
+300 POKE28672+Z,239
+305 Z=Z-(INKEY$="M")
+310 Z=Z+(INKEY$="N")
+315 IFZ&lt;0,Z=0ELSEIFZ&gt;31,Z=31
+320 A=RND(32)-1
+340 POKE29151+A,42
+350 IFA=0THENPRINTCHR$(234)ELSEPRINT
+360 REM  NAECHSTE ZEILE LOESCHEN, DANN SPIEL SCHNELLER
+370 RN=RND(RND(1))
+380 GOTO110
+400 PRINT:PRINT"SIE  SIND  PILOT  EINES  RAUM-  SCHIFFES,";
+410 PRINT"DAS IN EIN METEORITEN- FELD GERATEN IST."
+420 PRINT"MIT DEN TASTEN ";CHR$(206);
+430 PRINT" UND ";CHR$(205);" STEUERN SIE DAS SCHIFF."
+440 PRINT"WENN SIE VON EINEM METEORITEN"
+450 PRINT"GETROFFEN  WERDEN, DANN IST DAS SPIEL BEENDET, KANN";
+460 PRINT" ABER MIT    DER EINGABE VON RETURN WEITER-"
+470 PRINT"GESPIELT WERDEN."
+480 RETURN
+</PRE>
+          <HR>
+          <BR>
+          In der n&auml;chsten NoCover gibt es einen Testbericht
+          des "Grphics Basic" f&uuml;r den Commodore 64.
+        </TD>
+      </TR>
+    </TABLE>
+    <BR>
+    <BR>
+
+    <TABLE align="CENTER" border="3">
+      <TR bgcolor="#ffffff">
+        <TD><A href="mailto:">Thomas Nawroth</A></TD>
+      </TR>
+    </TABLE>
+  </BODY>
+</HTML>
+

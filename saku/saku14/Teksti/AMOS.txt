@@ -1,0 +1,106 @@
+5
+1*
+
+{3        Ongelmia ja niiden ratkaisuja aloitteleville AMOS-ohjelmoijille
+{3        ---------------------------------------------------------------
+
+                               Samuli Holopainen
+
+
+T‰m‰ artikkeli on tarkoitettu l‰hinn‰ AMOSia aloitteleville, mutta useat asiois-
+ta koskevat myˆs muita BASICin tapaisia kieli‰. Kerron ongelmista,  joihin  olen
+tˆrm‰nnyt ohjelmoidessani AMOSilla sek‰ niiden ratkaisuista.
+
+- AMOSin ohjelmia ei saa k‰ynnistym‰‰n suoraan, ennen kuin ne k‰‰nt‰‰ AMOS  Com-
+pilerilla koneen ymm‰rt‰m‰‰n muotoon. Compiler pit‰‰ hankkia erikseen.
+
+- Print-k‰skyn j‰lkeen tulevien lainausmerkkien sis‰lle voi kirjoittaa mit‰  ta-
+hansa (jostain syyst‰ kaikki eiv‰t ymm‰rr‰ t‰t‰).
+
+- BOB tai Sprite (Easy AMOSissa on vain BOB, Creatorissa ja ja Pro'ssa molemmat)
+saadaan liikkumaan piirt‰m‰ll‰ se joka kerta uudestaan mutta eri  paikkaan.  Oh-
+jelmanp‰tk‰ voisi olla esimerkiksi seuraavanlainen: 
+
+Load "DF0:Bobs.abk"  ` Lataa Bobs.abk-tiedoston DF0:sta.
+Double Buffer        ` Kaksoispuskuri, jolloin BOBit lakkaavat v‰lkkym‰st‰.
+Flash Off            ` Lopettaa v‰rin numero 3 vilkkumisen (mm. kursori).
+Get BOB Palette      ` Ottaa BOB-pankin v‰ripaletin.
+XCOORD=10            ` X-koordinaatti on 10 pistett‰ vasemmasta reunasta.
+YCOORD=20            ` Y-koordinaatti on 20 pistett‰ yl‰laidasta alas.
+IMAGE=2              ` Image eli BOB-kuva numero 1 BOB-pankista.
+Do                   ` Silmukan alku.
+Bob 1,XCOORD,YCOORD,IMAGE
+                     ` BOB 1 on XCOORD:in ja YCOORD:in m‰‰r‰m‰ss‰ paikassa
+                     ` kuvalla, jonka IMAGE m‰‰r‰‰. Alussa Bob 1,10,20,2.
+XCOORD=XCOORD+1      ` XCOORD on nyt XCOORD + 1, jolloin kuva liikkuu yhden
+                     ` pisteen oikealle.
+If XCOORD=250 Then XCOORD=10 
+                     ` Jos XCOORD on 250 se palaakin arvoon 10.
+IMAGE=IMAGE+1        ` IMAGE on IMAGE + 1. Kuvaa vaihtamalla voimme tehd‰
+                     ` esimerkiksi animaation, jossa BOBin vaihtuvat ja
+                     ` liikkuvat kuvat loihtivat ruudulle k‰velev‰n hahmon.
+                     ` T‰llˆin kuvissa hahmon jalat ovat tietenkin hieman
+                     ` eri asennoissa.
+If IMAGE=4 Then IMAGE=1
+                     ` Jottei kaikkia BOB-pankin kuvia k‰yt‰isi l‰vitse ja
+                     ` k‰vely n‰ytt‰isi toistuvan, laitetaan kuvan numero 4
+                     ` tullessa kuvan numero 4 sijasta kuva numero 1
+                     ` uudelleen, jolloin liike toistuu.
+Loop                 ` Silmukan loppu. Ohjelma hypp‰‰ takaisin Do-riville.
+
+Huom! AMOS laskee `-merkin j‰lkeiset merkit rivill‰ kommenteiksi, joten  heitto-
+merkin j‰lkeinen osa rivi‰ voi sis‰lt‰‰ mit‰  vain,  kuten  n‰iss‰  esimerkeiss‰
+selvent‰vi‰ huomautuksia.
+
+Mik‰li BOBin halutaan pysyv‰n paikoillaan ilman ett‰ kuva vaihtuu ja vie pahasti
+tehoja, kannattaa BOB piirt‰‰ vain kerran. T‰m‰ tapahtuu laittamalla  ennen  Do-
+rivi‰ vaikkapa Bob 2,200,130,4 jolloin BOB 2 tulee kohtaan 200,  130,  eik‰  tee
+t‰m‰n j‰lkeen mit‰‰n (pysyy paikoillaan).
+
+- Koska monilla on pahoja vaikeuksia muuttujien  kanssa,  niin  yrit‰n  selitt‰‰
+asian mahdollisimman perusteellisesti. Muuttujan  nimen‰  voidaan  k‰ytt‰‰  ihan
+mit‰ tahansa kirjainyhdistelm‰‰ (kunhan se ei vain ole k‰skyn nimi) esim. A,  B,
+C, D, DE, GHF tai vaikka SAKU. Muuttujia  k‰ytet‰‰n  pit‰m‰‰n  muistissa  jotain
+asiaa, esim. numeroa, joka merkitsee peliss‰ kellonaikaa.  Koska  aika  muuttuu,
+niin jonkin t‰ytyy olla ajasta perill‰, jotta esim. pelaaja  voisi  sit‰  sitten
+katsoa.
+
+T‰h‰n tarkoitukseen voimme k‰ytt‰‰ vaikka kirjainta K  (kuin  kello).  Pakko  ei
+tietenk‰‰n ole k‰ytt‰‰ kirjainta K, vaan yht‰ hyvin  voisimme  k‰ytt‰‰  vaikkapa
+A:ta tai juuri KELLO:a. Koska kellon t‰ytyy jo aluksi olla jotakin, niin laitam-
+me alussa kellonajaksi vaikkapa 76. T‰m‰ kello ei ole "oikea" kello, vaan  menee
+ymp‰ri aina 200:n v‰lein. 
+
+K=76                 ` K-muuttujan arvoksi asetetaan 76.
+
+Emme halua kellon muuttuvan joka kierros takaisin 76:ksi, joten laitamme  silmu-
+kan vasta sen j‰lkeen. 
+
+Do                   ` Aloittaa silmukan.
+K=K+1                ` K kasvattaa arvoaan yhdell‰.
+
+Koska emme halua kellon menev‰n liian suureksi, niin  p‰‰t‰mme  kellolle  rajan,
+jonka ylitetty‰‰n se aloittaa alusta. T‰ss‰ tapauksessa se olkoon 200. 
+
+IF K=200 THEN K=1    ` Jos K on 200, niin sen arvo muutetaan 1:ksi.
+
+N‰hd‰ksemme ohjelman toiminnan lis‰‰mme viel‰  komennon  tulostamaan  kellonajan
+ruudulle. 
+
+Print K              ` Tulostaa ruudulle K-muuttujan arvon.
+Loop                 ` Silmukan loppu. Ohjelma hypp‰‰ takaisin Do-riville.
+
+Edell‰ k‰ytetyn kaltaisia muuttujia voi k‰ytt‰‰ vain numeroiden  muistiintallen-
+tamiseen, mutta jos lis‰‰mme muuttujanimen per‰‰n dollarimerkin ($), niin  muut-
+tujaan voidaan tallettaa sanoja. Esim: 
+
+SANAA$="Tapa tuo k‰rp‰nen!"
+SANAB$="K‰teni! Ne ovat p‰‰ss‰ni!"
+
+Print SANAA$         ` Tulostaa SANAA$-muuttujan sis‰llˆn.
+Print SANAB$         ` Tulostaa SANAB$-muuttujan sis‰llˆn.
+
+Ohjelman ulosanti olisi seuraavanlainen:
+
+Tapa tuo k‰rp‰nen!
+K‰teni! Ne ovat p‰‰ss‰ni! 

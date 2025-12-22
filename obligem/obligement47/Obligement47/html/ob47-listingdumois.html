@@ -1,0 +1,673 @@
+<html>
+ <head>
+  <title>Listing du mois&nbsp;: simulateur de vie (Blitz Basic)</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Le listing du mois&nbsp;: simulateur de vie (Blitz Basic) </font>par&nbsp;<a href="mailto:tme@mail.com">Sylvain&nbsp;Terret</a></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">Non</font><br><br>
+
+Non, vous n'avez pas sous les yeux un &eacute;ni&egrave;me tutoriel sur le Blitz Basic, il est plut&ocirc;t question ici
+d'un vieil ami oubli&eacute;, mais n&eacute;anmoins appr&eacute;ci&eacute;&nbsp;: Le Listing du Mois (et pourquoi pas de
+l'Ann&eacute;e). Vous l'avez sans doute remarqu&eacute;, la presse informatique est devenue bien ennuyeuse pour qui
+n'est pas benchmarkophile ou soucieux de savoir que la version 2004 de la suite bureautique Y est r&eacute;volutionnaire
+par rapport &agrave; la mouture pr&eacute;c&eacute;dente, car int&eacute;grant une m&eacute;ga nouvelle fonction de zigouigoui
+machintruc qui permet au premier coll&egrave;gue venu de pourrir notre bo&icirc;te e-mail et de lagger tout l'Internet
+&agrave; grands coups de scripts PPS de 5 Mo. O&ugrave; donc sont pass&eacute;s les magazines remplis de listings&nbsp;? Sommes-nous
+condamn&eacute;s &agrave; lire de la pub pour des PC bidons, des articles sur la meilleure fa&ccedil;on de configurer sa
+barre des t&acirc;ches ou des tests d'imprimante/scanner/fax&nbsp;? Est-ce que ce n'est plus que &ccedil;a la micro&nbsp;?!<br><br><br>
+
+
+<font size="+1" color="#ccbb33">Moi je dis...</font><br><br>
+
+Moi, je dis stop. Stop &agrave; la misère intellectuelle et culturelle qui ronge les m&eacute;dias et qui nous tire
+tous vers le bas. Nous sommes autre chose que des parts de march&eacute;/ cibles produit / temps de cerveau humain / brique dans
+un mur (oui, il y a un clin d'oeil l&agrave;). C'est en songeant &agrave; tout cela que j'ai eu envie d'utiliser Obligement
+et l'Amiga pour nuancer (un petit peu) cette triste situation. Voici donc un court programme pas trop mal &eacute;crit qui
+vous permettra, je l'espère, de passer un bon moment... de r&eacute;flexion&nbsp;:-)<br><br><br>
+
+
+<font size="+1" color="#ccbb33">Un simulateur</font><br><br>
+
+Le code pr&eacute;sent&eacute; ici est celui d'un simulateur de vie de cellules, classique. Vous pouvez consulter l'index
+des commandes pour avoir les explications qu'il vous faut. Globalement, le principe de fonctionnement est simple, je
+vous laisse le plaisir d'&eacute;tudier le source soigneusement document&eacute; pour voir comment &ccedil;a marche
+(bah oui, si je dis tout, c'est moins marrant). Bien entendu, il y a des optimisations possibles, l&agrave; encore,
+c'est &agrave; vous de jouer&nbsp;! Les courageux qui seront all&eacute;s jusqu'au bout auront le plaisir de voir &eacute;voluer
+les petites b&ecirc;b&ecirc;tes. Pour l'avoir laiss&eacute; tourner pendant un moment, je peux vous dire qu'on obtient
+parfois des trucs surprenants&nbsp;! Un 68040 &agrave; 25 MHz et une r&eacute;solution de 640x512 sont n&eacute;cessaires si on veut
+profiter d&eacute;cemment du spectacle (oui, vraiment, il y a des optimisations &agrave; faire&nbsp;:-). A noter que le Blitz ne
+marche pas sur Pegasos (cf. notre ami Henes qui me l'a confirm&eacute; lors de l'excellente HunoParty 2).<br><br>
+
+Bon code&nbsp;!<br><br>
+
+<font size="+1" color="#ccbb33">Le code source</font><br><br>
+
+<a name="haut"></a>
+
+<table border="1" bgcolor="#112233" width="100%"><tr><td><font size="-1">
+<pre><a href="#WBStartup"><b>WBStartup</b></a>
+<a href="#WbToScreen"><b>WbToScreen</b></a> 3
+<a href="#Use Screen"><b>Use Screen</b></a> 3
+
+<a href="#LoadFont"><b>LoadFont</b></a> 2,"topaz.font",8
+<a href="#Use IntuiFont"><b>Use IntuiFont</b></a> 2
+
+<a href="#GTButton"><b>GTButton</b></a> 0,1,242,252,100,15,"Restart",#PLACETEXT_IN
+
+<a href="#Window"><b>Window</b></a> 0,0,14,600,300,$140e,"LifeSimAOS v1.0 Obligement version",-1,-1
+<a href="#DefaultOutput"><b>DefaultOutput</b></a>
+
+<a href="#AttachGTList"><b>AttachGTList</b></a> 0,0
+
+<a href="#Use Window"><b>Use Window</b></a> 0
+
+;Creation du tableau contenant les infos sur les cellules
+<a href="#Dim"><b>Dim</b></a> cellules.b(57,24)
+
+;Creation de la copie du tableau contenant les infos sur les cellules
+<a href="#Dim"><b>Dim</b></a> cellules_copie.b(57,24)
+
+comptvoisins.b=0
+
+<a href="#Gosub"><b>Gosub</b></a> InitSim
+
+comptboucles.l=0
+
+;Boucle principale du programme
+<a href="#While...Wend"><b>While</b></a> ev.l<>#IDCMP_CLOSEWINDOW
+
+  comptboucles.l=comptboucles.l+1
+  <a href="#Use Window"><b>Use Window</b></a> 0
+  <a href="#WLocate"><b>WLocate</b></a> 10,8
+  <a href="#Print"><b>Print</b></a> "Generation number ",comptboucles.l
+
+    ;On recupere les evenements qui se produisent dans la fenetre du logiciel
+    ev.l=<a href="#Event"><b>Event</b></a>
+
+    ;Si on clique sur le bouton RESTART
+    <a href="#If...EndIf"><b>If</b></a> ev=64
+      comptboucles.l=0
+      <a href="#Gosub"><b>Gosub</b></a> InitSim
+    <a href="#If...EndIf"><b>EndIf</b></a>
+
+    ;Debut du code de la simulation
+    <a href="#For...Next"><b>For</b></a> compteur2.w=1 To 57 Step 1
+      <a href="#For...Next"><b>For</b></a> compteur3.w=1 To 24 Step 1
+        comptvoisins.b=0
+          <a href="#If...EndIf"><b>If</b></a> compteur2.w>1
+            <a href="#If...EndIf"><b>If</b></a> compteur3.w>1
+              ;HAUT-GAUCHE
+              <a href="#If...EndIf"><b>If</b></a> cellules.b(compteur2.w-1,compteur3.w-1)=1
+                comptvoisins.b=comptvoisins.b+1
+              <a href="#If...EndIf"><b>EndIf</b></a>
+            <a href="#If...EndIf"><b>EndIf</b></a>
+            ;GAUCHE
+            <a href="#If...EndIf"><b>If</b></a> cellules.b(compteur2.w-1,compteur3.w)=1
+              comptvoisins.b=comptvoisins.b+1
+            <a href="#If...EndIf"><b>EndIf</b></a>
+            ;BAS-GAUCHE
+            <a href="#If...EndIf"><b>If</b></a> compteur3.w&lt;24
+              <a href="#If...EndIf"><b>If</b></a> cellules.b(compteur2.w-1,compteur3.w+1)=1
+                comptvoisins.b=comptvoisins.b+1
+              <a href="#If...EndIf"><b>EndIf</b></a>
+            <a href="#If...EndIf"><b>EndIf</b></a>
+          <a href="#If...EndIf"><b>EndIf</b></a>
+          <a href="#If...EndIf"><b>If</b></a> compteur2.w&lt;57
+            <a href="#If...EndIf"><b>If</b></a> compteur3.w>1
+              ;HAUT-DROITE
+              <a href="#If...EndIf"><b>If</b></a> cellules.b(compteur2.w+1,compteur3.w-1)=1
+                comptvoisins.b=comptvoisins.b+1
+              <a href="#If...EndIf"><b>EndIf</b></a>
+            <a href="#If...EndIf"><b>EndIf</b></a>
+            ;DROITE
+            <a href="#If...EndIf"><b>If</b></a> cellules.b(compteur2.w+1,compteur3.w)=1
+              comptvoisins.b=comptvoisins.b+1
+            <a href="#If...EndIf"><b>EndIf</b></a>
+            ;BAS-DROITE
+            <a href="#If...EndIf"><b>If</b></a> compteur3.w&lt;24
+              <a href="#If...EndIf"><b>If</b></a> cellules.b(compteur2.w+1,compteur3.w+1)=1
+                comptvoisins.b=comptvoisins.b+1
+              <a href="#If...EndIf"><b>EndIf</b></a>
+            <a href="#If...EndIf"><b>EndIf</b></a>
+          <a href="#If...EndIf"><b>EndIf</b></a>
+          ;HAUT
+          <a href="#If...EndIf"><b>If</b></a> compteur3.w>1
+            <a href="#If...EndIf"><b>If</b></a> cellules.b(compteur2.w,compteur3.w-1)=1
+              comptvoisins.b=comptvoisins.b+1
+            <a href="#If...EndIf"><b>EndIf</b></a>
+          <a href="#If...EndIf"><b>EndIf</b></a>
+          ;BAS
+          <a href="#If...EndIf"><b>If</b></a> compteur3.w&lt;24
+            <a href="#If...EndIf"><b>If</b></a> cellules.b(compteur2.w,compteur3.w+1)=1
+              comptvoisins.b=comptvoisins.b+1
+            <a href="#If...EndIf"><b>EndIf</b></a>
+          <a href="#If...EndIf"><b>EndIf</b></a>
+
+          <a href="#If...EndIf"><b>If</b></a> (comptvoisins.b<2 OR comptvoisins.b>3)
+            cellules_copie.b(compteur2.w,compteur3.w)=0
+          <a href="#If...EndIf"><b>Else</b></a>
+            <a href="#If...EndIf"><b>If</b></a> comptvoisins.b=3
+              cellules_copie.b(compteur2.w,compteur3.w)=1
+            <a href="#If...EndIf"><b>EndIf</b></a>
+          <a href="#If...EndIf"><b>EndIf</b></a>
+      <a href="#For...Next"><b>Next</b></a>
+    <a href="#For...Next"><b>Next</b></a>
+
+    <a href="#For...Next"><b>For</b></a> compteur2.w=1 To 57 Step 1
+      <a href="#For...Next"><b>For</b></a> compteur3.w=1 To 24 Step 1
+cellules.b(compteur2.w,compteur3.w)=cellules_copie.b(compteur2.w,compteur3.w)
+      <a href="#For...Next"><b>Next</b></a>
+    <a href="#For...Next"><b>Next</b></a>
+    <a href="#Gosub"><b>Gosub</b></a> RefreshCells
+
+    ;Fin du code de la simulation
+
+<a href="#While...Wend"><b>Wend</b></a>
+
+<a href="#DetachGTList"><b>DetachGTList</b></a> 0
+<a href="#Free Window"><b>Free Window</b></a> 0
+
+<a href="#End"><b>End</b></a>
+
+
+..InitSim
+
+  ;Remplissage aleatoire du tableau des cellules
+  <a href="#For...Next"><b>For</b></a> compteur2.w=1 To 57 Step 1
+    <a href="#For...Next"><b>For</b></a> compteur3.w=1 To 24 Step 1
+      cellules.b(compteur2.w,compteur3.w)=Rnd(2)
+    <a href="#For...Next"><b>Next</b></a>
+  <a href="#For...Next"><b>Next</b></a>
+
+  <a href="#For...Next"><b>For</b></a> compteur2.w=1 To 57 Step 1
+    <a href="#For...Next"><b>For</b></a> compteur3.w=1 To 24 Step 1
+cellules_copie.b(compteur2.w,compteur3.w)=cellules.b(compteur2.w,compteur3.w)
+    <a href="#For...Next"><b>Next</b></a>
+  <a href="#For...Next"><b>Next</b></a>
+
+
+  ;Tracage du tableau
+  ;Lignes horizontales
+  <a href="#For...Next"><b>For</b></a> compteur.w=20 To 260 Step 10
+    <a href="#Wline"><b>Wline</b></a> 10,compteur.w,580,compteur.w,1
+  <a href="#For...Next"><b>Next</b></a>
+
+  ;Lignes verticales
+  <a href="#For...Next"><b>For</b></a> compteur.w=10 To 580 Step 10
+    <a href="#Wline"><b>Wline</b></a> compteur.w,20,compteur.w,260,1
+  <a href="#For...Next"><b>Next</b></a>
+
+  <a href="#Gosub"><b>Gosub</b></a> RefreshCells
+
+<a href="#Return"><b>Return</b></a>
+
+
+
+..RefreshCells
+
+  ;Remplissage des cellules
+  <a href="#For...Next"><b>For</b></a> compteur2.w=11 To 571 Step 10
+    <a href="#For...Next"><b>For</b></a> compteur3.w=21 To 251 Step 10
+      <a href="#WBox"><b>WBox</b></a> compteur2.w,compteur3.w,compteur2.w+8,compteur3.w+8,
+      cellules.b(Int(compteur2.w/10),Int((compteur3.w/10)-1))
+    <a href="#For...Next"><b>Next</b></a>
+  <a href="#For...Next"><b>Next</b></a>
+
+<a href="#Return"><b>Return</b></a>
+		<!-- Hop hop, je r&eacute;indente -->
+</pre>
+</font></td></tr></table>
+<br>
+
+<a name="index_des_instructions"></a>
+
+<font size="+1" color="#ccbb33">Index des instructions</font><br><br>
+
+                <a name="WBStartup"><font color="#cccc33"><b>WBStartup</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                WBStartup<br><br>
+                Cette instruction permet &agrave; votre programme d'&ecirc;tre lanc&eacute; &agrave; partir du Workbench. Si elle
+                est manquante et que vous d&eacute;marrez votre logiciel &agrave; partir du WB, le plantage est assur&eacute;.
+	        <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="WbToScreen"><font color="#cccc33"><b>WbToScreen</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                WbToScreen <i>num&eacute;ro &eacute;cran</i><br><br>
+                Cette instruction attribue un num&eacute;ro d'&eacute;cran &agrave; celui du Workbench. Cela vous permet d'utiliser l'&eacute;cran du WB
+                 comme n'importe quel autre &eacute;cran pour y ouvrir des fen&ecirc;tres par exemple.
+	        <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Use Screen"><font color="#cccc33"><b>Use Screen</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Use Screen <i>num&eacute;ro &eacute;cran</i><br><br>
+                Indique au programme qu'il doit utiliser l'&eacute;cran indiqu&eacute; pour les op&eacute;rations d'affichage et de saisie.
+	        <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="LoadFont"><font color="#cccc33"><b>LoadFont</b></font></a><br><br>
+	        <b>Syntaxe :</b><br>
+                LoadFont <i>num&eacute;ro attribu&eacute; &agrave; la police,"nom de la police.font",taille,style</i><br><br>
+	        Cette instruction permet de charger une police de caract&egrave;res ("fonte" dans le langage amigaiste) &agrave; partir du dossier FONTS:. Voici quelques d&eacute;tails concernant le paramètre <i>style</i>&nbsp;:
+	        <ul>
+		        <li>
+                                Une valeur de 1 correspond &agrave; <u>soulign&eacute;</u>,
+		        </li>
+                        <li>
+                                Une valeur de 2 correspond &agrave; <b>gras</b>,
+		        </li>
+                        <li>
+                                Une valeur de 4 correspond &agrave; <i>italique</i>,
+		        </li>
+                        <li>
+                                Une valeur de 8 correspond &agrave; <big>plus large que la normale</big>.
+		        </li>
+	        </ul>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Use IntuiFont"><font color="#cccc33"><b>Use IntuiFont</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Use IntuiFont <i>num&eacute;ro d'une police de caract&egrave;res charg&eacute;e au pr&eacute;alable</i><br><br>
+                La police de caract&egrave;res pass&eacute;e en param&egrave;tre sera utilis&eacute;e pour inscrire du texte &agrave; l'&eacute;cran.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="GTButton"><font color="#cccc33"><b>GTButton</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                GTButton <i>num&eacute;ro de la GadgetList du bouton,num&eacute;ro du bouton,position en X,position en Y,largeur,hauteur,"texte",drapeau</i><br><br>
+                Cette instruction cr&eacute;e un bouton attach&eacute; &agrave; ce que l'on appelle une GadgetList, en quelque sorte un ensemble de composants (boutons, texte,...) que l'on attribue &agrave; une fen&ecirc;tre. Le param&egrave;tre <i>drapeau</i> optionnel sp&eacute;cifie, entre autres, la position du texte dans ou par rapport au bouton&nbsp;:<br><br>
+                <table border="1">
+                        <tr>
+                                <td>
+                                        <b>Valeur</b>
+                                </td>
+                                <td>
+                                        <b>Position du texte</b>
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        $1
+                                </td>
+                                <td>
+                                        Gauche
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        $2
+                                </td>
+                                <td>
+                                        Droite
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        $4
+                                </td>
+                                <td>
+                                        Au-dessus
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        $8
+                                </td>
+                                <td>
+                                        En-dessous
+                                </td>
+                        </tr>
+                </table>
+                <br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Window"><font color="#cccc33"><b>Window</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Window <i>num&eacute;ro que l'on veut donner &agrave; la fen&ecirc;tre,position en X,position en Y,largeur,hauteur,drapeaux,"titre",num&eacute;ro de la couleur du texte utilis&eacute;e pour le titre de la fen&ecirc;tre,num&eacute;ro de la couleur utilis&eacute;e pour la bordure de la fen&ecirc;tre,num&eacute;ro de la GadgetList rattach&eacute;e (facultatif)</i><br><br>
+                Cette instruction cr&eacute;e une fen&ecirc;tre WorkBench. Voici plus de d&eacute;tails sur les drapeaux&nbsp;:<br>
+                <table border="1">
+                        <tr>
+                                <td>
+                                        <b>Drapeaux</b>
+                                </td>
+                                <td>
+                                        <b>Valeur</b>
+                                </td>
+                                <td>
+                                        <b>Description</b>
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        WINDOWSIZING
+                                </td>
+                                <td>
+                                        $0001
+                                </td>
+                                <td>
+                                        Ajoute un gadget de redimensionnement &agrave; la fen&ecirc;tre.
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        WINDOWDRAG
+                                </td>
+                                <td>
+                                        $0002
+                                </td>
+                                <td>
+                                        Indique que la fen&ecirc;tre est d&eacute;plaçable.
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        WINDOWDEPTH
+                                </td>
+                                <td>
+                                        $0004
+                                </td>
+                                <td>
+                                        Ajoute un gadget de profondeur &agrave; la fen&ecirc;tre. Elle peut donc &ecirc;tre plac&eacute;e devant ou derri&egrave;re les autres. C'est l&agrave; qu'on sent l'&acirc;ge du WB...
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        WINDOWCLOSE
+                                </td>
+                                <td>
+                                        $0008
+                                </td>
+                                <td>
+                                        Ajoute un gadget de fermeture.
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        SIZEBRIGHT
+                                </td>
+                                <td>
+                                        $0010
+                                </td>
+                                <td>
+                                        Les drapeaux GIMME00 et WINDOWSIZING activ&eacute;s permettent de r&eacute;server une bordure &agrave; droite de la fen&ecirc;tre interdisant l'&eacute;criture sur une largeur &eacute;quivalente &agrave; la taille du gadget de redimensionnement.
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        SIZEBOTTOM
+                                </td>
+                                <td>
+                                        $0020
+                                </td>
+                                <td>
+                                        Idem que SIZEBRIGHT si ce n'est que la marge est cr&eacute;&eacute;e en bas de la fen&ecirc;tre.
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        BACKDROP
+                                </td>
+                                <td>
+                                        $0100
+                                </td>
+                                <td>
+                                        La fen&ecirc;tre est plac&eacute;e derri&egrave;re toutes celles qui sont d&eacute;j&agrave; ouvertes. Le drapeau WINDOWDEPTH ne peut &ecirc;tre activ&eacute; et la fen&ecirc;tre restera obligatoirement en arri&egrave;re-plan.
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        GIMME00
+                                </td>
+                                <td>
+                                        $0400
+                                </td>
+                                <td>
+                                        Les bordures de la fen&ecirc;tre ne peuvent en aucun cas &ecirc;tre effac&eacute;es par le contenu de la fen&ecirc;tre si celui-ci vient &agrave; d&eacute;border. D'la balle.
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        BORDERLESS
+                                </td>
+                                <td>
+                                        $0800
+                                </td>
+                                <td>
+                                        Vous voyez ce que c'est une serveuse topless&nbsp;? Bon, et bien c'est pareil, &agrave; la nuance pr&egrave;s que c'est la bordure qui saute, et pas le haut ;-)
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                        ACTIVATE
+                                </td>
+                                <td>
+                                        $1000
+                                </td>
+                                <td>
+                                        Active la fen&ecirc;tre une fois ouverte.
+                                </td>
+                        </tr>
+                </table>
+                <br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="DefaultOutput"><font color="#cccc33"><b>DefaultOutput</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                DefaultOutput<br><br>
+                Fait de la fen&ecirc;tre actuellement active la sortie par d&eacute;faut (des futures instructions Print par exemple). A noter que DefaultInput existe.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="AttachGTList"><font color="#cccc33"><b>AttachGTList</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                AttachGTList <i>num&eacute;ro de la GadgetList,num&eacute;ro de la fen&ecirc;tre</i><br><br>
+                Cette instruction attache un ensemble de gadgets GadTools &agrave; une fen&ecirc;tre ouverte (voir <a href="#GTButton">GTButton</a>).
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Use Window"><font color="#cccc33"><b>Use Window</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Use Window <i>num&eacute;ro de la fen&ecirc;tre</i><br><br>
+                Cette instruction active la fen&ecirc;tre d&eacute;sign&eacute;e. Un WindowInput et un WindowOutput sont automatiquement faits sur la fen&ecirc;tre en question afin d'en faire l'entr&eacute;e/sortie par d&eacute;faut.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Dim"><font color="#cccc33"><b>Dim</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Dim <i>nom_du_tableau(colonnes,lignes)</i><br><br>
+                Cette instruction cr&eacute;e un tableau dont les cellules sont num&eacute;rot&eacute;es de 1 &agrave; <i>n</i>. Elle est riche en possibilit&eacute;s, je vous renvoie au manuel du Blitz pour en savoir plus.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Gosub"><font color="#cccc33"><b>Gosub</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Gosub <i>Label</i><br><br>
+                Cette instruction indique &agrave; l'ordinateur qu'il doit ex&eacute;cuter ce qui se trouve &agrave; l'emplacement <i>Label</i> du programme, puis reprendre son cours normal l&agrave; o&ugrave; il a &eacute;t&eacute; interrompu. A ne pas confondre avec Goto.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="While...Wend"><font color="#cccc33"><b>While...Wend</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                While <i>condition(s)</i><br>
+                <i>instruction(s) &agrave; ex&eacute;cuter</i><br>
+                Wend<br><br>
+                Cette instruction appartient &agrave; la famille des boucles. Tant que la <i>condition</i> est satisfaite, le cycle se r&eacute;p&egrave;te.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="WLocate"><font color="#cccc33"><b>WLocate</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                WLocate <i>X,Y</i><br><br>
+                Cette instruction est utilis&eacute;e pour sp&eacute;cifier la position du texte dans la fen&ecirc;tre active. <i>X</i> et <i>Y</i> sont exprim&eacute;s en pixels et indiquent le d&eacute;calage &agrave; appliquer par rapport au coin sup&eacute;rieur gauche.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Print"><font color="#cccc33"><b>Print</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Print <i>Texte ou formule</i><br><br>
+                Permet d'afficher du texte ou des valeurs num&eacute;riques sur la sortie standard.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Event"><font color="#cccc33"><b>Event</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Event<br><br>
+                Cette instruction est similaire &agrave; WaitEvent&nbsp;: Elle retourne la valeur IDCMP des &eacute;v&eacute;nements qui surviennent dans les fen&ecirc;tres WB, mais se diff&eacute;rencie par le fait qu'elle ne bloque pas l'ex&eacute;cution du programme pendant qu'elle attend un &eacute;v&eacute;nement. Si rien ne se passe, Event renvoie 0.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="If...EndIf"><font color="#cccc33"><b>If...EndIf</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                If <i>condition(s)</i> Then <i>instruction &agrave; ex&eacute;cuter</i><br>
+                <u>OU</u><br>
+                If <i>condition(s)</i><br>
+                instruction(s)<br>
+                Else<br>
+                instruction(s)<br>
+                EndIf<br><br>
+                La bonne vieille condition des familles, dois-je vraiment l'expliquer&nbsp;?
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="For...Next"><font color="#cccc33"><b>For...Next</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                For <i>variable=une valeur de d&eacute;part</i> To <i>une valeur maximale</i> Step <i>valeur &agrave; ajouter &agrave; variable lors de chaque boucle (optionnel)</i><br>
+                instruction(s)<br>
+                Next<br><br>
+                La boucle FOR, un grand classique. Les instructions sont ex&eacute;cut&eacute;es jusqu'&agrave; ce que <i>valeur de d&eacute;part</i> soit sup&eacute;rieure &agrave; <i>valeur maximale</i>. Pour d&eacute;cr&eacute;menter au lieu d'incr&eacute;menter, on peut sp&eacute;cifier un STEP n&eacute;gatif.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="DetachGTList"><font color="#cccc33"><b>DetachGTList</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                DetachGTList <i>num&eacute;ro de la GadgetList &agrave; lib&eacute;rer</i><br><br>
+                Utile pour lib&eacute;rer proprement la m&eacute;moire quand on quitte l'application.<br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Free Window"><font color="#cccc33"><b>Free Window</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Free Window <i>num&eacute;ro de la fen&ecirc;tre &agrave; d&eacute;truire</i><br><br>
+                Permet de supprimer de la m&eacute;moire une fen&ecirc;tre dont on n'a plus besoin.<br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="End"><font color="#cccc33"><b>End</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                End<br><br>
+                Indique la fin du programme.<br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Wline"><font color="#cccc33"><b>Wline</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Wline <i>X1,Y1,X2,Y2,couleur</i><br><br>
+                Cette instruction sert &agrave; dessiner une ligne (voire plusieurs si on sp&eacute;cifie <i>X3,Y3...Xn,Yn</i>) dans une fen&ecirc;tre. Je vous laisse jouer avec les couleurs.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="WBox"><font color="#cccc33"><b>WBox</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                WBox <i>X1,Y1,X2,Y2,couleur</i><br><br>
+                Cette instruction dessine un rectangle plein dans une fen&ecirc;tre. <i>X1,Y1</i> sont les coordonn&eacute;es du coin sup&eacute;rieur gauche et <i>X2,Y2</i> celles du coin inf&eacute;rieur droit. Je vous laisse de nouveau jouer avec les couleurs.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+                <br><br><br>
+                <a name="Return"><font color="#cccc33"><b>Return</b></font></a><br><br>
+                <b>Syntaxe :</b><br>
+                Return<br><br>
+                Indique au programme qu'il doit reprendre le cours du programme l&agrave; o&ugrave; il l'avait interrompu suite &agrave; un <a href="#Gosub">Gosub</a>.
+                <br><br>
+                <center>
+                        <a href="#index_des_instructions">Remonter en haut de l'index</a> - <a href="#haut">Remonter en haut du source</a>
+                </center>
+<br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

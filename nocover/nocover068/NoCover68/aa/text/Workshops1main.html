@@ -1,0 +1,496 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Workshops / Hintergrundberichte / Buchvorstellungen
+---------------------------------------------------
+
+1. Workshops: Installation von Linux [Debian 2.1 m68k] (von Uwe Pannecke)
+
+»Willkommen bei den Pinguinen
+
+Linux-Installation am Beispiel der Debian 2.1 m68k-Distribution
+
+Teil 1 "Das Basissytem"
+
+
+1. Vorbemerkungen
+
+Sp&auml;testens seit die aktuellen Amiga-Eigner offiziell erkl&auml;rten, als
+OS-Basis f&uuml;r den AmigaNG Linux verwenden zu wollen, erlangte dieses 
+Betriebssystem schlagartig ein besonderes Interesse f&uuml;r viele Amigianer. 
+Obwohl Amiga in der Zwischenzeit (wieder einmal) die Pl&auml;ne zur Zukunft des 
+AmigaNG v&ouml;llig &uuml;ber den Haufen warf, bleibt f&uuml;r viele User das Interesse an 
+Linux geweckt. Nat&uuml;rlich geistert Linux gemeinsam mit weiteren Unix-
+Derivaten schon recht lange durch die Computerwelt und damit auch in der 
+Hardware nicht weniger Amigas. Interessant in diesem Zusammenhang: Der 
+Amiga war &uuml;brigens der erste 680x0-basierte Rechner, auf den Linux portiert 
+wurde. Nur umweht Linux gleichzeitig mit dem Flair eines modernen und 
+flexiblen Betriebssystems auch der Hauch von Spr&ouml;digkeit bei der 
+Installation und Wartung.
+
+In diesem Workshop soll exemplarisch am Beispiel der Debian-Distribution
+die Installation eines Linux-Systems auf dem Amiga m&ouml;glichst 
+nachvollziehbar dargestellt werden. Viele Schritte sind in &auml;hnlicher Form 
+auch bei allen anderen Linux- und BSD-Varianten notwendig, so da&szlig; 
+(hoffentlich) auch User Nutzen aus diesem Text ziehen k&ouml;nnen, die eine 
+RedHat- oder NetBSD-Distribution installieren wollen.
+
+Im Vorfeld sollte sich aber jeder Installations-Willige im klaren sein, da&szlig;
+ein Mindestma&szlig; an englischen Sprachkenntnissen nach wie vor notwendig ist,
+um Linux oder BSD auf Dauer und mit Gewinn nutzen zu k&ouml;nnen. Steht Ihr mit
+dem Englischen auf Kriegsfu&szlig; und seht keine M&ouml;glichkeit, da&szlig; Kriegsbeil zu
+begraben, lasst am besten die Finger von der Un*x-Geschichte.
+
+
+2. Systemvoraussetzungen
+
+Wer sich immer noch nicht hat abschrecken lassen, sollte mit dem Kauf einer
+CD noch einen Moment warten und erst einmal pr&uuml;fen, ob sein Amiga-System
+&uuml;berhaupt geeignet ist, Linux eine Heimstatt zu geben. Informationen aus
+erster Hand nicht nur zu Hardwarevoraussetzungen findet Ihr in st&auml;ndig
+aktualisierter Version unter [1]. Ein weiterer informativer Einstieg f&uuml;r
+Linux auf Motorola 680x0-Prozessoren bietet sich mit "The Linux/m68k Home
+Pages" [8].
+
+
+2.1 Prozessor
+
+Grunds&auml;tzlich ben&ouml;tigt Euer Amiga einen Prozessor mit MMU (Memory 
+Management Unit = Speicherverwaltungseinheit) und FPU (Floating Point Unit 
+= Koprozessor f&uuml;r Flie&szlig;kommaoperationen). Der Amiga mu&szlig; mindestens eine 
+MC68020 und die passende MMU MC68581 sowie FPU MC 68881 oder MC68882 
+besitzen. 68ECxxx-CPU sind ungeeignet, da sie keine MMU bzw. kein Interface 
+f&uuml;r eine externe MMU besitzen. Aus diesem Grund ist ein A1200 ohne 
+Turbokarte und der A4000/030 (das Prozessorboard ist mit einer 68EC030-CPU 
+best&uuml;ckt) f&uuml;r Un*x und damit auch Linux ungeeignet. Software, die eine 
+fehlende FPU emuliert, steht f&uuml;r einige Un*x-Derivate einsatzbereit zur 
+Verf&uuml;gung oder befindet sich im experimentellen Stadium.
+
+
+2.2 RAM
+
+Um mit Linux grunds&auml;tzlich arbeiten zu k&ouml;nnen, sollten mindestens 4 MB 
+Fast-RAM in Eurem Amiga stecken. Soll X11 als grafische Oberfl&auml;che genutzt 
+werden sind 8 MB absolutes Minimum. Hier gilt wie bei fast allen anderen 
+Computeranwendungen, je mehr RAM, desto gr&ouml;&szlig;er der Spa&szlig;.
+
+
+2.3 Festplatten
+
+Geeignet sind alle SCSI-Festplatten, die vom eingebauten A3000(T)- 
+(WD33c93-Chip) und A4000T- (53c710-Chip) Hostadapter angesprochen werden 
+sowie alle IDE-Platten, die am A1200 und A4000(T)-eigenen Gayle-Controller 
+betrieben werden k&ouml;nnen. Dar&uuml;ber hinaus werden laut FAQ [1] die Buddha- und 
+Catweasel-IDE-Karten und diverse SCSI-Karten unterst&uuml;tzt.
+
+Auf Eurer Festplatte m&uuml;sst Ihr mindestens zwei Partitionen f&uuml;r Linux 
+reservieren: Eine f&uuml;r das Root-Filesystem und eine f&uuml;r die Swap-Partition. 
+F&uuml;r die Root-Partition kommt Ihr zwar schon mit 20 MB ins Spiel, aber dann 
+k&ouml;nnt Ihr nur das Basis-System installieren. Gerade genug, um Linux 
+anzutesten, viel zu wenig, um Linux tats&auml;chlich nutzen zu k&ouml;nnen.
+Eine sinnvolle Gr&ouml;&szlig;e f&uuml;r die Root-Partition beginnt bei 200 bis 400 MB, 
+nach oben nat&uuml;rlich ohne Grenze. F&uuml;r die Gr&ouml;&szlig;e der Swap-Partition w&auml;hlt Ihr 
+m&ouml;glichst die doppelte Fast-RAM-Gr&ouml;&szlig;e. Wenn nur 8 MB Fast-RAM vorhanden 
+sind, sollten mindestens 20 MB f&uuml;r den Swap-Bereich reserviert werden.
+
+
+2.4 Grafikkarten
+
+Linux l&auml;uft zwar auch auf dem nativen Chipsatz (ECS/AGA), unter X11 kommt 
+jedoch erst mit einer Grafikkarte Freude auf. X11 unter ECS ist zwar 
+m&ouml;glich, wird aber wohl nur echte Masochisten befriedigen.
+Unterst&uuml;tzt werden sollten im Kernel 2.0.36 (Debian 2.1):
+- Phase5 Cybervision 64
+- Phase5 Cybervision 64/3D
+- Retina Z3
+- Cirrus Logic-Karten
+   Piccolo
+   Piccolo SD64
+   VillageTronic Picasso II
+   VillageTronic Picasso IV
+   GVP Spectrum.
+Die RetinaBLT-Z3 konnte vom Kernel 2.0.36 in der Debian 2.1-Release 
+entgegen den Aussagen in [1] nicht angesprochen werden. Zumindest konnte 
+ich meine Retina mit diesem Kernel nicht zur Mitarbeit &uuml;berreden. Sollte 
+diese Grafikkarte in Eurem Rechner werkeln, k&ouml;nnt Ihr dennoch auf ihre 
+Dienste zur&uuml;ckgreifen, indem Ihr einen neueren Kernel (z.B. 2.2.6, 2.2.8 
+o.&auml;.) f&uuml;r die Nutzung des installierten Systems aus geeigneter Quelle 
+zieht. In meinem Amiga arbeitet eine RetinaBLT Z3 unter X11 in 1024 x 768 
+Pixel und 8 Bit Farbtiefe seit l&auml;ngerer Zeit mit Kernel 2.2.6 problemlos 
+und zuverl&auml;ssig.
+
+
+3. Ben&ouml;tigte Software
+
+Ist Euer Amiga f&uuml;r das Linux-Abenteuer geeignet, sind f&uuml;r die erfolgreiche
+Installation einige Software-Pakete erforderlich. Hier stehen Euch zwei 
+Wege offen: Entweder Ihr erwerbt ein CD-ROM-Paket mit der offiziellen 
+Debian-Distribution [2] oder Ihr zieht Euch die ben&ouml;tigten Files aus dem 
+Internet. Alle ben&ouml;tigten Files findet Ihr auf einer der vielen Debian-FTP-
+Sites. F&uuml;r eine Basis-Installation ben&ouml;tigt Ihr mindestens das Lha-Paket 
+amigaintall.lha [3] und base2_1.tgz [4]. Die Lha-Pakete befinden sich 
+nat&uuml;rlich auch auf den Debian2.1-m68k-CD-Sets. Entpackt das ca. 2,9 MB 
+gro&szlig;e amigainstall.lha auf Eure Festplatte. In diesem Zusammenhang wird 
+automatisch ein Unterverzeichnis "debian" erstellt. Kopiert anschlie&szlig;end 
+base2_1.tgz in das "debian"-Verzeichnis. Ihr ben&ouml;tigt f&uuml;r die Files 
+insgesamt ca. 14 MB freien Platz auf der Festplatte.
+
+Screenshot:
+<IMG SRC="../extra/Debian-DirDOpus.png" ALT="Screenshot"> 
+
+Bitte verzichtet auf eine Umbenennung des "debian"-Verzeichnisses oder 
+irgendeines Files in diesem Verzeichnis. So erspart Ihr Euch unn&ouml;tigen 
+&Auml;rger w&auml;hrend der weiteren Installation.
+Au&szlig;erdem bietet es sich an, den (leider nur in Englisch gehaltenen) 
+Installationstext [6] vor der Installation auszudrucken und somit w&auml;hrend 
+der Installation parat zu haben. Die nachfolgende Beschreibung lehnt sich 
+an diesen Text an.
+
+
+4. Festplatten-Partitionierung
+
+Da Linux zwei eigene Partitionen haben m&ouml;chte, werdet Ihr nicht umhin 
+kommen, entweder die vorhandene oder auch eine nur f&uuml;r Linux reservierte 
+Festplatte zu partitionieren.
+Ganz wichtig: Bevor Ihr Eurer Festplatte zu Leibe r&uuml;ckt, legt unbedingt ein
+Backup Eurer Daten an! So seid Ihr f&uuml;r allen Eventualit&auml;ten ger&uuml;stet. Bitte
+nehmt Euch die Zeit f&uuml;r ein Sicherung Eurer Daten!
+F&uuml;r die Partitionierung der Festplatte eignet sich HDToolBox aus der Amiga-
+Systemsoftware sehr gut. Nat&uuml;rlich k&ouml;nnt Ihr auch jedes andere Festplatten-
+Installationsprogramm wie z.B. HDInstTools [5] gleicherma&szlig;en.
+Ich stelle die einzelnen Schritt am Einsatz der HDToolBox dar.
+
+Startet HDToolBox und w&auml;hlt die Festplatte aus, die Ihr f&uuml;r Linux nutzen 
+wollt. Klickt auf "Partition Drive" und selektiert oder erzeugt eine 
+Partition, die f&uuml;r das Root-Filesystem benutzt werden soll. Den "Partition 
+Device Name" k&ouml;nnt Ihr frei w&auml;hlen. Aktiviert dann "Advanced Option" (ein 
+H&auml;kchen wird sichtbar)
+
+Screenshot:
+<IMG SRC="../extra/Debian-HDToolBox1.png" ALT="Screenshot">
+
+und klickt auf "Change...". Im sich &ouml;ffnenden Fenster setzt Ihr unter "File
+System" das Filesystem auf "Custom File System". Eventuell wird Eure 
+HDToolBox hier den Namen "Reserved Filesystem" anbieten, je nach 
+Programmversion. Im "Identifier"-Breich l&ouml;scht Ihr alle Werte und tippt 
+dann "0x4c4e5800" (ohne die Anf&uuml;hrungszeichen!) ein. Dies ist die 
+hexadezimale Schreibweise f&uuml;r "LNX0" und wird von Linux f&uuml;r die Auswertung 
+des Partitions-Namens ben&ouml;tigt.
+Deaktiviert nun "Automount this partition:" und "Use custom boot code:" 
+(H&auml;kchen mu&szlig; verschwinden). Setzt anschlie&szlig;end in "Reserved blocks at" den 
+"beginning:"-Wert auf "2" und den "end:"-Wert auf "0". Jetzt klickt Ihr auf 
+"Ok" und verlasst damit das aktuelle Fenster.
+
+Screenshot:
+<IMG SRC="../extra/Debian-HDToolBox2.png" ALT="Screenshot">
+
+Jetzt selektiert/erzeugt Ihr die Partition f&uuml;r den Swap-Bereich und 
+absolviert die gleichen Schritt wie bei der Root-Partition. Lediglich der 
+"identifier" wird diesmal auf "0x53575000" gesetzt, die hexadezimale 
+Variante von "SWP0".
+
+Screenshot:
+<IMG SRC="../extra/Debian-HDToolBox3.png" ALT="Screenshot">
+
+Mit zweimaligen Klick auf "Ok" seid Ihr wieder auf dem HDToolBox-
+Ausgangsfenster. Klickt auf den Button "Save Changes to Drive". Bevor Ihr 
+nun mit "Continue" Eure gew&auml;hlten &Auml;nderungen der Partitionen auf die 
+Festplatte schreiben lasst, versichert Euch mindestens zweimal: Sind 
+wirklich nicht versehentlich Partitionen mit wichtigen Daten ver&auml;ndert 
+worden? Seid Ihr Euch sicher, werden nach Best&auml;tigung des Buttons die 
+&Auml;nderungen auf die Festplatte geschrieben und der Amiga neu gebootet.
+
+Screenshot:
+<IMG SRC="../extra/Debian-HDToolBox4.png" ALT="Screenshot">
+
+Noch ein paar Bemerkungen zur Verwaltung der Festplatten(partitionen) unter
+Linux. Im Unterschied zu AmigaOS wird unter Linux die erste SCSI-HD 
+entsprechend der SCSI-IDs als "sda", die zweite als "sdb" usw. bezeichnet. 
+Die erste IDE-HD ist "hda", die zweite entsprechend "hdb". Einzelne 
+Partitionen der Festplatten werden der Reihe nach mit einer einzelnen 
+Ziffer versehen.
+
+Konstruieren wir zur Verdeutlichung ein Beispiel:
+Euer Amiga besitzt eine SCSI- und eine IDE-Festplatte. Die SCSI-Platte ist 
+in drei Partitionen unterteilt. Die erste Partition ist f&uuml;r das Root-
+Filesystem reserviert, die zweite Partition steht als Swap-Bereich zur 
+Verf&uuml;gung. Die dritte Partition ist unter AmigaOS formatiert und enth&auml;lt 
+das "debian"-Verzeichnis mit den Installationdaten. Die IDE-Platte habt Ihr 
+in zwei Partitonen aufgeteilt und mit diversen Amiga-Daten belegt.
+Unter Linux werden die drei SCSI-Festplattenpartitionen als "sda1", "sda2" 
+und "sda3" gef&uuml;hrt. Dabei enth&auml;lt "sda1" das Root-Filesystem, "sda2" die 
+Swap-Partition und "sda3" Amiga-Daten einschlie&szlig;lich des "debian"-
+Verzeichnisses. Die IDE-Festplattenpartitionen tauchen unter Linux als 
+"hda1" und "hda2" auf. Dies solltet Ihr wissen, um im Bedarfsfall die 
+korrekte Partition ansprechen zu k&ouml;nnen.
+An dieser Stelle solltet Ihr die entsprechenden Daten Eurer 
+Festplattenpartitionen mit den Linux-Bezeichnungen (orientiert Euch an dem 
+obigen Schema) notieren. Diese Daten werdet Ihr bei der weiteren 
+Installation brauchen.
+
+
+5. Installation des Basis-Systems
+
+5.1 Die Amiga-Seite
+
+Ist der Rechner neu gebootet, k&ouml;nnt Ihr jetzt an die Installation der 
+Linux-Basis gehen. &Ouml;ffnet hierzu das "debian"-Verzeichnis.
+
+Screenshot:
+<IMG SRC="../extra/Debian-Dir.png" ALT="Screenshot">
+
+Ihr werdet im "debian"-Verzeichnis vier StartInstall-Icons vorfinden. 
+Weniger, um die Installation viermal durchzuf&uuml;hren, vielmehr als 
+Hilfestellung, denn der Linux-Kernel braucht f&uuml;r die Bildschirmausgabe die 
+notwendigen Informationen. Besitzt Euer Amiga keine Grafikkarte, wird ein 
+Doppelklick auf "StartInstall" den im "debian"-Verzeichnis befindlichen 
+Linux-Kernel im amigaeigenen PAL-Modus starten. "StartInstall_clgen" ist 
+f&uuml;r EGS Spectrum-, Piccolo- und Picasso-Grafikboards gedacht. 
+"StartIntsall_CV64" w&auml;hlt eine Bildschirmausgabe &uuml;ber die CyberVision64 und 
+"StartInstall_CV3D" l&auml;&szlig;t den Kernel &uuml;ber eine CyberVision/3D visuell mit 
+Euch kommunizieren.
+Alle Grafikkarten-Scripts nutzen in der vorliegenden Form eine 640x480 
+Aufl&ouml;sung in 8 Bit. Soll eine RetinaBLT-Z3 den Bildschirm ansteuern, k&ouml;nnt 
+Ihr dennoch auf ihre Dienste (wie bereits angef&uuml;hrt) zur&uuml;ckgreifen, indem 
+Ihr einen neueren Kernel mit aktivierter Retina-Unterst&uuml;tzung f&uuml;r die 
+Nutzung des installierten Systems aus geeigneter Quelle zieht. Und l&auml;uft 
+erst einmal Linux auf Eurem Rechner, k&ouml;nnt Ihr auch selbst recht problemlos 
+eine neue Kernelversion aus dem passenden Source-Code kompilieren.
+
+Habt Ihr mit einem Doppelklick das gew&uuml;nschte StartInstall-Icon aktiviert, 
+wird das dahinter verborgene Script den Kernel mit den passenden Optionen 
+starten. Die beiden nachfolgenden Shell-Ausgaben best&auml;tigt Ihr mit der 
+RETURN-Taste, und ein paar Sekunden sp&auml;ter &uuml;bernimmt der Linux-Kernel Euren 
+Amiga und wird in hoher Geschwindigkeit jede Menge Informationen auf den 
+Bildschirm ausgeben, so da&szlig; Ihr kaum die Chance haben werdet, selbige auch 
+in Ruhe zu lesen. Das sollte Euch aber nicht weiter st&ouml;ren. Wenn nach 
+wenigen Sekunden das Installationsprogramm automatisch gestartet wird, ist 
+ziemlich sicher Linux auf Eurem System lauff&auml;hig.
+
+
+5.2 Die Linux-Seite
+
+Ist das Installationprogramm gestartet, wird es Euch durch die weiteren 
+Untiefen w&auml;hrend der Linux-Einrichtung hilfreich begleiten.
+Folgende Schritte sind jetzt notwendig:
+- W&auml;hlt nach der Aufforderung "Select Color or Monochrome display" Color,   
+  es sei denn, Ihr schaut in eine A2024-R&ouml;hre.
+- Die nachfolgende Ausgabe von Anmerkungen zur aktuellen Release best&auml;tigt  
+  Ihr mit RETURN.
+- Nun m&ouml;chte das Installation-Programm unter "Configure the Keyboard"       
+  wissen, welche Tastaurbelegung Ihr benutzen wollt. Geht hierzu auf        
+  "amiga-de: Germany (Amiga)" und dr&uuml;ckt RETURN.
+- Best&auml;tigt die Meldung "Initialize and Activate a Swap Partition" mit      
+  RETURN. Umgehend wird Euch die Partition pr&auml;sentiert, die Ihr im Vorfeld  
+  als Swap-Partition pr&auml;pariert habt. Nach unserem oben konstruierten       
+  Beispiel w&uuml;rdet Ihr "sda2" als Vorgabe vorfinden. Seid Ihr Euch sicher,   
+  das dies auch die gew&uuml;nschte Partition ist, dr&uuml;ckt RETURN und die Swap-   
+  Partition wird "formatiert".
+- W&auml;hlt aus der Liste der m&ouml;glichen Schritte als n&auml;chstes "Initialize a     
+  Linux partition". Wieder wird Euch eine Liste der zuvor &uuml;ber HDToolBox    
+  vorbereiteten Root-Partitionen pr&auml;sentiert (entsprechend unseres          
+  Beispiels st&auml;nde nur "sda1" als Eintrag in der Liste).
+  Gabt Ihr mit RETURN Euer O.K., formatiert und initialisiert das
+  Installations-Programm diese Partition und will anschlie&szlig;end von Euch     
+  wissen, ob Ihr diese Partition als Root-Partition mounten wollt. Ein      
+  klares "Ja" sollte die Antwort sein.
+- Der n&auml;chste Punkte ist "Install Operating System Kernel and Modules".     
+  Wenn wir davon ausgehen, da&szlig; Ihr die entsprechenden Daten im "debian"-    
+  Verzeichnis vorr&auml;tig habt, selektiert Ihr "Harddisk: Filesystem on a      
+  Harddisk". Nun m&uuml;sst Ihr dem Programm mitteilen, wo Euer "debian"-        
+  Verzeichnis zu finden ist.
+  Nach unserem konstruierten Beispiel ist aus der Liste "sda3" die richtige
+  Wahl. Befindet sich das schon mehrfach angesprochene "debian"-Verzeichnis  
+  im Wurzelverzeichnis der Partition, k&ouml;nnt Ihr die Frage nach dem Pfad des  
+  Verzeichnisses einfach mit RETURN beantworten, da so die Vorgabe          
+  ("/debian") mit der Realit&auml;t auf Eurer Festplatte &uuml;bereinstimmt.          
+  Ansonsten m&uuml;sst Ihr den korrekten Pfad angeben.
+  Das Installationsprogramm wird nun den Kernel und verschiedene Module auf  
+  die Root-Partition entpacken. Sind die Arbeiten beendet, findet Ihr Euch  
+  auf dem Hauptauswahlliste wieder.
+- Jetzt ist es an der Zeit, aus den angebotenen Punkten "Configure Device   
+  Driver Modules" auszuw&auml;hlen und nach kurzer Zeit wird Euch die Meldung    
+  "Exit: Finished with modules. Return to revious menu." pr&auml;sentiert. In    
+  unserem Fall soll dem auch entsprochen werden.
+- Mit "Install the Base System" m&ouml;chte das Programm gern die Dateien aus    
+  dem "base2_1.tgz"-Archiv auf die Root-Partition entpacken. So wird auch   
+  hier wieder die Frage nach der Daten-Quelle gestellt.
+  &Auml;hnlich wie im Fall des Kernels k&ouml;nnt Ihr wieder "Harddisk: Filesystem on
+  the harddisk" ausw&auml;hlen und da Ihr ja zuvor das tgz-Archiv in das         
+  "debian"-Verzeichnis kopiert habt, bei der Pfad-Frage einfach nur RETURN  
+  dr&uuml;cken. Je nach CPU wird das Entpacken des Archivs eventuell einige      
+  Minuten dauern und Ihr k&ouml;nnt Euch erst einmal den Schwei&szlig; von der Stirn   
+  wischen.
+- Ist Eure Stirn wieder trocken, ist es Zeit, die letzten Schritte in       
+  Angriff zu nehmen. W&auml;hlt dazu aus der angebotenen Liste "Configure the    
+  Base System". Im nachfolgenden Dialog wird recht intuitiv die passende    
+  Zeitzone eingestellt. Auf der linken Seite w&auml;hlt Ihr "CET-Europe" und auf  
+  der rechten als Unterpunkt "Berlin". Auf die anschlie&szlig;ende Frage, ob die  
+  Systemuhr auf "GMT" (Greenwich Mean Time) gesetzt werden soll, solltet    
+  Ihr mit "No" antworten, da Euer Amiga wohl eher die lokale                
+  Zeiteinstellung nutzt.
+- Der letzte Schritt in dieser Prozedur ist "Configure the Network".
+  Solltet Ihr mit keinem Netzwerk verbunden sein, teilt dem Programm dies
+  mit und Euch bleibt hier nur noch die Vergabe eines Namens f&uuml;r Euren      
+  Rechner, da unter Linux jeder Rechner seinen eigenen Namen besitzt.       
+  Dieser Name sollte aus nur einem Wort bestehen, vielleicht der Name Eurer  
+  Freundin/Eures Freundes oder eine Figur aus dem aktuellen StarWars-       
+  Streifen - Eurer Fantasie sind keine Grenzen gesetzt.
+- So, die Basis-Installation ist komplett!
+  Der Rechner kann neu gebootet werden- bitte aber nicht mit dem &uuml;blichen
+  Klammergriff! Grunds&auml;tzlich solltet Ihr Euch unter Linux angew&ouml;hnen, den
+  Rechner geordnet herunter zu fahren. An dieser Stelle bietet das Instal-
+  lationsprogramm einen eigenst&auml;ndigen Punkt an. Nach der Anwahl von        
+  "Reboot the System" wird nach ein paar Sekunden der Amiga neu gebootet    
+  und kurze Zeit sp&auml;ter habt Ihr wieder die Workbench vor Augen.
+
+
+5.3 Arbeitsstart
+
+Um das frisch installierte Linux-System f&uuml;r den t&auml;glichen Gebrauch starten
+zu k&ouml;nnen, sind nun nur noch wenige Arbeiten notwendig. In Eurem Lieblings-
+editor &ouml;ffnet Ihr die Datei "StartInstall" aus dem "debian"-Verzeichnis.
+In dieser Datei werdet Ihr die Zeile "amiboot-5.6 -d -k linuxamiga -r 
+rootamiga.bin root=/dev/ram" vorfinden. Diese Zeile werden wir ein wenig 
+den neuen Gegebenheiten anpassen. 
+Das grundsätzliche Schema dieser Zeile lautet "amiboot-x.x -k Kernelname 
+root=/dev/yyyy ro video=z$". 
+In unserem konstruierten Beispiel verwenden wir das aktuelle "amiboot-5.6",
+der Kernelname ist "linuxamiga". Nat&uuml;rlich k&ouml;nnt Ihr den Linux-Kernel auch
+umbenennen. Oft werden Euch in der Linuxwelt "vmlinux" benannte Kernel &uuml;ber
+den Daten-Weg laufen oder als Ergebnis einer eigenen Kernel-Erzeugung zur
+Verf&uuml;gung stehen.
+Die Root-Partition ist in unserem Beispiel "sda1". Au&szlig;erdem soll eine 
+Cybervision 64 die Bildschirmausgaben unter 640x480 Pixel und einer 
+Farbtiefe von 8 Bit t&auml;tigen. Die angepa&szlig;te Startzeile sieht dann wie folgt 
+aus:
+"amiboot-5.6 -k linuxamiga root=/dev/sda1 ro video=cyberfb:640x480-8".
+Ein paar Beispiele f&uuml;r Video-Modes verschiedener Grafikkarten:
+F&uuml;r auf Cirrus Logic-Chips (CLGen) basierende Karten wie Piccolo, Piccolo 
+SD64, VillageTronic Picasso II, Picasso IV und GVP Spectrum w&auml;re eine 
+m&ouml;gliche Angabe "video=clgen:mode:low". F&uuml;r die Cybervision64/3D 
+entsprechend "video=virgefb: 640x480-8". Dies gilt jedoch nur bis Kernel 
+2.0.36 (der auch in der aktuellen Debian2.1-Distribution als Standard-Kenel 
+verwendet wird). Achtung: Ab Kernel 2.1 m&uuml;&szlig;t Ihr anstelle "virgefb" das 
+neue Schl&uuml;sselwort "virge" verwenden. F&uuml;r die RetinaBLT Z3 gilt z.B. 
+"video=retz3:800x600".
+Weitere mit aktuellen Kernelversionen m&ouml;gliche Videomodi k&ouml;nnen [1] und [3] 
+entnommen werden.
+
+Die Startzeile haben wir komplett angepa&szlig;t. Nun  solltet Ihr sie unter 
+einem aussagekr&auml;ftigen Namen wie "LinuxStart" in einem Verzeichnis Eurer 
+Wahl abspeichern. &Ouml;ffnet eine Shell und sorgt durch die Eingabe von
+"protect EuerVerzeichnis:LinuxStart +s" daf&uuml;r, das dieses Script in eine 
+ausf&uuml;hrbare Datei verwandelt wird. Jetzt k&ouml;nnt Ihr noch ein Icon f&uuml;r die 
+LinuxStart-Datei erstellen (oder eines aus dem "debian"-Verzeichnis 
+umbenennen) und damit bequem von der Workbench aus Linux durch ein 
+Doppelklick auf dieses Icon starten. Den Linux-Kernel und amiboot-5.6 
+verschiebt Ihr sinnvollerweise nach "C:".
+
+Nach der Eingabe von LinuxStart in der Shell oder dem Doppekklick auf das 
+Icon startet amiboot das Linux-System, indem es von der Root-Partition 
+bootet. Dies kann eine Weile dauern, dann seid Ihr automatisch in das 
+laufende Linux-System eingeloggt. Sofort stehen einige wichtige Punkte zur 
+Erledigung an: Zu Beginn m&uuml;sst Ihr ein Root-Passwort festlegen. W&auml;hlt ein 
+m&ouml;glichst starkes Passwort, das Ihr dennoch nicht vergesst! Das 
+Geburtsdatum oder der Name Eurer Frau/Mann/Kind ist denkbar ungeeignet f&uuml;r 
+ein Passwort! Verwendet ebenso keine Zitate oder Sprichw&ouml;rter! Selbst mit 
+bescheidener Rechenleistung sind diese leicht zu knacken. Euer Passwort 
+sollte aus einem Gemisch von Zeichen, Ziffern und Text bestehen. Aber 
+bedenkt bitte: Sollte Ihr Euer Passwort vergessen haben, werdet Ihr im
+Allgemeinen nicht mehr an Eure Daten kommen.
+Habt Ihr Euch f&uuml;r ein Passwort entschieden und selbiges nach Aufforderung 
+ein zweites mal zur Verifikation eingegeben, k&ouml;nnt Ihr einen weiteren, 
+diesmal mit weniger Privilegien ausgestatteten User-Account (also einen 
+Gast-Benutzer Eures Linux-Systems) festlegen. Au&szlig;erdem solltet Ihr die 
+nachfolgende Frage nach der Aktivierung von Schatten-Passw&ouml;rtern (Shadow-
+Passwords) mit "Yes" beantworten. 
+Nun wird das System von Euch wissen wollen, ob Ihr die weitere 
+Vervollst&auml;ndigung des Linux-Systems in Angriff nehmen wollt und pr&auml;sentiert 
+Euch letztendlich eine grafische Oberfl&auml;che des daf&uuml;r vorgesehenen 
+Programmes "dselect". Nat&uuml;rlich k&ouml;nnt Ihr nun sofort die gew&uuml;nschten Pakete 
+aus dem CDROM-Set ausw&auml;hlen und installieren. Aber da "dselect" f&uuml;r Amiga-
+Verh&auml;ltnisse recht eigenartig zu bedienen ist, empfiehlt sich ein 
+intensives Studium der "dselect"-Anleitung [7] vor der eigentlichen 
+Benutzung.
+Genauso gut k&ouml;nnt Ihr auch an dieser Stelle abbrechen und Euch erst einmal 
+am laufenden Linux-System auf Eurem Amiga erfreuen.
+
+
+6. Der Paketmanager dpkg
+
+Ist die erste Freude &uuml;berstanden, kann "dselect" durch Eingabe seines 
+Namens zu jeder Zeit erneut gestartet werden. Aber ebenso k&ouml;nnt Ihr manuell 
+die einzelnen Debian-Pakete mittels des eigentlich hinter "dselect" 
+steckenden "dpkg"-Programms erledigen. Die Linux-Distributionen (RedHat, 
+SuSE, Debian usw.) enthalten Programme in kompilierter und leicht 
+installierbarer Form, die in Software-Paketen zusammengefa&szlig;t sind. Ein 
+Paket umfa&szlig;t im Normalfall alle Bestandteile, die zu einem bestimmten 
+Programm(paket) geh&ouml;ren (Programme,Bibliotheken, Anleitungen) und 
+zus&auml;tzlich Steuerinformationen f&uuml;r das Paket-System. Alle Debian-Pakete 
+enden mit dem Suffix ".deb". Und dpkg sorgt nun bei der Installation und 
+bei Updates f&uuml;r das korrekte Entpacken, Installieren und Konfigurieren der 
+einzelnen Pakete. Da viele dieser Programmpakete auf bestimmte Libraries 
+oder andere Programme aufsetzen, wird Euch "dpkg" auf eventuell noch 
+fehlende Debian-Pakete hinweisen.
+Die grunds&auml;tzliche Syntax f&uuml;r das Entpacken und die Installation einzelner 
+Pakete lautet "dpkg -iGREB Paketname_mit_komplettem_Pfad". Eine sehr 
+anschauliche in deutscher Sprache verfasste Einf&uuml;hrung zu dpkg findet Ihr 
+unter [9].
+Wollt Ihr z.B. den sogenannten Midnight-Commander (der eine &auml;hnliche 
+Funktionalit&auml;t wie der Norton-Commander aufweist und die Arbeit in der 
+Linux-Shell unterst&uuml;tzt und f&uuml;r den Anf&auml;nger wesentlich erleichtert) von 
+einem offiziellen CDROM-Set installieren, w&auml;re die passende Shell-Eingabe
+"dpkg -iGREB /cdrom/dists/slink/main/binary-m68k/utils/mc_4.5.1.-1.1.deb".
+
+
+7. Linux beenden
+
+Entgegen dem unter AmigaOS &uuml;blichen einfachen Ausschalten des Rechners nach 
+Arbeitsende solltet Ihr unter Linux IMMER daf&uuml;r sorgen, da&szlig; das System 
+definiert heruntergefahren wird. Denn unter Linux werden viele Daten auch 
+in ver&auml;nderter Form nicht sofort auf Festplatte geschrieben, sondern f&uuml;r 
+eine bestimmte Zeit im RAM-Speicher gehalten. Schaltet Ihr in solch einer 
+Situation den Rechner einfach aus, wird unter Umst&auml;nden Euer Linux-System 
+inkonsistent und eventuell empfindliche Datenverluste drohen. Deshalb 
+sollte Linux grunds&auml;tzlich mit "shutdown -r now" (mit anschlie&szlig;endem
+Reboot) oder "shutdown -h now" (das System wird herunter gefahren und 
+angehalten) beendet werden!
+
+
+8. Ausblick
+
+In der n&auml;chsten Amiga-aktuell-Ausgabe soll im zweiten Teil dieses Workshops 
+u.a
+- die Installation der X11-Oberfl&auml;che
+- der Zugriff auf Amiga-Partitionen
+- und einige interessante Softwarepakete
+vorgestellt werden.
+
+
+[1] ftp://ftp.phil.uni-sb.de/pub/linux-m68k/mirror.erlangen/FAQ/FAQ.gz
+[2] http://www.debian.org/distrib/vendors
+[3] ftp://ftp.debian.org/debian/dists/slink/main/disks-
+m68k/current/amiga/amigainstall.lha
+[4] ftp://ftp.debian.org/debian/dists/slink/main/disks-
+m68k/current/common/base2_1.tgz
+[5] im Aminet unter /disk/misc/hdinst.lha
+[6] ftp://ftp.debian.org/debian/dists/slink/main/disks-
+m68k/current/amiga/install.txt
+[7] ftp://ftp.debian.org/debian/dists/slink/main/disks-
+m68k/current/dselect-beginner.txt
+[8] http://www.linux-m68k.org/index.html
+[9] http://www.schlittermann.de/deb-intern/dpkg/
+
+
+Uwe Pannecke &lt;Uwe.Pannecke@t-online.de&gt;«
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

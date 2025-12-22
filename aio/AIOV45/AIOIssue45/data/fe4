@@ -1,0 +1,326 @@
+{backimage bg.iff}
+{center}
+{subhead}Simple ATX for A1200/A4000{def}{p}
+Article by Paul Harvey
+{left}
+{pp}
+In issue 43 we looked at using the parallel port to control the on/off state of the PSU. Well, the
+final draft of the circuit and PCB layout has turned out to be an absolute MONSTER! (See 'ATX 
+PSU with software powerdown') So now I've done a much simpler and quicker outline of how to 
+use an ATX power supply unit, because I don't think many people are willing to fabricate their 
+own double sided PCBs...
+{pp}
+And, because of a suggestion from JoNty on the dalnet irc network, who was adamant I credit 
+him for the idea, I'll also give some tips on fitting your Amiga into a new ATX case. If you look
+on aminet under hard/hack, you will see many documents that tell you how to do this... I suggest
+going through them, picking up ideas on the way. After all, this is no small step, and I haven't 
+got around to towering my own A4000 yet. (Although I've done lots of research! :)
+{pp}
+First we'll finish the power problem. To start with, here is a simple diagram of an ATX power
+supply. Instead of butchering the PSU's connector (you can if you really want :), you should buy
+an extension cable. Just chop off the male end and use the wires off the female connector. You
+will also need a power plug for your Amiga's motherboard - A1200 ones should be easy to get
+hold of (from an old CBM PSU, perhaps), but finding an A4000 one will be tricky. I intend to
+simply butcher my old power supply.
+{pp}
+{center}
+{image ATX.128.iff}
+{left}
+{pp}
+Interestingly, online sources suggest that ATX PSUs have a permanent 10k resistor holding PS_ON
+high. This explains why leaving PS_ON floating has the same affect as supplying a logic high, and
+why only grounding it turns the unit off. So it is appropriate to use a 5v signal to turn the PSU
+off after all. That is why I'm using the off side of the power switch to connect PS_ON to the 5v
+rail via a 10k resistor. Another consideration brought up last time was that perhaps the 5v lines
+were all rated for different currents. It now appears that all 5v lines are the same source, so it is
+really up to you to decide which ones to use. I would recommend using at least two, because the
+motherboard wires on the A4000 PSU are a fairly heavy gauge compared to a single 5v ATX line,
+and my 4000's 5v line on the PSU is rated at 18 amps! If you follow the diagrams, I've used
+both pins 19 and 20 for the 5v source. The same is also true for the ground wires; you can
+connect all of them together or just use a few of them, as in the diagrams that follow.
+{pp}
+{bold}Parts you will need:{nobold}
+{pp}
+* ATX mainboard power extension cable (about $8.00 AUD from Jaycar, though not present in
+their catalogue){p}
+* SPDT switch, not a momentary one. If you have a case with a on/off type switch, such as a
+turbo button, this is fine. Otherwise you will have to mount one (toggle switches are clean and
+easy, but can look out of place), or somehow replace a momentary push button already on your
+face plate, such as the power/reset/stand-by buttons, with a SPDT
+one.{p}
+* 10k ohms resistor, for 5v pullup of PS_ON when power switch is in OFF position. Not 100%
+necessary, and hey, he worst that could happen would be your computer not turning off.
+* Twin conductor hook-up wire, such as speaker wire, for power button{p}
+* hook-up wire for resistor/switch{p}
+* Basic soldering skills. You COULD use crimp/contact connectors/terminal block, but that would
+be silly ;)
+{pp}
+As you should see from the diagrams, the solution is simple and you only need a basic
+understanding of electronics to follow it. Basically, the Amiga power inputs are substituted with
+the appropriate ATX ones. The PS_ON line is shorted to ground to turn the computer on with the
+power switch, and the OFF position of the switch supplies 5v via the 10k resistor to PS_ON.
+{pp}
+For an A1200, do the following connections:
+{pp}
+{fixed}
+A4000| Function| ATX PSU|Colour|Notes
+Pin #| of pin  | Pin #  |      |
+-----+---------+--------+------+-----
+1      +5v DC    19 + 20 Red    You could use all/any red wires
+2      SheildGnd 15 - 17 Black  You could use all/any black wires. Pin 2 connects to shield.
+3      +12v DC   10      Yellow
+4      0v        15 - 17 Black  You could use all/any black wires
+5      -12v DC   12      Blue
+{def}
+{left}
+{pp}
+Pinout of Amiga 1200 PSU plug:
+{pp}
+{fixed}
+Pin # Function
+--------------
+ 1    +5v DC
+ 2     Shield Ground
+ 3    +12v DC
+ 4     0v/Ground
+ 5    -12v DC
+{def}
+{left}
+{pp}
+5 pin female square DIN:
+{fixed}
+,----,_,----,
+| 1       4 |
+|     3     |
+| 2       5 |
+'-----------'
+{def}
+{left}
+{pp}
+[Source: Amiga 1200 Hardware guide v2 by Chris Appleton, c.appleton@uea.ac.uk]
+{pp}
+The following diagram is a guide only. Your colours may vary, and I might have it wrong.
+{pp}
+{center}
+{image ATX_A1200.128.iff}
+{left}
+{pp}
+For an A4000, do the following connections:
+{pp}
+{fixed}
+A4000       | Function | ATX PSU | ATX PSU | ATX PSU
+Wire colour | of pin   | Pin #   | Colour  | Notes
+------------+----------+---------+---------+--------
+Orange        +12v       10        Yellow
+Red           -12v       12        Blue
+Brown         Pwr Good   8         Grey
+Yellow        +5v        19-20     Red       You could use all/any red wires, probably at least 3
+Blue          0v         15-17     Black     You could use all/any black wires, probably at least 3
+{def}
+{left}
+{pp}
+Pinout of Amiga 4000 mainboard power plug:
+{pp}
+{fixed}
+Motherboard Power Connector
+  +------+------+------+
+  |Orange| Red  |Brown |   Power Good is a TTL output from the power supply,
+  | +12V | -12V |PwrGd |   a logical high indicating a stable power supply.
+  |------+------+------|
+  |Yellow| Blue | Blue |
+  | +5V  |Ground|Ground|
+  +------+------+------+
+{def}
+{left}
+{pp}
+[Source: Amiga 4000 Hardware guide by Warren Block, wblock@rapidnet.com]
+{pp}
+The following diagram is a guide only. Your colours may vary, and I might have it wrong.
+{pp}
+{center}
+{image ATX_A4000.128.iff}
+{left}
+{pp}
+Finally, do the following connections for the power switch:
+{pp}
+* PS_ON line (Pin 14, Green) of PSU to COMMON pole of SPDT switch.{p}
+* 0v rail (any [black] ground wire, e.g. pin 15) of PSU to one contact on the SPDT switch (this
+contact will turn off the computer).{pp}
+* 5v stand-by line on ATX (Pin 9, violet) to 10k ohm pullup resistor (brown black orange).
+[Optional]{p}
+* 10k ohm pullup resistor to SPDT switch, the opposite contact that was used for OFF. [If you left
+out the resistor,DON'T do this connection, leave the contact not
+connected.]
+{pp}
+{fixed}
+Switch Diagram A: (Fail safe)
+-----------------
+{pp}
+PSU.GROUND [Black] o
+                    /   10k resistor
+                   /     ,-----,
+PSU.PS_ON [Green] o   o--;_____;-- PSU.5vSB [Violet]
+{pp}
+OR
+{pp}
+Switch Diagram B: (Should work in most situations)
+-----------------
+{pp}
+PSU.GROUND [Black] o
+                    /
+                   /
+PSU.PS_ON [Green] o   o
+{pp}
+{bold}Pinout of a typical ATX PSU:{nobold}
+{pp}
+Pin # Function Usual colour Description
+---------------------------------------
+1     3.3V     Orange
+2     3.3V     Orange
+3     GND      Black
+4     5V       Red
+5     GND      Black
+6     5V       Red
+7     GND      Black
+8     PWR_OK   Grey         Active High
+9     5VSB     Violet       Stand-by 5v
+10    12V      Yellow
+11    3.3V     Orange
+12    -12V     Blue
+13    GND      Black
+14    PS_ON#   Green        Active Low
+15    GND      Black
+16    GND      Black
+17    GND      Black
+18    -5V      White/N.C.
+19    5V       Red
+20    5V       Red
+{def}
+{left}
+{pp}
+{bold}Towering - the ultimate challenge{nobold}
+{pp}
+There are basically two ways you can go about this. One is taking the motherboard out of your
+old case, and plonking it in the new tower. You need to drill new holes for your m/b, put
+standoffs in them, and hope everything lines up. In the case of an A1200, this isn't that hard.
+New ATX cases are designed for PS/2 motherboards, which have all the ports built onto the
+board. But, as you can imagine, some motherboards have onboard networking, others have
+onboard modem, etc. so the layout does vary. To solve this problem, the space to the left of the
+bus stops consists of a thin metal removable cut-out. Some cases come with replacements, others
+don't, but it makes life easier for Amigans because previously we would have had to hack away
+at the case itself to get all the ports accessible.
+{pp}
+{center}
+{image PS2.128.iff}
+{left}
+{pp}
+Unfortunately, in choosing a case for your Amiga, you can't go with a small and portable mini
+tower. For the A4000, even midi towers aren't quite big enough. Judging by my midi tower, a
+midi with 4x5.25" bays would be a tight squeeze even for the A1200, especially if you have a
+full sized accelerator card. The safest bet is to go for a larger full tower, but you should still
+measure before you buy. Measure the distance between the bottom of the case to the bottom of
+the PSU. The mainboard usually can't go up behind the PSU, so it's important the whole board
+fits between these two points. For an A4000, also measure from the bottom of the case to the
+top bus stop. The higher the better, as long as there is PSU clearance. More distance between
+these points will allow easier installation of ZII/III cards. Again for the A4000, measure from the
+bottom of the case to the bottom 5.25" bay. More distance here will give you easier access to
+your CPU card/ROM chips. See below.
+{pp}
+{center}
+{image A4000_measure.128.iff}
+{left}
+{pp}
+Definition of measurements:
+{pp}
+A width of zorro card space{p}
+B distance between bottom of A4000 case and bottom of tower{p}
+C width of A4000 case{p}
+D width of A4000 mainboard{p}
+E length of A4000 mainboard{p}
+F distance from bottom of lowest 5.25" bay to top of A4000 mainboard{p}
+G depth of tower{p}
+H width of the tower's card space{p}
+I width of tower's card space + PS/2 port space
+{pp}
+Restrictions:{p}
+A should be smaller than H.{p}
+B should be as large as possible, by moving mainboard up so the treecard support bar is as close as possible to the
+top card space in the tower. A must fit inside the region H covers.{p}
+D should be smaller than I.{p}
+E should be smaller than G.{p}
+F doesn't have a restriction, other than the fact there MUST be distance here. The reason being, although there is
+enough space behind a 3.5" bay for the motherboard, there is next to no room behind the 5.25" bays.
+{pp}
+For an A1200 user, the bus stop mounting bracket should be removed along with the PS2
+template/cutout thing, and all the thin metal in between. Usually the bracket for the bus stops is
+riveted in, if your lucky, it will be screwed in. This procedure gives a big clean L shaped hole to
+work with. If you want to fix up the hole where the bus stops used to be, it should be possible to
+modify the mounting bracket, and put it back with bus stops that have been cut short, to make
+one long even hole along the bottom. All that remains is mounting the A1200 mainboard. You
+could mount the bottom half of the keyboard case to the motherboard plate on the new case,
+then fit the A1200 mainboard in that. Or, you could just install some new stand offs that you can
+fit the r/f shield +motherboard to. The latter is probably better if you have an accelerator that
+has jumpers on the bottom of it.
+{pp}
+Notice I haven't mentioned the external keyboard issue. That's because it is a whole issue in itself,
+and there are a few ways you can go about it. The cheapest is patching in an
+A1000/2000/3000/4000 keyboard. A hack on aminet called 1200ExKb.lha in hard/hack by Sean
+Curtin explains which wires go where. You'll need to have pretty good soldering skills to work
+with the A1200's surface mount chips, however. Or, you could purchase a commercial
+keyboardcontroller, one that either takes a big box Amiga keyboard, or an IBM AT/PS2 one. This
+is much simpler, but is probably fairly expensive compared to the price of a whole new A1200.
+{pp}
+Once you have the A1200 mounted, all you need to do is hook up your power, FDD, 2.5" ->
+3.5" HDD cables etc. Allother ports should be accessible from the outside as normal, except for
+any PCMCIA cards or other internal peripherals. Most cases have holes you can mount extra D-
+Sub 9/25 pin connectors onto anyway, so if you need to you may have to make up some
+extension cables to these mounting holes.
+{pp}
+The poor A4000 is a lot more tricky to get right, because of the Zorro slots. I'm assuming you've
+got a CBM A4000 desktop, with a Zorro treecard. Again, the two options are mounting the old
+case to the new motherboard plate, or mounting the motherboard directly. Both options require
+removing the bus stop bracket and PS/2 templates and the other metal in between. If you don't
+intend using your old case, then you can afford to use a slightly smaller case. You will have to
+select a case that will be easy to remove the existing bus stop bracket, and install the one from
+your old case, to be able to mount your Zorro cards horizontally. You will also have to install the
+support bar that runs from the front to the back of your old case. On top of that, you will have
+to make sure the motherboard sits in the right spot so the treecard is in the right position!
+{pp}
+If you think that approach will turn into a big mess with cards not sitting right, then perhaps you
+can modify your old desktop case to be mounted internally. You will need to do a lot of cutting
+to your old case, so a hacksaw isn't recommended. Ideally you should have a powertool for doing
+this, such as an angle grinder or jigsaw. All you need to remove is most of the face metal at the
+front, in the area where the 5.25"+3.5" bays are. Firstly, unscrew the bracket that would
+normally hold your floppy drives etc. in place. You need to remove all the vertical plate from the
+right of where the tree card sits. This is so that the case can sit up behind the 3.5" bays in the
+new tower. You could also chop the whole case along the edge of where the mainboard finishes,
+but this is up to you.
+{pp}
+{center}
+{image A4000_mod1.128.iff}
+{left}
+{pp}
+Then you need to fix the case onto the motherboard plate in the new tower, so that the bus stops
+for the tree card are not obstructed, but mounted as high above the bottom of the case as
+possible. Hopefully you will have room to fit a stubby screw driver in to unscrew any Zorro cards
+you have; otherwise you will need to lift out the whole thing to do any card swapping.
+{pp}
+Last but not least, the mouse/joystick sockets. The easiest solution appears to involve running IDC
+ribbon cable to two 9 pin sockets on the outside of the case. Most cases have spare holes for
+extra D-Sub connectors. On the motherboard, just crimp on a D-9 pin female IDC connector. In
+affect, you have a right angle connector, and it shouldn't take up much room.
+{pp}
+Well, I think that's it, but keep in mind I haven't done this myself yet, so I've probably neglected
+something. The other methods on Aminet do allow you to use a smaller case, but will cost more
+and are more difficult. For example, DesktopAmiga.lha by Philip Edwards (actually an 11 year
+old's Scala presentation.. not bad :), describes how to mount the motherboard so that the ports
+are all facing towards the PSU in the tower. Then you have to make a custom faceplate for the
+back, with all the connectors you would have on your motherboard on this faceplate; plus the
+leads that go back to the mainboard. If you value portability over simplicity, then perhaps this
+method is for you.
+{pp}
+Although I've triple checked all my diagrams, colours, pin numbers and sources, I'm only human.
+If there is a mistake or if you have any suggestions, let me know! And if you damage anything
+whilst using this document, whether it be your computer or yourself or anyone else, it's because
+you did something wrong :)
+{pp}

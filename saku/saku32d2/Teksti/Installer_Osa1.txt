@@ -1,0 +1,152 @@
+2
+1*
+
+{3                        Installerin ohjelmointi - Osa 1
+{3                        -------------------------------
+ 
+                                Ilkka Lehtoranta
+ 
+ 
+Joskus  80-luvulla  oli  hyvin  tavallista,   ettei   ohjelman   mukana   tullut
+minkäänlaista asennusohjelmaa, vaan käyttäjän piti asentaa kaikki itse. Jos  oh-
+jelman mukana sattui tulemaan asennusohjelma, oli se usein hyvin kömpelö ja vai-
+keaselkoinen. Pahimmillaan asennusohjelma oli pelkkä  komentorivitiedosto,  joka
+kopioi omat tiedostonsa jonnekin päin kiintolevyä kysymättä käyttäjältä  mitään.
+Joissakin saattoi ehkä valita jopa mille osiolle ohjelman asentaa, muttei kohde-
+hakemistoa. Niinpä useimmat käyttäjät asensivatkin ohjelmat mieluummin itse kuin
+antoivat asennusohjelman sotkea kiintolevyä.
+ 
+Onneksi joku edesmenneellä Commodorella keksi tehdä  yleiskäyttöisen  asennusoh-
+jelman, jonka avulla asennus käy vaivattomasti. Riittää että  ohjelmoija  laatii
+pienehkön tekstitiedoston ohjaamaan Installerin toimintaa. Seuraavassa esittelen
+pintapuolisesti laatimaani  yksinkertaista  asennusohjelmaa,  jota  voi  käyttää
+paitsi levykelehden asentamiseen, myös omien Installerien pohjana.  Löydät  lis-
+tauksen kokonaisuudessaan ikonin kera Ohjelmat-hakemistosta nimillä Saku_Install
+ja Saku_Install.info.
+ 
+Yksi tärkeimmistä ohjelmointikielien ominaisuuksista ovat  muuttujat.  Installe-
+rissa muuttujia ei tarvitse esitellä erikseen kuten esim.  C:ssä.  Riittää  vain
+että asetetaan sille joku arvo set-lauseella. Seuraavassa on  muutamia  esimerk-
+kejä set-lauseen käytöstä: 
+
+
+{5(set #dirname @app-name)
+{5(set #copying "Kopioin tiedostoja...")
+{5(set #destdir-prompt (cat "Valitse hakemisto, jonne luon uuden hakemiston
+{5nimellä '" #dirname "'."))
+
+Ensimmäisessä muuttuja #dirname  saa  arvokseen  muuttujan  @app-name  sisällön.
+@-alkuiset muuttujat ovat Installerin valmiiksi määrittelemiä  muuttujia,  joita
+voi käyttää hyödykseen. Tässä tapauksessa @app-name on sama kuin asennusohjelman
+info-tiedostossa olevan APPNAME-tooltypen arvo. Niistä lisää  myöhemmin.  Joskus
+on tarpeen yhdistää useita merkkijonoja yhdeksi, kuten  kolmannessa  tapauksessa
+on tehty. Tämä hoidetaan cat-funktiolla. Huomaa, että Installerin muuttujat ovat
+tyypittömiä eli muuttujat voivat saada arvokseen yhtä hyvin luvun kuin merkkijo-
+nonkin. Sen lisäksi ne ovat kaikki  globaaleja  eli  toisin  sanoen  paikallisia
+muuttujia ei ole. Yksi useimmin tarvittavista ominaisuuksista on kohdehakemiston
+kysyminen: 
+
+{5(set @default-dest
+{5    (askdir
+{5        (prompt #destdir-prompt)
+{5        (help @askdir-help)
+{5        (default @default-dest)
+{5    )
+{5)
+
+Tässä asetetaan muuttujalle @default-dest uusi arvo askdir-funktion avulla, joka
+avaa ikkunaan hakemistolistauksen. Parametrilla 'prompt' asetetaan teksti,  joka
+näkyy listauksen yläpuolella. Pyri pitämään  se  mahdollisimman  lyhyenä,  sillä
+mitä pidempi se on, sitä vähemmän jää tilaa itse hakemistolistaukselle. Paramet-
+ri 'help' asettaa ohjetekstin (pakollinen), joka tässä tapauksessa on  Installe-
+rin oma vakioteksti, mutta halutessasi voit laatia oman.  'default'  määrittelee
+hakemiston, jota Installer ehdottaa käyttäjälle. Tässä tapauksessa annamme  Ins-
+tallerin itse päättää oletushakemistosta. Parametri 'newpath' on  tässä  tapauk-
+sessa hieman turha.
+ 
+Koska hyvin usein annamme käyttäjän vain valita polun, jonne asennamme itse  oh-
+jelman, täytyy meidän vielä lisätä @default-dest:iin ohjelman  hakemiston  nimi.
+Se tehdään käyttäen tackon-funktiota:
+ 
+{5(set @default-dest (tackon @default-dest "#dirname"))
+ 
+Missään nimessä ei pidä käyttää cat-funktiota, koska seurauksena saattaisi  olla
+virheellinen hakemistopolku.
+ 
+Nyt kun olemme lopultakin saaneet määriteltyä kohdehakemiston, voimme luoda sen:
+ 
+{5(makedir @default-dest (infos))
+ 
+Parametri 'infos' määrää, että hakemistolle luodaan kuvake. Jos  haluat  varmis-
+tuksen käyttäjältä, voit lisätä parametrin 'confirm' jolloin kysytään varmistus,
+mutta tällöin myös parametrit 'prompt' ja 'help' täytyy määritellä.
+ 
+Jos tarkoituksena on tehdä jotain jännää pitkän  aikaa,  voit  asettaa  ikkunaan
+tekstin, joka näkyy kun Installer tekee jotakin.  Koska  aiomme  kohta  kopioida
+pitkän liudan levykelehden tiedostoja asetamme tekstin "Kopioin  tiedostoja...",
+jonka määrittelimme jo aiemmin:
+ 
+{5(working #copying)
+ 
+Mikäli working-lausetta ei käytetä, näkyy ikkunassa  "Working  on  Installation"
+tai vastaava suomeksi.
+Nyt sitten alamme kopioida tiedostoja: 
+
+{5(copyfiles
+{5    (source "")
+{5    (dest   @default-dest)
+{5    (pattern "#?")
+{5)
+
+'source' määrittelee lähdehakemiston, joka tässä tapauksessa on sama  hakemisto,
+mistä Installer käynnistettiinkin. 'dest' on tietenkin kohdehakemisto.  Paramet-
+rilla 'pattern' voimme valita kopioitavat tiedostot  kuin  hakemistotkin.  Vaih-
+toehtoisesti voisimme käyttää myös parametria 'all', joka kopioi kaikki  tiedos-
+tot hakemistoja myöten. Jos hakemistoja ei haluta kopioida,  lisätään  parametri
+'files'. Muita hyödyllisiä parametreja ovat mm. 'nogauge' (ei  edistysmittaria),
+'confirm' ja 'choices', jolloin käyttäjä voi itse valita kopioitavat tiedostot.
+ 
+Jos aiot kopioida esim. uuden kirjaston tai  ajurin,  käytä  'copylib'-lausetta,
+joka osaa tarkistaa versionumeron ennen kopiointia. Näin  et  kopioi  vahingossa
+vanhaa versiota, paitsi jos käyttäjä todellakin niin  haluaa  (mahdollista  vain
+EXPERT-moodissa).
+ 
+Koska kaikki työ on tehty voimme vaikka vain huvin vuoksi laittaa ikkunan otsik-
+kopalkissa näkyvän asennuksen edistymisestä kertovat prosenttiluvun sataan:
+ 
+{5(complete 100)
+ 
+Jos asennus on vähänkään monimutkaisempi, kannattaa sinne tänne ripotella (comp-
+lete xx) lauseita ilmoittamaan asennuksen edistymisestä.
+ 
+
+Rusinana pohjalla käynnistämme levykelehden: 
+
+{5(run "Saku"
+{5    (prompt "\nLopuksi käynnistän levykelehden...")
+{5    (confirm)
+{5    (help "")
+{5)
+ 
+Koska olemme laiskoja ihmisiä,  käyttäjä  saa  ohjeeksi  pelkän  tyhjän  ruudun.
+Käyttämällä 'confirm'-parametria käyttäjän ei ole heti pakko alkaa lukea levyke-
+lehteä, vaan voi sen tehdä myös myöhemmin.  Tässä  esimerkissä  on  myös  virhe,
+sillä oikeaoppisesti Saku pitäisi käynnistää  siitä  hakemistosta  mihin  se  on
+asennettukin. Voit varmasti kuvitella käyttäjän turhautumisen,  kun  levykelehti
+on ensin asennettu hitailta levykkeiltä kiintolevylle ja lopuksi  asennusohjelma
+käynnistää lehden levykkeeltä, vaikka nopea kiintolevykin olisi tarjolla. :)
+ 
+Ennen kuin käyttäjä pääsee käyttämään laatimaamme asennusohjelmaa, tarvitsee  se
+vielä ikonin sekä tietysti että siinä on  määritelty  muutama  tärkeä  tooltype.
+APPNAME kertoo asennettavan ohjelman nimen, esim. APPNAME=Saku, ja  on  pakolli-
+nen. MINUSER määrittelee helpoimman mahdollisen tason, jolla käyttäjä  voi  ope-
+roida. Tasoja on kolme: NOVICE, AVERAGE ja EXPERT. Novice-tasolla  Installer  ei
+anna käyttäjän vaikuttaa asennukseen muuta  kuin  korkeintaan  asennushakemiston
+suhteen. Average-tasolla käyttäjä voi vaikuttaa  asennukseen  rajoitetusti,  kun
+taas expert-tasolla käyttäjä saa päättää lähes kaikesta itse. Jos  asetat  MINU-
+SER=EXPERT, ei Installer kysy lainkaan käyttäjän kokemustasoa.  Jos  taas  MINU-
+SER=AVERAGE, käyttäjä ei voi valita NOVICE-modea lainkaan. Jos  annat  käyttäjän
+operoida muullakin kuin expert-tasolla, on tärkeää että eri tasoilla  todellakin
+on jotain eroa.
+ 
+Kirjoittajan tavoittaa sähköpostitse osoitteesta iti@solutions.fi.

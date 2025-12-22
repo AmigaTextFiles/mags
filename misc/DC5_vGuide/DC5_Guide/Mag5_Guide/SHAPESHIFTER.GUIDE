@@ -1,0 +1,73 @@
+@database ShapeShifter.html
+@remark Converted with HTML2Guide ©1997 Mark Harman
+@wordwrap
+
+@node MAIN "ShapeShifter.html"
+@{"b"}Using ShapeShifter@{"ub"}  
+
+Hurrah! I've finally got ShapeShifter to work! And I've managed to tear myself from playing Classic Daleks to write this little article.  
+
+You see, getting SS to work wasn't the easiest of things... in fact, about a year passed between getting hold of SS and getting it to work. I must point out that this isn't SS's fault so much, more not having HD disk drives (and only being able to get to a real Mac too often). So if any of you are having trouble, maybe I can provide a few pointers...  
+
+The first step is to get a copy of a Mac ROM. A 512k ROM, or a 1MB ROM if you have an '040 or better. Ah yes, legally, you can only use a copy of a ROM if you actually own that Mac (and even then, you can't use the Mac and SS at the same time). As a responsible diskmag editor, I can't encourage people to go around swiping copies of Mac ROMs off of other people's Macs.  
+
+Anyway, getting my legally purchased ROM copy was no problem. SS comes with a Mac program to run to do the job. Next step is the system software... and this is where I fall flat on my face.  
+
+How do you get Mac HD disks to run on Amiga DD disks? Answer - you don't. You have to use 'filedisks', but even so, you've got to get these 1.4MB files to your Amiga's hard disk. By the way, the Mac program 'DiskDup+' will make images of files.  
+
+You could use a Mac-Amiga serial link, but I went for the 'splitting files' approach. Simple matter, you split the files on the Mac into 700k chunks, and then put it together using the AmigaDOS 'join' command.  
+
+The problem was, Steph (the ever-so-helpful Mac owner who was helping me) didn't know of any such Mac programs to split files. Damn.  
+
+In the end, a program called 'Split' came to the rescue - a PC program (thanks to Steve Smith for sending me this!) This program would be useful if you were, say, downloading files for your Amiga on a PC, and needed to transfer them to you Amiga by DD disks. So what I did was ran it on a Mac running Softwindows, so I could run Split via emulation... Rather awkward, but I suppose it is worth to see the 'Amiga is the best!' message Spilt prints out when you run it!  
+
+There are quite a lot of disks in the system software, but the ones I needed, according to the SS docs, where DiskTools, and Install 1, so I got these images... and got home to find the disk containing one of the DiskTools image chunks was corrupt. Aaargh! A while later, I got a proper copy, and away I went!  
+
+Well, not immediately. There were problems booting SS, but I tracked this down to Executive (a pity, as it's a useful program). So I disable this, and boot up DiskTools, to initialise  my 32MB Mac harddiskfile. The next problem came with the InstallDisk. It wouldn't boot, and examining the contents (by booting disktools), I saw that it didn't have a proper System folder, just a suitcase in the root directory. Running the installation progam just caused an error. I don't know whether the problem was down to a buggered disk I was using, or I had the wrong install disk (there are many more of them), or I needed some others as well. But I didn't bother, and did this instead:  
+
+DiskTools has working system files on it, sort of the bare minimum you need to boot up the Mac. So I booted DiskTools, with the Mac harddiskfile as my second filedisk, and copied the System drawer on DiskTools across to the MacHD.  
+
+Now I had a working Mac, I wanted some Mac programs to run. You might think this is just as hard, as you still only have DD drives. But now, you don't have to bother with disk images, just copy them onto a PC disk (if they fit, of course!) To get them onto the MacHD, you can use the Mac Handler that SS provides. This represents the Mac drives as AmigaDOS devices - excellent!  
+
+You have to be careful; if you copy a file from a PC disk, say, the game 'Classic Daleks', the Mac will by default see it as a Teachtext document, and won't run it. You see, for every file, the Mac stores two four letter codes, the Type, and the Creator. Type is just whether it's an application, text file, picture, etc. Creator, is either the program which created it (like 'Default Tool' on the Amiga), or code to represent the file if it  is an application. You can change these via the Mac Handler using 'Information' on the icon (see the SS guides for details), or on the Mac using the Mac program 'MacChange'.  
+
+The problem is you need to know what four letter codes to use - here are some that I know so far. Note that a four letter code in brackets is the Creator that is usually associated with that file Type.  
+
+
+	Type		Creator	 
+INIT	System Extension	TTXT	Simple/Teachtext 
+APPL	Application	MACS	File 
+TEXT	Text	OMOV	Font Suitcase 
+FFIL	Font Suitcase (OMOV)	CPCT	Compact Pro 
+FNDR	Finder (MACS)	BOBO	ClarisWorks 
+CLIP	Clipboard (MACS)	DOSA	PC Exchange 
+ZSYS	Suitcase (MACS)		 
+CDEV	Control Panel		 
+PACT	Compact Pro Archive (CPCT)		   
+
+The best way when taking programs from a Mac, and copying them via the Mac Handler is to use the MacChange program first on the (real) Mac on all the files, make a note of the Type and Creator of each file, and then change the files accordingly when you've copied them to your Mac harddiskfile.  
+
+If you have a CD drive, then you could do the same thing, but taking programs from a Mac CD instead of using PC DD disks (make sure your filesystem can cope with Mac HFS discs). Of course, the best solution is to have the registered version of SS, as then you can use CDs from the Mac side, and so not have to worry about these Types and Creators (note that Macs can read HFS 'Mac' CDs as standard, but need additional drivers to read ISO9660 (Amiga and PC) discs and PhotoCD).  
+
+Despite all this, I was still having problems. In particular, control panels didn't get recognised, and ClarisWorks didn't work. About all I could do was play Classic Daleks and Star'Roids... 
+	----------------------------------------
+ [Time Passes...] Since I wrote that lot, I've got CU Amiga (the TFX one), which just happened to have a load of ShapeShifter stuff! Firstly, a mini harddiskfile which was setup correctly. This worked with control panels and ClarisWorks, so I copied the stuff across to my 32MB hardfile. Then there was the complete System 7 installation disks in disk image form which could be used from the Mac (thanks to the provided program MountImage). And a few other things too - it seems that CU have saved the day!  
+
+So how does it perform? As you probably know, there isn't the slowdown like with PC emulation, the only problem comes with converting the graphics from chunky to planar. I think that this doesn't apply in 2 colours, which is what I am using; it seems fast enough, anyway. Anything more than 1 bitplane is very slow - even four colours has a very @{"i"}very@{"ui"} jerky Mac. So at the moment, I have a Mac with a 50MHz '030, 5 or 6 MB RAM (depending on how much I have free on the Amiga side), 2MB Video RAM (well, about 1-1.5MB free), and 2 colour graphics only realistically. A diskdrive that can only read PC DD  disks, a slow 32MB hard disk, and a 4x CD ROM (that has to be used on the Amiga side with the Mac Handler).  
+
+But there was yet more stuff on the CUCD! A collection of video drivers, some of which speed up the colour emulation greatly. There were two of interest to me: FastECS, by Chris Brenner, and Savage, by Laszlo Torok. FastECS was 16 colours only, where as Savage was 256 colours. But Savage is shareware, and the unregistered version only allows a resolution of 512x384.  The results? Both are amazingly fast! Okay, still slower than 2 colours, but still very useable. In fact, it seems just as fast as real Macs I have seen (I imagine that having to do chunky to planar conversions is evened out by the Mac having no chips to do the graphics). Both of these video drivers require an MMU (to work out which bits of the screen need updating), but there is one which doesn't (although is slower).  
+
+So now I'm happily running a 16 colour Mac (Classic Daleks in colour - excellent!) I may even register Savage, as a 256 colour Mac will be brilliant (all running on AGA - no graphics card or Graffiti needed). This is no longer some pointless black and white Mac emulation - this is a @{"i"}real@{"ui"} Mac.  
+
+Looking to the future, it is a pity that there won't be a PowerPC version of ShapeShifter. But then again, that shouldn't be a problem, as Fusion will be available for PPC.  
+
+In fact, just imagine a PPC Amiga - of course, a wonderful machine in its own right, but Fusion would provide you with a PowerMac just as good as the real thing. You could give it as much RAM as you could afford, let it use hard disk partitions (so  no slowdowns), and CD drives, Zips, etc. As far as the graphics are concerned, if you haven't got a graphics card, hopefully there will be decent video drivers allowing reasonable speed at 256 colours, and there is also the Graffiti, which would provide 256 colours without slowdown. And this Mac would be just an 'optional extra' to the Amiga. Paul Lesurf of Blittersoft said that 'Fusion will really blow people's minds.' I can imagine. There'd be no reason at all to buy a real PowerMac...  
+	----------------------------------------
+ 
+
+@{"b"}PS@{"ub"} I would love to hear from any Amiga users out there running ShapeShifter. Maybe you are having trouble, or maybe you've been running it for ages and can help me out!  
+
+@{"b"}Mark@{"ub"}   
+ 
+@endnode
+

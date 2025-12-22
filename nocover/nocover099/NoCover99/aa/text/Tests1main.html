@@ -1,0 +1,195 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Tests und Erfahrungsberichte
+----------------------------
+
+1. Kleine Helfer f&uuml;r den Amiga-Alltag (von Christian Aichinger)
+
+Herzlich Willkommen zu den Kleinen Helfern im Juni. Diesmal m&ouml;chte ich euch 
+die Programme wget, PatchRAM und swfplayer vorstellen.
+
+Viel Spa&szlig; beim Lesen!
+
+
+Wget V1.7:
+
+Neben all dem digitalen Unsinn, den man st&auml;ndig von diversen Suchmaschinen 
+angeboten bekommt, soll es ja auch hin und wieder vorkommen, dass man
+beim St&ouml;bern im Internet auf interessante Seiten st&ouml;&szlig;t. In so einem Fall
+k&ouml;nnte es durchaus passieren, dass der Anwender diese Daten immer schnell
+abrufbar haben m&ouml;chte, auch ohne eine st&auml;ndige Verbindung zum Internet zu 
+halten, und damit dem Risiko zu entgehen, aufgrund der n&auml;chsten 
+Telefonrechnung einen Herzinfarkt zu bekommen. ;)
+Leider unterst&uuml;tzt kein einziger Amiga-Browser das Abspeichern kompletter
+Internet-Seiten (inklusive Unterverzeichnisse, Links und diverse Dateien 
+wie Archive oder Grafiken), so dass man als Amiga-Anwender auf kleine 
+Zusatztools wie z.B. Wget zur&uuml;ckgreifen muss. Wget ist ein sogenannter 
+Robot, der das Internet als auch FTP-Server sogar rekursiv abgrasen kann 
+und einige n&uuml;tzliche Funktionen, wie z.B. das Abspeichern kompletter 
+Webseiten auf der Festplatte oder das Suchen nach Dateien mit Hilfe eines 
+beliebigen Suchmusters, zur Verf&uuml;gung stellt.
+
+Nachdem das ca. 1.4 MByte gro&szlig;e Archiv entpackt wurde, muss das 68k-Binary 
+"wget" nur noch in ein beliebiges Verzeichnis kopiert werden. Das C-
+Verzeichnis der Systempartition d&uuml;rfte daf&uuml;r am besten geeignet sein, da 
+die Bedienung ausschlie&szlig;lich &uuml;ber die Shell und mittels eines f&uuml;rchterlich 
+un&uuml;bersichtlichen, dennoch extrem leistungsf&auml;higen Kommandointerface 
+erfolgt. Wer die ixemul.library und die ixnet.library noch nicht 
+installiert hat, sollte dies erst schnell nachholen, denn beide Funktions-
+Bibliotheken werden von Wget ben&ouml;tigt.
+
+Eine ungef&auml;hre Ahnung, was Wget zu bieten hat, kann der Anwender mit Hilfe 
+des "--help"-Arguments bekommen. Nachdem ca. f&uuml;nf Seiten mit Shell-
+Kommandos inklusive kurzer englischer Erkl&auml;rung abgespult wurden, wird so 
+mancher Anwender erschaudern und verzweifelt die Anleitung suchen. Leider 
+liegt diese im Amiga-untypischen "man"-Format vor, f&uuml;r das es unter AmigaOS 
+kaum einen vern&uuml;nftigen Anzeiger gibt. Eine englische Anleitung f&uuml;r die 
+aktuellere Version 1.8.1, f&uuml;r die es leider noch keine AmigaOS-Portierung 
+gibt, kann man aber unter http://www.gnu.org/manual/wget-1.8.1/ 
+runterladen.
+
+Da es schon jede Menge gute Workshops zu Wget gibt, spare ich mir hier 
+jegliche Einf&uuml;hrung in dieses Programm. Einen sehr guten dreiteiligen 
+Workshop zur Amiga-Version kann der Anwender z.B. in den Ausgaben 03 bis 05 
+des Online-Mags "Amiga Scene" finden, welche man sich aus dem Aminet (unter 
+docs/mags/ascene0x.lha - x f&uuml;r die Ausgabe) runterladen kann.
+
+Die Anforderungen an die verwendete Hardware werden leider ebenfalls 
+nirgends erw&auml;hnt. Ein Rechner mit 68020-CPU, 2 MByte freiem RAM und OS 2.0 
+sollte allerdings vollkommen ausreichen. Dass eine Internetverbindung 
+ben&ouml;tigt wird, muss ich nicht extra erw&auml;hnen. ;) Wenn es beim Start von 
+Wget Programmabst&uuml;rze gibt, sollte der Stack-Speicher vor dem 
+Programmaufruf auf etwa 100-200 KByte erh&ouml;ht werden. Open-Source-
+Portierungen haben sehr oft die Eigenart, extrem viel Stack-Speicher zu 
+ben&ouml;tigen.
+
+Autor: Diverse (Amiga-Port von "LouiSe")
+Aminet: dev/gg/wget-1.7.lha
+Programmversion: 1.7
+Homepage: http://louise.amiga.hu
+Lizenz: GNU General Public Licence
+
+
+PatchRAM:
+
+So intuitiv AmigaOS auch sein mag, hin und wieder findet man doch ein
+paar Merkw&uuml;rdigkeiten, die jenseits des logischen Menschenverstandes sind. 
+Eine davon ist mit Sicherheit die RAM-Disk, die jederzeit zu 100% voll ist, 
+obwohl noch mehr als genug RAM-Speicher frei ist. F&uuml;r &auml;ltere Revisionen des 
+Amiga-Betriebssystems gibt es gegen dieses Ph&auml;nomen schon diverse Patch-
+Programme, und auch f&uuml;r OS 3.9.2 wurde erst vor kurzem eine entsprechende
+Korrektur im Aminet ver&ouml;ffentlicht. &Uuml;brigens wird OS 3.9.2 zwingend 
+vorausgesetzt - ohne das letzte Boinbag 2 l&auml;uft n&auml;mlich nichts.
+
+Nachdem das Archiv entpackt wurde, muss zuerst das "AmigaOS ROM Update"
+"auseinandergenommen" werden. Das daf&uuml;r ben&ouml;tigte Programm "ExtractModule"
+befindet sich in der PatchRAM-Distribution. In einer Shell gibt man dazu 
+das Kommando...
+
+ExtractModule from "Devs:AmigaOS ROM Update" module 17 to ram:Ram-Handler
+
+...ein, und in der RAM-Disk erscheint eine neue Datei namens "Ram-Handler", 
+welche nun mit...
+
+spatch -oram:Ram-Handler.new -pRam-Handler.pch RAM:Ram-Handler
+
+...gepatcht wird. Wenn keine Fehlermeldungen ausgegeben wurden, befindet 
+sich der neue Ram-Handler in der RAM-Disk und tr&auml;gt den Namen "Ram-
+Handler.new". Diese Datei muss jetzt mit...
+
+copy xRam:Ram-Handler.new l:Ram-Handler
+
+...nach "L:" kopiert werden. Zum Abschluss muss die Startup-Sequence noch
+etwas modifiziert werden, damit Setpatch nicht mehr den Ram-Handler aus dem
+ROM-Update l&auml;dt, sondern das gepatchte Modul, das sich jetzt in "L:" 
+befindet: Vor der Zeile, in der Setpatch aufgerufen wird, muss die neue 
+Zeile...
+
+LoadModule L:Ram-Handler NOREBOOT
+
+...eingetragen und der Setpatch-Aufruf folgenderma&szlig;en modifiziert werden:
+
+SetPatch SKIPROMMODULES ram-handler &gt;NIL:
+
+Nachdem die ge&auml;nderte Startup-Sequence gespeichert wurde, muss noch das
+Programm "LoadModule" in das "C:"-Verzeichnis kopiert werden.
+
+So, wenn das erledigt w&auml;re, wird der Rechner ausgeschaltet(!) und dann neu
+gestartet. Ist die Workbench wieder geladen, hat die RAM-Disk die Gr&ouml;&szlig;e,
+die man von ihr auch erwarten w&uuml;rde. ;)
+
+Screenshot:
+<IMG SRC="../extra/patchram.png" ALT="Screenshot">
+
+Die kurze englische Anleitung beschreibt &uuml;brigens noch eine weitere 
+M&ouml;glichkeit, wie man PatchRAM ins System einbinden kann. 
+
+Autor: Thomas Richter
+Aminet: util/boot/patchram.lha
+Programmversion: 2.01
+Homepage:
+Lizenz: THOR-Software Licence
+
+
+swfplayer:
+
+In den Genuss von Flash-Animationen auf Internet-Seiten kommen zur Zeit nur
+Anwender von Voyager. F&uuml;r alle anderen Amiga-Browser wird leider kein
+entsprechendes Plugin zur Verf&uuml;gung gestellt. Um auch mit Browsern wie AWeb 
+und IBrowse solche Animationen anzeigen zu k&ouml;nnen, ben&ouml;tigt man das externe 
+Programm swfplayer. swfplayer ist eigentlich nur ein kleines Shell-
+Programm, welches auch "solo" zur Anzeige von auf Festplatte gespeicherten 
+Animationen verwendet werden kann. Der Player &ouml;ffnet dazu ein neues Fenster 
+auf der Workbench und spielt den Film in diesem Fenster ab. Der Nachteil 
+bei Verwendung als Plugin f&uuml;r AWeb bzw. IBrowse liegt auf der Hand: Das 
+Layout von Flash-animierten Seiten leidet unter dieser Darstellungsform. 
+Zudem unterst&uuml;tzt der Player auch keine Features wie Streaming Audio, Anti-
+Aliasing und noch einige andere Dinge.
+
+Die Installation ist schnell erledigt. Dazu wird das Archiv entpackt, das 
+ausf&uuml;hrbare Programm "swfplayer" in das "C"-Verzeichnis der Bootpartition
+kopiert und die Mime-Einstellungen des Browsers erg&auml;nzt. Unter AWeb zum 
+Beispiel &ouml;ffnet man dazu die Browser-Einstellungen und den dort zu 
+findenden Reiter "5 Anzeiger". Mit einem Klick auf "Neu" wird ein neuer Typ 
+erstellt, der mit den folgenden Parametern definiert werden muss:
+
+Typ: application "/" x-shockwave-flash
+Erweiterung: swf
+Aktion: Ext. Programm (E)
+Name: c:swfplayer
+Argumente: %f
+
+Nachdem die neuen Mime-Einstellungen gespeichert wurden, kann AWeb nun auch
+Flash-Animationen abspielen.
+
+Screenshot:
+<IMG SRC="../extra/swfplayer.png" ALT="Screenshot">
+
+Nun ja, das sieht zwar nicht besonders toll aus aber in der Not frisst der 
+Teufel bekanntlich Fliegen. ;) F&uuml;r den Betrieb von swfplayer wird ein Amiga 
+mit 68020-CPU, FPU und AmigaOS 3.0 ben&ouml;tigt. Ein schnellerer Amiga mit 
+Grafikkarte ist allerdings sehr zu empfehlen.
+
+Autor: Olivier Debon (Amiga-Port von Paul Hill)
+Aminet:
+Programmversion: 1.1
+Homepage: http://www.lagernet.clara.co.uk/main.html
+Lizenz: GNU General Public Licence
+
+
+So das war's mal wieder. Ich m&ouml;chte mich noch bei den Teilnehmern der 
+AMIGA-aktuell-Mailingliste f&uuml;r die Hilfe zu swfplayer und allen Lesern, die 
+mir E-Mails geschickt haben, f&uuml;r die Vorschl&auml;ge bedanken.
+
+Christian Aichinger &lt;christian@aakt.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

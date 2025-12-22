@@ -1,0 +1,66 @@
+From: Wolf Dietrich <wd@gf.phase5.de>
+Newsgroups: comp.sys.amiga.misc
+Subject: Re: ppc.library/WarpOS discussion
+Date: Thu, 16 Oct 1997 18:08:51 +0200
+Organization: phase 5 digital products
+Lines: 51
+Message-ID: <34463C13.578516F3@gf.phase5.de>
+References: <3442309A.74DF@mtek.chalmers.se> <32000306245443162499@BIRDLAND.es.bawue.de>
+NNTP-Posting-Host: ufoo.phase5.de
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Mailer: Mozilla 3.0Gold (X11; I; Linux 2.0.0 i586)
+Path: 195.95.96.10!news.unisource.be!News.Amsterdam.UnisourceCS!cosy.sbg.ac.at!news.cs.utwente.nl!opus.ies-energy.com!news.webspan.net!newsfeed.internetmci.com!4.1.16.34!cpk-news-hub1.bbnplanet.com!news.bbnplanet.com!newsfeed.ecrc.net!newsfeed.nacamar.de!news.nacamar.de!not-for-mail
+
+Steffen Haeuser wrote:
+> 
+> 
+> But then again, coding like that does not work without losing lots of
+> performance. FORGET the independence tasks for each processor !!!
+
+Could you please explain on which qualification your statements are
+based? 
+
+When you tell people to forget about the independent tasks on different
+processors, you tell them to forget about real parallel multiprocessing.
+You tell them to forget a solution that will feature accelerators with
+multiple PPC processors, which are already in the plannings and to be
+released next year.
+
+Why don't you talk about loosing performance in a kernel software
+concept that is completely focused on doing context-switches between
+CPUs? The asynchronous message system of the PowerUp System Software
+from phase 5 allows to send 1,000 (onethousand) messages (each with 30
+byte of data enclosed) from a 68k task to a PPC task within less than 60
+milliseconds (yes, for all 1,000 messages), and 1,000 replies from the
+PPC task to the 68k task in less than 8 milliseconds (these are actually
+measured values). Sending a message from one task to the other AND
+sending a reply needs less than 70 microseconds - THIS is a time that we
+consider to be fast.  
+
+ 
+> CPU-inexpensive stuff you do on 68k side anyways... so you do not NEED
+> Multi-CPU for this. You really do not get any more speed out of it. Parallel
+> CPU would only bring you more speed for CPU-intensive (which also means
+> memory-intensive) stuff... but exactly THAT does not work without problems
+> that slow you down... well, i am telling this out of a programmer's point of
+> view...
+
+CPU-intensive does not always mean memory-intensive. When two (or more)
+CPUs share the same memory dynamically, as they do in the PowerUp
+design, they can consecutively read necessary data in burst accesses
+from the memory. 
+
+Just a note from the hardware labs: When you watch the bus activity of
+the CPUs on a logic analyzer, you will recognize that even during
+application each of the CPUs is repeatedly off-bus, leaving access
+cycles for another bus master. When the second active CPU can use this
+time for memory access, the memory bandwidth is used much more
+efficiently, thus resulting in better overall performance.
+
+------------------------------------------------------------
+  Wolf Dietrich, General Manager  phase 5 digital products  
+ Return mail address: wd@gf.phase5.de  http://www.phase5.de
+------------------------------------------------------------
+

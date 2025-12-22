@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><TITLE>Pelipuuta ilman muuta</TITLE></HEAD>
+<BODY>
+
+ <HR>
+ <B>Pelipuuta ilman muuta</B><BR>
+ <I>Petri Keckman</I>
+ <HR>
+
+ <P>Nyt on hyv‰ peli! ƒlk‰‰ j‰tt‰kˆ sit‰ kokeilematta aikaisempien kokemustenne perusteella &quot;peleist‰ni&quot;.</P>
+
+ <P>Yli kymmenen vuoden tauon j‰lkeen p‰‰tin ryhty‰ k‰ytt‰m‰‰n Pascal-ohjelmointikielt‰. Voi miksi olen yritt‰nytk‰‰n koskaan k‰ytt‰‰ mit‰‰n muuta? Se on Amigalla helppoa ja halpaa PCQ-freeware-k‰‰nt‰j‰ll‰ - sen j‰lkeen kun systeemin saannut asetettua ja sit‰ on oppinut k‰ytt‰m‰‰n... tai no jaa, melkoista pilkunviilausta se ohjelmointi aina on. Pascal oli hallitseva opetuskieli yliopistomaailmassa 70- ja viel‰ pitk‰lti 80-luvulla. Pascalin syntaksissa kaikki muuttujat ja tyypit on esitelt‰v‰ lohkojen (ts. ohjelmien tai aliohjelmien) alussa, mik‰ aluksi saattaa tuntua hankalalta mutta kuitenkin helpottaa ohjelmointia ja karsii huolimattomuusvirheit‰, kun ne eiv‰t mene edes k‰‰nt‰j‰st‰ l‰pi... tai niiden ei pit‰isi; vaikuttaa silt‰, ett‰ esimerkiksi Integer- ja Real-tyyppisi‰ muuttujia saa PCQ:ssa k‰ytt‰‰ samoissa lausekkeissa, jolloin saattaa tulla virheit‰, kun Real-luvun tallennus tulkitaan Integeriksi.</P>
+
+ <P>Pascal suosii - ellei per‰ti vaadi - rakenteellista ohjelmointia, jossa ohjelmoitava ongelma on jaettu selkeisiin aliohjelmiin. Se muistuttaa paljolti C-kielt‰. Kuten yleens‰kin ohjelmointikielill‰, sill‰kin voi tehd‰ tietysti vaikka mit‰. Eroja on l‰hinn‰ syntaksin pilkkus‰‰nnˆiss‰.</P>
+
+ <P>Sill‰ on tullut suoritettua perus- ja aineopintojen labroja - suoritettua, muttei palautettua. Olin niin kypsynyt yliopiston arvomaailmaan, jossa t‰rkeint‰ oli ker‰t‰ suorituspisteit‰ kopioimalla laskuharjoituksia, ett‰ menin toiseen ‰‰rimm‰isyyteen: opiskelin omaksi huvikseni ja tiedokseni ja j‰tin merkkaamatta laskuharjoitukset ja palauttamatta labrat. Helvetti‰kˆ minun ohjelmointiharrastukseni muille kuului?</P>
+
+ <P>Ohjelmat-hakemistosta lˆytyv‰n numeropeli-ohjelman er‰s versio tuli kuitenkin aikoinaan palautettua &QUOT;Tietorakenteet&QUOT;-kurssiin kuuluvana harjoitustyˆn‰, joskus vuonna 1987, silloin kun viel‰ uskalsin kuvitella osaavani ohjelmoida. Siin‰ harjoiteltiin pelipuun k‰sittely‰. Pelipuu on tietorakenne, johon rakennetaan kustakin pelitilanteesta vaihtoehtoiset jatkotilanteet ja valitaan paras mahdollinen siirto. Pelilaudan tilannetta kuvaa arvofunktio, joka on pelipuun solmun arvo. Koko pelilaudan tilannetta ei siis tallenneta solmun arvoksi, vaan vain arvofunktion arvo. Pelipuuta rakennettaessa t‰ytyy pelilaudan tilannekin olla kuitenkin selvill‰, jotta sit‰ p‰‰st‰‰n rakentamaan. Siksi pelipuun solmuun tallennetaan myˆs tehdyn siirron sarake- tai rivi-indeksi.</P>
+
+ <P>Numeropelin idea on yksinkertainen: pelaajat nostavat vuorotellen numeroituja laattoja, toinen rivitt‰in, silt‰ rivilt‰, jolta toinen (sarakkeittain pelaava) oli poistanut laatan. Viimeksi poistetun laatan paikalle siirret‰‰n t‰htilaatta. Laattojen numerot lasketaan yhteen. Suuremman summan ker‰nnyt on voittanut tilanteessa, jossa vuorossa oleva ei p‰‰se en‰‰ jatkamaan, kun laatat ovat loppuneet. T‰h‰n peliin liittyv‰ pelitilannetta kuvaava arvofunktio, jonka pelipuualgoritmi tarvitsee, on siis ‰‰rimm‰isen yksinkertainen: ker‰ttyjen laattojen summasta v‰hennet‰‰n vastustajan ker‰‰mien laattojen summa.</P>
+
+ <P ALIGN=CENTER><IMG SRC="Kuvat/numeropeli.gif" WIDTH=353 HEIGHT=232></P>
+
+ <P ALIGN=CENTER><IMG SRC="Kuvat/pelipuu.gif" WIDTH=379 HEIGHT=227></P>
+
+ <P>Alkuper‰inen versio kaukaisilta opiskeluajoiltani tulosti merkkigrafiikkaa k‰skyrivi-ikkunaan, josta alla huvin vuoksi esimerkkiajon alkua ja loppua. Kone aloitti poistamalla t‰ydelt‰ pelilaudalta laatan rivilt‰ 3 sarakkeelta 2.</P>
+
+ <P><B>8.H1:OHJELMOINTI/pcq12d> omat/numeropeli</B></P>
+
+ <HR>
+ <P>JOS HALUAT MUUTTAA JONKIN ALLAOLEVAN ASETUKSEN ARVOA, NIIN SYOTA VASTAAVA NUMERO 1..7.</P>
+ <HR>
+
+ <OL>
+  <LI>KONE ALOITTAA.
+  <LI>KONE PELAA SARAKKEITTAIN.
+  <LI>OHJELMA ARPOO LAATOILLE PAIKAT JA ARVOT 
+  <LI>LAATTOJEN PIENIN ARVO = -8
+  <LI>LAATTOJEN MAKSIMI ARVO = 8
+  <LI>OHJELMA TUTKII 6 SIIRTOA ETEENPAIN.
+  <LI>KONE PELAA KAYTTAJAA VASTAAN.
+ </OL>
+
+ <UL>JOS HALUAT MUUTTAA PELIKENTAN KOKOA 4x4, NIIN MUUTA OHJELMASTA VAKION maxind ARVOA.</UL>
+
+ <HR>
+ <P>SYOTA 8 KUN HALUAT LOPETTAA KOKO OHJELMAN TAI<BR>
+ SYOTA 0 KUN OLET VALMIS PELAAMAAN.</P>
+ <HR>
+
+ <UL>
+  0. ALETAAN PELAAMAAN.<BR>
+  8. LOPETETAAN PELAAMINEN.
+ </UL>
+
+ <P>SYOTA LUKU 0..8   ?<BR>
+    0</P>
+
+ <BR>
+
+ <TABLE>
+  <TR><TD ALIGN=CENTER>SARAKE=<BR>RIVI<BR>1<BR>2<BR>3<BR>4
+      <TD>|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>1|<BR>|<BR>1|<BR>-1|<BR>0|<BR>-8|
+      <TD ALIGN=RIGHT>2|<BR>|<BR>-1|<BR>-8|<BR>7|<BR>-1|
+      <TD ALIGN=RIGHT>3|<BR>|<BR>7|<BR>-5|<BR>6|<BR>0|
+      <TD ALIGN=RIGHT>4|<BR>|<BR>4|<BR>1|<BR>-7|<BR>4|
+      <TD><BR>PELITILANNE:<BR>KONE=0<BR>PELAAJA=0<BR><BR><BR>
+
+  <TR><TD ALIGN=CENTER>SARAKE=<BR>RIVI<BR>1<BR>2<BR>3<BR>4
+      <TD>|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>1|<BR>|<BR>1|<BR>-1|<BR>0|<BR>-8|
+      <TD ALIGN=RIGHT>2|<BR>|<BR>-1|<BR>-8|<BR>*|<BR>-1|
+      <TD ALIGN=RIGHT>3|<BR>|<BR>7|<BR>-5|<BR>6|<BR>0|
+      <TD ALIGN=RIGHT>4|<BR>|<BR>4|<BR>1|<BR>-7|<BR>4|
+      <TD><BR>PELITILANNE:<BR>KONE=7<BR>PELAAJA=0<BR><BR><BR>
+ </TABLE>
+
+ <P>SYOTA POISTETTAVAN LAATAN SARAKEINDEKSI VALILTA 1..4:<BR>
+    3</P>
+
+ <BR>
+
+ <TABLE>
+  <TR><TD ALIGN=CENTER>SARAKE=<BR>RIVI<BR>1<BR>2<BR>3<BR>4
+      <TD>|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>1|<BR>|<BR>1|<BR>-1|<BR>0|<BR>-8|
+      <TD ALIGN=RIGHT>2|<BR>|<BR>-1|<BR>-8|<BR>|<BR>-1|
+      <TD ALIGN=RIGHT>3|<BR>|<BR>7|<BR>-5|<BR>*|<BR>0|
+      <TD ALIGN=RIGHT>4|<BR>|<BR>4|<BR>1|<BR>-7|<BR>4|
+      <TD><BR>PELITILANNE:<BR>KONE=7<BR>PELAAJA=6<BR><BR><BR>
+
+  <TR><TD ALIGN=CENTER>SARAKE=<BR>RIVI<BR>1<BR>2<BR>3<BR>4
+      <TD>|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>1|<BR>|<BR>1|<BR>-1|<BR>0|<BR>-8|
+      <TD ALIGN=RIGHT>2|<BR>|<BR>-1|<BR>-8|<BR>|<BR>-1|
+      <TD ALIGN=RIGHT>3|<BR>|<BR>*|<BR>-5|<BR>|<BR>0|
+      <TD ALIGN=RIGHT>4|<BR>|<BR>4|<BR>1|<BR>-7|<BR>4|
+      <TD><BR>PELITILANNE:<BR>KONE=14<BR>PELAAJA=6<BR><BR><BR>
+ </TABLE>
+
+ <P>SYOTA POISTETTAVAN LAATAN SARAKEINDEKSI VALILTA 1..4:<BR>4</P>
+
+ <P>..jne. jne...</P>
+
+ <BR>
+
+ <TABLE>
+  <TR><TD ALIGN=CENTER>SARAKE=<BR>RIVI<BR>1<BR>2<BR>3<BR>4
+      <TD>|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>1|<BR>|<BR>1|<BR>|<BR>|<BR>*|
+      <TD ALIGN=RIGHT>2|<BR>|<BR>-1|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>3|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>4|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD><BR>PELITILANNE:<BR>KONE=13<BR>PELAAJA=-14<BR><BR><BR>
+
+  <TR><TD ALIGN=CENTER>SARAKE=<BR>RIVI<BR>1<BR>2<BR>3<BR>4
+      <TD>|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>1|<BR>|<BR>*|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>2|<BR>|<BR>-1|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>3|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>4|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD><BR>PELITILANNE:<BR>KONE=14<BR>PELAAJA=-14<BR><BR><BR>
+ </TABLE>
+
+ <P>SYOTA POISTETTAVAN LAATAN SARAKEINDEKSI VALILTA 1..4:<BR>
+    2</P>
+
+ <BR>
+ <TABLE>
+  <TR><TD ALIGN=CENTER>SARAKE=<BR>RIVI<BR>1<BR>2<BR>3<BR>4
+      <TD>|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>1|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>2|<BR>|<BR>*|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>3|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD ALIGN=RIGHT>4|<BR>|<BR>|<BR>|<BR>|<BR>|
+      <TD><BR>PELITILANNE:<BR>KONE=14<BR>PELAAJA=-15<BR><BR><BR>
+ </TABLE>
+
+ <P>KONE EI VOI TEHDA ENAA SIIRTOA.<BR>
+    HAVISIT TALLA KERTAA.</P>
+
+ <P>Vaikka peli on yksinkertainen - tai juuri sen takia - on se ihmiselle kuitenkin sen verran vaikeaa, etten ole Amigaani kertaakaan voittanut v‰h‰nk‰‰n isommilla vaikeustasoilla. Tosin en jaksakaan yleens‰ mietti‰ kuin korkeintaan kaksi siirtoa eteenp‰in - yleens‰ n‰p‰yt‰n hiirell‰ sit‰ rivin suurinta laattaa.</P>
+
+ <P>Kuinka kone sitten tarkemmin ottaen tekee siirtonsa? Samalla tavalla kuin ihminen yritt‰‰ mietti‰: jos nostan tuon laatan, niin se nostaa tuon laatan, jolloin minun on nostettava jokin noista, jolloin kone p‰‰see kuitenkin nostamaan tuon laatan jne...</P>
+
+ <P>Pelipuuhun rakennetaan osoitinmuuttujilla solmut ja linkit tietty m‰‰r‰ siirtoja eteenp‰in. Solmun arvona on siis arvofunktion arvo (=KONE-PELAAJA). Jos pelilaudan koko on vaikkapa 10x10 ruudukko, nousee solmujen m‰‰r‰ ‰kki‰ melko suureksi. Kuusi tasoa eteenp‰in tutkittaessa lukum‰‰r‰ l‰hestyy miljoonaa. T‰st‰ johtuen ei algoritmissa suinkaan rakenneta koko puuta, vaan yksi haara kerrallaan, eli solmuja tarvitaan vain kuusi kerrallaan. Tilantarve on siis kokoluokkaa 6x solmun koko, mutta koska kaikki solmut k‰yd‰‰n l‰pi, on ajan tarve maksimissaan (ts. pelin alussa) luokkaa 10^6 (lopussa l‰henee ykkˆst‰, kun siirtoja ei voi en‰‰ tehd‰).</P>
+
+ <P>Mit‰ sitten, kun pelipuu on saatu rakennettua? (Pee-lipuu on raa-ken-nettu, peelii on joo ovella, nuumeeria riipustettu ompi laudan ruuduille - ei kun joulu meni jo?) Kuinka Amiga valitsee siirtonsa? Olisiko houkuttelevinta valita se siirto, jota pitkin p‰‰see alimman tason solmuun, jossa arvofunktion arvo on suurin? Ei, sill‰ koneella on vastassa ‰lyk‰s ihminen, joka myˆs haluaisi p‰‰st‰ solmuun, jossa arvofunktion arvo on pelaajalle edullisin.</P>
+
+ <P>Algoritmi purkaa pelipuuta alhaalta ylˆsp‰in ja nostaa alemmalta tasolta parhaimman siirron ylemm‰lle tasolle. Se on siis vuorotellen arvofunktion suurin ja pienin arvo, koska joka toisen siirron tekee kone ja joka toisen ihminen. Lopulta kone valitsee sen siirron, jota kuvaavaan solmuun on nostettu suurin arvo.</P>
+
+ <P>Vaikka alkuper‰isess‰ versiossa oli suurin osa muuttujista ohjelman ajoaikana muutettavissa, ei t‰ss‰ Amiga-versiossa p‰‰se niit‰ muuttamaan. Pelilaudan koko pysyy siis 6x6:ssa ja tasoja tutkitaan kahdeksan eteenp‰in. En ole viel‰ oikein saanut rakenneltua gadtools-juttuja... Muuten ohjelma moniajaa n‰tisti. On siin‰ valikotkin. Ja ennen kaikkea ikkunan kokoa voi vapaasti muuttaa ajon aikana.</P>
+
+ <P>Kirjoittajan kotisivu lˆytyy osoitteesta <A HREF="http://www.mbnet.fi/~keckman">http://www.mbnet.fi/~keckman</A>.
+
+</BODY>
+</HTML>

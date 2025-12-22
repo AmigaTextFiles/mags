@@ -1,0 +1,151 @@
+<html>
+<head><title>News - Geek Gadgets Info Packet</title></head>
+<body bgcolor=ffffff>
+  <table width=100% border=0 cellpadding=3 cellspacing=0>
+  <tr><td bgcolor=000000></td></tr>
+  <tr><th bgcolor=0000ee align=center><font size=+3 color=ffffff>Geek Gadgets Info Packet</font></th></tr>
+  <tr><td bgcolor=000000></td></tr>
+  </table><br><p>
+
+<p><b>OVERVIEW</b>
+
+<p>This message is regarding the Geek Gadgets CVS repository.  If you do not
+know what Geek Gadgets is, the following URL should help:
+
+<p><a href="ftp://ftp.ninemoons.com/pub/geekgadgets/current/README">ftp://ftp.ninemoons.com/pub/geekgadgets/current/README</a>
+<p>Additional info is available from the following URL for the AmigaOS version
+of Geek Gadgets, refered to as "Amiga Developers Environment":
+<p><a href="http://www.ninemoons.com/ADE/ADE.html">http://www.ninemoons.com/ADE/ADE.html</a>
+<p>If you are unfamiliar with CVS, the following URL should help:
+<p><a href="ftp://ftp.ninemoons.com/pub/geekgadgets/README-cvs">ftp://ftp.ninemoons.com/pub/geekgadgets/README-cvs</a>
+
+<p>I have made some changes in the Geek Gadgets CVS repository which will make
+it much easier to expand the group of volunteer Geek Gadgets maintainers,
+giving them more flexibility to add new packages to Geek Gadgets, update
+existing package to newer releases, fix bugs, and do new platform specific
+development work.
+
+<p>Currently the entire world has anonymous read-only access to the master
+repository on cvs.ninemoons.com, but only a handful of people have write
+access.  This negates some of the effectiveness of using CVS and has
+resulted in much development work languishing in my Geek Gadgets staging
+area because I've not had the time to review it, test it, and check it in.
+
+<p>I would like to see more people become involved in Geek Gadgets development
+by becoming official maintainers for one or more existing packages (or
+adding new packages they are interested in) and giving them write
+permission so they can do their own CVS checkins for the packages they are
+responsible for.
+
+<p><b>NEW STABILITY BRANCHES</b>
+
+<p>I have created two new branches in the Geek Gadgets CVS repository, one for
+m68k AmigaOS and one for PPC BeOS.  Each of these are "stability" branches,
+from which releases will be made for their corresponding targets.  The
+corresponding CVS branch tags are "m68k_amigaos_branch" and
+"ppc_beos_branch" and can be used to check out copies of each branch with
+the CVS "-r" option.  The points at which the branches split from the main
+trunk of the CVS tree are tagged as "m68k_amigaos_branchpoint" and
+"ppc_beos_branchpoint" respectively so the branchpoints can always be found
+easily.
+
+<p>For doing AmigaOS builds, snapshots, and releases, I will use the
+m68k_amigaos branch on my Amiga and for doing the BeOS builds, snapshots,
+and releases I will use the ppc_beos branch on my BeOS system.  Nobody but
+myself should check in any changes on these stability branches, although
+everyone is free of course to check them out and use them for their own
+local builds.
+
+<p>The idea is to make the GG CVS environment more open for maintainers of
+individual packages to update existing packages, check in development work
+that might cause short term instability but which is important to get into
+the repository, and to add new packages.  The main trunk of the repository
+will become the "development branch" for people to do this work on, without
+worrying about whether they will be making de-stabilizing changes that
+affect the GG release process for any given target.  Any changes people
+make in the main trunk of the CVS tree will only be migrated to the
+stability branches at carefully controlled times.
+
+<p><b>CODE MIGRATION TO BRANCHES</b>
+
+<p>When I'm satisfied that I've hit a stable build point on a branch I will
+check in any changes made in the checked out source tree for that branch,
+tag that point on the branch with a tag like
+"m68k_amigaos_stable_19970917".
+
+<p>I can then use CVS to merge additional new code from the main CVS trunk to
+the branch, and start the build and test process again.  This way I'm
+isolated from changes in the main trunk except at points when I choose to
+bring over and try out new updates, fixes, or development work.  It should
+also be the case that at any given time, the head of the stability branch
+represents the latest stable build and test point.
+
+<p>When I make a patch on either stability branch, I'll be sure to check in a
+corresponding patch on the main trunk and if important to other stability
+branches, on those as well after testing.  All major changes should happen
+on the main trunk and on the vendor branch.
+
+<p>I will use some additional tags on each stability branch and the main trunk
+to identify points at which the most recent merge was made.  I.E.  if I
+merge the latest gcc changes from the main trunk to the m68k_amigaos
+branch, then I will retag gcc on the main branch with "m68k_amigaos_export"
+and retag gcc on the m68k_amigaos branch with "m68k_amigaos_import" to
+identify the syncronization points.
+
+<p>When I go to do the next merge, I simply have to ask CVS to merge changes
+on the main trunk, from the last m68k_amigaos_export tag to a temporary tag
+at the current head of the trunk, into the branch I'm working on.  This
+will also make it easy for people to find out which changes on the main
+trunk have not yet made it into any stability branch, and remind me if
+necessary to try them out at the next opportunity.
+
+<p><b>GG MAINTAINERS</b>
+
+<p>People who would like to volunteer to become the GG maintainer for a given
+package or set of packages should send me email at fnf@ninemoons.com.  If
+more than one person wants to act as maintainer, that is fine.  CVS makes
+it very convenient for a small team of widely separated individuals to work
+effectively with a common source code base.
+
+<p>If you are doing a port of any freely distributable software from a POSIX
+type environment to either AmigaOS or BeOS, that software is suitable for
+inclusion in Geek Gadgets, and you have a reasonably good connection to the
+Internet, then there are a number of advantages to doing your development
+using the Geek Gadgets repository:
+
+<p>(1) If for some reason you have a problem you need help with, it is very
+simple for any interested party to check out a current copy of the same
+source you are working with, assuming you regularly commit your changes to
+the repository, and help you out.
+
+<p>(2) If you "run out of steam" and can't continue with the port, or just
+want to take a break for a while, it is very easy to "pass the torch" to
+another developer and let them continue from where you left off.
+
+<p>(3) If your house burns down you know that another copy of the source
+exists somewhere else.  :-)
+
+<p>(4) When the port is complete enough, it can be incorporated into the
+normal Geek Gadgets build process.  The build process results in the
+package being rebuilt on one or more systems other than your own, thus
+ensuring that it is possible for someone else to rebuilt it.  It also helps
+to ensure that your port integrates cleanly with the ports of other
+packages when there are some mutual dependencies.
+
+<p>(5) When ready, it can be incorporated into the normal Geek Gadgets release
+process.  The release process results in regular snapshots and releases
+being made available to the developer and user community, though of course
+you are free to do your own releases as you see fit.
+
+<p>(6) Everyone has a common focus for at least one place to find source and
+binary copies of common packages when a port for their platform already
+exists, rather than having to scurry around on the Internet collecting bits
+and pieces from multiple locations, where those bits and pieces may not
+play well together.
+
+<p>-Fred
+  <br><p>
+  <table width=100% border=0 cellpadding=2 cellspacing=0><tr><td bgcolor=000000></td></tr></table><br><p>
+  <center><a href="news.html">Back to News</a></center>
+</body>
+</html>

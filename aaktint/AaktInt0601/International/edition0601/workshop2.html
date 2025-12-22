@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops / Background reports / Book introductions</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="workshop1.html" OnMouseOver="status='Addendum to »Dirk´s Tinkering Lesson« in AMIGA aktuell 03/01 (Dirk Wenk)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="workshop.html" OnMouseOver="status='Workshops / Background reports / Book introductions' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="workshop3.html" OnMouseOver="status='Amiga 1000 Phoenix, Legend or Truth? - Part 1 (by Werner Brennecke)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Workshops / Background reports / Book introductions
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H2>2. Workshop: Virtual Network Computing - part 2 (by Uwe Pannecke)</H2>
+<P><B>Master of the remote control - part 2</B></P>
+<P>
+The VNC server for Amiga by von Denis Spach
+</P>
+<H3>1. From client to server</H3>
+<P>
+While in the first part of this article about VNC [1], the Amiga was only used as a
+client to access remote machines, this time it will run as a server, allowing use of its
+software from other machines on a Intranet, or, if desired, even over the Internet.
+</P>
+<H3>2. System requirements</H3>
+<P>
+Your Amiga needs, beside Workbench 3.0, the RTG software Picasso96 in version 2.0. The
+VNC server does not work with Cybergraphics. The CPU must be a MC68040 or 060 with a
+working MMU. And of course you will need a working TCP/IP stack to communicate with other
+computers.
+</P>
+<P>
+Last but not least, the programs you intend to use over VNC must be RTG com&uuml;patible,
+which means they have to have a screenmode requester or least have their output
+redirected via a utility like NewMode.
+</P>
+<H3>3. Installation</H3>
+<P>
+Once you have downloaded the archive &quot;avnc-beta6b.lha&quot; from the web site [2], unpack it
+anywhere on your harddisk and copy the file &quot;p96fb.card&quot; from the subdirectory &quot;libs/&quot; to
+the directory &quot;Libs:Picasso96&quot; on the system partition. The directory &quot;Monitors/&quot;
+contains the monitor drivers for 8, 16 and 32 bit colour depth.
+</P>
+<P><B><A HREF="img/vncs_p96fb1.png"><IMG SRC="thumb/vncs_p96fb1.jpg" WIDTH="94" HEIGHT="96" ALT="Screenshot"  BORDER="0"></A></B></P>
+<P>
+Copy one of these framebuffer drivers (Denis Spach recommends the 16 bit version) to
+&quot;Sys:Devs/Monitors&quot; and then open the icon information to check the ToolTypes. You will
+find the entries FBWIDTH and FBHEIGHT. Enter the desired screen resolution here.
+</P>
+<P>
+The higher the resolution, the more data has to be transferred over the network. 800 x
+600 pixels has proved to be a good compromise.
+</P>
+<P><B><A HREF="img/vncs_p96fb2.png"><IMG SRC="thumb/vncs_p96fb2.jpg" WIDTH="120" HEIGHT="59" ALT="Screenshot"  BORDER="0"></A></B></P>
+<H3>4. Configuration</H3>
+<H4>4.1 Network</H4>
+<P>
+Configure your TCP/IP stack to accept connections on ports 5900 to 5999. Miami seems to
+do so in the standard configuration. The port to be used by &quot;AVNC&quot; is set in the
+ToolTypes of the program icon. Default is port 5904. Since in my network the clients on
+the Windows and Linux machines are using port 5900, I have changed the value accordingly
+to &quot;Port=5900&quot;.
+</P>
+<H4>4.2 Server password</H4>
+<P>
+Besides the port, it is also essential to configure a password to authorize access from
+the client. For this purpose, you can set up a password. This is done via ToolTypes
+again. Enter the password in unencoded form after the keyword &quot;PASSWORD=&quot;, for example
+&quot;PASSWORD=ami2vnc&quot;.
+</P>
+<P><B><A HREF="img/vncs_avnc.png"><IMG SRC="thumb/vncs_avnc.jpg" WIDTH="120" HEIGHT="74" ALT="Screenshot"  BORDER="0"></A></B></P>
+<P>
+After the first start of the program, Avnc then scrambles the password and saves it under
+&quot;EPASSWORD=&quot;.
+</P>
+<H3>5. Usage of the server</H3>
+<P>
+When the Amiga is rebooted now, the framebuffer driver in &quot;Sys:Devs/Monitors&quot; is
+activated. Start up your TCP/IP stack and then &quot;Avnc&quot; by double clicking its icon. Now
+the VNC server is ready.
+</P>
+<P>
+When a program is going to be controlled by remote machines, then select &quot;P96fb&quot; in the
+screenmode requester of said program.
+</P>
+<P><B><A HREF="img/vncs_smode.png"><IMG SRC="thumb/vncs_smode.jpg" WIDTH="120" HEIGHT="55" ALT="Screenshot"  BORDER="0"></A></B></P>
+<P>
+Once the program is running, you can start up the VNC client on the remote machine
+(usually it is installed together with the server application, see Amiga aktuell
+international 05/2001).
+</P>
+<P>
+As parameter, the IP address or the domain name is required. For Linux, for example,
+&quot;vncviewer&quot; 192.168.0.2&quot; will do the trick.
+</P>
+<P><B><A HREF="img/vncs_linux.png"><IMG SRC="thumb/vncs_linux.jpg" WIDTH="120" HEIGHT="61" ALT="Screenshot"  BORDER="0"></A></B></P>
+<P>
+Of course, the client will now ask for the password. Enter it as defined in the Avnc
+ToolTypes, and a window with the output of the program started on the Amiga will open.
+And from then on, you can remote control this program.
+</P>
+<P>
+This works for the Workbench too, of course, allowing for full control over the Amiga
+from the remote host.
+</P>
+<P><B><A HREF="img/vncs_wb.png"><IMG SRC="thumb/vncs_wb.jpg" WIDTH="99" HEIGHT="96" ALT="Screenshot"  BORDER="0"></A></B></P>
+<H3>6. Result</H3>
+<P>
+Virtual Network Computing is a fascinating way to control networked computers. The
+exported user interface makes it very easy to control programs or even the complete
+server computer.
+</P>
+<P>
+Even though the Amiga VNC server by Denis Spach is marked as a beta version, it is quite
+usable, provided you have an Amiga with a full 040 or 060 CPU. Many interesting uses are
+possible.
+</P>
+[1] <A HREF="http://www.uk.research.att.com/vnc/index.html" TARGET="_top">http://www.uk.research.att.com/vnc/index.html</A><BR>
+[2] <A HREF="http://dspach.free.fr/amiga/avnc/index.html" TARGET="_top">http://dspach.free.fr/amiga/avnc/index.html</A><BR>
+<P><B>Uwe Pannecke &lt;<A HREF="mailto:Uwe.Pannecke@t-online.de">Uwe.Pannecke@t-online.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="workshop1.html" OnMouseOver="status='Addendum to »Dirk´s Tinkering Lesson« in AMIGA aktuell 03/01 (Dirk Wenk)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="workshop3.html" OnMouseOver="status='Amiga 1000 Phoenix, Legend or Truth? - Part 1 (by Werner Brennecke)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

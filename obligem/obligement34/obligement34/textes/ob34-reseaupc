@@ -1,0 +1,450 @@
+\T
+
+ --> EN PRATIQUE : RESEAU AMIGA/PC AVEC CARTE PASSERELLE par Niffo
+=====================================================================
+
+
+   Voici un article pratique sur la mise en r_seau d'un Amiga 2000/3000/4000 en 
+utilisant une carte ethernet PC ISA par l'interm_diaire d'une carte passerelle.
+
+~   Pr_sentation :
+   Possesseur d'un A2000 avec une carte passerelle PC, cela faisait longtemps que 
+je cherchais a connecter mon Amiga 2000 avec mon r_seau local de facon peu on_reuse.
+Un jour, en surfant sur le matou femelle, quelle ne fut pas ma surprise d'y
+d_couvrir un pilote appel_ EtherBridge et dont la description _tait : "permet
+d'utiliser une carte ethernet ISA par l'interm_diaire d'une carte passerelle PC".
+Sachez _galement que EtherBridge est un pilote compatible Sana2 donc utilisable
+avec toutes les piles IP (Miami, AmiTCP, Genesis) et de surcroit freeware.
+
+~   Principe de fonctionnement : (voir fig. 1)
+   Cot_ Amiga, les applications r_seau communiquent comme d'habitude avec la 
+BdsSocket.library de la pile IP. La pile IP fait appel au pilote Sana2
+etherbridge.device et ce dernier dialogue avec la m_moire partag_e de la carte
+passerelle via la Janus.library.
+   Cot_ PC, le programme serveur "ebserver" fait la liaison entre le pilote packet
+MS-DOS de la carte r_seau et la m_moire partag_e de la carte passerelle. Lors de
+son lancement, le pilote Sana2 lance automatiquement le pilote paquet ainsi que le
+serveur "ebserver" cot_ PC.
+
+ö
+
+\I principe
+\X 95
+\Y 10
+\T
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+~                         Fig. 1 : Principe de fonctionnement
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ö
+
+\T
+
+~   Mise en oeuvre mat_rielle : (voir fig. 2 et 3)
+   Cot_ mat_riel, rien de plus simple, il suffit d'ajouter une carte ethernet ISA du
+monde PC dans un des connecteurs ISA de l'Amiga. Attention, si vous utilisez une 
+carte passerelle de type A2088, vous _tes limit_ aux cartes ISA 8 bits (un seul
+connecteur de bus). Par contre, si vous utilisez une carte A2286 (comme moi) ou 
+plus, vous pouvez utiliser une carte ISA 16 bits (deux connecteurs de bus).
+
+                                                                                        -->
+
+ö
+
+\I a2000back
+\X 110
+\Y 6
+\T
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+~                         Fig. 2 : derri_re l'A2000
+
+
+
+
+
+
+
+ö
+
+\I a2000inside
+\X 110
+\Y 6
+\T
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+~                         Fig. 3 : l'int_rieur de l'A2000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ö
+
+\T
+
+~   Mise en oeuvre logicielle cot_ PC :
+   Pour la suite de cet article, nous consid_rerons que votre carte passerelle 
+est correctement install_e, que vous avez un MS-DOS en _tat de marche sur une 
+partition r_elle ou virtuelle (fichier) et que vous savez transf_rer des fichiers 
+cot_ PC. EtherBridge n'est pas compatible avec Windows. Si Windows est install_ 
+sur votre syst_me PC, vous devrez le quitter avant d'utiliser EtherBridge.
+
+   En ce qui concerne la partie MS-DOS, vous aurez deux fichiers situ_s dans le 
+r_pertoire PC de l'archive etherbridge a recopier sur votre partition MS-DOS :
+- ebserver.exe (le serveur etherbridge MS-DOS)
+- Le pilote MS-DOS en mode packet de votre carte r_seau
+
+   Je vous conseille vivement de mettre ces deux fichiers dans la racine de votre
+partition MS-DOS pour une raison sur laquelle nous reviendrons plus tard. Deux
+pilotes paquet sont fournis dans l'archive. L'un convient aux cartes r_seau
+compatibles NE2000 tandis que l'autre convient aux cartes r_seau de type 3Com
+Etherlink III (3C509). Si votre carte n'est pas de l'un de ces deux types, vous
+devrez vous procurer un pilote en mode packet pour cette derni_re. Une visite sur
+le site du constructeur vous donnera certainement satisfaction.
+
+~   Mise en oeuvre logicielle cot_ Amiga :
+   Cot_ pilote Amiga, deux fichiers a copier :
+
+- L'un des fichiers etherbridge000.device, etherbridge020.device ou
+etherbridge040.device du r_pertoire devs/networks de l'archive est a renommer en
+etherbridge.device et a mettre dans votre r_pertoire devs/networks (en fonction
+de votre processeur).
+
+ö
+
+\T
+
+- Le fichier etherbridge.config du r_pertoire envarc/sana2 doit _tre copi_ dans 
+votre r_pertoire env:sana2 et envarc:sana2
+Si vous poss_dez MUI, une GUI de configuration du fichier etherbridge.config est
+_galement disponible (voir fig. 4). Dans le cas contraire, vous pouvez
+toujours _diter le fichier de configuration et le modifier a la main. Vous trouverez
+un exemple de fichier etherbridge.config comment_ ci-dessous. Si vous n'utilisez
+pas le pilote paquet NE2000 ou 3Com fourni dans l'archive, vous devrez ajouter une
+entr_e pour celui-ci dans le fichier de configuration. Dans l'exemple ci-dessous,
+vous remarquerez que les chemins d'acc_s des fichier PC "ebserver.exe" ainsi que
+du pilote paquet n'int_grent pas de sous-r_pertoire. En effet, lorsque le pilote
+Sana2 simule l'entr_e au clavier des commande, il ne tient pas compte de la
+localisation du clavier et les caract_res sp_ciaux posent probl_me.
+
+                                                                                        -->
+
+ö
+
+\I etherprefs
+\X 110
+\Y 6
+\T
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+~                       Fig. 4 : pr_f_rences Etherbridge
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ö
+
+\T
+
+Le fichier etherbridge.config :
+
+-------------------------------------------------------------------------------
+}PCSERVER  "ebserver.exe"
+}# Mode de dialogue avec la carte passerelle : 0=A2386, 1=A2088/A2268
+}COMMODE  1
+}# Ne pas toucher ou alors en connaissance de cause
+}TXBUFFERS  2
+}TASKPRI  0
+}RINGBUFSIZE  10
+}PTRACEENABLED  no
+}PTRACEFILE  "KCON:0/16/500/200/Packets/AUTO/CLOSE"
+}DEBUGENABLED  no
+}DEBUGFILE  "KCON:0/16/300/200/Etherbridge Debug/AUTO/CLOSE"
+}DEBUGLEV  100
+}# Num_ro du pilote packet DOS a utiliser dans la liste ci-dessous, le premier _tant 0
+}USEPKTDRVNO  1
+}# Nombre de pilotes dans la liste ci dessous
+}PKTDRVCNT  2
+  
+}# Liste des pilotes packet DOS
+
+}# Nom arbitraire
+}PKTDRVNAME0  "NE2000"
+}# Emplacement de l'ex_cutable cot_ Pc
+}PKTDRV0  "ne2000.com"
+}# Param_tres a passer au pilote
+}PKTDRVPARAM0  "0x60 4 0x320"
+
+ö
+
+\T
+
+}# Nom arbitraire
+}PKTDRVNAME1  "3Com"
+}# Emplacement de l'ex_cutable cot_ Pc
+}PKTDRV1  "3c509.com"
+}# Param_tres a passer au pilote
+}PKTDRVPARAM1  "0x60"
+-------------------------------------------------------------------------------
+
+   Cot_ pile IP, j'ai choisi d'utiliser AmiTCP 4 (disponible sur Aminet), mais l'on
+peut tout a fait utiliser une autre pile comme Miami. Je ne vais pas entrer dans 
+les d_tails de l'installation et la configuration d'une pile IP, mais sachez que 
+l'auteur fourni des exemples de fichiers de configuration pour AmiTCP et Miami. En
+ce qui me concerne, j'ai install_ AmiTCP comme si j'avais une carte A2065 puis j'ai :
+
+- Ajout_ la ligne suivante au fichier db/interfaces :
+etherbridge DEV=DEVS:Networks/etherbridge.device UNIT=0
+
+- Modifi_ la ligne suivante du fichier bin/startnet :
+AMITCP:bin/ifconfig etherbridge {IPADRESS} netmask 255.255.255.0
+
+~   Points positifs :
+- M'a permis de mettre mon Amiga en r_seau pour 0 Euro !
+- Fonctionnement tr_s efficace et tr_s bluffant !
+- Donne un sens a la carte passerelle ;-)
+
+ö
+
+
+\T
+
+~   Points n_gatifs :
+- Un peu lourd a mettre en oeuvre (mais avec cet article, vous ne devriez pas 
+avoir de probl_me ;-)
+- D_marrage de la pile IP un peu long (une bonne dizaine de secondes) du fait de 
+l'attente du d_marrage des programmes cot_ PC.
+
+
+}Nota : Cet article est _galement disponible sur le site http://amigaenreseau.free.fr
+
+ö

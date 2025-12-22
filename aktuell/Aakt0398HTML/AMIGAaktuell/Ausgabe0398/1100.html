@@ -1,0 +1,859 @@
+<HTML>
+<HEAD>
+<TITLE>Amiga-Aktuell 03/98 Workshop</TITLE>
+</HEAD>
+
+<BODY BACKGROUND="../gfx/newbg.gif" BGCOLOR="#75BAFF" TEXT="#000000" LINK="#0000FF" VLINK="#000088">
+
+
+<TABLE>
+<TR>
+<TD VALIGN=TOP COLSPAN=2 WIDTH=100><IMG WIDTH=491 HEIGHT=86 SRC="../gfx/amiws.gif" ALT="Amiga-Aktuell 02/98 - Workshop" BORDER=0></TD>
+<TD WIDTH=100 VALIGN=TOP>
+</TD>
+</TR>
+<TR>
+<TD VALIGN=TOP><IMG WIDTH=51 HEIGHT=351 SRC="../gfx/akt.gif" ALT="Logo">
+<CENTER><BR><BR>
+<IMG WIDTH=100 HEIGHT=1 SRC="../gfx/spc.gif" BORDER=0 ALT="">
+<BR><BR>Powered by <BR><A HREF="http://www.clearlight.com/~dietmar">GoldED</A>
+</CENTER>
+</TD>
+<TD WIDTH=391 VALIGN=TOP>
+<A NAME="Top"></A>
+<H2 ALIGN=CENTER>ARexx-Kurs - Teil 2 (von Heiko Kuschel)</H2>
+&#187;ARexx-Kurs: &Uuml;bersicht<P>
+
+1. Einf&uuml;hrung in ARexx.
+<UL>
+    - Wie funktionierts?
+    - Was brauche ich?
+    - Installation
+    - ein erstes kleines Programm
+<UL>
+        - Ein- und Ausgabe
+        - do...end
+</UL></UL>
+2. Programmstruktur und Ansteuerung von anderen Programmen
+<UL>
+    - if
+    - do...end
+    - address
+    - Tracing
+</UL>
+3. Stringfunktionen
+<UL>
+    - Stringfunktionen
+    - Ein- und Ausgabe
+</UL>
+4. weitere Variablenfunktionen
+<UL>
+    - Funktionen
+    - Operatoren
+</UL>
+5. komplexere Programmstrukturen
+<UL>
+    - Procedure
+    - Libraries
+    - sonstiges
+</UL>
+6. Beispiele f&uuml;r die Vernetzung von Programmen
+<UL>
+    - Wordworth
+    - GoldEd
+    - Database Professional
+    - YAM
+    - Miami
+    - usw.
+</UL>
+&Auml;nderungen vorbehalten. Spezielle W&uuml;nsche werden, wenn m&ouml;glich, gerne
+aufgenommen.&#171;<P>
+&#187;<H3 ALIGN=CENTER>2. Programmstrukturen und Ansteuerung von externen Programmen</H3>
+<B>2.0. Vorbemerkungen</B><BR>
+Hier wiederhole ich f&uuml;r Quereinsteiger noch einmal einen Teil der
+Vorbemerkungen, die ich zum ganzen Kurs gemacht habe.<P>
+Der Kurs wird als reine Text-Datei angefertigt, da auch Amiga aktuell u.a.
+in ASCII-Form verschickt wird. Um den Text etwas zu gliedern, habe ich
+daher ein paar "Textmarker" eingef&uuml;gt.<P>
+********** unterteilt einzelne Abschnitte<P>
+__________ bezeichnet Beginn und Ende eines ARexx-Programms. Die Striche
+geh&ouml;ren nicht zum Programm!<BR>
+ARexx-Befehle werden in diesem Kurs immer GROSS geschrieben, obwohl das
+eigentlich nicht n&ouml;tig ist. Auf diese Weise kann man sie aber leichter
+erkennen.<P>
+Ich hoffe, da&szlig; diese Regelung den Kurs etwas leserlicher macht.<P>
+Wenn Ihr spezielle Fragen habt, etwas nicht verstanden oder Anregungen und
+Ideen f&uuml;r weitere Kursteile habt, k&ouml;nnt Ihr Euch gern an mich wenden.
+Ich selbst benutze folgende ARexx-f&auml;hige Programme und kann daher auf deren
+Programmierung kurz eingehen, wenn das gew&uuml;nscht wird:
+Wordworth, GoldEd, Database Professional, YAM, Miami, Voyager, TurboCalc.<P>
+Hier meine Kontaktadresse:<P>
+Heiko Kuschel<BR>
+Lehmgrubenweg 13<BR>
+97280 Remlingen<P>
+E-Mail: hk0006@wuerzburg.baynet.de<P>
+Und jetzt... viel Spa&szlig; mit ARexx!<P>
+****************************************************<P><BR>
+<B>2.1. Die "Hausaufgabe" vom letzten Mal</B><BR>
+Im letzten Kursteil ging es um Programmschleifen mit dem Befehl DO...END.
+Wie kann man nun eine Schleife so programmieren, da&szlig; sie dann abbricht,
+wenn man "Ende" eingibt? Dazu gibt es mehrere M&ouml;glichkeiten: Mit DO UNTIL,
+DO WHILE, aber auch mit DO FOREVER.
+<PRE>
+--------------------------------
+/* Hello World Version 1.3.*/
+DO UNTIL Eingabe="Ende"
+  ECHO "Gib was ein!"
+  PARSE PULL Eingabe
+  ECHO "Du hast "||Eingabe||" eingegeben."
+END
+--------------------------------
+--------------------------------
+/* Hello World Version 1.4.*/
+DO WHILE Eingabe~="Ende"
+  ECHO "Gib was ein!"
+  PARSE PULL Eingabe
+  ECHO "Du hast "||Eingabe||" eingegeben."
+END
+--------------------------------
+</PRE>
+Die Tilde ~ ist das Negationszeichen in ARexx. ~= hei&szlig;t soviel wie "ist
+nicht gleich".<BR>
+Die zwei senkrechten Striche verkn&uuml;pfen Zeichenfolgen miteinander.
+Die Einr&uuml;ckungen sind zwar nicht n&ouml;tig, erh&ouml;hen aber die &Uuml;bersichtlichkeit.<P>
+Wozu nun diese zwei verschiedenen M&ouml;glichkeiten, das offenbar gleiche
+auszudr&uuml;cken (DO WHILE, DO UNTIL)?<BR>
+Es gibt einen Unterschied zwischen den beiden:<P>
+DO WHILE &uuml;berpr&uuml;ft die Bedingung am Anfang der Schleife,<BR>
+DO UNTIL &uuml;berpr&uuml;ft die Bedingung, wenn ARexx bei END angekommen ist.<BR>
+Das hei&szlig;t: mit DO UNTIL wird die Schleife in jedem Fall einmal durchlaufen,
+mit DO WHILE kann es passieren, da&szlig; ARexx sofort nach END weitermacht,
+falls die Bedingung nicht erf&uuml;llt ist.<P>
+Kapiert? Wenn nicht, probiere einmal, in beiden Versionen als erste Zeile
+nach dem Kommentar einzuf&uuml;gen:
+<PRE>
+--------------------------------
+Eingabe="Ende"
+--------------------------------
+</PRE>
+In Hello World 1.4. wird gar nichts passieren! Die Schleife wird
+&uuml;bersprungen, denn die Bedingung ist schon erf&uuml;llt.
+Hello World 1.3. dagegen geht brav in die Schleife rein... und bis zum END
+hat sich der Wert von Eingabe schon wieder ver&auml;ndert.<P>
+Jetzt fehlt uns allerdings noch die dritte M&ouml;glichkeit, Schleifen zu
+programmieren: DO FOREVER.<BR>
+Um hier eine Abfrage machen zu k&ouml;nnen, brauchen wir aber noch einen neuen
+Befehl. Wir m&uuml;ssen ARexx ja etwas in der Art mitteilen k&ouml;nnen:
+"Wenn Eingabe gleich "Ende" ist, dann verlasse bitte die Schleife. Und wenn
+nicht, dann gib die Eingabe aus."<BR>
+Dieser Befehl hei&szlig;t sinnvollerweise IF... THEN (...ELSE)
+Nach dem THEN darf allerdings nur ein einziger Befehl stehen! Wie soll man
+das anstellen? Oft genug mu&szlig; nach so einer Abfrage doch eine ganze Menge im
+Programm geregelt werden. Ganz einfach: Im ersten Teil des Kurses habe ich
+so einen seltsamen Satz geschrieben: "Dieser Abschnitt zwischen DO und END
+wird intern wie ein einziger Befehl behandelt." Na, kapiert? Jawohl! Wenn
+nach dem THEN mehrere Befehle folgen sollen, mu&szlig; vor dem ersten Befehl ein
+DO und nach dem letzten dieser Befehle ein END stehen.<BR>
+Heiko Strohmeier hat mir daf&uuml;r ein Beispiel geliefert. (Danke, Heiko!) Er
+hat's wagemutig mit DO FOREVER und IF...THEN probiert und das Ganze auch
+sehr gut gemacht:
+<PRE>
+--------------------------------
+/**/
+DO FOREVER
+  ECHO "Gib Ende f&uuml;r Quit ein"
+  PARSE PULL Eingabe
+
+  IF Eingabe="Ende" THEN
+  ECHO "Die eingabe war richtig "||Eingabe
+  LEAVE
+
+  IF Eingabe ~="Ende" THEN
+  ECHO "Die eingabe war falsch "||Eingabe
+END
+--------------------------------
+Das ist schon eine ganze Menge, aber es fehlt
+DO... END, um funktionieren zu k&ouml;nnen. Also:
+--------------------------------
+/**/
+DO FOREVER
+  ECHO "Gib Ende f&uuml;r Quit ein"
+  PARSE PULL Eingabe
+
+  IF Eingabe="Ende" THEN DO
+    ECHO "Die Eingabe war richtig "||Eingabe
+    LEAVE
+  END
+
+  IF Eingabe ~="Ende" THEN DO
+    ECHO "Die Eingabe war falsch "||Eingabe
+  END
+END
+--------------------------------
+
+&Uuml;brigens: IF...THEN kann auch noch mit ELSE
+(ansonsten) weitergef&uuml;hrt werden. Eine kleine
+&Auml;nderung des obigen Skripts:
+--------------------------------
+/**/
+DO FOREVER
+  ECHO "Gib Ende f&uuml;r Quit ein"
+  PARSE PULL Eingabe
+
+  IF Eingabe="Ende" THEN DO
+    ECHO "Die Eingabe war richtig "||Eingabe
+    LEAVE
+  END
+  ELSE DO
+    ECHO "Die Eingabe war falsch "||Eingabe
+  END
+END
+--------------------------------
+
+</PRE>
+****************************************************<P><BR>
+<B>2.2. Eine kleine "ARexx-Shell"</B>
+Aus diesem Skript k&ouml;nnen wir nun sehr leicht ein Skript machen, das uns die
+Arbeit mit ARexx sehr erleichtert. Wie w&auml;re es mit einer Art Shell, die
+&auml;hnlich wie die DOS-Shell der Workbench Befehle direkt interpretiert, wenn
+man sie eingibt?<BR>
+Auch daf&uuml;r gibt es einen Befehl:<BR>
+INTERPRET Variable<BR>
+Variable wird dabei als ARexx-Befehl angesehen und direkt ausgef&uuml;hrt.<BR>
+Also...
+<PRE>
+--------------------------------
+/*Interpreter V1.0.*/
+DO FOREVER
+  PARSE PULL Eingabe
+  IF Eingabe="Ende" THEN LEAVE
+  INTERPRET Eingabe
+END
+--------------------------------
+</PRE>
+Tip: Speichere dieses Programm irgendwo auf Festplatte, und nimm "rx (Name
+des Programms)" in Deine HotKey-Liste auf, falls Du ein Programm hast, das
+andere Programme auf Tastendruck startet!
+<P>
+****************************************************<P><BR>
+2.3. <B>Ansteuern von anderen Programmen</B><BR>
+2.3.1. <B>ADDRESS</B><P>
+Wir haben zwar noch lange nicht alle M&ouml;glichkeiten von ARexx selbst
+ausgesch&ouml;pft. Trotzdem m&ouml;chte ich schon jetzt darauf eingehen, wie
+Programme angesteuert werden k&ouml;nnen, die einen ARexx-Port zur Verf&uuml;gung
+stellen. Denn einfache Skripte kannst Du jetzt schon selbst schreiben, und
+am meisten lernt man meiner Erfahrung nach, wenn man selber was
+ausprobiert. Und wenn's Probleme gibt... Meine Adresse steht am Anfang des
+Kurses.<P>
+Um ARexx mitzuteilen, welches Programm angesteuert werden soll, ben&ouml;tigen
+wir den Befehl ADDRESS. Die ARexx-Adresse (ARexx-Port), die dann folgen
+mu&szlig;, entnimmst Du der Dokumentation des jeweiligen Programms.
+Z.B.:
+<PRE>
+ADDRESS YAM
+ADDRESS Wordworth.1
+ADDRESS TCALC
+ADDRESS GOLDED.1
+</PRE>
+Eine Liste der vorhandenen Ports erh&auml;ltst Du mit ECHO SHOW("PORTS")
+Gib das mal in der ARexx-Shell ein! Der Befehl wird weiter unten genauer
+erkl&auml;rt.<P>
+Nach dem Befehl ADDRESS YAM werden alle Anweisungen, die ARexx nicht
+versteht, an die YAM-Schnittstelle weitergeleitet. Wenn nun YAM zuf&auml;llig
+einen Befehl haben sollte, der auch als ARexx-Befehl existiert, mu&szlig;t Du ihn
+in Anf&uuml;hrungszeichen setzen, damit er nicht von ARexx selbst interpretiert
+wird.<P>
+ADDRESS COMMAND hat eine besondere Bedeutung: Damit k&ouml;nnen Shell-Befehle
+aufgerufen werden.
+<PRE>
+--------------------------------
+ADDRESS COMMAND DIR
+--------------------------------
+</PRE>
+listet das aktuelle Verzeichnis auf.
+<PRE>
+--------------------------------
+ADDRESS COMMAND
+DIR
+--------------------------------
+</PRE>
+hat prinzipiell die gleiche Bedeutung. Im ersten Fall wird aber nur eben
+schnell der Befehl DIR an COMMAND &uuml;bergeben, im zweiten Fall wird die
+Schnittstelle als COMMAND definiert und alle weiteren Befehle an COMMAND
+geschickt.<P>
+Also: Ich habe ein Programm, mit dem ich z.B. YAM steuere. Zwischendurch
+ben&ouml;tige ich einen einzigen COMMAND-Befehl. Dann schreibe ich ihn direkt
+hinter ADDRESS COMMAND, und alle folgenden Befehle gehen wieder an YAM.
+<PRE>
+------------------------    ------------------------
+ADDRESS YAM                 ADDRESS YAM
+(Befehle gehen an YAM)      (Befehle gehen an YAM)
+ADDRESS COMMAND DIR         ADDRESS COMMAND
+                            DIR
+(Befehle gehen an YAM)      (Befehle gehen an COMMAND)
+------------------------    ------------------------
+</PRE>
+(Wenn Du einen proportionalen Zeichensatz installiert hast, wirst Du diesen
+Vergleich nicht ganz so gut betrachten k&ouml;nnen. Sorry!)<P>
+ADDRESS kann auch noch ein paar Parameter mit auf den Weg bekommen:
+ADDRESS VALUE Variable<P>
+interpretiert Variable als solche und nimmt den Inhalt der Variablen als
+neuen ARexx-Port. Z.B.:<PRE>
+--------------------------------
+Var="YAM"
+ADDRESS VALUE Var
+--------------------------------
+</PRE>
+Alle Befehle gehen an YAM.P>
+ADDRESS ohne weitere Angaben schaltet auf den vorhergehenden ARexx-Port
+zur&uuml;ck.<P><BR>
+****************************************************<P><BR>
+<B>2.3.2. SHOW()</B><BR>
+Wie kann ich nun aber feststellen, ob ein ARexx-Port wirklich existiert, ob
+z.B. YAM bereits gestartet ist?
+Dazu ben&ouml;tige ich wieder den Befehl SHOW().
+SHOW(Option[,Name,Trennzeichen])
+Option mu&szlig; angegeben werden. Es gibt die folgenden M&ouml;glichkeiten:
+<PRE>
+  Clip      : Alle Eintr&auml;ge in der Clip-Liste
+  Files     : Eine Liste der offenen logischen
+              Dateinamen
+  Internal  : Die interne Port-Liste
+  Libraries : die ge&ouml;ffneten Bibliotheken
+  Ports     : die allgemeinen PublicMessagePorts,
+              zu denen auch die ARexx-Ports geh&ouml;ren.
+</PRE>
+Es reicht jeweils die Angabe des ersten Buchstabens.<P>
+Wird ein Name angegeben, dann &auml;ndert SHOW() seine Funktion. Es gibt 1
+zur&uuml;ck, wenn der unter Name angegebene Port gefunden wurde, und 0, wenn er
+nicht gefunden wurde.<BR>
+Also:
+<PRE>
+--------------------------------
+YAM-Existiert=SHOW("P",YAM)
+--------------------------------
+</PRE>
+Die dritte M&ouml;glichkeit ist die, ein beliebiges Trennzeichen f&uuml;r die Liste
+anzugeben. Am sinnvollsten ist ein "Wagenr&uuml;cklauf", was der Return-Taste
+entspricht. Er hat den ASCII-Code 10 und wird angegeben als D2C(10) (Warum,
+erkl&auml;re ich im n&auml;chsten Kursteil.)
+<PRE>
+--------------------------------
+ECHO SHOW("P",,D2C(10))
+--------------------------------
+
+</PRE>
+****************************************************<P><BR>
+<B>2.3.3. WaitForPort</B><BR>
+Wenn ein Programm neu gestartet wird, dauert es evtl. eine Weile, bis der
+ARexx-Port eingerichtet ist. Daf&uuml;r gibt es den DOS-Befehl
+sys:rexxc/WaitForPort, der maximal 10 Sekunden wartet, bis der ARexx-Port
+da ist.<P>
+ADDRESS COMMAND sys:rexxc/WaitforPort YAM<BR>
+wartet auf die Einrichtung des Ports YAM und macht dann weiter.<P><BR>
+****************************************************<P><BR>
+<B>2.3.4. OPTIONS, RESULT und RC</B><P>
+Jetzt brauchen wir noch die M&ouml;glichkeit, Werte aus Programmen in ARexx zu
+&uuml;bernehmen. Das geschieht auf folgende Weise:<P>
+a)<BR>
+Ein Befehl wird an ein Programm geschickt, der einen R&uuml;ckgabewert
+verlangt. Z.B. den Inhalt einer Zelle in TurboCalc.
+TurboCalc setzt diesen Befehl in die Variable RESULT (Ergebnis).
+In ARexx kann mit der Variable RESULT weitergearbeitet werden.<P>
+b)<BR>
+Ein Befehl wird an ein Programm geschickt.<BR>
+Der Befehl verursacht einen Fehler<BR>
+Die Variable RC (Return Code - R&uuml;ckgabecode) wird auf einen definierten<BR>
+Wert gesetzt, der gr&ouml;&szlig;er als 0 ist.<BR>
+Wenn der Befehl anf&auml;llig f&uuml;r Fehler ist, kann man nun eine kleine<BR>
+Fehlerabfrage einbauen: IF RC~=0 THEN...<P>
+c)
+Der Befehl ist so definiert, da&szlig; er sein Ergebnis (einen Zahlenwert) in
+RC ablegt. Das ist meines Erachtens zwar nicht ganz korrekt, aber
+durchaus nicht un&uuml;blich.<BR>
+Beispiel: ISONLINE in Miami liefert 0 oder 1 in RC, je nachdem, ob Miami
+online ist oder nicht.<P>
+Achtung: Diese Variablen funktionieren nur, wenn vorher die entsprechende
+Option eingeschaltet wurde! Das geschieht mit:<BR>
+OPTIONS RESULTS<BR>
+Was soviel bedeutet wie: Gib mir Ergebnisse von anderen Programmen zur&uuml;ck.<P>
+Die anderen Optionen liefere ich am Ende des Kursteils nach. Sie sind jetzt
+gerade weniger interessant.<P><BR>
+****************************************************<P><BR>
+<B>2.4. Erste Skripte mit anderen Programmen: Zwei Beispiele</B>
+<B>2.4.1. Postholen.rexx</B><BR>
+Nun k&ouml;nnen wir schon ein paar kleine Programme schreiben. Ein Beispiel: Ein
+Skript, das<P>
+<OL>
+<LI>nachsieht, ob YAM gestartet ist, wenn nicht, dann YAM startet
+<LI>das gleiche f&uuml;r Miami
+<LI>online geht
+<LI>Post aus der Warteschlange verschickt
+<LI>Post vom Server holt
+<LI>nochmal nachschaut, ob inzwischen noch mehr Post eingetroffen ist
+<LI>YAM schlie&szlig;t, falls keine neue Post eingetroffen ist
+<LI>offline geht
+<LI>Miami wieder schlie&szlig;t.
+</OL>
+... und so schaut das aus:<BR>
+(Ich habe die Nummern der einzelnen Schritte in Kommentarzeilen mit ###
+eingef&uuml;gt.)
+<PRE>
+--------------------------------
+/* Post abholen mit Miami und YAM */
+/* Version 1.0. 9.7.97 Heiko Kuschel */
+OPTIONS RESULTS
+YAMON=1
+MIAMION=1
+MIAMIONLINE=0
+/*Bis hierher werden nur die Variablen so gesetzt, da&szlig;*/
+/*YAMON=1: angenommen wird, da&szlig; YAM gestartet ist    */
+/*MIAMION=1: das gleiche f&uuml;r Miami                  */
+/*MIAMIONLINE=0: Miami ist offline                 */
+
+
+/* ############ Teil 1 ############ */
+if ~show(PORTS, YAM) then do
+   address command
+   "run Comm:YAM/YAM"
+                      /*Diese Zeile mu&szlig;t Du &auml;ndern!*/
+   "sys:rexxc/waitforport YAM"
+   YAMON=0
+   end
+/* Wenn YAM nicht bereits gestartet ist, dann*/
+/* starte es                                 */
+/* warte auf den ARexx-Port von YAM          */
+/* merke dir, da&szlig; YAM nicht gestartet war    */
+/* Nat&uuml;rlich mu&szlig;t Du den Pfad entsprechend   */
+/* anpassen.                                 */
+
+/* ############ Teil 2 ############ */
+if ~show(PORTS, MIAMI.1) then do
+   Address command
+   "run Comm:miami11a/miami"
+   "sys:rexxc/waitforport MIAMI.1"
+   MIAMION=0
+   end
+/* Genau wie bei YAM. */
+
+/* ############ Teil 3 ############ */
+address Miami.1
+   isonline
+   if RC=1 then do
+      MIAMIONLINE=1
+      end
+   else do
+     ONLINE
+     end
+/*Hier sind zwei Befehle drin, die zum Befehlsschatz */
+/*von Miami geh&ouml;ren:                                 */
+/*ISONLINE gibt RC=0 oder 1 zur&uuml;ck                   */
+/*ONLINE geht online.                                */
+/*Die Zeile MIAMIONLINE=1 merkt sich, da&szlig; Miami schon*/
+/*online war. Sonst wird am Ende des Programms u.U.  */
+/*eine Verbindung unterbrochen, wo doch Dein Browser */
+/*gerade 98% einer 3-Megabyte-Datei geladen hatte... */
+
+/* ############ Teil 4 ############ */
+address YAM
+   Mailsendall
+/* ############ Teil 5 ############ */
+   Mailcheck
+   if RESULT>0 then YAMON=1
+/* ############ Teil 6 ############ */
+   Mailcheck
+   if RESULT>0 then YAMON=1
+/* ############ Teil 7 ############ */
+   if YAMON=0 then quit
+/*Das ist der Teil, in dem eigentlich was passiert.   */
+/*Mailsendall ist ein YAM-Befehl, der alle anstehenden*/
+/*Mails sendet.                                       */
+/*Mailcheck holt Post ab und gibt in RESULT die Anzahl*/
+/*der Mails zur&uuml;ck.                                   */
+/*Wenn mehr als 0 Mails abgeholt wurden, dann wird die*/
+/*Variable YAMON auf 1 gesetzt. YAM wird dann am Ende */
+/*nicht geschlossen, damit Du die neuen Mails auch    */
+/*lesen kannst.                                       */
+
+/* ############ Teil 8 ############ */
+Address MIAMI.1
+if MIAMIONLINE=0 then do
+   offline
+   end
+/*Wenn Miami vorher nicht online war,     */
+/*geht es jetzt auch wieder offline.     */
+/* ############ Teil 9 ############ */
+if MIAMION=0 then do
+   quit
+   end
+/*Und wenn Miami gar nicht gestartet war,      */
+/*wird es jetzt wieder beendet.               */
+--------------------------------
+</PRE>
+Das Ganze funktioniert leider noch nicht mit YAM 2.0., da dort ARexx noch
+nicht vollst&auml;ndig implementiert ist.
+Wenn Du das Skript nutzen willst, mu&szlig;t Du es mit YAM 1.3.x tun.<P>
+Achtung: Lasse das Skript nicht unbeaufsichtigt laufen!<BR>
+Wenn beim Aufbau der Verbindung ein Fehler auftritt, meldet Miami das mit
+einem Requester und bleibt so lange online, bis Du auf "OK" geklickt hast.
+Wenn Du erst nach ein paar Stunden zur&uuml;ckkommst, hast Du eine ziemlich hohe
+Telefonrechnung... Sobald Miami erst mal online ist, vertraue ich selber
+meinem Skript. (Bei mir dauert das Laden manchmal eine Stunde.)<P><BR>
+****************************************************<P><BR>
+<B>2.4.2. Dokumente-Drucken.rexx</B><BR>
+Da vermutlich nicht alle hier eine Internet-Verbindung haben, noch ein
+praktisches Beispiel f&uuml;r Wordworth, an dem ich gleichzeitg noch ein paar
+Dinge zeigen will<BR>.
+Dieses Skript tut folgendes:
+<OL>
+<LI>nach einem beliebigen Dokument fragen
+<LI>fragen, ob noch ein weiteres Dokument gedruckt werden soll
+Schritte 1-2 wiederholen, bis bei 2. "nein" angeklickt wird
+<LI>ein Dokument nach dem anderen laden und drucken.
+</OL>
+Dazu ben&ouml;tigen wir allerdings noch eine neue Information. Also bitte ich
+alle, die kein Wordworth haben, trotzdem noch den n&auml;chsten Absatz zu lesen!
+Variablen k&ouml;nnen in ARexx wie in vielen anderen Sprachen mehrere
+Dimensionen haben. Das sieht folgenderma&szlig;en aus:
+Name.Nummer - Damit kann man schon eine kleine Datenbank realisieren...<P>
+Name.1="Meyer"<BR>
+Strasse.1="Meyerstra&szlig;e 11"<BR>
+Name.2="Hagenb&uuml;chel"<BR>
+Strasse.2="Briefkastenstr. 188"<P>
+Kapiert? An den Namen der Variablen wird ein Punkt angeh&auml;ngt, danach kommt
+eine Zahl. Jeder Name in Verbindung mit jeder Zahl ist eine eigene Variable
+mit einem eigenen Wert!<P>
+Das Sch&ouml;ne in ARexx, im Gegensatz zu den meisten anderen Sprachen, die ich
+kenne:<P>
+Du mu&szlig;t ARexx nicht von vornherein sagen, welches die h&ouml;chste Zahl ist. Und
+man kann auch dem "Stamm" (so hei&szlig;t der Teil der Variable, den ich als
+"Name" bezeichnet habe) einen Wert zuweisen, der dann f&uuml;r alle
+Untervariablen gilt.<BR>
+Z.B.:
+<PRE>
+--------------------------------
+PLZ.=97280  /*Beachte den Punkt!*/
+Zahl=12
+echo PLZ.1
+echo PLZ.10
+echo PLZ.Zahl
+echo PLZ.PLZ
+--------------------------------
+</PRE>
+Im letzten Fall wird der Wert der Variablen PLZ.97280 ausgegeben... und der
+ist auch 97280!<BR>
+Auch mehrdimensionale Variablen sind m&ouml;glich: Variable.Zahl.Zahl2<P>
+Und nun zu dem Programm. Es ist &uuml;brigens mit Dokumentation auch im Aminet
+zu haben, unter util/rexx/WW-Print.lha<P>
+Au&szlig;erdem sind noch zwei String-Funktionen drin, die eigentlich erst
+n&auml;chstes Mal behandelt werden sollen. Es sind:
+LASTPOS(Buchstabe,Zeichenkette)
+gibt die Position des Buchstabens an, an der er zum letzten Mal in einer
+Zeichenkette auftritt.
+<PRE>
+--------------------------------
+Position=LASTPOS("e","Heiko Kuschel")
+ECHO Position
+--------------------------------
+</PRE>
+ergibt 11
+LEFT(Zeichenkette,Zahl)
+ergibt den linken Teil einer Zeichenkette, bis zum xten Zeichen.
+<PRE>
+--------------------------------
+ECHO LEFT("Heiko Kuschel",6)
+--------------------------------
+</PRE>
+ergibt "Heiko"
+<PRE>
+--------------------------------
+/* Wordworth 5 ARexx-Skript zum
+Drucken beliebig vieler Dateien  */
+/* Heiko Kuschel 27. Juni 1996 */
+/* basierend auf WW5-Skript von
+MJ (Digita)                    */
+/* FREEWARE, falls Digita kein Copyright
+beansprucht.         */
+OPTIONS RESULTS
+
+Nummer=0
+Pfad =""
+DO forever
+Nummer=Nummer+1
+
+  RequestFile TITLE "Zu druckendes Dokument w&auml;hlen..." PATH Pfad
+ File.Nummer = Result
+/*RequestFile ist ein Wordworth-Befehl. Mit der Option PATH kann
+wahlweise angegeben werden, welcher Pfad im Requester voreingestellt
+sein soll.*/
+/*Das Resultat der Abfrage steht in RESULT. RC ist gr&ouml;&szlig;er 0,
+wenn Abbruch */
+/*gew&auml;hlt wurde.*/
+/*Dieses Skript geht davon aus, da&szlig; es
+direkt aus Wordworth gestartet */
+/*wurde. Dann ist ADDRESS &uuml;berfl&uuml;ssig, die Adresse
+ist bereits richtig */
+/*gesetzt. Da Wordworth f&uuml;r jedes Textfenster einen eigenen
+ARexx-Port*/
+/*aufmacht, ist es auch ziemlich schwierig herauszufinden,
+welchen man */
+/*adressieren kann. Wenn ich in WW das erste Fenster schlie&szlig;e,
+geht der */
+/*ARexx-Port mit dem Namen Wordworth.1 mit fl&ouml;ten.
+Dann kann ich nat&uuml;rlich*/
+/*nicht einfach ADDRESS Wordworth.1 schreiben.
+Ziemlich kompliziert, wie */
+/*gesagt. :-( */
+
+        Strich=Lastpos("/",File.Nummer)
+        Pfad=""
+        if (Strich>0) then Pfad=Left(File.Nummer,(Strich-1))
+/*Hier "extrahiere" ich den Pfad des zuletzt
+gew&auml;hlten Dokuments, damit */
+/*der Benutzer sich nicht jedesmal durch alle Verzeichnisse und */
+/*Unterverzeichnisse durchw&uuml;hlen mu&szlig;. Er findet sich
+im n&auml;chsten*/
+/*Requester (wenn weitere Dokumente ausgew&auml;hlt werden)
+wieder im */
+/*gleichen Verzeichnis, in dem er bereits war. */
+        if (RC > 0) THEN Exit
+/*Wenn im File-Requester "Abbruch" geklickt wurde, wird
+das Programm mit */
+/*EXIT vollst&auml;ndig abgebrochen.*/
+
+  RequestResponse PROMPT "M&ouml;chten Sie ein weiteres Dokument drucken?"
+  if (RC > 0) THEN leave
+/*Frage danach, ob ein weiteres Dokument gedruckt werden
+soll. Wenn nein, */
+/*wird die DO FOREVER-Schleife mit LEAVE verlassen, wenn
+doch, geht's */
+/*oben wieder weiter... mit dem Pfad des zuletzt
+gew&auml;hlten Dokuments */
+/*als Vorgabe. */
+
+END
+
+        New
+        Address Value Result
+/*NEW &ouml;ffnet ein neues Fenster in Wordworth und
+gibt in Result den */
+/*ARexx-Port zur&uuml;ck. Jedes Wordworth-Fenster hat
+einen eigenen Port: */
+/*Wordworth.1, Wordworth.2 usw. */
+
+Do Zaehler=1 to Nummer
+        Open FILENAME File.Zaehler
+        Print
+end
+/*In File.1 steht der Name des ersten zu druckenden
+Dokuments, */
+/*in File.2 der des zweiten usw. */
+        Close FORCE
+
+--------------------------------
+
+</PRE>
+****************************************************<P><BR>
+<B>2.4.3. Hinweise f&uuml;rs eigene 'rumexperimentieren</B>
+Leider sind die ARexx-Ports bei manchen Programmen etwas
+gew&ouml;hnungsbed&uuml;rftig.<BR>
+Database Professional akzeptiert Befehle offenbar nur in GROSSBUCHSTABEN.
+Wordworth gibt keinerlei Fehlermeldungen aus, wenn das Programm direkt aus
+Wordworth gestartet wurde, und ist in der Befehlssyntax sehr pingelig, in
+der Dokumentation aber sehr d&uuml;rftig. Beckertext hat einen Befehl, den ich
+genau so eingegeben habe, wie in der Anleitung beschrieben, nicht
+akzeptiert. Usw. Da hilft nur eines: Probieren, probieren, probieren. Und
+"Trace", das unten beschrieben wird.<BR>
+Schau Dir einfach mal verschiedene ARexx-Skripte an und versuche
+herauszufinden, was sie machen, und wie sie das machen.
+F&uuml;r Wordworth 6 existiert eine &uuml;berarbeitete (erg&auml;nzte und verbesserte)
+Version der Dokumentation der ARexx-Befehle im Aminet. Verzeichnis:
+docs/misc/WW6-Germ-ARexx.lha<P>
+Wichtig zu wissen ist die Behandlung von Anf&uuml;hrungszeichen in ARexx-
+Skripten.<BR>
+Wenn Du ein " an das ausf&uuml;hrende Programm senden willst, mu&szlig;t Du es in ''
+setzen (Linke-Alt-&auml;).<BR>
+Wenn Du ein ' an das ausf&uuml;hrende Programm senden willst, mu&szlig;t Du es in ""
+setzen.<BR>
+Beide Anf&uuml;hrungszeichen sind geeignet, einen Befehl einzuschlie&szlig;en.
+"END" ist gleichbedeutend mit 'END'. Beides wird an ein externes Programm
+gesendet.<BR>
+Vor dem Ausf&uuml;hren einer Zeile entfernt ARexx immer die "&auml;u&szlig;ersten"
+Anf&uuml;hrungszeichen. Aus "END" wird END, das dann an das externe Programm
+geschickt wird.
+<PRE>
+--------------------------------
+ADDRESS TCALC /*Das ist TurboCalcs Adresse*/
+variable="Hallo"
+Put Variable  /* F&uuml;gt den Wert von Variable in die aktuelle Zeile ein*/
+"NACHUNTEN()" /* Setzt den Cursor eine Zeile tiefer */
+'Put Variable' /* Da Variable mit in Anf&uuml;hrungszeichen steht, wird */
+               /* es als Text interpretiert, nicht als der Name einer*/
+               /* Variablen. In TurboCalc steht in dieser Zeile VARIABLE */
+"NACHUNTEN()"
+Put '"Hallo Du da"'
+"NACHUNTEN()"
+Put '"Ich sage mal '||Variable||' zu dir"'
+'NACHUNTEN()'
+'Put "Ich sage mal '||Variable||' zu dir"'
+--------------------------------
+
+</PRE>
+Schau Dir mal mit Trace (vgl. u.) an, was ARexx aus den einzelnen Zeilen
+macht!<P><BR>
+****************************************************<P><BR>
+<B>2.5. Trace</B><BR>
+"Trace" (Spuren) ist eine M&ouml;glichkeit, herauszufinden, was Dein Programm
+denn nun eigentlich tut.<BR>
+Es handelt sich im wesentlichen um die schon im ersten Kursteil kurz
+erw&auml;hnten DOS-Programme im Verzeichnis sys:rexxc
+Du mu&szlig;t diese Befehle also in eine Shell eingeben, nicht in ein ARexx-
+Programm! (Dort h&ouml;chstens mit ADDRESS COMMAND)
+<PRE>
+TCO  Trace Console Open
+     &Ouml;ffnet ein eigenes Trace-Fenster
+TCC  Trace Console Close
+     schlie&szlig;t das Fenster wieder
+TS   Trace Start
+     Ab sofort werden alle Befehle in der Form,
+     wie sie ARexx interpretiert, ausgegeben. Ergebnisse werden
+     angezeigt. Der n&auml;chste Befehl wird erst nach
+     Dr&uuml;cken von Return ausgef&uuml;hrt.
+TE   Trace End
+     Tracing wird wieder beendet. F&uuml;r den momentan
+     ausgef&uuml;hrten Befehl mu&szlig; im Trace-Fenster
+     noch einmal Return gedr&uuml;ckt werden.
+</PRE>
+In der Trace-Console k&ouml;nnen auch Befehle eingegeben werden, die als Teil
+des Programms betrachtet werden.<BR>
+= wiederholt die Ausf&uuml;hrung der letzten Zeile
+-x &uuml;berspringt die n&auml;chsten x Befehle<P>
+In der Trace-Console werden vor der Auflistung der abgearbeiteten Befehle
+folgende Codes vorangestellt:
+<PRE>
++++ Befehls- oder Syntaxfehler
+>C> erweiterter zusammengesetzter Name
+>F> Ergebnis eines Funktionsaufrufs
+>L> Sprungmarkenklausel
+>O> Ergebnis einer zweistelligen Operation
+>P> Ergebnis einer Pr&auml;fix-Operation
+>U> nicht initialisierte Variablen
+>V> Wert einer Variablen
+>>> Ergebnis eines Ausdrucks
+>.> Wert eines "Platzhalter"-Tokens
+</PRE>
+Es gibt allerdings auch einen Befehl, der innerhalb eines ARexx-Programms
+angewendet werden kann. Er hei&szlig;t sinnvollerweise
+TRACE<BR>
+und hat eine Menge Optionen:
+<PRE>
+ALL              Zeigt alles an.
+BACKGROUND       Es findet keine Ablaufverfolgung statt.
+                 Was immer das auch hei&szlig;t.
+COMMANDS         Zeigt alles an, was an ein externes
+                 Programm geschickt wird.
+ERRORS           Zeigt alle Fehler an. (Befehle,
+                 die RC~=0 liefern.)
+INTERMEDIATES    Zeigt alle Zwischenwerte an.
+LABELS           Zeigt alle Sprunganweisungen an (
+                 die hatten wir noch nicht).
+NORMAL           Zeigt alle Befehle an, die den
+                 voreingestellten Schweregrad
+                 (OPTIONS FAILAT x) &uuml;berschreiten
+                 (RC>=x).
+RESULTS          Zeigt alle Ergebnisse an.
+SCAN             Pr&uuml;ft das Skript auf Fehler, ohne
+                 es auszuf&uuml;hren
+OFF              Aus.
+!                Schaltet das Versenden von Befehlen
+                 an externe Programme
+                 ab, beim zweiten Aufruf wieder an.
+?                Entspricht TS in DOS. Nach jedem Befehl
+                 wird gewartet. Nochmal schaltet den
+                 Modus wieder aus.
+</PRE>
+Es reicht jeweils die Angabe des ersten Buchstabens: TRACE R
+? kann auch in Verbindung mit den anderen Optionen verwendet werden: TRACE
+R?<P>
+Au&szlig;erdem gibt es die Funktion TRACE()<P>
+ECHO TRACE()<BR>
+oder:<BR>
+Ergebnis=TRACE()
+ECHO Ergebnis<BR>
+gibt die momentane Trace-Einstellung aus.<BR>
+Au&szlig;erdem k&ouml;nnen innerhalb der Klammern die gleichen Parameter angegeben
+werden wie bei TRACE.<BR>
+ECHO TRACE("A")<BR>
+setzt Tracing auf All.<P><BR>
+****************************************************<P><BR>
+<B>2.6. &Uuml;bersicht &uuml;ber die neuen Befehle und Funktionen</B>
+<PRE>
+IF...THEN...ELSE
+INTERPRET Ausdruck
+ADDRESS (VALUE|COMMAND)
+Ergebnis=SHOW("C|F|I|L|P",Name,Trennzeichen)
+TRACE Optionen
+Ergebnis=TRACE()
+Ergebnis=LASTPOS(Zeichen,Zeichenkette)
+Ergebnis=LEFT(Zeichenkette,Zahl)
+
+OPTIONS [NO] RESULTS die unten genannten Systemvariablen werden
+                                                 (de-)aktiviert
+  FAILAT x     RC>=x wird als Fehler interpretiert
+  PROMPT Ausdr.Bei PULL und PARSE PULL wird Ausdr. vorangestellt
+  [NO] CACHE:  Der interne Befehlscache, der die Ausf&uuml;hrung von
+               Schleifen beschleunigt, wird ab- bzw. angestellt.
+               Normalerweise an.
+  ohne Parameter werden die Einstellungen wieder zur&uuml;ckgesetzt.
+
+DOS-Befehle:
+TCO
+TCC
+TS
+TE
+WaitForPort
+
+Systemvariablen:
+RESULT
+RC
+</PRE>
+So, das war's f&uuml;r diesmal. Ich hoffe, es ist mir gelungen, Dich ein wenig
+in die Materie einzuf&uuml;hren. Probiere einfach mal aus, Deine eigenen Skripte
+zu schreiben! Und im Aminet gibt es ein eigenes Verzeichnis util/rexx, in
+dem auch viele Skripte darauf warten, von Dir erforscht zu werden. Bitte
+schreibe mir, wenn Du etwas nicht verstanden hast oder bestimmte Probleme
+hast. Auch, welche Programme Du programmieren willst, und zu welchem Zweck.
+Wenn m&ouml;glich, werde ich darauf eingehen.&#171;<P>
+
+<CENTER><BR><A HREF="0018.html"><IMG SRC="../gfx/prev.gif" BORDER=0 WIDTH=11 HEIGHT=21></A>
+&nbsp;
+<A HREF="#Top"><IMG WIDTH=20 HEIGHT=20 SRC="../gfx/top.gif" ALT="[TOP]" BORDER=0></A>
+&nbsp;
+<A HREF="0100.html"><IMG SRC="../gfx/nxt.gif" BORDER=0 WIDTH=11 HEIGHT=21></A></CENTER>
+</TD>
+<TD VALIGN=TOP>
+<A HREF="../index.htm"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/home0.gif" ALT="Homepage" BORDER=0></A><BR>
+<A HREF="../hot.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/letzm0.gif" ALT="letzte Meldung" BORDER=0></A><BR>
+<H3><B>Ausgabe 03/98</B></H3>
+<A HREF="0000.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/int0.gif" ALT="Intern" BORDER=0></A><BR>
+<A HREF="1100.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/workshp1.gif" ALT="[Workshop]" BORDER=0></A><BR>
+<A HREF="0100.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/test0.gif" ALT="Test" BORDER=0></A><BR>
+<A HREF="0200.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/games0.gif" ALT="Spiele" BORDER=0></A><BR>
+<A HREF="1200.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/intv0.gif" ALT="Interview" BORDER=0></A><BR>
+<A HREF="0300.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/anews0.gif" ALT="Amiga News" BORDER=0></A><BR>
+<A HREF="0400.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/powup0.gif" ALT="PowerUp-to-date" BORDER=0></A><BR>
+<A HREF="0600.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/prod0.gif" ALT="Produktvorstellungen" BORDER=0></A><BR>
+<A HREF="0700.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/div0.gif" ALT="diverse News" BORDER=0></A><BR>
+<A HREF="0800.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/nflash0.gif" ALT="Newsflash" BORDER=0></A><BR>
+<A HREF="0900.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/gerk0.gif" ALT="Ger&uuml;chtek&uuml;che" BORDER=0></A><BR>
+<A HREF="1000.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/abschl0.gif" ALT="Absclie&szlig;end" BORDER=0></A><BR>
+<BR><BR>
+<A HREF="../archiv.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/archiv0.gif" ALT="Archiv" BORDER=0></A><BR>
+<A HREF="../abo.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/abo0.gif" ALT="Abo" BORDER=0></A><BR>
+<A HREF="../kontakt.html"><IMG WIDTH=98 HEIGHT=23 SRC="../gfx/kont0.gif" ALT="Kontakt" BORDER=0></A><BR>
+</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>
+

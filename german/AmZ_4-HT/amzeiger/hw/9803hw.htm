@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/98 - Hardware Grundlagen </TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Nadel&ouml;hr und Flaschenhals</H1><B>Hardware-Grundlagen /1</B><BR>von<BR><A HREF="mailto:T.Heinrich@t-online.de">Thomas Heinrich</A><BR>
+</DIV>
+
+<B>Vorwort</B>
+<BR><BR>
+Diese voraussichtlich dreiteilige Serie befa&szlig;t sich mit der (Amiga-)
+Hardware und ihren Beschr&auml;nkungen. Ich m&ouml;chte die Beziehungen der
+einzelnen Baugruppen untereinander erl&auml;utern und auf die resultierenden
+Engp&auml;sse eingehen. Es soll dabei keine wissenschaftliche Abhandlung
+werden, sondern im g&uuml;nstigen Fall eine Wissensgrundlage bieten, von der
+aus man mit Verstand seinen Amiga erweitern und verbessern kann. Die
+vorgesehenen Themen im Einzelnen:
+<PRE><B>
+           Teil 1: Prozessor, Takt und Speicher
+           Teil 2: Bussysteme
+           Teil 3: Peripherie
+</B></PRE><BR>
+<B>Der Prozessor</B>
+<P>
+Der Prozessor (oder CPU -> Central Processing Unit) ist das Herzst&uuml;ck
+des Computers. Seine Geschwindigkeit bestimmt, wie schnell anstehende
+Daten bearbeitet werden k&ouml;nnen - zumindest in der Theorie. Denn die CPU
+ist das schnellste St&uuml;ck Technik in einem Computer und mu&szlig; demzufolge
+oft genug auf die anderen Komponenten warten.
+</P><P>
+Eng gekoppelt an den Prozessor ist auch die <B>Taktfrequenz</B>. Der Prozessor
+selbst k&ouml;nnte ohne diesen Schrittmacher gar nichts tun. Ist er aber zu
+schnell, ger&auml;t die CPU auch leicht aus dem Tritt.
+</P><P>
+Die Kenndaten einer CPU klingen reichlich simpel: Die Taktfrequenz gibt
+an, wie schnell der Prozessor ist; die <B>Busbreite</B> gibt an, wie viele Bits
+bei einem Takt betroffen sind. Wobei Bus nicht gleich Bus ist. Es gibt
+einen Datenbus und einen Adressbus. Und noch einige mehr, die uns jetzt
+nicht interessieren.
+</P><P>
+Sehen wir uns einen Motorola MC68020 an, wie er serienm&auml;&szlig;ig im A1200
+werkelt. Die dort verwendete Version hat nur einen Adressbus von 24 Bit
+Breite, jedoch schon einen vollwertigen 32 Bit Datenbus. Ist die CPU
+deswegen langsamer als ein Prozessor mit 32 Bit Adressbus?
+</P><P>
+Nein. Denn der <B>Adressbus</B> bezeichnet nur, vereinfacht gesagt, den maximal
+zur Verf&uuml;gung stehenden Speicherbereich. Mit 24 Bit kann man 16 MByte
+adressieren, mit 32 Bit dann eben 4 GByte, also 4096 MByte. An so einer
+Adresse mu&szlig; aber nicht zwingend eine Speicherstelle stehen, ebenso k&ouml;nnen
+dort Kontrollregister f&uuml;r andere Hardware vorhanden sein.
+</P><P>
+Zus&auml;tzlich verwendet das System das oberste Bit f&uuml;r interne Zwecke, so
+da&szlig; der A1200 letztlich nur bis 8 MByte Speicher aufger&uuml;stet werden kann.
+Bei den anderen Prozessoren (MC68030 bis MC68060) bleiben so theoretisch
+2 GByte zur Speicheraufr&uuml;stung.
+</P><P>
+Wichtiger ist der <B>Datenbus</B>. Denn die Breite dieses Busses legt fest, wie
+viele Bits auf einen Rutsch gelesen oder geschrieben werden k&ouml;nnen.
+Gegen&uuml;ber dem MC68000 mit seinen 16 Bit Adressbus sollte der MC68020 also
+doppelt so schnell sein.
+ </P><P>
+Zudem arbeitet der A1200 mit 14 MHz, also doppelt so schnell wie z.B. ein
+A500. Rein theoretisch ist der A1200 also schon viermal so schnell, wie
+ein A500.
+</P><P>
+Aber es gibt noch mehr geschwindigkeitssteigernde Faktoren. Der MC68020
+besitzt n&auml;mlich einen <B>Datencache</B>. Das ist ein kleiner Zwischenspeicher
+direkt im Prozessor, der schneller anzusprechen ist, als der normale
+Hauptspeicher. Oft ben&ouml;tigte Daten k&ouml;nnen hier schnell ge&auml;ndert werden,
+ohne auf die Geschwindigkeit des Hauptspeichers R&uuml;cksicht nehmen zu
+m&uuml;ssen. Je mehr von diesem "<B>First-Level-Cache</B>" vorhanden ist, umso
+weniger oft mu&szlig; auf den Hauptspeicher zugegriffen werden, umso schneller
+also auch die CPU. Der MC68060 hat deswegen auch nicht nur 256 Byte Cache,
+sondern ganze 8 KByte. Und was f&uuml;r Daten gut ist, schadet auch nicht f&uuml;r
+Programmcode. Ab dem MC68030 besitzen die Prozessoren auch einen
+&quot;<B>Instruction-Cache</B>&quot; f&uuml;r Programmcode.
+</P><P>
+Der Cache allein ist aber kein Garant f&uuml;r mehr Geschwindigkeit. Mu&szlig; man
+mehr Daten bearbeiten, als in den Cache passen, mu&szlig; man nat&uuml;rlich die
+neuen Daten erst in den Cache schreiben, und die alten vorher in den
+Hauptspeicher zur&uuml;ck. Das macht es schwierig, eine
+Geschwindigkeitsbewertung f&uuml;r den Cache aufzustellen, denn je nach
+Programm wird er mal mehr, mal weniger gut ausgenutzt. Man kann nur eine mittlere
+Geschwindigkeitssteigerung angeben, wobei eigentlich generell gilt:
+Eine Verdoppelung der Geschwindigkeit setzt mindestens eine
+Vervierfachung der Ressource voraus. Dies gilt f&uuml;r Cachegr&ouml;&szlig;e
+genauso, wie f&uuml;r Taktfrequenz.
+</P><P>
+Nat&uuml;rlich ist dies kein exaktes Ma&szlig;, aber die Erfahrung hat gezeigt,
+da&szlig; es ein recht realistisches ist.
+</P><P>Es sieht also so aus, als w&auml;re der Hauptspeicher schon der erste Bremser
+der CPU. Woran liegt das ?
+</P><P>
+<B>Der Speicher</B>
+</P><P>
+Die heute f&uuml;r den Amiga &uuml;blichen Speichermodule haben alle eine
+Zugriffszeit von 70 Nanosekunden oder besser. Dies h&ouml;rt sich extrem
+schnell an, aber rechnen wir einmal mit der folgenden einfachen Formel
+nach:</P>
+<PRE>
+   f              =     1     /     T
+   Taktfrequenz   =     1     /     Zugriffszeit
+
+   f  =  1  /  70 * 10^-9 sec
+   f  =  14,3 MHz
+</PRE><P>
+Die Frequenz, mit der ein handels&uuml;blicher RAM-Baustein betrieben werden
+kann, ist also ca. 14 MHz. Durch den 32 Bit-Zugriff k&ouml;nnen 4 Bytes pro
+Takt &uuml;bertragen werden, also gute 56 MByte pro Sekunde. Warum aber zeigt
+sich mit den &uuml;blichen Me&szlig;programmen f&uuml;r den Speicherzugriff, da&szlig; die
+tats&auml;chliche Leistung bei maximal ca. 28 MByte pro Sekunde liegt?
+</P><P>
+Die Antwort ist typisch f&uuml;r die Computerbranche: Der Aufdruck "-70" auf
+dem Speicherchip f&uuml;r 70 Nanosekunden ist gelogen - jedenfalls zur H&auml;lfte.
+Denn die angegebene Zugriffszeit ist nur der halbe Weg. Bis dorthin ist
+im Speicherchip die Speicherstelle ausgelesen oder beschrieben. Gemerkt
+hat sich der Chip das aber noch nicht.
+</P><P>
+Normale Speicherchips (Dynamische RAMs, DRAMs) haben die fatale
+Eigenschaft, eine adressierte Speicherstelle in einen internen Puffer
+zu kopieren, und damit ist designbedingt der Inhalt der Speicherstelle
+zerst&ouml;rt. Der Inhalt mu&szlig; also erst wiederhergestellt werden, was fast
+solange dauert, wie der Zugriff selbst. Beim Schreibzugriff werden die
+Daten erst in den Puffer geschrieben und dann in die eigentliche
+Speicherstelle. Solange ist ein Lesezugriff, aber auch ein weiterer
+Schreibzugriff nicht m&ouml;glich. Das dauert ebenfalls etwa so lange wie
+die angegebene Zugriffszeit.
+</P><P>
+Neuere RAM-Chips haben eine Zugriffszeit von 60 Nanosekunden. Nach obiger
+Formel m&uuml;ssten bei 16,7 MHz Maximalfrequenz bis 66 MByte pro Sekunde drin
+sein, aber wieder ist kaum mehr als 33 MByte/s realistisch. Und es kommt
+noch ein weiteres Problem hinzu.
+</P><P>
+Die Zugriffszeiten m&ouml;gen f&uuml;r einen RAM-Baustein noch realistisch sein,
+ein normaler Speicherriegel hat aber mehrere davon, je nach Gr&ouml;&szlig;e schon
+mal bis zu 18 St&uuml;ck. Jedes elektronische Bauteil besitzt jedoch eine
+elektrische Kapazit&auml;t, die sich dadurch auszeichnet, da&szlig; sie hohe
+Frequenzen d&auml;mpft. Diese Kapazit&auml;t addiert sich, und indem man mehrere
+Speicherriegel verwendet, noch viel mehr. Da auch RAM mit einem Taktsignal
+versorgt wird, kann diese Kapazit&auml;t dazu f&uuml;hren, da&szlig; der verwendete Takt
+ged&auml;mpft wird und von der Elektronik gar nicht mehr als Takt erkannt wird,
+sondern als ein immer gleichbleibendes Signal. Resultat: Der Rechner steht,
+nichts geht mehr. Nimmt man ein oder zwei Speichermodule heraus, geht's
+wieder. Die RAM-Module bis an die Grenzen zu fahren, kann also schnell
+ins Auge gehen.
+</P><P>
+<B>Taktfrequenzen</B>
+</P><P>
+Aus den obigen Betrachtungen folgt: Der Prozessor mu&szlig; u.U. schon f&uuml;r den
+Hauptspeicher <B>Wartezyklen</B> einlegen, sogenannte Wait-States. Dies ist dann
+der Fall, wenn der Prozessor den Speicher schneller ansprechen k&ouml;nnte, als
+er zul&auml;&szlig;t. L&auml;uft der Prozessor also mit 25 MHz, und der Befehl, der den
+Speicher adressiert und ausliest, ben&ouml;tigt drei Takte, so ist alles in
+Butter. Die drei Takte entsprechen dann einer Zeitspanne von 120
+Nanosekunden, mit der ein 60 ns-RAM zurechtkommt.
+</P><P>
+Ist der Takt aber 50 MHz, wartet der Prozessor nach den drei Takten,
+die nunmehr nur 60 ns entsprechen, noch einmal drei Takte, bis sich der
+Speicher bequemt, seine Daten zu liefern. Man sieht, das Timing ist ein
+weiterer wichtiger Faktor f&uuml;r das System.
+</P><P>
+Dabei ist der obige Fall noch ein Idealfall. Viel krasser wird es,
+wenn die Taktfrequenz nicht vervielfacht wird, sondern z.B. von 25 MHz
+auf 33 MHz ver&auml;ndert wird. Viele Vorg&auml;nge im Computer h&auml;ngen von
+Gleichzeitigkeit ab, es k&ouml;nnen z.B. nicht einfach irgendwann Daten
+&uuml;bertragen werden, sondern ein Bus mu&szlig; vom Sender und Empf&auml;nger genau
+zur gleichen Zeit mit Signalen belegt werden, damit nicht der eine
+sendet, wenn der andere nicht zuh&ouml;rt.
+</P><P>
+Hat man die Taktfrequenz verdoppelt, mu&szlig; man nur einen Wartetakt
+einlegen, ist sie aber so krumm, wie 25 zu 33, mu&szlig; man 3 Takte warten,
+bis beide Signale f&uuml;r kurze Zeit synchron sind. Errechnet wird dies durch
+das kleinste gemeinsame Vielfache, was hier 100 ist (4 * 25 = 3 * 33...
+naja, fast jedenfalls). Die geringe Abweichung von 1 % interessiert nicht,
+da die Taktfrequenzen auch nie ganz exakt sind. Solch geringe Toleranzen
+sind normalerweise im Timing ber&uuml;cksichtigt.
+</P><P>
+Warum ist das ein Problem, es wird doch f&uuml;r jedes Bauteil der Takt erh&ouml;ht?
+Eben nicht. Normalerweise hat der Prozessor eine h&ouml;here Taktfrequenz als
+der Speicher, der wiederum schneller ist, als der Rest des Systems.
+Wechselt man den 14 MHz Prozessor des A1200 gegen einen 50 MHz MC68030
+aus, dann ist erst einmal nur der Prozessor schneller, d.h. er wartet
+schneller auf den Rest des Systems. Ein Leistungsschub erfolgt erst,
+wenn man auch den Speicher schneller taktet, z.B. indem er mit auf der
+Turbokarte sitzt und mit dem schnelleren Prozessortakt betrieben wird.
+</P><P>
+<B>Erste Zwischenbilanz</B>
+</P><P>
+Zuerst darf man sich nicht von <B>MHz-Angaben</B> blenden lassen. Eine schnelle
+CPU erfordert immer auch einen schnellen Speicher, damit sie sich rentiert.
+Der zweite Blick sollte also auf dessen Art und Gr&ouml;&szlig;e fallen.
+</P><P>
+<B>Dummerweise</B> sind die auf dem Amiga &uuml;blichen Taktfrequenzen so niedrig, da&szlig;
+ein Second-Level-Cache, wie auf dem PC, sich gar nicht auswirkt. Genauso
+gut kann man direkt auf den Speicher zugreifen. Man informiert sich also
+m&ouml;glichst &uuml;ber den First-Level-Cache, den die CPU schon an Bord hat und
+ob die Turbokarte selbst mit Speicher aufr&uuml;stbar ist. Je mehr desto
+besser/schneller.
+</P><P>
+Bei Angaben &uuml;ber die Speichergeschwindigkeit skeptisch sein. Man wei&szlig;
+nicht, mit welchen und mit wie vielen Speicherchips gearbeitet wurde.
+M&ouml;glicherweise wurden nur wenige und s&uuml;ndhaft teure 40 ns-RAMs benutzt,
+die man nicht ohne weiteres kaufen kann.
+</P><P>
+Wenn sich die M&ouml;glichkeit bietet, eine Hardware zu <B>testen</B>, m&ouml;glichst den
+eigenen Rechner danebenstellen und einige speicher- und rechenintensive
+Programme auf beiden Rechnern gleichzeitig laufen lassen.</P>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9803tint.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0398/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../cc/9803bla.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

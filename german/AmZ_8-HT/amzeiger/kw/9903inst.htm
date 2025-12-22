@@ -1,0 +1,272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/99 - Installer-Kurs 5/6</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Installer-Kurs 5/6</H1>von<BR><A HREF="mailto:A.Wyrwa@gmx.de">Andr&#233; Wyrwa</A></DIV>
+ <br>
+
+Hier eine &Uuml;bersicht &uuml;ber die Inhalte der einzelnen Kursteile:
+<B>
+<OL>
+<LI>Einf&uuml;hrung, &Uuml;berblick, Grundlagen</LI>
+<LI>Kommunikation mit dem User, grundlegende Kommandos</LI>
+<LI>Dateioperationen</LI>
+<LI>weiterf&uuml;hrende Funktionen und Statements</LI>
+<LI>Scriptoptimierung, Lokalisierung</LI>
+<LI>Tricks f&uuml;r Fortgeschrittene, Tools</LI>
+</OL></B>
+
+<h3>Teil 5:</h3>
+
+<P>Eigentlich kennen Sie bereits alles, was Sie ben&ouml;tigen, um Ihre Software
+mit einem komfortablen Installer-Script zu versehen. Im folgenden widmen
+wir uns spezielleren Kommandos, die Ihrem Script den letzten Schliff geben. </P>
+
+<P><A HREF="9903in2.htm">Befehls&uuml;bersicht dieses Teils</A> </P>
+
+<P>Ich m&ouml;chte diesen Kursteil in vier Punkte gliedern:</P>
+
+<OL>
+<LI>Lokalisierung</LI>
+<LI>User-Level-Handling</LI>
+<LI>Fehlerkontrolle</LI>
+<LI>Bitmanipulation</LI>
+</OL>
+
+<P>Und damit legen wir auch gleich los...</P>
+
+
+<h3>Lokalisierung</h3>
+
+<P>Bis jetzt sind wir davon ausgegangen, da&szlig; der Anwender unsere Sprache
+spricht, und haben uns nicht weiter um die Lokalisierung unseres Scripts
+gek&uuml;mmert. Wollen Sie aber ein Produkt z.B. im Aminet ver&ouml;ffentlichen, so
+macht es freilich einen sehr guten Eindruck, wenn auch Anwender anderer
+Nationalit&auml;t als der Ihren in ihrer jeweiligen Sprache durch die
+Installation gef&uuml;hrt werden.</P>
+
+<P>Diese Aufgabe teilen wir in zwei Teile, bedingt dadurch n&auml;mlich, da&szlig; nicht
+alle Ausgaben des Installers in unserem Script festlegbar sind, sondern
+dieser auch eigene Ausgaben macht (z.B. bei den Startup-Screens und den
+eingebauten Hilfe-Texten). Wir m&uuml;ssen also einerseits unser Script
+lokalisieren, andererseits dem Installer mitteilen, in welcher Sprache
+er mit dem User kommunizieren soll.</P>
+
+<P>Widmen wir uns zun&auml;chst letzterem. Wie Sie wissen, ist das Betriebssystem
+ab OS2.1 lokalisiert, dies gilt auch f&uuml;r den Installer. L&auml;uft er auf einer
+dieser Versionen, so &uuml;bernimmt er die Sprache aus den Lokale-Prefs und
+setzt auch gleich die @language-Variable entsprechend. Hier haben wir
+also nichts zu tun.</P>
+
+<P>Anders verh&auml;lt es sich bei OS2.0. Hier m&uuml;ssen wir dem Installer die
+bevorzugte Sprache &uuml;ber den LANGUAGE-Tooltype (s. <a href="9803tool.htm">Tooltypes</a> im ersten
+Kursteil) mitteilen. Dazu erstellt man am besten f&uuml;r jede Sprache ein
+separates Project-Icon, tr&auml;gt im Default-Tool den Aufruf f&uuml;r das Script
+ein und setzt den LANGUAGE-Tooltype auf die entsprechende Sprache.</P>
+
+<P>Da aber auch das OS2.0 Englischkenntnisse voraussetzt und heutzutage
+sowieso die Verbreitung von Betriebssystemen h&ouml;herer Versionen recht
+gro&szlig; ist, halte ich diese Methode f&uuml;r &uuml;berfl&uuml;ssig und empfehle an ihrer
+statt, als Standardsprache Englisch zu w&auml;hlen und im weiteren auf ein
+lokalisiertes Betriebssystem zu bauen.</P>
+
+<P>Wenden wir uns also der Scriptlokalisierung zu. Zentrale Rolle spielt
+hierbei die @language-Variable. Aus ihr entnehmen wir die Sprache, die
+in den Lokale-Prefs eingestellt oder im LANGUAGE-Tooltype gesetzt wurde.
+Was nun folgt, ist recht einfach. Zun&auml;chst ersetzen wir alle Strings im
+Script durch Variablen (mit aussagekr&auml;ftigen Bezeichnern). Dann weisen wir
+innerhalb einer vom Inhalt der @language-Variablen abh&auml;ngigen Verzweigung
+diesen Variablen wieder die Strings zu. Dies sollte freilich gleich zu
+Beginn des Scripts geschehen. Schematisch dargestellt also in etwa:</P>
+<PRE>
+;Dieser Block dient zum Definieren der Strings in der Standardsprache
+(set #s_willkommen &quot;Welcome to the installation ....&quot;)
+(set #s_kopieren &quot;.......&quot;)
+
+;Dann, falls eine andere Sprache eingestellt, Neubelegung der
+;String-Variablen in derselbigen
+(if (= @language &quot;deutsch&quot;)
+ (
+  (set #s_willkommen &quot;Willkommen zur Installation ....&quot;)
+  (set #s_kopieren &quot;.......&quot;)
+  ;......
+ )
+)
+;......
+;F&uuml;r jede Sprache also einen entsprechenden IF-THEN-Block.
+</pre>
+
+<P>Im eigentlichen Script dann z.B. ...</P>
+
+<P>(message #s_willkommen)</P>
+
+<P>Damit ist das Thema Lokalisierung auch schon abgehakt.</P>
+
+
+<h3>User-Level-Handling</h3>
+
+<P>Wie ja bereits an mehreren Stellen erw&auml;hnt, l&auml;uft das Script abh&auml;ngig
+vom gew&auml;hlten User-Level ab. Die Auswahl des User-Levels erfolgt auf
+dem ersten Startup-Screen, die Wahlm&ouml;glichkeiten lassen sich durch die
+Tooltypes MINUSER und DEFUSER beeinflussen. Zu den Bedeutungen:</P>
+
+<P>Im NOVICE-Modus werden die R&uuml;ckfragen einiger Statements &uuml;bergangen, so
+da&szlig; das Script im Idealfall abl&auml;uft, ohne da&szlig; der User eine Frage
+beantworten mu&szlig; oder sonstwie damit konfrontiert wird. Auch die Ausgaben
+von (message ) werden hier unterdr&uuml;ckt, sofern kein (all)-Parameter
+gesetzt wird. Zur weiteren Beeinflussung dieses Modus beachten Sie
+jeweils die Befehlsbeschreibungen der entsprechenden Kommandos.</P>
+
+<P>AVERAGE- und EXPERT-Modus funktionieren von Seiten des Installers
+gleich, sie m&uuml;ssen vom Scriptschreiber getrennt werden. Dies kann
+Beispielsweise mittels des (confirm)-Parameters einiger Statements
+geschehen, jedoch auch durch Abfragen der internen Variable @user-level.
+Diese enth&auml;lt den User-Level als Zahlenwert 0 bis 2 mit 0 f&uuml;r NOVICE.</P>
+
+<P>Weitere Informationen dazu finden Sie im <a href="9803inst.htm">ersten Teil</a> dieses Kurses:
+Style-Guide, Tooltypes, Vordefinierte Variablen.</P>
+
+<P>In diesem Zusammenhang m&ouml;chte ich noch drei weitere Kommandos einf&uuml;hren.
+Diese sind (WELCOME ), (EXIT ) und (USER ).</P>
+
+<P>Taucht das (WELCOME )-Statement in einem Script auf, so wartet der
+Installer mit dem &Ouml;ffnen der Startup-Screens (Welcome-Screens) bis zu
+diesem Statement und f&uuml;hrt erst alle Kommandos aus, die davor im Script
+auftauchen. Au&szlig;erdem lassen sich zus&auml;tzliche Begr&uuml;&szlig;ungs-Strings definieren.</P>
+
+<P>Dank dieses Kommandos l&auml;&szlig;t sich ein wenig tricksen. Zusammen mit dem
+(EXIT )-Statement l&auml;&szlig;t sich das Auftauchen der Startup-Screens vollst&auml;ndig
+vermeiden, indem man das (WELCOME )-Statement hinter dem (EXIT )-Statement
+plaziert. Auf diese Weise bekommt der User gar keine Kontrolle &uuml;ber das
+User-Level und die weiteren Startup-Optionen. Eine andere M&ouml;glichkeit ist
+der Einbau von (WELCOME ) in eine Schleife, so da&szlig; die Auswahl immer
+wieder neu vorgenommen werden kann.</P>
+
+<P>(EXIT ) beendet die Scriptausf&uuml;hrung. Dies ist vor allem in Verzweigungen
+sinnvoll, um ein vorzeitiges Beenden realisierbar zu machen o.&auml;.</P>
+
+<P>Mittels (USER ) l&auml;&szlig;t sich letztlich der User-Level modifizieren. Die
+Original-Styleguides veranlassen mich, Sie darauf hinzuweisen, da&szlig; dieses
+Kommando nur zu Testzwecken benutzt werden soll und in fertigen Scripts
+nicht mehr auftauchen soll. Dieser Hinweis ist sicherlich darauf
+zur&uuml;ckzuf&uuml;hren, da&szlig; ein gewisser Standard der User-Level erhalten werden
+soll und in den Scripts nicht wild dazwischen hin- und hergeschaltet wird,
+jedoch habe ich selbst die Erfahrung gemacht, da&szlig; es durchaus n&uuml;tzlich
+sein kann, f&uuml;r einzelne Statements den User-Level tempor&auml;r runter- oder
+hochzusetzen um Einflu&szlig;nahmen zu unterdr&uuml;cken oder zu erlauben. Vergessen
+Sie dabei aber nicht, den User-Level vor dem &Auml;ndern in einer Variablen zu
+sichern, damit Sie ihn danach wieder herstellen k&ouml;nnen.</P>
+
+
+<h3>Fehlerkontrolle</h3>
+
+<P>Obgleich der Installer eine eingebaute Fehlerkontrolle hat und somit
+bereits recht sicher funktioniert, kann es n&ouml;tig werden, im Falle eines
+Fehlers weitere Schritte zu unternehmen, um nicht &Uuml;berreste der
+Installationsprozedur zu hinterlassen. Zu diesem Zwecke existieren die
+Befehle (TRAP ), (ONERROR ) und (ABORT ).</P>
+
+<P>Mittels (TRAP ) l&auml;&szlig;t sich die Ausf&uuml;hrung von Statement-Folgen &uuml;berwachen
+und bei Auftreten eines Fehlers die Ausf&uuml;hrung mit den hinter dem (TRAP )-
+Statement kommenden Befehlen fortfahren (z.B. um bereits erstellte
+Verzeichnisse wieder zu entfernen etc.).</P>
+
+<P>(ONERROR ) wird benutzt, um eine Statement-Folge zu definieren, die bei
+Auftreten eines (nicht von (TRAP ) abgefangenen) Fehlers abgearbeitet wird.</P>
+
+<P>Diese Anweisungen sind vor den Script-Teilen, in denen die Fehler
+auftreten k&ouml;nnen, zu plazieren, also in der Regel am Scriptanfang.</P>
+
+<P>(ABORT ) bricht die Ausf&uuml;hrung des Scripts ab, wobei mit der Ausf&uuml;hrung
+der mit (ONERROR ) definierten Statements fortgefahren wird. Evtl.
+angegebene Fehlermeldungen werden dabei dem User pr&auml;sentiert.</P>
+
+<P>In diesem Abschnitt seien auch noch die Befehle (DEBUG ) und (TRANSCRIPT )
+untergebracht. (DEBUG ) erm&ouml;glicht es, Ausgaben in die Shell zu machen,
+von der aus das Script gestartet wurde, sofern dies der Fall war,
+(TRANSCRIPT ) dient dazu, beliebigen Text in das vom Installer ggf.
+angelegte Logfile zu schreiben.</P>
+
+
+<h3>Bitmanipulation</h3>
+
+<P>Ein weiterer noch nicht n&auml;her angesprochener Punkt ist die Bitmanipulation.
+Einige der Befehle des Installers arbeiten mit Bitmasken, z.B. (ASKOPTIONS ).
+Deshalb ist es n&ouml;tig, deren Funktionsweise zu verstehen und manchmal auch,
+sie von Hand zu manipulieren.</P>
+
+<P><I>Zum Verst&auml;ndnis:</I></P>
+
+<P>Eine Bitmaske ist nichts anderes, als eine Folge von Bits, die entweder
+gesetzt oder nicht gesetzt sein k&ouml;nnen. Dies l&auml;&szlig;t sich am einfachsten in
+bin&auml;rer Schreibweise darstellen, eine &Uuml;bertragung in das dezimale System
+kann aber auch sinnvoll werden.</P>
+<P>
+Bsp.:</P><pre>
+bin&auml;re Darstellung:          0  0  1  0  1  1  1  0
+
+repr&auml;sentiert
+2 hoch Nummer des Bits:      0  1  2  3  4  5  6  7
+
+also:                        1  2  4  8 16 32 64 128
+
+ergibt als Summe:            (0*1)+(0*2)+(1*4)+(0*8)+(1*16)+(1*32)+(1*64)
+(dezimale Darstellung:)      +(0*128) = 4+16+32+64 = 116
+</pre>
+
+<P>Der dezimale Wert 116 repr&auml;sentiert also eineindeutig (116 f&uuml;hrt bei
+Zerlegung in entsprechende Potenzen wieder genau zu der oben angegebenen
+bin&auml;ren Darstellung) die bin&auml;re Bitmaske 00101110.</P><P>
+Die Bitfolge w&auml;re beliebig fortf&uuml;hrbar. (ASKOPTIONS ) verwendet nun diese
+Bitmasken, um die Auswahl des Users zu repr&auml;sentieren. Dabei repr&auml;sentieren
+gesetzte Bits (1) gew&auml;hlte Eintr&auml;ge.</P>
+
+<I>Manipulation</I>
+
+<P>Zum Beeinflussen von Bitmasken stehen z.B. sogenannte bitweise logische
+Funktionen, also Funktionen, die f&uuml;r jedes Bit der Maske die entsprechende
+logische Funktion durchf&uuml;hren, wie (BITAND ), (BITOR ), (BITXOR ) und
+(BITNOT ) zur Verf&uuml;gung. Die logischen Funktionen von ARexx sind &uuml;brigens
+keine echten, sondern bitweise logische Funktionen.</P>
+
+<P>Au&szlig;erdem k&ouml;nnen alle Bits innerhalb der Maske verschoben werden.
+Dies geschieht mittels (SHIFTRIGHT ) bzw. (SHIFTLEFT ).</P>
+
+<P>Zu guter letzt l&auml;&szlig;t sich noch pr&uuml;fen, ob bestimmte Bits innerhalb einer
+Maske gesetzt sind, oder nicht, was durch die Funktion (IN ) geschieht.
+Diese wurde bereits im zweiten Kursteil beschrieben.</P>
+
+<P>Details zu allen hier aufgef&uuml;hrten Kommandos finden Sie wie immer in den
+<A HREF="9903in2.htm">Befehlsbeschreibungen</A>.</P>
+
+<P>Sie kennen damit den gesamten Befehlsumfang, sowie die Verfahrensweise bei
+der Erstellung eines Installerscripts. Um Ihre Scripts &uuml;bersichtlich zu
+gestalten, sollten Sie von den Prozeduren gebrauch machen, sie eignen sich
+nicht nur zum Sparen von Schreibarbeit, sondern auch zum Gliedern des
+Codes.</P>
+<P>
+Manche Variablen lassen sich auch sparen, indem man ein wenig Anweisungen
+schachtelt, passen Sie dabei aber auf, da&szlig; Ihr Code nicht zu
+un&uuml;bersichtlich wird, eine &uuml;bersichtliche Scriptgestaltung erleichtert
+das sp&auml;tere Hineinfinden erheblich.</P>
+
+<P>Im n&auml;chsten Kursteil widmen wir uns vor allem ein paar zus&auml;tzlichen Tools,
+sowie inzwischen erschienenen alternativen Installern. Au&szlig;erdem erhalten
+Sie dann eine Gesamtbefehls&uuml;bersicht als AmigaGuide-Datei.</P>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="../cc/9903bb.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0399/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9903in2.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; `99<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

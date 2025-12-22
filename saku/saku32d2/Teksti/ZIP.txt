@@ -1,0 +1,272 @@
+2
+1*
+
+{3                               ZIP-asema Amigaan
+{3                               -----------------
+ 
+                                Teemu Kärkkäinen
+ 
+ 
+ZIP-asemia on ollut saatavilla jo pitkään eri versioina.  Itse  ostin  kaverilta
+käytettynä 100 Mt SCSI-version jo pari vuotta sitten. Nykyään siitä on  jo  hie-
+nompia ja myös kapasiteetiltaan isompia (250 Mt) malleja eri liitännöille  (IDE,
+parallel ja USB).
+ 
+Ensimmäinen kone, johon asennusta kokeilin, oli sen aikainen Amiga 500:ni,  jota
+oli laajennettu 68030/68882-turbolla (4 Mt 32-bit Fast) ja SupraDrive 500XP -SC-
+SI-kiintolevyohjaimella (2 Mt 16-bit muistia). Koneessa oli myös KS3.1 ja WB3.1.
+ 
+Tämänhetkinen koneeni on  A1260T/64  MHz,  32  Mt  fast,  SCSI-Kit  IV,  Merlin-
+näyttökortti ja monitorina 17" LG Flatron 795FT Plus (tästä lisää  toisessa  ju-
+tussa). Lisäksi vielä kolme Fujitsun  SCSI-kiintolevyä,  Toshiba  XM-6201TA  32x
+-SCSI-CD-ROM-asema, SCSI-ZIP 100 ja risa  MultiFaceCard,  jossa  onneksi  toimii
+sentään yksi seriaali (kiitti, Apache! ;).
+ 
+ 
+{3Ongelmaton asennus
+{3------------------
+ 
+Fyysinen asennus oli todella helppoa: ZIP-asema kiinni ohjaimen  takana  olevaan
+25-pin-SCSI-liittimeen (Supra) ja sitten ZIPin  virtajohto  kiinni  ja  muuntaja
+seinään. Blizzard SCSI-Kit IV:n kanssa tuli muutama ongelma, kun se sisälsi vain
+tuon kyseisen 25-pin-liittimen vakiona. Parin  päivän  kuluttua  sainkin  sitten
+kyhättyä adapterikaapelin, kytkin ZIP-aseman  SCSI-ohjaimen  perään.  ZIP-aseman
+toiseen SCSI-liittimeen kytkin sitten oman  kaapelin,  johon  sain  kiinni  muut
+laitteet. (Kaapelin teosta lisää artikkelin lopussa.)
+ 
+ZIPin takana on myös pari kytkintä, joilla  voidaan  valita  aseman  terminointi
+(päällä/pois) ja aseman SCSI-ID. Myös  läpivienti  SCSI-väylälle  löytyy  kahden
+25-pin-D-liittimen muodossa. Ellei ZIP-aseman perään tule muita laitteita,  niin
+terminointi pitää olla päällä. ID pitää valita niin, ettei mikään muu SCSI-laite
+käytä samaa ID:tä kuin ZIP.
+ 
+ 
+{3Käyttöönotto
+{3------------
+ 
+Kun kaikki on asennettu, on aika käynnistää kone. Jos ongelmia ilmenee jo  tässä
+vaiheessa, niin virrat pois vehkeistä ja tarkistamaan kytkentä. Kun WB on latau-
+tunut, on tässä vaiheessa parikin vaihtoehtoa. Yksi mahdollisuus on laittaa tyh-
+jä ZIP-levy asemaan ja asentaa sen RDB:lle HDToolBoxilla kaikki tarvittava  tie-
+to, jotta levy tunnistuu koneen käynnistyessä ja päällä ollessa oikein  -  aivan
+kuten normaaleille kiintolevyillekin tehdään. Levyjä voi sitten  vaihdella  len-
+nossa, ja Amiga tunnistaa ne aina automaattisesti.
+ 
+Haittapuolina voi mainita sen, että jos tiedostojärjestelmä (PFS/SFS)  on  opti-
+moitu jollekin tietylle prosessorille ja se on asennettuna RDB:lle, niin ZIP-le-
+vyä ei voi käyttää koneissa, joissa on astetta huonompi prosessori.  Ongelma  on
+korjattavissa sillä, että käyttää 68000- tai ehkä 68020-versioita  (kenellä  nyt
+on 68000 enää tosi käytössä? ;). Toinen haittavaikutus on se, että levyn  alusta
+varataan pari blokkia RDB:lle, ja levyn kapasiteetti pienenee muutamalla  kymme-
+nellä kilotavulla. Plussana voi mainita, että ZIP-asemalta voi vaikka käynnistää
+koneen, kun tarvittavat tiedot ovat RDB:llä!
+Toinen vaihtoehto on tehdä oma MountList ZIP-asemalle ja sitten Mount-komennolla
+alustaa ZIP-asema käyttöön joka bootin yhteydessä. Itse suosin RDB:n asentamista
+levylle, koska käytän hieman erilaisia ZIP-levyjä eri tarkoituksia varten.  Näin
+ei tarvitse aina mountata kutakin levyä  erikseen.  PC-  tai  Mac-formatoiduille
+ZIP-levyille on tehtävä MounList-tiedosto aina. Tässä omani listattuna:
+ 
+{3Iomega ZIP100, MacOS 
+ 
+ZMAC0:
+Device = 1230scsi.device
+Unit = 5
+FileSystem = L:CrossMacFileSystem
+Flags = 0
+Surfaces = 2
+BlocksPerTrack = 64
+SectorSize = 512
+Mask = 0x7ffffffe
+MaxTransfer = 0xfffe00
+Reserved = 0
+Interleave = 0
+LowCyl = 0
+HighCyl = 1535
+Buffers = 150
+BufMemType = 0
+StackSize = 2000
+Priority = 10
+GlobVec = -1
+DosType = 0x4d414300
+#
+
+{3Iomega ZIP100, FAT-16/MS-DOS 
+ 
+ZPC0:
+device = 1230scsi.device
+unit = 5
+FileSystem = L:CrossDOSFileSystem
+Flags = 0
+Surfaces = 2
+BlocksPerTrack = 64
+SectorSize = 512
+Mask = 0x7ffffffe
+MaxTransfer = 0xfffe00
+Reserved = 1
+Interleave = 0
+LowCyl = 0
+HighCyl = 1535
+Buffers = 150
+BufMemType = 0
+StackSize = 2000
+Priority = 10
+GlobVec = -1
+DosType = 0x4d534800
+#
+ 
+{3Iomega ZIP100, Amiga FFS 
+ 
+ZIPF:
+FileSystem = L:fastfilesystem
+Device = 1230scsi.device
+Unit = 5
+Flags = 1
+SectorSize = 512
+StackSize = 1000
+Buffers = 150
+BufMemType = 5
+Activate = 1
+Reserved = 0
+Priority = 10
+BlocksPerTrack = 68
+Surfaces = 2
+Interleave = 0
+Highcyl = 1535
+Lowcyl = 0
+GlobVec = -1
+Mask = 0x7ffffffe
+MaxTransfer = 0xfffe00
+DosType = 0x444F5301
+#
+ 
+Device ja unit pitää muuttaa kullekin koneelle erikseen sen mukaan, mihin ZIP on
+liitetty. Mask- ja maxtransfer-arvot toimivat varmasti ainakin kaikilla SCSI-oh-
+jaimilla, mutta IDE tarvitsee  muistaakseni  pienemmät  arvot.  esim.  Zorro  II
+-liitännässä  oleville  ohjaimille  mask  pitää   olla   0xfffffc,   Zorro   III
+-liitännässä 0xfffffffc ja A1200/A4000:n IDE-liitännälle 0xfffffffc. Suurin  osa
+SCSI-ohjaimista pystyy käyttämään maxtranfer-arvona 0xfffe00 (16 Mt) ja  IDE-oh-
+jaimille se tulisi asettaa arvoon 0x1fe00 (130 kt).
+ 
+Sectorsize-arvon muuttaminen 512 tavusta 1024:ään tai jopa 2048:aan  tavuun  no-
+peuttaa Amigan FastFileSystemin  toimintaa  huomattavasti.  Siirrellessä  paljon
+pikku tiedostoja ZIPille ja takaisin on FFS erittäin hidas  ZIP-aseman  lukupään
+siirron hitauden vuoksi. PFS2/3- tai  SFS-tiedostojärjestelmillä  ZIP-asemaa  on
+ilo käyttää, eikä 512 tavun blokkikoko paljoa menoa haittaa!
+ 
+Jos käytät mountlistiä, niin muista lisätä user-startup-tiedostoon  rivi  "Mount
+ZIP:". Voit myös tehdä siitä oman tiedostonsa  ja  siirtää  sen  sopivan  ikonin
+kanssa DEVS:DosDrivers-hakemistoon, josta AmigaOS osaa sen myös käynnistää auto-
+maattisesti, ellei startup-sequencea ole menty  muuttelemaan.  SupraDrive  500XP
+-ohjaimella ZIP-asemalta pystyi käynnistämään koneen  vain  jos  tiedostojärjes-
+telmäksi laittoi OFS/FFS:n. Tämä päti myös normaaleihin kiintolevyihin.
+ 
+Nyt onkin sitten aika käynnistää kone uudelleen ja testata, miten asema  toimii.
+Käynnistyksen jälkeen työnnä levy sisään ZIP-asemaan. Workbenchiin  pitäisi  il-
+mestyä ikoni, jossa lukee alla "ZIP:Uninitialized" (OS 3.5) tai  "ZIP:NDOS"  (OS
+2.0-3.1). Klikkaa ikonia kerran ja valitse valikosta Format Disk.  Ensimmäisellä
+kerralla ei kannata tehdä quick formatia, vaan odotella ihan kiltisti, että  oh-
+jelma käy jokaisen blokin läpi yksitellen. Tämän jälkeen levyn  pitäisikin  olla
+käyttövalmis ja tilaa löytyä tiedostojärjestelmästä ja levyn  kunnosta  riippuen
+90-97 megatavua. Kannattaa myös testata, että levyjen  lennossa  vaihto  toimii,
+kun formatoi niitä muutaman lisää.
+ 
+ 
+{3Suorituskyky
+{3------------
+ 
+SCSI-mallin nopeus on ohjaimesta riippuen n. 1 Mt/sek kumpaankin suuntaan.  IDE-
+malli hieman hitaampi, ja parallel-malli vielä IDE:täkin paljon hitaampi. Paral-
+lel-malli ei toimi Amigassa ilman radikaaleja  muutoksia  Amigan  parallel-port-
+tiin. Aminetissä muistaakseni on ohjeet kyseiseen toimenpiteeseen.  FastFileSys-
+tem on osoittautunut hitaimmaksi tiedostojärjestelmistä varsinkin pikku  tiedos-
+tojen siirtelyssä. PFS2/3 ja SFS ovat nopeimmat.
+Jos aikoo isoja tiedostoja pitää ZIP-asemalla,  niin  suositeltavaa  on  muuttaa
+blokkikokoa 1024 tavuun tai isommaksi riippuen siitä,  mitä  tiedostojärjestelmä
+tukee (PFS3 max. 1024 tavua). Tämä myös nopeuttaa varmuuskopiointia. RSCP  antaa
+tällä hetkellä aseman nopeudeksi 1.2 Mt/sek, SysInfo hieman vähemmän.  DiskSpeed
+3.1 antaa tiedostojen käsittelynopeudeksi PFS3-levyllä:
+ 
+Files/s Create : 632
+Files/s Open/Close : 616
+Files/s Scan : 13872
+Files/s Delete : 891
+ 
+ 
+{3"Click of death"
+{3----------------
+ 
+Valmistusvirhe vai joku muu häikkä? Joskus satunnaisesti lukiessa  levyltä  ZIP-
+asema päästää aika kovan naksahtavan äänen ja luku keskeytyy Read Erroriin.  Ai-
+kansa klikkailemalla tuota uudelleen ilmestyvää ikkunaa ongelma poistuu.  Kuule-
+man mukaan se saattaa myös tapahtua kesken kirjoituksen, ja joitain ongelmia tu-
+lee varmasti. Itse en ole kokenut sen kuin kerran ja  senkin  lukemisen  aikana.
+Sen verran tuota on näemmä ihmisillä tapahtunut, että se on saanut ihan viralli-
+sen nimen "Click of death". Beware...
+ 
+ 
+{3Adapterikaapelin valmistaminen
+{3------------------------------
+ 
+Adapterikaapeli on melko helppo valmistaa jopa kotioloissa, jos  omistaa  kolvin
+ja tinaa. Riittää kun ostaa metrin verran 50-pin-lattakaapelia,  muutaman  SCSI-
+liittimen (50-pin naaras) ja D-liittimen (25-pin  uros).  Sitten  leikkaa  esim.
+mattoveitsellä tai partaveitsen terällä lattakaapelin pään johtimet erilleen  ja
+kolvaa ne järjestyksessä kiinni D-liittimeen alla olevan taulukon mukaisesti : 
+
+25-pin - 50-pin
+
+1 - 48
+2 - 42
+3 - 50
+4 - 40
+5 - 38
+6 - 36 
+7 - GROUND (20, 22, 24, 28, 30, 34)
+8 - 2 --
+9 - GROUND (20, 22, 24, 28, 30, 34)
+10 - 8  --
+11 - 12
+12 - 14
+13 - 16
+14 - GROUND (20, 22, 24, 28, 30, 34)
+15 - 46  --
+16 - GROUND (20, 22, 24, 28, 30, 34)
+17 - 32 --
+18 - GROUND (20, 22, 24, 28, 30, 34)
+19 - 44  --
+20 - 18
+21 - 4
+22 - 6
+23 - 10
+24 - GROUND (20, 22, 24, 28, 30, 34)
+25 - NOT USED (26) -- 
+Tämän jälkeen voi lattakaapeliin painaa kiinni niitä 50-pin-liittimiä aina  tar-
+peen mukaan. Esim. vasaralla saa naputeltua ne kiinni helposti.  Kannattaa  tar-
+kistaa myös, että liitin tulee oikein päin: siinä pitäisi olla pienellä nuolella
+merkitty ykkösnastan paikka, ja lattakaapelissa se on punaisella merkitty.  Tämä
+myös kannattaa huomioida, kun kolvaa kiinni johtoja 25-pin-liittimeen.
+ 
+ 
+{3Yhteenveto
+{3----------
+ 
+Saatavuus:      hyvinvarustetut atk-liikkeet ympäri Suomen
+
+Hinta:          Vaihtelee 700-1200 markan välillä liitännästä ja mallista  riip-
+                puen. Amigalla ei parallel-malli toimi ilman muutoksia! USB taas
+                ... ehkä joskus? ;)
+
+Yleisarvosana:  8+
+
+
+{3Testatut kokoonpanot:
+ 
+A500, 030/882, SupraDrive 500XP (suprascsi.device), 6 Mt Fast, 1 Mt Chip, 500 Mt
++ 1 Gt SCSI HD, CD-ROM, OS 3.1
+ 
+A1240T/40, 32 Mt, SCSI-Kit IV (1230scsi.device v8.5) NEC Multisync, 4 Gt + 1  Gt
++ 1 Gt SCSI HD, 32x CD-ROM, OS 3.1
+ 
+A1260T/64, 32 Mt, SCSI-Kit IV, (1230scsi.device v8.5), Merlin + XCalibur, 17" LG
+Flatron 795FT+, Micronik Z2, MultiFaceCard 3, 4 Gt + 1 Gt + 1 Gt  SCSI  HD,  32x
+CD-ROM, OS 3.5

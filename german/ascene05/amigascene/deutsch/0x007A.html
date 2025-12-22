@@ -1,0 +1,534 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+	<TITLE>AmigaScene 0x05 - TCP/IP: AmiTCP</TITLE>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="TEXT/HTML;CHARSET=iso8859-1">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#101010" LINK="#BF0000" VLINK="#101010" ALINK="#E04040">
+	<TABLE WIDTH="100%" CELLPADDING=3 CELLSPACING=0 BORDER=0>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP WIDTH="80%" HEIGHT=75>
+				<A NAME="00" HREF="welcome.html"><IMG SRC="../images/_amiga.gif" WIDTH=125 HEIGHT=48 ALT="[Amiga]" ALIGN=RIGHT BORDER=0></A><A HREF="#99"><IMG SRC="../images/_krumm_lo.gif" WIDTH=37 HEIGHT=29 ALT="[Down]" ALIGN=LEFT BORDER=0></A>
+				<BR CLEAR=ALL><BR>
+				<TABLE ALIGN=CENTER WIDTH=170 BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD ALIGN=CENTER>
+					<A HREF="../deutsch/0x007A.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" BORDER=1></A>
+				</TD></TR></TABLE>
+ 			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=RIGHT WIDTH=175>
+				<A HREF="welcome.html"><IMG SRC="../images/_scene.gif" WIDTH=110 HEIGHT=47 ALT="[Scene]" ALIGN=LEFT BORDER=0></A>
+				<A HREF="0x0079.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x007B.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=CENTER>
+				<CENTER>&nbsp;<BR>
+
+					<IMG WIDTH=155 HEIGHT=25 SRC="../images/_workshop_.gif" ALT="[Workshop]">&nbsp;<BR><BR>
+
+					<TABLE WIDTH="90%" BORDER=0>
+						<TR><TD ALIGN=CENTER><FONT SIZE="-1">
+
+| <A HREF="0x0078.html">WGet</A> | <A HREF="0x0079.html">Programmieren</A> | <A HREF="0x007A.html">TCP/IP: AmiTCP</A> | <A HREF="0x007B.html">TCP/IP: I-Net 225</A> | <A HREF="0x007C.html">Tunnel-Anims</A> |
+
+						</FONT></TD></TR>
+					</TABLE>&nbsp;<BR>
+				</CENTER>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER WIDTH=175 ROWSPAN=2>
+				<CENTER>&nbsp;<BR>
+					<IMG SRC="../images/__.gif" HEIGHT=1 WIDTH=175 ALT=" "><BR> 
+					<A HREF="0x006F.html"><IMG WIDTH=77  HEIGHT=25 SRC="../images/_cover.gif"     ALT="[Cover]"     BORDER=0></A><BR>
+					<A HREF="0x0070.html"><IMG WIDTH=117 HEIGHT=25 SRC="../images/_editorial.gif" ALT="[Editorial]" BORDER=0></A><BR>
+					<A HREF="0x0071.html"><IMG WIDTH=85  HEIGHT=25 SRC="../images/_inhalt.gif"    ALT="[Inhalt]"    BORDER=0></A><BR>
+					<A HREF="0x0072.html"><IMG WIDTH=70  HEIGHT=25 SRC="../images/_news.gif"      ALT="[News]"      BORDER=0></A><BR>
+					<A HREF="0x0073.html"><IMG WIDTH=131 HEIGHT=25 SRC="../images/_hardware.gif"  ALT="[Hardware]"  BORDER=0></A><BR>
+					<A HREF="0x0074.html"><IMG WIDTH=121 HEIGHT=25 SRC="../images/_software.gif"  ALT="[Software]"  BORDER=0></A><BR>
+					<A HREF="0x0078.html"><IMG WIDTH=135 HEIGHT=25 SRC="../images/_workshop.gif"  ALT="[Workshop]"  BORDER=0></A><BR>
+					<A HREF="0x007D.html"><IMG WIDTH=73  HEIGHT=25 SRC="../images/_spiele.gif"    ALT="[Spiele]"    BORDER=0></A><BR>
+					<A HREF="0x007E.html"><IMG WIDTH=91  HEIGHT=25 SRC="../images/_special.gif"   ALT="[Special]"   BORDER=0></A><BR>
+					<A HREF="0x007F.html"><IMG WIDTH=112 HEIGHT=25 SRC="../images/_feedback.gif"  ALT="[Feedback]"  BORDER=0></A><BR>
+					<A HREF="0x0080.html"><IMG WIDTH=46  HEIGHT=25 SRC="../images/_etc.gif"       ALT="[Etc]"       BORDER=0></A><BR>
+				<BR></CENTER>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+
+<BR><H1 ALIGN=LEFT><FONT FACE="Arial"><B>TCP/IP (Teil 3a): AmiTCP</B></FONT></H1>&nbsp;
+
+<BR><FONT SIZE="+1">In diesem dritten Teil unseres Workshops zur
+Netzanbindung werden nun die verschiendenen TCP-Stacks, die es f&uuml;r den
+Amiga gibt, vorgestellt. In diesem Artikel ist das AmiTCP. In weiteren
+Rollen: I-Net 225 (vulgo AS225) und Miami. </FONT><BR>
+
+<BR><CENTER><A NAME="01" HREF="#00"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Welchen der drei Stacks man verwendet, h&auml;ngt im Wesentlichen vom
+eigenen Geschmack ab, denn in den Leistungen unterscheiden sie sich nicht
+wesentlich. AmiTCP ist eher was f&uuml;r die Unix-J&uuml;nger, Miami
+f&uuml;r die, die sich nicht um die Interna k&uuml;mmern wollen, es aber
+ohne weiteres k&ouml;nnen, und I-Net 225 zum Beispiel f&uuml;r die, die
+einen NFS-D&auml;mon auf ihrem Amiga brauchen.<BR>
+
+<BR>Allein schon die Verzeichnisstruktur von AmiTCP zeigt, da&szlig; es an
+Unix-Systeme angelehnt ist. Das geht auch soweit, da&szlig; die ganzen
+Konfigurationsfiles gleich hei&szlig;en und im gleichen Format geschrieben
+sind.<BR>
+
+<BR>Das Paket ist mittlerweile eine kommerzielle Software, zu der es eine
+Demoversion im Aminet zu finden gibt. Auch schon mit dieser Demoversion ist
+ein geruhsames Arbeiten m&ouml;glich, einzig beim Starten des Stacks
+erscheint ein Requester, den man wegklicken mu&szlig;. Ansonsten ist aber
+die volle Funktionalit&auml;t gegeben. Die Demoversion ist noch Version
+4.0, derzeit aktuell (seit zwei Jahren aber schon :-(( ) ist V4.3.<BR>
+
+<BR><CENTER><A NAME="02" HREF="#01"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>AmiTCP kommt mit einem Installerskript daher, da&szlig; eine relativ
+einfache Installation erm&ouml;glicht, aber nat&uuml;rlich nur f&uuml;r
+Standardkonfigurationen dienen kann. Sobald etwas Spezielleres gemacht
+werden soll, ist es schon &uuml;berfordert.<BR>
+
+<BR>Will man nur ein Interface starten (sei es nun mit der Ariadne oder der
+Connexion in ein LAN oder mittels Modem an seinen Provider), so wird das
+Skript durchaus brauchbare Ergebnisse liefern. Aber schon bei mehreren
+Interfaces, die noch dazu nicht alle gleichzeitig gestartet werden sollen
+(zum Beispiel beim Hochfahren des Amigas ins lokale LAN, aber nur bei
+Bedarf ins Internet), mu&szlig; man selbst Hand anlegen.<BR>
+
+<BR>Der Vorteil von AmiTCP gegen&uuml;ber seinem gro&szlig;en Konkurrenten
+Miami ist der, da&szlig; AmiTCP mehrere Interfaces verwalten kann und damit
+auch als Router fungieren kann. Au&szlig;erdem ist es viel freier zu
+konfigurieren und erlaubt viel mehr Einstellungen. Beachtet man, da&szlig;
+Miami aus dem ppp.device hervorgegangen ist, so verwundert es nicht,
+da&szlig; es im Grunde &quot;nur&quot; ein aufgeblasenes ppp.device mit
+sch&ouml;ner Oberfl&auml;che ist, das halt hinten dran keinen TCP-Stack
+mehr ben&ouml;tigt. Ganz anders hingegen AmiTCP, das einen vollwertigen
+Stack bietet. Will man neue, zus&auml;tzliche D&auml;mons installieren, ist
+der Server einfach in ein bestimmtes Verzeichnis zu kopieren und ein
+Eintrag im <TT>inetd.conf</TT> zu machen. Im Miami kann man das nicht so
+einfach bis gar nicht.<BR>
+
+<BR>Der Nachteil dieser Konfigurierbarkeit liegt nat&uuml;rlich darin,
+da&szlig; AmiTCP f&uuml;r Anf&auml;nger und Einsteiger nicht leicht zu
+durchblicken ist. Des weiteren gibt es f&uuml;r AmiTCP keine graphische
+Oberfl&auml;che, es mu&szlig; alles in der Shell eingestellt werden. Die
+Unix-typische Kryptizit&auml;t der Optionen und Flags und Parameter
+mu&szlig; man erst durch intensives Studium der Dokumentation
+aufl&ouml;sen, dann jedoch findet man nichts vergleichbar M&auml;chtiges am
+Amiga. Hat man sich erst einmal eingearbeitet und alles nach dem eigenen
+Geschmack eingerichtet (was bei Miami ja auch nicht so ohne weiteres
+funktioniert, dort gibt es ein vorgestaltetes GUI, das einem keine
+M&ouml;glichkeiten offen l&auml;&szlig;t), so gestaltet sich die Handhabung
+ziemlich brauchbar und auch f&uuml;r allt&auml;glichen Gebrauch
+ben&uuml;tzbar.<BR>
+
+<BR><CENTER><A NAME="03" HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Im Verzeichnis AmiTCP:bin/ sammelt sich so einiges an mitgelieferten
+Programme an. Die Standardtools, wie ping, traceroute, telnet, ncftp,
+passwd, login fehlen genausowenig, wie auch ausgefallenere wie nslookup,
+resolve, aws, askhost, archie oder auch ein rsh. Allerdings l&auml;&szlig;t
+ein rlogin doch schmerzlich vermissen. Auch wenn man es nicht alle Tage
+braucht, es geh&ouml;rt doch irgendwie zur Vollst&auml;ndigkeit dazu.<BR>
+
+<BR>Auf auf anderen Rechnern freigegebene Laufwerke kann mittels der
+NFS-Clients ganz einfach zugegriffen werden, es braucht nur im File
+AmiTCP:db/ch_fstab ein entsprechender Eintrag gemacht werden:<BR>
+
+<BR><TT>a2000.rockus.at:/nfsgate&nbsp;&nbsp;&nbsp;&nbsp;NFSGate: USER
+root</TT><BR>
+
+<BR>und schon kann mittels eines<BR>
+
+<BR><TT>ch_nfsmount NFSGATE:</TT><BR>
+
+<BR>Das Verzeichnis nfsgate, da&szlig; auf einem Rechner im Netz mit dem
+Namen <TT>a2000.rockus.at</TT> freigegeben wurde, am lokalen Rechner als
+Laufwerk <TT>NFSGate:</TT> angesprochen werden. Auf der Workbench erscheint
+brav ein Icon und dank der letzten beiden Parameter in der fstab-Zeile hat
+man in diesem Verzeichnis auch alle root-Rechte. Das ist sowohl praktisch
+als auch nat&uuml;rlich sehr gef&auml;hrlich. Da aber Userrechte am Amiga
+in der Normalkonfiguraiton nicht implementiert sind, ist das fast die
+einzige M&ouml;glichkeit, auf NFS zuzugreifen. Eine andere M&ouml;glichkeit
+besteht noch darin, auf seinen Platten ein Multiuserfilesystem zu
+installieren, allerdings bei&szlig;t sich das Format der
+Passwort-Verarbeitung mit dem vom AmiTCP (F&uuml;r die
+&Uuml;berspezialisten sei gesagt, da&szlig; es auch hier schon einen
+Workaround gibt). Will man dieses Icon, bzw. diesen Laufwerkseintrag wieder
+loswerden, so hilft ein <TT>ch_die NFSGate:</TT>. Damit wird die komplette
+Anbindung an dieses Verzeichnise freigegeben und braverweise auch das Icon
+von der WB wieder entfernt.<BR>
+
+<BR>Diese Programme in AmiTCP:bin/ sind unter anderem die Clients, mit
+denen der lokale Rechner Verbindung mit dem Rest des Netzes aufnimmt. Will
+ein entfernter Rechner auf den lokalen zugreifen, m&uuml;ssen daf&uuml;r
+sogenannte D&auml;mons, oder Server, am lokalen Rechner laufen, die diese
+Anfrage beantworten k&ouml;nnen. In AmiTCP:serv/ sind diese zu finden:<BR>
+
+<BR><TT>ftpd</TT> ist der FTP-D&auml;mon, damit andere Rechner per FTP auf
+Verzeichnisse in unserem lokalen Amiga zugreifen k&ouml;nnen.<BR>
+
+<BR><TT>in.fingerd</TT> ist ein finger-D&auml;mon. Das hat nichts mit
+unanst&auml;ndigen Verhaltensweisen pubertierender Jugendlicher zu tun,
+sondern kennzeichnet einen Server, der Anfragen nach den aktuell auf dem
+lokalen Rechner eingeloggten Usern beantwortet.<BR>
+
+<BR><TT>netfs-server</TT> hat leider nichts mit einem NFS-Server zu tun,
+sondern stellt eine propriet&auml;re AmiTCP-spezifische M&ouml;glichkeit
+dar, unter Amigas Laufwerke freizugeben und gegenseitig zu mounten.<BR>
+
+<BR>Und schlie&szlig;lich der <TT>telnetd</TT>, der es erm&ouml;glicht,
+da&szlig; andere Rechner oder auch User per telnet auf den lokalen Rechner
+gelangen k&ouml;nnen.<BR>
+
+<BR>Weitere D&auml;mons (wie einen smtpd oder pop3d) lassen sich im Aminet
+finden.<BR>
+
+<BR><CENTER><A NAME="04" HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Der gro&szlig;e Vorteil von AmiTCP liegt darin, da&szlig; man, wenn man
+von einem Unix-Rechenr kommt, das System sofort durchschaut hat, da es
+genau gleich aufgebaut ist. Einzig das Verzeichnis, da&szlig; sonst /etc/
+hei&szlig;t, wird hier AmiTCP:db/ genannt. In diesem finden sich dann die
+ganzen bekannten Dateien, wie <TT>hosts</TT>, <TT>passwd</TT>,
+<TT>services</TT>, <TT>interfaces</TT>, <TT>protocols</TT> usw.<BR>
+
+<BR>Ein versuchsweises Kopieren von <TT>services</TT> vom Server der
+TU-Graz brachte nat&uuml;rlich das Ergebnis, da&szlig; es ganz einwandfrei
+auch mit dieser Datei funktionierte, da das Format ja das Gleiche ist.<BR>
+
+<BR>Damit man einmal die Funktionsweise dieses Stacks in Grundz&uuml;gen
+versteht, werden wir nun einmal das Skript zum Starten des Stacks
+auseinandernehmen:<BR>
+
+<BR>
+<TT>.key IPADDRESS
+<BR>.bra {
+<BR>.ket }
+<BR>.def IPADDRESS 129.27.240.2
+</TT>
+<BR>
+
+<BR>Diese vier Zeilen dienen nur dazu, amigaspezifische Ungereimtheiten
+anzupassen, bzw. die Default-IP-Adresse des lokalen Rechners
+voreinzustellen.<BR>
+
+<BR><TT>AmiTCP:bin/login &gt;NIL: -f rockus</TT><BR>
+
+<BR>Damit erfolgt kein Login, wie man ihn von einem Unix-Rechner oder vom
+Multiuser-Filesystem her kennt, sondern es wird nur AmiTCP-intern ein
+Username festgelegt, mit dem sich AmiTCP gegen&uuml;ber anderen Rechnern
+meldet. Die Option <TT>-f</TT> bedeutet, da&szlig; keine Passwort-Abfrage
+erfolgen soll.<BR>
+
+<BR><TT>AmiTCP:bin/umask 022</TT><BR>
+
+<BR>Jedes neue File erh&auml;lt bestimmte Flags, die die Zugriffsrechte
+beschreiben. Damit wird gesetzt, da&szlig; Files, die &uuml;bers Netz von
+AmiTCP auf irgendeinem anderen Rechner erzeugt werden, autmatisch nur die
+Rechte, die 022 entsprechen, bekommen. Setzt man stattdessen 777 ein, so
+kann jeder mit diesem File machen was er will.<BR>
+
+<BR><TT>run &lt;&gt;NIL: AmiTCP:AmiTCP &gt;NIL: <BR>WaitForPort AMITCP
+</TT><BR>
+
+<BR>Hier nun endlich wird der Stack gestartet und gleich darauf gewartet,
+bis er auch wirklich da ist. Dieses Starten hat aber alleine noch nicht
+viel Sinn, da noch keine Interfaces initialisiert sind, der Stack also
+nicht wei&szlig;, was er wohin schicken soll. Doch das folgt sogleich:<BR>
+
+<BR>
+<TT>; Configure loop-back device
+<BR>AmiTCP:bin/ifconfig lo0 localhost
+</TT>
+<BR>
+
+<BR>Das Programm <TT>ifconfig</TT> erkl&auml;rt durch die ihm
+&uuml;bergebenen Parameter, wie ein bestimmtes Interface zu initialisiern
+ist, und welche Aufgaben es hat. Hier wird das lokale Interface
+(<TT>lo0</TT> genannt, das auf jedem Rechner im Netz existieren mu&szlig;,
+eingerichtet. Der Parameter, der darauf folgt, gibt die IP-Adresse dieses
+Interfaces an. Hier also <TT>localhost</TT>, was nur den lokalen Rechner
+beschreibt. Damit kann man &uuml;ber den TCP/IP-Stack wieder auf sich
+selber zur&uuml;ckgreifen. Deshalb wird dieses Interface auch
+Loopback-Device genannt.<BR>
+
+<BR>
+<TT>; Configure ariadne
+<BR>AmiTCP:bin/ifconfig ariadne 192.168.1.1 192.168.1.255
+</TT>
+<BR>
+
+<BR>Hier wird es nun schon interessanter. Der Aufruf unterscheidet sich
+nicht wesentlich von Obigem, allerdings wird als Interface ariadne
+angegeben, und das ist ja eine der Netzwerkkarten f&uuml;r den Amiga. Es
+wird also AmiTCP dahingehend unterrichtet, da&szlig; die eingebaute
+Ariadne-Karte die IP-Adresse 192.168.1.1 bekommen soll. Das ist (wie schon
+im ersten Teil erl&auml;utert), eine der IP-Adressen, die nicht im globalen
+Internet geroutet werden, und somit f&uuml;r private Netzte verwendet
+werden kann. Der Parameter danach gibt die Broadcast-Adresse f&uuml;r
+dieses Interface an. Broadcasts sind Messages, die an alle Rechner in
+diesem Netzsegment geschickt werden, und alle Rechner m&uuml;ssen daher auf
+die gleiche Broadcast-Adresse reagieren.<BR>
+
+<BR>Damit dieses Interface initialisiert werden kann, ist ein
+entsprechender Eintrag in <TT>AmiTCP:db/interfaces</TT> n&ouml;tig.<BR>
+
+<BR><CENTER><A NAME="05" HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Will man zum Beispiel ein zweites Interface parallel dazu starten,
+gen&uuml;gt ein weiterer Eintrag in startnet oder man schreibt diese Zeilen
+in ein eigenes Skript-File, das man dann irgendwann sp&auml;ter
+ausf&uuml;hren kann. Das ist zum Beispiel bei Einwahl bei einem Provider
+per Modem erforderlich.<BR>
+
+<BR>Dazu k&ouml;nnen folgende Zeilen dienen:<BR>
+
+<BR><TT>online &gt;NIL: amippp</TT><BR>
+
+<BR>Damit wird zum Beispiel das AmiPPP-Device online geschaltet, was
+bewirkt, da&szlig; es sich selbst&auml;nsidg beim Provider einzuw&auml;hlen
+und anmelden versucht.<BR>
+
+<BR>
+<TT>IF NOT WARN
+<BR>&nbsp;&nbsp;&nbsp;AmiTCP:bin/ifconfig &gt;NIL: amippp $AmiPPPipLocal $AmiPPPipRemote
+<BR>&nbsp;&nbsp;&nbsp;AmiTCP:bin/route &gt;NIL: add default $AmiPPPipRemote
+</TT>
+<BR>
+
+<BR>Gelingt das, so wird das entsprechende Interface (<TT>amippp</TT>)
+konfiguriert und die Defaultroute ins internet &quot;verlegt&quot;.<BR>
+
+<BR>
+<TT>ELSE
+<BR>&nbsp;&nbsp;&nbsp;AmiTCP:bin/Hangup
+<BR>ENDIF
+</TT>
+<BR>
+
+<BR>Funktioniert es nicht, wird wieder aufgelegt. Dieses Hangup-Skript
+besteht im einfachsten Fall einfach aus der Zeile:<BR>
+
+<BR><TT>offline &gt;NIL: amippp</TT><BR>
+
+<BR>Damit wird das Device offline geschaltet, das Modem legt auf und die
+Verbindung wird automatisch umkonfiguriert, da&szlig; es keine Verbindungen
+mehr zul&auml;&szlig;t.<BR>
+
+<BR><CENTER><A NAME="06" HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Aber nun weiter in <TT>startnet</TT><BR>
+
+<BR>
+<TT>Add route to the default gateway
+<BR>AmiTCP:bin/route add default 192.168.1.1
+</TT>
+<BR>
+
+<BR>Das bisher war aber noch gar nichts, denn erst mit <TT>route</TT> legen
+wir fest, welche Pakete wohin geschickt werden sollen. AmiTCP erkennt
+automatisch, wenn Pakete auf eines der konfigurierten Interfaces pa&szlig;t
+und schickt sie selber dorthin. Aber f&uuml;r alle die Pakete, die nirgends
+hinpassen, wird eine Default-Route ben&ouml;tigt, damit auch diese
+abgeschickt werden k&ouml;nnen. Im Normalfall wird das nat&uuml;rlich ein
+Interface sein, durch das das Internet erreicht werden kann. Hier
+allerdings wird nur gesagt, da&szlig; eine neue Route angelegt werden soll
+(<TT>add</TT>), diese soll die voreingestellte Route f&uuml;r alle sonst
+nicht zustellbaren Pakete sein (<TT>default</TT>) und die Route wei&szlig;t
+nach <TT>192.168.1.1</TT>.<BR>
+
+<BR><TT>setenv HOSTNAME 'AmiTCP:bin/hostname'</TT><BR>
+
+<BR>Der Befehl hostname liefert den aktuellen Namen des lokalen Rechners,
+der sich zum Beispiel beim Einw&auml;hlen in einen Rechner eines Providers
+ja immer wieder &auml;ndern kann. Dadurch wird also eine Umgebungsvariable
+gesetzt, die den aktuellen Hostnamen enth&auml;lt.<BR>
+
+<BR>
+<TT>Assign TCP: Exists &gt; NIL:
+<BR>IF Warn
+<BR>&nbsp;&nbsp;Mount TCP: from AmiTCP:devs/Inet-Mountlist
+<BR>EndIf
+</TT>
+<BR>
+
+<BR>Eine ganz praktische Sache am AmiTCP ist der TCP:-Handler, der damit
+gestartet wird. Damit ist es ganz einfach m&ouml;glich, zum Beispiel per
+ARexx auf andere Server und deren Diesnte zuzugreifen. Ein Beispiel
+daf&uuml;r ist im File <TT>AmiTCP:bin/SynClock</TT> gegeben, da&szlig; die
+lokale Uhrzeit nach einem Zeitserver im Netz ausrichtet.<BR>
+
+<BR>
+<TT>; Start the internet 'super server'
+<BR>run &lt;&gt;NIL: AmiTCP:bin/inetd &lt;&gt;NIL:
+</TT>
+<BR>
+
+<BR>Und nun schlu&szlig;endlich wird der Internet-D&auml;mon gestartet, der
+zwar nach Internet klingt, aber nichts damit zu tun hat. Er ist vielmehr
+daf&uuml;r da, die einkommenden Anfragen an die entsprechenden Server (oder
+D&auml;mons) aufzuteilen. Wie er das machen soll, steht in
+<TT>AmiTCP:db/inetd.conf</TT><BR>
+
+<BR>Es sei eine beispielhafte Zeile herausgenommen:<BR>
+
+<BR><TT>ftp&nbsp;&nbsp;&nbsp;stream&nbsp;&nbsp;&nbsp;tcp nowait root
+AmiTCP:serv/ftpd ftpd -l -x -b30 -G</TT><BR>
+
+<BR>Diese legt fest, da&szlig; bei einer Anfrage auf dem FTP-Port, der
+TCP-Verbindungen (im Gegensatz zu UDP-Verbindungen) hereinl&auml;&szlig;t,
+der Server <TT>AmiTCP:serv/ftpd</TT> mit root-Berechtigungen gestartet
+werden soll und dieser soll dann die Anfrage beantworten. Der Rest der
+Zeile sind Parameter, die direkt dem D&auml;mon &uuml;bergeben werden.<BR>
+
+<BR>Die Festlegung der Namen der Ports zu ihrer Nummer geschieht in der
+Datei <TT>AmiTCP:db/services</TT>:<BR>
+
+<BR><TT>ftp 21/tcp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ; file
+transfer</TT><BR>
+
+<BR>Also soll alles, was am Port 21 an TCP-Verbindungen hereinkommt, an
+einen <TT>ftp</TT> genannten Port weitergeleitet werden.<BR>
+
+<BR><CENTER><A NAME="07" HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Um wieder aus dem Netz auszusteigen und den Stack zu beenden, gibt es
+ein <TT>stopnet</TT>-Skript, mit dem ein geordneter R&uuml;ckzug
+m&ouml;glich ist:<BR>
+
+<BR>
+<TT>.KEY FLUSH/S
+<BR>.BRA {
+<BR>.KET }
+</TT>
+<BR>
+
+<BR>...und wieder die Amiga-Spezialit&auml;ten...<BR>
+
+<BR>
+<TT>FailAt 21
+<BR>Version bsdsocket.library &gt;nil:
+</TT>
+<BR>
+
+<BR>Ist eine bsdsocket.library im System bekannt, so wurde AmiTCP
+gestartet...<BR>
+
+<BR>
+<TT>If NOT Warn
+<BR>
+<BR>&nbsp;&nbsp;If Exists AmiTCP:db/User-Stopnet
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;Execute AmiTCP:db/User-Stopnet
+<BR>&nbsp;&nbsp;EndIf
+</TT>
+<BR>
+
+<BR>... und sollte eine User-spezifische <TT>stopnet</TT>-Datei vorhanden
+sein (zum Beispiel, um sich irgendwo auszuloggen), so wird auch die noch
+abgearbeitet.<BR>
+
+<BR><TT>Rx &quot;address AMITCP; KILL&quot; ; Send &quot;KILL&quot; to
+AmiTCP</TT><BR>
+
+<BR>Damit wird aber nun unwiderruflich und brutal das AmiTCP abgew&uuml;rgt
+und aus dem System geschmissen. Obwohl es so brutal aussieht, ist das die
+offizielle Methode.<BR>
+
+<BR>
+<TT>&nbsp;&nbsp;If {FLUSH}
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;Wait 3 secs
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;If 'rx &quot;Say Show(ports, AMITCP)&quot;' EQ 0
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Avail &gt;NIL: FLUSH
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;Else
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Echo Memory NOT flushed!
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;EndIf
+<BR>&nbsp;&nbsp;EndIf
+</TT>
+<BR>
+
+<BR>In manchen F&auml;llen kann es vorkommen, da&szlig; ein Teil der Ports,
+die AmiTCP belegte, nicht aus dem System entfertn wird und es dazu zu
+Speicherverlust kommt. Damit wird das &uuml;berpr&uuml;ft (ob vielleicht
+nach dem Beenden von AmiTCP noch immer Ports existieren) und gegebenenfalls
+eine Meldung ausgegeben.<BR>
+
+<BR>
+<TT>Else
+<BR>&nbsp;&nbsp;Echo AmiTCP/IP is not running.
+<BR>EndIf
+</TT>
+<BR>
+
+<BR>Wird oben keine bsdsocket.library gefunden, ist AmiTCP gar nicht
+gelaufen. Was soll dann also beendet werden?<BR>
+
+<BR>Danach kann ganz normal wieder ein <TT>startnet</TT> ausgef&uuml;hrt
+werden, um wieder das Netz zu starten.<BR>
+
+<BR><CENTER><A NAME="08" HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#99"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Von den drei Stacks, die am Amiga derzeit verf&uuml;gbar sind, ist
+AmiTCP sicher der umfassendste. Nicht zuletzt auch, weil es im Aminet
+massig Zusatzprogramme und -tools daf&uuml;r gibt, die die
+Leistungsf&auml;higkeit noch weiter erh&ouml;hen. Nachteilig wirkt sich in
+heutigen Zeiten nat&uuml;rlich die fehlende GUI aus, was aber durch den
+Funktionsumfang und die Routerf&auml;higkeit mehr als wettgemacht wird. Im
+Vergleich zu Miami kann AmiTCP mit seiner freien Konfigurierbarkeit und
+Leistungsf&auml;higkeit gl&auml;nzen, mu&szlig; aber im Vergleich zu I-Net
+225 den fehlenden NFS-D&auml;mon z&auml;hneknirschend akzeptieren. Bis
+heute gibt es f&uuml;r den Amiga nur einen einzigen NFSd und der ist nicht
+der Weiheist leztzter Schlu&szlig;. Also, Leute, auf ans Programmieren!<BR>
+
+<BR>Als Zugabe sind meine Miniskripts zur Einwahl bei einem Provider mit cSLIP bzw. PPP dabei. N&auml;here
+<A HREF="http://www.cis.tu-graz.ac.at/zid/students/erfahrung/amiga.html">Informationen und Konfigurationshinweise</A>
+stehen auf dem Web-Server der TU-Graz.<BR>
+
+			<BR>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+				<P ALIGN=RIGHT>
+
+					<A HREF="as-redax.html#oliver">Oliver Gerler</A>
+					&nbsp;&nbsp;&nbsp;
+					<A HREF="../deutsch/0x007A.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" VSPACE=0 HSPACE=0 BORDER=1></A>
+					&nbsp;&nbsp;&nbsp;
+					<BR>
+
+				</P>
+				<BR><TABLE BORDER=0 CELLPADDING=8 CELLSPACING=0 ALIGN=CENTER WIDTH="90%">
+				<TR VALIGN=TOP ALIGN=LEFT><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="http://www.nsdi.fi/">AmiTCP</A> - Homepage<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_05/pppscr.lha">PPP-Scripts</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x0050.html">Workshop Teil 1</A><BR>
+
+				</TD><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="http://at.aminet.net/pub/aminet/comm/tcp/AmiTCP-demo-40.lha">Demoversion von AmiTCP</A> [Aminet; Austria]<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_05/cslipscr.lha">cSLIP-Skripts</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x0066.html">Workshop Teil 2</A><BR>
+
+				</TD></TR>
+				</TABLE>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER> &nbsp; 
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=LEFT>
+				<A HREF="#00"><IMG SRC="../images/_krumm_hi.gif" WIDTH=37 HEIGHT=29 BORDER=0 ALT="[Up]"></A>
+				<A NAME="99"><FONT COLOR="#FFFFFF">&nbsp;</FONT></A>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=BOTTOM ALIGN=RIGHT>
+				<A HREF="0x0079.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x007B.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+	</TABLE>
+</BODY>
+</HTML>

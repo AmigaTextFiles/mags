@@ -1,0 +1,140 @@
+·
+ ¹F.infinitiv³
+ °
+
+
+
+
+
+»
+
+
+ Ez  a  cikk  egy  ¾Tower.FAQ¼  alapján  jött  létre,  és az A1200-as tornyokkal
+kapcsolatban  tapasztalható  hibák  és  egyebek  találhatóak meg benne.  Itt a
+Micronik  Infinitiv  tower-rel kapcsolatos dolgokhoz még hozzáfûzném, hogy nem
+állt  módomban  ellenõrizni  az állítások igazságát, így csak leközlöm a mások
+által tapasztalt dolgokat.
+
+ Zorro  2  DMA:   a  kártya  kézikönyvében egy nagy probléma van leírva:  "Egy
+DMA-képes  turbókártya  használatakor  az átvezetett A1200-as expansion porton
+keresztül blokkolódik a DMA-képes Z2-es kártyák használhatósága"
+ Ez  az  idézet annyit tesz, hogyha a CPU-portba (az eredeti 1200-as alaplapon
+található  150 pólusú baszkettyrõl van szó) egy DMA képes turbókártyát teszünk
+be,  amin  van  SCSI  kontroller  is, akkor jöhetnek elõ a gondok.  Azért csak
+akkor,  mert  a  SCSI kontrollerek kínálnak egy olyan alternatívát, hogy DMA-t
+használnak  a  kártyán található RAM segítségével (itt lenne egy megjegyzésem:
+egyes  típusoknál  a memóriát nem csak a turbókártyán, hanem a kontrolleren is
+el  lehet  helyezni.   Ha  mindkét  helyen  van RAM, akkor csak a SCSI vezérlõ
+memóját  tudják  DMA-val használni - GOD!).  A probléma valódi oka az, hogy az
+1200-as  felépítése  eléggé  Z2  ellenes,  így  a  Z2  nem  tudja  használni a
+turbókártya  RAM-ját,  mivel  a  Z2-es  alaplap  (ez  nem az 1200-as alaplap!)
+vezérlõ  elektronikája  úgy lett megépítve, hogy eleve azt feltételezi, hogy a
+DMA  is a Z2-es alaplapon keresztül érhetõ el (egyébként erre utal az is, hogy
+minden Zorro alaplapon meg lehet találni a helyet 8 MB RAM-nak - GOD!).  Ezért
+lehetséges  az,  hogy  a Z2-es DMA-s kártyák elgurítják/lefagyasztják a gépet,
+vagy  nemes  egyszerûséggel  nem  mûködnek.   Az  ilyen  kártyák  vásárlásától
+tekintsünk el.
+ Ilyenek pl.:
+
+¾ Masoboshi - SCSI/AT - Host
+ C= A2091  - SCSI-Host adapter
+ GVP       - SCSI-Host adapter
+ GVP       - turbókártyák SCSI-vel¼
+
+ Ezek  a  DMA-s kontrollerek lehet, hogy hibákat okoznak.  A Masoboshi-n ugyan
+ki  lehet kapcsolni a DMA-t, de egyébként sincs semmi értelme pénzt adni érte,
+mivel  az  1200-as rendelkezik saját AT kontrollerrel, a SCSI-ja meg csak bajt
+csinál.   Aki  mindenáron  SCSI  kontrollert  akar,  az  használja  az Oktagon
+2008/4008-as  kontrollert,  csak  arra  ügyeljen,  hogy arra ne rakjon RAM-ot,
+mivel az csak 16 bites, és így csak a gépet fékezi.
+ Egyébként  ez  a  DMA probléma csak a `95 januárja elõtt készített modelleken
+jelentkezik, az újabbaknál a gyártó állítása szerint már nem fordul elõ.
+
+ Z3-as  problémák:   az  A1200  nem  tud Z3-as slotokat vezérelni a 68EC020-as
+miatt,  mivel  ide  minimum  egy  teljes  68020-as kell.  Ennek oka az, hogy a
+020-asnak  32  bites  a  busza,  míg az EC020-nak csak 24 (mivel csak belül 32
+bites a protkó, kifelé már sokkal bénább - GOD!).  Egy Z3 vezérléséhez viszont
+teljesértékû 32 bites adatbusz kell.
+
+ A  pöcés  billentyûzetek  problémái:   néhány  usernél  a  pöcés billentyûzet
+interface  komoly  problémákat  okoz.   Ha  túl  gyorsan  gépelnek, egyszerûen
+eltûnnek  útközben a karakterek.  Ez a hiba vagy magában az interface-ben van,
+vagy  kisebb eséllyel a használt billentyûzetben.  Azok az átalakítók, amiknél
+ez  a probléma jelentkezik, `93/`94-ben lettek gyártva, így mára ez a probléma
+is tökig eltûntnek nevezhetõ.
+
+ Z2-es  bõvítésekkel való kompatibilitás:  mivel nekem az A1200 infinitiv csak
+kölcsönzött verzióban állt a rendelkezésemre, ezért a hardware-eket az A500-as
+Micronik-tornyomon  és  A3000-en  teszteltem.   Hibátlanul  futottak az alábbi
+kártyák:
+
+ Oktagon 2008        : SCSI-Host adapter (ROM v4.7, v6.5, v6.7, v6.8)
+ Oktagon 2008 AT-Bus : AT kontroller
+ Tandem Kontroller   : AT kontroller
+ Retina Z2 2MB       : grafikus kártya
+ Picasso II          : grafikus kártya
+ A2091/2090 C=       : SCSI kontroller
+ A2065 C=            : Hálózati kártya
+ Ariadne             : Hálózati kártya
+ I/O Expander, GVP   : Multi I/O
+ Multiface III, bsc  : Multi I/O
+
+ További bõvítésekkel való kompatibilitás:
+
+ OS 3.1 (A1200-as verzió) : Operációs rendszer
+ KS 3.0 + WB 3.1          : Operációs rendszer
+ Blizzard 1220 II         : 28 MHz-es turbókártya 4MB RAM-mal (68020),
+                            CPU-slot-on*
+ Blizzard 1230 II + SCSI  : Turbókártya különbözõ kivitelekben SCSI
+                            kontrollerrel (68(EC)030), CPU-slot-on*
+ M-Tec 1230/28            : 28 MHz-es turbókártya (68EC030), CPU-slot-on*
+ G-Force 1230/50 + SCSI   : 50 MHz-es turbókártya SCSI kontrollerrel
+                            (68030), CPU-slot-on*
+ Különbözõ AT-buszos winyók a belsõ kontrolleren
+ Minden Commodore x86-os emukártya és kiegészítõ pöcés grafikus kártyák
+ Emplant (hardware-es verzió)   : Emulátor
+ AMAX (hardware-es verzió)      : Emulátor
+
+ *:   az  így  jelzett  turbókártyák  nem  mûködnek  teljesen  együtt  a Z2-es
+alaplappal!   Ezekrõl  a  kártyákról el kell távolítani a RAM-ot, amennyiben a
+Z2-es  alaplapunk  `96  márciusa elõtt lett gyártva (a késõbb készültekkel már
+biztonságosan  mûködtethetõek  ezek a kártyák is minden további nélkül).  Ezen
+kívül  a  régi  (`96  márciusa  elõtt gyártott) Z2-es alaplapokra nem ajánlott
+RAM-ot  tenni, mert azok erõsen fékezik a rendszert (16 bit).  Az új kártyákon
+már 32 bites SIMM aljzatok vannak, amivel már megéri az új kártyákra is RAM-ot
+tenni.
+
+ Grafikus  kártyák:   Minden  Z2-es  grafikus  kártya használható, csak a régi
+Picassoknál  keletkezhetnek  problémák,  mivel  256  színben  csúnya  lehet  a
+grafika.  Az újabb Picassoknál ez nem fordul elõ.  Olyan grafikus kártyák amik
+a Videó-slotot (is) elfoglalják, nem használhatóak!
+
+ PCMCIA port:  Mivel alapban a PCMCIA csatlakozó a torony alja felé néz, ezért
+az  nem  használható.  Szériatartozék viszont egy olyan adapter, ami 90 fokkal
+elfordítja  a  csatlakozót,  és  azt  a tornyon kívülre vezeti ki.  Így minden
+kiegészítõt   tovább  használhatunk  (ennek  az  a  hátránya,  hogy  az  újabb
+(EIDE/ATAPI)   kontrollerekkel   meghajtott  cuccok  nem  kerülhetnek  bele  a
+házalásba - GOD!).
+
+ Táp:   nagyon  javasolt,  mivel  egy  230  Wattos  tápegységet  és  egy  erõs
+hûtõventillátort   tartalmaz,   és   mindegyikre  szükség  van  több  hardware
+kiegészítõ  esetén.   További  elõnyei:  2 lemezmeghajtó tápcsatlakozó (nem az
+alaplapról  szipkázzák  a  feszkót);  sok  csatlakozó  belsõ  (SCSI)  egységek
+számára,  így szükségtelenné válik a külsõ táp; monitor tápcsatlakozó, így nem
+kell   külön  kapcsolgantni  azt  sem;  az  egész  torony  teljes  tápellátása
+biztosított.
+
+ Turbo-kapcsoló:  ennek tulajdonképpen két feladata van:
+
+ 1. átkapcsolni a freq kijelzését (MHz);
+ 2. be/kikapcsolni a turbókártyát.
+
+ MHz  kijelzés:  a kijelzõ hátoldalán jumperek segítségével lehet beállítani a
+kijelzendõ  sebességet  a  turbó  gomb  ki/bekapcsolt állapotára.  A kézikönyv
+nagyon jól leírja ezt a beállítást.
+
+                                ½Jörg Bergs¼
+                     ¾(Fordítás & megjegyzések: GOD!)¼
+
+ DMA:   Direct  Memory  Access;  valami  úgy  nyúl hozzá a memóriához, hogy az
+adatoknak nem kell átmászniuk a CPU-n is, így tehermentesítik azt.

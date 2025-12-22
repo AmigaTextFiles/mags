@@ -1,0 +1,187 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="context.html">PREV</a> | <a href="asyncc.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Mixed/Fat Binary </b>
+
+Mixed/Fat Binary Creation is a bit more complicated. You CANNOT do it from
+the CLI Interface of the Assembler. You HAVE to use the GUI. I will describe
+how to create a Mixed/Fat Binary now in several steps:
+
+1. Create a Project file of the Storm Environment.
+   The Settings you use (PPC/Mixed Binary/...) do not
+   matter at all, as you will change them completely,
+   anyways.
+2. Remove all entries from the project, so that it is an
+   empty project now.
+3. In the Assembler-Settings do:
+
+   * Append Header File: stormc:asm-includes/powerpc/ppcmacros.i
+   * PowerPC: Remove &quot;Codegenerator: Create executable Program&quot; Checkmark
+     (if not already Removed)
+
+4. In the Linker-Settings do:
+
+   * Linker1: Set to &quot;Custom Startup-Code&quot; Progdir:startups/asm_startup.o
+   * Link Program
+
+5. Save these Settings somewhere. You will always use them,
+   if you want to do a Mixed Binary WITHOUT C parts (with
+   C Parts you don't need this, you only need this for a
+   100% ASM Project).
+
+6. Select &quot;Choose Program Name&quot; and set the Name of your
+   Program
+
+7. Include your 68k sources and your PPC sources (see below)
+
+8. ASM the thing by pressing the button in the Storm Environment
+
+As to how the sources have to look:
+
+A. PPC-Part
+===========
+
+1. XREF the _PowerPCBase
+2. XDEF your PPC-Functions
+3. XREF all used 68k Functions called by Context-Switches
+4. Define your functions as usual in the code-section,
+   don't forget to create the Stackframes
+
+Example (out of the StormPowerASM Docs) :
+
+   incdir &quot;stormc:asm-includes&quot;
+   include powerpc/powerpc.i
+
+   XREF    Func68K
+   XREF    _PowerPCBase
+
+   XDEF    PPCMain
+
+   section code
+PPCMain
+   prolog
+   mr      r4,r3
+   li      r3,8
+   RUN68K  Func68K
+   epilog
+
+B. 68k-Part
+===========
+
+1. XREF all PPC-functions to be used
+2. XREF _LinkerDB, if you use Global Variables inside the PPC-Functions
+   In this case you should put it to a4 using
+
+   lea _LinkerDB,a4
+
+   b efore calls of RUNPOWERPC/RUNPOWERPC_XL. _LinkerDB points
+   to the SmallDataBase.
+
+3. Define all 68k-Functions the PPC-Source calls by using Context-Switches
+4. Define _PowerPCBase
+5. Define _main as the main function of your 68k Code.
+   A Mixed Binary always starts on 68k side !!!
+6. Open powerpc.library like described in the section about Context-Switches
+   (OPENPOWERPC,CLOSEPOWERPC,POWERDATA)
+7. Do the interfacing between 68k and PPC Parts by using Context-Switches
+
+The difference between Mixed and Fat Binary is mainly:
+
+- Mixed Binaries do some things in 68k, some things in PPC
+- Fat Binary have all PPC functions also available in
+  68k versions. If powerpc.library fails to open, they
+  run the 68k versions, else the PPC versions
+
+BTW: PPC-Library-Functions get their Library-Bases in r3 after the call !!!
+
+Example out of the StormPowerASM Docs:
+
+68k Part (remember to name your sources differently !!!)
+
+  XREF    PPCMain
+  XREF    _LinkerDB
+  XDEF    Func68K
+  XDEF    _PowerPCBase
+  XDEF    _main
+
+  incdir &quot;stormc:Asm-includes&quot;
+  include powerpc/powerpc.i
+  include lvos/exec_lib.i
+  include lvos/dos_lib.i
+
+  section &quot;&quot;,code
+
+_main
+  movem.l d1-a6,-(sp)
+  move.l  $4.w,_SysBase
+  lea     _LinkerDB,a4
+  OPENPOWERPC
+  tst.l   _PowerPCBase
+  beq.b   .exit
+  lea     dos_name,a1
+  moveq   #0,d0
+  CALLEXEC        OpenLibrary
+  tst.l   d0
+  beq.b   .exit
+  move.l  d0,_DOSBase
+  move.l  #12,d0
+  RUNPOWERPC      PPCMain
+  move.l  d0,Args
+  move.l  #result_text,d1
+  move.l  #Args,d2
+  CALLDOS         VPrintf
+  move.l  _DOSBase,a1
+  CALLEXEC        CloseLibrary
+.exit
+  CLOSEPOWERPC
+  movem.l (sp)+,d1-a6
+  moveq   #0,d0
+  rts
+
+
+Func68K
+  movem.l d1-a6,-(sp)
+  muls    d1,d0
+  movem.l (sp)+,d1-a6
+  rts
+
+  section &quot;&quot;,data
+
+  POWERDATA
+dos_name        dc.b    &quot;dos.library&quot;,0
+result_text     dc.b    &quot;The PPCMain function returned %ldn&quot;,0
+
+  section &quot;&quot;,bss
+_SysBase        ds.l    1
+_DOSBase        ds.l    1
+Args            ds.l    1
+
+PPC Part:
+
+  incdir &quot;stormc:asm-includes&quot;
+  include powerpc/powerpc.i
+
+  XREF    Func68K
+  XREF    _PowerPCBase
+
+  XDEF    PPCMain
+
+  section code
+PPCMain
+  prolog
+  mr      r4,r3
+  li      r3,8
+  RUN68K  Func68K
+  epilog
+
+</pre>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Workshops.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops2.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Workshops
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="&gt;&gt;"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H1>Workshops / Hintergrundberichte / Buchvorstellungen</H1>
+<H2>1. Workshop: Verteilte Dateisysteme - Teil 2 (von Uwe Pannecke)</H2>
+<P><B>Der Amiga als NFS-Client und -Server</B></P>
+<P><B>Teil 2 - NFS-Server Amiga</B></P>
+<P>
+Das urspr&uuml;nglich von SUN Microsystems entwickelte Network File System (rfc
+1094), kurz auch als NFS bezeichnet, erlaubt mehreren Rechnern, Ressourcen
+zusammen- zufassen und gemeinsam &uuml;ber ein TCP/IP-Netzwerk zu nutzen. Mit
+installiertem NFS wird es so m&ouml;glich, von beliebiger Stelle des Netzes auf
+installierte Programme zuzugreifen oder f&uuml;r alle beteiligten Rechner
+erreichbar an zentraler Stelle Datenbest&auml;nde wie Dokumentationen,
+Bildersammlungen, Lexika u.&auml;. abzulegen. In der Unix/Linux-Welt ist das NFS
+ein g&auml;ngiges Verfahren, um Verzeichnisse entfernter Rechner in den lokalen
+Verzeichnisbaum einzubinden und selbige so benutzen zu k&ouml;nnen, als w&auml;ren
+sie auf dem eigenen Rechner vorhanden.
+</P>
+<P>
+Nachdem im ersten Teil des Workshops der Amiga als Client in ein Network
+File System integriert wurde, soll diesmal der Amiga seine Festplatten-
+Ressourcen zur Verf&uuml;gung stellen.
+</P>
+<H3>1. NFS Daemon</H3>
+<P>
+Um dem Amiga die M&ouml;glichkeit zu geben, Verzeichnisse anderen Netzwerk-
+Teilnehmern bereitzustellen, muss ein NFS-Server her. Vor diesem Problem
+stand auch Joseph Walton, der seinen Amiga mit einem PC gekoppelt hatte
+und mit seinem Amiga-NFS-Clienten leider nur in einer Richtung problemlos
+Daten transferieren konnte. Da keine Abhilfe in Sicht war, griff er zu
+DiceC und dem MiamiSDK und programmierte kurz entschlossen einen Amiga-NFS-
+Server. Er nannte ihn schlicht &quot;nfsd&quot; und stellte ihn freundlicherweise
+unter die GPL und damit allen interessierten Usern auf seiner Homepage [1]
+kostenlos als Binary und Source zur Verf&uuml;gung. Klasse.
+</P>
+<H4>1.1 Installation</H4>
+<P>
+Zum Testzeitraum war die Version vom 14. Oktober 2000 verf&uuml;gbar und mit
+einem Umfang von knapp 20 KByte als LZX-Archiv in wenigen Augenblicken
+herunter geladen. Neben dem eigentlichen Daemon &quot;nfsd&quot; enth&auml;lt das Paket im
+&quot;nfsd&quot;-Verzeichnis eine Readme-Datei sowie eine Beispielkonfiguration und
+&quot;nfsd.inode&quot;. Das komplette Verzeichnis k&ouml;nnt Ihr an einen beliebigen Platz
+kopieren. Einzige Bedingung ist eine Schreibberechtigung f&uuml;r dieses
+Verzeichnis.
+</P>
+<P>
+ <A HREF="img/nfs_nfsd_dir.png"><IMG SRC="thumb/nfs_nfsd_dir.jpg" WIDTH="120" HEIGHT="87" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Da in unserem Fall &quot;nfsd&quot; gemeinsam mit Miami verwendet werden soll, habe
+ich die Schublade kurzerhand ins Miami-Verzeichnis verfrachtet.
+</P>
+<H4>1.2 Konfiguration</H4>
+<P>
+Entscheidend f&uuml;r eine erfolgreiche Freigabe von Laufwerken und/oder
+Verzeichnissen ist die Datei &quot;nfsd.config&quot;. Selbige k&ouml;nnt Ihr in einem
+beliebigen Editor Euren Erfordernissen anpassen. Die Eintr&auml;ge folgen einem
+einheitlichen Schema: Das lokale Laufwerk bzw. Verzeichnis mit komplettem
+Pfad folgt der Name, unter dem dieses Laufwerk/Verzeichnis exportiert
+werden soll. Dem schlie&szlig;t sich eine Definition der zugriffsberechtigten
+IP-IDs sowie Attributen zu User-ID und Gruppen-ID mit den gew&uuml;nschten
+Zugriffs-Rechten. Konstruieren wir zur Veranschaulichung einige Beispiele:
+</P>
+<P>
+A)<BR>
+Das lokale Verzeichnis &quot;Work2:maildaten/&quot; wird als Verzeichnis &quot;/amiga&quot;
+exportiert werden. Auf dieses Verzeichnis darf lediglich der Rechner mit
+der IP-ID 192.168.1.101 Zugriff erhalten. Eigner soll der User mit der ID
+500 sein, dieser User geh&ouml;rt zur Gruppe mit der ID 100. Es werden Rechte
+zum Lesen, Schreiben und Ausf&uuml;hren der Daten im Verzeichnis f&uuml;r Eigner,
+Gruppe und Sonstige vergeben. Der passende Eintrag lautet
+</P>
+<PRE>
+Work2:Maildaten  /amiga  192.168.1.101  RW  UID=500  GID=100  PERM=777 FORCEALL
+</PRE>
+<P>
+B)<BR>
+Das Verzeichnis &quot;Ram:&quot; soll als &quot;/amigaram&quot; f&uuml;r alle Rechner des lokalen
+Netzwerkes (hier alle Rechner mit einer IP-ID 192.168.1.x) exportiert
+werden. Die Dateien sollen &quot;root&quot; geh&ouml;ren und nur mit Leserechten versehen
+sein. Der passende Eintrag lautet diesmal
+</P>
+<PRE>
+Ram:   /amigaram   192.168.1.0/255.255.255.0 UID=0 GID=0 PERM=444 FORCEALL
+</PRE>
+<P>
+C)<BR>
+Die Festplatte &quot;Work:&quot; soll mit Lese- und Ausf&uuml;hrungsrechten als
+Verzeichnis &quot;/daten&quot; freigegeben und allen Rechnern unabh&auml;ngig von ihrer
+IP-ID zug&auml;nglich sein. Die Daten geh&ouml;ren dem User mit der ID 600. Die
+zugeh&ouml;rige Gruppen-ID ist 200.
+</P>
+<PRE>
+Work:  /daten  -  UID=600  GID=200  PERM=555  FORCEALL
+</PRE>
+<P>
+F&uuml;r einen detaillierten Einstieg zur Vergabe der Dateirechte auf
+Unix/Linux- Systemen sei an dieser Stelle auf das im O'Reilly Verlag
+bereits in dritter Auflage ver&ouml;ffentlichte und auch online verf&uuml;gbare [2]
+Buch &quot;Linux - Wegweiser zur Installation &amp; Konfiguration&quot; von M. Welsh, M.
+Dalheimer und L. Kaufmann verwiesen.
+</P>
+<P>
+Speichert abschlie&szlig;end die Euren W&uuml;nschen entsprechend ge&auml;nderte
+Konfiguration unter einem aussagekr&auml;ftigen Namen ab.
+</P>
+<H3>2. TCP/IP-Stack</H3>
+<P>
+Hier habt Ihr die Qual der Wahl. Neben AmiTCP und Genesis ist gleicherma&szlig;en
+auch Miami geeignet. Da bei Miami etwas mehr Aufwand zu treiben ist, soll
+an dieser Stelle f&uuml;r die Konfiguration eben jener TCP/IP-Stack [3] als
+Beispiel dienen. Sinngem&auml;&szlig; lassen sich die Aussagen auch auf die beiden
+anderen Vertreter &uuml;bertragen.
+</P>
+<H4>2.1 Miami</H4>
+<P>
+Ist Miami gestartet, solltet Ihr &uuml;berpr&uuml;fen, ob unter &quot;Datenbank/Dienste&quot;
+die Eintr&auml;ge
+</P>
+<PRE>
+Name     ID    Protokoll
+sunrpc   111     tcp
+sunrpc   111     udp
+</PRE>
+<P>
+vorhanden sind und gegebenenfalls erg&auml;nzen.
+</P>
+<P>
+ <A HREF="img/nfs_miami_rpc.png"><IMG SRC="thumb/nfs_miami_rpc.jpg" WIDTH="120" HEIGHT="76" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<H3>3. Der Deamon</H3>
+<P>
+Da &quot;nfsd&quot; ein RPC-Dienst ist, ben&ouml;tigt der Server zwingend einen laufenden
+Portmapper. In der Miami-Distribution werdet Ihr einen solchen Portmapper
+jedoch vergeblich suchen. Doch keine Panik- auch hier k&ouml;nnen die
+Kontrahenten AmiTCP bzw. Genesis aushelfen. Bereits in den Demoversionen
+[4] und [5] ist im Verzeichnis &quot;BIN:&quot; mit &quot;portmap&quot; das passende Programm
+enthalten. Kopiert dieses z.B. in das C-Verzeichnis. In einer Shell k&ouml;nnt
+Ihr dann den Portmapper, nachdem Miami auf &quot;Online&quot; gesetzt ist, durch
+Eingabe von &quot;portmap&quot; starten. Ob der Portmapper auch wirklich aktiv ist,
+verr&auml;t das Tool &quot;rpcinfo&quot;, welches ebenso wie &quot;portmap&quot; im &quot;BIN:&quot;-
+Verzeichnis von AmiTCP bzw. Genesis zu finden ist. Tauchen in der
+&quot;rpcinfo&quot;-Ausgabe der Port 111 und die Protokolle tcp und udp auf, war der
+Start erfolgreich.
+</P>
+<P>
+ <A HREF="img/nfs_portmap.png"><IMG SRC="thumb/nfs_portmap.jpg" WIDTH="120" HEIGHT="55" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Jetzt kann der NFS-Server endlich zum Zug kommen. Bei seinem Aufruf
+&uuml;bergeben wir ihm die zu verwendende Konfigurationsdatei.
+</P>
+<P>
+Ist alles nach Plan gelaufen, teilt uns &quot;nfsd&quot; seinen aktiven Zustand mit
+der Shell-Ausgabe &quot;Serving.&quot; mit. Zus&auml;tzlich k&ouml;nnen wir seine
+Arbeitsbereitschaft mit erneutem Aufruf von &quot;rpcinfo&quot; &uuml;berpr&uuml;fen.
+</P>
+<P>
+ <A HREF="img/nfs_nfsd.png"><IMG SRC="thumb/nfs_nfsd.jpg" WIDTH="120" HEIGHT="65" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<H3>4. Die Linux-Seite</H3>
+<P>
+Ich gehe davon aus, dass wie im ersten Teil beschrieben, die NFS-
+Unterst&uuml;tzung der jeweiligen Linux-Distribution bereits installiert ist.
+Somit bleiben f&uuml;r die Einbindung der freigegebenen Amiga-
+Laufwerke/Verzeichnisse nur noch wenige Handgriffe. Unter Linux setzt man
+zu mountende Ger&auml;te und damit auch Laufwerke sowie Verzeichnisse auf ein
+im Linux-Dateisystem vorhandenes Verzeichnis, dem Mountpoint, auf.
+Entweder Ihr erstellt ein gew&uuml;nschtes Verzeichnis zu diesem Zweck oder aber
+Ihr benutzt das auf den meisten Systemen zu findende &quot;/mnt&quot;- Verzeichnis.
+Der eigentliche Mount-Befehl besitzt folgendes Format:
+</P>
+<PRE>
+mount -t typ ger&auml;t mount-point
+</PRE>
+<P><B>Konstruieren wir wieder zwei konkrete Beispiele:</B></P>
+<P>
+A)<BR>
+F&uuml;r das freigegebene Amiga-Verzeichnis soll im Wurzelverzeichnis eine
+eigene Schublade mit dem Namen &quot;amiga&quot; erstellt werden. Dies gelingt in
+einer Shell im Handumdrehen und als Superuser mit der Kommandofolge &quot;mkdir
+/amigadaten&quot;. Nun kann das auf dem Amiga als &quot;/amiga&quot; freigegebene
+Verzeichnis &quot;Work2:Maildaten&quot; (wiederum als Superuser) mit Hilfe der
+Eingabe
+</P>
+<PRE>
+mount -t nfs 192.168.1.102:/amiga /amigadaten
+</PRE>
+<P>
+in das lokale Dateisystem eingeh&auml;ngt werden. Ab sofort k&ouml;nnt Ihr nun von
+Linux aus auf das Amiga-Verzeichnis mit den fest- gelegten Rechten
+zugreifen.
+</P>
+<P>
+B)<BR>
+Soll die weiter oben als &quot;/amigaram&quot; freigegebene RAM-Disk unter &quot;/mnt&quot;
+ein- gebunden werden, sorgt der Befehl
+</P>
+<PRE>
+mount -t nfs 192.168.1.102:/amigaram /mnt
+</PRE>
+<P>
+f&uuml;r das gew&uuml;nschte Ergebnis.
+</P>
+<P>
+ <A HREF="img/nfs_aonlinux.png"><IMG SRC="thumb/nfs_aonlinux.jpg" WIDTH="120" HEIGHT="91" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Wollt Ihr nicht nur als &quot;root&quot; oder &quot;su&quot;, sondern auch als normaler
+Benutzer den Befehl &quot;mount&quot; ausf&uuml;hren, solltet Ihr den betreffenden
+Ger&auml;tenamen f&uuml;r das Amiga-Verzeichnis mit einem entsprechenden Eintrag
+in der Datei &quot;/etc/fstab&quot; auflisten.
+</P>
+<H3>5. Fazit</H3>
+<P>
+Wenn man sich erst einmal mit dem f&uuml;r Amiga-Verh&auml;ltnisse ungew&ouml;hnlichen
+Aspekten von Eigent&uuml;merschaft und Gruppenzugeh&ouml;rigkeit der Dateien auf dem
+einzubindenden Dateisystem vertraut gemacht hat, bietet das Network File
+System auch dem Amiga eine transparente und zugleich elegante M&ouml;glichkeit,
+Dateien netzwerkweit verf&uuml;gbar zu machen.
+</P>
+[1] <A HREF="http://www.pr0n.freeserve.co.uk/nfsd.html" TARGET="_top">http://www.pr0n.freeserve.co.uk/nfsd.html</A><BR>
+[2] <A HREF="http://www.oreilly.de/german/freebooks/rlinux3ger/linux_wegIVZ.html" TARGET="_top">http://www.oreilly.de/german/freebooks/rlinux3ger/linux_wegIVZ.html</A><BR>
+[3] <A HREF="ftp://de.aminet.net/pub/aminet/comm/tcp/Miamixxx.lha" TARGET="_top">ftp://de.aminet.net/pub/aminet/comm/tcp/Miamixxx.lha</A><BR>
+[4] <A HREF="ftp://de.aminet.net/pub/aminet/comm/tcp/AmiTCP-demo-40.lha" TARGET="_top">ftp://de.aminet.net/pub/aminet/comm/tcp/AmiTCP-demo-40.lha</A><BR>
+[5] <A HREF="ftp://de.aminet.net/pub/aminet/comm/tcp/gendemo104.lha" TARGET="_top">ftp://de.aminet.net/pub/aminet/comm/tcp/gendemo104.lha</A><BR>
+<P><B>Uwe Pannecke &lt;<A HREF="mailto:Uwe.Pannecke@t-online.de">Uwe.Pannecke@t-online.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops2.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

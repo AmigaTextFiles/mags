@@ -1,0 +1,387 @@
+<html>
+ <head>
+  <title>Configuration de MUI</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+</a>
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr" alt="Obligement">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table summary="" align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr valign="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table summary="" align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique&nbsp;: MorphOS - configuration de MUI </font>par&nbsp;<a href="mailto:guy.maysonnave@freesbee.fr">Guy&nbsp;Maysonnave</a></div><br><br><br>
+
+MUI (Magic User Interface) est une interface graphique développée pour Amiga 68k depuis 1992. Désormais, elle fait partie intégrante des
+nouveaux systèmes d'exploitation PowerPC, AmigaOS 4 et MorphOS. Cette interface est entièrement configurable par
+l'utilisateur et offre aux programmeurs un système de gestion d'interfaces graphiques complet et relativement
+simple à appréhender (voir les tutoriels sur <a href="http://www.guru-meditation.net/" target="_blank">www.guru-meditation.net</a>).
+Beaucoup de programmes utilisent MUI, on peut citer IBrowse, YAM, MUIFind, VoodooX, Voyager, OptyCDPlayer,
+Song Player, etc. De plus, la plupart des programmes récents l'utilisent.
+Cet article traitera plus particulièrement de MUI 3.9 utilisé par MorphOS 1.4, compatible avec AmigaOS 4 et qui reste très
+proche de MUI 3.8 pour Amiga 68k et autres émulateurs.<br><br>
+
+<font size="+1" color="#ccbb33">1. Global MUI Settings</font><br><br>
+
+Les préférences globales permettent de régler tous les aspects graphiques et le design pour toutes les applications
+compatibles MUI. Par la suite, vous pourrez faire des réglages pour chacune d'entre elles. Les préférences globales
+sont accessibles depuis le menu "Settings/Global MUI settings" d'Ambient. Ce dernier dispose de ses propres
+préférences via "Ambient MUI settings". Sur Amiga, on y accède depuis "MUI:mui".<br><br>
+
+<b>Attention :</b> Dans MorphOS 1.4, le volume "MUI:" n'existe plus ! Cela peux poser des problèmes lors de
+l'installation de certains programmes comme IBrowse, par exemple, qui cherche "MUI:libs/mui/" pour installer
+les classes nécessaires à son bon fonctionnement. Les éléments standards de MUI sont inclus dans MorphOS
+et un répertoire est prévu pour recevoir les "classes externes" installés par certains programmes.
+Je propose de l'utiliser pour créer le volume MUI: et les répertoires manquants
+comme pour une installation MUI classique. Pour cela, il suffit de :<ul>
+
+<li>Faire une assign de MUI comme ceci : "assign MUI: SYS:classes/mui"
+<li>Créer le répertoire MUI:libs en tapant : "makedir MUI:libs"
+<li>Créer le répertoire MUI:libs/mui en tapant : "makedir MUI:libs/mui"
+<li>Assigner les librairies de MUI en tapant : "assign Libs: MUI:libs ADD"
+</ul>
+
+Ajoutez la première et la dernière des lignes ci-dessus dans votre user-startup.<br><br>
+
+Ainsi, vous n'aurez plus de problèmes avec MUI lors de l'installation d'un programme. Vous n'êtes pas obligé de faire
+cette modification du système. Il suffit parfois de copier les classes MUI dans "SYS:classes/mui" mais certains scripts
+d'installation peuvent s'arrêter si les répertoires créés plus haut sont absents. Dans tous les cas soyez sûr de ce
+que vous faites et n'hésitez pas à faire une sauvegarde de votre partition "SYS:" avant toutes modifications.<br><br>
+
+Vos réglages sont sauvegardés sur le disque dans "Envarc:mui/". Si vous modifiez
+un élément pour une application en particulier, un fichier de préférences est alors créé au nom de cette application.
+Pour partager ces réglages avec d'autres applications, copiez-le dans "MUI:presets/", il sera ainsi accessible
+depuis les "presets" du menu contextuel.<br><br>
+
+Ouvrons "Global MUI settings". En bas, vous trouverez le bouton "Save" qui sauve définitivement vos réglages.
+"Use" les sauve provisoirement jusqu'au prochain démarrage du système. "Test" fait la même chose en laissant
+la fenêtre de préférences ouverte et "Cancel" pour annuler les modifications et quitter.<br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui1.jpg" width="543" height="429" border="0" alt="MUI - fenêtre générale"><br><br>
+</div>
+
+<font size="+1" color="#ccbb33">2. Les menus</font><br><br>
+
+La fenêtre de préférences globales de MUI dispose de trois types de menus.<br><br>
+
+<font size="+1" color="#ccbb33">2.1 Le menu classique</font><br><br>
+
+Ce menu est accessible avec un clic droit comme dans toutes les bonnes applications. Ce menu n'est accessible
+qu'avec les préférences globales. Vous pourrez ouvrir des préférences préalablement sauvées grâce à "Save as". Le chemin par
+défaut pour ouvrir ou sauver vos préférences est "MUI:Presets/". Il vous faudra aussi créer ce répertoire car il n'existe
+pas sous MorphOS 1.4 (en tapant "makedir MUI:presets"). Les préférences sauvées dans "MUI:Presets/", seront accessibles
+pour n'importe quelles applications depuis le menu contextuel.<br><br>
+
+<font size="+1" color="#ccbb33">2.2 Le menu contextuel</font><br><br>
+
+Il apparaît si on clique avec le bouton droit et que le pointeur se trouve sur un élément
+modifiable de MUI. Ce menu permet de retrouver les réglages de base, les derniers réglages sauvegardés, revenir aux
+dernières modifications ou sélectionner des présélections (presets), ces dernières devant évidemment se trouver
+dans "MUI:presets". La particularité de ce menu est que son champ d'action dépend de l'endroit où il a été activé.
+Si c'est au dessus du bouton "Builtin", il s'applique à l'ensemble des éléments de MUI. Si c'est au dessus de la
+liste des groupes, seuls les gadgets du groupe sélectionné seront concernés. Et enfin, si c'est au dessus d'un
+gadget, seul ce dernier sera concerné. Regardez le titre du menu contextuel pour connaître son champ d'application.<br><br>
+
+<font size="+1" color="#ccbb33">2.3 Le pop menu</font><br><br>
+
+<img src="../gfx/morphosmui2.jpg" width="255" height="211" border="0" hspace="5" vspace="5" align="right" alt="MUI - pop menu">
+
+Le "pop menu" MUI est accessible en cliquant sur le premier gadget MUI (côté droit) de la
+barre de titre des fenêtres. Ce menu est disponible pour toutes les applications MUI. Il propose plusieurs options
+comme Iconify (pour icônifier la fenêtre), Snapshot (pour fixer la taille et la position de la fenêtre),
+Unsnapshot (pour libérer la fenêtre), Embedded menus (permet d'afficher le menu de l'application dans la fenêtre),
+Jump to screen (pour afficher l'application dans un autre écran MUI) et MUI Settings (pour lancer les préférences MUI
+pour l'application courante).<br><br>
+
+<b>Astuce :</b> si vous désirez retrouver les réglages MUI par défaut de MorphOS 1.4 vous pourrez les charger depuis le
+cédérom dans "MorphOSBoot:Prefs/env-archive/MUI/«Global».prefs" puis sauvez-les dans "MUI:Presets" sous le nom "MOS14.prefs"
+par exemple.<br><br>
+
+<font size="+1" color="#ccbb33">3. Les classes</font><br><br>
+
+Le gadget cyclant, en haut à droite de la fenêtre de préférences, permet de choisir entre les éléments MUI de base
+(Builtin) inclus dans MorphOS et les éléments ajoutés (External) pour certaines applications. La liste en dessous
+affiche les différents éléments. Passons en revue les éléments de bases :<br><br>
+
+<font size="+1" color="#ccbb33">3.1 System</font><br><br>
+
+Réglez ici le mode d'icônification, avec ou sans icône. L'interface des applications MUI peut être réaffichée
+via l'outil "Exchange" du menu "Ambient/Utilities". Les autres réglages sont grisés car ils s'appliquent
+individuellement. Ils permettent d'activer l'iconification au démarrage et de choisir les raccourcis clavier
+pour lancer l'interface de l'application MUI courante.<br><br>
+
+<font size="+1" color="#ccbb33">3.2 Windows</font><br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui3.jpg" width="555" height="419" border="0" alt="MUI - windows"><br><br>
+</div>
+
+Dans le groupe "control" puis "positions", indiquez si MUI doit se rappeler de la taille et la position de la fenêtre
+lorsqu'on quitte les applications. On peut aussi choisir les gadgets qui apparaîtront dans la barre de titre des fenêtres.<br><br>
+
+<b>Astuce :</b> immobilisez un instant le pointeur de la souris sur un gadget pour avoir son descriptif.<br><br>
+
+En dessous, vous pourrez choisir les polices de caractères par défaut. Si aucune police n'est indiquée pour les autres
+éléments, ce sont celles-ci qui seront utilisées.<br><br>
+
+"Blending" permet de régler le mixage des contours des gadgets avec les arrières plans. Plus le pourcentage est élevé
+moins les contours seront visibles. Généralement, une valeur entre 50% et 60% améliore sensiblement l'aspect général
+mais cela dépend aussi des autres réglages et des goûts de chacun.<br><br>
+
+La zone "Background" permet de choisir les arrières plans des fenêtres et des requêtes. Le choix des arrières plans
+est possible pour pratiquement tous les éléments de MUI. Cliquer sur "Window" fera apparaître la fenêtre
+"Adjust Background".<br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui4.jpg" width="290" height="338" border="0" alt="MUI - adjust background"><br><br>
+</div>
+
+L'onglet "Pattern" propose des motifs prédéfinis, "color" permet de choisir parmi les couleurs de base de MUI,
+depuis leurs positions dans la palette utilisée ou avec la roue de couleurs RGB. L'onglet "Bitmap" permet de
+sélectionner une image de fond et de régler sa luminosité et ses couleurs. Tous les formats d'image supportés
+par MorphOS sont utilisables. Enfin, l'onglet "Gradient", permet de créer des dégradés.<br><br>
+
+La zone "Border Spacing" règle la largeur des bords des fenêtres. Plus la valeur est élevée, plus l'espace
+entre les éléments à l'intérieur de la fenêtre et les bords sera grand.<br><br>
+
+<font size="+1" color="#ccbb33">3.3 Groups</font><br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui6.jpg" width="533" height="383" border="0" alt="MUI - groups"><br><br>
+</div>
+
+La plupart des éléments de MUI est placée en groupes comme ici. Dans "Title" vous pourrez régler l'aspect et la
+position des titres des groupes. Le groupe "Frame" est présent dans beaucoup d'éléments de MUI et permet de
+régler le contour de l'élément courant. Dans le groupe "Frame", cliquez sur "Normal". Une fenêtre s'ouvre, "Adjust Frame",
+choisissez parmi les contours proposés et ajustez l'espacement entre le contenu et le contour choisi.<br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui5.jpg" width="441" height="174" border="0" alt="MUI - adjust frame"><br><br>
+</div>
+
+En dessous à gauche, "Spacing" permet de régler l'espacement entre chaque groupe et le contour de la page.
+A côté, dans "Background", réglez l'arrière-plan des groupes ("framed"), de la page les contenants ("page")
+et d'un autre type de groupe ("Register". que l'on retrouve par exemple dans les onglets de la fenêtre "Adjust Background").<br><br>
+
+<b>Astuce :</b> le glisser/déposer est possible entre éléments du même type. Par exemple, si vous désirez le même réglage
+pour "Frame/Normal" et "Virtual", faîtes glissez le bouton de l'un sur l'autre. Idem entre les "Background".<br><br>
+
+<font size="+1" color="#ccbb33">3.4 Buttons</font><br><br>
+
+Réglez, ici, l'aspect de tous les types de boutons.<br><br>
+
+"Text Buttons" permet de régler le contour, les fonds et la police pour les boutons textes et cyclant.<br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui7.jpg" width="252" height="166" border="0" alt="MUI - text buttons"><br><br>
+</div>
+
+Dans "Cycle Buttons", "Menu" permet de choisir si les différentes valeurs s'affichent
+par alternance dans le bouton ("never"), si un menu apparait avec toutes les valeurs ("always") ou seulement s'il
+y a plus de trois valeurs ("3 or more"). Dans ces deux derniers cas l'aspect utilisé sera celui choisi dans
+le paragraphe "3.9 Menus" dans "Menubox Design".<br><br>
+
+Le groupe "Image Buttons" permet de choisir l'aspect de chacun des "boutons images MUI" ici présents. Vous pourrez
+choisir le dessin pour chaque élément. Cliquez, par exemple, sur "Checkmark", une fenêtre s'ouvre. Vous
+pourrez choisir parmi des éléments de base ("Vector") ou plus sophistiqué dans l'onglet "External".<br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui8.jpg" width="503" height="160" border="0" alt="MUI - Image buttons"><br><br>
+</div>
+
+<font size="+1" color="#ccbb33">3.5 Scrollbars</font><br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui9.jpg" width="545" height="381" border="0" alt="MUI - scrollbars"><br><br>
+</div>
+
+Comme pour les boutons, choisissez ici les graphismes pour les barres et les flèches de défilement.<br><br>
+
+La boîte à cocher en bas permet d'activer l'utilisation du bouton du milieu ou de la molette.<br><br>
+
+<font size="+1" color="#ccbb33">3.6 Listviews</font><br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui10.jpg" width="447" height="297" border="0" alt="MUI - listviews"><br><br>
+</div>
+
+Cet élément permet l'affichage de listes comme celle utilisée pour sélectionner les différents éléments de
+MUI dans la fenêtre "MUI préférences".<br><br>
+
+Dans "Control" puis "Selection", choisir la méthode de "multi-selection" lorsqu'elle est possible, avec ou
+sans la touche Shift. "Smooth" permet d'adoucir le défilement des listings. Vous pouvez sélectionner les
+polices à utilisez et l'espacement entre les éléments de la liste (Leading).<br><br>
+
+"Design" permet de choisir les contours et arrière-plans des listes. Vous pouvez constater ici qu'il y a deux
+sortes de listes. Les listes avec des entrées sélectionnables et d'autres en lecture simple. Vous pouvez voir
+ces deux types de listes dans les préférences USB de System settings ou Trident. La liste de gauche est une
+"Input List" et celle d'en bas est en lecture simple (Readonly).<br><br>
+
+La zone "Cursor" permet d'ajuster les arrière-plans des éléments actifs et sélectionnés dans les listes.<br><br>
+
+<font size="+1" color="#ccbb33">3.7 Strings</font><br><br>
+
+Ces réglages concernent les cellules de chaînes de caractères.<br><br>
+
+"String Gadgets" correspond aux gadgets de saisie de caractères (par exemple la fenêtre de saisie "Ambient/Execute command").<br><br>
+
+"Text fields", quant à lui, ajuste l'aspect des cellules d'affichage simples (par exemple la fenêtre "Ambient/About"). Notez que
+certaines applications utilisent d'autres classes MUI pour les cellules textes. Il s'agit de "Newstring" ou "TextInput"
+(par exemple la cellule de saisie de l'URL de Voyager). Regardez dans la liste "External" des réglages MUI de l'application
+concernée.<br><br>
+
+<font size="+1" color="#ccbb33">3.8 Sliders et Gauges</font><br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui11.jpg" width="522" height="337" border="0" alt="MUI - gauges"><br><br>
+</div>
+
+Comme pour les boutons texte, réglez ici les boutons "glissants" et leurs contenants, ainsi que les jauges de
+mesure utilisées pour afficher l'avancement d'une opération ou un niveau.<br><br>
+
+<font size="+1" color="#ccbb33">3.9 Menus</font><br><br>
+
+Nous avons vu qu'il y avait plusieurs types de menus. Un menu commun à toutes les applications MUI et accessible à partir
+de la barre de titre de chaque fenêtre MUI, un menu contextuel, présent dans certaines applications, qui s'ouvre selon
+le placement du pointeur de la souris et enfin le menu propre à chaque application.<br><br>
+
+L'aspect de ces menus se règle dans "Menubox Design". Ajustez l'arrière-plan des menus, l'aspect des éléments sous le
+pointeur, la police de caractères. "Shadows" permet de choisir la taille de l'ombre sous le menu. "Delay" fixe la durée
+de la temporisation avant l'ouverture d'un sous-menu lors du passage du pointeur de la souris. Enfin, "Titles"
+s'applique aux titres des menus contextuels.<br><br>
+
+Le groupe "Default Menus" règle le mode d'apparition des menus de l'application. "Type" permet de choisir si le
+menu s'ouvre en haut de l'écran, de la fenêtre ou sous le pointeur de la souris. Dans ce dernier cas la barre du
+menu apparaîtra horizontalement ("mouse pulldown") ou verticalement ("mouse popup") sous le pointeur de la souris.
+Le dernier type "os menu" permet d'utiliser le menu configuré dans "System Setting" pour les applications non MUI.
+"Pullstick" et "Popstick" permettent de choisir si le menu reste ouvert ou pas lorsqu'on relâche le bouton
+droit de la souris. "auto" garde le menu ouvert si le clic est bref.<br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui12.jpg" width="181" height="125" border="0" alt="MUI - menu"><br><br>
+</div>
+
+"Embedded Menus" permet d'incorporer le menu de chaque application à l'intérieur de sa fenêtre et de façon permanente.
+Vous pourrez régler sa position et son aspect indépendamment des autres menus (comme ci-dessus).
+
+<b>Astuce :</b> la présence et la position du menu d'une application sont réglables à partir du menu MUI de la fenêtre de titre.<br><br>
+
+<font size="+1" color="#ccbb33">3.10 Drag &amp; Drop</font><br><br>
+
+Nous l'avons vu, certains éléments MUI peuvent être déplacés sur d'autres du même type. Par exemple pour classer les
+éléments d'une liste ou pour copier un arrière-plan sur un autre. "Left Button", si coché, permet de déplacer un
+élément sélectionné en restant appuyé sur le bouton gauche de la souris et sur la touche de clavier indiquée.
+"Middle Button", idem avec le bouton du milieu. "Autostart" déplace l'élément automatiquement si le bouton de la
+souris reste appuyé et qu'on déplace le pointeur du nombre de pixels indiqué.<br><br>
+
+"Frame" défini le contour et "Look" règle la "transparence" de l'élément déplacé.<br><br>
+
+<font size="+1" color="#ccbb33">3.11 Keyboard</font><br><br>
+
+"Color of active object" permet de choisir la couleur du contour de l'élément MUI actif. Vous pouvez contrôler
+divers éléments MUI grâce à des raccourcis clavier définis en dessous. Par défaut, appuyez sur "Entrer" est
+équivalent à cliquer sur l'élément actif, vous pouvez passer d'un élément à un autre avec la touche de tabulation,
+et la touche "ESC" fermera l'application active.<br><br>
+
+<font size="+1" color="#ccbb33">3.12 Images</font><br><br>
+
+<div align="center">
+<img src="../gfx/morphosmui13.jpg" width="547" height="361" border="0" alt="MUI - images"><br><br>
+</div>
+
+Choisissez ici les images d'illustration pour les unités de stockage, les volumes et répertoires,
+le réseau, ainsi que certains boutons de commande pour les lecteurs/enregistreurs audio et vidéo.
+Les gestionnaires de fichiers RO et ClassAction (sur Aminet) utilisent certains de ces réglages.<br><br>
+
+<font size="+1" color="#ccbb33">3.13 Help</font><br><br>
+
+La plupart des applications utilisant MUI incluent une aide en ligne. Elle peut apparaître si la touche "Help" est sollicitée
+et en laissant le pointeur au dessus d'un élément pendant la durée définie par le bouton "glissant".
+Cette aide peut disparaître à chaque mouvement de la souris ou seulement lorsque le pointeur sort de l'élément concerné.
+Deux aspects sont disponibles, soit une bulle arrondie façon bande dessiné soit un rectangle configurable.
+On pourra choisir la taille et le type de police de caractères ainsi que le ratio hauteur/largeur pour l'affichage de l'aide.<br><br>
+
+<b>Astuce :</b> sur un clavier PC, la touche "help" est généralement à côté de la touche "CTRL" de droite. Il y a un
+pictogramme dessus décrivant un menu et un pointeur de souris. L'aide est parfois utilisée par certaines applications
+pour envoyer des messages. C'est le cas, par exemple, du programme aussi inutile qu'indispensable, l'excellent
+MisterBanana ;-).<br><br>
+
+<font size="+1" color="#ccbb33">4. Classes externes</font><br><br>
+
+Je vous laisse découvrir les autres réglages externes. Ces derniers sont utilisés par certaines applications en particulier.
+Il est peut-être préférable de les régler à partir des préférences MUI de l'application concernée. Dans ce cas, seuls
+les éléments MUI externes utilisés par cette application seront présents dans la liste "External".<br><br>
+
+Voici un descriptif de quelques classes MUI externes avec, entre paranthèses, des exemples d'applications les utilisant :<br>
+
+<ul>
+<li>BetterString : autre classe pour les cellules de texte avec une meilleure gestion de la saisie (Yam et SimpleMail).
+<li>Busy : barre d'attente façon K2000 (IBrowse).
+<li>Bwin : fenêtre sans bordure (PolyNet).
+<li>Newstring : un autre type de cellule de saisie de texte (IBrowse).
+<li>Nlisttree : utilisé pour l'affichage des arborescences (IBrowse).
+<li>Nlistviews : gestion des afficheurs de listes plus puissante et configurable, utilisé par beaucoup d'applications (YAM,
+SimpleMail, AmitradeCenter, VoodooX, etc).
+<li>TextEditor : classe contenant un mini éditeur de texte (édition des messages dans YAM et SimpleMail).
+<li>TextInput : classe pour la saisie et l'affichage de textes. Utilisée par Voyager pour la saisie des URL ou des textes dans une page.
+<li>Toolbar : barre d'outils configurable (YAM).
+<li>TWFmultiLED et Lamp : ajoutent le support des LEDs (points lumineux), pratique pour les logiciels de FTP.
+</ul>
+
+Retrouvez d'autres descriptions sur <a href="http://www.amiga.dk/tumult/desc.html" target="_blank">www.amiga.dk/tumult/desc.html</a>.
+Les développeurs pourront trouver une aide à la programmation MUI en français sur Amiga et MorphOS sur
+l'incontournable site <a href="http://www.guru-meditation.net" target="_blank">Guru Meditation</a>.<br><br>
+
+<font size="+1" color="#ccbb33">5. Réglages individuels</font><br><br>
+
+L'aspect de chaque application peut être modifié individuellement depuis le menu de la fenêtre MUI de l'application
+concernée (et de son propre menu). Un fichier est alors créé dans les volumes contenant les variables d'environnement
+MUI à savoir "ENV:MUI/" pour les réglages temporaires et "ENVARC:MUI/" pour les réglages définitifs. Le fichier
+créé portera le nom de l'application et contiendra les valeurs pour les éléments MUI modifiés. Les autres
+éléments utiliseront les réglages définis dans les préférences "Global MUI settings" et sauvés dans le fichier
+"«Global».prefs". Chaque fenêtre de réglage MUI d'une application offre un réglage supplémentaire. "Screen" permet
+de choisir si l'application s'ouvre sur l'écran "Ambient" (Workbench), sur un autre écran public ouvert ou sur
+son propre écran. Pour en savoir plus sur la création d'écrans publics reportez vous au paragraphe "ModeEdit" de
+l'article <a href="http://obligement.free.fr/articles/morphosprefs.php" target="_blank">MorphOS - configuration des préférences</a>.<br><br>
+
+Voilà, cet article est terminé et j'espère qu'il vous sera utile. N'hésitez pas à tenter des modifications
+dans MUI, car on peut aisément améliorer la qualité de son interface graphique en changeant quelques réglages.
+Mais évidemment, cette relative "beauté" d'une interface graphique est avant tout une histoire de goût.<br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>
+

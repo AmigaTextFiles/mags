@@ -1,0 +1,226 @@
+<html>
+ <head>
+  <title>USB</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="14,85,74,105" href="../index.html" alt="Intro">
+  <area shape="rect" coords="90,85,184,105" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="200,85,302,105" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="318,85,430,105" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="442,85,512,105" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="526,85,630,105" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="648,85,746,105" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#113333" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Hardware : Highway et Subway </font>par&nbsp;<a href="mailto:pixelart@wanadoo.fr">Jean-Yves&nbsp;Auger</a>&nbsp;et&nbsp;<a href="mailto:ours@noname.fr">Jérôme&nbsp;Chesnot</a></div><br><br><br>
+
+
+Cet article se compose de trois parties&nbsp;: la présentation de la couche USB Poseïdon, le montage et les tests des cartes Subway (port horloge) et Highway (port Zorro II).<br><br>
+
+<font size="+1" color="#ccbb33">Poseïdon</font><br><br>
+
+L'intégration de la couche (ou pile) USB à l'AmigaOS a été réalisée de main de maître par Chris Hodges. Les 
+divers commentaires et joyeux Easter Eggs ne manquent pas d'humour, ce qui est fort agréable à l'utilisation.<br>
+L'installation se fait rapidement à l'aide d'un script Installer, les composants sont répartis de la manière suivante&nbsp;:<br><br>
+
+<b>Devs:USBHardware/&nbsp;:</b> les devices correspondants à votre carte, SUBWAY ou HIGHWAY, les pilotes PCI étant en développement.<br><br>
+<b>Classes/USB/&nbsp;:</b> les classes définissant les différents protocoles de communication. Les principales sont massstorage.class (unités de stockage), printer.class (imprimantes), bootmouse.class et bootkeyboard.class, ... Si votre périphérique est conforme au standard USB, ce qui n'est pas toujours le cas, il correspondra à une classe et aura de grandes chances de fonctionner sous Poseïdon.<br><br>
+<b>Storage/DOSDrivers/&nbsp;:</b> les mountlists de vos unités connectées en USB. Si vous avez une version récente de FAT95, vos unités formatées FAT12/FAT16 seront montées automatiquement sur le Workbench. Smaaaart :-)<br><br>
+<b>Prefs/Trident&nbsp;:</b> le programme de préférences complet de la pile USB, vous permet de suivre l'évolution des choses grâce à une console intégrée à la fenêtre, et c'est extrêmement bavard&nbsp;: cela est très rassurant car tout branchement sur l'un des ports USB provoque automatiquement une réaction de l'Amiga.<br><br>
+<b>ENVARC:PsdStackloader&nbsp;:</b> ce petit programme est compilé par Trident. Il lance la couche USB au démarrage du Migouze, permettant l'utilisation d'une souris et d'un clavier USB d'une manière optimale.<br><br>
+
+Quelques outils Shell supplémentaires sont fournis, pour relancer la pile ou récupérer un log de ce qu'il s'est 
+produit depuis le démarrage (PsdErrorlog >ram:error.log).<br><br>
+
+
+<font size="+1" color="#ccbb33">Subway</font><br><br>
+
+<b>Configuration requise</b><br><br>
+
+- Un Amiga 1200 avec un port horloge soudé (même à moitié)<br>
+- L'OS et Roms 3.1 ainsi qu'un processeur 68030 à 25 Mhz, sont conseillés.<br><br>
+
+<b>Le paquet</b><br><br>
+
+- la carte (protégée par une gaine plastique moulée)<br>
+- la nappe (un peu courte)<br>
+- les quatre connecteurs USB avec deux équerres pour les tours<br>
+- le manuel en Anglais, mais c'est facile à comprendre<br>
+- la carte d'enregistrement (inutile car c'est déjà fait lors de l'achat de la carte Subway).<br><br>
+
+Le tout, bien protégé et emballé séparément.<br><br>
+
+<div align="center">
+<img src="../gfx/subway.jpg" border="0" width="374" height="221" alt="Carte Subway"><br><br><i>La carte Subway</i><br><br>
+</div>
+
+<b>Le montage</b><br><br>
+
+Cette petite carte (plus petite que la surface d'une carte de crédit) se branche sur le port horloge du mildeucent,
+même, et c'est le cas de nombreuses cartes mères, si celui-ci n'est pas entièrement soudé. En effet, seule la 
+partie droite du port horloge est utilisée par la carte Subway. Il suffit de brancher la nappe sur le port 
+horloge ainsi que la carte et les connecteurs USB (la documentation est d'ailleurs très précise sur ce sujet).<br>
+Relisez bien plusieurs fois l'installation, une erreur sera fatale à votre mildeucent.<br>
+Pour les possesseurs de boîtier tour, étant donnée la position de la carte mère et donc de la carte Subway, je
+vous conseille de la placer du côté des ROMs car dans cette position, les fils sont suffisament longs. Vous 
+pourrez alors brancher deux connecteurs vers l'arrière de la tour avec une équerre et les deux autres ports USB 
+à l'avant, en façade, après un petit travail de perçage d'une des baies 5 1/4.<br>
+Je ne reviendrai pas sur l'affaire Elbox et la carte USB PCI Spider mais la carte Subway marche très bien avec 
+le Mediator d'Elbox.<br><br>
+
+
+<b>Les tests</b><br><br>
+
+C'est le grand moment, ça passe ou ça casse&nbsp;?<br><br>
+
+<b>Premier test :</b> la clé USB (voir article dans Boing Attack N°18 page 29)&nbsp;: c'est un petit disque dur de mémoire flash
+de 13 grs emportant 64 Mo de stockage auto alimenté&nbsp;!<br><br>
+
+Résultat&nbsp;: rien. Un coup d'oeil avec le logiciel Trident&nbsp;: tout est reconnu, bizarre&nbsp;! Un autre coup d'oeil sur la 
+documentation&nbsp;: il faut installer, pour ce type de périphérique de stockage de données, FAT95 un logiciel gratuit 
+qui est fourni avec Poseïdon. Je l'installe et je tape donc à la main&nbsp;: MOUNT UMSD: (du nom de la mountlist 
+fournie) et en 1/100e de seconde, je vois l'icône de la clé&nbsp;: miracle&nbsp;!<br><br>
+
+Je copie, j'efface, je déplace&nbsp;: tout est parfaitement fonctionnel, tout marche très bien et rapidement. Je 
+débranche brutalement la clé, l'icône disparaît, je rebranche, il revient aussi vite&nbsp;: génial. J'ai réalisé 
+des tests de vitesse entre l'Amiga, le PC W2000 et MacOS 10.2&nbsp;: l'Amiga semble être un poil plus rapide, 
+mais pour la reconnaissance, il est de loin le plus rapide&nbsp;! <br>
+Selon la documentation de Trident, "ça" devrait monter automatiquement mais je n'ai pas réussi à trouver 
+l'astuce pour ça.<br>
+C'est d'ailleurs le cas avec un lecteur de carte Compact Flash (Marque Hama Traveldrive) qui "monte" 
+automatiquement les cartes mémoire de l'unit 0 à 3 parce qu'il y a 4 ports USB.<br>
+Attention donc, à la mountlist UMSD (son icône en fait) et indiquez bien "UNIT=4" (supérieur à 3) sinon la 
+carte mémoire sera montée deux fois&nbsp;: une en automatique et une autre par la mountlist&nbsp;!<br><br>
+
+Autre astuce&nbsp;: le système FAT95 est quelque peu faché avec le FFS de l'Amiga, aussi il faut modifier la mountlist 
+UMSD comme ceci&nbsp;: Control  = "-d" au lieu de Control  = "+S" pour ne plus être ennuyé par des commentaires à 
+rallonge en Allemand.<br><br>
+
+<b>Deuxième test :</b> Appareil photo numérique Kodak DC265<br><br>
+
+Résultat : rien et Trident ne voit rien non plus, échec... pour l'instant, car l'auteur a pensé aussi à ce 
+genre de situation (voir plus bas). Avec un lecteur de carte mémoire Compact Flash, tout est facilité et 
+dans ce cas, la carte mémoire monte toute seule&nbsp;!<br><br>
+
+<b>Troisième test :</b> Tablettes graphiques WACOM <br><br>
+
+Graphire I : Résultat, échec. Des messages d'erreur apparaissent dès la connexion. L'auteur sur son site précise
+que c'est instable.<br>
+Graphire II : Résultat, échec. Cela fonctionne pendant une minute puis blocage.<br>
+PenPartner : Résultat, 100% OK.<br><br>
+
+<b>Quatrième test :</b> Lecteur MP3 Rio Diamond 600<br><br>
+
+Résultat, échec. Des messages d'erreur apparaissent dès la connexion.<br><br>
+
+<b>Autre tests :</b> la petite souris ronde et le clavier d'Apple, je n'ai même pas lancé Trident, j'ai branché et bougé 
+la souris, tapé quelques lettres au clavier, 100% OK. Un joystick USB, reconnu certes, mais pas encore 
+testé à fond, un adaptateur USB-SCSI, reconnu aussi mais pas le reste en SCSI. En revanche le lecteur USB ZIP
+100 Mo marche parfaitement, etc. La liste est longue et je continue à tester.<br>
+Tout ceci montre que la multitude de périphériques USB ne peuvent pas tous fonctionner
+(voir liste des <a href="http://www.e3b.de/usb/usb-komp_e.html" target="_blank">périphériques supportés</a>) mais comme précédemment cité,
+l'auteur y a aussi pensé. Il fournit une commande&nbsp;: PSDDEVLISTER qui va scruter le périphérique connecté et va créer 
+un fichier avec toutes ses informations. Il ne vous reste plus qu'à envoyer le fichier à l'auteur de Poseïdon par 
+mail, afin qu'il puisse trouver la solution. Sympa.<br>
+À cela s'ajoute une <a href="mailto:highway_usb@yahoogroups.com">mailing-list</a> très riche et efficace, car aussi bien l'auteur du logiciel que le concepteur de 
+la carte USB répondent souvent et rapidement à toutes les questions.<br><br>
+
+
+<font size="+1" color="#ccbb33">Highway</font><br><br>
+
+<b>Configuration requise</b><br><br>
+
+- Un Amiga équipé de bus Zorro II (A2000, A3000, A4000, Bus ZII pour A1200, Draco)<br>
+- L'OS et Roms 3.1<br>
+- Un processeur 68030 à 25 Mhz est conseillé.<br><br>
+
+<b>Le paquet</b><br><br>
+
+- La carte, pas très grande (de la longueur du bus Zorro sur environ sept centimètres de largeur)<br>
+- Un "cul" de bus équipé de quatre connecteurs USB<br>
+- Le manuel en Anglais, mais c'est facile à comprendre<br>
+- La carte d'enregistrement.<br><br>
+
+<div align="center">
+<img src="../gfx/highway.jpg" border="0" width="374" height="194" alt="Carte Highway"><br><br><i>La carte Highway</i><br><br>
+</div>
+
+<b>Le montage</b><br><br>
+
+On ouvre le bestiau, un A2500 pour cet article, on enquille la carte, on connecte les prolongateurs et on 
+visse le cul de bus, on referme, c'est fini :-) <br>
+La carte Highway possède un HUB intégré, on dispose donc dès le départ de quatre ports USB.<br><br>
+
+<b>Les tests</b><br><br>
+
+Heureux propriétaire d'une carte USB depuis juillet 2002, j'ai essuyé quelques plâtres avec mon Nikon Coolpix 775,
+reconnu comme unité de stockage via le massstorage.class mais assez lent à démarrer et donc à être reconnu par 
+Poseïdon. Chris Hodges a depuis grandement amélioré la situation et a ainsi intégré des réglages de temps d'attente,
+configurables pour chaque unité connectée, ce qui rend le système très souple et performant, sûrement le plus 
+rapide toutes plate-formes confondues. En effet, les développeurs de chez Hum-Hum ou de chez On-va-pas-les-nommer
+ont préféré définir des temps d'attentes très longs par défaut de manière à être le plus compatible possible...<br>
+J'ai donc testé avec succès un Nikon Coolpix, une clé USB 32 Mo dont j'ai oublié la marque et depuis un DiscOnKey de 32 Mo qui monte aussi tout seul, deux Webcams reconnues
+comme telles (à exploiter avec VHI Studio), une souris Apple et une imprimante Canon S750, mais il faut pour le 
+moment Turboprint pour les pilotes.<br>
+Vous trouverez sur la Minette ou sur la mailing-list USB de Yahoo un script Arexx, AiptekRexxTool.lha, qui vous 
+permettra de récupérer les images stockées sur une Webcam Aiptek ou compatible (Pencam,...).<br>
+Soyons clair&nbsp;: on dit "incompatible" un périphérique reconnu par une Classe de la pile USB mais qui pose problème, 
+comme par exemple une souris HID qui ne voudrait pas fonctionner avec la hid.class. À ne pas confondre avec un 
+périphérique qui utilise une classe spécifique, souvent propriétaire, comme certains lecteurs MP3 ou appareils 
+photos numériques. Se reporter au site de <a href="http://www.e3b.de/usb/index_e.html" target="_blank">Michael Boehmer</a>
+avant de faire ses emplettes au Pas de la Case&nbsp;!<br><br>
+
+<b>Conclusion</b><br><br>
+
+Le produit est très bien conçu et il fonctionne parfaitement sur Amiga (même après toutes ces années et notamment 
+les quatorzes de l'Amiga 2000).<br>
+Les opinions sur l'USB sont partagées, mais la quantité de périphériques est telle que s'en passer serait vraiment 
+dommage car on peut réellement connecter n'importe quoi et l'auteur de la partie logicielle fait de très gros 
+efforts pour que l'Amiga en reconnaisse le plus possible. C'est déjà le cas des souris, claviers, hubs, etc...
+Voir sur le site pour plus d'informations.<br>
+Un module additionnel "BootRom" est en cours de développement, un prototype étant déjà fonctionnel. Il vous permettra 
+de démarrer depuis un périphérique externe USB. Smaaart ;-)<br>
+Le montage d'une carte Highway sur port Zorro 2 dans un Draco n'a posé aucune difficulté et fonctionne très bien.<br>
+<br>
+Dernières nouvelles (24 mars 2003)&nbsp;: E3B annonce <b>ALGOR</b>, le successeur de la carte Zorro Highway qui intègre désormais le module FlashROM permettant de booter sur un périphérique USB&nbsp;!<br><br>
+
+<font size="+1" color="#ccbb33">Les liens</font><br><br>
+
+Le site de <a href="http://www.e3b.de/usb/index_e.html" target="_blank">Michael Boehmer</a> le concepteur des cartes.<br>
+Le site de <a href="http://www.platon42.de/" target="_blank">Chris Hodges</a>, l'auteur de Poseïdon<br>
+La liste des <a href="http://www.e3b.de/usb/usb-komp_e.html" target="_blank">périphériques supportés</a>.<br>
+La <a href="mailto:highway_usb@yahoogroups.com">mailing-list</a> Highway USB.<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>
+

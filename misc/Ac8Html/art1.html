@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!-- Converted on 02 Aug 1997 with RexxDoesAmigaGuide2HTML 2.1 by Michael Ranner. -->
+<HTML>
+<HEAD>
+<TITLE>AHI: Un nuevo estándar.</TITLE>
+</HEAD>
+<BODY BACKGROUND="images/amiga.gif" BGCOLOR="#FFFFFF">
+
+<A HREF="main.html"><IMG SRC="images/content.gif" ALT="[Contents]" BORDER="0"></A> 
+<IMG SRC="images/dindex.gif" ALT="[Index]">
+<IMG SRC="images/dhelp.gif" ALT="[Help]">
+<A HREF="not89.html"><IMG SRC="images/prev.gif" ALT="[Browse &lt;]" BORDER="0"></A> 
+<A HREF="art2.html"><IMG SRC="images/next.gif" ALT="[Browse &gt;]" BORDER="0"></A> 
+<HR><PRE><FONT SIZE="+1">
+
+AHI: Un nuevo estándar
+----------------------
+
+Ya  llevamos bastante tiempo hablando de las famosas tarjetas gráficas y el
+standard  RTG  que  se han buscado para compatibilizarlas con los programas
+actuales.  Pero, y el sonido que.
+
+Pues el AHI es la solución que ha buscado Martim Blom para hacer que el uso
+de  las  tarjetas  de  sonido  no estén restringidas a dos o tres programas
+concretos.   Ahora será mucho mas fácil soportar todas las opciones como la
+Prelude, Delfine, Toccata, Wavetools...etc.
+
+A  partir de ahora no habrá excusas para que los juegos no tengan sonido en
+16bits, aunque eso si, tendremos que animarnos a comprar alguna tarjeta.
+
+Pero  el  AHI  no  se queda solo en esto.  Incorpora un modulo para nuestro
+querido Paula que permite 8 canales y una calidad de 14bits.
+
+Aquí   pongo  un  esquema  de  bloques  para  entender  un  poco  mejor  su
+funcionamiento:
+ 
+ +---------------------+ +----------------------+ +--------------+
+ | Sound Object hander | | Faked 'audio.device' | | Applications |
+ +---------------------+ +----------------------+ +--------------+
+     |                             |                      |
+     |  +--------------------------+                      |
+     |  |  +---------------+------------------------------+
+     |  |  |               |
+     V  V  V               V
+ +-----------------------------+
+ |   <commands>   <functions>  |
+ |         ahi.device          |
+ +-----------------------------+
+            |   |   |
+         +--+   |   +---------------------------+
+         |      +------------+                  |
+         V                   V                  V
+ +-----------------+ +---------------+ +-------------------+
+ | ahi/paula.audio | | ahi/gus.audio | | ahi/toccata.audio |  etc...
+ +-----------------+ +---------------+ +-------------------+
+
+ Level 1:     Standard device interface (commands)
+
+           o  Allows applications to share the resources, with
+              priorities etc.
+           o  Could even use multiply libraries on a soundcard
+              equipped system, to allow both the native hardware
+              and the card to be used.
+           o  The user (not the application programmer) could select
+              desired library (libraries), resolution (8/12/16 bit),
+              mixing frequency, number of channels etc...
+
+
+ Level 2:     Library-like device interface (functions)
+
+           o  The device has library-like functions ala timer.device,
+              which are available to the low-level user.
+           o  Contains mixing functions, perhaps sample
+              conversion and (de)crunch functions etc.
+           o  For all programs that talks to the hardware today (and has a
+              good reason to do so), like composer programs and module
+              players.
+
+ Level 3:     Sound card drivers
+
+           o  The drivers are libraries.
+           o  Only one owner at time.
+           o  Can either just send a mixed audio stream to the sound card,
+              or chose to preform the mixing itself, perhaps with its own
+              DSP.
+
+
+Yo  no se que versión he estado usando pues, eso si, la documentación no me
+ha  parecido  muy ordenada.  Tienes los autodocs y unos cuantos ejemplos de
+sources.   Lo he probado con los ejemplos del archivo y con algún juego que
+ya  soporta  el  AHI  y  no he tenido ningún tipo de problema.  Como "solo"
+tengo el Paula no se como irá en tarjetas pero parece que la cosa promete.
+
+Para más información o conseguir el dispositivo en cuestión:
+
+URL:http://www.lysator.liu.se/~lcs/ahi.html
+
+Tolkien (c)
+                      =--------------------------------=
+ ---------------------| <A HREF="articulos.html"> Articulos </A>  <A HREF="menu.html"> Menu Principal </A>  |--------------------
+                      =--------------------------------=
+</FONT></PRE><HR>
+Converted on 02 Aug 1997 with RexxDoesAmigaGuide2HTML 2.1 by <A HREF="http://www.sbox.tu-graz.ac.at/home/rmike">Michael Ranner</A> .</P>
+</BODY>
+</HTML>

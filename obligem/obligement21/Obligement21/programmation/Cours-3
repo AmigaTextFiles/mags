@@ -1,0 +1,74 @@
+
+Cours n°3:
+
+  rexxreqtools suite :
+
+  Sélection de  plusieurs fichiers.
+  *********************************
+  rtfilerequest("Disk/Répertoire",," Titre requester ",,"rtfi_flags=freqf_multiselect",files)
+
+  Dans cette leçons, nous allons créer un décompacteur LHA qui nous permettra :
+
+  1. De voir le contenu de l'archive avec multiview sans utiliser de datatype pour fichiers lha.
+  2. Extraire ce fichier dans un répertoire spécifique.
+
+ C'est parti.
+
+/** Lha Extract v1.0 **/
+if ~show("l","rexxreqtools.library") then
+call ouvrir_rexxreqtools
+else
+call debut
+
+ouvrir_rexxreqtools:
+call addlib("rexxreqtools.library",-5,-30)
+
+debut:
+nl="0a"x
+call rtezrequest(" Programme créé par : "||nl||nl,
+                 " Gerday Johan ( Grendel ) "||nl,
+                 " Rue St-Roch, 42a "||nl,
+                 " 6760 Virton "||nl,
+                 " Belgique ",
+               ,," Lha Extract v1.0 © Grendel Soft 1999 ","rtez_flags=ezreqf_centertext")
+
+fichiers = rtfilerequest("ram:",," Choix des fichiers Lha ",,"rtfi_flags=freqf_multiselect",files)
+if fichiers = " " then
+call quit
+else
+call view_extract
+
+view_extract:
+do /* Loop init */
+ do i=1 to files.count /* Tous les fichiers sélectionnés. */
+/** On va commencer par voir le contenu du fichier **/
+  address command "lha v "files.i" >ram:t/archive.tmp"
+  address command "multiview screen ram:t/archive.tmp"
+  address command "delete >nil: ram:t/archive.tmp"
+/** On Sélectionne la destination et on y extrait le fichier. **/
+  repertoire = rtfilerequest("ram:",," Répertoire destination ? ",,"rtfi_flags=freqf_nofiles")
+  if repertoire = " " then /* pas de sélection */
+  repertoire = "ram:"      /* répertoire par défaut ( ram: ) */
+  call extract
+/** On passe à l'archive suivante **/
+  i=i+1
+/** Fin deuxième do **/
+ end
+/** Fin premier do **/
+end
+
+quit:
+exit
+
+extract:
+address command "Lha x "files.i repertoire
+
+/** Fin de notre deuxième utilitaire ARexx **/
+
+ Si vous avez des questions à poser, vous désirez de plus amples informations
+écrivez-moi à l'addresse suivante, je me ferais un plaisir d'y répondre.
+
+ Gerday Johan (Grendel)
+ Rue St-Roch, 42a
+ 6760 Virton
+ Belgique.

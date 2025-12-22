@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Testberichte</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="Tests5.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Tests.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Spiele.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Testberichte
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H2>6. Softwaretest: Grafikbeschleuniger-Patch &raquo;BlazeWCP&laquo; (von Sebastian Rosa)</H2>
+<P>
+BLAZEWCP ist ein weiterer Patch f&uuml;r unser armes OS. Die Aufgabe dieses
+Patches ist es, f&uuml;r Nicht-Grafikkarten-Benutzer einige Dinge etwas zu
+beschleunigen, die manchmal wirklich weh tun. Ich meine die Chunky-nach-
+Planar-Umsetzung (c2p - chunky to planar). Jeder wei&szlig;, was f&uuml;r eine
+Errungenschaft und einmalige Idee der Planar-Modus war, der in unserem
+Chip-Satz eingerichtet ist. Ungl&uuml;cklicher Weise sind heute in der Zeit des
+3D, in der Spiele und viele Hilfsprogramme den Chunky-Modus verwenden,
+unsere Chips unmodern geworden. Sie sind einfach zu langsam. Sie brauchen
+zu lange, um jedes Einzelbild auf dem Schirm von Chunky nach Planar und
+wieder zur&uuml;ck von Planar nach Chunky zu verwandeln. Bei den gl&uuml;ckliche
+Besitzern einer Grafikkarte ist das kein Problem. Diese Karten arbeiten im
+Chunky-Modus. Aber was sollen die anderen, die Anwender ohne Grafikkarte,
+machen? Ich glaube, sie sollten BlazeWCP verwenden. Wenn sie schon nicht
+von AGA auf eine Grafikkarte umsteigen, k&ouml;nnen sie doch leicht den Prozess
+der c2p-Umwandlung beschleunigen.
+</P>
+<P>
+Am Anfang sollen einige technische Informationen stehen. BlazeWCP patcht
+und beschleunigt die c2p-Umwandlung und auch Systemfunktionen, wie zum
+Beispiel WritePixelLine8(), WritePixelArray8() und das seit OS3.1
+verf&uuml;gbare WriteChunkyPixels(). Das ist noch nicht alles. BlazeWCP kann bei
+jeder Art Chipspeicher (16bit und 32bit) verwendet werden. Das ist ein
+gro&szlig;er Vorteil, durch den es besser ist als sein Konkurrent NewWPA8.
+NewWPA8 ist auch ein Hochgeschwindigkeits-Patch f&uuml;r c2p, aber es wirkt
+nicht bei 32bit-Chipspeicher. Dar&uuml;ber hinaus ist NewWPA8 nicht fehlerfrei,
+den Fehler kann man sehen, wenn man mit IBrowse arbeitet.
+</P>
+<P>
+Nun zur Arbeit mit dem Programm. BlazeWCP beschleunigt unser System
+(nat&uuml;rlich nur, wenn die c2p-Umwandlung geschieht). Im 16bit-
+Chipspeicher ist es fast doppelt so schnell wie die Konkurrenten PatchWPA8
+und NewWPA8. Im 32bit-Chipspeicher ist es vier und zehn Mal schneller. Ich
+glaube schon, dass das etwas ist! Die folgende Tabelle zeigt das deutlich:
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0" WIDTH=80%>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP" ALIGN="RIGHT">32bit Chip nicht initialisiert&nbsp;</TD><TD VALIGN="TOP" ALIGN="RIGHT">32bit Chip initialisiert&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">OS 3.0&nbsp;</TD><TD VALIGN="TOP" ALIGN="RIGHT">111 000 pixels/s&nbsp;</TD><TD VALIGN="TOP" ALIGN="RIGHT">272 000 pixels/s&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">PatchWPA8&nbsp;</TD><TD VALIGN="TOP" ALIGN="RIGHT">152 000 pixels/s&nbsp;</TD><TD VALIGN="TOP" ALIGN="RIGHT">593 000 pixels/s&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">NewWPA8&nbsp;</TD><TD VALIGN="TOP" ALIGN="RIGHT">200 000 pixels/s&nbsp;</TD><TD VALIGN="TOP" ALIGN="RIGHT">569 000 pixels/s&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">BlazeWCP&nbsp;</TD><TD VALIGN="TOP" ALIGN="RIGHT">476 000 pixels/s&nbsp;</TD><TD VALIGN="TOP" ALIGN="RIGHT">2 060 000 pixels/s&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Der Test wurde vom Autor von BlazeWCP auf einem 030/40 mit der Aufl&ouml;sung
+640 x 512 x 256 mit Wpatest ausgef&uuml;hrt.
+</P>
+<P>
+So weit, so gut, aber wir wollen auf dem Boden der Tatsachen bleiben. Alle
+&quot;Fans&quot; von SysSpeed, die dieses zum Geschwindigkeitsvergleich auf ihren
+Maschinen verwenden, werden nicht zufrieden sein. SysSpeed &quot;sieht&quot; den
+Patch in unserem System nicht, einfach deshalb, weil es keine c2p-Tests
+ausf&uuml;hrt. O.k., aber wo wird die Geschwindigkeit durch unseren Patch erkannt?
+&Uuml;berall da, wo f&uuml;r die Bildschirmdarstellung eine der oben genannten
+Systemfunktionen eine wesentliche Rolle spielt. So sollte die gr&ouml;&szlig;te
+Beschleunigung bei IBrowse zu erkennen sein. Jfif.datatype, das den
+towerjpeg.codec verwendet, wird auch auf langsameren CPUs perfekt arbeiten.
+Wenn wir Cybershow oder Visage verwenden, werden wir den Unterschied ebenso
+erkennen. Die Beschleunigung um das ungef&auml;hr anderthalbfache kann man auch
+in allen Spielen sehen, die 3D-Engines verwenden, wie Breathless, Genetic
+Species, Alien Breed 3D, The Killing Grounds. Doom auf DoomAttack l&auml;uft auf
+meinem 030/50 sehr gleichm&auml;&szlig;ig mit allen Einzelheiten und auf dem vollen
+Bildschirm. Seit ich den Patch installiert habe, werden alle AVI/QT/MPEG-
+Filme, die mit RiVa, MooVid oder CyberQT abgespielt werden, etwas
+beschleunigt. Der bessere Ablauf kann auch bei der Verwendung von AmigaAMP
+erkannt werden.
+</P>
+<P>
+Nun muss ich aber alle diejenigen entt&auml;uschen, die glaubten, dass BlazeWCP
+auf der Workbench selbst Wunder wirkt. Nein!!! BlazeWCP beschleunigt NICHT
+die Darstellung von Icons, das Bewegen von Fenstern oder das Scrollen von
+Texten in Fenstern. Daf&uuml;r gibt es andere Patches. Au&szlig;erdem beschleunigt
+BlazeWCP auch nicht solche Programme, die keine Systemfunktionen verwenden
+(z.B. Voyager).
+</P>
+<P>
+BlazeWCP wurde von Rick Pratt geschrieben. Es kann auf jeder CPU laufen,
+den gr&ouml;&szlig;ten Vorteil erkennt man aber nur von 030/50 an aufw&auml;rts. Der Patch
+braucht auch einiges an Fast-RAM und mindestens das OS 3.0. Empfohlen
+ist auch die Verwendung von 32bit-Chip-Speicher und der AGA-Chipsatz. Um
+es zu verwenden, muss man es nur nach C: kopieren und in der Startup-
+Sequence unmittelbar nach Setpatch die Zeile &quot;C:BlazeWCP&quot; einf&uuml;gen.
+</P>
+<P>
+Die Entscheidung zur Benutzung dieses Patches liegt bei jedem Einzelnen.
+Ich kann sagen, dass ich froh bin ihn zu verwenden, und ich denke, er ist
+es wert, installiert zu werden. Man erh&auml;lt eine mehrfache Beschleunigung im
+c2p-Modus. Der Patch arbeitet mit MCP, FBlit und PoolMem zusammen. Wenn
+irgend etwas die gepatchten Funktionen nicht verwendet, quittiert BlazeWCP
+einfach seinen Dienst. Das hei&szlig;t, dass theoretisch BlazeWCP sehr stabil
+ist. Theoretisch? Ja, denn irgend wie l&auml;uft der Patch nicht auf einem
+040/25 mit Copyspeed.
+</P>
+<P>
+BlazeWCP ist ein sehr interessantes Hilfsprogramm. Die neueste Version von
+BlazeWCP ist 1.65 und es ist Freeware. Man kann es von der Homepage des
+Autors <A HREF="http://kingamiga.webjump.com" TARGET="_top">http://kingamiga.webjump.com</A> herunter laden.
+</P>
+<P><B>Sebastian Rosa &lt;<A HREF="mailto:sebastian.rosa@wp.pl">sebastian.rosa@wp.pl</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Tests5.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Spiele.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

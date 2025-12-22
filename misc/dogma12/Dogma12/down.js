@@ -1,0 +1,12 @@
+document.write ('</div><div class="bubble_down">',
+'<table width="920" align="center" border="0" cellspacing="0" cellpadding="10">',
+'<tr><td background="../gfx/main/back.png" valign="top">',
+'<font size="-2" color="black"><b><a href="http://www.dogma.net.ru/"><img src="../gfx/main/apple.png" alt="" width="100" height="100" border="0" align="left" hspace="5"></a><a href="#"><img src="../gfx/main/arrow.png" alt="UP!" width="32" height="32" border="0" align="right"></a><img src="../gfx/main/russia.png" alt="RU" width="32" height="32" border="0" align="right"><img src="../gfx/main/ukraine.png" alt="UA" width="32" height="32" border="0" align="right">',
+'Copyright © 2002-2012 team Dogma<br>All Rights Reserved. Все права защищены.</b><BR><BR>',
+'Полное или частичное воспроизведение материалов или графики в любом виде и форме разрешается только с письменного разрешения редакции.<BR>',
+'Amiga®, AmigaOS® & Boing® зарегистрированные торговые марки <a href="http://www.amiga.com/">Amiga Inc.</a>, Ravensdale, WA US.<BR>',
+'Pegasos® & MorphOS® зарегистрированные торговые марки <a href="http://www.genesi.lu/">Genesi S.а.r.l.</a><BR>',
+'Mac® & MacOSX® зарегистрированные торговые марки <a href="http://www.apple.com/">Apple Inc.</a>, Cupertino, CA US.<BR>',
+'<b>Amiga & Pegasos Rules Forever ! Back for the Future !<br>From now Until the End of Time!</b></font>',
+'</td></tr></table>',
+'</div>')

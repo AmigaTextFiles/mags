@@ -1,0 +1,358 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+    <HEAD>
+    <META NAME="GENERATOR" CONTENT="HANDMADE">
+    <TITLE>P&uuml;nktlich zur neuen NoCover: Mein Shell-Workshop.</TITLE>
+    </HEAD>
+
+    <BODY TEXT="#000000" LINK="#0000FF" ALINK="#FF0000" VLINK="#0000FF" BGCOLOR="#B0B0B0">
+    <TABLE WIDTH="100%" BORDER="0" CELLPADDING="0" SUMMARY="" BGCOLOR="#000000">
+    <TR>
+	<TD>
+	<MAP NAME="wks0">
+	<AREA SHAPE="RECT" COORDS="460,1,550,22" HREF="wks.html" ALT="zur&uuml;ck">
+	</MAP>
+	<TABLE ALIGN="CENTER" WIDTH="640" BORDER="2" CELLPADDING="0" SUMMARY="" BGCOLOR="#800000">
+	<TR>
+	    <TD><IMG SRC="wks.gif" ALT="" WIDTH="640" HEIGHT="22" BORDER="0" USEMAP="#wks0"></TD>
+	</TR>
+	<TR>
+	    <TD>
+	    <BR>
+	    <H1 ALIGN="CENTER"><B><FONT COLOR="#FFFF00">CLI Workshop<BR>
+	    3. Teil</FONT></B></H1>
+	    <BR>
+	    <TABLE ALIGN="CENTER" BORDER="0" CELLPADDING="10" SUMMARY="" BGCOLOR="#00FFFF" WIDTH="80%">
+	    <TR>
+		<TD>
+
+		<P>
+		Gehen wir also in die dritte Runde. Letztes Mal habe ich
+		geschrieben, da&szlig; wir uns jetzt das S-Verzeichnis
+		vornehmen. Dass werde ich auch tun, aber nicht in dem Ramen, wie
+		ich es mir erst vorgestellt habe. Der Grund: Der andere
+		Shell-Workshop. Wir haben uns abgesprochen und dabei ist
+		herausgekommen, da&szlig; er die Scripts macht und ich mich
+		woanders austobe. Also los:
+		</P>
+
+		<P>
+		Das s-Verzeichnis (s f&uuml;r Scripts) sollte eigentlich mit
+		BatchDateien gef&uuml;llt sein. Das erteilt uns nat&uuml;rlich
+		die Frage wieso hei&szlig;t es dann nicht b-Verzeichnis. Aber
+		die Antwort ist ganz einfach auf dem Amiga werden Batch-Dateien
+		eben meistens Scripts genannt. Die Scripts sind f&uuml;r den
+		blutigen Anf&auml;nger relativ uninteressant, er sollte sie aber
+		auch kennengelernt haben. Die einzige Frage, die ich in diesem
+		Workshop (zu diesem Thema) beantworte ist: Was sind Scripts?
+		Aber dazu hole ich etwas weiter aus. Die Shell und das CLI sind
+		Zeileninterpreter. Das bedeutet, da&szlig; der User eine Zeile
+		eingibt und er interprtiert sie (f&uuml;hrt sie aus,meldet
+		Fehler etc.). Ein Script ist eine Datei, in der mehrere Befehle
+		aneinandergereit sind und die dan f&uuml;r eine gewisse Zeit
+		anstatt dem User die Shell "befehligen" (was f&uuml;r den User,
+		richtig eingesetzt, viel Zeit spart).
+		</P>
+
+		<P><STRONG><FONT COLOR="#FFFF00">
+		Allerdings ist das s-Verzeichnis nicht mehr nur den Scripts
+		vorbehalten. Viele Programme versuchen ihre "Prefs"
+		(Voreinstellungen) dort abzulegen (z.B. PowerPacker, VirusZ,
+		VC).
+		<BR>
+		<BR>
+		Aber nicht nur die Workbench hat Verzeichisse sondern auch die
+		"Ram Disk". Diese Verzeichnisse haben f&uuml;r den Amiga
+		besondere Bedeutung:</FONT></STRONG>
+		</P>
+
+		<PRE>
+    1.Workbench:> dir "Ram Disk:"
+
+	 clipboards (dir)
+	 t (dir)
+	 env (dir)
+		</PRE>
+
+		<P>
+		Das Verzeichnis env Speichert die Umgebungsvariablen, die aber
+		nur im Zusammenhang mit Scripts interessant sind. Sie speichern
+		bestimmte Werte, die in Script benutzt werden. Clipboards wird
+		einzig und allein zur Nutzung vom Clipboard.device eingerichtet
+		und soll uns nicht weiter st&ouml;ren. Das verzeichnis T wird in
+		der Regel nur zur Zwischenspeicherung von Texten benutzt.<BR>
+		<BR>
+		<STRONG><FONT COLOR="#FFFF00">
+		Jemand, der bis jetzt meinen Workshop verfolgt hat, k&ouml;nnte
+		sich fragen, wieso ich diesen Teil so schnell abhandle. Nun es
+		soll nur als &Uuml;bergang zum n&auml;chsten Thema dienen, das
+		wieder sehr umfangreich wird. Also geben wir mal
+		ein:</FONT></STRONG>
+		</P>
+<PRE>
+    1.Workbench:> cd env:
+    1.Ram Disk:Env> cd c:
+    1.Workbench:c> cd libs
+    Can't find libs
+    1.Workbench:c> cd libs:
+    1.Workbench:libs> cd l:
+    1.Workbench:l> cd sys:
+    1.Workbench:>
+</PRE>
+		<P>
+		Ich hoffe damit genug Verwirrung geschaffen zu haben, damit das
+		Verlangen, diesen Workshop zuende zu lesen, gro&szlig; genug
+		ist. Aber fangen wir erst einmal an. Cd ist ein Befehl, der die
+		Shell auf ein bestimmtes Verzeichnis festlegt, in der sie nach
+		Dateien sucht. Und es scheint so auf den ersten Blick, als
+		gen&uuml;ge es, hinter einen Verzeichnisnamen einen ":" zu
+		setzen damit der Amiga &uuml;berall danach sucht und die Shell
+		dann darauf verwei&szlig;t. Dem ist aber nicht so, wenn man zum
+		Beispiel das ganze mit dem UtilitiesOrdner (=Verzeichnis)
+		versucht, fordert uns ein netter Requester auf die Disk
+		"Utilities" einzulegen. Also was steckt dahinter???...
+		</P>
+
+		<H3 ALIGN="CENTER">LOGISCHE LAUFWERKE</H3>
+
+		<P>
+		&Uuml;ber den Begriff ist wahrscheinlich jeder schon einmal
+		gestolpert, aber etwas damit anzufangen wei&szlig;, nicht jeder.
+		Hier ertmal noch ein Begriff: physiche Laufwerke. Sie kann man
+		als User sehen oder zumindest, wenn sie intern eingebaut sind,
+		bei der Arbeit h&ouml;ren. Zu ihnen geh&ouml;ren Laufwerke, wie
+		auch Festplatten etc. Logische Laufwerke kann ein User weder
+		sehen, noch h&ouml;ren. Sie existieren nur f&uuml;r den Computer
+		und sind deshalb "logisch". Aber weg von der Theorie hin zur
+		Verwirrung:
+		</P>
+
+		<PRE>
+    1.Workbench> assign
+
+    Volumes:
+    Workbench [Mounted]
+    RAM DISK [Mounted]
+
+    Directories:
+    CLIPS          RAM DISK:clipboards
+    T              RAM DISK:t
+    ENV            RAM DISK:env
+    S              Workbench 1.3:s
+    L              Workbench 1.3:l
+    C              Workbench 1.3:c
+    FONTS          Workbench 1.3:fonts
+    DEVS           Workbench 1.3:devs
+    LIBS           Workbench 1.3:libs
+    SYS            Workbench 1.3:
+
+    Devices:
+    PIPE AUX SPEAK NEWCON DF1
+    PRT PAR SER RAW CON
+    RAM DF0
+		</PRE>
+
+		<P><STRONG><FONT COLOR="#FFFF00">
+		Als erstes listet der Befehl assign (ohne Parameter) die
+		eingelegten Disketten auf. Dann folgen die eigentlichen
+		Logischen Laufwerke mit dem Directory f&uuml;r das sie stehen.
+		Als letztes kommen noch die angemeldeten Ger&auml;te dran.
+		F&uuml;r uns sind aber nur die logischen Laufwerke (= LLs)
+		wichtig.</FONT></STRONG>
+		</P>
+
+		<P>
+		Man sieht jetzt auch wieso ich die "Ram Disk-Verzeichnisse" noch
+		abgehakt (nicht abgehaCKt) habe. Aber wozu dienen diese LLs
+		denn? Tja gute Frage, n&auml;chste Frage. Aber ich w&uuml;rde
+		dieses Thema nicht anspielen, wenn ich nicht Bescheid
+		w&uuml;&szlig;te: Nun, stellen Sie sich einmal folgende
+		Situation vor. Ein Programmierer m&ouml;chte seinem Programm
+		abspeicherbare Preferences und HD-installation g&ouml;nnen. Er
+		hat dann zwei M&ouml;glichkeiten, damit er seine Prefs im
+		Verzeichnis s der Festplatte wieder findet: a) er zwingt den
+		User seine Festplatte "xxx" zu nennen und kann die Prefs dann in
+		"xxx:s" ablegen oder b) er speichert seine Prefs in LL s:.
+		Grunds&auml;tzlich dienen LL der Flexibilit&auml;t des Systems.
+		Nicht nur Programme haben so einen leichts Spiel auch das System
+		baut darauf. #?.library-Dateien werden grunds&auml;tzlich in
+		LIBS: erwartet. So gilt das auch f&uuml;r entsprechend f&uuml;r
+		die anderen LLs. Eine Ausnahmen stellt dabei mehr oder weniger
+		das LL sys: dar. Es bezeichnet grunds&auml;tzlich die Diskette,
+		von der gebootet wurde.
+		</P>
+
+		<P><STRONG><FONT COLOR="#FFFF00"> Aber man bekommt mit den LLs
+		nicht eine Festform vorgesetzt, sondern eher eine
+		Arbeitsgrundlage, die nach belieben ge&auml;ndert werden kann,
+		aber nur mit bedacht ge&auml;ndert werden sollte.</FONT></STRONG><BR>
+		<BR>
+		Ich zeige wovon ich rede:
+		</P>
+
+		<PRE>
+    1.Workbench> assign IK: sys:Ichkenne
+    1.Workbench> cd ik:
+    1.Workbench:IchKenne>
+		</PRE>
+
+		<P>
+		Man kann also durch die beiden parameter neue LLs
+		hinzuf&uuml;gen und alte ver&auml;ndern:
+		</P>
+
+		<PRE>
+    1.Workbench> copy c: ram: QUIET
+    1.Workbench> assign c: ram:
+    1.Workbench>
+		</PRE>
+
+		<P><FONT COLOR="#FFFF00">
+		Diese kurze Komandofolge w&uuml;rde die gesamte Shell-Arbeit
+		wesentlich beschleunigen, da jetzt alle Befehle, die im LL c:
+		liegen jetzt in der Ram gesucht und ausgef&uuml;hrt werden. Der
+		einzige negative Effekt ist ein Speicherverlust.</FONT><BR>
+		<BR>
+
+		Der Assign Befehl kann auch LLs entfernen:
+		</P>
+
+		<PRE>
+    1.Workbench> assign IK: LIST
+
+    Volumes:
+    Workbench [Mounted]
+    RAM DISK [Mounted]
+
+    Directories:
+    CLIPS          RAM DISK:clipboards
+    T              RAM DISK:t
+    ENV            RAM DISK:env
+    S              Workbench 1.3:s
+    L              Workbench 1.3:l
+    C              Workbench 1.3:c
+    FONTS          Workbench 1.3:fonts
+    DEVS           Workbench 1.3:devs
+    LIBS           Workbench 1.3:libs
+    SYS            Workbench 1.3:
+
+    Devices:
+    PIPE AUX SPEAK NEWCON DF1
+    PRT PAR SER RAW CON
+    RAM DF0
+		</PRE>
+
+		<P><FONT COLOR="#FFFF00">
+		Mehr kann ich dazu nicht sagen, au&szlig;er das der beste
+		Lehrmeister eine Kombination aus viel Zeit, Geduld und Praxis
+		ist.</FONT><BR>
+		<BR>
+		Aber der Assign Befehl hat bei aufmerksamen Lesern vielleicht
+		noch eine Frage aufgerufen. Die "Devices:", so bezeichnet sie
+		der Assign Befehl. PRT (der Drucker), Par (die Parallele
+		Schnittstelle), Ser (die Serielle Schnittstelle), df0, df1 und
+		ram wird man vielleicht noch einordnen k&ouml;nnen. Aber Pipe,
+		aux etc. machen da schon Probleme. Pipe dient zum Aufbau von
+		PufferspeicherDateien und "aux" kann uns mit anderen Computern
+		in Verbindung bringen. Speak ist das Sprachrohr des Amiga mit
+		ihm kann man sich Dateien, Directories vorlesen lassen
+		(Beispiele gibts sp&auml;ter erstmal die Theorie).<BR>
+		<BR>
+		NewCon ist das Ger&auml;t, da&szlig; f&uuml;r unsere
+		Shell-Fenster sorgt. Con dementsprechend f&uuml;rs CLI. "Raw"
+		ist eigentlich das gleiche wie "con", blo&szlig; das hier mit
+		den Tastaturcodes gearbeitet wird und bei "Con" mit den ASCII
+		Codes. In diesem Zusammenhang gibt es noch ein Ger&auml;t: NIL.
+		Was macht es? Nichts. Es werden alle daten ins "Nichts"
+		geleitet. Es ist z. B. in Scripts n&uuml;tzlich, um die
+		Textausgabe zu verhindern.<BR>
+		<BR>
+		Im Bereich dieser Ger&auml;te gibt es noch eine Sache, die ich
+		erw&auml;hnen m&ouml;chte: das Umleiten von Ausgaben.
+		</P>
+
+		<PRE>
+    1.Workbench> dir >NIL:
+    1.Workbench> dir >SPEAK:
+		</PRE>
+
+		<P>
+		Der erste Befehl ist vollkommen sinnlos. Man l&auml;&szlig;t
+		sich ein Verzeichnis einladen und schickt die Ausgabe ins
+		Nichts. Der zweite Befehl lie&szlig;t uns ein Verzeichnis vor.
+		Leider in englisch und sehr schwehr zu verstehen. Nat&uuml;rlich
+		kann man dir Textausgabe auch in Dateien umleiten.<BR>
+		<BR>
+
+		Deshalb ist
+		</P>
+
+		<PRE>
+    1.Workbench> type >ram:start s:startupII
+		</PRE>
+
+		<P>
+    dasselbe wie
+		</P>
+
+		<PRE>
+    1.Workbench> copy s:startupII ram:start
+    ...
+		</PRE>
+
+		<P ALIGN="CENTER"><EM>PRAXIS!PRAXIS!PRAXIS!PRAXIS!PRAXIS !PRAXIS!PRAXIS!PRAXIS!</EM>
+		</P>
+
+		<PRE>
+    1.Workbench> copy s:startup-sequence speak:
+    1.Workbench> dir >"con:320/0/320/256/Hallo" c:
+    1.Workbench> copy >"newcon:0/0/500/100/copy" s:shell-startup ram:
+    1.Workbench> type >prt: ram:Help.txt
+    1.Workbench> newcon:0/0/10/20/pl&ouml;p
+		</PRE>
+
+		<P ALIGN="CENTER">
+		<EM>!!!TSCH&Uuml;&szlig;!!!TSCH&Uuml;&szlig;!!!TSCH&Uuml;&szlig;
+		!!!TSCH&Uuml;&szlig;!!!TSCH&Uuml;&szlig;!!!TSCH&Uuml;&szlig;!!!</EM>
+		</P>
+
+		<P>
+		Erkl&auml;ren tu ich`s nicht. Wer etwas nicht wei&szlig;, der
+		sollte es einfach ausprobieren. Wenn er es nicht kann, will oder
+		was wei&szlig; ich, der kann mir immernoch schreiben. Womit wir
+		auch schon am merklichen Ende w&auml;ren. Schreiben kann mir
+		jeder, der Fragen zur Shell (mu&szlig; sich nicht auf den
+		Workshop beziehen), Kritik, Lob oder/UND Schokolade hat.
+		</P>
+
+		<P>
+		Au&szlig;erdem geht mir dann langsam der Stoff aus und mit dem
+		vierten Teil werde ich mich verabschieden, wenn nicht jemand
+		noch etwas gekl&auml;rt haben m&ouml;chte. Also SCHREIBT
+		MIR......
+		</P>
+
+		<P>
+		Dennis M&uuml;ller<BR>
+		Bruchwiesenweg 27<BR>
+		<BR>
+		45891 Gelsenkirchen<BR>
+		<BR>
+		</P>
+
+		</TD>
+	    </TR>
+	    </TABLE>
+	    <BR>
+	    <BR>
+	    </TD>
+	</TR>
+	<TR>
+	    <TD><IMG SRC="wks.gif" ALT="" WIDTH="640" HEIGHT="22" BORDER="0" USEMAP="#wks0"></TD>
+	</TR>
+	</TABLE>
+	</TD>
+    </TR>
+    </TABLE>
+    </BODY>
+</HTML>

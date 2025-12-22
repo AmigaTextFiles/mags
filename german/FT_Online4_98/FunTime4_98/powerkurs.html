@@ -1,0 +1,109 @@
+<HTML>
+<HEAD>
+<title>PowerPC Kurs 2</title>
+</head>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#ff2f2f" ALINK="#FFac97" VLINK="#ff71ff" BACKGROUND="funrelif3.gif">
+<CENTER>
+<table WIDTH="80%" ALIGN="CENTER">
+ <TR>
+   <TD BGCOLOR="#000098" ALIGN="CENTER">
+    <FONT COLOR="#FFFFFF">  
+    <H1>PowerPC Kurs Teil 2</H1>
+    <H6>es geht weiter mit dem Programmieren unter WarpOS</H6></TD>
+   <TD BGCOLOR="#0046FF">
+    <FONT COLOR="#FFFFFF">   
+    <H1 ALIGN="CENTER">INTERN</H1></TD>
+ </TR>
+</Table><FONT COLOR="#000000">  
+<TABLE WIDTH="80%" ALIGN="CENTER">
+<TD BGCOLOR="#D2F0FF">
+<P>
+<BR>
+Hi!
+<P>
+<B>Kurs-Fortsetzung:</B>
+<P>
+- OS-Calls die oft pro Sekunde aufgerufen werden
+<P>
+Wer diese drei Dinge nicht beachtet, kann u.U. ein PPC-Programm erzeugen, dass 
+langsamer als auf einem 68k ist. Dies sind uebrigens die einzigen Dinge in 
+diesem Kurs, die fuer beide PPC-Kernel gelten, den von H&P und den von Phase 5.
+<P>
+Die Liste der zu vermeidenden Dinge ist sicher auch nicht vollstaendig. Denken 
+beim Programmieren !!!
+<P>
+Ein wenig im Verdacht, einen Kontextswitch zu verwenden, habe ich die 
+Standard-C-Funktion clock(). Anbei Ersatzcode (aus ZhaDoom):
+<P>
+double tb_scale_lo = ((double)(bus_clock >> 2)) / 35.0;<BR>
+double tb_scale_hi = (4.294967296E9 / (double)(bus_clock >> 2)) * 35.0;<BR>
+<P>
+Hierbei wird bus_clock auf den Bus-Clock des Boards gesetzt, z.B. 50000000 
+fuer 50 MHz.
+<P>
+Zeitmessung: (Im Beispiel fuer 70tel-Sekunden Einheiten, wie bei Doom):
+<P><PRE>
+int I_GetTime (void)
+{
+ unsigned int clock[2];
+ double currtics;
+ static double basetics=0.0;
+        ppctimer (clock);
+ if (basetics == 0.0)</PRE>
+ basetics = ((double) clock[0])*tb_scale_hi + ((double) clock[1])/tb_scale_lo;<BR>
+currtics = ((double) clock[0])*tb_scale_hi + ((double) clock[1])/tb_scale_lo;<BR>
+return (int) (currtics-basetics);<BR>
+}<BR>
+<P>
+ppctimer sieht *so* aus (Leute, die kein StormPowerASM haben, bitte mir 
+schreiben, dann maile ich ihnen den Objekt-Code der Funktion zu...):
+<P><PRE>
+ vea
+ XDEF    _ppctimer
+
+_ppctimer:      mftbu   r4
+                mftbl   r5
+                mftbu   r6
+                cmpw    r4,r6
+                bne     _ppctimer
+
+                stw     r4,0(r3)
+                stw     r5,4(r3)
+                blr
+</PRE>
+<P>
+So, das wars eigentlich. Es folgt nur noch eine Liste moeglicher (aber absolut 
+optionaler) Optimierungen:
+<P><UL>
+<LI>Video-Buffer als Noncachable deklarieren (siehe AllocVecPPC in den WarpOS<BR>
+  Docs). Bringt vor Allem z.B. bei Doom, dass 640x480 nicht an den Waenden<BR>
+  ruckt.<BR>
+<LI>PPC Assembler Teile (ich empfehle die Verwendung des StormC-Profilers zur<BR>
+  Messung, welche Programm-Teile die meiste Rechenzeit verbraten)<BR>
+<P></UL>
+Es sei darauf hingewiesen, dass eine Aufteilung der Arbeit in Tasks fuer den 
+PPC und den 68k
+<P>
+- nichts bringt (zumindest nicht, wenn die beiden Tasks kommunizieren muessen),<BR>
+  und das ist kein Problem von WarpUP, es ist ein Problem der Hardware<BR>
+- Nachteile haben wird, sobald AmigaPPC auf reinen PPC-Systemen mit 68k<BR>
+  Emulation basieren wird<BR>
+- Fehleranfaellig ist<BR>
+<P>
+Wer sich dennoch nicht davor warnen lassen will, sei auf das AllocXMsg-System 
+von WarpUP vermieden. Damit kann man (u.a.) so etwas machen. 
+<P>
+<BR>
+</TD></TABLE>
+<TABLE WIDTH="80%" ALIGN="CENTER">
+<TD BGCOLOR="#000098">
+  <FONT COLOR="#FFFFFF"> 
+  <HR align="center" size="4" width="50%">
+  <CENTER><A HREF="main.html">Zurück zum Inhalt</A></CENTER>
+  <HR align="center" size="4" width="50%">
+  <CENTER><B>Fun Time ©1998</B></CENTER>
+</TD>
+</TABLE>
+</CENTER>
+</BODY>
+</HTML>

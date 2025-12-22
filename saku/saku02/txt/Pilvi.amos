@@ -1,0 +1,99 @@
+15
+1*
+'
+'    T‰m‰ on PILVI, Fractaaliesimerkkiohjelma SAKU-lehteen  
+'    T‰m‰ optimoimaton r‰pellys on per‰isin: AMOS LIB    
+'                                            Innantie 22 a 2 
+'                                            80260 Joensuu 
+'
+'    Jos on ongelmia ohjelmoinnin kanssa tai haluaa tiet‰‰ viimeiset   
+'    uutiset AMOS rintamalta, niin yll‰ oleva osoite vain kuoreen. 
+'    AMOS LIBin toiminta on ilmaista. Vain vastauskuori+postari tarpeen.  
+'
+'    Huom. Ohjelman saa nopeammaksi k‰ytt‰m‰ll‰ TURBO-laajennuksen 
+'          nopeita k‰skyj‰........kysy lis‰tietoja ^ 
+'
+'Ruutu auki, paletti sopivaksi, + normaalit tyhjennykset
+Screen Open 0,320,256,16,Lowres
+Palette $FFF,$EEF,$DDF,$CCF,$BBF,$AAF,$99F,$88F,$77F,$66F,$55F,
+        $44F,$33F,$22F,$11F,$F '<- siirr‰ t‰m‰ edelliselle riville!!!
+Flash Off 
+Curs Off 
+Cls 0
+'
+'Muuttuja m‰‰ritykset ja yleist‰miset ( Global ) 
+J=256 : H=18 : H2=H/2
+Global B1,B2,B3,B4,X,Y,J,H,H2
+'
+'P‰‰luuppi 
+Repeat 
+   For Y=0 To 256-J Step J
+      For X=0 To 256-J Step J
+         '
+         PISTEIDEN_ARVOT
+         '
+         'keskus
+         If Point(J/2+X,J/2+Y)=0 : Rem    Onko piste jo sytytetty 
+            R=Rnd(H)-H2 : Rem             Satunnaisuutta peliin  
+            A=(B1+B2+B3+B4)/4+R : Rem     Lasketaan uuden pisteen v‰ri   
+            If A>15 : A=15 : End If : Rem Tarkistuksia 
+            If A<1 : A=1 : End If : Rem     ---II--- 
+            Plot J/2+X,J/2+Y,A : Rem      Tulostetaan uusi piste  
+         End If 
+         '
+         'north 
+         If Point(J/2+X,0+Y)=0
+            R=Rnd(H)-H2
+            A=(B1+B2)/2+R
+            If A>15 : A=15 : End If 
+            If A<1 : A=1 : End If 
+            Plot J/2+X,0+Y,A
+         End If 
+         '
+         'south 
+         If Point(J/2+X,J+Y)=0
+            R=Rnd(H)-H2
+            A=(B3+B4)/2+R
+            If A>15 : A=15 : End If 
+            If A<1 : A=1 : End If 
+            Plot J/2+X,J+Y,A
+         End If 
+         '
+         'west
+         If Point(0+X,J/2+Y)=0
+            R=Rnd(H)-H2
+            A=(B1+B3)/2+R
+            If A>15 : A=15 : End If 
+            If A<1 : A=1 : End If 
+            Plot 0+X,J/2+Y,A
+         End If 
+         '
+         'east
+         If Point(J+X,J/2+Y)=0
+            R=Rnd(H)-H2
+            A=(B2+B4)/2+R
+            If A>15 : A=15 : End If 
+            If A<1 : A=1 : End If 
+            Plot J+X,J/2+Y,A
+         End If 
+         '
+      Next 
+   Next 
+   '
+   J=J/2 : Rem Puolitetaan For lauseiden askelta  
+   H=H*0.7 : H2=H/2 : Rem V‰hennet‰‰n satunnaisuuden osuutta 
+   '
+Until J=1 : Rem Toistetaan kunnes askel =1 
+'
+Boom 
+End 
+'
+'  
+' Aliohjelma jossa otetaan tarvittavat arvot ruudulta
+Procedure PISTEIDEN_ARVOT
+   B1=Point(0+X,0+Y)
+   B2=Point(J+X,0+Y)
+   B3=Point(0+X,J+Y)
+   B4=Point(J+X,J+Y)
+End Proc
+

@@ -1,0 +1,189 @@
+@database Assembler3.html
+@remark Converted with HTML2Guide ©1997 Mark Harman
+@wordwrap
+
+@node MAIN "Assembler3.html"
+ 
+     #########   ###         ########     ##########           ####### 
+   ###########   ###        ###########   ############      ########## 
+   ###           ###       ####     ###   ###     #####    ###### 
+   ###           ###       ###      ####  ###       ####  #### 
+   #####         ###       ###       ###  ###        #### ### 
+    #######      ###       #############  ###        #### ############ 
+      #######    ###       #############  ###        #### ############ 
+        ######   ###       ###       ###  ###        #### ### 
+           ####  ###       ###       ###  ###       ####  #### 
+            ###  ####      ###       ###  ###      #####   #### 
+          #####  #####     ###       ###  ###   #######     #####        ### 
+  ############    ######## ###       ###  ### #######        #########   ### 
+  ###########       ###### ###       ###  ### #####             ######   ### 
+ 
+                               continues his.... 
+ 
+                        ASSEMBLER TUTORIAL - PART THREE 
+ 
+Firstly,  this  may  be  the  last  in the little series of tutorials.  This is 
+partly  due  to  the  fact  that  I find writing it very hard, partly due to me 
+having  to  learn  a lot of stuff myself within the issues and partly because I 
+have  not  had  one  response at all.  Ok, this is not a moan and I'll still be 
+here to help with the magazine.  You will still find all the usual Slade stuff, 
+just  maybe not the Assembler tutorial.  If you remember I did say in the first 
+part  that I would hopefully hand the tutorial on to someone with a little more 
+experience, well I hope this is still possible.  Is there anyone out there? 
+ 
+                                 ------+------ 
+ 
+Okay.   In  the  last issue I said I would try to write some code to display an 
+AGA  picture (i.e.  256 colours!).  This is proving harder than I first thought 
+it  would  be.   But never mind, here in plain English is what the stuff I gave 
+you in the reference section last issue really means: 
+ 
+ 
+                              SUPER HI-RES MODE 
+ 
+Okay, this is a mode that is only possible on an A1200 or so I believe.  It may 
+work  on graphics cards too.  All we need to do to set Super Hi-Res mode is set 
+bit 6 of register $0100.  Doing this in assembler is done as follows: 
+ 
+                       move.l %0000010000000000,BPLCON0 
+ 
+There  you  go!  Now you should have a Super Hi-Res screen.  That is to say one 
+that  is  1280  pixels across.  If bit 6 is not set then you won't have a Super 
+Hi-Res screen.  Simple, eh? 
+ 
+ 
+                              USING 8 BITPLANES 
+ 
+Okay, from the last issue you should remember that the first Amiga's only had 5 
+bitplanes  that  you  could  use.   You could only use 32 colours as well.  The 
+A1200  is much better than this and you will be happy to know that it can use 8 
+bitplanes, or in English you can have 256 colour displays. 
+ 
+If you paid attention last issue, you will also notice that using bits 12-14 of 
+BPLCON0,  would  only give us a maximum of 7 bitplanes.  To use 8 then you must 
+set bit 4 of BPLCON0.  The rest of bits 12-14 are not considered. 
+ 
+Okay,  so  we  can now use a Super Hi-Res screen and also use 8 bitplanes.  But 
+what about the colour registers?  There are still only 32 colour registers. 
+ 
+ 
+                           GETTING 24-BIT COLOURS 
+ 
+Okay,  here  it  gets  a  bit more complicated!  This is where we have to start 
+getting  a little fiddly.  This is due to the fact that the A1200 had to remain 
+compatible  with  it's  old brother - the A500.  So the colours last issue were 
+set with code much like this: 
+ 
+                                  COL0,$0000 
+                                  COL1,$0000 
+ 
+Well  to  get  24-bit  values  we need to modify a colour register using 24-bit 
+coding.   We  must  use  2 copper moves on the same colour register.  The first 
+move must always be the move of the word of the 3*4 high bits.  The second move 
+is the move of the word of the 3*4 low bits. 
+ 
+You  set  on  which to write the high or low bits by setting a special clearing 
+bit in bit 9 of register $0106 or BPLCON3. 
+ 
+ 
+                                    BIT 9 
+ 
+           0  -  Access to the 4 high bits of components R,G and B. 
+           1  -  Access to the 4 low  bits of components R,G and B. 
+ 
+Okay, in plain English this is to say that if we had $F1F200, which is a bright 
+yellow colour, then the high-bits word is $FF0 and the low bits word is $120. 
+ 
+So  if  we  wanted to change COL0 or $0180 to $00123456 in a copperlist then we 
+would use the following code. 
+ 
+                      $0106,0000  ; Sets High bits 
+                      $0180,0135  ; High bits register 0 
+                      $0106,0200  ; Set low bits 
+                      $0180,0246  ; Low bit register 1 
+ 
+When  you want to work using 12 bits colour coding mode, the 3*4 bits value you 
+move  to  the colour register is considered by the copper as the 3*4 high bits. 
+You don't have to care about $0106.  It seems bit 9 of register $0106 is set to 
+0 at each copjmp. 
+ 
+So from this we can us code like this: 
+ 
+                       $0106,0000 ; Set high bits 
+                       $0180,0123 ; High bits register 0 
+                       $0182,0123 ; High bits register 1 
+                       $nnnn,0123 ; High bits register n 
+ 
+                       $0106,0200 ; Set low bits 
+                       $0180,0246 ; Low bits register 0 
+                       $0180,0246 ; Low bits register 1 
+                       $nnnn,$246 ; Low bits register n 
+ 
+So  we  don't  have  to do the high bit and low bits of each colour immediately 
+after each other.  This saves a lot of needless BPLCON3 ($106) commands! 
+ 
+Okay,  so  now  we  have Super HI-RES, 8 planes and 24 bit colour coding.  What 
+next? 
+ 
+ 
+                      ACCESSING THE 256 COLOUR PALETTE 
+ 
+Okay,  first the bad news.  As I said the Amiga doesn't use 256 separate colour 
+registers.   The  same  colour  register  is used several times to code several 
+different  colours.   Weird  or  what!   So  the  Amiga  works with 8 different 
+palettes  of  32  colours  each, using the usual colour register COL0 to COL31 
+($0180 to $01BE). 
+ 
+You can choose the palette you want to access via the bits 11 to 14 of BPLCON3. 
+($0106). 
+ 
+                         Bit 14  -  Bit 13  -  Bit 12 
+ 
+            0          0          0 ; Palette 0 (Color 0 to 31) 
+            0          0          1 ; Palette 1 (Color 32 to 63) 
+            0          1          0 ; Palette 2 (Color 64 to 95) 
+            0          1          1 ; Palette 3 (Color 96 to 125) 
+            1          0          0 ; Palette 4 (color 128 to 159) 
+            1          0          1 ; Palette 5 (color 160 to 191) 
+            1          1          0 ; Palette 6 (color 192 to 223) 
+            1          1          1 ; Palette 7 (color 224 to 255) 
+ 
+Okay,  so say for example that we wanted to set color 177 to $00123456.  Colour 
+177 is colour $01A2 of palette 5, therefore: 
+ 
+                                  $0106,5000 
+                                  $01A2,0135 
+                                  $0106,5200 
+                                  $01A2,0246 
+ 
+Okay, from all this it should not be too much trouble to draw a nice 256 colour 
+picture  and  write some source code to display it.  Well, I have tried in vain 
+to do this and have now given up.  I can't find a 256 colour RAW converter that 
+we  can  get the colours from as well.  This is what we need to get our picture 
+and colours into the hardware registers. 
+ 
+I  have  included  some source although it's not by me and it's not in English. 
+The  code  should give you some idea of what is actually going on.  If you have 
+an AGA converter and could let me have a copy, I may write some source code for 
+the  stuff  that  has been discussed here, but I'll leave that up to you.  This 
+issue's  tutorial  is a little shorter than normal, simply because I am writing 
+the next issue's tutorial and I think this is a good place to leave it for this 
+issue.  Next issue we will be going over sprites.  So until then... 
+ 
+
+	----------------------------------------
+ 
+ 
+Okay, you will find on one of these luvly disks, a 256 colour raw converter and 
+the  source  code for an example picture display, although I couldn't get it to 
+work.   Maybe  you  will  have  better  luck?   Even though it doesn't work, it 
+explains what we have gone over here in this issue. 
+ 
+
+	----------------------------------------
+ 
+ 
+[ The source files are in the AssembSource drawer of the Mag4/ drawer of this mag, in lha format. This article first appeared in the diskmag Beyond The Frontier, issue 6, an excellent diskmag by Area 51 - Mark ]    
+ 
+@endnode
+

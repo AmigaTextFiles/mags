@@ -1,0 +1,593 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 06/98 - MUI++</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>MUI++ - Einsatz</H1><BR>von<BR><A HREF="mailto:S.Manske@gmx.de">Stephan Manske</A><BR>
+</DIV>
+<P>Vor einigen Tagen mailte mich Carsten Jahn an und fragte, ob ich denn
+nicht was zum Thema objektorientiertes MUI-Programmieren in C++ schreiben
+k&ouml;nne, da ich mich ja in den Newsgroups mal danach erkundigt hatte. Tja
+nichts leichter als das, oder wie?</P>
+<P>Nachdem ich zuerst &uuml;berlegt hatte, wor&uuml;ber ich - um alles in der Welt -
+schreiben soll, fiel mir mein erstes Testprogramm ein, mit dem ich anfing
+MUI++ zu benutzen.</P>
+<P>Doch zuerst mal ein bi&szlig;chen allgemeines &uuml;ber MUI++:</P>
+
+<H2>1. Das Readme aus dem Aminet:</H2>
+
+<PRE>Short:    C++ wrapper classes for MUI 3.8
+Author:   nick@carlton-castel.demon.co.uk
+Type:     dev/mui
+
+Allows the use of MUI 3.8 through C++ classes.
+This has only been tested with the GCC compiler although it has been
+written so that it should compile with other compilers.
+
+Features:
+
+ * Supports all attributes and methods of MUI 3.8
+ * Support for NList, NListview, and HTMLtext custom classes
+ * Template classes supplied for List, Listview, NList, NListview
+ * Methods and attributes can be inlined for efficiency or linked with a
+   link library for faster compilation.
+ * Ability to convert to and from BOOPSI objects
+ * Extra support for List classes including AddHead, AddTail, InsertTop,
+   InsertBottom, Length.
+ * Numeric classes have coercion to ints and longs
+ * Lists can be treated like arrays
+ * Strings and Texts have coercion to char *
+ * Includes ARexx macros for generating main header file and header files
+   for custom classes from autodocs.
+ * Includes documentation in guide format
+ * Is completely free!
+</PRE>
+
+<H2>2. Ein paar Worte von mir zu MUI++</H2>
+<B>(oder eine deutsche Variante der originalen Einleitung)</B>
+
+<H3>2.a. Was ist MUI++</H3>
+
+<P>MUI++ erm&ouml;glicht es C++-Programmierern MUI mittels normalen C++-Klassen
+zu benutzen. Dies geht meiner Meinung nach nicht nur intuitiver, sondern
+erm&ouml;glicht bsw. &uuml;ber Templates eine wesentlich sichere Typpr&uuml;fung.</P>
+<P>Deshalb sollten zwei Bedingungen vom Programmierer erf&uuml;llt werden:</P>
+
+<UL>
+<LI>Kenntnisse von MUI (Die Kurse im AmZeiger und ein bissel Studieren der
+MUI-developer-docs reichten zumindestens bei mir.)</LI>
+<LI>Kenntnisse &uuml;ber C++ sind zwingend, da es sonst keinen rechten Sinn macht
+MUI f&uuml;r C++ zu programmieren. Empfehlenswerte Lekt&uuml;re ist da nat&uuml;rlich
+Stroustrups &quot;Die C++-Prgrammiersprache 3. Edition&quot; oder eine der diversen
+Online-Kurse, von denen ihr einige auf der Linkseite meiner <A HREF="http://smanske.home.pages.de/">Homepage</A>
+finden k&ouml;nnt.</LI>
+</UL>
+
+<H3>2.b. Warum MUI++?</H3>
+
+<P>Obwohl MUI objektoriert ist, wird es in der Regel in einer prozeduralen
+Programmiersprache wie C benutzt. Was liegt also n&auml;her als MUI
+objektorientiert in einer objektorientierten Sprache wie C++ zu benutzen?</P>
+<P>Mechanismen wie Vererbung innerhalb der MUI-Klassen sind dann z.B. auch
+in der Programmiersprache ausgedr&uuml;ckt, was durch eine Basisklasse
+(CMUI_Object) und deren Ableitungen realisiert wird.</P>
+<P>Zum anderen ist MUI++ einfach wesentlich k&uuml;rzer zu notieren als das
+klassische MUI. Beispiel:</P>
+<P>Um einen Eintrag in eine Liste einzutragen, mu&szlig; man in C folgendes
+schreiben:</P><PRE>
+      <B>DoMethod (myList, MUIM_List_InsertSingle, &quot;Hello world!&quot;,
+                MUIV_List_Insert_Bottom);</B>
+
+In MUI++ gen&uuml;gt ein:
+
+      <B>myList.InsertSingle(&quot;Hello world!&quot;, MUIV_List_Insert_Bottom);</B>
+
+oder gar:
+
+      <B>myList.InsertBottom(&quot;Hello world!&quot;);</B>
+
+Wenn das kein Grund ist, zu wechseln? :-)
+</PRE>
+
+<H2>3. Programmbeispiel</H2>
+
+<P>So, nun kommen wir zu dem Beispielprogramm. Entstehen soll ein List-
+Fenster, in dem dynamisch Eintr&auml;ge eingef&uuml;gt werden k&ouml;nnen und die
+Darstellung der Daten ver&auml;ndert werden soll.</P><P>
+Dabei mu&szlig; noch angemerkt werden, da&szlig; ich den GCC benutze, und der hat ein
+paar kleine Probleme mit C++ und Hook-Funktionen, deshalb werde ich an
+diesen Stellen sowohl die bei mir funktionierende Version, als auch die
+ganz korrekte darstellen. Was die Funktionsdeklarationen von Hook-
+Funktionen f&uuml;r andere Compiler betrifft, kann ich leider nichts sagen.
+</P><P>Desweiteren sollten in fast allen F&auml;llen Strings statt char* oder char[]
+benutzt werden, aber leider hat der GCC damit noch seine Probleme. :-(</P>
+<P>Die Original-Kommentare aus dem von mir benutzten Programmrumpf habe ich
+belassen und zus&auml;tzlich - so gut es mir eben gelang - &uuml;bersetzt.</P>
+<P>Zun&auml;chst kommen noch ein paar Defines und so, die sollen uns aber nicht
+st&ouml;ren.</P><PRE>
+<B>/* Simple example and test program to demonstrate use of template Listview
+   class */
+
+#define MUIPP_DEBUG         // Turn debugging mode on for invalid use of classes
+//#define MUIPP_NOINLINES       // No inlines makes code compile quicker but the resulting
+                            // executable is larger and slower. Best to use this
+                            // option when developing and turn off for final release.
+#define MUIPP_TEMPLATES     // Allows use of MUI template classes
+
+// This is the main C++ header file
+
+#include &lt;libraries/mui.hpp&gt;
+
+#include &lt;inline/exec.h&gt;</B>
+
+Zuerst erstellen wir die Klasse f&uuml;r die Eintr&auml;ge
+
+<B>// These objects are inserted directly into the listview. Using template
+// listview means that the objects are retrieved and inserted as Person
+// objects (ie there is no need to convert to/from void *).
+
+// Diese Objekte werden direkt in das Listview eingetragen. Da wir die
+// Template-Version des Listviews benutzen, werden die Person-Objekte wie
+// sie sind, benutzt und es ist kein Konvertieren von/zu void* n&ouml;tig.
+
+class Person
+{
+public:
+    Person (const char *_name)
+    {
+        name = (char *)_name;
+    }
+
+    char *name;
+};
+
+//---------</B>
+
+Einige Deklarationen f&uuml;r die Libraries und die Hook-Funktionen.
+
+<B>typedef unsigned long (*HookFunction)();
+
+struct UtilityBase *UtilityBase = NULL;
+struct IntuitionBase *IntuitionBase = NULL;
+struct Library *MUIMasterBase = NULL;
+
+//---------  </B></PRE>
+
+<P>Nun kommen die ersten interessanten Funktionen, n&auml;mlich die beiden, die
+f&uuml;r die beiden unterschiedlichen Darstellungen im Listview zust&auml;ndig sind.
+</P><P>MUI ben&ouml;tigt daf&uuml;r eine sogenannte Hook-Funktion, die ihre Parameter in
+speziellen Registern erwartet (welche findet man in den entsprechenden
+Autodocs).</P>
+
+<P><B>// Hook function to display Person object in listview</B></P>
+
+<P>Im Register a1 erwartet die Hook-Funktion, die die Darstellung in einem
+Listview steuert, den Datensatz, der dargestellt wwerden soll. Eben
+&quot;Person&quot;.</P>
+<P>In a2 soll der Programmierer einen Array von Char-Strings zur&uuml;ckgeben,
+der in jedem String den Eintrag f&uuml;r eine Spalte des Listviews enthalten
+soll. (Bei einer Liste von {Name, Vorname, Wohnort} m&uuml;ssen also drei
+Strings im Array sein, mit je einem der Daten.)</P>
+<P>In der ersten Version werden nur die Namen aus &quot;Person&quot; in dieses Array
+eingetragen.</P><PRE>
+
+<B>void DisplayPerson1 (void)
+{
+    register Person* a1 __asm(&quot;a1&quot;);
+    Person* person=a1;
+
+    register char** a2 __asm(&quot;a2&quot;);
+    char** column=a2;
+
+    static  char buf[20];
+
+    strcpy(buf,person->name);
+
+    *column = buf;
+    return;
+}    </B></PRE>
+
+<P>In der zweiten Version kommt vor den Namen noch eine laufende Nummer.
+Daf&uuml;r ist die Zeile...</P>
+
+<P>   <B>sprintf(buf1,&quot;%ld&quot;,(column[-1]+1));</B></P>
+
+<P>...zust&auml;ndig. Da das von MUI erwartete (und bereitgestellte) Array an der
+Position -1 die laufende Nummer mit Null beginnend hinterlegt, mu&szlig; diese
+nur noch um eins erh&ouml;ht werden.</P><PRE>
+
+<B>void DisplayPerson2 (void)
+{
+    register Person* a1 __asm(&quot;a1&quot;);
+    Person* person=a1;
+
+    register char** a2 __asm(&quot;a2&quot;);
+    char** column=a2;
+
+    static  char buf2[20],buf1[20];
+
+    strcpy(buf2,person->name);
+    sprintf(buf1,&quot;%ld&quot;,(column[-1]+1));
+
+
+    *column++ = buf1;
+    *column   = buf2;
+    return;
+} </B>
+</PRE><P>
+Zuletzt werden die Hook-Funktionen noch in die Amiga-Struktur HOOK
+eingebunden. Diese HOOKs werden nachher &uuml;bergeben, wenn eine Hook-
+Funktion aufgerufen werden soll.</P><PRE>
+<B>struct Hook displayHook2 = {{NULL, NULL}, (HookFunction)DisplayPerson2, NULL, NULL};
+struct Hook displayHook1 = {{NULL, NULL}, (HookFunction)DisplayPerson1, NULL, NULL};
+
+//---------</B></PRE>
+
+<P>So, nun k&ouml;nnen wir MUI sagen, wie es unsere Eintr&auml;ge darstellen soll,
+damit w&auml;re die Arbeit doch getan!?</P>
+<P>Wie, ich habe was von wechselnder Darstellung geschrieben? Und woher
+soll MUI wissen, wann und wie es umschalten soll?</P><P>
+Okay, okay. Also zuerst einmal, wie soll MUI umstellen? (Das wann kommt
+sp&auml;ter, wer in den letzten Kursen aufgepa&szlig;t hat, der wird wahrscheinlich
+sowieso schon an die Notifys denken.)</P><PRE><B>void ChangeList (void)
+{
+    register CTMUI_Listview&lt;Person&gt;* a2 __asm(&quot;a2&quot;);
+    CTMUI_Listview&lt;Person&lg;* liste=a2;
+
+    if (liste->Format()!=&quot;BAR,&quot;)
+      {
+        liste->SetDisplayHook(&amp;displayHook2);
+        liste->SetFormat(&quot;BAR,&quot;);
+      }
+    else
+      {
+        liste->SetDisplayHook(&amp;displayHook1);
+        liste->SetFormat(&quot;&quot;);
+      }
+}</B>
+
+Das sieht doll aus, wah?  :-) So richtig C++-like.
+
+Also was passiert da:
+
+Zuerst wird wieder ein Register &uuml;bergeben, ist ja auch eine Hook-Funktion.
+
+Jede MUI-Liste enth&auml;lt ein Format-Datum, welches unter anderem die Anzahl
+der Spalten enth&auml;lt. In unserem Fall wird gepr&uuml;ft, ob das Format NICHT wie
+folgt aussieht:
+
+  xxx | yyy
+  zzz | ttt
+  aaa | eee
+
+&quot;BAR&quot; steht f&uuml;r eine Trennlinie, das Komma f&uuml;r eine zweite Spalte.
+
+    i<B>f (liste->Format()!=&quot;BAR,&quot;)</B>
+
+Wenn dem also nicht so ist, wird die neue DiplayHookFunktion ausgew&auml;hlt
+(eben die mit den zwei Spalten und das Format wird auf zwei Spalten
+umgestellt.
+
+        <B>liste->SetDisplayHook(&amp;displayHook2);
+        liste->SetFormat(&quot;BAR,&quot;);</B>
+
+Haben wir allerdings schon zwei Spalten, so wird die einspaltige Display-
+Funktion gew&auml;hlt und das Format einspaltig gemacht.
+
+        <B>liste->SetDisplayHook(&amp;displayHook1);
+        liste->SetFormat(&quot;&quot;);</B>
+
+
+Soweit zur Theorie, in GCC geht das leider nicht so einfach, da C++-
+Konstruktionen in Hook-Funktionen nicht unterst&uuml;tzt werden.
+
+<B>void ChangeList (void)
+{
+    register CTMUI_Listview&lt;Person&gt;* a2 __asm(&quot;a2&quot;);
+    CTMUI_Listview&lt;Person&gt;* liste=a2;
+
+    char* list_format;</B>
+
+Hier mu&szlig; zuerst das MUI-Attribut &quot;MUIA_List_Format&quot; auf konventionellem
+Weg aus dem MUI_Listview geholt werden.
+
+    <B>GetAttr(MUIA_List_Format,(Tag)liste,(ULONG)&amp;list_format);</B>
+
+Und alle MUI_Attribute m&uuml;ssen via SettAttrs gesetzt werden:
+
+    <B>if (list_format!=&quot;BAR,&quot;)
+      {
+        SetAttrs((Tag)liste,MUIA_List_DisplayHook,(ULONG)&amp;displayHook2,TAG_DONE);
+        SetAttrs((Tag)liste,MUIA_List_Format,(ULONG)&quot;BAR,&quot;,TAG_DONE);
+      }
+    else
+      {
+        SetAttrs((Tag)liste,MUIA_List_DisplayHook,(ULONG)&amp;displayHook1,TAG_DONE);
+        SetAttrs((Tag)liste,MUIA_List_Format,(ULONG)&quot;&quot;,TAG_DONE);
+      }
+}</B>
+
+Zuletzt erfolgt in beiden F&auml;llen das Eintragen in einen HOOK:
+
+<B>struct Hook changeListHook = {{NULL, NULL}, (HookFunction)ChangeList, NULL, NULL};
+
+//---------</B>
+
+Um zu zeigen, da&szlig; auch fern ab von jeder graphischen Darstellung die
+MUI-Klassen voll funktionsf&auml;hig in C++ sind, habe ich diese Funktion
+geschrieben. Sie stellt den Inhalt des Listviews in einem CLI-Fenster
+dar und beim Programmieren m&uuml;ssen wir uns nicht darum k&uuml;mmern, da&szlig; wir
+mit MUI++-Klassen arbeiten.
+
+Nebenbei: auch hier w&auml;ren C++-Konstrukte wie &quot;cout&quot; zur Ausgabe sinnvoller.
+
+<B>// Although the listview is passed by value it is actually passed by reference
+// always. This is because the class is only a wrapper to the BOOPSI class
+// and only has one attribute - the BOOPSI object pointer. Hence, it is the
+// equivalent of passing an Object * on the stack.
+
+void
+PrintPersonList (CTMUI_Listview&lt;Person> list)
+{
+    // You can use Length() or Entries() to get the length of a list
+
+    int numPeople = list.Length();
+
+    printf (&quot;Number of people in list = %d\n&quot;, numPeople);
+
+    // You can treat Listviews just like arrays!!
+
+    for (int i = 0; i &lt; numPeople; i++)
+    {
+        printf (&quot;%d %s\n&quot;, i, list[i].name);
+    }
+}
+
+//---------</B>
+
+
+Tatata! Und schon kommen wir zum Hauptprogramm:
+
+<B>int
+main (void)
+{</B>
+
+Zuerst werden die Libraries ge&ouml;ffnet.
+
+    <B>// Open libraries required
+
+    if ((IntuitionBase = (struct IntuitionBase *)OpenLibrary (&quot;intuition.library&quot;, 0)) == NULL)
+    {
+        printf (&quot;Could not open intuition.library\n&quot;);
+        return 10;
+    }
+
+    if ((MUIMasterBase = OpenLibrary (&quot;muimaster.library&quot;, 0)) == NULL)
+    {
+        printf (&quot;Could not open muimaster.library\n&quot;);
+        return 10;
+    }</B>
+
+So jetzt kommen wir zur ersten MUI++-Klasse, dem CTMUI_Listview.
+
+Kurz was zur Nomenklatur, die MUI++-Klasse hei&szlig;t so, wie ihr MUI-
+Gegenst&uuml;ck mit dem Zusatz &quot;CMUI_&quot;. Handelt sich um eine Templete-
+Version hei&szlig;t sie &quot;CTMUI_...&quot;.
+
+Also, wir wollen uns ein Listview erstellen und nehmen also CTMUI_Listview.
+Und da es um &quot;Person&quot; geht: CTMUI_Listview&lt;Person&gt;.
+
+    <B>// Declare template Listview of type Person to display list of people
+    // NOTE: This does no initialization, it's just a declaration.
+
+    CTMUI_Listview&lt;Person&gt; list;</B>
+
+Dazu kommen dann die &uuml;bliche MUI-Klassen wie Fenster, Slider, Buttons:
+
+    <B>CMUI_Window window;</B>
+
+Achtung, hier wurde eben nur deklariert, nicht definiert!
+
+    <B>CMUI_Slider mySlider (MUIA_Numeric_Min, 0,MUIA_Numeric_Max, 100,MUIA_Numeric_Value,30,TAG_DONE);
+       </B>
+Die ganz normalen MUI-Tag-Notation geht also auch hier.
+
+    <B>CMUI_Button myButton (&quot;_Ok&quot;);</B>
+
+Andererseits gibt es auch spezielle Konstruktoren f&uuml;r (leider erst) einige
+Klassen, die den Umgang noch einfacher machen.
+
+    <B>// Create Application object. I am not using any shortcuts here to create
+    // the objects. I actually prefer the layout like this than when using
+    // shortcuts. If you prefer the old way of creating objects by using the
+    // shortcuts then you can still do this. See the shortcuts.cpp example
+    // for details as some shortcuts have had to change name so as not to clash
+    // with class member functions.</B></PRE>
+<P>Nun wollen wir die MUI-Applikation erstellen. Einige Objekte tragen wir
+nur noch ein, andere erzeugen wir an Ort und Stelle.</P>
+<PRE>
+    <B>CMUI_Application app
+    (
+        MUIA_Application_Title,         &quot;TListview&quot;,
+        MUIA_Application_Author,        &quot;Nicholas Allen&quot;,
+        MUIA_Application_Base,          &quot;TEST&quot;,
+        MUIA_Application_Copyright,     &quot;AllenSoft&quot;,
+        MUIA_Application_Description,   &quot;Test Program For Template Listview class&quot;,
+        MUIA_Application_Version,       &quot;$VER: Test 1.0 (17.9.96)&quot;,
+        SubWindow, window = CMUI_Window
+        (
+            MUIA_Window_Title, &quot;Test Program For Template Listview class&quot;,
+            MUIA_Window_ID, 10,
+            WindowContents, CMUI_VGroup
+            (
+                Child, list = CTMUI_Listview<Person>
+                (
+                    MUIA_Listview_List, CMUI_List
+                    (
+                        MUIA_List_DisplayHook, &amp;displayHook1,
+                        InputListFrame,
+                        TAG_DONE
+                    ),
+                    MUIA_CycleChain, 1,
+                    MUIA_ShortHelp, &quot;Listview created using templates!!&quot;,
+                    TAG_DONE
+                ),
+
+                Child, mySlider,Child, myButton,
+                TAG_DONE
+            ),
+            TAG_DONE
+        ),
+        TAG_DONE        // Don't forget these if you're not using shortcuts!
+    ); </B>
+
+Dann &uuml;berpr&uuml;fen wir, ob alles geklappt hat:
+
+    <B>// Any MUI object created as a C++ class can be tested for validity by
+    // calling its IsValid() method. This method just checks that the
+    // BOOPSI object pointer is not NULL.
+
+    if (!app.IsValid())
+    {
+        printf (&quot;Could not create application!\n&quot;);
+        return 10;
+    }  </B>
+
+Nun f&uuml;gen wir einige Personen in bester C++-Manier ein:
+
+    <B>// Insert some new people into the listview!!
+
+    list.InsertBottom(new Person (&quot;Nick&quot;));
+    list.InsertBottom(new Person (&quot;Dom&quot;));
+    list.InsertBottom(new Person (&quot;Mart&quot;));
+    list.InsertBottom(new Person (&quot;Nicky&quot;));
+
+    // This only copies 4 bytes onto stack!! It is the same as passing a
+    // BOOPSI Object *</B>
+
+Und drucken diese in das CLI-Fenster:
+
+    <B>PrintPersonList (list);
+
+    // Setup close window notification.
+    // Because Notify() is a variable args method we have to pass sva as the
+    // first parameter. Failing to do this will result in an error at
+    // COMPILE time so there won't be any weird crashes by forgetting to do
+    // this.
+
+    // Nur soviel: Um Notify als Member-Funktion aufzurufen, ben&ouml;tigen
+    // wir ein dummy namens sva, das von MUI++ mitgeliefert wird.
+    // Ansonsten l&auml;uft das Eintragen in ein Notify wie bei MUI.
+    // Das erste Objekt wird &uuml;ber das aufrufende Objekt definiert.</B>
+
+
+Zuerst &auml;ndern wir das das Listview-Layout das erste Mal:
+
+   <B>myButton.Notify(sva, MUIA_Pressed, false,
+                    list, 2,MUIM_CallHook, &amp;changeListHook);</B>
+
+Standart-Notify f&uuml;r das Beenden der Applikation:
+
+    <B>window.Notify(sva, MUIA_Window_CloseRequest, TRUE,
+                  app, 2, MUIM_Application_ReturnID, MUIV_Application_ReturnID_Quit);
+              </B>
+Wir &ouml;ffnen das Fenster:
+
+    <B>window.SetOpen(TRUE);</B>
+
+Und nun f&uuml;gen wir dynamisch eine weitere Person ein, mich. :-)
+
+    <B>list.InsertBottom(new Person (&quot;Stephan&quot;));</B>
+
+</PRE>Zum Schlu&szlig; kommt die Schleife, in der das Programm verharrt, bis es
+beendet wird. Auch hier vereinfacht die C++-like-Schreibweise das ganze.
+Bsp:<PRE>
+
+        <B>switch (app.NewInput(&amp;sigs))</B>
+
+Und im Zusammenhang:<B>
+
+    ULONG sigs = 0;
+    BOOL running = TRUE;
+
+    while (running)
+    {
+        switch (app.NewInput(&amp;sigs))
+        {
+            case MUIV_Application_ReturnID_Quit:
+                running = FALSE;
+            break;
+        }
+
+        if (sigs)
+        {
+            sigs = Wait (sigs | SIGBREAKF_CTRL_C);
+            if (sigs &amp; SIGBREAKF_CTRL_C) break;
+        }
+    }
+
+    // This disposes of the application and all windows and objects in the
+    // windows.
+
+    app.Dispose();
+
+    CloseLibrary ((struct Library *)IntuitionBase);
+    CloseLibrary (MUIMasterBase);
+
+    return 0;
+} </B>
+
+</pRE>Fertig?    FERTIG!!!
+<P>Zum Abschlu&szlig; m&ouml;chte ich noch anmerken, da&szlig; auch das Generieren von Headern
+f&uuml;r eigene MUI-Klassen, die sich dann wunderbar in die Vererbungslinie
+einpassen, mittels AREXX-Scripten unterst&uuml;tzt wird. Nur wie, wei&szlig; ich noch
+nicht genau, aber sobald ich mich da rein gearbeitet habe (und eigene MUI-
+Klassen geschrieben habe) werde ich diesen Kurs sicher fortsetzen!</P>
+<P>Ein letztes noch zum Include-File &quot;mui.hpp&quot;:</P>
+<P>Da &quot;mui.hpp&quot; nat&uuml;rlich &quot;mui.h&quot; und andere System-Libs einbindet, mu&szlig; dieses
+ab der 170. Zeile von &quot;mui.hpp&quot; in ein 'extern &quot;C&quot; { .... };' gekapselt
+werden, zumindestens bei mir, wer also Probleme hat, versuche dies:</P>
+
+<PRE><B>
+#ifndef MUI_NOSHORTCUTS
+#define MUI_NOSHORTCUTS
+#endif
+
+extern &quot;C&quot; {
+
+#ifndef LIBRARIES_MUI_H
+#include &lt;libraries/mui.h&gt;
+#endif
+
+// Include prototypes for MUI and BOOPSI function calls
+
+#ifdef __GNUC__
+#include &lt;inline/muimaster.h&gt;
+#include &lt;inline/intuition.h&gt;
+#else
+#include &lt;clib/muimaster_protos.h&gt;
+#include &lt;clib/intuition_protos.h&gt;
+#endif
+
+#include &lt;clib/alib_protos.h&gt;
+
+};</B>
+</PRE><BR>
+
+Wenn es noch Fragen gibt, mailt mich an! (Adresse s.oben)
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9806bug.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0698/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9806bb.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

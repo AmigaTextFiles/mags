@@ -1,0 +1,183 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Workshops / Hintergrundberichte / Buchvorstellungen
+---------------------------------------------------
+
+1. Workshop: AFPL Ghostscript 6.50 - Teil 4 (von Uwe Pannecke)
+
+Crash-Kurs durch die Ghostscript-Untiefen
+
+Mit ein wenig Verz&ouml;gerung in dieser Septemberausgabe nun der versprochene 
+vierte Teil des Ghostscript-Workshops. Diesmal soll neben der harmonischen
+Zusammenarbeit von Ghostscript [1] und Final Writer die Ausgabe von PS- und 
+PDF-Dateien in weiteren Formaten sowie die Erh&ouml;hung des Bedienkomforts im 
+Mittelpunkt unserer Betrachtungen stehen.
+
+
+1. Teamwork
+
+Im letzten Teil haben wir uns Ghostscripts interessante F&auml;higkeit, 
+PostScript-Dateien in (zunehmend) betriebssystemunabh&auml;ngig verarbeitbare 
+PDF-Dokumente umwandeln zu k&ouml;nnen, kennen gelernt.
+Anwender der Textverarbeitung Final Writer werden sich, obwohl das Programm 
+in der letzten Version bereits f&uuml;nf Jahre alt ist, &uuml;ber dessen 
+Leistungsf&auml;higkeit im t&auml;glichen Einsatz nach wie vor freuen. Doch leider 
+findet sich unter den vielf&auml;ltigen Funktionen kein PDF-Export erstellter 
+Dokumente. Da aber Final Writer in der Lage ist, seine Dokumente als 
+Postscript-Dateien auszugeben, ist das PDF-Format nur einen (Ghostscript-) 
+Schritt entfernt.
+Im Unterschied zu einigen Firmen auf dem Amiga-Markt demonstrieren die 
+beiden Programme eindrucksvoll, dass man gemeinsam stark sein kann. Zwar 
+k&ouml;nnt ihr auch per Hand jede exportierte PS-Datei &uuml;ber Ghostscript ins PDF-
+Format wandeln, doch wesentlich komfortabler ist ein Automatismus, der 
+einem diese Arbeit abnimmt. Dank ARexx und dem Skript "Convert to PDF" [2] 
+des nur mit seinem Synonym auftretenden "ELAL" ist auch dieser Wunsch
+mit wenig Aufwand erf&uuml;llbar.
+Kopiert das ARexx-Skript nach "FinalWriter_D:FWMacros". Da das ARexx-File 
+f&uuml;r Ghostscript 5.x geschrieben wurde, solltet ihr vor dem eigentlichen 
+Start zuvor mit Hilfe eines beliebigen Editors im Skript den Stapelspeicher 
+von 40000 auf den f&uuml;r Ghostscript 6.50 notwendigen Wert von 200000 erh&ouml;hen. 
+
+Screenshot:
+<IMG SRC="../extra/gs_fwriter1.png" ALT="Screenshot">
+
+Um den Komfort auf die Spitze zu treiben, binden wir nun dieses Skript in 
+das FinalWriter-Men&uuml; ein. W&auml;hlt dazu in FinalWriter in der Men&uuml;-Zeile 
+"User/Andere/Voreinsteller..." und klickt im aufpoppenden Fenster unter 
+"Aktionen" auf "Neu", anschlie&szlig;end f&uuml;llt ihr das Feld unter "Name des 
+Men&uuml;punkts" mit einem gew&uuml;nschten Eintrag, wie etwa sinnigerweise "Convert 
+to PDF", und stellt den "Befehl/Typ" auf "ARexx-Script". Mit einem weiteren 
+Klick auf "Ausw&auml;hlen..." &ouml;ffnet sich ein Datei-Requester, der den Inhalt 
+des "FWMacros"-Verzeichnisses auflistet. Nachdem das Skript "Convert to 
+PDF" ausgew&auml;hlt wurde, beendet ihr die Konfiguration mit einem beherzten 
+Klick auf "Sichern".
+
+Screenshot:
+<IMG SRC="../extra/gs_fwriter2.png" ALT="Screenshot">
+
+Ab sofort wartet die PDF-Ausgabe in FinalWriter unter dem Men&uuml;-Abschnitt 
+"User" auf ihren Einsatz.
+
+Screenshot:
+<IMG SRC="../extra/gs_fwriter3.png" ALT="Screenshot">
+
+Vom eigentlichen Zusammenspiel FinalWriters und Ghostscripts bemerkt der 
+Anwender nicht sonderlich viel: Ghostscript erledigt seine Konvertierung im 
+Hintergrund. Lediglich f&uuml;r die Ausgabe der fertigen PDF-Datei will das 
+Skript von euch einen Dokumentnamen und das Zielverzeichnis.
+
+Screenshot:
+<IMG SRC="../extra/gs_fwriter4.png" ALT="Screenshot">
+
+Bei den Tests konnten typische FinalWriter-Dokumente mit unterschiedlichen 
+Schriftschnitten und reichlich eingebundenem Bildmaterial problemlos 
+konvertiert werden. Bei der Anzeige der PDF-Dateien stellte sich heraus, 
+dass "APDF" offensichtlich keinerlei Gefallen an diesen Dokumenten fand und 
+grunds&auml;tzlich jeden Anzeigeversuch mit einem Absturz quittierte. Schade, 
+zeigte sich "APDF" doch bisher recht robust beim Umgang mit dem portablen 
+Dokumentenformat. 
+Ghostscript selbst hatte keine Probleme mit der PDF-Pr&auml;sentation, ebenso 
+wenig wie der "Acrobat Reader", "GsView" und "KGhostView" unter Microsoft 
+Windows und Linux. 
+
+
+2. Rasterformate
+
+Ghostscript bringt im Schlepptau Treiber f&uuml;r einige Grafikformate mit und 
+erlaubt so die Konvertierung von PS- und PDF-Dokumenten in diese Formate 
+und die Ausgabe der Grafikdateien auf ein gew&uuml;nschtes Ger&auml;t. Zu den 
+unterst&uuml;tzten Formaten z&auml;hlen u.a. TIFF, BMP, PBM, PCX, PNG und JPEG.
+Wollt Ihr etwa eine im Verzeichnis "Work:" vorhandene 25-seitige Datei 
+"test.pdf" Seite f&uuml;r Seite in eines der unterst&uuml;tzten Rasterformate wandeln 
+und nach "RAM:" ausgeben, lautet die passende Syntax nach dem Setzen des 
+Stapelspeichers auf den Wert 200000:
+
+gs -dNOPAUSE -dFIXEDMEDIA -sDEVICE=Bildformat -rWertXxWertY -sOutputFile=RAM:Seite-0%d.Dateiendung Work:Test.pdf
+
+Mit "-dNOPAUSE" &uuml;berreden wir Ghostscript, bei der Konvertierung alle 
+Seiten in einem Rutsch ohne explizite Best&auml;tigung durch den Anwender 
+abzuarbeiten. Der Schalter "-dFIXEMEDIA" veranlasst das Programm, nach der 
+Initialisierung die Seitengr&ouml;&szlig;e zu fixieren. Wenn es erforderlich sein 
+sollte, wird Ghostscript Seiten entsprechend drehen und/oder skalieren. 
+Der Schalter "sDEVICE=" bekommt das entsprechende Bildformat zugewiesen, 
+mit "-rWertXxWertY" legen wir die gew&uuml;nschte DPI-Aufl&ouml;sung der Ausgabedatei 
+fest. Wird keine spezielle Aufl&ouml;sung f&uuml;r die Bildformate angegeben, nutzt 
+Ghostscript die vordefinierten. Bei TIFF w&auml;re es die FAX-Aufl&ouml;sung 204 x 
+196 DPI, bei JPEG 72 x 72 DPI. Die Ausgabedatei wird durch das 
+"-sOutputFile"-Argument "RAM:Seite-%02d.Dateiendung", Seite f&uuml;r Seite ab 
+Ziffer 01 zweistellig durchnummeriert, mit der gew&uuml;nschten Dateiendung in 
+der RAM-Disk abgelegt.
+Soll also unser "Test.pdf"-Dokument im JPEG-Format in der Ausl&ouml;sung 200x200 
+DPI nach "RAM:" ausgegeben und die Seitenzahl fortlaufend auf zwei Stellen 
+angegeben werden, geben wir Ghostscript in der Shell die entsprechenden 
+Anweisungen:
+
+gs -dNOPAUSE -dFIXEDMEDIA -sDEVICE=jpeg -r200x200 -sOutputFile=RAM:Seite-%02d.jpg Work:Test.pdf
+
+Je nach Leistungsf&auml;higkeit der CPU im Amiga liegt nach mehr oder weniger 
+kurzer Zeit das Ergebnis in der RAM-Disk vor.
+
+Screenshot:
+<IMG SRC="../extra/gs_jpegausgabe.png" ALT="Screenshot">
+
+
+3. Mehr Komfort
+
+Nach wie vor tummeln wir uns in der Shell, um Ghostscript unsere W&uuml;nsche zu 
+&uuml;bermitteln. Das klappt nach einer Eingew&ouml;hnungsphase auch ganz gut. Doch 
+ein wenig mehr Komfort wird wohl niemand verschm&auml;hen. Und mit den zwei 
+nachfolgend beschriebenen Befehlserweiterungen sollte auch eine komplette 
+Maussteuerung, etwa per selbsterstelltem Icon, nur noch wenige 
+Befehlszeilen entfernt sein.
+
+Dateiauswahl-Requester
+
+Bei allen bisherigen Anweisungen haben wir dem Programm die zu 
+bearbeitenden Dateien in der Kommandozeile &uuml;bergeben. Deutlich bequemer 
+w&auml;re eine Auswahl &uuml;ber einen Requester. Das haben sich offensichtlich auch 
+die Ghostscript-Programmierer gedacht und eine solche Option in das 
+Programm implementiert. Wenn wir aus dem obigen Beispiel die Angabe 
+"Work:Test.pdf" durch "`RequestFile`" ersetzen, k&ouml;nnen wir zuk&uuml;nftig die 
+gew&uuml;nschten Dateien per Maus ausw&auml;hlen. Au&szlig;erdem sorgt der Zusatz
+"PATTERN "(#?.ps|#?.pdf)"" f&uuml;r mehr &Uuml;bersicht, da er alle Dateien, die 
+nicht auf ".ps" oder ".pdf" enden, im Requester-Fenster ausblendet.
+
+Ende und Aus
+
+Eine zweite Besonderheit hat bisher unn&ouml;tig viel zus&auml;tzliche Arbeit 
+erfordert und eine m&ouml;gliche Automatisierung erschwert: Ghostscript meldete 
+sich nach getaner Arbeit im Interpreter-Modus in der Shell zur&uuml;ck und 
+musste durch "quit" bzw. "CTRL + C" beendet werden. &Uuml;bergeben wir dem 
+Programm in der Kommandozeile "-dBATCH", wird es sich nach Erledigung 
+seiner Aufgabe selbst&auml;ndig terminieren. Alternativ k&ouml;nnen wir auch an das 
+Ende der Zeile ein "-c quit" setzen.
+Abschlie&szlig;end die entsprechend erweiterte Shell-Eingabe des obigen 
+Beispiels:
+
+gs -dBATCH -dNOPAUSE -dFIXEDMEDIA -sDEVICE=jpeg -r200x200 -sOutputFile=RAM:Seite-%02d.jpg `RequestFile PATTERN "(#?.ps|#?.pdf)"`
+
+
+4. Schluss f&uuml;r heute
+
+So, das soll es f&uuml;r diesen Monat gewesen sein. In einer der n&auml;chsten AMIGA-
+aktuell-Ausgaben wird Ghostscripts Funktionalit&auml;t beim Ausdruck intensiver 
+beleuchtet. Den Abschluss soll eine Steuerung des Programms &uuml;ber Icons und 
+eine (von euch erweiterbare) Mini-GUI bilden. 
+Bis dann.
+
+
+[1] im Aminet unter /gfx/conv/GS650-xxx.lha
+[2] im Aminet unter /util/rexx/Convert_to_PDF.lha
+
+Uwe Pannecke &lt;Uwe.Pannecke@t-online.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

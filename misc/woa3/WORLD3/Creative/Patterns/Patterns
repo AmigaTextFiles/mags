@@ -1,0 +1,131 @@
+Patterns
+
+We've all seen those horribly complex pattern matching things which you
+can specify in filenames and commands to make it easier to specify a
+range of files. The PC went one better with it's *. method of pattern
+matching, but the Amiga's has always been more felxible, if a little
+complicated.
+
+Hopefully, in the next Amiga OS (3.5) we will see some sort of
+improvement, but since that is months away, we will take a quick look
+at the current method of pattern matching.
+
+As the experts amongst you will know, pattern matching is pretty simple
+one you get to grips with it. It's basically like the PC *. method,
+but you use #?. instead.
+
+However, it doesn't end here. In this article, we'll use the dir command
+for examples. Using an imaginary directory on your computer, called
+'Test' we will demonstrate how the pattern matching works, exactly.
+
+Here's a directory listing of our Test directory, just for example
+purposes:
+
+---
+     ACB (dir)
+     AEB (dir)
+     AAB (dir)
+  ABB                              ABB.info
+  ABBBBE                           ABBBBE.info
+  ABBC                             ABBE
+  ABCE                             AFEB
+  AFEB.info
+---
+
+These '#?' characters are called 'Wildcards'. They mean that you can
+work with more than one file, but only use one command, as long as the
+files you want to work with share common features, such as beginning
+with the same letter, or end with the same extension.
+
+When using wildcards, a string of characters which appears adjacent
+to the wildcard will be matched. Working with the above directory
+listing, I will try to demonstrate how to use each one of the wild
+cards.
+
+Starting with the easiest, which will probably appear incredibly over
+complicated to anyone who is not familiar with the Amiga. First of
+all, we'll have a look at how to match single character in a file
+name.
+
+just a quick note to remind you that I'm working with the imaginary
+directory shown above, you can work on any directory. Try your
+'Libs:' or 'Devs:' directory.
+
+Open up a CLI and change to the neccessary directory. I'd type
+
+   cd test/
+
+and you should use something like
+
+   cd libs:
+or
+   cd devs:
+
+and you'll see the command prompt change to your current directory. Now
+you can start matching filenames. The ? wildcard allows you to match
+a single character in a filename. Try this:
+
+   Dir A?B
+
+This would return any files which begin with 'A' and end with 'B'.
+The actual output would be:
+
+     ACB (dir)
+     AEB (dir)
+     AAB (dir)
+  ABB
+
+If you actually had a file called 'A?B' then you would need to put
+a back apostrophe (`) before the ? (`?) and it wouldn't then be treated
+as a wildcard.
+
+Now we'll look at the # wildcard. This allows you to match any number
+of single characters which are the same. For instance, typing
+
+   Dir A#B
+
+would bring up 'ABB' as the only matching file. '#B' is actually the
+pattern, and you can replace 'B' with any other character (not a colon)
+'#B' looks for occurrences of 'B' after the characters you have
+already typed, in this case 'A'. If you typed
+
+   Dir A#BC
+
+you would get ABBC as the only matching file because it has a number of
+B's between the first and last characters you enter. The most common
+wildcard there is, is the #? pattern matcher. This is a combination of
+? and # (obviously) and matches any number of characters. Try
+
+   Dir #?.info
+
+and you'd get a list of all files ending in .info
+
+   Dir A#?
+
+would product a list of all files starting with 'A'. Simple really. Now
+we'll look at multiple matches in the same wildcard. You can use brackets
+to seperate parts of the wildcard. For instance, entering:
+
+   Dir A(C|B)B
+
+would return the 'ACB' directory and the 'ABB' file because it starts
+with 'A', ends with 'B' and has either C or B as the middle character.
+That's fairly simple, also. Next comes the method of non matching.
+This is done using the ~ character. Just add it to one of your
+existing wildcards. Try
+
+   Dir (~#?.info)
+
+to get a directory list without the '.info' files. You must put the
+brackets in for this method to work. Also, note that you can use
+non matches and matches in the same wildcard.
+
+   Dir (~#?.info|A#?B)
+
+would give all files which match A#?B (start with A, end with B and
+have anything else in the middle, while ~#?.info would stop the info
+files being displayed. Clever eh?
+
+That's really it! There is one more wildcard, '%' which doesn't appear
+to do anything useful, so I've left it out.
+

@@ -1,0 +1,103 @@
+;Diese beiden Default-Variablen werden gesetzt, um die Abschlußausgabe
+;des Installers ein wenig sinnvoller zu machen.
+(set @app-name "FixRamIcon V1.0")
+(set @default-dir (expandpath "SYS:"))
+
+;Begrüßung
+(message (cat "\n\nWillkommen\n\nzu\n\nFixRamIcon V1.0\n\n\n"
+              "Teil des AmZeiger-Installerkurses von André Wyrwa.") (all))
+
+;Hauptauswahl zur Verfahrensweise
+(if
+
+ ;Verzweigungskriterium (User-Auswahl)
+ (askbool
+  (prompt "\n\nMöchten Sie die Koordinaten von Hand eingeben oder das Icon auf der Workbench positionieren?")
+  (help @askbool-help)
+  (choices "Koordinaten" "Icon positionieren")
+  (default 1)
+ )
+
+ ;TRUE-Block (Koordinaten)
+ (
+
+  ;Eingabe der Koordinaten
+  (set #x
+   (asknumber
+    (prompt "Bitte geben Sie nun die x-Koordinate ein.")
+    (help @asknumber-help)
+    (default 10)
+   )
+  )
+  (set #y
+   (asknumber
+    (prompt "Bitte geben Sie nun die y-Koordinate ein.")
+    (help @asknumber-help)
+    (default 10)
+   )
+  )
+
+  ;Modifizieren des Icons der "Ram Disk"
+  (tooltype
+   (dest "Ram Disk:disk")
+   (setposition #x #y)
+  )
+ )
+
+ ;ELSE-Block (Positionierung auf WB)
+ (
+
+  ;Einleitung
+  (message (cat "\nDie folgenden Aktionen können nicht vom Installer übernommen werden,"
+              " bitte führen Sie sie selbst gemäß den Anweisungen des Installers durch.") (all))
+
+  ;Anleitung
+  (message (cat "\n1. Schieben Sie das Icon für die \"Ram Disk\" an die gewünschte Position.\n\n"
+                "2. Aktivieren Sie das \"Ram Disk\"-Icon, falls dies nicht mehr der Fall ist.\n\n"
+                "3. Wählen Sie aus dem \"Piktogramm\"-Menü den Menüpunkt "fixieren".\n\n"
+                "Das wars, der Installer übernimmt jetzt alle weiteren Schritte, bitte drücken Sie \"Weiter\".") (all))
+ )
+
+;Ende IF-Block
+)
+
+;Existenzprüfung für "SYS:Storage" bzw. "S:"
+(if (exists "SYS:Storage")
+ (set #defdir "SYS:Storage")
+ (if (exists "S:") (set #defdir (expandpath "S:")))
+)
+
+;Auswahl des Zielverzeichnisses, in dem das Icon auf der Platte abgelegt wird
+(set #storedir
+ (askdir
+  (prompt "Wo soll das Icon abgelegt werden?\n(Genaueres: siehe Hilfe.)")
+  (help (cat "Das Icon der \"Ram Disk\" liegt normalerweise im RAM und geht"
+             "daher bei jedem Reset verloren. Auch die Positionswerte, die"
+             "im Icon festgeschrieben sind, werden damit also gelöscht.\n"
+             "Deshalb ist es erforderlich, das Icon auf der Festplatte"
+             "zwischenzuspeichern und nach jedem Neustart wieder in die"
+             "\"Ram Disk\" zurückzukopieren.\n\n"
+             "Bitte wählen Sie ein Verzeichnis aus, in dem das Icon abgelegt"
+             "werden soll.\n\n"
+             "Es erhält dort den Namen \"RamDisk.info\" und wird auf der"
+             "Workbench nicht sichtbar sein.\n\n"
+             "Empfohlen wird das Verzeichnis \"Storage\" und falls dieses"
+             "nicht vorhanden ist, das Verzeichnis \"S:\".\n\n---\n\n" @askdir-help))
+  (default #defdir)
+ )
+)
+
+;Kopieren des Icons
+(copyfiles
+ (source "Ram Disk:disk.info")
+ (dest #storedir)
+ (newname "RamDisk.info")
+)
+
+;Einfügen des nötigen Eintrages in die User-Startup
+(startup "FixRamIcon"
+ (prompt "Es wird nun ein Eintrag in die User-Startup geschrieben, der das Icon bei jedem Neustart in die \"Ram Disk\" zurückkopiert.")
+ (help @startup-help)
+ (command (cat "copy >NIL: " (tackon #storedir "RamDisk.info") " \"Ram Disk:disk.info\""))
+)
+

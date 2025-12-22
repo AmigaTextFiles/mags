@@ -1,0 +1,75 @@
+; Script di controllo per l'installazione del Numero_01 di AMIGAzette
+; $VER: installer 1.0 (17.6.99)
+; Scritto da Francesco De Napoli
+
+
+; Definizione delle frasi di uso comune!!!
+(set nomedisco ""
+)
+
+(set frase1
+       (cat   "In quale directory preferisci INSTALLARE la rivista "
+              "Amigazette")
+)
+
+(set frase2
+       (cat "Attendere!\nSto creando la directory \""
+             nome-dir
+             "Amigazette\""
+       )
+)
+
+(set frase3
+       (cat "\n\nAttendere!\n\nSto copiando tutti i files "
+            "necessari nella directory \""
+             "Amigazette\""
+       )
+)
+
+(set @default-dest "Work:")
+
+; Script vero e proprio
+
+(set nome-dir
+       (askdir
+              (prompt frase1)
+              (help @askdir-help)
+              (default @default-dest)
+       )
+)
+
+(set @default-dir nome-dir)
+
+;-------------------
+
+(set sorgente (cat nomedisco ":"))
+
+(copyfiles
+	(source "c/lhex")
+	(dest "c:")
+)
+(complete 20)
+
+(working "Istallando il programma...")
+(run ("c/lhex >CON:0/0//60/lhex/AUTO -a -f \"-w=%s\" x %samigazette.lha" nome-dir nomedisco))
+(complete 99)
+
+(set comando
+       (cat   "assign Amigazette: "
+              nome-dir
+              "\n")
+)
+(set frase5
+       (cat
+               "\n\nATTENZIONE!\n\nAggiungo alcune informazioni vitali "
+               "al file \"S:User-Startup\"\n")
+)
+
+(startup "Amigazette"
+       (prompt frase5)
+       (help "SPIACENTE!\n\nNessuna spiegazione!!!")
+       (command comando)
+)
+(complete 100)
+
+(exit "Ora installate i numeri della rivista")

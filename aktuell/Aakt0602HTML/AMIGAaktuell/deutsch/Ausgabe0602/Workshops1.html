@@ -1,0 +1,455 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Workshops.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops2.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Workshops
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="Inhalt"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H1>Workshops / Hintergrundberichte / Buchvorstellungen</H1>
+<H2>1. Einf&uuml;hrung in die Reaction-Programmierung (von Martin R. Elsner)</H2>
+<H3>Teil 4: Listbrowser, Clicktab, Speedbar und Hooks</H3>
+<P>
+Es dauert nicht lange, bis man in die Verlegenheit kommt, eines der
+genannten Gadgets benutzen zu m&uuml;ssen - heute wollen wir verhindern,
+dass man dabei den Spa&szlig; am Programmieren verliert!
+</P>
+<P>
+Zun&auml;chst eine kleine Zusammenfassung der Exec-Listen, die man h&auml;ufig
+ben&ouml;tigt. Listen sind eine praktische Form, dynamisch Daten zu speichern. Im
+Gegensatz zu Arrays ben&ouml;tigt man aber ein paar Kenntnisse, Strukturen
+und Funktionen, um mit Ihnen umgehen zu k&ouml;nnen.
+</P>
+<P>
+Am Amiga gibt es ein Standardformat f&uuml;r eine doppelt verkettete Liste
+(d.h. man kann die Liste sowohl von vorne nach hinten als auch von hinten
+nach vorne durchlaufen, es existieren zwei Zeiger pro Knoten), das auch in
+eigenen Programmen einfach eingesetzt werden kann und f&uuml;r das schon die
+wichtigsten Funktionen existieren. Die Liste ist dabei eine Struktur
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ struct List {
+   struct  Node *lh_Head;       /* Zeiger auf ersten Knoten     */
+   struct  Node *lh_Tail;       /* Dummy, muss immer NULL sein  */
+   struct  Node *lh_TailPred;   /* Zeiger auf letzten Knoten    */
+   UBYTE   lh_Type;             /* Typ                          */
+   UBYTE   l_pad;               /* Dummy                        */
+ };
+</PRE></TD></TR></TABLE>
+<P>
+die dann als Aufh&auml;nger f&uuml;r beliebig viele Knoten dient:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ struct Node {
+   struct  Node *ln_Succ;       /* Zeiger auf n&auml;chsten Knoten   */
+   struct  Node *ln_Pred;       /* Zeiger auf vorhergeh. Knoten */
+   UBYTE   ln_Type;             /* Typ, siehe exec/nodes.h      */
+   BYTE    ln_Pri;              /* Priorit&auml;t zur Sortierung     */
+   char    *ln_Name;            /* Name zur Identifikation      */
+ };
+</PRE></TD></TR></TABLE>
+<P><B>(zu finden in exec/lists.h bzw. exec/nodes.h)</B></P>
+<P>
+Man ben&ouml;tigt pro Liste eine Variable vom Typ struct List. Diese muss
+mit NewList() initialisiert werden:
+</P>
+<PRE>
+ struct List MyList;
+ NewList(&amp;MyList);
+</PRE>
+<P>
+Danach kann man dann Knoten f&uuml;r Knoten erzeugen. Da ein Node keinen
+wirklichen Speicherplatz f&uuml;r unsere Daten bereitstellt bzw. die vorhandenen
+Variablen f&uuml;r uns tabu sind, m&uuml;ssen wir eine eigene Struktur definieren; um
+z.B. pro Knoten einen String zu speichern, kann man folgende Struktur
+definieren:
+</P>
+<PRE>
+ struct MyData {
+   struct Node nd;
+   char MyString[1000];
+ }
+</PRE>
+<P>
+(Man kann alternativ die Variablen aus struct Node direkt in MyData
+&uuml;bernehmen, um MyData.ln_Succ statt MyData.nd.ln_Succ zu schreiben.)
+</P>
+<P>
+Die so definierte Struktur ist dann &auml;quivalent zur struct Node und kann
+in allen Listenfunktionen verwendet werden.
+</P>
+<P>
+Um nun einen Knoten einzuf&uuml;gen, reserviert man zun&auml;chst Speicher mit
+</P>
+<PRE>
+ struct MyData *md;
+ md = (struct MyData*)AllocVec(sizeof(struct MyData),MEMF_CLEAR);
+</PRE>
+<P>
+und h&auml;ngt diesen Knoten an die Liste an:
+</P>
+<PRE>
+ AddTail(&amp;MyList,(struct Node*)md);
+</PRE>
+<P><B>Jetzt k&ouml;nnen wir speichern, was zu speichern ist:</B></P>
+<PRE>
+ strcpy(md-&gt;MyString,&quot;Irgendein Text&quot;);
+</PRE>
+<P>
+Statt AddTail() kann man auch AddHead(), Insert() oder Enqueue() verwenden,
+je nach Platzierung des neuen Knotens.
+</P>
+<P>
+Die Liste muss nat&uuml;rlich sp&auml;ter wieder freigegeben werden, was mit RemHead()
+folgenderma&szlig;en passieren kann:
+</P>
+<PRE>
+ struct Node *md;
+ while( !IsListEmpty(&amp;MyList) ) FreeVec(RemHead(&amp;MyList));
+</PRE>
+<P>
+RemHead() entfernt nur die Adresse des ersten Knotens aus der Liste, FreeVec gibt
+dann den Speicher wieder frei. Mit RemTail() und Remove() kann man schlie&szlig;lich
+den letzten oder einen bestimmten Knoten entfernen.
+</P>
+<P>
+IsListEmpty ist nur ein Makro, das es erleichtert, den Zustand der Liste zu pr&uuml;fen;
+man sollte n&auml;mlich wissen, dass MyList.lh_Head nie NULL wird, sondern bei einer
+leeren Liste auf den unteren Teil unserer Struktur zeigt, der immer als letzter
+Knoten angesehen wird (was manche Listenoperationen vereinfacht, aber den
+Einsteiger meist verwirrt). Wer mehr dar&uuml;ber wissen will, dem empfehle ich die
+ROM Kernel Manuals (z.B. auf der Developer-CD unter
+ADCD_2.1:Reference/ROM_Kernel_Manuals/Libraries_Manual
+in ExecLibraries-&gt;ExecListsAndQueues).
+</P>
+<P>
+Jetzt zur Praxis: solche &quot;Exec linked lists&quot; werden auch gerne in BOOPSI-Objekten
+benutzt, in denen eine variable Datenstruktur ben&ouml;tigt wird. Im ClickTab sind das
+die Seiten (bzw. &Uuml;berschriften), im SpeedBar die Buttons und im ListBrowser die Zeilen.
+Intern arbeiten die Gadgets mit Listen, die unserer MyList sehr &auml;hnlich sind;
+sie k&ouml;nnen unter CLICKTAB_Labels, SPEEDBAR_Buttons und LISTBROWSER_Labels
+entweder direkt in ReActor oder im eigenen Quelltext definiert werden.
+</P>
+<P>
+Es werden erweiterte Nodes benutzt, in denen die spezifischen Daten untergebracht werden.
+Wir brauchen uns um die genaue Struktur nicht zu k&uuml;mmern, sondern k&ouml;nnen und m&uuml;ssen
+statt mit AllocVec nun mit den Routinen
+</P>
+<PRE>
+ AllocClickTabNode()
+ AllocSpeedButtonNode()
+ AllocListBrowserNode()
+</PRE>
+<P>
+neue Knoten erzeugen. &Uuml;bergeben werden Tags, die die Eigenschaften des Knotens festlegen,
+und beim ListBrowser die Anzahl der Spalten. Mit
+</P>
+<PRE>
+ FreeClickTabNode()
+ FreeSpeedButtonNode()
+ FreeListBrowserNode()
+</PRE>
+<P>
+kann man die Knoten wieder freigeben, mit FreeListBrowserList() sogar die gesamt Liste.
+</P>
+<P>Eine &Auml;nderung der Knoten ist mit</P>
+<PRE>
+ Get/SetListBrowserNodeAttrs()
+ Get/SetClickTabNodeAttrs()
+ Get/SetSpeedButtonNodeAttrs()
+</PRE>
+<P>
+m&ouml;glich, wobei die Tags denen von Alloc...Node() entsprechen.
+</P>
+<P>
+Beim Zugriff auf die Listen ist Vorsicht geboten, da die Objekte nat&uuml;rlich permanent auf
+die Liste zugreifen k&ouml;nnen. Um &Auml;nderungen durchzuf&uuml;hren, muss man die Liste zuerst abh&auml;ngen:
+</P>
+<PRE>
+ SetGadgetAttrs((struct Gadget *)lb,NULL,NULL,LISTBROWSER_Labels,~0,TAG_DONE);
+</PRE>
+<P>
+dann k&ouml;nnen die &Auml;nderungen an der Liste durchgef&uuml;hrt werden (Einf&uuml;gen/&Auml;ndern/L&ouml;schen von
+Knoten), woraufhin man die Liste wieder anh&auml;ngt:
+</P>
+<PRE>
+ SetGadgetAttrs((struct Gadget *)lb,intuiwin,NULL,LISTBROWSER_Labels,&amp;MyList,TAG_DONE);
+</PRE>
+<P><B>Das war's auch schon fast ;)</B></P>
+<H3>Das LISTBROWSER-Gadget</H3>
+<P>
+Schauen wir und direkt einen mehrspaltigen Listbrowser an:
+Wir wollen zwei Spalten anzeigen, in der ersten Spalte soll ein Image, in der zweiten
+ein Text erscheinen.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ struct ColumnInfo LBColumns[3];
+ struct List LBList;
+ Object *ListBrowser;
+
+ /* Die Spalten werden nicht als Liste, sondern als Array definiert: */
+ LBColumns[0].ci_Title = &quot;Erste Zeile&quot;;
+ LBColumns[0].ci_Width = 40;
+ LBColumns[0].ci_Flags = 0;
+ LBColumns[1].ci_Title = &quot;Zweite Zeile&quot;;
+ LBColumns[1].ci_Width = 60;
+ LBColumns[1].ci_Flags = 0;
+ LBColumns[2].ci_Title = &quot;&quot;;
+ LBColumns[2].ci_Width = -1; /* bedeutet letzter Eintrag, keine Spalte (wie TAG_END) */
+ LBColumns[2].ci_Flags = 0;
+
+ NewList( &amp;LBList );
+
+#define LB_ID 1
+
+ ListBrowser = (Object*)NewObject(
+   LISTBROWSER_GetClass(),NULL,
+   GA_ID, LB_ID,
+   GA_RelVerify, TRUE,
+   LISTBROWSER_ColumnInfo, &amp;LBColumns[0],
+   LISTBROWSER_Labels, &amp;LBList,
+   TAG_END);
+
+ Image = (Object*)NewObject(
+   BITMAP_GetClass(),NULL,
+   BITMAP_Screen,scr,BITMAP_SourceFile,filename,TAG_END);
+ /* scr ist der am Anfang geholte Bildschirmzeiger, filename irgenein Bild-Dateiname */
+ /* Nat&uuml;rlich kann man auch eine ganze Reihe von Bildern laden und verwenden. */
+</PRE></TD></TR></TABLE>
+<P>
+Dieser Listbrowser kann nun an ein Layout angeh&auml;ngt und angezeigt werden.
+</P>
+<P>
+Wir werden aber noch keine Zeilen sehen. Angenommen, es gibt eine Funktion GetNewData(),
+die uns String f&uuml;r String und schlie&szlig;lich NULL zur&uuml;ckliefert; dann m&uuml;ssen wir die Strings
+speichern, da der ListBrowser die Texte nicht kopiert. Wir k&ouml;nnten eine eigene Liste oder
+ein Array anlegen, aber der ListBrowser besitzt ja schon eine Struktur!
+Wir haben das Gl&uuml;ck, dass wir - anders als im ClickTab - eine eigene Node-Struktur
+definieren k&ouml;nnen, die dann vom ListBrowser mittel LBNA_NodeSize angelegt und verwaltet
+wird. Also benutzen wir unser MyData:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ SetGadgetAttrs((Gadget *)lb,NULL,NULL,LISTBROWSER_Labels,NULL,TAG_DONE);
+ newdata=GetNewData();
+ while( newdata ){
+   struct MyData newnode;
+
+   newnode=(struct MyData *)AllocListBrowserNode(2,LBNA_NodeSize,sizeof(struct MyData),TAG_END);
+   /* Also zwei Spalten, jeder Knoten kann als struct MyData benutzt werden */
+
+   strcpy(newnode-&gt;MyString,newdata);
+
+   SetListBrowserNodeAttrs( (struct Node *)newnode,
+     LBNA_Column,0, LBNCA_Image,Image,
+     LBNA_Column,1,
+       LBNCA_Text,newnode-&gt;MyString, LBNA_Flags,LBFLG_CUSTOMPENS,LBNCA_FGPen,2, LBNCA_Justification,LCJ_LEFT,
+       /* ein paar Beispiele, was man noch so &uuml;bergeben kann */
+     TAG_END );
+
+   AddTail(&amp;MyList,(struct Node*)newnode);
+
+   newdata=GetNewData();
+ }
+ SetGadgetAttrs((struct Gadget *)lb,intuiwin,NULL,LISTBROWSER_Labels,&amp;MyList,TAG_DONE);
+</PRE></TD></TR></TABLE>
+<P>
+Da newnode erst nach AllocListBrowserNode() verf&uuml;gbar ist und wir noch nicht die Adresse von MyString kennen,
+k&ouml;nnen wir dort noch nicht den Text angeben; deswegen muss SetListBrowserNodeAttrs() aufgerufen werden.
+Hier muss die Reihenfolge der Tags beachtet werden: zun&auml;chst wird die Spalte angegeben, dann die Eigenschaften,
+die der Knoten in dieser Spalte besitzen soll.
+</P>
+<P>
+Interessant ist die M&ouml;glichkeit, mit dem Listbrowser Baumstrukturen abzubilden. Dies wird durch Setzen von
+LISTBROWSER_Hierarchical m&ouml;glich und erfordert die Angabe des Tags LBNA_Generation f&uuml;r jeden Node, 1 steht
+f&uuml;r die oberste Ebene, 2 f&uuml;r die n&auml;chste (also die Children der ersten Ebene) etc.
+Mit ShowListBrowserNodeChildren(), HideListBrowserNodeChildren(),
+ShowAllListBrowserChildren() und HideAllListBrowserChildren() lassen sich dann im Programm Knoten ein- und
+ausblenden. Mit LISTBROWSER_ShowImage, LISTBROWSER_HideImage und LISTBROWSER_LeafImage lassen sich sogar
+eigene Bilder f&uuml;r einen Knoten mit eingeblendeten Children, mit ausgeblendeten Children und ohne Children
+angeben.
+</P>
+<P>
+ <A HREF="img/reaction4.png"><IMG SRC="thumb/reaction4.jpg" WIDTH="120" HEIGHT="48" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Bei der Reaktion auf Mausklicks kann man an LISTBROWSER_RelEvent die Art des Ereignisses ablesen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ switch( GadgetId ){
+   case LB_ID:{
+     GetAttr( LISTBROWSER_RelEvent,lb,&amp;code );
+     switch( code ){
+       case LBRE_DOUBLECLICK:   ... break;
+       case LBRE_NORMAL:        ... break;
+       case LBRE_COLUMNADJUST:  ... break;
+       ... /* siehe AutoDocs */
+     }
+     break;
+   }
+   ...
+ }
+</PRE></TD></TR></TABLE>
+<P>
+Je nach Ereignis bekommt man dann weitere Informationen durch folgende Eigenschaften:
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">LISTBROWSER_RelColumn:&nbsp;</TD><TD VALIGN="TOP">Angeklickte Spalte&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">LISTBROWSER_Selected&nbsp;</TD><TD VALIGN="TOP">Gew&auml;hlte Zeilen-/Nodenummer nach NORMAL oder DOUBLECLICK&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">LISTBROWSER_SelectedNode:&nbsp;</TD><TD VALIGN="TOP">Gew&auml;hlter ListbrowserNode nach NORMAL oder DOUBLECLICK&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">LISTBROWSER_NumSelected:&nbsp;</TD><TD VALIGN="TOP">Anzahl ausgew&auml;hlter Nodes, falls MultiSelect=TRUE&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+F&uuml;r Ereignisse wie LBRE_CHECKED und alle Mehrfachselektionen bei MultiSelect=TRUE muss man
+die ListbrowserLabels auswerten; mit GetListBrowserNodeAttrs() bekommt man heraus, ob
+der Knoten ausgew&auml;hlt (LBNA_Selected) oder der Haken gesetzt ist (LBNA_Checked, nur f&uuml;r Knoten,
+bei denen LBNA_CheckBox=TRUE gesetzt wurde). Genauso wie LISTBROWSER_Selected und
+LISTBROWSER_SelectedNode auch vom Programm gesetzt werden k&ouml;nnen, k&ouml;nnen einzelne Nodes durch
+SetListBrowserAttrs() (de-)selektiert werden (vorher wieder die Liste abh&auml;ngen!).
+</P>
+<P>
+&Uuml;brigens rate ich von der Verwendung von LISTBROWSER_PersistSelect ab, wenn man LBRE_DOUBLECLICK
+nutzen m&ouml;chte, da ein Doppelklick in diesem Modus zur Zeit nicht immer gemeldet wird.
+</P>
+<P>
+Leider bleibt hier kein Platz - bzw. f&uuml;r mich keine Zeit ;) - auf alle Features des Listbrowsers
+genau einzugehen, aber ich rate jedem, jede Eigenschaft einmal auszuprobieren; der Listbrowser
+ist eines der m&auml;chtigsten BOOPSI-Gadgets und kann f&uuml;r fast jedes Problem, das eine Liste von Daten
+oder Objekten betrifft, angepasst und eingesetzt werden.
+</P>
+<H3>Das CLICKTAB-Gadget</H3>
+<P>
+Ein ClickTab ist sehr n&uuml;tzlich, wenn man viele Informationen anzeigen muss, diese aber nicht
+gleichzeitig angezeigt werden k&ouml;nnen oder sollen. Dazu werden die Daten auf mehrere Seiten
+verteilt und &uuml;ber eine Reihe von Titel-Buttons zug&auml;nglich gemacht. Die einzelnen Gadgets und Images
+werden dabei von einem PAGE-Objekt verwaltet, die Buttons in einer Liste &auml;hnlich den ListbrowserLabels.
+</P>
+<P><B>In ReActor sieht das also so aus:</B></P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">1.&nbsp;</TD><TD VALIGN="TOP">Am gew&uuml;nschten Platz ein CLICKTAB einf&uuml;gen.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">2.&nbsp;</TD><TD VALIGN="TOP">Neue GadgetGroup erzeugen und dort ein PAGE einf&uuml;gen.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">3.&nbsp;</TD><TD VALIGN="TOP">Unter diesem Page nun f&uuml;r jede Seite ein LAYOUT erzeugen, und dort alle gew&uuml;nschten Objekte einf&uuml;gen.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">4.&nbsp;</TD><TD VALIGN="TOP">Zur&uuml;ck zum ClickTab und dort unter CLICKTAB_PageGroup die neue Gruppe angeben.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">5.&nbsp;</TD><TD VALIGN="TOP">Im ClickTab unter CLICKTAB_Labels f&uuml;r jede Seite einen Node anlegen und ihm sowohl einen bezeichnenden&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">Namen als auch eine eindeutige Nummer geben. Diese Nummer bezieht sich auf die Reihenfolge der Objekte&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">im Page-Objekt, d.h. 0 steht f&uuml;r erstes Layout im Page etc.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Die Erzeugung im Quelltext sieht &auml;hnlich aus, wobei die CLICKTAB_Labels so anzulegen sind wie im Listbrowser
+(Unterschiede: keine Spaltenanzahl in AllocClickTabNode, TNA_ statt LBNA_-Eigenschaften).
+Wie bei ListbrowserNodes werden die Texte nicht kopiert. Da ClickTabs aber auch nicht f&uuml;r variable
+Strukturen gedacht sind, sondern meist eine festgelegte Anzahl von Seiten aufweisen, wird man die
+Titel der Seiten sowieso im Programm hinterlegen.
+</P>
+<H3>Das SPEEDBAR-Gadget</H3>
+<P>
+ist eine sehr gute M&ouml;glichkeit, eine Liste von Standardaktionen in einem Fenster unterzubringen, die
+durch Images symbolisiert werden. Im Grunde handelt es sich nur um ein Layout mit einer Liste von
+Gadgets, die Kapselung in einem Objekt erleichtert aber die Programmierung, und es werden Buttons
+ausgeblendet, wenn dem Speedbar nicht gen&uuml;gend Platz zur Verf&uuml;gung steht. Die Liste der Buttons ist -
+wie zu erwarten - wieder eine unserer verketteten Listen, hier mit SpeedButtonNodes, die leider keinen
+Text, sondern nur Images enthalten; gl&uuml;cklicherweise kann auch ein Hilfetext angegeben werden.
+&Uuml;brigens sind die Eigenschaften SPEEDBAR_Visible und SPEEDBAR_Total, die die Zahl der sichtbaren und
+aller Buttons im Speedbar angeben, nicht &uuml;berschreibbar, auch wenn sie in ReActor aufgef&uuml;hrt werden.
+</P>
+<P>
+Leider fehlen dem SpeedBar ein paar w&uuml;nschenswerte Eigenschaften wie die Darstellung von Pfeilen, und die
+fehlende Popup-Hilfe macht sich hier negativ bemerkbar. Man kann sich allerdings behelfen:
+die Pfeile kann mal selber als Gadgets anlegen, und mit der Eigenschaft SPEEDBAR_Top l&auml;sst sich dann die
+Anzeige unserer Buttons scrollen. Und f&uuml;r die Anzeige der Hilfe gibt es wenigstens die M&ouml;glichkeit,
+mit SPEEDBAR_Window ein Fenster anzugeben, dessen Titelzeile zur Anzeige der Button-spezifischen
+Hilfetexte missbraucht wird.
+</P>
+<H3>HOOKS</H3>
+<P><B>And now to something completely different: Hooks!</B></P>
+<P>
+Worum geht es? Wenn ein eigenes Programm auf bestimmte Dinge reagieren soll, gibt es nat&uuml;rlich
+die M&ouml;glichkeit, mittels eines MessagePorts auf Ereignisse zu warten und dann die entsprechende
+Funktion auszuf&uuml;hren. Dies ist nicht immer m&ouml;glich und bedeutet, dass die Funktion nicht direkt an
+der ben&ouml;tigten Stelle aufgerufen wird. Einen anderen Weg gehen die sogenannten Hooks, wobei es
+sich im Grunde nur um etwas erweiterte Funktionszeiger handelt, die an geeigneter Stelle &uuml;bergeben
+und dann automatisch aufgerufen werden. Da der Aufruf nicht unbedingt aus dem eigenen Prozess
+heraus erfolgt, sollte die Hookfunktion m&ouml;glichst kompakt sein und keine Anforderungen an die
+Umgebung stellen (u.a. sollte kein printf() etc. benutzt werden).
+</P>
+<P>
+Das komplizierteste ist die Parameter&uuml;bergabe. StormC z.B. erm&ouml;glicht eine einfache
+Implementation, die ich hier am Beispiel eines IDCMPHooks f&uuml;r ein Window-Objekt darstellen m&ouml;chte;
+Ziel soll sein, die Nachricht von Intuition zu speichern, wenn ein Ereignis auftaucht, das
+WM_HANDLEINPUT sonst verschlucken w&uuml;rde.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ #include &lt;utility/hooks.h&gt;
+
+ struct Hook IDCMPHook;
+ struct IntuiMessage IDCMPMessage;
+
+ /* Hilfsfunktion zum Initialisieren der Hook-Struktur:
+ void InitHook( Hook *h,ULONG (*func)(), void *data ){
+   if(h){
+     h-&gt;h_Entry=func;
+     h-&gt;h_SubEntry=NULL;
+     h-&gt;h_Data=data;
+   }
+ }
+
+ /* Die aufzurufende Funktion: */
+ /* andere Compiler erfordern zus&auml;tzlich das Schl&uuml;sselwort __asm */
+ ULONG __saveds IDCMPHandler( register __a0 Hook *h,
+                              register __a2 void *o,
+                              register __a1 void *msg ){
+   memcpy( h-&gt;h_Data, msg,sizeof(struct IntuiMessage) );
+   /* wir kopieren einfach die Message, um sie nachher zu verarbeiten */
+   return(1);
+ }
+
+ ...
+ /* Die Initialisierung im Programm: */
+
+ InitHook( &amp;IDCMPHook,(ULONG (*)())IDCMPHandler,&amp;IDCMPMessage );
+
+ /* ab hier steht unser Hook zur Verf&uuml;gung und kann &uuml;bergeben werden, z.B.: */
+
+ Win = NewObject( WINDOW_GetClass(),NULL,
+   ...
+   WA_IDCMP,IDCMP_CLOSEWINDOW|IDCMP_GADGETUP|IDCMP_MOUSEBUTTONS|
+            IDCMP_RAWKEY|IDCMP_DISKINSERTED|IDCMP_DISKREMOVED,
+   WINDOW_IDCMPHook,&amp;Main.IDCMPHook,
+   WINDOW_IDCMPHookBits,IDCMP_DISKREMOVED|IDCMP_DISKINSERTED|IDCMP_MOUSEBUTTONS|IDCMP_RAWKEY,
+   TAG_END );
+</PRE></TD></TR></TABLE>
+<P>
+Bei anderen Compilern kann dies theoretisch etwas anders aussehen, wenn Parameter nicht direkt
+aus den Registern ausgelesen werden k&ouml;nnen; die L&ouml;sung dieses Problems und weitere Informationen
+findet man auf der Developer-CD unter Reference/Amiga_Mail_Vol2/Archives/Plain/ma92/Hooks/Hooks.txt
+F&uuml;r alle, die noch Probleme mit den Hooks haben: in den meisten F&auml;llen gibt es Alternativen
+zu Hooks, sodass man auch ohne sie leben kann ...
+</P>
+<P>
+Ansonsten w&uuml;nsche ich viel Spa&szlig; beim Erzeugen und Freigeben aller Listen,
+</P>
+<P>
+euer
+</P>
+<P><B>Martin R. Elsner &lt;<A HREF="mailto:email@martin-elsner.de">email@martin-elsner.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops2.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

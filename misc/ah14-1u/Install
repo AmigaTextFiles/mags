@@ -1,0 +1,378 @@
+;
+; Amiga Haber Installer 
+;
+; ©1997 Sinan Gurkan
+;
+
+(
+        
+
+        (set #intro
+                (cat
+                        "AMIGA HABER NISAN 1997\n"
+                        "\n"
+                        "Copyright ©1997\n" 
+                        "\n"
+                        "Sinan Gurkan\n"
+                )
+        )
+
+        (set #askdir
+                (cat    "Select where you would like to install "
+                        "AMIGA HABER. A drawer called 'AMIGA-HABER-14' will "
+                        "be created here."
+                )
+        )
+
+        (set #askdir_help
+                (cat
+                        "Executables and all necessary files will "
+                        "be installed in the directory of your choice. You "
+                        "may wish to create a new directory by using the "
+                        "'Make New Drawer' gadget.\n\n"
+                )
+        )
+
+        (set #overwrite
+                (cat
+                        "The 'AMIGA-HABER-14' directory already exists, overwrite?"
+                )
+        )
+
+        (set #overwrite_help
+                (cat
+                        "You may stop the install to "
+                        "avoid overwriting your current "
+                        "version of Amiga Haber.\n\n"
+                        "Continuing the install will "
+                        "overwrite your current files."
+                )
+        )
+
+        (set #yes
+                (cat
+                        "Yes"
+                )
+        )
+
+        (set #no
+                (cat
+                        "No"
+                )
+        )
+
+        (set #quit
+                (cat
+                        "Quit"
+                )
+        )
+
+        (set #disk1
+                (cat
+                        "\nPlease insert disk 1 into any drive"
+                )
+        )
+
+        (set #helpdisk1
+                (cat
+                        "Search for disk labeled 'ah14_1' and "
+                        "insert it into any drive."
+                )
+        )
+                        
+        (set #disk2
+                (cat
+                        "\nPlease insert disk 2 into any drive"
+                )
+        )
+
+        (set #helpdisk2
+                (cat
+                        "Search for disk labeled 'ah14_2' and "
+                        "insert it into any drive."
+                )
+        )
+
+
+        (set #disk3
+                (cat
+                        "\nPlease insert disk 3 into any drive"
+                )
+        )
+
+        (set #helpdisk3
+                (cat
+                        "Search for disk labeled 'ah14_3' and "
+                        "insert it into any drive."
+                )
+        )
+
+
+        (set #disk4
+                (cat
+                        "\nPlease insert disk 4 into any drive"
+                )
+        )
+
+        (set #helpdisk4
+                (cat
+                        "Search for disk labeled 'ah14_4' and "
+                        "insert it into any drive."
+                )
+        )
+
+
+                
+        (set #installed
+                (cat
+                        "Amiga Haber will be installed in "
+                )
+        )
+
+        (set #installing
+                (cat
+                        "Installing Amiga Haber..."
+                )
+        )
+
+        (set #creating
+                (cat
+                        "Creating 'AMIGA-HABER-14' directory"
+                )
+        )
+
+        (set #copyingexe
+                (cat
+                        "Copying Executables..."
+                )
+        )
+
+        
+
+        (set #copying2disk
+                (cat
+                        "Copying 2nd disk files..."
+                )
+        )
+
+
+
+        (set #copying3disk
+                (cat
+                        "Copying 3rd disk files..."
+                )
+        )
+
+
+        (set #copyingdisk
+                (cat
+                        "Copying 4th disk files..."
+                )
+        )
+
+                      
+
+        (set #setup1
+                (cat
+                        "Now I must insert some commands in your "
+                        "User-Startup."
+                )
+        )
+
+        (set #setup2
+                (cat
+                        ""
+                )
+        )
+
+        (set #setup_help
+                (cat
+                        "AMIGA HABER installation requires inserting an "
+                        "Assign command in your User-Startup to properly "
+                        "setup environment."
+                )
+        )
+
+        
+
+        (set #goodbye
+                (cat
+                        " 1.YASIMIZA BASTIK !"
+                )
+        )
+
+        ; Start! Show intro message...
+
+        (message #intro)
+
+        ; Ask where to install 
+
+        (set destdir
+                (askdir
+                        (prompt #askdir)
+                        (help #askdir_help)
+                        (default @default-dest)
+                        (disk)
+                )
+        )
+
+        (set destdir
+                (tackon destdir "AMIGA-HABER-14")
+        )
+
+        (set @default-dest destdir)
+
+        ; See whether this directory exists, if so warn the user
+
+        (if (exists @default-dest) 
+                (
+                        (if (= 0 (askbool
+                                        (prompt #overwrite)
+                                        (help #overwrite_help)
+                                        (choices #yes #quit)
+                                ))
+
+                                (
+
+                                ; User wishes to quit
+
+                                (exit (quiet))
+                                )
+
+                        )
+                )
+        )
+
+        ; Prompt for choosed dir
+
+        (message #installed @default-dest)
+
+        ; Start copy
+
+        (complete 0)
+
+        (working #installing)
+
+        ; Create the directory if it doesn't exist
+
+        (if (= 0 (exists @default-dest))
+                (
+                        (makedir @default-dest
+                                (prompt #creating)
+                                (infos)
+                        )
+                )
+        )
+
+        ; Ask for 1st disk
+
+        (askdisk
+                (prompt #disk1) 
+                (help #helpdisk1)
+                (dest "ah14_1")
+        )
+
+        ; Install the executable file
+
+        (working #copyingexe)
+
+        (copyfiles
+                (source "ah14_1:")
+                (dest @default-dest)
+                (infos)
+                (all)
+        )
+
+        
+
+        ; Ask for 2nd disk
+
+        (askdisk
+                (prompt #disk2)
+                (help #helpdisk2)
+                (dest "ah14_2")
+        )
+
+        ; Install all files from 2nd disk
+
+        (working #copying2disk)
+
+        (copyfiles
+                (source "ah14_2:")
+                (dest @default-dest)
+                (infos)
+                (all)
+        )
+
+
+        ; Ask for 3rd disk
+
+        (askdisk
+                (prompt #disk3)
+                (help #helpdisk3)
+                (dest "ah14_3")
+        )
+
+        ; Install all files from 3rd disk
+
+        (working #copying3disk)
+
+        (copyfiles
+                (source "ah14_3:")
+                (dest @default-dest)
+                (infos)
+                (all)
+        )      
+
+
+        ; Ask for 4th disk
+
+        (askdisk
+                (prompt #disk4)
+                (help #helpdisk4)
+                (dest "ah14_4")
+        )
+
+        ; Install all files from 4th disk
+
+        (working #copying4disk)
+
+        (copyfiles
+                (source "ah14_4:")
+                (dest @default-dest)
+                (infos)
+                (all)
+        )      
+
+        
+
+        (complete 90)
+
+;       Updates User-StartUp
+
+        (startup "AMIGA-HABER-14"
+                (prompt
+                        (cat
+                                #setup1
+                                #setup2
+                        )
+                )
+                (help #setup_help)
+                (command
+                        "Assign ah14_1: \"" @default-dest "\"\n"
+                        "Assign ah14_2: \"" @default-dest "\"\n"
+                        "Assign ah14_3: \"" @default-dest "\"\n"
+                        "Assign ah14_4: \"" @default-dest "\"\n"
+                        "Copy ah14_1:c/ppshow ram: >NIL:\n"
+                        "Copy ah14_1:fonts ALL fonts: >NIL:\n"
+                        "Path ah14_1:libs add\n"
+                        "Path ah14_1:c add\n"
+                )
+        )
+
+        (complete 100)
+
+        ; Say goodbye
+
+        (message #goodbye)
+)

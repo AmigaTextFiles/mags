@@ -1,0 +1,462 @@
+<html>
+ <head>
+  <title>Installation de LinuxPPC sur Pegasos</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="14,85,74,105" href="../index.html" alt="Intro">
+  <area shape="rect" coords="90,85,184,105" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="200,85,302,105" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="318,85,430,105" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="442,85,512,105" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="526,85,630,105" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="648,85,746,105" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#113333" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique : installation de Linux/Debian PPC sur Pegasos </font>par&nbsp;<a href="mailto:det.nicolas@free.fr">Nicolas&nbsp;Det</a></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">1. Introduction</font><br><br>
+
+<font size="+1" color="#ccbb33">1.1 Avertissement</font><br><br>
+
+Cette aide est distribuée dans l'espoir qu'elle vous sera d'une certaine aide, mais sans aucune garantie ;
+sans même la garantie implicite de la valeur marchande ou de l'intégrité physique du matériel prévu pour un
+but particulier. De même, si vous perdez toutes vos données, si votre ordinateur tombe en panne, je ne 
+saurai être tenu pour responsable en aucun cas.<br><br>
+
+<font size="+1" color="#ccbb33">1.2 Qu'est ce que Linux&nbsp;?</font><br><br>
+
+Linux est un système d'exploitation OpenSource multi-utilisateurs. Il est devenu très populaire en quelques 
+années. Linux possède beaucoup de caractéristiques très intéressantes&nbsp;:<br><br>
+
+<ul>
+<li> Gratuit (OpenSource)
+<li> Grande gamme de logiciels disponibles gratuitement
+<li> Très stable
+<li> Très efficace pour les applications orientées réseau
+<li> Multi-utilisateurs
+<li> Multi-Plate-formes
+</ul>
+
+Il possède néanmoins quelques points faibles&nbsp;:<br><br>
+
+<ul>
+<li> Pas très facile à utiliser, ni à installer
+<li> Très lourd
+<li> Pas très efficace pour ce qui est des applications graphiques
+</ul>
+
+Il y aurait encore beaucoup à dire concernant Linux. Pour plus d'informations, visitez
+<a href="http://www.linux.org" target="_blank">www.linux.org</a><br><br>
+
+<font size="+1" color="#ccbb33">1.3 Ce qui est requis</font><br><br>
+
+Avant d'installer Linux/Debian, voici ce dont vous allez avoir besoin&nbsp;:<br><br>
+
+<ul>
+<li> Les cédés d'installation Debian PPC, vous n'aurez besoin que des deux premiers, à télécharger sur <a href="http://www.debian.org/CD/http-ftp" target="_blank">www.debian.org</a>
+<li> Un lecteur de disquette
+<li> Une disquette :-)
+<li> Au moins 3 Go de libre sur votre disque dur
+<li> Le noyau Linux Pegasos (doit normalement être nommé zimage.chrp)
+<li> Du café...
+<li> Quelque heures&nbsp;!
+<li> Un Pegasos (Yeah&nbsp;!)
+<li> Un PC, ou autre pour créer la disquette de boot
+</ul>
+
+Nous avons tout&nbsp;! Continuons&nbsp;!<br><br>
+
+<font size="+1" color="#ccbb33">2. Préparation</font><br><br>
+
+Tout d'abord, les choses sérieuses&nbsp;!<br><br>
+
+<font size="+1" color="#ccbb33">2.1 Créer la disquette de démarrage (boot)</font><br><br>
+
+Vérifiez bien que vous avez un lecteur de disquette et le cédé 1 de Debian. 
+Vous allez aussi avoir besoin d'un autre ordinateur car il n'y a pas de support de lecteur de disquette
+sous MorphOS pour le moment.<br><br>
+
+Sous Linux,<br><br>
+
+<ul>
+<li> Insérez une disquette dans le lecteur (attention, toutes ses données seront perdues&nbsp;!)
+<li> Faites de même avec le cédé&nbsp;!
+<li> Ouvrez un shell
+<li> Montez le cédé
+<li> Dans l'arborescence du cédé, allez dans /install/chrp
+<li> Tapez: "dd if=root.bin of=/dev/fd0 bs=1024 conv=sync ; sync"
+<li> Attendez...
+<li> C'est bon&nbsp;! Vous avez une disquette de boot
+</ul>
+
+Sous Windows,<br><br>
+
+<ul>
+<li> Installez <a href="http://sourceforge.net/projects/ntrawrite/" target="_blank">rawwrite</a>
+<li> Choisissez install/chrp/root.bin
+<li> Cliquez sur "Write"
+<li> Attendez...
+</ul>
+<br>
+
+<font size="+1" color="#ccbb33">2.2 Préparez votre disque dur sous MorphOS</font><br><br>
+
+Tout d'abord, attention, utiliser SCSIConfig peut être dangereux&nbsp;! J'ai déjà perdu mon RDB une fois&nbsp;!
+Je vous conseille d'avoir un cédé de démarrage MorphOS sous la main, ainsi que sys:tools/SCConfig.rdbstorage
+quelque part (vous pouvez aussi l'imprimer). Avec ceci, pour pouvez récupérer votre RDB.<br><br>
+
+Avec SCSIConfig, vous devez créer deux partitions. Une pour Linux lui-même, l'autre pour la partition swap.<br><br>
+
+Pour la partition Linux, vous avez beoin d'au moins 2 Go, choisissez Custom FileSystem, et entrez "0x4c4e5800".<br>
+Pour la partition swap, il vous faut au moins 200 Mo, chosissez Custom FileSystem et entrez "0x53575000".<br><br>
+
+Maintenant, "où" se trouvent vos partitions Linux. Ceci est très important pour l'étape suivante.<br>
+Exemple&nbsp;: votre disque dur est sur ide.device, unité 0 comme cela&nbsp;:<br>
+DH0: FFS<br>
+DH1: FFS<br>
+DH2: SFS<br>
+DH3: SFS<br>
+DH4: SFS<br>
+DH5: Linux<br>
+DH6: Linux<br>
+DH7: Swap<br>
+Pour Linux, la partition ext2fs si votre disque dur est en unité 0 -> /dev/hda6.<br><br>
+
+/dev/hda -> unit 0<br>
+/dev/hdb -> unit 1<br>
+/dev/hdc -> unit 2<br>
+/dev/hdd -> unit 3<br><br>
+
+pour le SCSI&nbsp;:<br>
+/dev/sda -> unit 0...<br><br>
+
+<font size="+1" color="#ccbb33">3. Installation</font><br><br>
+
+<font size="+1" color="#ccbb33">3.1 Premier démarrage</font><br><br>
+
+Maintenant que tout est installé pour Linux, commençons&nbsp;!<br><br>
+
+<ul>
+<li> Allumez votre Pegasos&nbsp;!
+<li> Entrez dans l'invite du Firmware (appuyez sur ESC, si vous êtes en auto-boot)
+<li> tapez&nbsp;: "boot ide0:0 zimage.chrp root=/dev/fd0 ramdisk_size=64000 load_ramdisk=1" (si ide0:0 est l'endroit où se trouve zimage.chrp)
+<li> ENTER :-)
+<li> Insérez le disque de démarrage que vous avez créé
+<li> ENTER&nbsp;!
+</ul>
+
+Maintenant, le noyau devrait se charger et ensuite charger le filesystem root, il faut juste attendre...<br><br>
+
+<font size="+1" color="#ccbb33">3.2 Installation du système de base</font><br><br>
+
+Une fois que Linux a démarré, vous allez vous retrouver face à l'installateur Debian. Il vous guidera pendant 
+le processus d'installation du sytème de base. Cependant, il est plus ou moins prévu pour un PC, et ce n'est
+pas ce que nous utilisons. Donc, il va y avoir quelques opérations à faire à la main.<br><br>
+
+Premièrement, il va vous demander de choisir un langage, faites-le&nbsp;!<br><br>
+
+Quelques informations concernant Linux/Debian, appuyez juste sur&nbsp;:<br><br>
+
+<b>Clavier (Keyboard)&nbsp;:</b> vous devrez choisir qwerty/us car je suppose que vous utilisez un clavier PS/2, et 
+c'est la seule option pour les claviers non-USB. Nous sélectionnerons le bon keymap plus tard, ne vous
+inquiétez pas&nbsp;! <br><br>
+
+<b>Nom de la machine (Machine Name)&nbsp;:</b> là, l'installateur vous demande le nom à attribuer à la machine. C'est
+ce qui s'affichera lors de votre login. Néanmoins, ce n'est pas vraiment important, surtout si vous n'etes 
+pas en réseau. J'ai mis "Pegasos".<br><br>
+
+<b>DHCP&nbsp;:</b> Est-ce que votre IP se configure de façon automatique ou non&nbsp;? Si vous n'avez pas besoin de réseau, 
+sélectionnez simplement NO et laisser la valeur par défaut.<br>
+-> YES&nbsp;: Ceci devrait détecter tout ce dont vous avez besoin.<br>
+-> NO&nbsp;: Il ne vous reste plus qu'à configurer votre réseau (IP, mask,...)<br><br>
+
+<b>Partition&nbsp;:</b> Humm, nous allons devoir faire quelques opérations à la main, car l'installateur ne sait pas 
+comment prendre en compte les partitions de type Amiga.<br>
+Appuyez sur ALT+F2<br>
+Vous êtes maintenant dans un shell simple de type Unix.<br><br>
+
+> ATTENTION&nbsp;! CECI EST DANGEREUX&nbsp;! SI VOUS ENTREZ QUELQUECHOSE DE FAUX, VOUS RISQUEZ LA PERTE DE VOS DONNEES&nbsp;!<br>
+Alors soyez prudents, et vérifiez toujours ce que vous faites&nbsp;!<br><br>
+
+La partition que vous devez formater est celle que vous avez configurée avec SCSIConfig.<br><br>
+
+Pour formater une partition Linux, entrez: >mke2fs /dev/xxx (exemple&nbsp;: j'ai mis >mkde2fs /dev/hda6). Soyez très prudent&nbsp;!<br>
+Pour créer votre partition swap: >mkswap /dev/yyy Soyez prudent&nbsp;!<br>
+Activons le swap: >swapon -c /dev/yyy<br>
+Maintenant, nous allons monter la partition "cible" (c.à.d. ou Debian sera installée)&nbsp;: >mount /dev/xxx /target<br>
+Mettez le cédé Debian dans le le lecteur.<br><br>
+
+Continuons: Retournons à l'installateur avec ALT+F1. Sélectionnez "Kernel & module installation", "NO" et "Cancel".<br>
+Ensuite, sélectionnez "Install base system", CDROM, "/instmnt" -> OK<br><br>
+
+Cela va prendre un peu de temps, patience...<br><br>
+
+Quand l'opération est terminée, dé-montez /target: ALT+F2, >umount /target.<br>
+Maintenant, il n'y a plus qu'à relancer la machine (ALT+F1 -> sélectionnez reboot dans le menu d'installation)<br><br>
+
+<font size="+1" color="#ccbb33">3.3 Comment démarrer sous Linux</font><br><br>
+
+Maintenant que vous avez installé le système de base Debian, il vous faut démarrer sous Linux&nbsp;!<br>
+Entrez dans le Firmware et tapez quelque chose dans ce style&nbsp;:<br><br>
+
+boot votre_lecteur zimage:chrp root=/dev/votrepartitionlinux<br><br>
+
+Remplacer votre_lecteur par le lecteur où se trouve zimage.chrp (par ex: ide0:0)<br>
+Remplacez votrepartitionlinux par la partition où se trouve Linux (par ex: /dev/hda6)<br><br>
+
+<font size="+1" color="#ccbb33">3.4 Installation complète</font><br><br>
+
+Après un petit moment, Linux devrait démarrer la dernière partie de l'installation&nbsp;! Enfin&nbsp;!<br><br>
+
+Le but de ce guide n'est pas de décrire l'installation complète de Debian, ce chapitre n'est donc pas 
+exhaustif. Cependant, il devrait amplement suffire pour aider les débutants&nbsp;! Voyez le
+<a href="http://www.debian.org/releases/stable/powerpc/install" target="_blank">guide officiel d'installation de Debian</a> pour plus d'aide.<br><br>
+
+<b>Premier écran&nbsp;:</b> vous êtes félicité(e), cliquez juste sur OK.<br>
+<b>Second écran&nbsp;:</b> à lire si vous le souhaitez&nbsp;! Appuyez sur OK.<br>
+<b>Keymaps&nbsp;:</b> il vous faut juste choisir les keymaps dont vous avez besoin. Pour les Français, choisissez pc/azerty latin0.<br><br>
+
+<b>Hardware clock&nbsp;:</b> NO&nbsp;! (je ne sais pas pourquoi mais tout le monde me conseille ce choix).<br><br>
+
+<b>Time zone&nbsp;:</b> là, l'installateur Debian vous demande votre zone horaire. Choisissez&nbsp;!<br><br>
+
+<b>MD5&nbsp;:</b> choisissez YES. Cela vous permettra de crypter votre mot de passe.<br><br>
+
+<b>Shadow password&nbsp;:</b> YES. Le mot de passe sera sauvegardé dans /etc/shadow au lieu de /etc/passwd.<br><br>
+
+<b>Root password&nbsp;:</b> le root est le super-utilisateur, cela signifie qu'il peut faire tout ce qu'il veut&nbsp;!
+Choisissez bien votre mot de passe et ne l'oubliez pas. Si une personne mal intentionnée le connaît,
+il peut prendre le contrôle de votre ordinateur si vous êtes connecté à un réseau&nbsp;!<br><br>
+
+<b>Normal user&nbsp;:</b> là, il vous faut créer des comptes utilisateurs. Linux est un système d'exploitation 
+multi-utilisateurs. Cela signifie que chaque utilisateur possède son propore espace de travail, sa propre 
+configuration. Vous devez créer au moins un utilisateur (vous&nbsp;!), et peut-être d'autres (pour chaque 
+personne qui utilisera cet ordinateur).<br><br>
+
+<b>Remove PCMCIA&nbsp;:</b> YES. Il n'y a pas de slots PCMCIA sur le Pegasos, On peut donc l'enlever.<br><br>
+
+<b>PPP Connection&nbsp;:</b> entrez juste NO: Vous pourrez facilement le configurer avec kpppd plus tard.<br><br>
+
+<b>CD Scan&nbsp;:</b> maintenant, l'installateur va scanner le cédé Debian pour trouver les packages que vous pouvez installer.<br><br>
+
+<b>Another APT Source&nbsp;:</b> sélectionnez NO. Si vous avez une connexion Internet rapide, vous aurez la possibilté 
+d'installer ces packages directement depuis le mirroir debian. cela se fera plus tard.<br><br>
+
+<b>Security update&nbsp;:</b> sélectionnez YES si vous avez une connexion Internet active. Si vous n'êtes pas sûr, choisissez NO.<br><br>
+
+<b>Tasksel&nbsp;:</b> Tasksel vous permet de choisir beaucoup de packages avec quelque options. Je vous conseille de sélectionner&nbsp;:<br><br>
+
+<ul>
+<li> X Window system
+<li> Deskop environment (KDE, GNOME,...)
+<li> Dialup system
+<li> En serveur, SQL, FILE et WEBSERVER si vous voulez utiliser votre ordinateur en tant que serveur.
+<li> C et C++ (nécessaire si vous voulez compiler des programmes avec leurs sources).
+</ul>
+
+<b>Dselect&nbsp;:</b> comme Tasksel mais d'une utilisation moins aisée. Sélectionnez juste NO si vous n'êtes pas expert.<br><br>
+
+Maintenant, l'installateur va installer et configurer la totalité du système. Soyez patient...<br><br>
+
+<font size="+1" color="#ccbb33">3.5 Comment installer la dernière version de XFree</font><br><br>
+
+<b>Pourquoi installer la dernière version de XFree&nbsp;?</b><br><br>
+
+Premièrement, il est toujours mieux d'avoir la dernière version stable de quelquechose plutôt que 
+d'utiliser une ancienne version. La nouvelle version peut être plus rapide, plus jolie, plus stable...<br>
+De plus, certaines Radeon ont des problèmes avec XFree 4.1.x (la version installée par Debian).
+Par exemple, je ne peux utiliser que des écrans 8 bits, car les écrans en 15, 16 ou 24 bits sont 
+corrompus (mauvaise couleur ou jaune seulement). Et surtout, XF 4.2.1 supporte l'accélération 3D des 
+Radeon (dès que le noyau sera prêt pour cette fonctionnalité).<br><br>
+
+<b>Ou puis-je trouver la dernière version de XFree86&nbsp;?</b><br><br>
+
+Il vous faut récuperer les sources car il n'y a pas de binaires pour XFree86 sur PowerPC.<br>
+Allez sur <a href="http://www.xfree86.org" target="_blank">www.xfree86.org</a> et téléchargez les dernières sources.<br>
+Normalement, vous devriez télécharger 4 fichiers sur votre partition Linux&nbsp;:<br>
+
+<ul>
+<li> Trois nommées telles que&nbsp;: X420-srcx.tgz (où x = 1 à 3).
+<li> Une nommée comme: 4.2.0-4.2.1.diff.gz. C'est le patch pour la version actuelle (optionnel).
+</ul>
+
+Explications&nbsp;: l'équipe Xfree86 met à disposition les sources pour chaque mise à jour "importante" comme la 
+version 4.1.0 et la 4.2.0 mais pour les petites mises à jour, seul le patch est fourni.
+Donc, vous devez télécharger les dernières sources (actuellement la V 4.2.0) et le patch (4.2.1).<br><br>
+
+<font size="+1" color="#ccbb33">L'installation</font><br><br>
+
+A) Compiler et installer à partir des sources<br><br>
+
+Vérifiez que vous êtes bien en root.<br>
+Tout d'abord, installez les packages nécessaires pour compiler XFree:<br><br>
+
+<ul>
+<li> apt-get install ncurses-dev
+<li> apt-get install zlib1g-dev
+<li> apt-get install libpam0g-dev
+</ul>
+
+Désarchivez l'archive: tar -xzvf X420-src1.tgz (faites de même pour les deux autres fichiers). Ceci devrait créer un répertoire nommé "xc"<br>
+et le patch&nbsp;: tar -xzvf 4.2.0-4.2.1.diff.gz<br>
+Patcher les sources&nbsp;:<br><br>
+
+<ul>
+<li> Copier 4.2.0-4.2.1.diff.gz dans le répertoire xc
+<li> appliquez le patch: gzip -d
+</ul>
+
+Compilez XFree&nbsp;! Dans le reprtoire xc&nbsp;:<br>
+>make World && make install<br><br>
+
+Cela va prendre beaucoup de temps, sûrement quelques heures&nbsp;! Soyez patient(e)&nbsp;!<br>
+Une fois ceci terminé avec succès, vous devriez avoir la dernière version d'XFree86&nbsp;! Félicitations&nbsp;!<br><br>
+
+B) Utilisez Apt-get (pour les connexion Internet rapides seulement)<br><br>
+
+Nous allons utiliser apt-get pour installer XFree facilement. En fait, la dernière version disponible
+est "instable". "Unstable", c'est pour les tous derniers packages mais comme il ne sont pas testés, il 
+n'ont pas la mention "stable". Nous allons donc demander à apt-get de mettre à jour notre système en 
+"instable" en récupérant la dernière version de Xfree (ne vous inquiétez pas, instable avec Debian n'est 
+en fait pas instable&nbsp;!).<br><br>
+
+<ul>
+<li> Passez d'abord en root&nbsp;!
+<li> Installez netselect&nbsp;: apt-get install netselect
+<li> Laissez travailler netselect&nbsp;: netselect-apt unstable
+<li> Netselect crée un fichier nommé "sources.list", copiez-le dans /etc/apt/
+<li> Mettez à jour la base de donnée des packages&nbsp;: apt-get update
+<li> Mettez à jour votre système avec les derniers packages&nbsp;: apt-get upgrade
+<li> Voilà&nbsp;! Vous avez maintenant la dernière version d'XFree86
+</ul>
+
+Merci à Peter Kaltstein pour cette astuce.<br>
+Cependant, je n'ai pas testé ceci, et utiliser Debian en "Unstable" doit être spécial... Je vous conseille 
+plutôt de compiler les sources.<br><br>
+
+<font size="+1" color="#ccbb33">4. Trucs et astuces</font><br><br>
+
+Quelques trucs et astuces pour Linux.<br><br>
+
+<ul>
+<li> L'utilisateur root est l'"administrateur", cela signifie que le root a tous les droits. Dans une console, 
+pour passer en mode root, tapez "su" et le mot de passe de root.
+<li> Pour installer un package facilement&nbsp;: ouvrez une console et passez en root. Tapez "apt-get install your_package".<br>
+Exemples&nbsp;: "apt-get install tuxracer", "apt-get install kdevelop"
+Pour enlever un package&nbsp;: "apt-get remove the_package"
+<li> Pour avoir de l'aide à propos d'une commande&nbsp;: dans une console, tapez "man la_commande"
+<li> Pour passer du mode texte (console) à XFree, apuuyez sur "CTRL+ALT Fx" (x = 1 à 6, 7=XFree)
+<li> Pour facilment monter ou dé-monter un disque, utiliser KwikDisk du menu KDE.
+<li> Pour tuer XFree (en cas de plantage)&nbsp;: appuyez sur "CTRL+ALT+BACKSPACE"
+<li> Pour tuer un logiciel&nbsp;: lancer "xkill" dans une console et cliquez sur le vilain programme&nbsp;!
+<li> Pour tuer une programme en mode texte, utiliser la commande "kill" (man kill pour plus d'aide)
+<li> Pour installer un logiciel à partir des ses sources&nbsp;:
+<li> Désarchivez l'archive&nbsp;: >tar -xzvf l_archive (si c'est une .tar.gz) ou tar -xjvf l_archive (si c'est une .tar.bz2)
+  <ul>
+  <li> Allez dans le répertoire où se trouvent les sources du programme: >cd le_répertoire_archive
+  <li> Passez en mode root
+  <li> tapez: "./configure && make && make install"
+  <li> Le programme devrait maintenant s'installer
+  </ul>
+<li> Pour installer les packages directement depuis le mirroir Debian (pour connexion au net rapide)
+  <ul>
+  <li> Installez netselect: apt-get install netselect
+  <li> Laissez travailler netselect&nbsp;: netselect-apt unstable
+  <li> Netselect crée un fichier nommé "sources.list", copiez-le dans /etc/apt/
+  <li> Mettez à jour la base de données des packages: apt-get update
+  <li> Mettez à jour votre système avec les derniers packages: apt-get upgrade
+  <li> Voilà&nbsp;!  Vous avez maintenant un système à jour&nbsp;! Et n'importe quel package installé avec apt-get sera téléchargé du web&nbsp;!
+  </ul>
+</ul>
+<br>
+
+<font size="+1" color="#ccbb33">5. FAQ</font><br><br>
+
+<b>Qu'en est-il du CD bootable Linux/Debian de Thendic&nbsp;?</b><br><br>
+
+Je n'ai pas ce cédé actuellement, donc je ne peux pas en dire plus à ce sujet. Dès que j'aurai mis la 
+main dessus, cette aide sera mise à jour&nbsp;! Néanmoins, ce cédé devrait juste permettre de ne pas avoir 
+à utiliser de lecteur de disquette. Il faudra donc juste passer les parties 2.1 "Creer une disquette de 
+démarrage" et 3.1 "Premier démarrage". <br><br>
+
+<b>Est-il possible d'utiliser MacOS sous Linux&nbsp;?</b><br><br>
+  
+Oui, il faut utiliser <a href="http://www.maconlinux.org" target="_blank">MOL</a> (MacOnLinux).<br><br>
+
+<b>J'ai quelques problèmes quand j'utilise un périphérique IDE connecté sur le second port, c'est normal&nbsp;?</b><br><br>
+
+En fait, non&nbsp;! C'est un problème connu. Il devrait être fixé avec un nouveau noyau et/ou un Pegasos sans bogue
+(Pegasos avec April).<br><br>
+
+<b>Linux est vraiment lent comparé à MorphOS&nbsp;! Comment est-ce possible&nbsp;?</b><br><br>
+
+Linux est très différent de MorphOS&nbsp;! C'est un UNIX qui gère beaucoup de services pour les applications
+orientées réseau (telles qu'Apache, serveurs FTP, seveurs SSH,...).<br>
+De plus, la gestion de la mémoire sous Linux est bien plus compliquée car il doit prendre en compte
+l'espace utilisateur etc... Tout ceci utilise le CPU mais aussi de la mémoire&nbsp;! En conclusion, vous devriez 
+acheter de la mémoire, surtout si vous n'avez que 128 Mo, pour rendre Linux plus rapide. A mon avis, Linux 
+ne peut être aussi rapide que MorphOS car ce dernier a un meilleur design (pour la vitesse), Linux -> Merveilleux
+pour les applications réseau, MorphOS -> Merveilleux :-) (mais pas dans une optique multi-utilisateurs).<br><br>
+
+<b>L'installateur me demande XXXX, vous n'en faites pas mention dans votre guide&nbsp;!</b><br><br>
+
+Et bien, ce guide n'est sûrement pas parfait. Si vous avez des problèmes, n'hésitez pas à me contacter.
+J'essaierai de vous aider et mettrai à jour ce superbe guide :-)<br><br>
+
+<b>Comment monter une partition FFS&nbsp;?</b><br><br>
+
+Premièrement, seules les partitions FFS sont supportées. La commande est simple, en mode root, tapez&nbsp;:
+">mount /dev/xxxx /mnt/myamigapartitin -t affs". Vous pouvez aussi ajouter une ligne dans /etc/fstab
+pour monter votre partition Amiga à chaque démarrage&nbsp;:<br>
+/dev/xxxx /mnt/myamigaparitoopn affs user,noauto 0 0<br><br>
+
+<font size="+1" color="#ccbb33">6. Liens</font><br><br>
+
+Quelque liens concernant Linux PPC/Pegasos&nbsp;:<br><br>
+
+<ul>
+<li>PegasosPPC the home of the Pegasos computer <a href="http://www.pegasosppc.com" target="_blank">www.pegasosppc.com</a>
+<li>Linux.org <a href="http://www.linux.org" target="_blank">www.linux.org</a>
+<li>The home of the Debian project <a href="http://www.debian.org" target="_blank">www.debian.org</a>
+<li>PenguinPPC (Linux PPC port home page) <a href="http://www.penguinppc.org" target="_blank">www.penguinppc.org</a>
+<li>kernel.org (où vous pourrez trouver le dernier noyau Linux) <a href="http://www.kernel.org" target="_blank">www.kernel.org</a>
+</ul>
+
+<br><br>
+<i>Note&nbsp;: texte traduit de l'Anglais par Mehdi Boulahia</i><br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>
+

@@ -1,0 +1,47 @@
+@Database SHOAH.s.guide
+@Node MAIN "DMA"
+DMA.
+
+Direct Memory Access ( DMA ) is something which makes coding on the Amiga
+such a joy, God I love it, I do it all the time, I like to take my pants off
+and tape up the cat and... oh nothing.
+Basically DMA lets the computer do stuff without using the CPU, ie you don't
+really have to bother that much about sprites/sound/bobs etc., you just tell
+the hardware what you want, and he'll go away and do it all for you, 'cause
+he's a nice bloke.
+
+The DMA has six different channels, which look after Audio, Disk, Sprite,
+Blitter, Copper and Bitplane, and to use it...
+
+DMACON $dff096 and can be read from DMACONR $dff002 ( ALL hardware registers
+are either read or write or strobe only )
+
+DMACON :-
+Bit		Name
+ 0		Audio Channel 0
+ 1		Audio Channel 1
+ 2		Audio Channel 2
+ 3		Audio Channel 3
+ 4		Disk DMA
+ 5		Sprite DMA
+ 6		Blitter DMA
+ 7		Copper DMA
+ 8		Bitplane DMA
+ 9		DMAEnable - This bit must be set to turn on any DMA channels
+ 10		BLTPRI - If set, the blitter goes into nasty mode
+ 11		UNUSED
+ 12		UNUSED
+ 13		BZERO ( Read only ! ) - For the blitter
+ 14		BBUSY ( Read only ! ) - For the blitter
+ 15		Set/Clear bits
+
+Bit 15 is funny, in that if you want to set any of the other bits this bit
+must be set to 1, and 0 if you want to turn channels off ( ??? ),eg
+
+	move	#%1000001010000000,$dff096	;Turn the copper ( And DMA-
+						;Enable ) on
+or
+	move	#%0000000010000000,$dff096	;Turn the copper off
+
+And thats it really.
+@Endnode

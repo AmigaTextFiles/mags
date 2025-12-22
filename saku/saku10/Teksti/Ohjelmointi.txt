@@ -1,0 +1,424 @@
+5
+1*
+
+{3         Järjestelmäohjelmoinnin alkeiskurssi - Osa 1: System Executive
+{3         --------------------------------------------------------------
+
+                                  Sami Klemola
+
+
+Tämän kurssin tarkoitus on perehdyttää lukija Amigan  käyttöjärjestelmän  ohjel-
+mointiin. Kurssin ensimmäinen osa on johdanto aiheeseen. Edellytän lukijalta ai-
+nakin vähän ohjelmointikokemusta sekä C-kielen osaamista. Aivan  aloittelijatkin
+voivat päästä mukaan, mutta suosittelen kuitenkin ensin esimerkiksi lehden C-oh-
+jelmointikurssia.  Edes  jonkinlainen  ohjelmointikokemus  olisi  kyllä  kovasti
+hyödyksi, samoin kirjallisuus. Hyviä kirjoja ovat esimerkiksi BITTI-kirjat AMIGA
+3 ja 4. AMIGA 3 käsittelee konekieliohjelmointia,  mutta  sisältää  myös  tietoa
+käyttöjärjestelmästä. AMIGA 4 on varsinainen  käyttöjärjestelmäohjelmointikirja.
+Siinä käsitellään lähinnä Exec-ohjelmointia.
+
+Execistä tämäkin kurssi lähtee liikkeelle, koska se on Amigan käyttöjärjestelmän
+sydän ja se osa käyttöjärjestelmää, jonka kanssa kaikki  ohjelmat  ensimmäiseksi
+ovat tekemisissä. Execin tehtäväkenttä on  laaja.  Se  vastaa  käytännössä  koko
+järjestelmän ylläpidosta. Exec hoitaa moniajon, tehtävien luomisen ja lopettami-
+sen sekä niiden keskinäisen viestinnän, tietokoneen resurssien jakamisen ja pal-
+jon muuta. Tähän kaikkeen tutustumme kurssin tässä  osassa.  Seuraavassa  osassa
+kaivamme sitten jo kääntäjän esiin ja alamme vääntää koodia.  Palautetta  siitä,
+mitä kurssissa tulisi käsitellä ja mihin tulisi erityisesti keskittyä, kannattaa
+lähetellä toimitukseen tai suoraan kurssin pitäjälle. Tässä johdannossa  sivuttu
+hardware-ohjelmointi  ei  kuulu  tämän  kurssin  aihepiiriin,  mutta   erillinen
+hardware-kurssi voidaan järjestää, mikäli kiinnostusta sellaista  kohtaan  ilme-
+nee.
+
+
+{3Järjestelmäohjelmoinnin perusteet
+{3---------------------------------
+
+AmigaOS on moniajokäyttöjärjestelmä, mikä tarkoittaa ohjelmoijan kannalta  sitä,
+että mitään koneen resursseja ei saa missään vaiheessa  täysin  omia  itselleen.
+Käyttöjärjestelmän moniajokyky tulee ottaa jatkuvasti huomioon.  Syötettä  tulee
+odottaa käyttöjärjestelmän funktioilla, jotka antavat samalla  muiden  ohjelmien
+ajaa itseään, käyttämättä kallisarvoista prosessoriaikaa tarpeettomasti. Tärkeää
+on myös se, että mihinkään, mitä ei ole omalle ohjelmalle pyydetty, ei  kosketa.
+Kaikki, mitä tarvitaan, on varattava. Mikäli varaus ei  onnistu,  tarkoittaa  se
+sitä, että jokin muu ohjelma jo käyttää esimerkiksi tarvitsemaamme laitetta,  ja
+silloin siihen ei saa puuttua, vaan on kieltäydyttävä  jatkamasta.  Ohjelma  saa
+myös käyttää vain sitä muistialuetta, jonka se on käyttöjärjestelmältä saanut.
+
+Amigassa ei ole varsinaisesti muistinsuojausta, joten huonolla  koodauksella  on
+varsin helppoa kaataa sekä oma ohjelma että  kaikki  muut  ohjelmat.  Ehdottoman
+tärkeää on myös  palauttaa  kaikki  varatut  resurssit,  kun  ohjelman  suoritus
+päättyy. Amigassa ei ole myöskään resurssien seurantaa, joten tämä on täysin oh-
+jelmoijan vastuulla. Ohjelmat eivät  myöskään  saa  "pokeilla"  toisiinsa,  vaan
+tehtävienvälinen kanssakäyminen on hoidettava Execin suomilla menetelmillä.  Oh-
+jelman kirjoittaminen moniajoympäristöön on huomattavasti hankalampaa  kuin  yk-
+siajokäyttöjärjestelmän alaisuuteen, mutta sellaiset ovat tehokoneissa jo histo-
+riaa, joten ei auta kuin oppia uutta!
+
+
+{3AmigaOS:n osat
+{3--------------
+
+Amigan käyttöjärjestelmä koostuu monista osista. Niistä olennaisimmat on luetel-
+tu alla olevassa taulukossa. Kolme ensimmäistä ovat tärkeimmät. 
+
+         Exec                                Moniajojärjestelmän ydin
+         Intuition, CLI, Workbench           Käyttöliittymä
+         DOS                                 Levynkäyttöjärjestelmä
+         Graphics, Layers                    Grafiikka
+         Commodities Exchange Network        Syötteenkäsittelyjärjestelmä
+         Expansion                           Laajennustoiminnot
+
+         Taulukko 1. Käyttöjärjestelmän osat.
+
+Exec huolehtii tehtävien käynnistämisestä,  ajamisesta  ja  lopettamisesta  sekä
+niiden  keskinäisen  ja  käyttöjärjestelmän  kanssa   tapahtuvan   liikennöinnin
+järjestämisestä. Intuition on monipuolinen kokonaisuus,  joka  sisältää  kaiken,
+mitä ohjelma tarvitsee graafisen käyttöliittymän luomiseen ja syötteen hankkimi-
+seen käyttäjältä. DOS taas pitää huolen siitä, että ohjelmilla  on  mahdollisuus
+saada käyttöönsä massamuistia. Se myös lataa ja käynnistää ohjelmat prosesseina.
+Tässä DOS on hyvin läheisessä yhteistyössä Execin kanssa. Exec ajaa  myös  DOS:n
+käynnistämät prosessit ja tarjoaa niiden tarvitseman moniajoympäristön.
+
+Graphics ja Layers ovat alemman tason järjestelmiä, jotka on tarkoitettu grafii-
+kan tulostamiseen ruudulle ja sen pitämiseen järjestyksessä. CLI eli Command Li-
+ne Interface ja Workbench ovat AmigaOS:n käyttöliittymät. CLI on tekstipohjainen
+komentojärjestelmä  ja  Workbench  graafinen.  Intuition  ei  ole  varsinaisesti
+käyttöliittymä, vaan järjestelmä, jolla sellainen rakennetaan. Intuition on  oh-
+jelman käyttöliittymää alemmalla tasolla, eikä käyttäjä koskaan ole suoraan  te-
+kemisissä sen kanssa, vaan ohjelmat ovat siinä välissä. Workbenchissä voi  tehdä
+periaatteessa melkein sen, minkä CLI:ssäkin, usein helpomminkin, koska  ohjelmat
+ja muut tiedostot esitetään graafisin symbolein, ikonein.
+
+Kaksi viimeistä ovat loppukäyttäjälle harvemmin näyttäytyviä  järjestelmiä.  CEN
+on OS2.0:ssa mukaan otettu järjestelmä, jolla  ohjelmat  voivat  saada  helposti
+syötettä käyttäjältä sekä manipuloida sitä haluamallaan tavalla. Expansion pitää
+huolen siitä, että kaikki koneeseen liitetyt laajennukset, kuten muisti ja  Zor-
+ro-väylän laajennuskortit, otetaan käyttöön konetta käynnistettäessä.
+
+Käyttöjärjestelmän osat eivät toki  rajoitu  näihin,  mutta  esittelin  lyhyesti
+olennaisimmat. AmigaOS on tavattoman laaja  kokonaisuus,  ja  pelkästään  siihen
+johdattaminen voisi venähtää kirjan mittaiseksi. Tämä  kurssin  ensimmäinen  osa
+käsittelee järjestelmän toimintaa yleisesti. Tarkempaa tietoa saa  kirjoista  ja
+lehdistä. Artikkelin lopussa on  lähdeluettelo,  josta  löytyy  mielenkiintoista
+luettavaa.
+
+
+{3Kirjastot ja laiteohjaimet
+{3--------------------------
+
+Kuten jo mainitsin, System Executive, lyhyesti  Exec,  on  Amigan  käyttöjärjes-
+telmän  (tästedes  tarkoitan   aina   Amigan   käyttöjärjestelmää,   kun   puhun
+käyttöjärjestelmästä) keskeisin osa. Nämä osat, joista tässä on koko ajan puhut-
+tu, ovat itse asiassa kirjastoja. Kirjasto on joukko funktioita,  tässä  tapauk-
+sessa järjestelmäfunktioita, mutta ohjelmalla voi olla omiakin kirjastoja, jois-
+sa on sen omia funktioita. Niitä voivat sitten kutsua myös muut  ohjelmat.  Exec
+ja DOS ovat omat kirjastonsa, mutta käyttöliittymä  jakautuu  useampaan  kirjas-
+toon, jotka ovat Intuition, Workbench, Icon ja ASL.  Näiden  lisäksi  on  paljon
+muita kirjastoja, kuten Graphics, Layers, Commodities, Expansion jne.
+
+Kaikki käyttöjärjestelmän osat eivät kuitenkaan ole kirjastoja, vaan monet  ovat
+esimerkiksi laiteohjaimia, kuten Console, Input, Serial ja  Trackdisk.  Laiteoh-
+jaimet ovat yleensä kiinteästi liitettyjä  johonkin  tiettyyn  hardwaren  osaan,
+esimerkiksi Serial sarjaväylään ja Trackdisk MFM-levyohjaimeen. Ne  voivat  myös
+tarjota virtuaalisia palveluita, kuten esimerkiksi Nullmodem  ja  Console,  joka
+tulostaa tekstiä Intuition-ikkunaan, eikä ole suoranaisesti kiinni missään lait-
+teiston osassa. Käyttäjä on tekemisissä vain CLI:n  ja  Workbenchin  kanssa,  ja
+kaikki muut käyttöjärjestelmän osat  toimivat  jossakin  syvemmällä  tietokoneen
+sisällä. Exec on tavalla tai toisella mukana kaikessa. Ainoana melko itsenäisenä
+käyttöjärjestelmän osana Intuitionilla on keskeinen rooli käyttöliittymän raken-
+tajana.
+
+
+{3Moniajo
+{3-------
+
+Käyttäjälle näkyvin hyöty moniajosta  on  se,  että  hän  voi  suorittaa  useita
+tehtäviä tietokoneella yhtä aikaa. Esimerkiksi musiikki soi, C-kääntäjä kääntää,
+muutama levyke formatoituu ja käyttäjä lukee Star Fleetin uusia viestejä. Musii-
+kin on saanut soimaan jo kauan taustalla, koska se ei vaadi varsinaista omaa oh-
+jelmaa, vaan soittorutiinia kutsutaan osana keskeytystä.  Olennaista  tehtävissä
+on se, että vain yksi tehtävä on yleensä sellainen, joka  vaatii  käyttäjän  ko-
+koaikaista huomiota. Useamman tällaisen tehtävän yhtäaikainen ajaminen  vastaisi
+esimerkiksi television katselua ja lehden  lukemista  samanaikaisesti.  Moniajon
+avulla saadaan myös ohjelmien kuluttama hukka-aika vähiin. Ohjelma voisi vaikka-
+pa joutua odottamaan dataa levyltä, jolloin se ei voisi tehdä mitään muuta.  Mo-
+niajoympäristössä ohjelma voi lähettää lukupyynnön levytoiminnoista  vastaavalle
+tehtävälle ja tehdä jotakin  muuta  sillä  aikaa,  kun  dataa  haetaan  levyltä.
+Säästynyttä prosessoriaikaa voi hyödyntää jokin muukin ohjelma.
+
+Vaikka nykyiset tietokoneet pystyvätkin  moniajoon,  useimmat  käyttäjät  ajavat
+silti varsinaisesti vain yhtä ohjelmaa kerrallaan  muiden  ollessa  enemmän  tai
+vähemmän taustalla odottamassa omaa vuoroaan. Perinteisissä  yksiprosessorisissa
+tietokoneissa moniajo ei ole todellista, vaan se toteutetaan niin, että  proses-
+soriaikaa jaetaan kaikille sitä haluaville ohjelmille vuorotellen. Tämä tapahtuu
+hyvin nopeasti. Yhtä ohjelmaa ei yleensä ajeta kuin muutama  millisekunti.  Näin
+käyttäjä saa sen vaikutelman, että kaikkia ohjelmia  todellakin  suoritettaisiin
+samanaikaisesti, vaikka näin ei todellisuudessa tapahdukaan. Ajettavan  ohjelman
+vaihtaminen tapahtuu lennossa, niin  ettei  ohjelmien  tarvitse  olla  ollenkaan
+siitä tietoisia. Tehtävien vaihdosta ja ylläpidosta vastaa totta kai Exec.
+
+
+{3Tehtävät
+{3--------
+
+Exec ajaa ohjelmia tehtävinä eli taskeina. Useimmat taskit ovat myös prosesseja.
+Prosessit kuuluvat DOS:n alaan, joten niitä ei käsitellä  sen  enempää.  Tehtävä
+voi olla kolmessa tilassa: ready, sleeping tai running. Readyssä  oleva  tehtävä
+on valmis ajettavaksi ja se odottaa prosessoria  käyttöönsä.  Ready-taskit  ovat
+omassa listassaan, jossa ne  pidetään  prioriteetin  mukaisessa  järjestyksessä.
+Siitä Exec tehtävää vaihtaessaan hakee päällimmäisen,  eli  tehtävän,  jolla  on
+suurin prioriteetti.
+
+Sleeping-tilassa oleva tehtävä ei halua prosessoria vielä, vaan odottaa  jotakin
+tapahtuvan. Tapahtuma, joka herättää nukkuvan tehtävän, voi olla esimerkiksi sen
+jollekin toiselle tehtävälle antaman toiminnon suorittaminen loppuun,  näppäimen
+painaminen, levyn asettaminen levyasemaan tai vaikkapa monitorin  katodisädeput-
+ken elektronisuihkun osuminen haluttuun paikkaan. Tehtävä voi  jäädä  odottamaan
+useaakin tapahtumaa. Kun yksi niistä toteutuu, Exec herättää tehtävän ja asettaa
+sen Ready-tilaan eli siirtää sen prosessoria odottavien tehtävien listaan,  jol-
+loin sitä aletaan ajaa heti kun mahdollista. Sitten ohjelmalla  on  mahdollisuus
+tutkia, mitä tapahtui, ja toimia vastaavasti. Exec pitää nukkuvat tehtävät omas-
+sa listassaan. Ready-listassa olevat tehtävät ovat aina valmiit  vastaanottamaan
+prosessorin.
+
+Vain yksi tehtävä kerrallaan on Running-tilassa. Se on se  tehtävä,  joka  sillä
+hetkellä omistaa prosessorin. Tehtävä saa pitää prosessorin, kunnes se  on  sen-
+hetkisen tehtävänsä tehnyt ja haluaa odottaa jotakin tapahtumaa, suurempipriori-
+teettinen tehtävä haluaa prosessoriaikaa edellä kuvatulla tavalla, tai se on ku-
+luttanut quantuminsa loppuun ja prosessoria odottaa toinen tehtävä, jolla on sa-
+ma prioriteetti. Quantum on se aika, jonka yksi tehtävä saa enimmillään  proses-
+soria hallussaan pitää. Kun Ready-tilassa on vähintään kaksi tehtävää, alkaa nk.
+time-slicing. Tämä tarkoittaa sitä, että kaikkia samalla  prioriteetilla  olevia
+tehtäviä ajetaan vuorotellen. Jokainen saa  pitää  prosessoria  yhden  quantumin
+ajan. Tämä aika on muutettavissa. Omassa A3000:ni quantum on  neljä  millisekun-
+tia. Yhteen kuvaruutupiirtoon aikaa kuluu 20 ms. Rasterilinjoina ilmaistuna  yh-
+den tehtävän ajoaika on siis noin 60.
+
+Mikäli samalla prioriteetilla on vain yksi tehtävä, eikä ajovalmiiden  tehtävien
+listassa ole tehtäviä, joilla on suurempi prioriteetti, tehtävän suoritusta jat-
+ketaan, kunnes sellainen sinne siirretään eli herätetään tai tehtävä jää odotta-
+maan jotakin tapahtumaa, jolloin aletaan ajaa  tehtävää,  jolla  on  seuraavaksi
+suurin prioriteetti. Mikäli Ready-listassa ei ole yhtään  ajovalmista  tehtävää,
+vaan kaikki odottavat  jotakin,  mikä  on  normaali  tila  useimmiten,  kone  on
+tyhjäkäynnillä. Tällöin Exec pysäyttää prosessorin, ja  vain  keskeytykset  aje-
+taan. Toiminta jatkuu heti, kun vähintään yksi tehtävä herää eli tulee  aktiivi-
+seksi. Silloin se siirretään Ready-listaan normaalisti  ja  prosessori  annetaan
+sille.
+
+
+
+
+
+
+{3Tehtävienvälinen kommunikaatio
+{3------------------------------
+
+Tärkeän osan Amigan ympäristöstä muodostaa moniajoon kiinteästi kuuluva kokonai-
+suus, joka tunnetaan nimellä interprocess  communication.  Exec  tarjoaa  keinot
+tiedon välittämiseen tehtävältä toiselle ja takaisin. Monien ohjelmien  ei  tar-
+vitse välittää muista sillä hetkellä käytössä olevista ohjelmista.  Tämän  takia
+painotan vielä sitä, että oma ohjelma ei saa sotkea muiden ohjelmien  toimintaa.
+Muuten koko moniajon idea menettää merkityksensä. Useimmille ohjelmille  riittää
+se, että ne ovat yhteydessä käyttöjärjestelmän  tehtäviin  ja  vaihtavat  tietoa
+niiden kanssa. Hyvin harvoin minkään ohjelman  tarvitsee  olla  kanssakäymisissä
+jonkin  toisen   ohjelman   kanssa.   Suurin   osa   ohjelman   kanssakäymisestä
+käyttöjärjestelmän kanssa tapahtuu kirjastojen funktioita kutsumalla.
+
+Varsinainen tehtävienvälinen kommunikaatio tulee kuvaan esimerkiksi  laiteohjai-
+mia käytettäessä. Niitäkin voidaan  käyttää  suoraan  synkronisesti,  mutta  jos
+I/O-toiminnoista halutaan ottaa kaikki irti, on käytettävä asynkronista  toimin-
+tatapaa. Tällöin komennot lähetetään  laiteohjaimille  kutsumalla  kirjastofunk-
+tioita aivan samalla tavalla kuin synkronisessa I/O:ssakin. Erona  on  se,  että
+funktiokutsu palaa välittömästi takaisin kutsuneeseen ohjelmaan, ja sen suoritus
+jatkuu. Tässä on vaarana se, että oletetaan esimerkiksi, että levyltä on  luettu
+jotakin, vaikka data itse asiassa onkin vasta haussa. Tieto annetun I/O-komennon
+suorittamisesta saadaan laiteohjaimelta signaalin välityksellä.
+
+
+{3Signaalit ja viestit
+{3--------------------
+
+Signaalit ovat tehtävienvälisen  kommunikaation  keskeisin  osa.  Niitä  voidaan
+käyttää suoraan yksinkertaisen tiedon välittämiseen.  Esimerkiksi  DOS  välittää
+prosessille tiedon <CTRL>-C:n eli breakin painamisesta lähettämällä  sille  eri-
+tyisen signaalin. Yleensä signaaleita kuitenkin käytetään ilmoittamaan ohjelmal-
+le, että toiminto, jota se on odottanut, on suoritettu, tai että tieto, jota  se
+on odottanut, on käytettävissä. Nukkuvat tehtävät odottavat  juuri  signaaleita.
+Kun nukkuva tehtävä saa signaalin, jota se odottaa, Exec herättää sen  ja  alkaa
+ajaa sitä niin pian kuin mahdollista. Signaali voi olla esimerkiksi merkki vies-
+tin saapumisesta ohjelman viestiporttiin.
+
+Tärkein tapa, jolla tietoa siirretään tehtävien välillä, on  viestin  lähettämi-
+nen. Kun ohjelma haluaa siirtää tietoa toiselle ohjelmalle, sen tarvitsee tietää
+sen viestiportin osoite. Exec ylläpitää listaa myös viestiporteista  tehtävälis-
+tojen tapaan. Siitä ohjelma voi etsiä haluamansa  portin  osoitteen.  Ohjelmalla
+voi olla useita viestiportteja tai ei yhtään, jos se ei tarvitse ollenkaan vies-
+tejä mistään. Viestejä voi lähettää ilman omaa porttia, mutta  se  on  kuitenkin
+hyväksi, koska useimmissa tapauksissa  viestin  vastaanottaja  vastaa  viestiin,
+jolloin se palautetaan sen lähettäneelle ohjelmalle. Esimerkiksi laiteohjaimille
+annetaan I/O-komennot viestien avulla, vaikkakaan niitä ei lähetetä, vaan ne an-
+netaan niille suoraan kirjastokutsujen  avulla.  Mikäli  käytetään  asynkronista
+I/O:ta, laiteohjain vastaa viestiin suoriuduttuaan annetusta  toiminnosta.  Vas-
+tauksen saapuminen ohjelman viestiporttiin synnyttää  signaalin,  joka  herättää
+tehtävän.
+
+
+{3Resurssien hyödyntäminen
+{3------------------------
+
+Exec pitää kirjaa myös järjestelmän  käytössä  olevista  resursseista  ja  jakaa
+niitä kiinnostuneille. Painotan taas sitäkin uudestaan, että kaikki  tarvittavat
+resurssit tulee pyytää Execiltä ennen käyttöä. Mikäli niitä ei  saada,  se  tar-
+koittaa, että jokin muu ohjelma on jo ottanut ne käyttöön. Tällöin niitä ei  saa
+mennä sotkemaan. Jos saamatta jääneiden resurssien käyttö on  ohjelmalle  pakol-
+lista, on poistuttava virheilmoituksen kera. Resursseja  on  fyysisen  hardwaren
+lisäksi paljon muitakin, kuten muisti ja kirjastot. Kaikki resurssit  tulee  pa-
+lauttaa Execille niiden käytön jälkeen, jotta ne voidaan taas antaa  seuraavalle
+tarvitsijalle, joita voi olla odottamassakin. Resursseja ei tule pitää varattuna
+tarpeettomasti, koska jokin toinen ohjelma voi tarvita niitä samaan aikaan.
+
+
+{3Muisti
+{3------
+
+Amigassa on dynaaminen muistirakenne, joten kiinteää muistikarttaa ei  ole.  Pe-
+riaatteessa ainut absoluuttinen osoite on 4. Siinä pidetään 32-bittinen  osoitin
+Execiin. Kaikki muut osoittimet on tiedusteltava  tavalla  tai  toisella  siltä.
+Varsinkin demokoodereilla on ollut vaikeuksia  ymmärtää  tätä  sekä  sitä,  että
+käyttöjärjestelmästä on olemassa useita versioita. Vanhat demot (1980-luvun lop-
+pupuolella) kutsuivat usein käyttöjärjestelmän rutiineja absoluuttisella  osoit-
+teella. Sellaiset demot toimivat vain koneissa,  joissa  on  sama  käyttöjärjes-
+telmäversio. Vähitellen asia sitten  meni  kovimpiinkin  kalloihin,  ja  nykyään
+tällaisia ongelmia ei enää ole. Paitsi että käyttöjärjestelmästä on  monta  ver-
+siota, ei  ROM  välttämättä  edes  sijaitse  samassa  paikassa.  A3000  taas  ei
+välttämättä käytä ROM:ia ollenkaan, vaan useimmat lataavat  Kickstartin  levyltä
+ja voivat sijoittaa sen aivan minne tahansa, tietysti kuitenkin sinne, missä  on
+vapaata RAM:ia, mutta RAM taas voi sijaita aivan missä  vain.  AutoConfig-kortit
+asetetaan niin ikään johonkin vapaaseen paikkaan.
+
+Kaikki käytettävät muistialueet tulee pyytää Execiltä. Muistia  varattaessa  saa
+osoittimen varattuun muistialueeseen, ja vain  sitä  osoitinta  saa  laillisesti
+käyttää. Minkäänlaisia oletuksia ei saa tehdä minkään osoitteiden kanssa.  Muis-
+tia varattaessa on myös syytä katsoa tarkkaan mitä pyytää. Ei tule pyytää  FAST-
+muistia, jos ei sitä välttämättä tarvitse. Tunnetaan ohjelmia, jotka eivät toimi
+koneissa, joissa on vain CHIP-muistia, ainoastaan sen takia, että ohjelmoija  on
+mennyt typeryyksissään pyytämään aiheettomasti FAST-muistia ilman  minkäänlaista
+järkevää syytä. FAST-muistia voi tarvita esimerkiksi  nopeuskriittinen  ohjelma.
+CHIP-muistiakaan ei kannata erityisesti pyytää, ellei tarvitse sitä  esimerkiksi
+DMA-operaatioihin. CHIP-muistin osoittaminen on selvästi  hitaampaa  kuin  FAST-
+muistin, koska se ei sijaitse suoraan prosessorin väylällä ja DMA on  etusijalla
+prosessoriin nähden. CHIP-muisti voi olla täynnäkin, ja sitten ohjelma ei toimi,
+vaikka FAST-muistia olisi vapaana. Exec antaa ensin FAST-muistia niin kauan kuin
+sitä riittää ja alkaa sitten jakaa CHIP-muistia. Normaalisti kumpi tahansa muis-
+tityyppi käy, eikä siitä tarvitse erityisemmin huolta kantaa.
+
+
+{3Kirjastot ja käyttöjärjestelmäversiot
+{3-------------------------------------
+
+Kirjastoja käsitellään niiden kantaosoitteiden avulla. Se on  osoitin  osoittee-
+seen, jossa on tietoja kirjastosta  sekä  hyppytaulukko  kirjaston  funktioihin.
+Kirjaston käyttämiseen tarvitaan näin ollen sen kantaosoite.  Sen  saa  tietysti
+Execiltä mille tahansa kirjastolle. Kirjastojen versiot mukailevat käyttöjärjes-
+telmäversioita. Seuraavassa on taulukko, josta selviää  kirjastoversioiden  vas-
+taavuus käyttöjärjestelmäjulkaisuihin: 
+
+         Käyttöjärjestelmäjulkaisu  Versionumero
+
+         3.1                        40
+         3.0                        39
+         2.04                       37
+         2.0                        36
+         1.3                        34
+         1.2                        33
+
+         Taulukko 2. Kirjastoversiot ja käyttöjärjestelmäjulkaisut.
+ 
+Taulukossa ovat kaikki merkittävimmät vielä käytössä olevat versiot. Vanhin  vi-
+rallisesti tuettu käyttöjärjestelmä on 1.2 eli versio  33.  Väliin  mahtuu  myös
+muutamia harvinaisempia julkaisuja, kuten A600:n 2.05 ja erityisesti A2024-moni-
+toria varten julkaistu V35. Itse asiassa taulukossa on mukanakin eräs  harvinai-
+nen julkaisu, 2.0. Versio 36 oli ensimmäinen  kakkosjulkaisu,  mutta  siinä  oli
+paljon bugeja. Niistä suurin osa on  korjattu  versiossa  37,  joka  on  yleisin
+käytössä oleva kakkosjulkaisu. On olemassa myös versio 38, mutta  siihen  kuuluu
+vain Workbench-päivitys, eikä ollenkaan  Kickstartia  ja  järjestelmäkirjastoja.
+Käyttöjärjestelmään on tullut paljon uusia kirjastoja. Esimerkiksi ASL ja Commo-
+dities julkaistiin ensimmäisen kerran kakkosjulkaisussa,  joten  niistä  ei  ole
+olemassakaan 36:a pienempiä versioita.
+
+Uudemman versiosarjan kirjastot  eivät  yleensä  toimi  vanhempien  Kickstartien
+kanssa, koska ne hyödyntävät niiden uusia ominaisuuksia. Poikkeuksena ovat eräät
+matematiikkakirjastot. 2.0:aan kuuluu muutama  uusi  matematiikkakirjasto,  joka
+toimii myös vanhempien Kickstartien alla. Kirjastoja avattaessa tulee pitää huo-
+li siitä, että pyytää tarpeeksi uuden version. Jos  esimerkiksi  käyttää  2.04:n
+funktioita, tulee pyytää kirjastoversiota 37. Mikäli pyytää vaikkapa  36:ta,  ei
+voi olla varma, saiko tarpeeksi uuden vai ei. Funktion kutsuminen  siitä  huoli-
+matta todennäköisesti kaataa koneen, jos ohjelma ajetaan V36:n alla. V36:ssa to-
+sin on suurimmaksi osaksi kaikki V37:n funktiot, mutta bugisina.  Laiteohjaimien
+versiot kulkevat aivan samalla tavalla. Niitä avattaessa tosin ei anneta versio-
+numerotoivomusta ollenkaan.
+
+
+
+{3Hardware
+{3--------
+
+Äärettömän harvojen ohjelmien tarvitsee ohjata  suoraan  koneen  kovoa.  Melkein
+kaiken voi tehdä käyttöjärjestelmän funktioita kutsumalla. Joskus sille voi kui-
+tenkin olla tarvetta, tai sitten sitä voi haluta tehdä ihan kokeilemisen  halus-
+ta, joka onkin harrastelijoiden keskuudessa varmaankin niitä suurimpia  innotta-
+jia. Hardware-ohjelmointi on kieltämättä eräs mielenkiintoisimmista ohjelmoinnin
+alueista. Varsinaisiin moniajossa normaalisti toimiviin ohjelmiin sitä  ei  kui-
+tenkaan kannata soluttaa, koska kovon käyttäminen moniajo ja muut ohjelmat  huo-
+mioon ottaen on hankalaa. Kovotasolla ohjelmoidessa nimittäin joutuu itse  usein
+huolehtimaan siitä, että muut ohjelmat eivät pääse sotkemaan omia juttuja.  Ami-
+gan hardware on hyvin mielenkiintoinen. Prosessoria avustaa kolme asiakaspiiriä:
+Agnus, Denise ja Paula. Varsinaisia apuprosessoreita on kaksi, ja  ne  kummatkin
+sijaitsevat fyysisesti Agnus-piirissä, johon on integroitu paljon muutakin  mie-
+lenkiintoista.
+
+Apuprosessoreista toinen on Blitter. Se ei kuitenkaan ole aivan oikea  prosesso-
+ri, koska se ei aja ohjelmakoodia. Se kuitenkin suorittaa nopeasti  kaikenlaisia
+muistin kopiointi- ja operointihommia. Blitter osaa tehdä loogisia  operaatioita
+siirtämälleen datalle. Lisäksi se piirtää viivaa miljoonan pikselin sekuntivauh-
+tia ja osaa täyttää alueita.
+
+Copper on näytönpiirtoon synkronisoitu todellinen apuprosessori, joka ajaa  omaa
+koodia. Copper tuntee vain kolme käskyä, mutta sen avulla voi kirjoittaa apupii-
+rien rekistereitä, joten se on yksinkertaisesta käskykannastaan huolimatta teho-
+kas apuväline grafiikan kanssa. Käyttöjärjestelmä hyödyntää Copperia esimerkiksi
+ruudun vaihtamisessa. Kun ruudulla on kaksi Intuitionin ruutua päällekkäin, Cop-
+per vaihtaa värirekisterien, bittikarttaosoittimien ja muiden tarpeellisten  re-
+kisterien sisällöt. Agnus vastaa lisäksi mm. DMA:sta. Denisen vastuulla on  gra-
+fiikka. Paula on kiireinen tyttö, jonka osana on huolehtia mm. sarjaväylästä  ja
+levyasemaväylästä. Amigan laitteistoon kuuluu  paljon  muitakin  piirejä,  kuten
+kaksi CIA:ta. Ne ylläpitävät yhteyttä näppäimistöön ja  rinnakkaisportin  kautta
+esimerkiksi äänen digitoijaan.
+
+
+{3Kirjallisuutta
+{3--------------
+
+Tässä on lyhyt luettelo hyödyllisistä  kirjoista  järjestelmäohjelmoijalle.  Pe-
+riaattessa ensimmäiset neljä ovat NE kirjat, jotka ohjelmoija tarvitsee. Ne  kun
+löytyvät hyllystä, muita ei tarvitsekaan. Helpommin ohjelmointiin pääsee kuiten-
+kin sisälle jonkin opaskirjan avulla. Niitä  on  listan  lopussa.  Niissä  käsi-
+tellään asioita perusteellisemmin  ja  enemmin  esimerkein.  Reference-manuaalit
+ovat juuri sitä, eli hakuteoksia. Ohjelmoinnin opettelu niitä käyttämällä on to-
+ki mahdollista, mutta ei välttämättä helppoa. Reference-manuaalit  ovat  Addison
+Wesleyn julkaisuja ja opaskirjat Abacuksen. Abacuksen kirjasarjaan kuuluu paljon
+muitakin kirjoja, jotka käsittelevät esimerkiksi levyasemia ja grafiikkaa. 
+
+AMIGA ROM Kernel Reference Manual: Libraries
+AMIGA ROM Kernel Reference Manual: Devices
+AMIGA ROM Kernel Reference Manual: Includes and Autodocs
+Amiga Hardware Reference Manual
+BITTI-kirjat, AMIGA 3: konekieliohjelmointi
+BITTI-kirjat, AMIGA 4: Exec
+AmigaDOS Inside and Out
+Amiga Machine Language
+Amiga C for Beginners
+Amiga C for Advanced Programmers
+Amiga System Programmer's Guide
+Advanced System Programmer's Guide for the Amiga

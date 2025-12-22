@@ -1,0 +1,264 @@
+<HTML>
+<HEADER>
+<TITLE>Miami PPC</TITLE>
+</HEADER>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF">
+<P>
+<CENTER><IMG SRC="images/news.gif" ALT="News" 
+BORDER="0" HSPACE="1" VSPACE="1">
+</CENTER>
+<P>
+<CENTER><H2>Miami PPC</H2></CENTER>
+<P>
+<CENTER><IMG SRC="images/exclusive.gif" ALT="Exclusive" BORDER="0" 
+HSPACE="1" VSPACE="1">
+</CENTER>
+<P>
+The following article is from Nordic Global's web site and regards the forthcoming 
+PowerPC version of Miami.
+<p>
+	Now that I have my CyberStorm-PPC board (happy, happy :-)), I
+of course looked into the issue of whether it makes sense to
+port Miami to PPC, and how this could or should be done.<p>
+
+(Btw, I am aware of that current, unfortunate PowerUp&lt;-&gt;WarpOS
+incompatibility. At this time I have plans to port Miami
+and its tools to Phase5's native PowerUp kernel only, not
+to WarpOS. This decision was not made for political reasons,
+but simply because of what the C compiler I use (SAS/C-PPC)
+supports.)<p>
+
+For stand-alone applications a PPC port is usually easy: just
+recompile the application with a PPC C compiler and use one
+of the dev kits which ensure that OS calls get translated to
+the 68k side (via PPCCallOS() or PPCCallM68k()). I am referring
+to this mechanism as an "API translator" in the remainder of
+this text. This has nothing to do with translating code, of
+course.<p>
+
+After making the change described above the main application
+should run faster, but there is a performance penalty for each
+OS call because of the PPC&lt;-&gt;68k switch, which often involves
+cache flushing and other overhead. For computationally intensive
+applications the net effect should still be a speed increase
+though, and often the number of OS calls can be reduced by
+slightly rewriting the application (e.g. by increasing file
+buffers or changing memory allocation schemes).<p>
+
+For applications like Miami this issue is a lot more
+complicated, because Miami is NOT computationally intensive,
+i.e. taken by itself it does not benefit that much from a PPC
+version, and it has several APIs (bsdsocket.library,
+miami.library, SANA-II, serial.device,...), all of which only
+operate in 68k mode.<p>
+
+This means if the kernel of Miami was ported to PPC, and
+the APIs still used the 68k, then there would be a <strong>lot</strong>
+of context switches between both CPUs, so overall performance
+would actually decrease, not increase, with the PPC version.<p>
+
+One logical solution would be to first provide PPC-compatible
+APIs in addition to the 68k APIs, to allow new PPC applications
+to access Miami in PPC mode, but keep the Miami kernel running
+in 68k mode for the time being. Then the Miami kernel could be
+migrated to PPC once most of the major Amiga network applications
+have been ported to PPC.<p>
+
+Unfortunately this is not quite as easy as it sounds, because
+on the PPC side there currently is no defined shared library
+model to build an API on. Besides it would be impossible to
+allow both APIs (PPC and 68k) access to Miami's data structures
+at the same time, because of cache synchronization problems.
+This means with a temporary dual-CPU API solution one of the
+APIs would have to be translated to the kernel's native CPU
+within Miami, slowing access down for applications which use
+that API.<p>
+
+Transparently translating an API for one CPU to a different
+CPU is not without problems either, because then callbacks
+don't work as expected: the API expects a callback function
+for its native CPU, but the CPU behind the translator might
+be different. This problem has to be solved separately from
+the actual PPC migration of the code.<p>
+
+
+<h3><strong>Roadmap to MiamiPPC</strong></h3>
+
+Here is a breakdown of the individual things involved in
+getting a PPC version of Miami:<p>
+
+<ol start=1>
+<li> APIs to applications (miami.library, bsdsocket.library,
+     usergroup.library):
+
+<ol type="a" start=a>
+<li>  A translation mechanism to allow PPC binaries to access
+      the current 68k API has to be created, so new PPC
+      binaries can access Miami from PPC code as easily as
+      other OS library functions (through a time-consuming
+      context switch though).
+
+<li>  Miami's 68k API needs to be extended to support
+      callbacks into PPC code, even if the 68k API is
+      used. Otherwise PPC binaries using the 68k API through
+      an API translator would need awkward 68k stubs for
+      callbacks. Miami currently uses callbacks for two
+      purposes: SBTC_FDCALLBACK and packet filter callbacks.
+      
+<li>  A new PPC API for Miami has to be designed and
+      implemented, which allows PPC applications to access
+      Miami in PPC mode. As long as the Miami kernel still
+      operates in 68k mode any calls through this API would
+      have to be translated to 68k within Miami. After
+      migrating the kernel to PPC the API would work
+      without any context switches.
+
+<li>  Structure alignment problems have to be solved. 68k and PPC
+      use different natural alignments for 32-bit integers,
+      making some network structures with 16-bit "holes" in their
+      definitions (e.g. from net/if.h) incompatible at the binary
+      level.
+   
+      There are two ways to solve this: one is to keep using
+      the 68k alignment for all network structures even after
+      the transition to PPC, and to tell the compiler to create
+      PPC code with 68k alignment. The disadvantages of this are
+      that not all compilers support this, that it results in
+      lower performance in the PPC kernel, and that defining
+      68k alignment to be the "canonical" alignment for the
+      PPC network API now would make it impossible to switch
+      to the faster, easier natural alignment later without
+      breaking all software written in the meantime.
+   
+      The better way to solve this is by fixing the 68k side now,
+      i.e. to provide new structures with natural alignment which
+      are compatible to PPC structures, and to provide new access
+      functions for those new structures. Old 68k binaries use
+      the old access functions and thus remain binary-compatibility
+      with older protocol stacks. New software uses new access
+      functions and is PPC-compatible at the binary level. 68k
+      kernels support both access functions, but PPC kernels
+      will only support the new access functions. Luckily only
+      very few data structures are affected by this problem, and
+      the vast majority of applications does not have to be changed.
+</ol>
+
+<li> APIs to device drivers (SANA-II and serial.device). All
+     of these APIs should stay in 68k mode as long as the kernel
+     of Miami runs in 68k mode. Once the kernel is migrated to
+     PPC the following problems occur:
+<ol type="a" start=a>
+
+<li>  The built-in serial driver of Miami should be
+      migrated to PPC at the same time the kernel is
+      migrated to PPC. This requires support for interrupts
+      in PowerUp first though.
+
+<li>  SANA-II support is a <strong>big</strong> problem. We probably cannot
+      expect the SANA-II standard to migrate to PPC any
+      time soon, and even less that developers actually
+      write SANA-II PPC drivers for old hardware. This
+      means the only way to use a PPC Miami kernel with
+      SANA-II is through a stub 68k process which handles
+      context switches and callbacks. The performance
+      penalty induced by this is probably severe, in
+      particular with Ethernet, not to mention Fast Ethernet
+      PCI boards in future Amigas.
+
+<li>  Mainly because of the above problem, and because of the
+      generally poor performance and high overhead of SANA-II,
+      even in 68k mode, I am currently considering a new
+      network device standard, specifically for Miami, with a
+      lower overhead than SANA-II, closer to the BSD "if" API.
+      This would allow relatively easy ports of existing
+      Linux/NetBSD drivers for Ethernet boards (available in
+      source code) to Miami, both in 68k and PPC versions,
+      once interrupts are supported by PowerUp.
+
+<li>  Serial devices present the same problem as SANA-II, i.e.
+      native PPC versions are unlikely. The problem is not quite
+      as severe as with SANA-II though, because serial devices
+      are typically slower, so the performance penalty in
+      switching to 68k mode would not effectively reduce transfer
+      rates, only increase CPU utilitization. Miami would have
+      to use a stub 68k task which communicates with the device
+      at the byte level and the PPC kernel at the packet level.
+</ol>
+
+<li> Miami's kernel. This should only be ported to PPC once
+     PPC-compatible APIs exist and are used. Also, for users
+     with fast network devices (Ethernet etc.) a PPC version
+     would only make sense if the network device operates in
+     PPC mode as well.
+
+<li> MiamiSSL. This library is computationally intensive, so
+     a large performance gain can probably be expected from
+     a PPC version. Two solutions are possible:
+<ol type="a" start=a>
+
+<li>  Port only the cryptographic code to PPC, but keep the
+      APIs (towards Miami and towards the application) in
+      68k mode. This is easier to do, and does not require
+      modifications in Miami or applications, but causes
+      performance penalties because of context switches
+      within the SSL library.
+      
+<li>  Once Miami has PPC-compatible APIs the library should
+      be completely migrated to PPC.
+</ol>
+
+<li> Other libraries (miamipcap, miamibpf etc.)
+<ol type="a" start=a>
+
+<li>  miamipcap.library supports callbacks. PPC support for
+      these has to be added even before any real PPC
+      code migration occurs, so PPC binaries can access
+      miamipcap.library through API translators.
+
+<li>  Once Miami has PPC APIs both libraries should use them,
+      and migrate their code to PPC.
+</ol></ol>
+
+
+<h3><strong>Current status</strong></h3>
+
+(Note: tasks in the list above are numbered 1, 2, 3, and
+1.a, 1.b, 1.c,... for indented items. If your web browser
+displays only numbers or circles instead then you should upgrade
+your browser).<p>
+
+So far tasks 1.a and 1.b are completed: MiamiSDK 2.11
+has "ppcpragmas" header files for SAS/C-PPC, allowing
+developers to access Miami and compatible TCP/IP stacks
+from PPC binaries. Also Miami versions 2.93a and higher
+support PPC callbacks.<p>
+
+Task 1.c should be done in cooperation with Phase-5. It
+would be nice to come up with a shared-library standard
+(or something similar) on the PPC side. If we cannot get this
+done within a reasonable time frame then I'll probably go
+ahead with my own solution just for Miami, using a simple
+jump table with PPC function pointers, tagged to 68k shared
+libraries.<p>
+
+Task 1.d was completed in the transition to Miami 2.93a and
+MiamiSDK 2.11.<p>
+
+Task 2.a will have to wait until interrupts are supported
+in PowerUp. Getting native versions for the drivers mentioned
+in tasks 2.b and 2.d is probably hopeless, so the decribed
+workarounds have to be used once the kernel is migrated to
+PPC. Task 2.c is in the advanced design phase.<p>
+
+Task 3 will follow once the driver and API problems are
+solved.<p>
+
+Task 4.a could be done rather quickly, before any of the
+other changes. Task 4.b will have to wait for a while.<p>
+
+Task 5.a has been completed: miamipcap.library V3 supports
+PPC callbacks. Task 5.b will have to wait until the PPC
+API is ready.
+<p>
+</BODY>
+</HTML>

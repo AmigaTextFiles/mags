@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/99 - Installer-Kurs Befehls&uuml;bersicht</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>&Uuml;bersicht &uuml;ber die Befehle des f&uuml;nften Kursteils</H1></DIV>
+
+<pre>
+<I>Anmerkung:</I> Parameter, die mit (Pflichtparameter) gekennzeichnet sind, sind
+           unbedingt anzugeben. Fehlen sie, verweigert der Installer die
+           Ausf&uuml;hrung des Scripts.
+
+
+<B>User-Level-Handling</B>
+
+
+<B>(WELCOME )</B>
+
+ <I>Schablone:</I>   (welcome [&lt;string&gt; &lt;string&gt; ...])
+
+ <I>Funktion:</I>  Taucht dieser Befehl im Script auf, so wartet der Installer
+            mit dem Pr&auml;sentieren der Startup-Screens (Welcome-Screens) bis zu
+            der Stelle, an der er steht. S&auml;mtlicher Code davor wird also erst
+            ausgef&uuml;hrt. Wird (WELCOME ) weggelassen, so erscheinen die
+            Startup-Screens unmittelbar nach der Scriptcompilierung.
+            Es k&ouml;nnen au&szlig;erdem Strings angegeben, die dann zus&auml;tzlich zum
+            Standard-Help-Text der Displays angezeigt werden.
+
+ <I>Bemerkung:</I> Die Variablen @user-level und @pretend haben bis hierhin
+            ihre Default-Werte, sofern diese nicht durch die Tooltypes
+            beeinflu&szlig;t wurden.
+
+ <I>Beispiel:</I>  (set #summe (+ 2 3))
+            (welcome &quot;2 + 3 ist &uuml;brigens &quot; #summe &quot; .&quot;)
+            ;Ein Blick in die Hilfe bewei&szlig;t, da&szlig; vor dem Welcome-Screen
+            ;bereits Code abgearbeitet wurde.
+
+
+<B>(EXIT )</B>
+
+ <I>Schablone:</I>   (exit [&lt;string&gt; &lt;string&gt; ... (quiet)])
+
+ <I>Funktion:</I>  Beendet die Script-Ausf&uuml;hrung mit der Standard
+            &quot;Done with installation...&quot;-Message.
+            Es k&ouml;nnen Strings angegeben werden, die zus&auml;tzlich zu dieser
+            Message angezeigt werden.
+            Bei Angabe von (quiet) wird der &quot;Done with installation...&quot;-
+            Screen unterdr&uuml;ckt.
+
+ <I>Bemerkung:</I> Beachten Sie, da&szlig; die Variablen @appname und
+            @default-dest in den Standardtext mit einflie&szlig;en, es
+            empfielt sich also, diese richtig zu setzen.
+
+ <I>Beispiel:</I>  (...
+              .
+              .
+              .
+            )
+            (exit (quiet))
+            (welcome)       ;Die Welcome-Screens werden unterdr&uuml;ckt.
+
+
+<B>(USER )</B>
+
+ <I>Schablone:</I>   (user &lt;user-level&gt;)
+
+ <I>Funktion:</I>  &Auml;ndert den aktuellen User-Level, &lt;user-level&gt;
+            ist dabei ein Zahlenwert: 0=NOVICE, 1=AVERAGE, 2=EXPERT.
+
+ <I>R&uuml;ckgabe:</I>  Der zuvor aktuelle User-Level.
+
+ <I>Beispiel:</I>  (set #oldlevel (user 2))
+            (...)
+            (user #oldlevel)
+
+
+
+<B>Fehlerkontrolle</B>
+
+
+<B>(TRAP )</B>
+
+ <I>Schablone:</I>   (trap &lt;trapflags&gt; &lt;statements&gt;)
+
+ <I>Funktion:</I>  Wird benutzt, um Fehler abzufangen.
+            Tritt ein Fehler innerhalb der &lt;statements&gt; auf, so wird
+            die Ausf&uuml;hrung dieser abgebrochen und mit dem hinter (TRAP )
+            auftauchenden Statement fortgefahren.
+            &lt;trapflags&gt; sind dabei die Fehler, die abgefangen werden
+            sollen als Bitmaske:
+
+               Bit Nr. 0 = Abbruch durch User
+               Bit Nr. 1 = Zu wenig Arbeitsspeicher
+               Bit Nr. 2 = Scriptfehler
+               Bit Nr. 3 = DOS-Error
+               Bit Nr. 4 = Falsche Parameterangaben
+
+ <I>R&uuml;ckgabe:</I>  Der aufgetretene Fehlertyp oder 0, falls kein
+            Fehler auftrat:
+
+               1 = Abbruch durch User
+               2 = Zu wenig Arbeitsspeicher
+               3 = Fehler im Script
+               4 = DOS-Error (siehe interne Variable @ioerr)
+               5 = Falsche Parameterangaben
+
+ <I>Beispiel:</I>  (set #err (trap %11111 (...)))  ;alle Fehler abfangen
+            (select #err
+             (abort &quot;Userabbruch.&quot;)
+             (abort &quot;Zu wenig Arbeitsspeicher.&quot;)
+             (abort &quot;Scriptfehler.&quot;)
+             (abort &quot;Ein DOS-Error ist aufgetreten.&quot;)
+             (abort &quot;Falsche Parameterangaben.&quot;)
+            )
+
+
+<B>(ONERROR )</B>
+
+ <I>Schablone:</I>   (onerror &lt;statements&gt;)
+
+ <I>Funktion:</I>  Definiert eine Statementfolge, die im Falle des Auftretens
+            eines nicht anderwertig abgefangenen Fehlers nach dem Abbruch des
+            Scripts ausgef&uuml;hrt wird, um evtl. &quot;&Uuml;berreste&quot; der Installation zu
+            beseitigen.
+
+ <I>Bemerkung:</I> Kann mehrfach im Script auftauchen, um eine kontext-sensitive
+            Fehlerkontrolle zu erm&ouml;glichen.
+
+ <I>Beispiel:</I>  (onerror (delete &quot;T:#?.inst&quot;))
+
+
+<B>(ABORT )</B>
+
+ <I>Schablone:</I>   (abort [&lt;string&gt; &lt;string&gt; ...])
+
+ <I>Funktion:</I>  Bricht die Scriptausf&uuml;hrung ab und pr&auml;sentiert eine
+            Fehlermeldung, die die angegebenen Strings enth&auml;lt.
+
+ <I>Bemerkung:</I> Die in (ONERROR ) definierten Statements werden danach
+            ausgef&uuml;hrt.
+
+ <I>Beispiel:</I>  (abort &quot;Willk&uuml;rlicher Abbruch.&quot;)
+
+
+<B>(DEBUG )</B>
+
+ <I>Schablone:</I>   (debug &lt;string&gt; &lt;string&gt; ...)
+
+ <I>Funktion:</I>  Sofern das Script von der Shell gestartet wird, gibt
+            (DEBUG ) die &lt;string&gt;s in diese aus (wie (MESSAGE ), nur eben in
+            die Shell). Beim Zusammenf&uuml;gen der &lt;string&gt;s wird dabei eine
+            Leerstelle eingebaut.
+
+ <I>Bemerkung:</I> Falls eine nicht initialisierte Variable angegeben
+            wird, schreibt (DEBUG ) &quot;&lt;NIL&gt;&quot; als deren Inhalt.
+
+ <I>Beispiel:</I>  (set #err (trap %11111 (...)))
+            (debug &quot;Fehler Nummer&quot; #err &quot;ist aufgetreten.&quot;)
+
+
+<B>(TRANSCRIPT )</B>
+
+ <I>Schablone:</I>   (transcript &lt;string&gt; &lt;string&gt; ...)
+
+ <I>Funktion:</I>  Verkn&uuml;pft die &lt;string&gt;s, f&uuml;gt einen Zeilenvorschub an
+            und schreibt das Resultat in das vom Installer angelegte
+            Logfile, sofern dies der Fall ist.
+
+ <I>Beispiel:</I>  (transcript &quot;--- eine einfache Trennzeile ---&quot;)
+
+
+
+<B>Bitmanipulation</B>
+
+
+<B>(BITAND )</B>
+
+ <I>Schablone:</I>   (bitand &lt;Bitmaske 1&gt; &lt;Bitmaske 2&gt;)
+
+ <I>Funktion:</I>  Logisches UND zwischen &lt;Bitmaske 1&gt; und &lt;Bitmaske 2&gt;.
+
+ <I>Beispiel:</I>  (bitand %01101 %10110) ; liefert %00100
+
+
+<B>(BITOR )</B>
+
+ <I>Schablone:</I>   (bitor &lt;Bitmaske 1&gt; &lt;Bitmaske 2&gt;)
+
+ <I>Funktion:</I>  Logisches ODER zwischen &lt;Bitmaske 1&gt; und &lt;Bitmaske 2&gt;.
+
+ <I>Beispiel:</I>  (bitor %01101 %10110) ; liefert %11111
+
+
+<B>(BITXOR )</B>
+
+ <I>Schablone:</I>   (bitxor &lt;Bitmaske 1&gt; &lt;Bitmaske 2&gt;)
+
+ <I>Funktion:</I>  Logisches ausschlie&szlig;endes ODER zwischen &lt;Bitmaske 1&gt; und
+                     &lt;Bitmaske 2&gt;.
+
+ <I>Beispiel:</I>  (bitxor %01101 %10110) ; liefert %11011
+
+
+<B>(BITNOT )</B>
+
+ <I>Schablone:</I>   (bitnot &lt;Bitmaske&gt;)
+
+ <I>Funktion:</I>  Logische Negation von &lt;Bitmaske&gt;.
+
+ <I>Beispiel:</I>  (not %01101) ; liefert %10010
+
+
+<B>(SHIFTLEFT )</B>
+
+ <I>Schablone:</I>   (shiftleft &lt;Bitmaske&gt; &lt;Anzahl&gt;)
+
+ <I>Funktion:</I>  Verschiebt die Bits von &lt;Bitmaske&gt; um &lt;Anzahl&gt; Stellen
+            nach links. Von rechts r&uuml;cken entsprechend Nullen nach.
+
+ <I>Beispiel:</I>  (shiftleft %011010111 3) ; liefert %010111000)
+
+
+<B>(SHIFTRIGHT )</B>
+
+ <I>Schablone:</I>   (shiftright &lt;Bitmaske&gt; &lt;Anzahl&gt;)
+
+ <I>Funktion:</I>  Verschiebt die Bits von &lt;Bitmaske&gt; um &lt;Anzahl&gt; Stellen
+            nach rechts. Von links r&uuml;cken entsprechend Nullen nach.
+
+ <I>Beispiel:</I>  (shiftright %011010111 3) ; liefert %000011010)
+</pre>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9903inst.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0399/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9903prov.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; `99<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

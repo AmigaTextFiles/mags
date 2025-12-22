@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops / Background reports / Book introductions</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="workshop.html" OnMouseOver="status='Workshops / Background reports / Book introductions' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="workshop.html" OnMouseOver="status='Workshops / Background reports / Book introductions' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="workshop2.html" OnMouseOver="status='Dirk`s Tinkering Lesson... (by Dirk Wenk)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Workshops / Background reports / Book introductions
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H1>Workshops / Background reports / Book introductions</H1>
+<H2>1. Workshop: Extending the CyberstormPPC with a ZIF Socket (by Dirk Wenk)</H2>
+<P>
+[Attention: If you dare execute the actions specified hereafter, you do it at your own
+risk!]
+</P>
+<P>
+THIS currently is ONLY a purely theoretical consideration. That means,
+something like this should/could work as a modification. It does not mean,
+that it it really will operate!
+</P>
+<P>
+Everybody is urgently dissuaded from making any changes to a CSPPC board
+prompted by this article!
+</P>
+<P>
+Should anybody be brave (stupid) enough to try it anyway, I'll deny any
+knowledge or responsibility for it!
+</P>
+<H3>
+1. The Idea ...
+</H3>
+<P>
+Man, how ssllowww is &quot;Quake&quot; today! Now I have a 604 and nonetheless the
+game is lame. So let's have a look at what can be done about it. Quickly
+scan the page about overclocking, everything is calculated and you jump to
+the conclusion: Overclocking is not the solution.
+</P>
+<P>
+For instance, clocking a 150 MHz PPC to 170 MHz? Just a 10% improvement,
+instead of 20 FPS you could get 22 FPS ... how great! You might not even
+notice this! So, some other processor must be installed on the board.
+Quickly to the www.mot.com site and ... oh yeah, there is the 604e with 350
+MHz! This sounds like a good speed.
+</P>
+<P>
+First thing is downloading the PDF documents and investigating if this
+silicon is pin-compatible. And yes, it is ... but what do I read? &quot;NOT 5
+VOLT TOLERANT&quot; ... OH OHHH! Quickly you discover that all PPC processors
+faster than 233 MHz only can stand a max. level of 3.45 volts. If such a
+processor is fed more than this, you can just throw it away. Quite
+frustrated, I have a look at the other PPC processors. And I recognize that
+the processors are not only software, but mostly as well hardware,
+compatible (Beside the 740s). Quickly I check the pin arrangements and lo,
+they are (nearly) identical!
+</P>
+<H3>2. The Theory</H3>
+<P>
+Well, but how do I install such a processor onto my CSPPC board? Firstly I
+will need a level adapter. For both inputs and outputs a circuit built of
+older components is rapidly sketched up. But the signal propagation times
+are extremely long and the number of components exceeds 500. Not
+acceptable!
+</P>
+<P>
+And a further problem arises: These newer processors starting with the G3
+need a so-called &quot;Level-2 Cache&quot;. But after several investigations I found
+a solution ... or better I cribbed it! For some time the PowerMac has used
+so-called ZIF sockets, into which a board is inserted. Upon this board the
+L2 cache and the processor is placed. Additionally the main board is
+informed via certain connectors which clock rate and voltage the board
+needs. Just ideal for this project.
+</P>
+<P>
+And a further item pops up: The power-up startup process is different
+compared to the 604 processors. During startup it is determined where first
+the power must be applied, because otherwise the processor gets &quot;roasted&quot;.
+Sounds funny, but is understandable.
+</P>
+<P>
+With this we have a list of all items needed: A ZIF socket, a fitting
+processor board, the power supply including powerup and finally of course
+the signal adapter.
+</P>
+<H3>3. The Basic Structure</H3>
+<P>
+Once at an Amiga gathering a manufacturer displayed a prototype of a G3
+Turbo Board for the A1200, which did without a 68k processor. A closer look
+showed how those people had managed it. On board there was the processor,
+the L2 cache and a flash memory for the boot process and the 68k emulation -
+and two more components to prevent the processor from getting &quot;broiled&quot;
+by the 5 volts from the Amiga. These two ICs are very simple but super-fast
+level converters, which are ideal for this project as well. Fur ther data
+for these chips you will find at the end of the next part of this workshop
+under the topic &quot;Components&quot;.
+</P>
+<P>
+In principle it could be done like this: The 604-processor is soldered off,
+the signals are led to another board which houses our custom circuitry.
+This circuitry consists of the power supply, the powerup and the signal
+converters. And of course there is the ZIF socket, too. All we have to do
+now is build one.
+</P>
+<H3>4. The Next Consideration</H3>
+<P>
+All right, in theory we have everything that might be needed. But it is not
+that simple, because the processor on the CSPPC is of the BGA type. That
+means, that the connectors for the processor are under its body. If we want
+to remove the processor, we need a BGA soldering machine, otherwise the
+board will be damaged and we will have to look for another CSPPC. And even
+if we had such a machine somewhere on hand and were able to remove the
+processor, we will have an additional problem. The contact pins are tiny!
+It would be a real challenge to connect those tiny pins to our homemade
+board. Just pull a little bit too hard and the CSPPC board is done forever.
+But we are not yet at our wits' end.
+</P>
+<P>
+Though we have nearly none or even no documents about the CSPPC board and
+have no possibility of getting any of them, we can try to work out the
+layout. But unfortunately the CSPPC just has too many layers to make this
+an easy job. Unless someone gives us a defective CSPPC, which we can
+disassemble part by part to work out the circuit diagram.... Or someone in
+a certain company assists us with certain documents (broad hint). :)
+</P>
+<P>
+A further way to find out more about the signals of the processor is via
+the expansion port of the CSPPC. Theoretically all important data should be
+present at this port. If necessary, the connections left over may finally
+be picked out. Possibly in a way that enables switching between the
+original PPC CPU and our selfmade board.
+</P>
+<P>
+The more savvy of you will already have asked: Hey man, the 604 runs with
+150 - 233 MHz and this new board does up to 750 MHz, how can the the CSPPC
+hardware manage this? Well, the PPC bus of the 604 runs up to approximately
+75 MHz, while the new G4 processors have a bus running between 33 and 133
+MHz. It all depends upon the setting of the clock dividers. For instance,
+the 604e/150 MHZ runs with a bus speed of 60 MHz and a divider setting of
+2.5. The 750 MHz G4 variant could do it like this: 62 MHz bus c lock,
+divider set to 12, or 75 MHz bus clock, divider at 10. The smaller the
+setting number of the divider, the higher the memory throughput. And as
+well more heat develops ... it is advisable to install at 75 MHz an
+additional blower for the memory chips.
+</P>
+<H3>5. The Basic Structure of the CSPPC</H3>
+<P>
+Now I move up the garden-path! For what do we know about the CSPPC at all?
+How is it made up and how does it work? Honestly, I only can guess, because
+I do not have any documents (besides the manual). First the 64-bit bus of
+the 604e must be adapted to the 32-bit bus of the 68k processor. This means
+we need something with the storage and sufficient input/output ports. If we
+look at our CSPPC, we recognize lots of 74FTC543 devices (upon request at
+<A HREF="mailto:dw@teleservice.com">dw@teleservice.com</A> 74FTC543_DS_30937.pdf). And exactly those components
+are specified to adapt the bus from 64 bit to 32 bit. In the PDF document
+(AN1271.pdf) on page 8 you find a little example for the connection, which,
+though it is realized with a 74F646, nicely shows how this is done.
+</P>
+<P><B>Example:</B></P>
+<PRE>
+
+            32bit  ____   64bit
+    A0-32   ___ __|    |------  A0-32
+    68k Bus    Y  | 74 |        60X Bus
+               \--| 646|------  A33-64
+                  |    |
+                   ¯¯¯¯
+</PRE>
+<P>
+Further more you see in the example circuit (PDF document), that for the
+control of the 74FTC543 devices a Mach210 is used. And one of these babies
+we find on the CSPPC.
+</P>
+<P>
+Theoretically the whole bus should be changed over. By this the complete
+68k system should come to a halt. To test this I started the system and
+simply interrupted the clock of the PPC processor. The result was that
+indeed everything stopped, including the mouse pointer. As soon as the
+clock was restarted, the system proceeded without fail. If you try the same
+procedure in the Early-Startup Menu, this does not happen. This indicates
+that a separate program, which is executed automatically after the comput
+er starts, controls the Mach210, which after that switches over. I was not
+able to determine which processor runs this program. But I think that it is
+running on the 68k processor, because a task with the name &quot;PPC
+Early-Startup&quot; or similar runs there.
+</P>
+<P><B>In the 2nd part you will read:</B></P>
+<UL>
+<LI> What happens when the PPC-switch programs are terminated? Does the PPC switch over?
+</LI>
+<BR><LI> What signals are needed where?
+</LI>
+<BR><LI> Is the timing corrected by the operation of the level accommodation?
+</LI>
+<BR><LI> What signals are needed by the PPC processor?
+</LI>
+<BR><LI> Which are the differences between the processors? From 604 through 7450EC!
+</LI>
+<BR><LI> And more, that will come to my mind :)
+</LI>
+</UL>
+<P><B>Dirk Wenk &lt;<A HREF="mailto:Dirk@wax7.de">Dirk@wax7.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="workshop.html" OnMouseOver="status='Workshops / Background reports / Book introductions' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="workshop2.html" OnMouseOver="status='Dirk`s Tinkering Lesson... (by Dirk Wenk)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

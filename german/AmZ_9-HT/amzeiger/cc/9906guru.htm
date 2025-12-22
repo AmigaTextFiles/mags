@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 06/99 - Die beliebtesten Stolperfallen f&uuml;r Programmierer</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Die beliebtesten Stolperfallen f&uuml;r Programmierer</H1>von<BR>
+<A HREF="mailto:T.Heinrich@amzeiger.de">Thomas Heinrich</A></DIV>
+
+<P><B>Der freie Fall</B></P>
+
+<P>Kompiliert - gestartet - abgest&uuml;rzt. &quot;Nicht schon wieder&quot;, denkt sich der
+Programmierer, verdreht die Augen und beherrscht sich m&uuml;hsam, um nicht
+seinen Rechner zu demolieren.</P>
+
+<P>Kommt Ihnen das bekannt vor? Mir geht es &ouml;fters so. Dadurch, da&szlig; der
+Amiga keinerlei Resourcenschutz besitzt, ist ein Programmabsturz sehr
+oft gleichbedeutend mit einem sofortigen Reset und Neustart. F&uuml;r den
+Programmierer (und die Betatester) sehr &auml;rgerlich, aber andererseits
+verlangt der Amiga dadurch eine &auml;u&szlig;erst genaue und disziplinierte
+Programmierung. Auf anderen Systemen bietet das OS viele Rettungsleinen,
+die meistens sogar funktionieren. Unix und Windows NT sind meistens in
+der Lage, einen abgest&uuml;rzten Task zu entfernen, und das System ist immer
+noch stabil. Die anderen Windows-Versionen versuchen das zwar auch, aber
+normalerweise bleibt es bei dem Versuch...  </P>
+
+<P><B>Fallschirme</B></P>
+
+<P>Es bleibt uns Amiganern also nichts anderes &uuml;brig, als bei der
+Programmierung gewissenhafter zu sein, als es auf anderen Systemen
+&uuml;blich ist. Das ist aber gar nicht so schwer.  </P>
+
+<P>Die Erste-Hilfe-Grundausstattung ist sicherlich &quot;Enforcer&quot; oder
+&quot;Cyberguard&quot;. Jeder Enforcer-Hit ist grunds&auml;tzlich ein Programmier-
+Fehler. Zwar gibt es ein paar spezielle Hits, die tats&auml;chlich &quot;harmlos&quot;
+sind, wie viele Programmierer gerne behaupten, aber das ist kein Grund,
+diese Fehlerquelle nicht auszuschalten.      </P>
+
+<P>Solche &quot;harmlosen&quot; Hits sind z.B. Byte-, Word-, Long-Reads von Null.
+Zuf&auml;lligerweise steht an der Adresse Null auch wirklich immer eine Null,
+so da&szlig; ein Test auf das Ergebnis des Lesevorgangs negativ ausf&auml;llt. Au&szlig;er
+nat&uuml;rlich, es wird auf Ungleichheit getestet... Oder ein anderes
+fehlerhaftes Programm hat dort versehentlich etwas hingeschrieben...
+F&uuml;r mich kann der Fehler also mitnichten als harmlos gelten.</P>
+
+<P><B>Meditation</B> </P>
+
+<P>Ab und zu kann nicht einmal Enforcer helfen, denn es bekommt durch ein
+absolut blockiertes System keine Meldung mehr heraus. Dann ist es wichtig,
+sich die Gurus anzusehen und die Fehlermeldungen mit denen aus dem Include
+&quot;exec/alerts.h&quot; zu vergleichen.   </P>
+
+<P>&Auml;u&szlig;erst beliebt ist das Freigeben von falschen Speicherbereichen. Da gibt
+es mehrere Typen: </P>
+
+<P>Nicht initialisierte Zeiger auf Speicherbereiche - man versucht, Speicher,
+den man sich noch gar nicht besorgt hat, wieder freizugeben. Der Zeiger
+hat irgendeinen zuf&auml;lligen Wert und der Guru macht Hausbesuch.   </P>
+
+<P>Teilweises Freigeben von Speicher - irgendeine Operation f&uuml;hrt den Zeiger
+auf einen Speicherbereich weiter, so da&szlig; die L&auml;nge des Blocks nicht mehr
+pa&szlig;t. Wieder ein Guru.     </P>
+
+<P>Ziemlich profan, trotzdem oft erlebt, sind auch Division-durch-Null-Fehler.
+Da nimmt eine Variable pl&ouml;tzlich einen Wert an, den sie nicht haben d&uuml;rfte,
+meistens verursacht durch das Nicht-Testen eines R&uuml;ckgabewertes einer
+Funktion. Leicht passiert, aber auch leicht verbessert - wenn man den
+Fehler selbst findet, und nicht erst der Enduser...  </P>
+
+<P><B>Hoch stapeln und tief fallen</B></P>
+
+<P>Der Stack ist ein leidiges Thema. Besonders rekursive Funktionen lassen
+den Stack leicht &uuml;berlaufen. Wann immer m&ouml;glich, vermeide ich solche
+Konstruktionen. Ungl&uuml;cklicherweise ist die Stackregulierung des Amiga viel
+zu sehr dem User &uuml;berlassen. Dazu laufen z.B. Patches auch auf einem
+fremden Stack, was von dem Programm selbst, das die gepatchte Funktion
+benutzt, nicht bemerkt wird. </P>
+
+<P>Zu guter Letzt lassen sich die Auswirkungen eines &uuml;bergelaufenen Stacks
+gar nicht vorhersagen. Wenn irgend etwas im System sich nicht mehr richtig
+anf&uuml;hlt, dann ist es meistens schon zu sp&auml;t. Probieren Sie einfach einen
+Stack-W&auml;chter aus. Ich f&uuml;r meinen Teil setze den Stack w&auml;hrend der
+Programmierung ziemlich hoch und teste dann am Ende, bis zu welchem Punkt
+nichts passiert, wenn man den Stack wieder heruntersetzt. Braucht ein
+Programm mehr, als die standardm&auml;&szlig;igen 4 KB, kommt ein Hinweis in die
+Anleitung, und ein Test f&uuml;r die Stackgr&ouml;&szlig;e in das Programm. Der Test ist
+ganz einfach: </P>
+
+<P>Ein FindTask(NULL), dann das Feld tc_SPUpper minus tc_SPLower, fertig ist
+der verf&uuml;gbare Stack. Er ist zwar um 2 Bytes ungenau, aber darauf darf es
+nicht ankommen. Sie m&uuml;ssen schon einen Spielraum in die Abfrage einbauen.
+Haben Sie festgestellt, da&szlig; Sie zuwenig Stack haben, m&uuml;ssen Sie das
+Programm sofort abbrechen lassen. </P>
+
+<P><B>Zeigerln</B>   </P>
+
+<P>Hinterh&auml;ltig sind auch Zeiger, Indizes und Dereferenzen, besonders in
+Verbindung mit Strukturen. Ist das folgende Fragment korrekt?  </P>
+
+<PRE>   struct texthandle
+   {
+      ...
+      UBYTE th_String[80];
+      ...
+   };
+
+   struct texthandle th;
+
+   th-&gt;th_String[0] = 0;
+                           </PRE>
+<P>Offensichtlich soll hier ein String gel&ouml;scht werden, indem das erste
+Zeichen zum Nullbyte gemacht wird. Nur funktioniert es nicht, bzw. wenn,
+dann nicht mit jedem Kompiler. Es ist n&auml;mlich nicht eindeutig, was hier
+Null gesetzt werden soll:  </P>
+
+<PRE>   (th-&gt;th_String)[0] = 0; </PRE>
+
+<P>oder   </P>
+
+<PRE>   th-&gt;(th_String[0]) = 0;</PRE>
+
+<P>Der erste Fall funktioniert wie gew&uuml;nscht, aber der zweite Fall setzt das
+erste Element eines Arrays der Struktur auf Null. Im folgenden ist das
+Element &quot;th_String&quot; nicht mehr die Adresse der 80 reservierten Bytes,
+sondern NULL! </P>
+
+<P>Nun stellen Sie sich vor, es soll nicht das erste, sondern das 80ste
+Element gel&ouml;scht werden. Welche Speicherstelle Sie dann mit Null
+&uuml;berschreiben, ist nicht mehr vorhersagbar.</P>
+
+<P>Genauso unklar sind Weiterf&uuml;hrungen  </P>
+
+<PRE>   th-&gt;th_String++;</PRE>
+
+<PRE>   (th-&gt;th_String)++; /* OK */  
+   th-&gt;(th_String++); /* Falsch */ </pre>
+
+<P>und Dereferenzen </P>
+
+<PRE>   *th-&gt;th_String = 0;
+
+   *(th-&gt;th_String) = 0;  /* OK */ 
+   (*th)-&gt;th_String = 0;  /* Extrem falsch, mu&szlig; sogar der Kompiler merken */
+    </PRE>
+<P>Der einzig wirksame Tip: Klammern, Klammern und nochmals Klammern! In &quot;C&quot;
+k&ouml;nnen Sie nur zu wenige Klammern setzen, nie zuviel. Selbst wenn Sie
+durch probieren die Eigenheiten Ihres Kompilers kennen, sp&auml;testens wenn
+Sie ihn wechseln oder jemand den Code portieren will, geht es f&uuml;rchterlich
+in die Hose. Auch wenn Sie alle Priorit&auml;ten der C-Operatoren auswendig
+kennen: es gibt viele F&auml;lle, in denen gleich priorisierte Operatoren
+zusammentreffen. Man mu&szlig; den &Auml;rger ja nicht provozieren. </P>
+
+<P><B>Blindflug</B>   </P>
+
+<P>Auch vergessene Prototypen sind auf den ersten Blick harmlos. Der Kompiler
+beschwert sich zwar, da&szlig; er die &Uuml;bergabeparameter nicht kennt, macht aber
+brav, was Sie eingetippt haben. Solange Sie keinen Fehler dabei gemacht
+haben, gibt es keine Probleme. Ein Beispiel:  </P>
+
+<PRE>   strncpy(str1, str2);  </PRE>
+
+<P>Klar, hier fehlt die L&auml;ngenangabe, wieviel Bytes denn nun kopiert werden
+sollen. Wenn der Prototyp nicht deklariert ist, nimmt die Funktion ohne
+Kenntnis des Kompilers f&uuml;r die L&auml;nge einfach das n&auml;chste Langwort vom
+Stack und was da drinsteht, entzieht sich jeder Kontrolle. Wenn Sie Pech
+haben, ist es die R&uuml;cksprungadresse eines Funktionsaufrufs, dann ist das
+eine sehr gro&szlig;e Zahl an unkontrolliert kopierten Zeichen...  </P>
+
+<P><B>Taubheit</B></P>
+
+<P>Es wurde schon sehr oft gesagt, genauso oft verhallt es ungeh&ouml;rt:
+Warnungen sind Fehler! Wenn ein Kompiler murrt, dann haben Sie etwas
+falsch gemacht. &quot;Kleine&quot; oder &quot;harmlose&quot; Fehler gibt es nicht, zumindest
+nicht auf dem Amiga.   </P>
+
+<P>Viele Entwicklungssysteme haben auch einen Debugger. Setzen Sie ihn ein,
+aber wundern Sie sich nicht, wenn er nicht viel n&uuml;tzt. Unter g&uuml;nstigen
+Umst&auml;nden werden mehrere Zeilen Sourcecode durch Optimierungen zu einer
+einzigen Assembleranweisung verdichtet, so da&szlig; sie gar nichts davon sehen.</P>
+
+<P>Mir pers&ouml;nlich hilft an absturzverd&auml;chtigen Stellen ein ausf&uuml;hrliches
+Zukleistern mit Printf() immer noch mehr, als ein noch so m&auml;chtiger
+Debugger. Das liegt wohl daran, da&szlig; ich noch keinen vern&uuml;nftigen Amiga-
+Debugger gesehen habe.  </P>
+       
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9906bug.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0699/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9906bb.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; `99 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>
+
+

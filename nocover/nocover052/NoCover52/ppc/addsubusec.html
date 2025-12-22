@@ -1,0 +1,45 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="addsubc.html">PREV</a> | <a href="muldiv.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Add/Sub using Carry</b>
+
+Note: For Add's the Carry is used as Carry-Bit. For Subs, the mechanism is not
+the same like for 68k (Borrow-Bit). The mechanism with Borrow-Handling was not
+described correctly in earlier versions of this document, so be careful !!!
+
+What really happens, is, that, if a Subtract Command would set the Borrow Bit
+on the *68k*, the *PPC* sets the Carry Bit to the *inverted Borrow Bit*. This is
+done in this way, as the PPC implements a subtraction as a negative addition,
+while the 68k has real subtraction commands.
+
+Example for using the Carry/Borrow with 64 Bit Numbers in two registers:
+
+subfc   r5,r4,r5
+subfe   r7,r6,r7      ;64-Bit-Number (r7:r5) - 64-Bit-Number (r6:r4)
+
+Now as to the command list for Add/Sub using Carry:
+
+adde   Rt,Ra,Rb
+subfe  Rt,Ra,Rb
+addme  Rt,Ra
+subfme Rt,Ra
+addze  Rt,Ra
+subfze Rt,Ra
+
+These commands add the Carry-Flag to the result of the operation. adde is a
+simple addition of Ra and Rb (and Carry), subfe is Ra-Rb (+ Carry), addme
+is the -1+Ra+Carry, subfme is -1-Ra+Carry, addze is Ra+Carry, subfze is
+-Ra+Carry. All these commands support the . and o notations, like
+outlined in <a href="imp.html">Important things</a>.
+
+</pre>
+</body>
+</html>

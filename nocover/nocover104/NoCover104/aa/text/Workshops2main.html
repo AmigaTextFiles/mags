@@ -1,0 +1,157 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+2. Dateitypen und Dateityperkennung am Amiga (von Martin R. Elsner)
+
+Wer hat sich nicht schon mal dar&uuml;ber lustig gemacht, dass die Microsoft-
+Betriebssysteme sich strikt an ein festes Dateinamenschema halten, das 
+fr&uuml;her sogar nur 8 Zeichen f&uuml;r den Namen und drei Zeichen f&uuml;r die Endung 
+vorschrieb! W&auml;hrenddessen lie&szlig; AmigaOS von Anfang an einen gro&szlig;en Freiraum 
+bei der Bezeichnung von Dateien, was sich zum Beispiel in Dateinamen ohne 
+oder mit zwei oder mehr Punkten &auml;u&szlig;erte. Aber diese drei Zeichen nach dem 
+Punkt hatten einen nicht zu untersch&auml;tzenden Vorteil: Sie lie&szlig;en schnell 
+erkennen, um welchen Typ von Datei es sich handelte - womit wir beim Thema 
+w&auml;ren:
+
+Dateitypen
+
+Man kann grob zwei Arten von Objekten auf Speichermedien unterscheiden: 
+Strukturen, also Verzeichnisse und Links, und Datenpakete, also Dateien. 
+W&auml;hrend Strukturen im Aufbau immer gleich sind und fast vollst&auml;ndig vom 
+Betriebssystem verwaltet werden, werden Dateien mit den verschiedensten 
+Inhalten sowohl vom Betriebssystem als auch von beliebigen Anwendungen 
+geschrieben und gelesen. Dies geht soweit, dass eine Datei ohne die 
+zugeh&ouml;rige Anwendung wertlos und "unlesbar" ist!
+Dies stellt das Betriebssystem und den Anwender vor ein gro&szlig;es Problem: Wie 
+soll man erkennen, was eine Datei enth&auml;lt und mit welcher Anwendung die 
+Datei angezeigt oder bearbeitet werden kann? W&auml;hrend die einzelnen 
+Anwendungen entscheiden k&ouml;nnen, ob eine Datei f&uuml;r sie lesbar ist, hat das 
+System zun&auml;chst keine Entscheidungsgrundlage. Es kann au&szlig;erdem der Fall 
+eintreten, dass eine Datei von mehreren Anwendungen bearbeitet werden kann, 
+so dass keine eindeutige Zuordnung m&ouml;glich ist (zum Beispiel Grafiken oder 
+Textdateien): Textdateien sollen beispielsweise in einem Editor angezeigt 
+werden, aber falls es sich um HTML-Quellcode handelt, soll ein Browser 
+gestartet werden!
+Man erkennt, dass es sowohl Probleme bei der Definition eines klar 
+abgegrenzten Dateityps als auch bei der Erkennung und Zuordnung zu einem 
+Standardprogramm gibt. Wir schauen uns nun mal an, was es f&uuml;r L&ouml;sungen 
+gibt:
+
+
+Gates punktet
+
+Oben sind sie schon aufgetaucht: die von Microsoft bekannten Endungen, die 
+sich auch schon auf dem Amiga verbreitet haben. Im Grunde ist es die 
+einfachste M&ouml;glichkeit, Dateien zu unterscheiden: Der Name erh&auml;lt einen 
+Zusatz, der den Inhalt charakterisiert. Unter den ersten Windows-Versionen 
+war Position und L&auml;nge von Punkt und Endung fest vorgeschrieben, heute sind 
+auch l&auml;ngere Endungen m&ouml;glich. Die Dateitypen werden mit den zugeh&ouml;rigen 
+Daten (also Endung, Beschreibung des Inhalts, Icon zur Anzeige in Listen, 
+Standardprogramm und weitere Funktionen) in der Registry, also einer 
+zentralen Systemdatenbank, gespeichert, auf die sowohl Anwender als auch 
+Programme zugreifen k&ouml;nnen (die n&ouml;tigen Rechte vorausgesetzt).
+
+Sowohl System als auch Anwender k&ouml;nnen leicht erkennen, um welchen Typ von 
+Datei es sich handelt. Beim Lesen eines Verzeichnisses kann zum Beispiel 
+schnell nach einem Dateityp gefiltert werden, was am Amiga beispielsweise 
+"list #?.info" zeigt. Da der Dateiname auch beim Kopieren auf andere 
+Betriebssysteme erhalten bleibt, l&auml;sst sich so auch dort der Inhalt noch 
+nachvollziehen. Die zentrale und gut zug&auml;ngliche Speicherung der Dateitypen 
+erleichtert den Zugriff durch Dateimanager oder das Anlegen eines neuen 
+Dateityps durch eine Anwendung.
+Aber das Prinzip hat auch Nachteile: Mit dem Umbenennen der Datei kann 
+auch, absichtlich oder aus Versehen, die Endung ge&auml;ndert werden, wodurch 
+die Informationen &uuml;ber den Inhalt verloren sind! Dass die Endungen auch 
+manchmal st&ouml;ren, wenn in einem Verzeichnis nur Dateien eines Typs 
+existieren, hat auch Microsoft erkannt und schon M&ouml;glichkeiten zum 
+Ausblenden der Endung geschaffen, in der Hoffnung dass das zugeh&ouml;rige Icon 
+dann noch aussagekr&auml;ftig genug ist.
+Ein weiteres Problem ist die m&ouml;gliche &Uuml;bereinstimmung von Endungen 
+verschiedener Dateitypen; beschr&auml;nkt man sich auf drei Buchstaben, so sind 
+n&auml;mlich die lesbaren Endungen bald ausgesch&ouml;pft, und es kann durchaus dazu 
+kommen, dass Programm x und Programm y Dateien mit der gleichen Endung 
+versieht.
+
+
+Interchange File Format
+
+ist nur ein Beispiel f&uuml;r die n&auml;chste Art der Dateityperkennung; die als IFF
+bekannten Dateien, die vor allem f&uuml;r Grafiken und Animationen benutzt 
+werden, besitzen einen modularen Aufbau mit einer wichtigen Gemeinsamkeit: 
+In den ersten Bytes der Datei - das hei&szlig;t im Inhalt selbst - steht unter 
+anderem der genaue Typ der folgenden Daten. Dies ist auch bei anderen 
+Dateitypen der Fall, zum Beispiel bei JPEG- oder TIFF-Dateien.
+Im Gegensatz zu den Endungen sind hier mehrere Informationen zur Erkennung 
+n&ouml;tig: Wo stehen die Kennzeichen, und was steht dort. Damit ist aber der 
+Anwender auf einen Dateimanager angewiesen, der dies pr&uuml;fen kann, ein 
+einfaches "list" tut es nicht mehr. Durch das &Ouml;ffnen der Datei wird zudem 
+das Lesen eines Verzeichnisses langsamer, und mehr Zugriffe auf den 
+Datentr&auml;ger sind n&ouml;tig.
+Wie unter Windows, ist hier eine genaue Auflistung der Erkennungsmerkmale 
+n&ouml;tig, die m&ouml;glichst zentral verwaltet werden sollte.
+
+
+Amiga bietet bunte Bildchen
+
+Unsere Workbench bietet eine etwas andere L&ouml;sung des Problems: Statt einer 
+allgemeinen Klassifizierung kann jede Datei eine .info-Datei mitbringen, 
+die alle n&ouml;tigen Informationen enth&auml;lt. Die zugeh&ouml;rige Grafik soll den Typ 
+der Datei f&uuml;r den Anwender erkennbar machen, das Standardprogramm und 
+weitere Eigenschaften werden in der .info-Datei abgelegt und k&ouml;nnen auf der 
+Workbench angezeigt und bearbeitet werden.
+Die Idee ist zwar nicht schlecht, aber wir kennen die Nachteile: Nicht alle
+Dateien besitzen auch eine .info-Datei! Zudem m&uuml;ssen beim Kopieren, 
+Umbenennen usw. immer auch die .info-Dateien ber&uuml;cksichtigt werden, was 
+noch schlimmer als das Nutzen der Endung ist. Au&szlig;erdem vermisst man unter 
+den Informationen den eigentlichen Dateityp, was wieder dazu f&uuml;hrt, dass 
+das Icon so gestaltet sein muss, dass man den Typ erahnen kann.
+Zur Verteidigung muss man allerdings hinzuf&uuml;gen, dass das Icon-Konzept 
+eigentlich nur f&uuml;r die grafisch orientierte Workbench entwickelt wurde und 
+dort auch akzeptable Dienste leistet.
+
+
+Und nun??
+
+Durch Internet und allgemeinen Datenaustausch finden sich auf Amiga-
+Rechnern heute sowohl Amiga-spezifische als auch plattformunabh&auml;ngige 
+Dateiformate. Dort, wo Dateien aus der Windows-Welt &uuml;bernommen werden, 
+m&uuml;ssen Endungen gepr&uuml;ft werden, um den Dateityp zu erkennen, bei 
+ausf&uuml;hrbaren Programmen usw. m&uuml;ssen wir die Datei &ouml;ffnen und den Inhalt 
+pr&uuml;fen.
+
+Die Entwicklung hat nicht aufgeh&ouml;rt, und so gibt es mehrere L&ouml;sungsans&auml;tze, 
+die sich kaum unterscheiden.
+DirectoryOpus, DefIcons und ClassAction beinhalten drei Ausf&uuml;hrungen des 
+gleichen Prinzips: die Konfiguration einer Liste von Dateitypen, wobei 
+zun&auml;chst Standarddateitypen vordefiniert sind, aber auch das Bearbeiten, 
+Hinzuf&uuml;gen und Entfernen neuer Typen m&ouml;glich ist.
+Dabei kann man sowohl Dateinamensmuster (also etwas mehr als nur Endungen) 
+als auch Erkennungsmerkmale im Inhalt, zum Teil auch weitere 
+Entscheidungskriterien angeben. DefIcons beschr&auml;nkt sich allerdings auf die 
+Klassen und definiert ein Standard-Icon, w&auml;hrend DOpus und ClassAction eine 
+Liste von Funktionen (Aktionen) hinzuf&uuml;gen.
+
+Dies f&uuml;hrt im schlimmsten Fall dazu, dass alle Dateitypen dreimal definiert 
+werden m&uuml;ssen - wobei manche Definitionen nicht von einem zum anderen 
+System &uuml;bertragen werden k&ouml;nnen, da sich die unterst&uuml;tzen Kriterien 
+unterscheiden. Die Stellung von DirectoryOpus und DefIcons in OS4+ sind 
+wohl nicht nur mir zur Zeit unklar.
+Es bleibt zu hoffen, dass das AmigaOS in Zukunft eine zentrale Verwaltung 
+von Dateitypen und Standardfunktionen anbietet (auch durch eine Library mit 
+den n&ouml;tigen Funktionen), so wie es unter anderen Betriebssystemen m&ouml;glich 
+ist, da damit sowohl Benutzern als auch Programmierern das Leben 
+erleichtert wird!
+
+Euer
+
+Martin R. Elsner &lt;email@martin-elsner.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

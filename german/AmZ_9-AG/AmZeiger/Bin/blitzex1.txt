@@ -1,0 +1,32 @@
+WBStartup
+WBenchToFront_
+WbToScreen 0
+Use Screen 0
+*Scr=ActiveScreen
+FH=Peek.w(Peek.l(*Scr+40)+4)
+FN$=Peek$(Peek.l(*Scr+40)+8)
+
+LoadFont 0,FN$,FH
+Use IntuiFont 0
+Window 0,0,0,300,200,$1008,"Menue Window",1,2
+*Wi0=ActiveWindow
+MenuTitle 0,0,"Erster Titel"
+
+MenuItem 0,0,0,0,"First Item ","1"
+MenuItem 0,0,0,1,"Second Item ","2"
+SetMenu 0
+Repeat
+  FlushEvents
+  ev.l=WaitEvent
+  If ev=$100 AND *Wi0 = ActiveWindow
+	 WLocate 1,1
+	 Select ItemHit
+	  Case 0
+		Print "First Item"
+	  Case 1
+		Print "Second Item"
+	 End Select
+
+  End If
+Until ev=$200 AND *Wi0=ActiveWindow
+End

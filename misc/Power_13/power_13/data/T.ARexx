@@ -1,0 +1,153 @@
+·
+ ¹F.Arexx³
+ °
+
+
+
+
+
+»
+
+
+ Mivel  már  foglalkoztam valami olyasmivel, mint az ¾ARexx¼ hibaüzenetek, ezért
+érdemesnek tartok pár szót elvesztegetni magáról a nyelvrõl is...
+
+ Mivel  mindenkinek  az  az elsõ kérdése a dologgal kapcsolatban, hogy mi kell
+hozzá,  ezért  ezzel  kezdeném.   Elvileg  a  Bonusban kell lennie annak a két
+programnak, ami tök elég a nyelv használatához:  ½RexxMast & RX.¼  Van ugyan még
+egy  nagyon  jó cuccos hozzá, az ARexxManager, ami sajna nincsen meg nekem, de
+az  egyik legjobb cuccos, ha tudod, szerezd meg magadnak.  A fent említett két
+programról  csak  annyit,  hogy  az RX-el lehet Shellbõl(!) meghívni különbözõ
+utasításokat  és  ARexx scripteket futtatni.  A ChangeLetterCase nevû scriptet
+pl.a `RX ChangeLetterCase` begépelésével (aposztrófok nélkül!) lehet futtatni,
+egy   utasítást   pedig  pl.   az  `RX  "Say  amiga"`  bepötyögésével  (megint
+aposztrófok nélkül!).
+ Szóval  nem  ártana  definiálni magát az ½ARexxet.¼  Ez nem más, mint egy olyan
+basic-szerû   nyelv,   amelyel  majd`  minden  programot  kiegészíthetünk,  és
+legnagyobb  elõnyének  azt  tartom, hogy nem kell soha sem compilert használni
+hozzá, tehát azonnal végrehajthatóak az AMIGA számára az utasításai; ill.  nem
+kell  órákat  várnunk  a  fordításra.   (Ez  az ellentmondás onnan jön, hogy a
+RexxMast nélkül nem futnak le a stufákok...)¾(Nem tudom, hogy mekkora programot
+kellene  ahoz  írnod,  hogy egy Assembler órákon át fordítsa.  A másik meg az,
+hogy  míg  egy  "fordítós"  nyelvnél  csak egyetlen egyszer kell lefordítani a
+programodat  addíg  az  arexx  esetében  minden egyes programfutásnál meg kell
+várnod míg az arexx értelmezi a programot, vagyis lefordítja.  Így programjaid
+jóval  lassabban  futnak  és  minden  egyes  indításkor  értelmeznie  kell  az
+interpeternek! - JaGu.)¼
+ Tehát kezdjük az alapoknál:  A változók szabadon elnevezhetõek bárminek, és a
+megnyitásukra  sincsen  alapvetõen  szükség, mivel ha egy nem létezõ változóra
+utalunk,  akkor  annak a változónak a tartalma a saját neve lesz nagybetûkkel.
+Példának  írjuk  be  a  Shellben:  RX "Say amiga" Erre a reakció az lesz, hogy
+kapunk  egy  AMIGA  feiratot  a  következõ sorban, mivel nem adtunk értéket az
+amiga   változónak.    A  változókkal  egyébként  szabadon  garázdálkodhatunk,
+mindenféle  mûveleteket  végezhetünk  el vele, csak egyet nem szabad szem elõl
+téveszteni:   stringgel  nem  lehet  számolási mûveleteket végezni, így pl.  a
+következõ  programnak  sincsen  semmi  értelme, mivel aritmetikai hibát kapunk
+visszajelzésben:
+
+¾/* próba */
+egy="PoWeR"
+ketto=" "
+harom="magazin"
+harom=harom+1
+negy=egy+ketto+harom
+Say negy
+Exit /* vége a programnak */¼
+
+ Mint innen is kiderül, a szöveges változók megadásánál macskakörmök közé kell
+tenni  a  szöveget.   A  programban két hiba is van:  elõször is egy stringhez
+akartam  hozzáadni  számot,  másodszor  pedig három stringet akartam összeadni
+matematikailag.  Helyesen így nézne ki, kihasználva azt, hogy nem kell értéket
+adni a változóknak:
+
+½/* próba 2 */
+szam=1 
+ketto=" "
+Say power; Say ketto; Say magazin; Say szam
+Exit /* vége a programnak */¼
+
+ Ebbõl  a  példából világosan látszik, hogy az utasításokat egy sorba is lehet
+írni,  ha  azok  pontosvesszõvel vannak elválasztva egymástól.  Amennyiben egy
+változó  nevében ékezetes karaktereket, vagy különleges jelzéseket használunk,
+akkor  kaphatunk  egy  10/8-as kódu Unrecongnized token jelzést, amit az angol
+ABC  betûinek  használatával  küszöbölhetünk ki.  Gondolom mindenkinek feltûnt
+az,  hogy  a  programok  elsõ  sorában  mindíg  egy  "/*  blablabla */" jelzés
+található.   Erre azért van szükség, mivel így azonosítjuk a scriptünket ARexx
+scriptként,  ellenkezõ  esetben  kaphatunk egy olyan hibaüzenetet, amit 5/1-es
+Program  not  founddal  honorál a gép.  Persze az embernek rengeteg lehetõsége
+van mindenféle lekérdezési módok alkalmazására is.  Ezek közül a legelsõ az If
+...   Then ...  Else ciklus.  A legegyszerûbb megoldások alkalmazása általában
+a  legcélravezetõbb  egy  lekérdezésnél,  mint ahogy az alábbi példaprogram is
+mutatja:
+
+½/* próba 3 */
+If alap="KALAP" 
+   Then Say szar
+   Else Say alap
+EndIf 
+Exit /* program vége */¼
+
+ Itt  jönnek  elõ olyan dolgok, mint az EndIf.  Ennek majd csak a késõbbiekben
+lesz  jelentõsége,  amikor  már  hosszabb  ciklusokkal  foglalkozunk.  Sokszor
+elõfordulhat,  hogy  több  egymásba  ágyazott  ciklusunk  van,  és ilyenkor jó
+lezárni  a már megkezdett dolgokat, bár egy egyszerûen kihagyva azt a sort egy
+sima  Exit  is  elég  lett  volna jelen esetben. ¾ (Az EndIf nem "ciklust" zár,
+hanem  a  feltétel  vizsgálatot.   Az  IF/EndIf  páros  nem  egymásba ágyazott
+ciklusok,  hanem, egymásba ágyazott feltételvizsgálatok - JaGu)¼.Az IF-en kívül
+van  még egy lehetõség a különbözõ okosságok közötti válogatásra, ez pedig nem
+más,  mint  a  Select  utasítással fémjelzett többszörös kiválasztás, ahol már
+tetszõleges számú feltételt nézethetünk végig a géppel:
+
+½/* select */
+szam=10
+Select
+ When szam/2=5 Then Say "2-vel osztható"
+ When szam/3<4 Then Say "hehe"
+ When szam-2=8 Then Say "Naná, majd más lesz!"
+ When szam=10 Then szam=szam+1
+ Otherwise Say "Nem tudsz gépelni?"
+End
+Exit /* program vége */¼
+
+ Ennek  a  stuffnak a futtatása eredményként a "2-vel osztható" üzenetet adja,
+mivel  már  az elsõ feltétel teljesül.  Az Otherwise arra az esetre jó, hogyha
+nem  ismert számot vagy szöveget kapunk, és az nem felel meg egyik feltételnek
+sem.   A  ciklust  illik  lezárni az End utasítással, bár nem muszáj megtenni,
+hiszen  nagyon  szép  10/26-os  kódú  "Missing  or unexpected END" üzenetet is
+kaphatunk hálából.
+
+ Egyelõre   ennyi  lett  volna  az  ARexx  körüli  garázdálkodás,  de  mielõtt
+abbahagynám, bemutatom a lehetséges mûveleteket, amiket az ARexx ismer:
+
+Matematikai:
+
+½+  : összeadás
+-  : kivonás
+*  : szorzás
+/  : osztás
+%  : egy osztás egészben kifejezett eredménye
+// : két szám elosztásának maradéka
+** : hatványozás¼
+
+Logikai:
+
+¾~ : logikai nem
+& : logikai és
+| : (függõleges vonal, elvileg Shift+ a backspace melletti gomb): logikai vagy¼
+
+Összehasonlításnál:
+
+½==         : azonos egyenlõség ellenõrzése
+~==        : azonos egyenlõtlenség ellenõrzése
+=          : egyenlõség ellenõrzése
+> és <     : nagyság összehasonlítása
+>= vagy ~< : egyenlõ vagy nagyobb ellenõrzése
+<= vagy ~> : egyenlõ vagy kisebb ellenõrzése¼
+
+Ezekkel   a   mûveletekkel   lehet   nyaggatni   a   processzort,   vagy  ezek
+kombinációival.
+
+                                  ¾GOD! ¼
+
+ Nagyon nagy hasznát veheted az ARexx felhasználásakor az "AMIGA-OS 3.1 ARexx"
+c.  könyvének, ami baromi használható cuccos.

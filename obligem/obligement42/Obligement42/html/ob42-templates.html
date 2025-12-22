@@ -1,0 +1,281 @@
+<html>
+ <head>
+  <title>Les templates</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Labo&nbsp;: les templates et Argue </font>par&nbsp;<a href="mailto:david.bonnet2@freesbee.fr">David&nbsp;Bonnet</a></div><br><br><br>
+
+<font size="+1" color="#ccbb33">Qu'est-ce qu'un template&nbsp;?</font><br><br>
+
+Un template est une chaîne descriptive présentant la syntaxe d'une simple commande
+AmigaDOS ou d'un programme s'utilisant sous Shell (ou CLI). Il présente les différentes
+options de cette commande ou programme.<br>
+Les paramètres ou arguments acceptés par les différentes options du programme y sont 
+notés par des lettres, précédées d'un slash "/".<br>
+Pour mieux appréhender les différents arguments envisageables dans un template,
+considérons une commande fictive ABC. Pour obtenir son template, il vous suffit de taper 
+dans un shell "ABC&nbsp;?". Considérons que vous obtenez alors ABC opt1/A, opt2/K, opt3/M, opt4a/S,
+opt5/N, opt6/T, option7=opt7/A/N, option8=opt8/K/N, opt9/F.<br><br>
+
+     Des programmes comme Argue ou Gui4Cli utilisent les templates (sous forme de fichier 
+texte) comme fichier de base pour la création d'une interface graphique. Avant d'envisager 
+d'utiliser un de ces programmes, voyons à quels types d'arguments correspondent les lettres 
+que l'on rencontre dans les templates.<br><br>
+
+<font size="+1" color="#ccbb33">Les arguments d'un template</font><br><br>
+
+Ces arguments sont représentés par des lettres au nombre de sept (justement celles
+indiquées dans l'exemple ci-dessus)&nbsp;:<br><br>
+
+<b>/A</b>&nbsp;: pour "Always". Cela signifie qu'un argument est obligatoire avec l'option considérée.
+Si opt1 correspond à 3, on écrira donc "ABC 3".<br>
+<b>/K</b>&nbsp;: pour Key. Dans ce cas, on doit utiliser le nom de l'option avec un
+des choix proposés par le programme. Si opt2 correspond à "pluie" ou à "soleil", il faudra
+entrer soit "ABC opt2=pluie", soit "ABC opt2=soleil", et non pas "ABC pluie" ou "ABC soleil".
+Cela ne fonctionnerait pas.<br>
+<b>/M</b>&nbsp;: pour "Multiple". L'argument accepte alors plusieurs données à la fois.<br>
+<b>/S</b>&nbsp;: pour "Switch". Cet argument active l'option considérée. Dans notre exemple, si
+l'on veut activer opt4a, on écrira "ABC opt4a". S'il s'agit de opt4b dont on a besoin, on écrira
+"ABC opt4b". En l'absence d'activation, une telle option est considérée comme égale à 0.<br>
+<b>/N</b>&nbsp;: pour "Number". L'argument fournit à la commande doit alors être obligatoirement
+un nombre. Si on utilise option5 et qu'on lui donne la valeur "10", on entrera "ABC opt5=10".<br>
+<b>/T</b>&nbsp;: pour "Toggle". L'argument ne peut avoir que deux formes possibles. Soit "yes", soit
+"no", ou encore "on" ou "off". Le programme doit savoir si on active ou désactive l'option, un
+peu comme un interrupteur doit toujours être en position "ouvert" ou "fermé".<br>
+<b>/F</b>&nbsp;: pour "Final". Cet argument est le plus rare de tous. L'argument est alors 
+obligatoirement une chaîne de caractères, qui FINIT la commande. Tout ce qui suit à partir de
+cet argument est considéré comme faisant partie de la chaîne de caractères.
+C'est pourquoi il se trouve en fin de commande.<br><br>
+
+Ces arguments sont souvent combinés, comme le montre le cas de opt7, où l'on a /A/N,
+signifiant que l'argument est obligatoirement numérique. Dans notre exemple, "/K/N" signifie
+qu'on devra indiquer le nom de l'argument avec la valeur désirée. Ainsi, si opt8 correspond à
+100, on entrera soit "ABC option8=100", soit "ABC opt8=100".<br><br>
+
+Pour plus d'informations, téléchargez sur Aminet l'excellente documentation (au format 
+Amigaguide) <a href="ftp://de.aminet.net/pub/aminet/docs/help/adosbegin.lha" target="_blank">
+AmigaDos_for_beginners.lha</a>. C'est en Anglais, mais vous y trouverez quantité
+d'autres informations sur le DOS Amiga. Vous pouvez également trouver un article de Mathias
+Parnadeau sur le site <a href="http://www.gurumeditation.net" target="_blank">www.gurumeditation.net</a>.<br><br>
+
+<font size="+1" color="#ccbb33">Argue&nbsp;: petite présentation</font><br><br>
+
+Voyons maintenant une utilisation pratique des templates&nbsp;: celle qui consiste à récupérer celui d'un petit
+programme en ligne de commande (CLI), afin de lui créer une interface graphique MUI à l'aide de Argue.
+Vous pouvez trouver ce programme dans les cédés Aminet (Aminet Set 4 par exmple), car il a apparemment
+été retiré des serveurs Aminet. C'est la version 1.3 ou 1.4. Impossible de savoir
+réellement, car la version 1.4 dont je dispose semble identique à la 1.3&nbsp;: même le fichier Amigaguide est
+identique. Argue est assez ancien, et malheureusement n'est même plus développé depuis plusieurs années,
+ce qui l'empêche de tirer partie de toutes les fonctions de MUI. La page de l'auteur n'existe plus non plus.
+Néanmoins, de nombreuses petites interfaces graphiques ont été développées avec Argue afin de
+faciliter la prise en main de programmes tels que Frogger.<br>
+J'insiste néanmoins d'entrée sur le fait que les interfaces MUI générées à la volée par Argue ne sont pas 
+redimensionnables, et la position de leurs différentes composantes (boutons, champs à compléter, boutons de 
+sélectionneurs de fichiers...) est peu modifiable. Les interfaces MUI-Argue se ressemblent donc beaucoup entre 
+elles, et les différents paramètres de commandes vont se retrouver répartis au mieux sur trois onglets. Aucune 
+sous-fenêtres ne peut être générée.<br>
+Tout ça pour dire que Argue est une solution simple pour créer des interfaces MUI à de petits
+programmes, sans avoir à programmer votre interface MUI (dont certains principes ne sont pas évidents pour le 
+novice). Wget ou Ghostscript, du fait de la multitude d'arguments de ces logiciels, deviennent vite 
+ingérables avec une interface générée par Argue. De plus, il semble que Argue soit limité à un certain nombre 
+d'arguments, car lors de mes premiers essais avec Ghostscript, j'avais eu un message d'erreur m'indiquant 
+qu'il y avait trop d'arguments pour Argue.<br><br>
+
+<font size="+1" color="#ccbb33">La grammaire de Argue</font><br><br>
+
+Considérons que vous avez maintenant l'archive de Argue. Vous la désarchivez où bon semble.
+Maintenant, il vous reste à placer ARGUE dans C:.<br><br>
+
+<div align="center"
+<img src="../gfx/templates1.jpg" width="501" height="137" border="0">
+</div>
+<br><br>
+
+Ensuite, lancez votre éditeur de texte préféré et jetez un coup d'oeil aux interfaces des répertoires
+"projects" ou "examples". Vous allez constater que le fichier de toute interface Argue doit commencer
+absolument par "@NEWFASHION". La ligne suivante doit être vide.<br><br>
+
+Les commandes de Argue doivent être placées après chaque argument du template, entre crochets,
+comme cela&nbsp;: opt1/A [commande]. Dans ses versions antérieures à la 1.3, Argue utilisait des parenthèses.
+Cela fonctionne encore, mais pas avec certains programmes CLI. Donc, utilisez systématiquement les
+crochets dès maintenant. De manière à rendre plus explicite votre interface, vous pouvez aussi
+associer du texte à un argument, dans l'interface même. Pour cela, il vous faut écrire&nbsp;:
+opt1=le premier argument/A [help="c'est la première option]. Ainsi, dans l'interface apparaîtra
+le texte "le premier argument".<br><br>
+
+Avant d'aller plus loin. Il convient de souligner qu'il ne faut pas le signe apostrophe à
+l'intérieur des crochets, même entre les guillemets contenant le texte des bulles
+d'aide. Cela est source de problèmes pour Argue.<br><br>
+
+La construction de l'interface se fait via un nombre limité de commandes qui sont&nbsp;:<br><br>
+
+<b>1) Pour les popups&nbsp;:</b><br>
+- [nopopup]. Cela désactive tous les popups.<br>
+- [filepopup]. Cela permet de créer un bouton pour ouvrir un sélectionneur de fichiers de type ASL.<br>
+- [screenmodepopup]. Cela permet d'accéder à la liste des écrans disponibles. Cela est utile si un
+argument nécessite le nom d'un mode écran.<br>
+- [devicepopup]. Cela donne accès à la liste de tous les devices présents dans DEVS:, et permet d'en
+sélectionner un.<br>
+- [pubscreenmode]. Cette commande permet de sélectionner un des écrans publiques présents au lancement
+de l'interface. Cette commande est peu utilisée.<br>
+- [secretpopup]. Cela permet d'entrer dans une fenêtre popup un mot de passe sous forme cryptée (les
+caractères sont représentés par un gros point). Utile si vous avez un argument requérant une information secrète.
+- [drivepopup]. C'est similaire à [devicepopup], mais permet d'accéder à la liste des lecteurs pour en
+choisir un.<br>
+- [candidatepopup]. Cela permet de créer dans une fenêtre popup une liste prédéfinie dans laquelle
+vous sélectionnerez la proposition qui vous convient le mieux. Si vous avez une option MODEECRAN/K, et
+voulez proposer un mode à choisir dans une liste bien précise, vous pouvez alors écrire&nbsp;: MODEECRAN [can
+cc"PAL 320x256" "PAL 640x512" "VGA 640x 480" VGA "800x 600"].<br><br>
+Avec les commandes de popups, peut aussi être utilisée la commande PRESET, afin de sélectionner par 
+défaut un répertoire par exemple. Considérons la commande [filepopup preset=Work:bureautique]. Dans ce
+cas, le sélectionneur de fichier apparaîtra déjà positionné dans le répertoire "bureautique" de votre
+partition Work:<br><br>
+
+<b>2)</b> [help="le texte que vous souhaitez faire apparaître dans la bulle d'aide"]. Cela sert à créer des bulles
+d'aide MUI. Si vous souhaitez faire tenir votre commentaire sur plusieurs lignes, il vous faudra utiliser le 
+symbole circonflexe ^ juste avant le mot qui commencera la nouvelle ligne, et ainsi de suite.<br><br>
+
+<b>3)</b> [node]. Cette commande permet d'appeler le paragraphe du fichier Amigaguide que vous avez spécifié 
+avec le tooltype GUIDE (voir plus loin). Pour que cela fonctionne, il faut que vous placiez le curseur de la souris 
+au niveau de l'argument pour lequel vous désirez avoir des explications, puis que vous pressiez la touche HELP.<br><br>
+
+<b>4)</b> Lorsque vous devez choisir une option parmi plusieurs arguments à activer (donc des arguments suivis
+de /S), il est possible de créer un bouton de cycle. Pour cela, créez un nouvel argument inexistant dans le
+template du programme CLI, suivi d'un /C (pour Choice). Imaginons que vous devez choisir entre l'option "BLANC/S"
+et son contraire "NOIR/S". Pour créer un bouton de cycle permettant de choisir entre ces deux options, il vous
+faudra créer un argument COULEUR/C. Le tout donnant COULEUR/C ["BLANC/S" "NOIR/S"].<br><br>
+
+Notez bien ici que /C est spécifique à la création de bouton cycle sous Argue et ne correspond pas à un nouvel
+argument des options d'un template.<br><br>
+
+<b>5)</b> [on], à la suite d'un argument /S, permet de créer une case à cocher, qui sera pré-cochée.<br><br>
+
+<b>6)</b> [min=n default=n max=n]. Ces trois commandes permettent respectivement d'attribuer à un
+argument /N, une valeur minimale, une valeur par défaut et une valeur maximale.<br><br>
+
+<b>7)</b> Enfin, vous pouvez proposer un choix précis et actualisable (à la différence des sélectionneurs
+prédéfinis par "candidatepopup" ou des boutons cycles) pour les options à choix multiples (/M). Pour cela,
+si vous avez une option FILE/M, acceptant plusieurs choix en même temps au sein d'une liste de fichiers
+situés tous dans "Work:Musique", vous devez écrire&nbsp;: FILE/M [DOSGATE=LIST >T:listedemorceaux Work:Musique PAT=(?#.mp3|?#.wav)
+GATEFILE="T:listedemorceaux" MULTI PREFIX="Work:Musique"].<br><br>
+
+Où&nbsp;:<br>
+- LIST est la commande DOS LIST (tous ces arguments sont bien sûr ajoutables).<br>
+LIST>T:listedemorceaux crée dans T: le fichierdemorceaux à partir des éléments présents dans Work:Musique.<br>
+- PAT (pour PATTERN) permet de prendre les fichiers correspondant uniquement aux extensions indiquées.<br>
+- GATEFILE récupère le fichier créé par la commande LIST (dans T:).<br>
+- MULTI permet la sélection multiple de fichiers (par défaut).<br>
+- PREFIX permet de passer comme argument le chemin complet des fichiers au programme CLI.<br><br>
+
+<font size="+1" color="#ccbb33">Mise en pratique</font><br><br>
+
+Pour finir, je vous livre le "code" de mon interface pour la commande Wrap. Récupérez sur Aminet le
+programme <a href="ftp://de.aminet.net/pub/aminet/util/cli/wrap.lha" target="_blank">Wrap</a>.
+Nous allons lui construire une interface avec Argue. Comme tout programme CLI, vous devez le placer dans C:.
+Maintenant, ouvrez un shell et tapez "wrap&nbsp;? >RAM:WrapGUI". Vous obtenez le template de Wrap dans 
+RAM: sous le nom WrapGUI. Sauvez-le sur votre disque dur.<br><br>
+
+Il doit se présente ainsi&nbsp;:<br><br>
+
+FILE/A, NEWFILE, L=LENTGH/K/N, TAB/K/N, P=PARA/K/N, STRIPCR/S, ADDCR/S<br><br>
+
+Maintenant, avec un éditeur de texte (Peditor, EditPad...), ouvrez le fichier nommé WRAPGUI.
+Voici le code source de l'interface&nbsp;:<br><br>
+
+<TABLE WIDTH="100%" BGCOLOR="#C0C0C0"><TR><TD>
+<font color="#000000">
+
+@NEWFASHION<br><br>
+
+FILE/A            [filepopup]<br>
+NEWFILE            [filepopup]<br>
+L=LENGTH/K/N    [help="Nombre de caractères par ligne. Maximum=1000; recommandé=80."]<br>
+TAB/K/N            [help="Indique le nombre d'espaces devant^remplacer chaque tabulation rencontrée.^La valeur 0 efface toutes les tabulations.^Maximum=80."]<br>
+P=PARA/K/N        [help="Permet de créer des paragraphes composés de lignes^séparées de N Retour(s) Chariot(s) dans le document original.^Maximum=30."]<br>
+STRIPCR/S        [help="Permet de retirer les Retours Chariots dans les fichiers PC."]<br>
+ADDCR/S            [help="Permet d'ajouter les Retours Chariots après chaque nouvelle ligne.^Combiné avec StripCR, cette option permet de reformater un fichier^texte tout en conservant le format PC."]<br>
+
+</font>
+</td></tr></table>
+<br>
+
+Une fois ce fichier enregistré sous le nom WrapGUI, il vous faut impérativement lui attribuer une icône.
+Pour finir, éditez les tooltypes de l'icône attribuée. S'il y en a déjà, retirez-les. Vous devez désormais 
+entrer les tooltypes suivants&nbsp;:<br><br>
+
+<div align="center"
+<img src="../gfx/templates2.jpg" width="430" height="166" border="0">
+</div>
+<br><br>
+
+COMMAND=C:WRAP&nbsp;: cela indique à Argue quel programme CLI appeler.<br>
+TITLE=WRAP&nbsp;: indique le titre de la fenêtre.<br>
+WINDOW_ID=WRAPGUI&nbsp;: indique un identifiant spécifique à l'interface créée afin de pouvoir sauver
+les préférences.<br>
+REQUIRES=13&nbsp;: indique quelle version de Argue est requise. Ici, c'est la 1.3.<br><br>
+
+Une fois tout cela fini, vous devriez obtenir le résultat suivant quand vous cliquez sur l'icône de 
+l'interface&nbsp;:<br><br>
+
+<div align="center"
+<img src="../gfx/templates3.jpg" width="306" height="299" border="0">
+</div>
+<br><br>
+
+Vous pouvez également ajouter le tooltype USEKNOBS, qui permet de remplacer les glissières des
+arguments numériques par des potentiomètres. Pour les programmes CLI issus du monde UNIX (comme WGET,
+par exemple), vous devez ajouter le tooltype UNIX, afin que les arguments qui sont dans ce cas tous
+précédés d'un trait d'union "-", puissent être gérés par Argue.<br>
+Il y a aussi moyen de lier l'interface à un fichier Amigaguide particulier, par l'intermédiaire du tooltype 
+"GUIDE=nom du fichier amigaguide". Placez ce dernier dans le même répertoire que l'interface. Ce fichier sera
+appelé à chaque fois qu'une commande [node] fait référence à un des ses paragraphes.
+Enfin, si votre interface est très grande, vous pouvez la répartir sur trois onglets, grâce au tooltype
+PAGEGROUP. D'autres tooltypes existent. Nous avons vu là les plus courants. Les autres vous seront utiles
+pour des besoins bien précis.<br><br>
+
+Je vous ai donné ici les bases de Argue. A vous maintenant d'explorer les possibilités qu'il offre.
+Si besoin, vous pouvez me contacter à <a href="mailto:david.bonnet2@freesbee.fr">david.bonnet2@freesbee.fr</a>
+ou <a href="mailto:GEO.amiga@ifrance.com">GEO.amiga@ifrance.com</a>.<br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

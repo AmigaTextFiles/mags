@@ -1,0 +1,297 @@
+2
+1
+2 Numeropeli.IFF 0 0
+3 Pelipuu.IFF 0 0*
+
+{3                             Pelipuuta ilman muuta
+{3                             ---------------------
+ 
+                                 Petri Keckman
+ 
+ 
+Nyt on hyv‰ peli! ƒlk‰‰ j‰tt‰kˆ sit‰ kokeilematta aikaisempien kokemustenne  pe-
+rusteella "peleist‰ni".
+ 
+Yli kymmenen vuoden tauon j‰lkeen p‰‰tin ryhty‰  k‰ytt‰m‰‰n  Pascal-ohjelmointi-
+kielt‰. Voi miksi olen yritt‰nytk‰‰n koskaan k‰ytt‰‰ mit‰‰n muuta? Se on Amigal-
+la helppoa ja halpaa PCQ-freeware-k‰‰nt‰j‰ll‰ - sen j‰lkeen kun systeemin  saan-
+nut asetettua ja sit‰ on oppinut k‰ytt‰m‰‰n... tai no jaa, melkoista  pilkunvii-
+lausta se ohjelmointi aina on.
+ 
+Pascal oli hallitseva opetuskieli  yliopistomaailmassa  70-  ja  viel‰  pitk‰lti
+80-luvulla. Pascalin syntaksissa kaikki muuttujat ja tyypit on esitelt‰v‰ lohko-
+jen (ts. ohjelmien tai aliohjelmien) alussa, mik‰ aluksi saattaa  tuntua  hanka-
+lalta mutta kuitenkin helpottaa ohjelmointia ja  karsii  huolimattomuusvirheit‰,
+kun ne eiv‰t mene edes k‰‰nt‰j‰st‰ l‰pi...  tai  niiden  ei  pit‰isi;  vaikuttaa
+silt‰, ett‰ esimerkiksi Integer- ja Real-tyyppisi‰ muuttujia saa PCQ:ssa k‰ytt‰‰
+samoissa lausekkeissa, jolloin saattaa tulla virheit‰, kun Real-luvun  tallennus
+tulkitaan Integeriksi.
+ 
+Pascal suosii - ellei per‰ti vaadi - rakenteellista ohjelmointia,  jossa  ohjel-
+moitava ongelma on jaettu selkeisiin aliohjelmiin.  Se  muistuttaa  paljolti  C-
+kielt‰. Kuten yleens‰kin ohjelmointikielill‰, sill‰kin voi tehd‰ tietysti vaikka
+mit‰. Eroja on l‰hinn‰ syntaksin pilkkus‰‰nnˆiss‰.
+ 
+Sill‰ on tullut suoritettua perus- ja aineopintojen labroja - suoritettua,  mut-
+tei palautettua. Olin niin kypsynyt yliopiston  arvomaailmaan,  jossa  t‰rkeint‰
+oli ker‰t‰ suorituspisteit‰ kopioimalla laskuharjoituksia,  ett‰  menin  toiseen
+‰‰rimm‰isyyteen: opiskelin omaksi huvikseni ja tiedokseni ja j‰tin  merkkaamatta
+laskuharjoitukset ja palauttamatta labrat. Helvetti‰kˆ minun  ohjelmointiharras-
+tukseni muille kuului?
+ 
+Ohjelmat-hakemistosta lˆytyv‰n numeropeli-ohjelman er‰s  versio  tuli  kuitenkin
+aikoinaan palautettua "Tietorakenteet"-kurssiin kuuluvana harjoitustyˆn‰, joskus
+vuonna 1987, silloin kun viel‰ uskalsin  kuvitella  osaavani  ohjelmoida.  Siin‰
+harjoiteltiin pelipuun k‰sittely‰. Pelipuu on  tietorakenne,  johon  rakennetaan
+kustakin pelitilanteesta vaihtoehtoiset jatkotilanteet ja valitaan paras mahdol-
+linen siirto. Pelilaudan tilannetta kuvaa arvofunktio, joka on  pelipuun  solmun
+arvo. Koko pelilaudan tilannetta ei siis tallenneta solmun  arvoksi,  vaan  vain
+arvofunktion arvo. Pelipuuta rakennettaessa t‰ytyy  pelilaudan  tilannekin  olla
+kuitenkin selvill‰, jotta sit‰ p‰‰st‰‰n rakentamaan. Siksi pelipuun solmuun tal-
+lennetaan myˆs tehdyn siirron sarake- tai rivi-indeksi.
+ 
+Numeropelin idea on yksinkertainen: pelaajat  nostavat  vuorotellen  numeroituja
+laattoja, toinen rivitt‰in, silt‰ rivilt‰, jolta toinen (sarakkeittain  pelaava)
+oli poistanut laatan. Viimeksi poistetun laatan paikalle siirret‰‰n t‰htilaatta.
+Laattojen numerot lasketaan yhteen. Suuremman summan ker‰nnyt on  voittanut  ti-
+lanteessa, jossa vuorossa oleva ei p‰‰se en‰‰ jatkamaan, kun laatat ovat  loppu-
+neet. T‰h‰n peliin liittyv‰ pelitilannetta kuvaava arvofunktio, jonka pelipuual-
+goritmi tarvitsee, on siis ‰‰rimm‰isen yksinkertainen: ker‰ttyjen laattojen sum-
+masta v‰hennet‰‰n vastustajan ker‰‰mien laattojen summa.
+ 
+
+
+{D                                                                     ---------->
+
+{1                                              Algoritmi on ajanut pelaajan tuka-
+{1                                              laan asemaan ja johtaa 40-27.  Pe-
+{1                                              laajalla nostettavina laatat  -11,
+{1                                              -12 tai -11.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{1                                                                     ---------->
+
+{1                                                Pelipuun yksi haara kolme  siir-
+{1                                                toa eteenp‰in. Algoritmissa tal-
+{1                                                lennusmuoto on pinotetut jonot.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{1                                                                     ---------->
+Alkuper‰inen  versio  kaukaisilta  opiskeluajoiltani  tulosti   merkkigrafiikkaa
+k‰skyrivi-ikkunaan, josta alla huvin vuoksi esimerkkiajon alkua ja loppua.  Kone
+aloitti poistamalla t‰ydelt‰ pelilaudalta laatan rivilt‰ 3 sarakkeelta 2.
+
+8.H1:OHJELMOINTI/pcq12d> omat/numeropeli
+
+*************************************************************
+*   JOS HALUAT MUUTTAA JONKIN ALLAOLEVAN ASETUKSEN ARVOA,   *
+*   NIIN SYOTA VASTAAVA NUMERO 1..7.                        *
+*************************************************************
+    1. KONE ALOITTAA.
+    2. KONE PELAA SARAKKEITTAIN.
+    3. OHJELMA ARPOO LAATOILLE PAIKAT JA ARVOT 
+    4. LAATTOJEN PIENIN ARVO = -8
+    5. LAATTOJEN MAKSIMI ARVO = 8
+    6. OHJELMA TUTKII 6 SIIRTOA ETEENPAIN.
+    7. KONE PELAA KAYTTAJAA VASTAAN.
+
+       JOS HALUAT MUUTTAA PELIKENTAN KOKOA 4x4,
+       NIIN MUUTA OHJELMASTA VAKION maxind ARVOA.
+
+*************************************************************
+*   SYOTA 8 KUN HALUAT LOPETTAA KOKO OHJELMAN TAI           *
+*   SYOTA 0 KUN OLET VALMIS PELAAMAAN.                      *
+*************************************************************
+    0. ALETAAN PELAAMAAN.
+    8. LOPETETAAN PELAAMINEN.
+
+SYOTA LUKU 0..8   ? 
+0
+ SARAKE=1   2   3   4
+RIVI  ::::::::::::::::: PELITILANNE:
+  1   :  1: -1:  7:  4: KONE  =0
+      ::::::::::::::::: PELAAJA=0
+  2   : -1: -8: -5:  1:
+      :::::::::::::::::
+  3   :  0:  7:  6: -7:
+      :::::::::::::::::
+  4   : -8: -1:  0:  4:
+      :::::::::::::::::
+
+
+ SARAKE=1   2   3   4
+RIVI  ::::::::::::::::: PELITILANNE:
+  1   :  1: -1:  7:  4: KONE  =7
+      ::::::::::::::::: PELAAJA=0
+  2   : -1: -8: -5:  1:
+      :::::::::::::::::
+  3   :  0: * :  6: -7:
+      :::::::::::::::::
+  4   : -8: -1:  0:  4:
+      :::::::::::::::::
+
+SYOTA POISTETTAVAN LAATAN SARAKEINDEKSI VALILTA 1..4: 
+3
+
+
+
+
+
+ SARAKE=1   2   3   4
+RIVI  ::::::::::::::::: PELITILANNE:
+  1   :  1: -1:  7:  4: KONE  =7
+      ::::::::::::::::: PELAAJA=6
+  2   : -1: -8: -5:  1:
+      :::::::::::::::::
+  3   :  0:   : * : -7:
+      :::::::::::::::::
+  4   : -8: -1:  0:  4:
+      :::::::::::::::::
+
+
+ SARAKE=1   2   3   4
+RIVI  ::::::::::::::::: PELITILANNE:
+  1   :  1: -1: * :  4: KONE  =14
+      ::::::::::::::::: PELAAJA=6
+  2   : -1: -8: -5:  1:
+      :::::::::::::::::
+  3   :  0:   :   : -7:
+      :::::::::::::::::
+  4   : -8: -1:  0:  4:
+      :::::::::::::::::
+
+SYOTA POISTETTAVAN LAATAN SARAKEINDEKSI VALILTA 1..4: 
+4
+
+..jne. jne...
+
+
+
+ SARAKE=1   2   3   4
+RIVI  ::::::::::::::::: PELITILANNE:
+  1   :  1: -1:   :   : KONE  =13
+      ::::::::::::::::: PELAAJA=-14
+  2   :   :   :   :   :
+      :::::::::::::::::
+  3   :   :   :   :   :
+      :::::::::::::::::
+  4   : * :   :   :   :
+      :::::::::::::::::
+
+
+ SARAKE=1   2   3   4
+RIVI  ::::::::::::::::: PELITILANNE:
+  1   : * : -1:   :   : KONE  =14
+      ::::::::::::::::: PELAAJA=-14
+  2   :   :   :   :   :
+      :::::::::::::::::
+  3   :   :   :   :   :
+      :::::::::::::::::
+  4   :   :   :   :   :
+      :::::::::::::::::
+
+SYOTA POISTETTAVAN LAATAN SARAKEINDEKSI VALILTA 1..4: 
+2
+
+
+
+
+
+ SARAKE=1   2   3   4
+RIVI  ::::::::::::::::: PELITILANNE:
+  1   :   : * :   :   : KONE  =14
+      ::::::::::::::::: PELAAJA=-15
+  2   :   :   :   :   :
+      :::::::::::::::::
+  3   :   :   :   :   :
+      :::::::::::::::::
+  4   :   :   :   :   :
+      :::::::::::::::::
+
+KONE EI VOI TEHDA ENAA SIIRTOA.
+HAVISIT TALLA KERTAA.
+ 
+Vaikka peli on yksinkertainen - tai juuri sen takia - on se ihmiselle  kuitenkin
+sen verran vaikeaa, etten ole Amigaani kertaakaan voittanut v‰h‰nk‰‰n  isommilla
+vaikeustasoilla. Tosin en jaksakaan yleens‰ mietti‰ kuin korkeintaan kaksi siir-
+toa eteenp‰in - yleens‰ n‰p‰yt‰n hiirell‰ sit‰ rivin suurinta laattaa.
+ 
+Kuinka kone sitten tarkemmin ottaen tekee siirtonsa? Samalla tavalla kuin  ihmi-
+nen yritt‰‰ mietti‰: jos nostan tuon laatan, niin se nostaa tuon laatan, jolloin
+minun on nostettava jokin noista, jolloin kone p‰‰see kuitenkin  nostamaan  tuon
+laatan jne...
+ 
+Pelipuuhun rakennetaan osoitinmuuttujilla solmut ja linkit tietty m‰‰r‰ siirtoja
+eteenp‰in. Solmun arvona on siis arvofunktion arvo (=KONE-PELAAJA). Jos pelilau-
+dan koko on vaikkapa 10x10 ruudukko, nousee solmujen m‰‰r‰ ‰kki‰ melko suureksi.
+Kuusi tasoa eteenp‰in tutkittaessa lukum‰‰r‰ l‰hestyy miljoonaa.  T‰st‰  johtuen
+ei algoritmissa suinkaan rakenneta koko puuta, vaan yksi haara  kerrallaan,  eli
+solmuja tarvitaan vain kuusi kerrallaan. Tilantarve on siis kokoluokkaa 6x  sol-
+mun koko, mutta koska kaikki solmut k‰yd‰‰n l‰pi,  on  ajan  tarve  maksimissaan
+(ts. pelin alussa) luokkaa 10^6 (lopussa l‰henee ykkˆst‰, kun  siirtoja  ei  voi
+en‰‰ tehd‰).
+ 
+Mit‰ sitten, kun pelipuu on saatu rakennettua? (Pee-lipuu on raa-ken-nettu, pee-
+lii on joo ovella, nuumeeria riipustettu ompi laudan ruuduille -  ei  kun  joulu
+meni jo?) Kuinka Amiga valitsee siirtonsa?  Olisiko  houkuttelevinta  valita  se
+siirto, jota pitkin p‰‰see alimman tason solmuun,  jossa  arvofunktion  arvo  on
+suurin? Ei, sill‰ koneella on vastassa ‰lyk‰s ihminen, joka myˆs haluaisi p‰‰st‰
+solmuun, jossa arvofunktion arvo on pelaajalle edullisin.
+ 
+Algoritmi purkaa pelipuuta alhaalta ylˆsp‰in ja nostaa  alemmalta  tasolta  par-
+haimman siirron ylemm‰lle tasolle. Se on siis vuorotellen arvofunktion suurin ja
+pienin arvo, koska joka toisen siirron tekee kone ja joka toisen ihminen. Lopul-
+ta kone valitsee sen siirron, jota kuvaavaan solmuun on nostettu suurin arvo.
+ 
+Vaikka alkuper‰isess‰ versiossa oli suurin osa  muuttujista  ohjelman  ajoaikana
+muutettavissa, ei t‰ss‰ Amiga-versiossa p‰‰se niit‰ muuttamaan. Pelilaudan  koko
+pysyy siis 6x6:ssa ja tasoja tutkitaan kahdeksan eteenp‰in. En ole viel‰  oikein
+saanut rakenneltua gadtools-juttuja... Muuten ohjelma moniajaa n‰tisti. On siin‰
+valikotkin. Ja ennen kaikkea ikkunan kokoa voi vapaasti muuttaa ajon aikana.
+ 
+Kirjoittajan kotisivu lˆytyy osoitteesta http://www.mbnet.fi/~keckman.

@@ -1,0 +1,171 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>AMIGA TIMES 01/98 - Workshops</title>
+<base target="main">
+</head>
+
+<body background="../images/bg.gif" bgcolor="#C0C0C0"
+text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000"
+bgproperties="fixed">
+
+<h1>Assemblerkurs - Teil 3</h1>
+
+<p>(c) 1998 by Enrico Bauermeister</p>
+
+<pre>;Datei       : listing13.asm
+;Beschreibung: Ein Sprite wird angezeigt.
+;Autor       : Enrico Bauermeister
+;Datum       : 12.02.1998
+;Assembler   : TFA AsmOne v1.30
+;========================================
+
+;Interrupts sperren - Betriebssystem ausschalten
+;-----------------------------------------------
+ move.w   #$4000,$dff09a
+
+;Bitplanepointer in Copperliste eintragen
+;----------------------------------------
+ move.l   #bitplane,d0
+ lea      bitplanepointer,a1
+ move.w   d0,6(a1)
+ swap     d0
+ move.w   d0,2(a1)
+
+;Spritepointer in Copperliste eintragen
+;--------------------------------------
+ move.l   #sprite,d0
+ lea      spritepointer,a1
+ move.w   d0,6(a1)
+ swap     d0
+ move.w   d0,2(a1)
+
+;Copperliste aktivieren
+;----------------------
+ move.l   #Copperliste,$dff084
+
+;Warten auf Rasterstrahl (eine 1/50 Sekunde)
+;-------------------------------------------
+wait:
+ move.l   $dff004,d0
+ and.l    #$fff00,d0
+ cmp.l    #$00003000,d0
+ bne.s    wait
+
+;Linke Maustaste gedrückt ?
+;--------------------------
+ btst     #6,$bfe001
+ bne.s    wait
+
+;Interrupts wieder erlauben
+;--------------------------
+ move.w   #$c000,$dff09a
+
+;Programmende
+;------------
+ moveq    #0,d0
+ rts
+
+;Copperliste definieren
+;----------------------
+ SECTION Cl,CODE_C
+Copperliste:
+ dc.w     $008e,$2c81  ;DIWSTRT
+ dc.w     $0090,$2cc1  ;DIWSTOP
+ dc.w     $0092,$0038  ;DDFSTRT
+ dc.w     $0094,$00d0  ;DDFSTOP
+ dc.w     $0100,$1200  ;BPLCON0
+ dc.w     $0108,$0000  ;BPL1MOD
+ dc.w     $010a,$0000  ;BPL2MOD
+bitplanepointer:
+ dc.w     $00e0,$0000  ;BPL1PTH
+ dc.w     $00e2,$0000  ;BPL1PTL
+spritepointer:
+ dc.w     $0120,$0000  ;SPR0PTH
+ dc.w     $0122,$0000  ;SPR0PTL
+ dc.w     $0124,$0000  ;SPR1PTH
+ dc.w     $0126,$0000  ;SPR1PTL
+ dc.w     $0128,$0000  ;SPR2PTH
+ dc.w     $012a,$0000  ;SPR2PTL
+ dc.w     $012c,$0000  ;SPR3PTH
+ dc.w     $012e,$0000  ;SPR3PTL
+ dc.w     $0130,$0000  ;SPR4PTH
+ dc.w     $0132,$0000  ;SPR4PTL
+ dc.w     $0134,$0000  ;SPR5PTH
+ dc.w     $0136,$0000  ;SPR5PTL
+ dc.w     $0138,$0000  ;SPR6PTH
+ dc.w     $013a,$0000  ;SPR6PTL
+ dc.w     $013c,$0000  ;SPR7PTH
+ dc.w     $013e,$0000  ;SPR7PTL
+ dc.w     $0180,$0000  ;COLOR00
+ dc.w     $0182,$0000  ;COLOR01
+ dc.w     $0102,$0000  ;COLOR16
+ dc.w     $01a2,$0fed  ;COLOR17
+ dc.w     $01a4,$0fa0  ;COLOR18
+ dc.w     $01a6,$0820  ;COLOR19
+ dc.w     $ffff,$fffe  ;Ende der Copperliste
+
+;Spritedefinition
+;----------------
+sprite:
+;
+;Sprite hat eine Höhe von 15 Punkten
+;
+ dc.b     $64  ;VSTART - von $2c bis $f2
+ dc.b     $87  ;HSTART - von $40 bis $d8
+ dc.b     $73  ;VSTOP  - $64+15=$73
+ dc.b     $00  ;control bits
+;
+;Spritedaten aus ArtPRO
+;
+ dc.w     $0820,$0FE0
+ dc.w     $2FC8,$3038
+ dc.w     $5304,$609C
+ dc.w     $2C60,$410C
+ dc.w     $E822,$810E
+ dc.w     $6820,$810E
+ dc.w     $6000,$939E
+ dc.w     $6000,$9FFE
+ dc.w     $4000,$AFEE
+ dc.w     $4000,$B39E
+ dc.w     $C002,$B83E
+ dc.w     $0000,$7C7C
+ dc.w     $4004,$7FFC
+ dc.w     $2008,$3FF8
+ dc.w     $0830,$0FF0
+ dc.w     $0000,$0000  ;Ende des Sprites
+
+;Bitplane definieren
+;-------------------
+ SECTION ZielBitplane,BSS_C
+bitplane:
+ ds.b     40*256
+
+ END
+
+In diesem Listing wird das Sprite &quot;sprite.iff&quot; angezeigt. Für eigene
+Sprites brauch ihr nur die Spritedaten austauschen, und VSTOP korrigieren
+(wegen der Höhe des Sprites). Die Farben müßt ihr dann auch ändern.
+Achtet aber dadrauf, daß ihr die Farben für die Sprites ab COLOR16 setzt,
+und nicht ab COLOR00.                                      </pre>
+
+<p align="right"><em>-eb-</em></p>
+
+<table border="0" width="100%">
+    <tr>
+        <td align="center"><a href="wshop01.htm#marke4"
+        target="main"><img src="../images/back2.gif"
+        alt="Zurück" align="left" border="0" hspace="0"
+        width="32" height="32"></a></td>
+        <td align="right"><a><img src="../images/next1.gif"
+        alt="Weiter" align="right" hspace="0" width="32"
+        height="32"></a></td>
+    </tr>
+</table>
+
+<hr>
+</body>
+</html>

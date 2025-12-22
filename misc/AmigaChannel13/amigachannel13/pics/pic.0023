@@ -1,0 +1,75 @@
+;      .:::::.
+;     ¦:::·:::¦    /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\
+;     |· - - ·|   |         _____                                   jmorata@kaos.es |
+;    C|  O p  l)  |        /____/                        _                          |
+;    / _ ( ) _ \  |       //         _____    _   _    _/_\_    _____   _____  _/\_ |
+;    \_\_____/_/  |       \\____    / ___ \  //   \\  ///_\\\  /____/  /____/   \/  |
+;     l_\___/_!   |        \____\   \\   //  \\   //  \\___//  \\      \\           |
+;      `-----'    | /           \\  //   \\  //   \\  / ___/   //      / \___       |
+;         |       |/             \\ \\   //  \\   //  \ \ \\   \\      \ /          |
+;       ~~~~~\    /          ____// //___\\  / \_/ \  / / //   //____  //____       |
+;     | |   | \__/| |||||||||____/  \_____/  \_____/  \/  \\   \____/  \____/       |
+;     | |   |   / |                                                                 |
+;     | |   |      \_______________________________________________________________/
+;     | |   |
+;     ^
+
+
+                            ; ********************
+                            ; Install_MCP $VER:1.2
+                            ; ********************
+
+
+failat 10
+stack 10000
+
+if `RequestChoice "Instalar el MCP --- © 1998 J.Morata" "Este Script copiará los ficheros necesarios*Nen su partición SYS: para poder usar el MCP.*NAdemás permite updatar nuevas versiones de éste." "Instalar / Updatar" "No instalar MCP"` EQ "0"
+     quit
+endif
+
+set archive `RequestFile title="Donde esta el MCP13xBx.LHA ?" noicons`
+if $archive EQ ""
+     quit
+endif
+
+if exists c:lzx
+     lzx >nil: x "$archive" ram:
+else
+     if exists c:lha
+          lha >nil: x "$archive" ram:
+     endif
+endif
+cd >nil: ram:mcp
+
+if not exists sys:Locale/Help/english
+     makedir >nil: sys:Locale/Help/english
+endif
+
+failat 21
+copy >nil: Docs/MCP_eng.guide sys:Locale/Help/english/MCP.guide
+copy >nil: Docs/MCP-History.guide sys:Locale/Help/english
+copy >nil: EnvArc sys:Prefs/Env-Archive all
+copy >nil: Libs sys:Libs
+copy >nil: Locale/esp#? sys:Locale/Catalogs all
+copy >nil: s/MCP.gurudat sys:s
+copy >nil: Tools sys:c
+failat 10
+
+copy >nil: Prefs sys:Prefs
+cpu >cpu_type
+search >nil: cpu_type 68000
+if not warn
+     copy >nil: MCP sys:c
+else
+     copy >nil: MCP020 sys:c/MCP
+endif
+
+cd ram:
+failat 21
+delete >nil: mcp#? impo#? all
+
+run >nil: ed sys:s/StartUp-Sequence
+
+failat 10
+RequestChoice >nil: "Instalar el MCP --- © 1998 J.Morata" "Instalación finalizada con éxito !!*NPor favor siga las instrucciones del*Ntutorial para un correcto uso !" "Continuar"
+quit

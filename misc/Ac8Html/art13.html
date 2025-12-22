@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!-- Converted on 02 Aug 1997 with RexxDoesAmigaGuide2HTML 2.1 by Michael Ranner. -->
+<HTML>
+<HEAD>
+<TITLE>SINCRONIZACION DE UN CD DE AUDIO CON EL SCALAmm400.</TITLE>
+</HEAD>
+<BODY BACKGROUND="images/amiga.gif" BGCOLOR="#FFFFFF">
+
+<A HREF="main.html"><IMG SRC="images/content.gif" ALT="[Contents]" BORDER="0"></A> 
+<IMG SRC="images/dindex.gif" ALT="[Index]">
+<IMG SRC="images/dhelp.gif" ALT="[Help]">
+<A HREF="art12.html"><IMG SRC="images/prev.gif" ALT="[Browse &lt;]" BORDER="0"></A> 
+<A HREF="art14.html"><IMG SRC="images/next.gif" ALT="[Browse &gt;]" BORDER="0"></A> 
+<HR><PRE><FONT SIZE="+1">
+
+  SINCRONIZACION DE UN CD DE AUDIO CON EL SCALAmm400:      Por: ElEcTrA
+ -----------------------------------------------------
+
+**INTRODUCCION**
+
+  Para  esas  personas  que  se  dedican  como  yo  a montajes de vídeo y a
+realizar  presentaciones  multimedia  con  el  fantástico ScalaMM400, voy a
+proponer  aquí  una  aplicación  más  que funciona vía Arexx, y que permite
+playear  un  CD  de  audio para añadir una determinada pista de audio a una
+presentación.
+
+  Este  sistema  es  muy  útil,  ya  que te reproduce mediante el CD-Rom la
+canción que elijas de tu CD preferido, y a parte puedes añadir a esto algún
+tipo de complemento sonoro o efectos con samples o módulos reproducidos por
+el propio Amiga.
+
+
+**ELABORACION DEL SCRIPT AREXX**
+
+  Dicho  esto  vayamos  directamente  al asunto.  Como todos sabréis, en el
+ScalaMM  podéis  dotar a los 'Scripts' de diversas propiedades como son las
+cortinillas,  los tiempos, los sonidos, parámetros de tipo Arexx...  A este
+último  tipo de datos me voy a referir.  Con los scripts (aquí sub-scripts)
+Arexx  puedes  gobernar  órdenes externas al Scala para el control de otros
+programas  que  estén  en  ese  momento cargados o en funcionamiento.  Y el
+ejemplo  que  aquí  nos  ocupa  controlará  el  reproductor de Compact Disc
+'YACDPlay'.   Por tanto, para probar esta aplicación debéis tener instalado
+este programa, que lo podéis encontrar en el CD-Rom Amiga.Info-1.
+
+  Con  este programa vienen una serie de scripts Arexx para controlarlo por
+otros elementos externos al mismo. En nuestro caso, va a ser el ScalaMM.
+
+  Primero  debemos  elaborar el script Arexx que se pondrá en el Scala para
+hacer que el YACDPlay reproduzca la canción que queramos.
+  Para  no  complicarle la vida a nadie voy a poner el script tal y como lo
+debéis  poner.   De este modo, lo único que debeis hacer es cortar y copiar
+este  texto  y  salvarlo  como 'CDplay-1.AREXX'.  Tras esto lo meteis en el
+directorio SYS:Arexx.
+  Es  IMPORTANTE decir que este es el script para reproducir la pista 1 del
+CD  que  tengáis  metido en el CD-Rom.  Debeis por tanto clonar este script
+unas cuantas veces y hacer en cada uno de ellos los cambios necesarios para
+reproducir  las  pistas 2, 3, 4...  y así hasta la 20 (a no ser que tengáis
+que reproducir pistas más altas). Aquí os indicaré los cambios a realizar.
+
+
+ ___(Se supone que esto son tijeras)
+|
+
+8><----------------------------C-O-R-T-A-R-----------------------------><8
+
+/* $VER: 1.2 © 1994 by Frank Würkner.                                    */
+
+SIGNAL ON SYNTAX                            /* Chequea sintáxis          */
+SIGNAL ON ERROR                             /* Chequea si hay error      */
+OPTIONS FAILAT 6                            /* Ignora alarmas            */
+ADDRESS 'YACDP'                             /* Envío al YACDP            */
+
+/* ------------------------ BEGIN OF YOUR CODE -----------------------   */
+
+'GETVAR STATUS'
+
+if (STATUS < 3) then                        /* Sale si no hay CD Audio   */
+do
+  'REQUESTER DUMMY "ERROR DE AREXX" "PON UN CD DE AUDIO DENTRO" "OK"'
+  EXIT
+end
+
+PLAYTRACK 1        /*  <-- Esto se cambia según la pista a reproducir.   */
+
+
+/* ------------------------- END OF YOUR CODE ------------------------   */
+EXIT
+
+SYNTAX:
+SAY "AREXX error at line" SIGL ":" ERRORTEXT(RC)
+EXIT
+
+ERROR:
+SAY "YACDP error at line" SIGL ":" ERR
+EXIT
+
+8><----------------------------C-O-R-T-A-R-----------------------------><8
+
+
+
+  Bueno,  pues  este  es el código del script Arexx.  Como veis, el comando
+PLAYTRACK  x sirve para decirle al YACDPlay qué pista debe reproducir.  Por
+tanto,  en cada copia de este script que hagáis debeis cambiar el número de
+pista    y   renombrar   el   archivo   resultante   como   CDplay-2.AREXX,
+CDplay-3.AREXX... etc.
+
+
+**ELABORACION DEL SCRIPT EN EL SCALAmm400**
+
+  Una  vez  hecho el script y debidamente guardado nos vamos al ScalaMM400.
+En  el  menú  principal tenemos los distintos parámetros de cada página, de
+izquierda  a  derecha.  Son el número de página (No), el nombre (Pagename),
+la  cortinilla  (Wipe),  la duración (Pause), los efectos de audio o música
+(Sound),  los  ejecutables  (Execute), los modos de Genlock (Genlock) y las
+variables  (Variables).   Algunos de ellos podrían permanecer ocultos, pero
+eso  se  soluciona  reconfigurando  los  tamaños de cada área; para ello se
+pulsa  el  ratón  señalando  entre  medio  de  dos  áreas (salen dos líneas
+amarillas  verticales)  y  sin  soltar  movemos el ratón (el tamaño varía).
+Tambien  podemos  hacer  que  el  órden  de los parámetros sea distinto, de
+manera  que  aparezca antes el parámetro 'Execute' que el 'Wipe', por poner
+un ejemplo.  Para ello nos vamos al menú 'System...' y pulsamos las flechas
+de  la  primera  barra  de la izquierda hasta que ponga 'Scala EX'; y ahora
+pinchamos el área a mover y la arrastramos al lugar que queramos, igual que
+se hace con las páginas para ordenarlas de posición.
+  A  nosotros, el parámetro o área que nos interesa es el 'Execute', porque
+será el que mande la señal al YACDPlay para poner en marcha la reproducción
+del CD, por tanto debemos tenerlo visible.
+
+  Empezamos   por   elaborar  los  rótulos  que  necesitemos  para  nuestra
+producción videográfica.  Lo más habitual es que estos rótulos partan de un
+color  liso  estático, normalmente de negro.  La pantalla primera será, por
+tanto  un negro total con duración controlada por ratón (pause modo ratón).
+Tras  esta  pantalla  vendrán los títulos, animaciones o lo que te apetezca
+poner.
+  Al  final  puedes  poner  otra salida a negro con duración controlada por
+ratón (útil para pasar a vídeo).
+  Y  ahora  viene el tema de la música.  Deseas que cuando pulses 'RUN!' la
+pantalla  permanezca en negro total mientras comienza la grabación de vídeo
+y  al pulsar el botón derecho del ratón comience a sonar el CD a la vez que
+comienzan  los  rótulos  a  verse  por la pantalla.  Pues bien, para lograr
+esto,  has  de  insertar  una  página entre el Negro inicial y los primeros
+rótulos.  Esta página ha de ser otro negro total, con duración (pause)=3, y
+que entre con la cortinilla «CUT» (al corte).
+  Pero  además  debe  llevar  el comando Arexx que elaboramos al principio.
+Para  ponerlo  aquí:
+  1- Pulsas el área 'EXECUTE' de esta página (este segundo negro total).
+  2- Eliges el tipo de comando a ejecutar:
+         Workbench....comando del Workbench
+         AREXX........script Arexx (*este es el que hay que seleccionar*)
+         None.........ninguno
+         CLI..........comando del CLI
+     Eliges en el gadget cíclico la opción 'AREXX'.
+  3- Ahora  haces  un  doble-click sobre el gadget que hay a la derecha del
+      anterior y te sale el requester para cargar el script.
+  4- Te  vas  a  SYS:Aexx  (donde  guardaste  el  script)  y  eliges el que
+      corresponda  a  la  pista  de  audio  que  vas  a  reproducir,  p.ej:
+      CDplay-5.AREXX.
+  5- Pulsas 'OK' (sales del requester) y de nuevo 'OK'. 
+      NOTA: La opción 'Wait?' la dejas desconectada.
+
+  Graba  el  script por si hay un "Guru" que no lo pierdas.  Ahora sales al
+Workbench  y  abres un CLI para ejecutar el REXXMAST.  Si no lo ejecutas no
+sirve de nada lo anterior.
+
+
+**COMPROBACION DEL FUNCIONAMIENTO**
+
+  Bueno,  pues  vamos  a  ver  qué debe ocurrir al pulsar 'Run!'.  Antes de
+nada,  decir  que  el  YACDPlay debe estar abierto, y que antes de poner en
+marcha  el  script  del  Scala (Run!) convendría que playearas los primeros
+segundos de cualquier canción.  Esto se hace por dos motivos:
+  a- Para comprobar que el YACDPlay está funcionando correctamente.
+  b- Para  preparar  la  reproducción, ya que el YACDPlay tarda algo más en
+      comenzar a reproducir la canción la primera vez después de abrirlo.
+
+  Tras  esta  breve comprobación nos vamos al ScalaMM400 y pulsamos por fin
+el 'Run!'.
+  Naturalmente,  en  el  ejemplo  puesto,  la  pantalla  se  pone negra por
+completo,  ya  que se está ejecutando la página 'Negro Total' primera.  Así
+permanecerá hasta pulsar el ratón (pusimos el Pause en modo ratón).
+  Al  pulsar  el botón derecho del ratón se lee el script Arexx y vemos que
+el CD-Rom busca la pista número 5, que fue la programada en el ejemplo.
+  Todo  esto ocurre durante la página del segundo 'Negro Total', cuya pausa
+se  fijó  en  '3', que es lo que el YACDPlay tardará en buscar y comenzar a
+reproducir la pista que tú le hayas dicho. (por lo menos en mi CD-Rom 4x).
+  Tras esto, y justo cuando la música comienza, los rótulos hacen aparición
+y comienza toda la secuencia prevista con la música del CD.
+
+
+**SECUENCIA DE FINALIZACION**
+
+  El  YACDPlay  trae consigo más scripts como el Fade In, Fade Out, Stop...
+Sería  bueno  poner por ejemplo un Arexx Fade Out en la página de salida de
+los  rótulos,  en el último 'Negro Total'.  En mi CD-Rom, que es un Hitachi
+7730 de 4x no funcionan los Fade In-Out, y entonces tengo que recurrir a la
+mesa de mezclas de audio.  Pero si alguno prueba lo del Fade y le funciona,
+puede automatizar toda la secuencia ahorrándose lo de la mesa de mezclas.
+
+
+
+  Pues  ya  está, así de fácil.  Tal vez he explicado demasiado las cosas o
+me he enrollado un poco para la chorradita que en realidad es.  No obstante
+lo  hago  por  si  hay alguien que nunca ha trabajado con el Arexx (como me
+pasaba a mí). De este modo creo que entenderá todo a la perfección.
+  De  todos  modos  si  alguna  persona  se interesa por lo escrito en este
+artículo  o lo prueba y no le sale, me puede mandar un E-Mail para intentar
+solucionar lo que sea entre los dos.
+
+
+     O N L Y    A M I G A    M A K E S    I T    P O S S I B L E   ! !
+
+© By ElEcTrA, (José J. Barceló) Málaga    E-Mail: jelectra@lettera.skios.es
+
+                      =--------------------------------=
+ ---------------------| <A HREF="articulos.html"> Articulos </A>  <A HREF="menu.html"> Menu Principal </A>  |--------------------
+                      =--------------------------------=
+</FONT></PRE><HR>
+Converted on 02 Aug 1997 with RexxDoesAmigaGuide2HTML 2.1 by <A HREF="http://www.sbox.tu-graz.ac.at/home/rmike">Michael Ranner</A> .</P>
+</BODY>
+</HTML>

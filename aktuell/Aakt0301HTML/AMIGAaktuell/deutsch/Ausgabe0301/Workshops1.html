@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="Workshops.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops2.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Workshops
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H1>Workshops / Hintergrundberichte / Buchvorstellungen</H1>
+<H2>1. Workshop: Erweiterung der CyberstormPPC um ZIF-Sockel (von Dirk Wenk)</H2>
+<P>
+[Achtung: Die Durchf&uuml;hrung der im Folgenden beschriebenen Arbeiten erfolgt
+auf eigene Gefahr!]
+</P>
+<P>
+Dies ist momentan NUR eine theoretische &Uuml;berlegung. Das hei&szlig;t, so
+m&uuml;sste/k&ouml;nnte der Umbau vonstatten gehen. Es hei&szlig;t nicht, dass es dann
+tats&auml;chlich funktioniert.
+</P>
+<P>
+Es ist dringend davon abzuraten, nach diesem Artikel irgendwelche
+Ver&auml;nderungen an seiner CSPPC Karte vorzunehmen!
+</P>
+<P>
+Sollte trotzdem jemand so dumm sein? Dann wei&szlig; ich von nix!
+</P>
+<H3>1. Die Idee...</H3>
+<P>
+Mann, ist &quot;Quake&quot; wieder laaaanngsam! Jetzt hab ich schon einen 604er und
+trotzdem ist das Spiel so lahm. Also mal schauen, was man da machen kann.
+Schnell hat man die &Uuml;bertaktungsseiten &uuml;berflogen, hat sich alles
+ausgerechnet und ist zu dem Schlu&szlig; gekommen: &Uuml;bertakten bringt's nicht...
+Z.B. eine 150-MHz-PPC auf 170 Mhz takten? Bringt 10% mehr, macht statt 20
+FPS satte 22 FPS... na toll! Das f&auml;llt nicht mal auf! Also muss ein anderer
+Prozessor drauf auf das Board. Nix wie hin zur www.mot.com-Seite und ...
+aaah ja, da sind die 604e mit 350 Mhz! Das ist doch eine ordentliche
+Geschwindigkeit.
+</P>
+<P>
+Also erstmal die PDF-Dokumente runterladen und studieren, ob das Ding auch
+sch&ouml;n Pin-kompatibel ist. Und ja, das ist er auch... doch was ist das? &quot;NOT
+5 VOLT TOLERANT&quot; ... OOH OHHH! Schnell stellt sich heraus, dass alle PPC
+Prozessoren &uuml;ber 233 MHz nur noch einen Pegel von maximal 3,45 Volt
+vertragen. Bekommt so ein Prozessor mehr auf seine Anschl&uuml;sse, dann kann
+man ihn gleich wegschmei&szlig;en. Voller Frust schau' ich mir die andern PPC
+Prozessoren an. Auch dort das gleiche Trauerspiel. Doch was mir auff&auml;llt
+ist, dass die Prozessoren nicht nur Software-, sondern gr&ouml;&szlig;tenteils auch
+Hardware-kompatibel sind! (au&szlig;er dem 740er). Schnell schau ich mir auch die
+Pin-Belegungen durch und siehe da, sie sind (fast) identisch!
+</P>
+<H3>2. Die &Uuml;berlegung</H3>
+<P>
+Nur, wie baue ich jetzt so einen Prozessor auf meine CSPPC-Karte?
+Zuerst einmal brauche ich eine Pegelanpassung. F&uuml;r jeweils die Eing&auml;nge und
+die Ausg&auml;nge ist schnell eine aus alten Bauteilen bestehende Schaltung
+zurecht gezeichnet. Allerdings sind die Signallaufzeiten extrem lang und
+die Zahl der notwendigen Bauteile liegt bei etwas mehr als 500. Nicht
+akzeptabel! Und noch ein Problem taucht auf. Diese neueren Prozessoren ab
+G3 brauchen so genannten Level-2-Cache. Aber nach etlichen Nachforschungen
+habe ich auch daf&uuml;r eine L&ouml;sung gefunden... oder besser gesagt abgeguckt!
+Denn beim PowerMac werden schon seit einiger Zeit so genannte ZIF-Sockel
+verwendet, in die dann eine Platine eingesetzt wird. Auf dieser Platine ist
+neben dem Prozessor auch der L2-Cache untergebracht. Au&szlig;erdem wird &uuml;ber
+bestimmte Kontakte auch gleich dem Motherboard gesagt, mit wieviel Takt und
+Volt die Platine gerne versorgt werden m&ouml;chte. Also ideal f&uuml;r dieses
+Projekt.
+</P>
+<P>
+Als Weiteres f&auml;llt auf, dass der Startprozess anders ist als bei dem 604-
+Prozessor. Mit ihm wird bestimmt, wo zuerst Strom anliegen darf, damit der
+Prozessor nicht getoastet wird. Klingt etwas seltsam, ist aber
+nachvollziehbar.
+</P>
+<P>
+Damit haben wir jetzt also zusammen, was gebraucht wird: Erstmal einen ZIF-
+Sockel, eine passende Prozessorplatine, die Stromversorgung inkl. PowerUp
+und zum Schluss nat&uuml;rlich noch die Signalanpassung.
+</P>
+<H3>3. Die Grundstruktur</H3>
+<P>
+Auf einer Amiga-Messe wurde einmal von einem Hersteller der Prototyp einer
+G3-Turbokarte f&uuml;r den A1200 gezeigt, die ohne 68k-Prozessor auskommt. Wenn
+man genau hingesehen hat, erkannte man sofort, wie die Leute das geschafft
+haben. Auf dem Board befinden sich neben dem Prozessor, dem L2-Cache und
+einem Flash-Speicher f&uuml;r den Bootvorgang und die 68k-Emulation auch noch
+zwei Bausteine, damit der Prozessor bei der Kommunikation mit den 5 Volt
+vom Amiga nicht verkokelt wird. Diese zwei Chips sind ganz einfache, aber
+superschnelle Pegelwandler, die auch f&uuml;r dieses Projekt ideal sind. Weitere
+Daten zu den Chips findet ihr am Ende dieses Artikels unter &quot;Bauteile&quot;. Im
+Prinzip sollte es so aussehen: Der 604-Prozessor wird abgel&ouml;tet, die
+Signale auf eine andere Platine weitergef&uuml;hrt, wo sich unsere Schaltung
+befindet. Diese Schaltung besteht jetzt aus der Stromversorgung, dem
+Powerup und den Signalkonvertern. Und nat&uuml;rlich ist der ZIF-Sockel auch mit
+drauf. Was jetzt noch fehlt, ist die Durchf&uuml;hrung.
+</P>
+<H3>4. Die n&auml;chste &Uuml;berlegung</H3>
+<P>
+Tja, theoretisch haben wird jetzt alles zusammen, was man eigentlich
+brauchen sollte. Doch so einfach ist es nicht. Denn der Prozessor auf der
+CSPPC ist eine BGA-Ausf&uuml;hrung. D.h., die Anschl&uuml;sse des Prozessors liegen
+unter diesem. Will man nun den Prozessor entfernen, braucht man eine BGA-
+L&ouml;tmaschine, ansonsten wird die Platine besch&auml;digt und wir k&ouml;nnen uns eine
+neue CSPPC suchen. Und selbst wenn wir nun so eine Maschine in Reichweite
+haben und mit dieser den Prozessor entfernen sollten, haben wird noch ein
+recht offensichtliches Problem. Die Anschl&uuml;sse sind n&auml;mlich winzig. Es
+sollte eine echte Herausforderung sein, diese winzigen Pins nun mit unserer
+selbstgebauten Platine zu verbinden. Aber einmal etwas zu stark dran
+gezogen und die CSPPC-Platine ist im Eimer. Aber wird sind mit unserer
+Weisheit noch nicht am Ende.
+</P>
+<P>
+Zwar haben wir kaum bzw. keinerlei Unterlagen &uuml;ber die CSPPC-Karte noch
+irgend welche M&ouml;glichkeiten, an sie heran zu kommen, aber wir k&ouml;nnen ja
+versuchen, es herauszufinden. Die CSPPC hat allerdings einfach zu viele
+Layers (Schichten), um es uns einfach zu machen. Es sei denn, jemand stellt
+uns eine defekte CSPPC zur Verf&uuml;gung, die wir dann St&uuml;ck f&uuml;r St&uuml;ck
+auseinander nehmen, um so einen Schaltplan der Karte zu rekonstruieren.
+Oder jemand bei einer gewissen Firma unterst&uuml;tzt uns mit gewissen
+Unterlagen (Wink mit dem Zaunpfahl). :)
+</P>
+<P>
+Eine weitere M&ouml;glichkeit, an die Signale des Prozessors zu gelangen, ist
+der Expansion-Port der CSPPC. Dort m&uuml;ssten theoretisch alle wichtigen Daten
+anliegen. Die restlichen Leitungen kann man sich dann immer noch zur Not
+heraus suchen. Eventuell sogar so, dass man dann zwischen der Original-PPC-
+CPU und unserer Bastelplatine umschalten kann. Bestimmt haben sich jetzt
+auch einige gesagt: Mann, die 604 l&auml;uft mit 150 - 233 MHz und diese neue
+Karten mit bis zu 750 MHz, wie soll das die CSPPC-Hardware schaffen? Dazu
+sei nur gesagt, dass der PPC-Bus des 604 bis zu etwa 75 MHz l&auml;uft. Und die
+neuen G4-Prozessoren haben auch einen Bus, der irgendwo zwischen 60 und 70
+MHz liegt. Es kommt nat&uuml;rlich auch immer noch darauf an, wie die Takt-
+Teiler eingestellt sind. Z.B. l&auml;uft der 604e/150 MHz mit einer
+Busgeschwindigkeit von 60 MHz und einem Teiler von 2,5. Die 750-MHz-G4-
+Variante k&ouml;nnte dann so aussehen: 62 MHz Bustakt, Teiler auf 12, oder 75
+MHz Bus und Teiler auf 10. Je kleiner der Teiler, um so h&ouml;her der
+Speicherdurchsatz. Aber auch mehr W&auml;rmeentwicklung... es empfiehlt sich bei
+75 MHz ein zus&auml;tzlicher L&uuml;fter f&uuml;r den Speicher...
+</P>
+<H3>5. Die Grundstruktur der CSPPC</H3>
+<P>
+Jetzt begebe ich mich auf Glatteis! Denn was wissen wir &uuml;berhaupt &uuml;ber die
+CSPPC? Wie ist sie aufgebaut und wie funktioniert sie? Um ehrlich zu sein,
+kann ich da nur Vermutungen anstellen, denn Unterlagen habe ich zu der
+Hardware leider keine (au&szlig;er dem Handbuch). Zuerst mal muss ja der 64-Bit-
+Bus des 604e an den 32-Bit-Bus des 68k-Prozessors angepasst werden. Also
+brauchen wir etwas, was speichert und gen&uuml;gend Ein-/Ausg&auml;nge hat. Wenn wir
+uns jetzt die CSPPC anschauen, fallen uns ganz viele 74FTC543-Bausteine auf
+(auf Anfrage unter <A HREF="mailto:dw@teleservice.com">dw@teleservice.com</A> 74FTC543_DS_30937.pdf). Und genau
+diese Bausteine sind dazu da, den Bus an 64bit bzw. 32bit anzupassen. In
+dem PDF-Dokument (AN1271.pdf) sieht man auf Seite 8 ein kleines
+Anschlussbeispiel, das zwar mit einem 74F646 realisiert ist, aber doch sehr
+sch&ouml;n verdeutlicht, wie so etwas auszusehen hat.
+</P>
+<P><B>Beispiel:</B></P>
+<PRE>
+
+            32bit  ____   64bit
+    A0-32   ___ __|    |------  A0-32
+    68k Bus    Y  | 74 |        60X Bus
+               \--| 646|------  A33-64
+                  |    |
+                   ¯¯¯¯
+</PRE>
+<P>
+Des Weiteren sieht man in der Beispielschaltung (PDF-Dokument), dass zur
+Steuerung der 74FTC543-Bausteine ein Mach210 eingesetzt wird. Auch diesen
+finden wir auf der CSPPC wieder.
+</P>
+<P>
+Theoretisch m&uuml;sste also der ganze Adressbus umgeschaltet werden. Was
+nat&uuml;rlich auch bedeutet, dass das ganze 68k-System dadurch h&auml;ngen bleibt.
+Um das zu &uuml;berpr&uuml;fen, habe ich das System gestartet und einfach den Takt
+des PPC-Prozessors unterbrochen. Das Ergebnis war, dass tats&auml;chlich alles
+anhielt inkl. Mauszeiger. Sobald der Takt wieder zugef&uuml;hrt wurde, lief das
+System weiter, als w&auml;re nichts geschehen. Versucht man dasselbe im Early-
+Startup-Men&uuml;, passiert das nicht. Was bedeutet, dass es sich um ein
+separates Programm handelt, das nach dem Start des Rechners automatisch
+ausgef&uuml;hrt wird, um den Mach210 anzusteuern, der daraufhin umschaltet. Nur
+auf welchem Prozessor das Programm l&auml;uft, kann ich nicht genau bestimmen.
+Ich nehme aber an, dass es auf dem 68k-Prozessor l&auml;uft, da eine Task mit
+dem Namen &quot;PPC Early-Startup&quot; oder so &auml;hnlich l&auml;uft.
+</P>
+<P><B>Im 2. Teil lesen Sie dann:</B></P>
+<UL>
+<LI> Was passiert, wenn die PPC-Switch-Programme beendet werden? Schaltet
+  der PPC um?
+</LI>
+<BR><LI> Welche Signale werden wo gebraucht?
+</LI>
+<BR><LI> Stimmt das Timing durch Einsatz der Pegelanpassung?
+</LI>
+<BR><LI> Welche Signale werden vom PPC-Prozessor gebraucht?
+</LI>
+<BR><LI> Welche Unterschiede gibt es zwischen den Prozessoren? Vom 604 bis
+  zum 7450EC!
+</LI>
+<BR><LI> Und weitere Sachen, die mir noch einfallen werden :)
+</LI>
+</UL>
+<P><B>Dirk Wenk &lt;<A HREF="mailto:wax@topmail.de">wax@topmail.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops2.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

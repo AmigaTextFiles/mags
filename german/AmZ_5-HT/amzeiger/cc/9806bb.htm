@@ -1,0 +1,333 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 06/98 - BltizBasic2 Kurs</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Blitz-Basic2 - Kurs /1+2</H1>von<BR><A HREF="mailto:Thomas@deutschland.de">Thomas Krippner</A></DIV>
+      
+<P>[Anmerkung: Thomas hat uns den Kurs zur Verf&uuml;gung gestellt, ich habe
+inhaltlich kaum etwas ge&auml;ndert. Ansonsten stehen meine Kommentare in
+eckigen Klammern, wobei ich nur Vermutungen anstellen kann, was
+Blitz-Basic angeht. Red.CC]</P>
+
+<H2>Vorwort</H2>
+
+<P>Blitz-Basic 2 ist eine der wenigen Sprachen, die noch auf dem Amiga
+weiterentwickelt werden. Durch den Library-Aufbau der Sprache ist es
+leicht m&ouml;glich, neue Befehle zu integrieren und somit auch OS-fremde
+Strukturen zu nutzen. Auch die systemnahe Library-Programmierung ist
+gut m&ouml;glich und einfach, da nicht erst die Library aufgerufen, Adressen
+herausgefunden und Strukturen angelegt werden m&uuml;ssen.</P><P>
+Leider ist die Dokumentation des Compilers sehr mi&szlig;verst&auml;ndlich und
+unstrukturiert, so das es leicht zu Frustration kommt, wenn man etwas
+Komplizierteres vorhat, als ein Window zu &ouml;ffnen.</P><P>
+Um ein wenig Hilfestellung zu geben und etwas Mut, f&uuml;r den Amiga zu
+programmieren, habe ich diesen Kurs ins Leben gerufen. Er soll vor allen
+Dingen auf die W&uuml;nsche und Fragen der Leser eingehen und sich mit den
+konkreten Problemen der User besch&auml;ftigen.</P><P>
+Um einen Anfang zu bekommen, werden sich die Teile 1-6 mit Intuition
+befassen, was jeden fr&uuml;her oder sp&auml;ter mal besch&auml;ftigen wird.
+</P><P>Die Datenstrukturen sollen helfen, die M&ouml;glichkeiten der Library zu
+nutzen und eine gro&szlig;e Kontrolle &uuml;ber sein Programm zu haben.
+</P><P>Dieser Kurs ist kein Ersatz f&uuml;r das Handbuch, sondern eine Erg&auml;nzung zu
+den Dokumenten, die Sie f&uuml;r BB2 haben. Mit den vielen Beispielen hoffe
+ich einfache und schnelle L&ouml;sungen zu geben und diese auch verst&auml;ndlich
+an den Benutzer zu bringen.
+</P><P>Da der Kurs von der Teilnahme lebt, bitte ich alle aufkommenden
+Bemerkungen und Fragen an mich zu senden. Auch Themenvorschl&auml;ge sind
+erw&uuml;nscht.</P><P>Viel Spa&szlig; beim Lesen!</P>
+<H2>Teil 1, Allgemeines</H2>
+<P>Hier werden jetzt Grundlagen besprochen, die sp&auml;ter im Kurs nicht mehr
+weiterbehandelt werden.</P><P>
+<B>- Starten von der Workbench</B></P>
+<P>Um ein Programm &uuml;ber die Workbench, da&szlig; hei&szlig;t mit Hilfe eines Icons starten
+zu k&ouml;nnen, ben&ouml;tigt es Informationen, die es an die WB weitergeben kann.
+Was das genauer ist, braucht uns nicht zu interessieren. Wichtig ist nur:
+Wie bekommt mein Programm diese Informationen?</P>
+In BB2 geschieht das mit dem Befehl:
+<P><B>- WBStartup</B></P><P>
+Dieser Befehl mu&szlig; am Anfang eines jeden Programms stehen, das von der WB
+aus startbar sein soll.</P><P>
+Ich habe es mir zu Gewohnheit gemacht, diesen Befehl immer in mein
+Programm aufzunehmen, um so keine &Uuml;berraschungen zu erleben.
+</P><P><B>- Newtype</B></P><P>
+Newtypes sind eine wunderbare Sache in BB2. Mit Ihrer Hilfe kann man gro&szlig;e
+Datenmengen leicht und &uuml;bersichtlich verwalten. Auch f&uuml;r die Programmierung
+des Systems sind diese Felder wichtig, da manche schon fest in der
+AmigaLib.res eingebunden sind.</P><P>
+Mit Newtype weise ich einer Variable einen variablen Stamm zu, um somit
+wie bei einem Verzeichnis auf der Festplatte in die Unterverzeichnisse zu
+gelangen. Wenn Sie nicht mit der NewType-Funktion vertraut sind, lesen Sie
+bitte im BB2 Handbuch nach.</P><P>
+Besonders wichtig f&uuml;r diesen Kurs sind die BB2-Objekte, die mit NewType
+strukturiert werden. Diese stehen ebenfalls im Anhang. Wenn wir sie im
+Kurs ben&ouml;tigen, werde ich Sie beschreiben.</P>
+<P>NewTypes sollten immer als dritte gro&szlig;e Struktur in Ihrem BB2-Programm
+stehen.</P><P><B>- Pointer</B></P><P>
+Auch dieses sollten Sie sich im Handbuch einmal anschauen, wenn sie
+systemfreundliche Programme entwickeln wollen.</P><P>
+Um auf Systemdaten zur&uuml;ckzugreifen, ben&ouml;tigen wir die Adresse dieser
+Daten und das liefert uns der Pointer, der eigentlich nur eine Variable
+ist, die auf einen Speicherbereich zeigt.</P><P>
+Mit Hilfe der-Peek Anweisung kann man aber leicht alle wichtigen
+Systemdaten finden und sein Programm darauf einstellen.
+</P><P><B>- Peek</B></P><P>
+Der Peek-Befehl liefert den Inhalt einer Speicherstelle. Vor diesem Befehl
+braucht man keine Angst zu haben, er kann das System nicht zum Absturz
+f&uuml;hren, im Gegensatz zu Poke [mit dem man in den Speicher schreibt].
+</P><P>Das war es dann auch schon an Grundlagen, die man im Vorfeld kl&auml;ren kann.
+</P><P>Abschlie&szlig;end sei gesagt, da&szlig; es immer Sinn macht in das Handbuch zweimal
+hineinzuschauen und zu experimentieren, kaputt kann man mit BB2 eigentlich
+nichts machen.</P>
+<H2>Teil 2, Screen-Programmierung</H2>
+<P>In diesem Teil geht es nun zur Sache.</P><P>
+Als erstes werden wir den Workbench-Screen klonen und zu unserem eigenen
+Screen erkl&auml;ren. Danach werden wir einen Screen &ouml;ffnen und die dazugeh&ouml;rige
+Bitmap. Wenn das alles geschafft ist, werden wir einen Screen mit Hilfe des
+ScreenTag, also des Screenrequesters &ouml;ffnen.</P><P>
+Und nun gehts los:</P><P>
+Ein Screen ist ein sogenannter virtueller Bildschirm, der sich wie jeder
+andere Bildschirm verh&auml;lt. Der Amiga ist in der Lage, soviel Screens zu
+&ouml;ffnen, wie Speicherplatz zu Verf&uuml;gung steht. Ohne einen Screen kann der
+Benutzer also nichts sehen: kein Window, keinen Mauszeiger - nichts.
+</P><P>F&uuml;r uns hei&szlig;t das, da&szlig; wir f&uuml;r alle Programme, die eine sichtbare Ausgabe
+machen, einen Screen &ouml;ffnen m&uuml;ssen (ausgenommen File-Erzeugung). [Das oben
+genannte "Klonen" des Screens bedeutet nicht, eine Kopie des Workbench-
+Screens zu &ouml;ffnen. Stattdessen ist nur gemeint, da&szlig; der Workbench-Screen
+jetzt unter Blitz-Basic angesprochen werden kann.]</P><P>
+Dieses gibt auch die Bedeutung der Screen-Programmierung wieder, die aber
+unter BB2 ganz einfach ist.</P><P>Ein Beispiel:</P><P>
+<B>- Worbench Screen benutzen</B></P><P>
+WBStartup<BR>
+WBenchToFront_<BR>
+WbToScreen 0<BR>
+MouseWait<BR>
+End<BR>
+</P><P>Das ist schon alles. Die erste Zeile kennen wir von Kurs 1.</P>
+<P>In der zweiten Zeile holen wir den Workbench-Screen nach vorne, so ist
+er f&uuml;r den Benutzer sichtbar.</P><P>
+In der dritten Zeile klonen wir den Workbench-Screen und machen diesen
+zu unserem Screen 0, damit haben wir auch alle Attribute und Flags dieses
+Screens &uuml;bernommen. Das hei&szlig;t, sollte es sich hierbei um einen Screen
+mit der Breite von 800 Pixeln handeln, so ist unser Screen 0 ebenfalls
+800 Pixel breit.</P><P>
+<B>- Eigenen Screen mit Bitmap</B></P><P>
+WBStartup<BR>
+Screen 0,3,&quot;Eigenen Screen&quot;<BR>
+ScreensBitMap 0,0<BR>
+MouseWait<BR>
+End<BR>
+</P><P>In diesem Fall &ouml;ffnen wir einen eigenen Lores Screen.</P><P>
+Die benutzte Bitmap gleichen wir an den offenen Screen an. Dieses geht
+auch in dem Beispiel mit dem Klonen des Workbench-Screens, ist jedoch
+nicht empfehlenswert, da es dort leicht zu Schwierigkeiten kommen
+kann. Doch dazu sp&atilde;ter mehr.</P><P>
+Die hier verwendete Form, um einen Screen zu &ouml;ffnen, ist die Kurzform.
+Mit dieser habe ich nur wenig Einflu&szlig; auf den ge&ouml;ffneten Screen.
+</P><P>Versuchen wir es mal mit etwas Komplexerem.</P><P>
+<B>- Screen Langversion</B></P><P>
+Screen 0,0,0,320,255,2,0,&quot;Eigenen Screen&quot;,1,2<BR>
+ScreensBitMap 0,0<BR>
+MouseWait<BR>
+End<BR>
+</P><P>Dieses kleine Programm macht nichts anderes, als das vorherige Programm.
+Es ist aber hier m&ouml;glich die Screenbreite, -h&ouml;he oder den Beginn des
+Screens zu beeinflussen. Experimentieren Sie einfach mit dem Flag und
+bald wird Ihnen die Struktur klar sein.</P><P>
+Die Parameter des Screen-Befehls:</P><P>
+Screen Nummer,X-Beginn,Y-Beginn,X-Ende,Y-Ende,Tiefe,Mode,Name,Dpen,Bpen,Bitmap
+</P><P>
+Nummer:<BR>
+Die Nummer unter dem wir den Screen ansprechen.</P><P>
+X-Beginn und  Y-Beginn:<BR>
+Die linke obere Ecke des Screens. Meistens werden diese Werte 0 sein, da
+der Screen dann links oben am Bildschirm zu sehen ist.</P><P>
+X-Ende und Y-Ende:<BR>
+Die rechte untere Ecke des Screens und somit die Gr&ouml;&szlig;enangabe in Pixel.</P><P>
+Tiefe:<BR>
+Anzahl der Bitplanes des Screens. Diese bestimmen, wieviele Farben der
+Screen darstellen kann. Sollte mit der Bitmap koordiniert werden, aber
+auch hierzu sp&auml;ter mehr.</P><P>
+Mode:<BR>
+Der Screen-Mode wird hier eingestellt, da dieses kein Raupkopiererkurs ist,
+bitte ich Sie, im BB2-Handbuch die Screen-Modes unter Screen-Viewmode
+nachzulesen.</P><P>
+Dieser Wert bestimmt die Frequenz und die Darstellung des Screens. In der
+Praxis kommt das folgenderma&szlig;en zur Geltung: Sie &ouml;ffnen einen Screen der
+Gr&ouml;&szlig;e 640x512, im LoRes-Modus kann der Screen aber nur 320x255 darstellen.
+Also sehen Sie nicht den kompletten Screen.</P><P>
+Dieses ist wichtig zu wissen, wenn der Benutzer seinen Screen selber
+aussuchen darf und das ist ja was wir wollen. Es ist also auf den Mode
+immer zu achten, da er uns &uuml;ber den tats&auml;chlich sichtbaren Screen
+Aufschlu&szlig; gibt.</P><P>
+Name:<BR>
+Hier kommt der Name des Screens hin.</P><P>
+Dpen und Bpen:<BR>
+Sind die Licht- und Schattenfarben des Screens.</P><P>
+Bitmap:<BR>
+Mu&szlig; nicht angegeben werden. Hier k&ouml;nnen wir dem Screen eine bereits
+bestehende Bitmap zuweisen. Diese Bitmap kann v&ouml;llig andere
+Gr&ouml;&szlig;enverh&atilde;ltnisse haben oder weniger Bitplanes benutzen.
+</P><P><B>-ScreenTags</B>
+</P><P>
+Nachdem wir den Screen-Befehl kennen und die Struktur verstanden haben,
+k&ouml;nnen wir daran gehen, etwas abstrakter zu werden.
+</P><P>Der ScreenTags-Befehl erlaubt uns nun die M&ouml;glichkeiten, die der
+individuelle Rechner zu Verf&uuml;gung stellt, zu nutzen. Er ist die
+Weiterentwicklung des Screen-Befehles.
+</P><P>Um das zu verstehen, schauen wir uns den Befehl einmal an:</P><P>
+ScreenTags Nummer,Name,TagList oder Tag,Daten
+</P><P>
+Nummer:<BR>
+Ist wieder die Nummer unter dem wir unseren Screen finden.
+</P><P>
+Name:<BR>
+Der Name des Screens.</P><P>
+TagList:<BR>
+Ist eine Adresse, die die spezifischen Daten des Screen enth&auml;lt.
+</P><P>
+Tag,Daten:<BR>
+Hier gebe ich die TagList einzeln ein.
+</P><P>
+Die TagList und Tag,Daten d&uuml;rfen nicht gemeinsam angegeben werden!
+</P><P>
+Doch kommen wir zu einem Beispiel:
+</P><P>
+<B>-Der Screen-Requester</B>
+</P><P>
+Hier zeigt sich am deutlichsten, wozu man den TagScreen-Befehl ben&ouml;tigt.
+</P><P>Bevor Sie allerdings das Programm starten und ausprobieren k&ouml;nnen,
+m&uuml;ssen Sie in den Optionen des BB2 die residenten AmigaLibs.res einladen.
+Dieses geben Sie einfach unter Compiler-Option Resident ein.</P><P>
+Blitz2:Blitzlibs/AmigaLibs.res</P>
+<B>Das Programm:</B><BR>
+
+<PRE>
+WBStartup
+
+NEWTYPE.screeninfo
+  id.l
+  width.l
+  height.l
+  _depth.w
+  overscan.w
+  autoscroll.w
+  bmapwidth.l
+  bmapheight.l
+End NEWTYPE
+
+NEWTYPE.WS
+  _screen.l
+End NEWTYPE
+
+WbenchToFront_
+WBtoscreen 0
+FindScreen 0
+*sc.screeninfo=ASLScreenRequest(31)
+
+If *sc
+  Dim scrtags.TagItem(8)
+
+  col.w=-1
+
+  scrtags(0)\ti_Tag=#SA_Left,0
+  scrtags(1)\ti_Tag=#SA_Top,0
+  scrtags(2)\ti_Tag=#SA_Width,*sc\width
+  scrtags(3)\ti_Tag=#SA_Height,*sc\height
+  scrtags(4)\ti_Tag=#SA_Depth,*sc\_depth
+  scrtags(5)\ti_Tag=#SA_Overscan,*sc\overscan
+  scrtags(6)\ti_Tag=#SA_AutoScroll,*sc\autoscroll
+  scrtags(7)\ti_Tag=#SA_DisplayID,*sc\id
+  scrtags(8)\ti_Tag=#SA_Pens,&col
+
+  ScreenTags 0,"Benutzer Screen",&scrtags(0)
+
+End If
+
+MouseWait
+
+End
+</PRE>
+
+<P>[Dieses Beispiel ist in der Datei ex1.bb2 zu finden.]
+</P><P>Als erstes finden wir wie immer die WBstartup, danach werden per NewType
+Strukturen f&uuml;r die Benutzereingaben definiert (.screeninfo). Dann wird
+eine Struktur f&uuml;r den Screen definiert (.WS).</P><P>
+Nun holen wir den Worbench-Screen nach vorne und machen ihn zum Screen 0,
+das ist nichts Neues f&uuml;r uns.</P><P>
+Den Pointer *sc.screeninfo setzen wir auf den ASL-Screenrequester, der
+damit auch gleichzeitig aufgerufen wird und nach dem Schlie&szlig;en die
+Informationen des eingestellten Screens enth&auml;lt.</P><P>
+Wir fragen, ob *sc &uuml;berhaupt einen Wert hat und gehen dann weiter in die
+Schleife. [Der andere Fall tritt ein, wenn der ASL-Screenrequester mit
+&quot;Abbruch&quot; statt &quot;Okay&quot; beendet wird.]</P><P>
+Jetzt dimensionieren wir unsere TagList, die dann zugewiesen wird.</P><P>
+TagItem und #SA_ d&uuml;rfen nicht von uns dimensioniert werden, sie sind in
+der AmigLibs.res eingebunden. In ihr sind diese Variablen schon zugewiesen
+und brauchen nur abgerufen zu werden.</P><P>
+Nun weisen wir noch dem Screen 0 alle Informationen &uuml;ber den ausgew&auml;hlten
+Screen zu und schon &ouml;ffnet sich das Ganze.</P><P>
+Ausgaben von Text oder Grafik k&ouml;nnen nicht direkt auf einen Screen gelegt
+werden, sondern nur auf die Bitmap des Screens. Diesen Vorgang beschreibt
+das n&auml;chste Beispiel.</P>
+
+<PRE>NEWTYPE.pt
+  x.w
+  y.w
+End NEWTYPE
+
+Dim p.pt(20)
+
+Screen 1,3,"Eigenen Screen"
+ScreensBitMap 1,0
+
+BitMapOutput 0
+
+For q = 0 To 19
+
+  p(q)\x=(ScreenWidth/2)+Sin(2*q*Pi/20)*((ScreenWidth/2)-1)
+  p(q)\y=(ScreenHeight/2)+Cos(2*q*Pi/20)*((ScreenHeight/2)-1)
+
+Next q
+
+For q = 0 To 18
+
+  For w = q+1 To 19
+
+    Line p(q)\x,p(q)\y,p(w)\x,p(w)\y,1
+
+  Next w
+
+Next q
+
+MouseWait
+End
+</PRE>
+<P>[Als Datei unter ex2.bb2 verf&uuml;gbar.]</P><P>
+Es erzeugt eine Grafik auf der Bitmap des Screen. Das Beispiel steht
+auch im BB2-Handbuch, ich habe es nur etwas abge&atilde;ndert, um es auf den
+n&auml;chsten Teil des Kurses vorzubereiten.</P><P>
+Was dort passiert, ist wohl jetzt jedem klar. Wie es zu der Grafikform
+kommt, werde ich nicht erkl&auml;ren, das ist Mathematik.
+</P><P>Am besten versucht man mit diesem Beispiel einmal verschiedene
+Aufl&ouml;sungen einzugeben, die Parameter des Screens zu &auml;ndern und so weiter.
+Das Beispiel verwendet keine statischen Werte f&uuml;r die Gr&ouml;&szlig;e der Grafik.
+Dieses erkennt man am ScreenWidth- und ScreenHeight-Befehl, die die
+Breite und H&ouml;he des aktuellen Screens ausgeben (WAS NICHT IMMER
+FUNKTIONIERT).</P><P>So, das war der Teil 2 unseres kleinen Kurses.</P>
+[und hier ist erstmal Schlu&szlig; f&uuml;r diese AmZeiger-Ausgabe...]
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9806mui.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0698/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../kw/wb_tun5.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

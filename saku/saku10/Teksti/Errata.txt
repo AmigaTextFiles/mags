@@ -1,0 +1,176 @@
+5
+1*
+
+{7                                     Errata
+{7                                     ------
+
+Edellisen disketti-Sakun lukija (v2.43) ei toiminut AmigaOS 1.3:lla.  T‰m‰  kor-
+jattiin muutama p‰iv‰ julkaisun j‰lkeen, mutta jos saamasi  SAKU  #9  kielt‰ytyy
+itsepintaisesti toimimasta koneellasi, tilaa  lehti  koordinaattorilta  uudemman
+kerran.
+
+Janne Siren 
+
+{3--------------------------------------------------------------------------------
+
+Edellisen Sakun "Resepti ymp‰ristˆyst‰v‰lliselle demolle" -artikkelin esimerkki-
+koodissa oli useitakin mokia. T‰ss‰ toivottavasti paremmin toimiva p‰tk‰.
+
+        include "exec/types.i"
+        include "libraries/dosextens.i"
+        include "graphics/gfxbase.i"
+        include "exec/libraries.i"
+        include "exec/execbase.i"
+
+        xref    _LVOFindTask
+        xref    _LVOWaitPort
+        xref    _LVOForbid
+        xref    _LVOGetMsg
+        xref    _LVOReplyMsg
+        xref    _LVODisable
+        xref    _LVOEnable
+        xref    _LVOOpenLibrary
+        xref    _LVOCloseLibrary
+
+        xref    _LVOLoadView
+        xref    _LVOWaitTOF
+
+        xref    _main
+        xdef    processor
+        xdef    chiprev
+
+NOCHIPREV equ 0
+
+        SECTION CODE,code
+
+startup:
+        movem.l d0/a0,-(sp)             ; Tallennetaan d0 ja a0
+        move.l  4,a6                    ; SysBase
+        move.l  #0,a1
+        jsr     _LVOFindTask(a6)        ; Haetaan oma prosessi
+                                        ; jsr -$0126(a6)
+        move.l  d0,a4
+        move.l  d0,process
+        tst.l   pr_CLI(a4)              ; Onko CLI?
+                                        ; tst.l $ac(a4)
+        bne.s   check_aga               ; Jos CLI niin check_aga
+wb:
+        lea     pr_MsgPort(a4),a0       ; Haetaan prosessin viestiportti
+                                        ; lea $5c(a4),a0
+        jsr     _LVOWaitPort(a6)        ; Odotetaan viesti‰
+                                        ; jsr -$0180(a6)
+        lea     pr_MsgPort(a4),a0
+        jsr     _LVOGetMsg(a6)          ; Haetaan viesti
+                                        ; jsr -$0174(a6)
+        move.l  d0,wbenchmsg            ; Tallennetaan ohjelman tarvetta
+                                        ; varten
+check_aga:
+        moveq   #0,d0
+        lea     gfxname,a1              ; Avataan
+        jsr     _LVOOpenLibrary(a6)     ; graphics.library
+                                        ; jsr -$0228(a6)
+        move.l  d0,gfxbase
+        beq.s   reply_to_wb             ; Jostain syyst‰ ei saatu avattua
+        move.l  d0,a4
+
+        jsr     _LVODisable(a6)         ; Keskeytykset pois
+                                        ; jsr -$0078(a6)
+        cmp.w   #39,LIB_VERSION(a4)     ; Onko ChipRevBits0 m‰‰ritelty
+                                        ; cmp.w #39,$14(a4)
+        bne.s   no_chiprev
+
+        move.b  gb_ChipRevBits0(a4),chiprev
+                                        ; move.b $ec(a4),chiprev
+        bra.s   check_proc
+no_chiprev:
+        move.b  #NOCHIPREV,chiprev      ; Ei pystyt‰ hakemaan ChipRevBitsia
+check_proc:
+        move.w  AttnFlags(a6),processor ; CPU ja FPU
+                                        ; move.w $128(a6),processor
+clear_view:
+        move.l  gfxbase,a6
+        move.l  gb_ActiView(a6),oldview ; Nykyinen View talteen
+                                        ; move.l $22(a6),oldview
+        move.l  #0,a1                   ; NULL View tilalle
+        jsr     _LVOLoadView(a6)        ; jsr -$00de(a6)
+
+        jsr     _LVOWaitTOF(a6)         ; jsr -$010e(a6)
+        jsr     _LVOWaitTOF(a6)
+
+        move.l  4,a6                    ; SysBase valmiiksi
+        movem.l (sp)+,d0/a0             ; d0/a0 pois pinosta
+        jsr     _main                   ; Hyp‰t‰‰n p‰‰ohjelmaan
+        move.l  d0,d7                   ; Palautuskoodi turvaan
+old_view:
+        move.l  gfxbase,a6
+        move.l  oldview,a1              ; Vanha View
+        jsr     _LVOLoadView(a6)        ; jsr -$00de(a6)
+
+        move.l  a6,a1                   ; Suljetaan graphics.library
+        move.l  4,a6                    ; ExecBase
+        jsr     _LVOCloseLibrary(a6)    ; jsr -$019e(a6)
+
+        jsr     _LVOEnable(a6)          ; Keskeytykset p‰‰lle
+
+reply_to_wb:
+        tst.l   wbenchmsg               ; Onko Workbench?
+        beq.s   exit                    ; Jos ei niin exit
+        jsr     _LVOForbid(a6)          ; Huomaa ettei tarvitse Permit()
+                                        ; jsr -$0084(a6)
+        move.l  wbenchmsg,a1
+        jsr     _LVOReplyMsg(a6)        ; jsr -$017a(a6)
+exit:
+        move.l  d7,d0
+        rts                             ; Poistutaan ohjelmasta
+
+        SECTION bss,BSS
+
+wbenchmsg       dc.l    0
+oldview         dc.l    0
+process         dc.l    0
+gfxbase         dc.l    0
+processor       dc.w    0               ; AFB_68010 equ 0
+                                        ; AFB_68020 equ 1
+                                        ; AFB_68030 equ 2
+                                        ; AFB_68040 equ 3
+                                        ; AFB_68881 equ 4
+                                        ; AFB_68882 equ 5
+                                        ; AFB_FPU40 equ 6
+                                        ; AFB_68060 equ 7
+chiprev         dc.b    0               ; GFXB_BIG_BLITS equ 0
+                                        ; GFXB_HR_AGNUS  equ 0
+                                        ; GFXB_HR_DENISE equ 1
+                                        ; GFXB_AA_ALICE  equ 2
+                                        ; GFXB_AA_LISA   equ 3
+
+        SECTION data,DATA
+
+gfxname         dc.b    'graphics.library',0
+
+        end
+
+Aki Laukkanen 
+
+{3--------------------------------------------------------------------------------
+
+P‰‰toimittajan virheen vuoksi SAKU 9:n TechnoBBS-artikkelissa oli tapahtunut sa-
+nojen yhteensulautuminen. Sanat "komento- ja" olivat muuttuneet muotoon  "komen-
+toja". T‰ss‰ on koko kyseinen virke alkuper‰isess‰ asussaan:
+
+        Se on vain komento- ja funktiopalvelija, joka j‰‰
+        odottamaan syˆtett‰ jostakin.
+
+Pahoittelen minusta riippumatonta virhett‰.
+
+Sami Klemola 
+
+{3--------------------------------------------------------------------------------
+
+Errata-palstalla julkaistaan korjauksia aiempien numeroiden kˆmm‰hdyksiin.  Voit
+l‰hett‰‰ toimitukseen palautetta seuraavaan osoitteeseen postitse.
+
+Janne Siren / SAKU
+Oravam‰entie 2 F 17
+02700 Kauniainen
+
+Internet: jts@krk.fi

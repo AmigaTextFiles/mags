@@ -1,0 +1,257 @@
+BG stonebg.iff
+FONT topaz.font 9
+COLUMN 1
+LIMIT 10 5 635 200
+IMAGE 1 e.iff
+
+§TEXT
+§SHCOL 0
+§IMAGE 1 POS 400 15 OVERWRITE NOBORDER
+§FONT 3 §CENTER §CR §SH+ §COL 15 §PIXELSLIDE 15
+§I+ Az ismeretlen Amiga §SPACES 15 §I- §PG
+§FONT 1
+§PG §SPACES 2 §FILL §SH-
+ Mikor programozásra kerül a sor, gyakran felmerül a kérdés, milyen nyelven
+érdemes nekikezdeni. Persze, ha csak egy nyelvet ismersz, akkor ez a dilemma
+egybõl megoldott, viszont a helyzet nem mindíg ilyen egyszerû. Egy-egy
+feladatot általában magas szintû nyelven könnyebb megoldani, akkor viszont jó
+lassú lesz. §B+ Assembly §B- is kellemes lehet, ha az egyszerûségét nézzük, 
+viszont túl sok mindenre kell figyelni, nem is beszélve az esetleges
+"rendszerprogramozás" címen ismert tortúráról.  (Igaz, jóval nagyobb
+szabadságot biztosít.)
+§PG
+ Ha magasszintû nyelv, akkor viszont nem olyan nagy a választék:
+§PG
+ Lehet §B+ Amos, §B- vagy valamelyik másik Basic alapú nyelv, ami viszont
+észbontó méretû kódot, és igen lassú futást jelent. Ha már mindenképp
+Basic-et kellene választanom, akkor inkább §B+ Blitz Basic §B- mellett
+döntenék.
+§PG §PG
+ Lehet C (általában §B+ SAS C §B- ), amit sokan választanak, viszont a C-hez már kell
+egy nagy adag elhivatottság mert - különösen a C++ - mutató- és
+struktúra-zavarán átvergõdni, az bizony embernek való feladat! A C-hez egy
+másfajta nézõpont kell, mint általában a nyelvekhez. (Nekem ne mondja senki,
+hogy egy ilyen kifejezést elsõ pillantásra megért: §I+ a+++++b §I- ! És ezt a
+förmedvényt egy csomó fordító még el is fogadja!)
+§PG §PG
+ Lehet még Pascal (pl.:  §B+ HighSpeed Pascal §B- a HiSoft-tól) ez viszont
+talán még bonyolultabbá teheti az ügyet, mivel a Pascal nyelvet nem
+rendszerprogramozásra találták ki, így gyakran igen nagy trükköket kell
+bevetni, hogy a kívánt eredményre vezessen végül.  Ráadásul a lefordított kód
+meg sem közelíti egy C által fordítottat.
+§PG §PG
+ "Mit lehet akkor még tenni?" Tettem fel magamban a kérdést kb.  egy fél éve.
+Hát nem sok választásom volt, mivel az AsmOne fordítóm messze van a
+tökéletestõl, a §B+ Devpac §B- -ot nem bírtam hosszútávon fordításra bírni
+(hát még a debuggere!!!), az SAS C fordítóból csak egy hibás verzió volt meg,
+amúgy sem vagyok oda a C-ért, a Basic-et hagyjuk, túl óvodás színvonala nem
+igazán nyújtja azt, amit az ember elvárhat egy nyelvtõl.  Így hát maradt a
+Pascal, amit "hivatalból" is ismernem kellett, csakhogy nagyon sokáig
+tartott, amíg végül rájöttem, milyen trükkök is kellenek, hogy egy normális
+rendszer alatt futó programot megírjak.  (Úgy presze, hogy azért ki is
+használja a rendszer képességeit!)
+§PG §PG
+ Szerencsémre az Aminetrõl letöltött játékok között volt egy, amelyet Amiga
+E-ben írtak és a doksi file-ban kivettek egy részt az §B+ Amiga E §B-
+leírásából.  Ez a következõ volt (természetesen lefodítottam magyarra :) ):
+§PG §PG
+ §I+ "Az E egy objektum orientált / procedurális / nem valódi függvényû magas
+szintû programozási nyelv, fõleg az olyan nyelvek inspirálták, mint a C++,
+Ada, Lisp stb...  Ez egy általános nyelv, az Amiga implementációjának legfõbb
+célja a rendszer alkalmazások programozása. A nyelv lehetõségei messze
+túlmutatnak azon, hogy egybe lehessen foglalni, de tartalmazzák a
+következõket: több mint 20000 sor/perces fordítást egy 7 Mhz-es Amigán,
+inline assembler és linker a fordító részeként, hatalmas készletét a
+beépített funkcióknak, remek modul koncepciót V39-es include-file-okkal, mint
+modulokkal, rugalmas változó típus-rendszerrel, "idézett" kifejezésekkel,
+azonnali és tipizált listákkal, parametrikus és befoglaló polimorfizmussal,
+kizárás kezeléssel, objektum-örökléssel, adat-rejtéssel, metódusokkal,
+többszörös visszatérési értékkel, hiányos argumentum-képzessel, regiszter
+lefoglalással, gyors memória menedzseléssel, egyesítéssel, LISP-sejtekkel
+(Cells), gui-toolkit-tel, (makró-) elõfeldolgozóval, nagyon intuitiv és
+hatásos forrás szintû debuggerrel, könnyû .library linkeléssel, és még sok
+minden mással... " §I-
+§PG §PG
+ Huhh! Hát gondolhatjátok, hogy erre igen kiváncsi lettem! El is mentem, és
+letöltöttem életem egyik leghasznosabb file-ját az Aminetrõl: az AmigaE v3.2
+csomagot, meg persze hozzá egy rakás példa programot, ami §B+ HALMOKBAN(!) 
+§B- áll az Amineten.
+ Nem tellett el több, mint két hét (vizsgaidõszakban) és már bátran
+nekiálltam egy egyszerûbb játék megírásának. (A játék címe egyébként §B+ Shells! 
+§B- , és megtalálható az Amineten.)
+§PG §PG
+ Na de kezdjük az elején: hogyan is alakult ki a nyelv?
+§PG
+ Volt egyszer, hol nem volt, volt egy ügyes, de sohasem elégedett holland
+programozó bácsi, nevezzük az egyszerûség(?) kedvéért §B+ Wouter van
+Oortmerssen-nek §B- (képtelen vagyok megtanulni a nevét, most is úgy másoltam
+ki a doksiból :) ).  Egy szép napon aztán rádöbbent, hogy sem a Pascal
+limitáltsága, sem az assembly nehézkes szabadsága, sem a C(++) sorzavara
+(line noise, ahogy ánglisul mondják) nem elégíti ki igényeit, ezért elõvett
+egy rakás nyelvet (ha jól sejtem, akkor a következõk lehettek:  §B+ Ada,
+Lisp, Prolog, C(++), Pascal, Modula-2, Miranda, HASKELL §B- ) és a sok jóból
+összegyúrt egy új hibrid nyelvet, mely leginkább a C és a Pascal keveréke.
+El is kezdte fejleszgetni, pillanatnyilag a 3.2-es verziónál tart és egyike a
+legkellemesebb magasszintû nyelveknek.  Olyan jóra sikerült, hogy PD nyelv
+volta ellenére megírták benne pl.  a §B+ Photogenics §B- c.  képfeldolgozó
+rendszert.
+
+§PG §PG
+ Miért is lelkendezek ennyire? Nézzük az elõnyöket:
+§PG §PG §SPACES 2
+ - a nyelv egész szerkezete nagyon egyszerû, a futtatható elemek - a C-hez
+hasonlóan - csak függvények lehetnek, melyek esetleg nem adnak vissza
+értéket. Itt szeretném egybõl megemlíteni, hogy egy függvény több értéket is
+visszaadhat, nem csak egyet. (Pillanatnyilag maximum hármat.)
+§PG §PG §SPACES 2
+ - a változó rendszere érdekes koncepcióra épül, un.  "típustalan"
+változókra.  Ez egyrészt nagy elõny, másrészt igen nehezen felderíthetõ
+hibákhoz vezethet. A "típustalan" azért nem teljesen igaz, csak annyit takar,
+hogy minden fõ típus ugyanúgy 4 byte-os elemként kezelhetõ, egymásnak
+átadhatnak értéket konverzió nélkül (is). És éppen itt van a hiba legnagyobb
+forrása, mert ezt egy C fordító is megengedheti, de legalább küld egy
+Warning-ot, itt viszont, mivel ez teljesen természetes, így nem szól érte a
+fordító.
+§PG §PG §SPACES 2
+ - létezik kombinált típus - mint Pascalban a record, vagy C-ben a structure,
+itt object-nek hívják és ugyanúgy mezõkbõl áll, mint a többi nyelvben.  Igaz
+itt az object típus egy kicsit komplexebb az §B+ objektum-orientált §B-
+programozás miatt, viszon ha esetleg nem értesz az objektum-orientált
+programozáshoz, akkor is nyugodtan nekiállhatsz a nyelvnek, mert -szemben a
+PC-s Borland Pascal-lal- a rendszert NEM csak objektum-orientáltan lehet
+programozni!
+§PG §PG §SPACES 2
+ - elég nagy elõny az un. lista. Ez egy viszonylag egyszerû struktúra, amit
+több elem összekapcsolására hoztak létre. Egy példán egyszerûbben megérthetõ:
+ ha valamilyen rendszer rutint akarunk meghívni, akkor azt általában
+valamilyen struktúra átadásával tehetjük meg. Pl. meg akarom nyitni a topaz
+font-ot, akkor az valahogy így nézne ki Pascalban:
+§PG §FONT 0 §PAD 30
+§PG   topazfont^.name:='topaz.font'
+§PG   topazfont^.ysize:=8
+§PG   topazfont^.style:=0
+§PG   topazfont^.flags:=FPF_ROMFONT
+§PG
+§PG   myfont:=OpenFont(topazfont)
+§PG §FONT 1 §PAD 0
+§PG 
+ (Ez persze csak a lényegre korlátozott, az inícializálást elhagytam!)
+§PG §PG
+ Mindez E-ben:
+§PG §PG §PAD 30 §FONT 0
+   myfont:=OpenFont(['topaz.font',8,0,FPF_ROMFONT]:textattr)
+§FONT 1 §PG §PAD 0
+§PG  Valamivel egyszerûbb, nem? Fölöslegessé teszi olyan struktúra létrehozását,
+amit csak egyetlen egyszer használunk!
+§PG §PG §SPACES 2
+ - minden kifejezésnek van visszatérõ értéke, mint C-ben. Így van értelme a
+következõ kifejezésnek:
+§PG §FONT 0 §PAD 30 §PG
+   WHILE (myimsg:=GetMsg(mywindow.userport))=NIL DO Delay(10)
+§PG §FONT 1 §PAD 0 §PG §SPACES 2
+ Ami addig várakozik, amíg a §B+ mywindow §B- által leírt ablak message
+portjára egy üzenet érkezik, és azt el is tárolja a myimsg pointerben.
+§PG §PG §SPACES 2
+ - gyakori probléma, hogy a program valamelyik alrészében hiba keletkezett,
+és ezért fel kell függeszteni az egész program futását. Ez együtt jár olyan
+apróságokkal, mint például lezárni a megnyitott screen-t, visszaadni a
+rendszernek a különbözõ handlereket, és persze lezárni a megnyitott
+file-okat. Persze gyakran nem is olyan könnyû azt megállapítani, hogy milyen
+erõforrásokat vettünk igénybe, és a rendszer igencsak allergiás arra, ha egy
+meg nem nyitott fontot akarunk például lezárni.
+§PG §SPACES 2
+ Ezt az E egy remekül kialakított kizárás-kezeléssel oldja meg (exception
+handling). Ez nem azonos a processzor-szintû kizárással (guru), bár az is
+megoldható egy másik úton. Lehetséges automatikus kizárást is kérni bármely
+rendszer vagy E rutinra, így nem kell foglalkoznunk azzal, hogy most tényleg
+sikerült-e a screen-t megnyitni, vagy sem.  Most ezt nem fejtem ki bõvebben,
+majd esetleg egy késõbbi számban.
+§PG §PG §SPACES 2
+ - szerencsére a memória felszabadítással nincs nagy gond, nem szükséges a
+futás alatt lefoglalt területeket visszaadni, ha az E rutinjain keresztül
+foglaltuk, azok ugyanis a program végén automatikusan felszabadulnak. (Ez nem
+vonatkozik természetesen a rendszer rutinok által foglalt memóriákra, azokat
+így is vissza kell adni!)
+§PG §PG §SPACES 2
+ - az E-ben kialakított §B+ modul §B- szerkezet hasonló a Pascal
+unit-rendszeréhez, viszont hatalmas elõnye, hogy az összes V39-es include át
+van fordítva modullá, így a rendszer használata teljesen megoldott.  Ezen
+kívül még rengeteg egyéb modult is tartalmaz a csomag, pl:  ProTracker
+lejátszó, vektor-rajzoló stb...  Persze mi is írhatunk modulokat, sõt §B+ C
+proto, assembly include §B- és §B+ object §B- file-okat is átfordíthatunk
+modullá a mellékelt tool-okkal.
+§PG §PG §SPACES 2
+ - egy E program vegyesen tartalmazhat E és assembly utasításokat. Mivel
+semmilyen kontrolt nem végez a fordító az inline assembly felett, így ha nem
+figyelünk oda néhány szabályra, akkor bizony az egész program felborulhat,
+viszont ennek ellenére is hatalmas elõny.
+§PG §PG §SPACES 2
+ - remek forrásszintû debuggere van, de a fordító tud debug hunk-ot is fûzni a
+lefordított programohoz.
+§PG §PG §SPACES 2
+ - viszonylag gyors és rövid kódot fordít. A Pascal kódjánál mindenképp jobb,
+de egy agyonoptimalizált C legyõzheti.
+§PG §PG §SPACES 2
+ Viszont nem minden fenékig tejfel, úgyhogy az E-nek sem csak elõnye létezik.
+Ha már a kivesézésnél tartunk, nézzünk néhányat a hátrányok közül is:
+§PG §PG §SPACES 2
+ - ha a programban saját modulokat használunk, akkor a modulok globális
+változói gyakran nagy keveredéshez vezetnek.
+§PG §PG §SPACES 2
+ - a fodító egyben linker is, E-bõl nem lehet object file-t csinálni, hogy
+más nyelvhez hozzálinkeljük. (Ez végül is nem olyan nagy katasztrófa.)
+§PG §PG §SPACES 2
+ - amekkora elõnyt jelent a típustalan változókezelés, olyan nagy problémát
+is okozhat, amire már kitértem valamivel elõbb.
+§PG §PG §SPACES 2
+ - a nyelvben nagyon nehézkes a lebegõpontos számok kezelése, ezért nem
+annyira alkalmas sokat számoló alkalmazások készítésére. (Azért még mindíg
+egyszerûbb, mint assembly-ben!)
+§PG §PG §SPACES 2
+ - az E nem tartalmaz mûveleti hierarchiát. Ez elég hihetetlennek tûnik,
+viszont sokat gyorsít a fordításon. Nem is okoz addig gondot, amíg el nem
+felejtkezünk róla! (Akkor viszont nagyon nehéz kideríteni, hogy mi nem
+stimmel... Hiszen ránézésre minden tökéletes!)
+§PG §PG §SPACES 2
+ - a fordító és a modulok is tartalmaznak kisebb-nagyobb hibákat, amelyek
+elkerülhetetlenek, különösen ha az ember egyedül ír egy ilyen komlex
+rendszert. Ha már semmi ötletem nincs, hogy mi okozhatja a hibát, akkor bele
+szoktam nézni a lefordított programba. Elõfordult, hogy nem azt találtam,
+amit én írtam.
+§PG §PG §SPACES 2
+ - a rendszer include-okban néha megváltozattak egy-egy struktúrát, vagy
+rutin nevet, ami általában nem okoz problémát, mert egy tool-lal meg lehet
+nézni bármelyik modult (Showmodule), és az esetleges eltérést azonnal észre
+lehet venni, viszont a Dos, Intuition és Graphics library hívások a
+fordítóba vannak integrálva, és ezeket már nehezebb ellenõrizni. (Így jártam
+mikor ezt az újságot írtam, az §FONT 0 UCopperListInit §FONT 1 csak egy betûben különbözött:
+§FONT 0 UcopperListInit §FONT 1 , viszont mire én erre rájöttem...!)
+§PG §PG §SPACES 2
+ - a string és tömbkezelése elég bonyolult és problémás. Többdimenziós tömbök
+nem léteznek, string-bõl viszont kétfajta van: normál string és estring.
+Szerintem az estring-ek meglehetõsen használhatatlanok, és csak gondokhoz
+vezetnek, viszont szinte az összes string-mûvelet csak ezeket támogatja.
+ (Pl.: string-másolás)
+§PG §PG §SPACES 2
+ Nos ennyi nagyobb hibát találtam az E-ben, viszont egyik sem olyan hatalmas,
+hogy akadályozza a használatát. A nyelvhez egyébként két guide formátumú
+doksi is jár, az egyik egy referencia-szerû programozói segítség, a másik
+pedig egy általánosabb leírás, ami kifejezetten a kezdõknek készült, és
+folyamatosan mutatja be az E-t az elejétõl a végéig. A kettõ elég jól
+kiegészíti egymást, bár az utóbbinak a stílusát eléggé szájbarágósnak tartom,
+viszont csak abban van teljes index az E-vel kapcsolatban.
+§PG §PG §SPACES 2
+ Végül csak annyit szeretnék még mondani, hogy ha a Pascal butusnak tûnik, a
+C nem tetszik, az Assembly nehézkes, akkor próbáld ki az E-t, nem fogsz
+csalódni! (Lehet, hogy indítok egy sorozatot az E-rõl, vigyázzatok!)
+
+§PG §PG §RIGHT §B+
+
+Rachy of BiøHazard §B-
+§SL 2 §FILL
+
+ (Csak úgy mellesleg jegyzem meg, hogy mivel a nyelv Shareware, így a teljes
+verzió 65 Holland guldenbe kerül. A szabadon terjeszthetõ és a teljes verzió
+közötti különbség csak annyi, hogy a terjeszthetõ fordító nem hajlandó tovább
+fordítani, ha a kimenõ file mérete elérte a 8 Kb-ot.) §CR
+

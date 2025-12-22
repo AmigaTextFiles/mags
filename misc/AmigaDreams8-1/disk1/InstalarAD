@@ -1,0 +1,85 @@
+;
+; Instalador para Amiga Dreams
+;
+; Por The Lawnmover Man / Suicidal Tendencies
+;
+; 21 Junio 1996
+;
+;
+(complete 0)
+
+(set destino "SYS:")
+
+(message
+   "\n\n\nAMIGA DREAMS\n#8\n"
+   "va a ser instalada en su disco duro.\n"
+
+)
+
+(set destino
+   (askdir
+		(prompt "Selecciona el directorio donde quieras\n"
+		        "que se instale la revista.\n")
+		(default destino)
+                (help "Instalación For Ever")
+   )
+                            
+)
+
+(set destino (tackon destino "AMIGADREAMS"))
+
+(makedir destino (infos))
+
+(askdisk (dest "AmigaDreams1")
+         (prompt "\n\n\n"
+                 "  Inserte el disco 1 de Amiga Dreams en\n"
+                 "  cualquier unidad\n")
+         (help "¿Para que quieres ayuda?")
+         (assigns)
+)
+
+(copyfiles 
+         (source "AmigaDreams1:AD.Exe")
+         (dest destino))
+(copyfiles 
+         (source "AmigaDreams1:AD.Exe.info")
+         (dest destino))
+
+(copyfiles
+         (source "AmigaDreams1:libs/ptreplay.library")
+         (dest "LIBS:"))
+
+(complete 16)
+
+(set destino2 (tackon destino "Datos"))
+
+(makedir destino2)
+
+(copyfiles (source "AmigaDreams1:datos/mod.revista")
+           (dest destino2))
+
+(complete 50)
+
+(askdisk (dest "AmigaDreams2")
+         (prompt "\n\n\n" 
+                 "Inserte el disco 2 de Amiga Dreams en\n"
+                 "cualquier unidad\n")
+
+         (help "\n\n\n\n"
+               " ¿Tienes algún problema? Pues mete el disquito\n")
+         (assigns)
+)
+
+(copyfiles (source "AmigaDreams2:")
+           (dest destino2)
+           (pattern "#?")
+)
+
+(complete 100)
+
+(message         "\n\n\n"
+                 "  Amiga Dreams ha sido instalada con  \n"
+                 "   éxito en su disco duro. Ya puede   \n"
+                 "  disfrutar de la revista más cañera  \n"
+                 "     de toda la escena española.      \n"
+)

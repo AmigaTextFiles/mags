@@ -1,0 +1,88 @@
+·
+ ¹F.Rad³
+ ¹AC.Chris³
+ °
+
+
+
+»
+
+
+ Egyebek  között  pl.   2  Megás  gépeknél  rá lehet telepíteni a Power-t.  Az
+elõnye  ott  van,  hogy  olvasás  közben  a cikkek betöltése gyorsul a lemezes
+betöltéshez  képest.   A  HD  tulajok ennek nem sok hasznát veszik, mármint ha
+felinstallálták.
+ A  3.0-s  WB-csel  rendelkezõk a RAD-ot az "Storage" lemezen talalhatják meg,
+elindítva  létrehoz  egy  RAD_0:   egységet  a  RAM-ban.   Ez  a terület, mint
+mindenki  számára  világos:   egyrészt  ugyanúgy  sávokra  és  szektorokra van
+felosztva, akár a floppy, másrészt Reset után is használható.  Ezt a file-t az
+egyéni  WB  disk-ünkre  feltehetjük, a futtatásához egy Mount-ra van szükség a
+C-ben.
+ Az  alacsonyabb  verziószámú Kick ill.  WB verziók is képesek a létrehozásra,
+amit  kézikönyvÖl  lehet  elõvadászni.  ( Pl.:  a Setpatch R - Nem hard reset,
+Mount RAD:, etc.  ) Sajátsága még, hogy csak file-os dolgokat kezel, de ezt jó
+lenne  ha megcáfolná valaki.  Ekkor ugyanis tracktöltõs programokat is lehetne
+használni  vele  (persze,  ha a betöltõ rész nem direkt az DF0-t keresi).  Itt
+egy másik probléma, ha file-os az anyag, de a töltõ floppyról töltene, szintén
+nem  ér  sokat (kivételt képeznek term.  a hozzáértõ coderek).  Apropó, ha van
+jellemzõ bytesorozat a töltõrészben, ezt átírva mehetnénk valamire.
+ További alkalmazásai lehetnek:  Több lemezes (általában 2 db.) stuffoknak (az
+õs  Defenderrel  mûködik)  meghatározott  számú  (RAM-tól  ill.  Drive számtól
+függõ)  részét  akár  filecopyval  vagy  diskcopyval fel lehet vinni a RAD-ra,
+amibõl  ugye  a  memóriában  több  is  megfordulhat.   Most  nem részletezem a
+letörlés  +  újralétrehozás  bonyodalmait,  meg azt sem, hogy pl.a Power 11-es
+számánál (2 Mega, standard) nem jön elõ a menüben a háttérgrafika.
+ Ennyit  tudtam  nagyjából  írni  mezei  felhasználóként,  esetleg  még néhány
+általam használt módszert megemlítek.  Érdekelt a Street Rod, de az elsõ része
+nálam  még  szûz  volt,  mint  késõbb  kiderült,  és  kérte  a  kódot  (színes
+wurlitzer).   A RAD-ra felmásoltam, majd miután kiderült az állapota  felírtam
+néhány page, line, word adatot (turn to hexa) amiket szépen sorban megtaláltam
+az egyik fileban, hozzá kapcsolódva a beírandó színadatokat is.  Ennek alapján
+egy  cetlire  véstem  õket  és  vége.   Másik példa az Elite, aminél hasonló a
+helyzet,  csak betût kér a pofi a stationön.  Namost ugyanilyen megfontolásból
+RAD-ra  vettem,  majd  a  több száz variációt (Gametek rulez) leírkálva meg is
+õszültem. A jól feltört  vagy esetleg eredeti programot felhasználók elõnyben.
+A  másik  lehetõség a sûrû mentegetés, kb.  minden kódkérés után.  A Police-os
+ejnye-bejnye  után  pedig  reset (itt nem írtam, hogy a drive-ból szedjük ki a
+lemezt,  vagy  nem  bootolót  tegyünk  bele, mert késõbb kattogni fog a drive:
+katt...  katt...).
+ Az  egyéb  alkalmazásokat  az egyéni fantáziára engedem szabadjára.Jó RAD-ot,
+emberek!
+
+                                                         ½CASE vagy nem?¼
+
+
+ Hozzátennék  még néhány gondolatot a RAD-hoz.  Ez valójában egy teljes értékû
+virtuális  lemez  a  memóriában, tehát bármit tehetünk vele, amit egy lemezzel
+(azért a sörösüvegbe való gyömöszölésrõl mondjunk le).
+ A  létrehozásához  az  alábbi mountlista szükséges, valamint a mount parancs.
+Megszüntetni  a RemRAD utasítással tudjuk vagy egy hard resettel, újabb RAD-ot
+egy  új  mountfile-lal  készíthetünk,  a  unit szám (unit=1, unit=2, stb.) (és
+persze gy.k.  a mountfile nevének, pl.  RAD, RAD1) megváltoztatásával.
+
+Device          = ramdrive.device
+Unit            = 0
+Flags           = 0
+Surfaces        = 2
+BlocksPerTrack  = 11
+Reserved        = 2
+Interleave      = 0
+LowCyl          = 0
+HighCyl         = 79
+Buffers         = 5
+BufMemType      = 1
+
+
+ Természetesen  használatának  csak  DOS  lemeznél van értelme.  Wincsitulajok
+installáláskor  vehetik  hasznát,  ha  DMS-t  kell  kicsomagolni.   Egy  40-es
+Blizzardon  3-4  másodperc  kicsomagolni egy DMS-t.  Ez az idõ lemezen, de még
+FF0-ás  meghajtón  is  jóval  több.  Az FF0-ás meghajtóról annyit illik tudni,
+hogy ugyanazt csinálja  mint a RAD, csak a wincsire rakja a lemezfile-t és nem
+a  memóriából  foglal helyet.  Alapgépeken viszont ez az ideálisabb megoldás a
+memória  "sokasága"  miatt.   Egyes  030-as  vagy jobb kártyáknál gond lehet a
+RAD-dal,  ugyanis ezeknél a kártyáknál a Chip-RAM-ból foglalódik le a memória,
+abból meg ugye lényegesen kevesebb van, mint a Fast-RAM-ból.  030-as kártyákon
+erre  megoldást  nyújt  a  PatchBlizzardMem  nevû program, ez szépen átpakol a
+Fast-RAM-ba.  Sajnos 040-esen ez a program már nem mûködik.
+
+»

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Easy Assign - Ein Update</TITLE>
+   <META NAME="AUTHOR" CONTENT="Jürgen Kumiega">
+</HEAD>
+<BODY BackGround="backto.gif" BACKGROUND="" TEXT="#ffffff" LINK="white" Vlink="gray" ALINK="#00ff8a" BGPROBERTIES="fixed">
+<a name=0>
+<center><H1>Easy Assign</H1>von<H2>Frank Gutmann</H2></center>
+<HR size="5">
+Da das File letztes Mal nicht der NoCover beilag habe ich mich entschlossen den Quelltext zu Veröffentlichen. Wer das klasse Tool haben will, muss man es in einen Editor einhacken, speichern und danach im CLI <Font color=00ff00>protect c:EA rweds</FONT> eingeben. Das wars.<P>
+
+<HR size="5">
+.key assign  <P>
+
+assign &lt;assign&gt; exists >env:e <P>
+
+if "&lt;assign&gt;" eq ""         <BR>
+ echo "Kein Assign angegeben"     <BR>
+ skip ende                        <BR>
+endif                             <P>
+
+if "$e" eq "&lt;assign&gt; not assigned"<BR>
+ skip neu                               <BR>
+else                                    <BR>
+ requestchoice "Easy Assign Nachricht" "Assign existiert bereits" "entfernen" "ändern" "hinzufügen" "lassen" >env:n  <BR>
+  skip $n<BR>
+endif        <P>
+
+lab 1        <BR>
+ assign &lt;assign&gt; remove<BR>
+skip ende                   <P>
+
+lab 2                       <BR>
+skip neu                    <P>
+
+lab 3
+ requestfile drawer=sys: title = "Schublade auswählen" drawersonly >env:a<BR>
+  if warn<BR>
+   skip ende <BR>
+  endif       <BR>
+ assign &lt;assign&gt; $a add<BR>
+skip ende                    <P>
+
+lab neu                      <BR>
+ requestfile drawer=sys: title = "Schublade auswählen" drawersonly >env:a <BR>
+  if warn<BR>
+   skip ende<BR>
+  endif     <BR>
+ assign &lt;assign&gt; $a<BR>
+skip ende                <P>
+
+lab 0                    <BR>
+skip ende                <P>
+
+lab ende                 <BR>
+del env:e  env:n env:a  >nil:<P><CENTER><FONT SIZE="-1">Easy Assign is © by Frank Gutmann</FONT> </CENTER>
+<HR size=10>
+<center><h2><a href="mitglieder/kumiega.html">Jürgen  <IMG SRC="../thedark.jpg" Width=130 Height=90 Border=0> Kumiega</H2></A>
+<bR><a href=pd_index.html><img src=index.gif border=0></center>
+</BODY>
+</HTML>

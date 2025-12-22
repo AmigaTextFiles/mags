@@ -1,0 +1,38 @@
+	if not exists env:fmsdiskvariable
+echo "Dieses Script wurde von dir zum ersten Mal gestartet.*nUm es zu benutzen mußt du entweder Das FMSDisk.device aus dem Aminet oder ein vergleichbares installiert haben.*nDadurch wird es möglich ADF Dateien auf die Festplatte zu entpacken.*n"
+wait 3 secs
+ask "Hast du FMS oder ein ähnliches installiert?"
+		IF NOT warn
+skip ende
+		else
+echo "Na sehr gut!*nDann gib jetzt bitte das Device ein (z.B. trackdisk.device), NICHT HF0: oder ähnliches!:*n" NOLINE
+SET >NIL: fmsdiskvariable ?
+setenv fmsdiskvariable $fmsdiskvariable
+ECHO "Sehr schön!*nAls nächstes bitte die Devicenummer, normalerweise 0 oder 1:*n" NOLINE
+SET >NIL: fmsunitvariable ?
+setenv fmsunitvariable $fmsunitvariable
+Echo "Als letztes brauche ich noch die Assign Zuweisung, z.B. DF0: oder HF0:. Mit Doppelpunkt!*n" NOLINE
+Set >NIL: fmsdiskdisk ?
+setenv fmsdiskdisk $fmsdiskdisk
+		endif
+skip weiter
+	else
+	skip weiter
+endif
+lab weiter
+ECHO "Bitte File wählen:"
+C:Requestfile title "Bitte ADF Datei auswählen:" drawer AmigaClassiX:PCMENU/ADFS >ENV:GewählteDatei
+Echo "Entpacke...."
+AmigaClassiX:SYSTEM/C/ADF2DISK $GewählteDatei $fmsdiskvariable $fmsunitvariable
+		if not warn
+Echo "Scheint so als ob alles geklappt hat! Tschö..."
+copy env:fmsdiskdisk envarc: >NIL:
+copy env:fmsdiskvariable envarc:
+copy env:fmsunitvariable envarc:
+else
+Echo "Offentsichtlich ist ein Fehler aufgetreten. Sorry :("
+		endif 
+diskchange $fmsdiskdisk
+
+lab ende
+endcli

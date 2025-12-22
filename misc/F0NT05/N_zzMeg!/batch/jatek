@@ -1,0 +1,77 @@
+; Számkitalálós játék
+; ©1997, Rachy of BiøHazard
+
+; Futtatásához legalább 2.04-es Kick és néhány külsõ állomány szükséges!
+
+Echo "*E[0;0H*E[J"
+;Ez a rusnyaság a képernyõtörlés Escape szekvenciákkal
+
+Echo "Számkitalálós játék"
+Echo ""
+
+;Bekérjük a gyerkõc nevét
+Echo "Mi a neved kedves fiam?"
+Set >NIL: player ?
+
+Echo ""
+Echo "Válassz ki egy egész számot 1 és 127 között, én meg megpróbálom"
+Echo "kitalálni legfeljebb 7 kérdésbõl, hogy mi az a válaszaid alapján."
+Echo "Ne merj csalni, mert úgyis rájövök!"
+Echo ""
+
+Echo "Ha mehet, üss egy Entert!"
+;Elnyeljük a hülyeségeket, amiket beírt
+Set >NIL: dummy ?
+
+;Na, innentõl áttérünk a requesterekre
+Set actnum 64
+Set step 32
+
+Lab maincycle
+If $step EQ 0
+;Elértük a nulla lépést, itt már biztos, hogy a kitalálandó számnál vagyunk.
+;Ha nem az azt jelenti, hogy a játékos csalt.
+  If `RequestChoice "Számkitalálós játék" "$player! Szerintem az általad választott szám a(z) $actnum!" "Ez az!|Ez nem az."` EQ 0
+  Echo "Te csalsz! Szégyeld magad!"
+  Skip quit
+ Else
+  Skip 2
+ EndIf
+EndIf
+
+Skip `RequestChoice "Számkitalálós játék" "$player! Szerintem az általad választott szám a(z) $actnum!" "Több|Ez az!|Kevesebb|Eh! Unom már!"`
+
+Lab 0
+;Kilépés
+ Echo "Hát ha unod, akkor itt a vége. Bye!"
+ Skip quit
+
+Lab 1
+;Több
+Set actnum `Eval $actnum+$step`
+Set step `Eval $step/2`
+Skip maincycle BACK
+
+Lab 3
+;Kevesebb
+Set actnum `Eval $actnum-$step`
+Set step `Eval $step/2`
+Skip maincycle BACK
+
+Lab 2
+;Megvan
+Echo "Na, milyen ügyes vagyok, nem?"
+Echo ""
+Echo "Kedves $player! A szám, amire gondoltál: $actnum"
+
+Lab quit
+;Kilépés elõtt elpucoljuk a változókat, mert így illik
+
+UnSet actnum
+UnSet step
+UnSet player
+UnSet dummy
+
+Echo ""
+Echo "Légy jó!"
+

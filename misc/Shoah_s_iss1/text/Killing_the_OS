@@ -1,0 +1,54 @@
+@Database SHOAH.s.guide
+@Node MAIN "Killing the OS."
+Killing the OS.
+
+To write that compitition winning demo you're going to have to write directly
+to the hardware. Now the problem with the Amiga being so nice is that it
+multitasks, which is great for reading AmigaGuide documents, but a real pain
+in the arse when you want to do flashy effects. So to avoid a load of hassle
+and to give your fractal mapped vector routine more CPU time you need to get
+rid of that cheesy Operating System,
+
+
+				@{"View the Source" link SHOAH.s:SHOAH_Libs/Startup.lib/MAIN}
+
+
+A few points about the source...
+You'll need the include files, I don't think I'm allowed to spread them, but
+if you own Devpac ( And some C compilers ? ) then you'll have them all ready.
+( The Jan. issue of Amiga Shopper has a demo of Devpac 3 on the coverdisk,
+which has all the include files ( I think so anyway ))
+
+This startup routine was coded by CJ/SAE and I added bits from various other
+coders, ie Shagratt/LSD and some other guys. I don't claim any credit for the
+above source, I've got very little to do with it.
+
+The next issue will have better memory reading, eg total free etc.
+
+Don't worry if you don't understand it, it's not important ! Just make sure
+you use it ( It's the best way I've seen to set things up ).
+
+Right to use the source, start your code with...
+
+Start:
+	bsr.s	TakeSystem		;Kill the OS
+	tst	d0			;Did we have an error ?
+	bne.s	Error			;Yes, so quit
+
+	bsr	Do_your_funky_code
+
+	bsr	RestoreSystem		;Finished, so restore the OS
+
+	moveq.l	#0,d0			;Keep Mr.CLI happy
+Error:
+	rts
+
+;*+*+*+*+*+*+*+*+*+*+*+- Library Routines -+*+*+*+*+*+*+*+*+*+*+*+*+*+*+
+	
+	include	Includes/Startup.lib
+
+;*+*+*+*+*+*+*+*+*+*+*+- Run your oh so cool program -+*+*+*+*+*+*+*+*+*
+Do_your_funky_code:
+	...
+	rts
+@Endnode

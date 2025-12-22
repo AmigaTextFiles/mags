@@ -1,0 +1,552 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+<html>
+<head>
+   <title>Amiga STORM; Hrvatski Amiga casopis</title>
+   <meta name="author" content="Davor Rivic (d_rivic@iname.com)">
+   <meta name="description" content="Hrvatski AMIGA casopis">
+   <meta name="keywords" content="Hrvatska, Amiga, casopis, STORM, news, review, preview, zznic, tutorials, as, special, help, interview, demo, scope, aminet, .com, mailing, list, amigas, download, links, impressum, nagrada, nagradna, igra, online, regular, registration, top, ten, opisi, najave, novosti">
+   <meta name="generator" content="CygnusEd Professional V4.2, Copyright © 1987-1997 by CygnusSoft Software">
+</head>
+<body background="../gfx/back.gif" link="blue" vlink="blue" bgcolor="white">
+
+<p align="center">
+
+  <table width="100%" border="0" cellpadding="3" cellspacing="0">
+  <tr><td colspan="4" bgcolor="#000000"></td></tr>
+  <tr><th colspan="4" align="center" bgcolor="red" background="../gfx/back3.gif"><font size="5" color="#ffffff">Tutorials: Mama, I wanna be a coder! II</font></th></tr>
+  <tr><td colspan="4" bgcolor="#000000"></td></tr>
+  <tr><td width="5%"></td><th width="45%" align="left"><font size="2">by Cyborg/INDUS3</font></th>
+  <th width="45%" align="right"><font size="2"><a href="mailto:cyborg@fonoc.co.yu">cyborg@fonoc.co.yu</A></a></th><td width="5%"></td></tr>
+  <tr><td colspan="4" bgcolor="#000000"></td></tr>
+  </table><br>
+
+</p>
+
+<br>
+
+<p>
+
+
+Nakon  kraæe  pauze  nastavljamo  sa  ¹kolicom  asemblera za dobru
+djeèicu i njihove nevaljale roditelje.
+</p>
+<p>
+    Na  samom poèetku æu ispraviti gre¹ku koja se potkrala u pro¹lom
+broju.   Primjer za JMP instrukciju ne uveæava registar D0 do beskonaènosti
+(toènije  do  vrijednosti  $ffffffff  =),  veæ bri¹e D0, a zatim ga uveæa za
+jedan  i  ove  dvije instrukcije ponavlja beskonaèno mnogo puta.  Problem je 
+u pogre¹nom mjestu na kome se nalazi labela "start", kao ¹to ste vjerojatno i
+sami primjetili.  Toèan primjer æe izgledati ovako:
+<pre>
+    CLR.L D0    ;bri¹e D0
+start    ADD.L #1,D0    ;poveæava D0 za 1
+    JMP start    ;skaèe na start
+</pre><font size="3"><br>
+<p>
+
+    JMP sadr¾i toènu adresu na koju program treba da "skoèi", tako da
+ova instrukcija zauzima 6 bajtova; 2 bajta oznaèavaju kod same instrukcije
+dok je u preostalom longwordu smje¹tena adresa na koju program skaèe.
+<br>
+    Instrukcija koja vr¹i istu funkciju kao i JMP, ali sa odreðenim
+ogranièenjima je instrukcija BRA. Njenim kori¹tenjem na¹ primjer postaje:
+<pre>
+    CLR.L D0
+start    ADD.L #1,D0
+    BRA.S start
+</pre><font size="3"><br>
+<p>    
+    BRA.S  start zauzima samo 2 bajta i funkcionira na taj naèin ¹to
+pamti  "udaljenost" od ili do adrese na koju program treba da skoèi, ali ne
+pamti  i samu adresu.  Po¹to je ADD.L #1,D0 du¾ine 6 bajtova, a BRA.S start
+du¾ine  2  bajta program æe skoèiti na adresu za 8 bajtova manju od stanja
+PC-a  (Program  Counter).   BRA.S  je  ekvivalentna instrukciji BRA.B i one
+omoguæavaju  skokove  na  udaljenosti od +/- $7f (127) bajtova, a postoje i
+BRA.W koja je dugaèka 4 bajta i mo¾e da skaèe u zoni od +/- $7fff (32768)
+bajtova  i  BRA.L  od  6  bajtova  s opsegom od +/- $7fffffff (2147483647)
+bajtova.   Ogranièenje  BRA instrukcije je i u tome ¹to ovom instrukcijom
+nije moguæ skok na druge sekcije programa.  No o tome ne¹to kasnije.
+</p>
+<p>    
+    Postoji  veliki  broj  tzv.  Branch instrukcija; jedna od njih je i 
+BRA  koja  vr¹i  bezuslovno  grananje.   BSR  je instrukcija koja ima istu
+funkciju  kao  i  JSR  stim  ¹to BSR.S ima 2 bajta, BSR.W 4 bajta a BSR.L
+poseduje 6 bajtova.
+<br>
+    Sve ostale Branch instrukcije vr¹e grananje u zavisnosti od stanja
+Statusnog  Registra (SR).  SR je 16-bitni registar, u èijem se ni¾em bajtu
+nalazi 5 bitova, tzv.  flegova.  To su C (Carry), V (Overflow), Z (Zero), N
+(Negative)  i X (Extended) fleg.  Nakon svake instrukcije odreðeni flegovi
+se  postavljaju  na jedinice ili nule u zavisnosti od operacije.  Na osnovu
+njihovih  imena  mo¾e  se  zakljuèiti koju funkciju imaju.  C fleg æe biti 
+postavljen  ako  je  do¹lo  do  prijenosa  jednog  bita  pri  raèunanju ili
+¹iftovanju, V æe biti postavljen ukoliko je do¹lo do prekoraèenja, Z ako 
+je  rezultat operacije nula, N fleg ako je rezultat operacije negativan, a X 
+fleg ima takoðer funkciju prenosa i bita, slièo kao i C fleg.  X fleg nema
+uticaja na grananje, tako da grananje odreðuju N,Z,V i C flegovi.
+</p>
+<p>
+BHI <labela>    
+</p>
+<p>
+Do grananja æe doæi ukoliko su i C i Z flegovi nule, tj. ako je
+rezultat veæi od operanda sa kojim se poredio.
+</p>
+<p>
+BLO <labela> i BCS <labela>
+</p>
+<p>
+Do grananja dolazi ako je C fleg nula, tj.  ako je rezultat manji.
+</p>
+<p>
+BLS <labela>
+</p>
+<p>
+Grananje  æe se dogoditi ako su ili C ili Z flegovi postavljeni,
+tj.  ako je rezultat manji ili jednak.
+</p>
+<p>
+BHS <labela> i BCC <labela>
+</p>
+<p> 
+Ukoliko  je  C  nula, doæi æe do grananja, tj.  ako je rezultat veæi
+ili jednak.
+</p>
+<p>
+BLT <labela>
+</p>
+<p>
+    Ako  je N=0 i V=1, ili N=1 i V=0, tj.  ako je rezultat manji dolazi
+do grananja.
+</p>
+<p>
+BLE <labela>
+</p>
+<p>
+    Ako  je  N=0  i  V=1,  ili  N=1  i V=0, ili ako je Z=1, tj.  ako je
+rezultat manji ili jednak.
+</p>
+<p>
+BGT <labela>
+</p>
+<p>
+    Ako  je  N=1 i V=1 i Z=0, ili N=0 i V=0 i Z=0, tj.  ako je rezultat
+veæi.
+</p>
+<p>
+BGE <labela>
+</p>
+<p>
+    Ako  je  N=1  i  V=1,  ili N=0 i V=0, tj.  ako je rezultat veæi ili
+jednak. 
+</p>
+<p>
+BPL <labela>
+</p>
+    Ukoliko je N=0, tj. ako je rezultat pozitivan.
+</p>
+<p>    
+BMI <labela>
+</p>
+<p>
+    N=1, tj. rezultat negativan.
+</p>
+<p>
+BVC <labela>
+</p>
+<p>
+    V=0, tj. nema prekoraèenja.
+</p>
+<p>
+BVS <labela>
+</p>
+<p>
+    V=1, tj. do¹lo je do prekoraèenja.
+</p>
+<p> 
+BNE <labela>
+</p>
+<p>
+    Z=0, tj. rezultat nije jednak nuli.
+</p>
+<p> 
+BEQ <labela>
+</p>
+<p>
+    Z=1, tj. rezultat je nula.
+</p>
+<p>
+Za razliku od BRA i BSR instrukcija sve ostale BCC instrukcije mogu
+imati samo sufikse .S(.B) i .W .
+
+<pre>  
+;- primjer grananja -------------
+
+    move.w    #$20,d1        ;postaljamo vrijednost sa kojom poredimo
+
+    tst.w    d0        ;da li je d0=0?
+    beq.s    .nula        ;ako jeste, skok na adresu .nula
+                ;ako nije,
+    cmp.w    d1,d0        ;poredimo d0 i d1
+    bgt.s    .vece        ;ako je d0>d1, skok na adresu .vece
+
+.manje                ;rezultat je manji od $20 i nije nula
+    ...
+    ...
+    
+    rts
+    
+.nula    
+    ...
+    rts
+
+.vece
+    ...
+    rts
+
+;--------------------------------
+</pre><font size="3"><br>
+<p>
+
+Ovde  se  pojavljuje  instrukcija  TST  koja testira dati operand i
+postavlja  N  i  Z flegove dok flegove V i C bri¹e.  Nakon ove instrukcije
+moguæe  je  vidjeti  da  li  je  operand koji je testiran jednak nuli ili je
+negativan, odnosno pozitivan.
+</p>
+<br>
+<p>
+<font size="5"><b>QUICK instrukcije</b></font>
+</p>
+<p>
+
+Postoje  tri quick instrukcije:  MOVEQ, ADDQ i SUBQ.  Sve tri imaju
+iste  funkcije  kao  i  njihove slow =) varijante, s tom razlikom ¹to ove
+instrukcije  slu¾e  da bi se konstanta stavila u registar ili da se izvr¹i
+zbrajanje/oduzimanje konstantom, i to relativno malom konstantom.
+</p>
+<p>
+MOVEQ  uvijek  stavlja longword i to samo u data registar.  Konstanta
+mo¾e  da  bude  u  opsegu od -128 ($ffffff80) do 127 ($7f).  Ako u AsmPro-u
+napi¹ete MOVEQ #128,D0, asembler æe vas upozoriti, a u D0 æete dobiti -128
+=)  Ova  instrukcija je dugaèka 2 bajta za razliku od MOVE.L #-128,D0 koja
+ima   6  bajtova.   Naravno, ovo  se  odra¾ava  i  na  brzinu  izvr¹avanja
+instrukcije.
+</p>
+<p>
+ADDQ/SUBQ  slu¾e  za dodavanje konstante u opsegu od 1 do 8, ali za
+razliku  od  MOVEQ  nisu ogranièeni samo na longwordove i na data registre
+veæ  se  mogu koristiti u sve tri du¾ine podataka i u razlièitim naèinima
+adresiranja.
+</p>
+<p>
+Ubuduæe  æu  na  svim  mjestima  na kojima je moguæe koristiti quick
+instrukcije  to  i  raditi  jer  se  time  dobija na brzini koda i njegovoj
+velièini.
+</p>
+<p>
+Tako bi prvi primjer trebao da glasi:
+<pre>    
+    moveq    #0,d0
+start    addq.l    #1,d0
+    bra.s    start
+</pre><font size="3"><br>
+<p>    
+Ako  se  pitate  za¹to  sam stavio MOVEQ #0,D0 umesto CLR.L D0, pa
+zato ¹to je br¾e.
+</p>
+<br>
+<p>
+<font size="5"><b>Operacije nad bitovima</b></font>
+</p>
+<p>
+BSET  n,xxx  postavlja n-ti bit u operandu xxx.  n mo¾e biti zadato 
+direktno ili iz data registra dok je xxx ili data registar ili adresa.
+<br>
+    BSET #4,D0 postalja èetvrti bit u D0, a BSET D0,(A0) postavlja bit 
+koji ima vrijednost iz D0 na adresi smje¹tenoj u A0.
+</p>
+<p>
+    BCLR bri¹e odreðeni bit poput prethodne instrukcije.
+</p>
+<p>
+    BCHG  invertira  odreðeni  bit.   Ako bit ima vrijednost 1 nakon ove
+instrukcije imat æe vrijednost 0 i obratno.
+</p>
+<p>
+    BTST testira odreðeni bit i na osnovu testiranja postavlja Z fleg.
+Na taj naèin se mo¾e saznati da li je odreðeni bit 0 ili 1.
+</p>
+<br>
+<p>
+<font size="5"><b>Matematièke operacije</b></font>
+</p>
+<p>
+    Veæ sam pomenuo ADD i SUB koji slu¾e za zbrajanje i oduzimanje.
+</p>
+<p>
+    MULU i MULS instrukcije slu¾e za mno¾enje dva operanda, bez znaka i 
+sa znakom.  Postoje po tri varijante ovih instrukcija.
+<br>
+    Prva  moguænost  je  da  se  mno¾e  dva  16-bitna  broja (wordovi),
+dobijeni rezultat je 32-bitan (longword).
+<pre>
+    move.w    #-2,d0
+    move.w    #$5000,d1
+    MULS.W    D0,D1
+</pre><font size="3"><br>
+</p>
+<p>
+      
+    Druga  varijanta  je da se pomno¾e dva 32-bitna broja i da rezultat
+bude isto tako 32-bitan.
+<pre>
+    MULU.L    D0,D1
+</pre><font size="3"><br>    
+</p>
+<p>
+
+    I  na  kraju  postoji moguæcnost mno¾enja dva 32-bitna broja tako da
+dobijeni rezultat bude 64-bitan (quadword).
+<pre>
+    MULS.L    D0,D0:D1
+    </pre><font size="3"><br>
+</p>
+<p>
+    U  ovom sluèaju D0 mno¾i D1, a rezultat ide u D0 i D1 tako da se  
+u D0 nalazi vi¹i longword dobijenog rezultata, a u D1 ni¾i longword.
+    </p>
+<p>
+    Primjer  u  kome  se  koristi mno¾enje bila bi rutina za ispisivanje
+jednog pixela na chunky ekranu.
+
+<pre>
+;- put pixel ---------------
+
+    lea    chunky,a0    ;adresa chunky bafera
+    moveq    #30,d0        ;x koordinata pixela
+    moveq    #70,d1        ;y koordinata
+    
+    MULU.W    #320,D1        ;y koord. mno¾imo sa 320 da bi dobili adresu
+                ;reda u kome æe biti upisan pixel
+    add.w    d0,d1        ;na nju dodajemo x koordinatu
+    move.b    #$1,(a0,d1.l)    ;stavljamo chunky pixel sa 1. bojom na
+                ;adresu chunky+320*y+x
+    rts    
+    
+;----------------------------
+</pre><font size="3"><br>
+</p>
+<p>
+    DIVU  i  DIVS  slu¾e  za  dijeljenje,  kao  i kod mno¾enja, znak mo¾e 
+uèestvovati  u  dijeljenju.   Za  instrukcije  dijeljenja  postoje  po  èetri
+varijante koje se tièu du¾ine operanada.
+<pre>
+    DIVS.W    (A0),D0
+    </pre><font size="3"><br>
+</p>
+<p>
+    U  ovom  sluèaju  se  32-bitni broj iz D0 dijeli sa 16-bitnim brojem
+koji je smje¹ten na adresi iz A0.  Koliènik se smje¹ta u nizih 16 bitova u
+registru D0, a u vi¹ih 16 bitova smje¹ta se ostatak deljenja.
+<pre>
+    DIVU.L    D1,D7
+    </pre><font size="3"><br>
+</p>
+<p>
+    32-bitni  broj  iz  D1  dijeli 32-bitni broj iz D7 i sme¹ta 32-bitni
+koliènik u D7.  Ostatak se nigdje ne upisuje!
+<pre>
+    DIVS.L    D0,D1:D2
+    </pre><font size="3"><br>
+</p>
+<p>
+    32-bitni  broj  iz  D0  dijeli  64-bitni  broj iz D1D2 (u D1 je vi¹i
+longword,  u  D2  ni¾i).   Koliènik  je 32-bitan i smje¹ta se u D2, dok se
+ostatak smje¹ta u D1 i takoðer je 32-bitan.
+<pre>
+    DIVUL.L    (A6),D7:D3
+</pre><font size="3"><br>
+</p>
+<p>
+    32-bitni  broj sa adrese iz A6 dijeli 32-bitni broj iz D3.  Koliènik
+ide u D3, a ostatak u D7.  I koliènik i ostatak su 32-bitni brojevi.
+</p>
+<p>
+
+    NEG  <ea>  je  instrukcija koja za funckiju ima negaciju odreðenog
+operanda.   Negativ  datog  broja dobija se tako ¹to se taj broj oduzme od
+nule.
+<pre>
+    move.l    #$7f7f7f,d0
+    moveq    #0,d1
+    sub.l    d0,d1
+    </pre><font size="3"><br>
+</p>
+<p>
+Prethodni primjer je ekvivalentan slijedeæem:
+<pre>
+    move.l    #$7f7f7f,d1
+    NEG.L    D1
+    </pre><font size="3"><br>
+</p>
+<p>
+    
+    
+    EXT  je  instrukcija  koja  slu¾i  da  "ra¹iri"  znak  na word ili
+longword  u  odreðenom  data  registru .  Pozitivni i negativni brojevi se
+razlikuju  po najvi¹em bitu.  Ako se radi o bajtu to je 7. bit, kod worda
+u pitanju je 15.  a kod longworda 31.  bit, tj.  krajnji lijevi bit.  Ukoliko
+ovaj  bit ima vrijednost 1 takav broj je negativan.  Na ovaj naèin je jednim
+bajtom  moguæe napisati brojeve od -128 do +127.  -128 je u heksadecimalnom
+sistemu $80, sledeæi -127 je $81, -126 je $82,....a -1 je ustvari $ff.
+    <pre>
+    moveq    #0,d0
+    move.b    #-2,d0
+    muls.w    #5,d0
+    rts
+</pre><font size="3"><br>
+</p>
+<p>
+Ovaj  primjer  prvo  bri¹e  kompletan  registar  D0  a  zatim  u bajt istog
+postavlja  broj  -2 tj.  $fe.  Zatim se vr¹i mno¾enje (16bit x 16bit = 32
+bit)  brojem 5, ali dobijeni rezultat æe biti broj $4f6, ¹to nije "toèno"
+jer  bi  rezultat  trebao  da bude -10.  U èemu je problem?  Napisat æu ono
+¹to  se dogodilo malo drugaèije, onako kako je izgledao registar D0 nakon
+svake instrukcije:
+<pre>
+    d0=$00000000    ;moveq  #0,d0
+    d0=$000000fe    ;move.b #-2,d0
+    d0=$000004f6    ;muls.w    #5,d0
+    </pre><font size="3"><br></p>
+<p>
+Kada bi registri izgledali ovako, rezultat bi bio toèan:
+<pre>
+    d0=$00000000
+    d0=$0000fffe
+    d0=$fffffff6    ;decimalno -10
+</pre><font size="3"><br></p>
+<p>
+    Po¹to  instrukcija  muls.w  mno¾i  dva  16-bitna  broja,  broj $fe
+odnosno  8-bitno  -2 je potrebno pro¹iriti na 16-bitno -2, tj.  $fffe.  To 
+je ono ¹to i radi instrukcija EXT.
+<br>
+    EXT  ima  svoje  tri  varijacije.   Njenim  kori¹tenjem  je moguæe 
+pro¹irivanje   8-bitne  vrijednosti  na  16-bitnu,  instrukcijom  EXT.W  Dn,
+pro¹irivanje   16-bitne   vrijednosti  na  32  bita  uz  pomoæ  EXT.L  Dn  i
+pro¹irivanje 8-bitnog broja na 32 bita, EXTB.L Dn.
+<pre>
+;-- ext primjer ------------
+
+    moveq    #0,d0
+    move.l    d0,d1
+    move.l    d0,d2
+    move.l    d0,d3
+    
+    move.b    #127,d0
+    move.b    d0,d1
+    ext.w    d1
+    
+    move.b    #-128,d2
+    move.b    d2,d3
+    extb.l    d3
+    rts
+    
+;--------------------------
+</pre><font size="3"><br></p>
+
+<br>
+<p>
+<font size="5"><b>Logièke operacije</b></font>
+</p>
+<p>
+
+   Logièko (Bulovo) I, ILI, Eksluzivno ILI i logièko NE su operacije 
+koje mc680x0 procesori mogu da izvr¹e po jednom instrukcijom.
+</p>
+<p>
+    AND obavlja operaciju logièko I. Svaki par bitova daje kao rezultat
+bit po slijedeæoj tablici:
+<pre>
+    0 1 0 1
+and 0 0 1 1
+    -------
+    0 0 0 1
+
+    move.b    #%10011011,d0
+    and.b    #%01010101,d0
+;rezultat je     %00010001
+</pre><font size="3"><br>
+</p>
+<p>
+    OR, logièko ILI radi po sledeæoj shemi:
+<pre>
+    0 1 0 1
+or  0 0 1 1
+    -------
+    0 1 1 1
+
+    move.b    #%10011011,d0
+    or.b    #%01010101,d0
+;rezultat je     %11011111
+</pre><font size="3"><br>
+</p>
+<p>
+ EOR, ekskluzivno ILI daje:
+<pre>
+    
+    0 1 0 1
+eor 0 0 1 1
+    -------
+    0 1 1 0
+
+    move.b    #%10011011,d0
+    eor.b    #%01010101,d0
+;rezultat je     %11001110
+</pre><font size="3"><br>
+</p>
+<p>
+    NOT, logièko NE invertira svaki bit:
+<pre>    
+not 0 1
+    ---
+    1 0
+    
+    move.b    #%10011011,d0
+    not.b    d0
+;rezultat je     %01100100
+</pre><font size="3"><br>
+</p>
+<p>
+   Ove instrukcije rade na sve tri du¾ine (.b, .w, .l).
+</p>
+<p>
+
+
+    Ponekad  æe se javiti potreba za zamjenom sadr¾aja dva registra.  Za
+ovakvu  operaciju  vam  neæe biti potreban dodatni registar jer ovu funkciju
+posjeeduje instrukcija EXG.  EXG uvijek razmjenjuje cijele registre (32-bita) bilo 
+da su u pitanju data ili adresni registri.
+<pre>
+    moveq    #-1,d0
+    move.w    #$1234,a0
+    EXG    D0,A0
+    rts
+     </pre><font size="3"><br>
+</p>
+<p>   
+
+To bi bilo sve za ovaj broj. Do slijedeæeg, samo naporno vje¾bajte =)
+</p>
+<!-- -->
+<p>
+<table width="100%">
+<tr>
+<td><form action="ce_6.html" method="post"><input type="submit" value="PREV"></form></td>
+<td><p align="right"><form action="lightwave1_h.html" method="post"><input type="submit" value="NEXT"></form></p></td>
+</tr>
+</table>
+</p>
+<br>
+<!-- -->
+</body>
+</html>

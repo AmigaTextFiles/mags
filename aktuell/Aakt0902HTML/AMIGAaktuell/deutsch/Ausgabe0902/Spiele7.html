@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Spieleteil</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Spiele6.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Spiele.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Spiele8.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Spieleteil
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="Inhalt"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H2>7. Tech-Abteilung: Informationen von Richard Fagher, Autor von &raquo;BabeAnoid&laquo;</H2>
+<P>
+Alles in meinen Programmen ist AMOS-spezifisch, wenn man die
+Standarderweiterungen wie z.B. AMCAF usw. nicht mitz&auml;hlt. Ich benutze keine
+Library-Aufrufe oder externe Maschinencode-Routinen. Es ist nur gute
+Programmierung. Ich gebe gern ein paar hilfreiche Tipps, viele davon sind
+auch in anderen Sprachen anwendbar.
+</P>
+<P>
+(Nat&uuml;rlich kann ich hier nicht in der gebotenen K&uuml;rze auf die Details
+meiner Programmiertechnik eingehen, aber wenn ein Programmierer einen Blick
+in meine Quellcodes werfen m&ouml;chte, kann er sich gern bei mir melden.)
+</P>
+<P>
+Zu Anfang ein grundlegendes Konzept, das f&uuml;r die Amiga-Classic- (und AMOS-)
+Programmierung gilt. Das Amiga-System ist haupts&auml;chlich in zwei Gruppen
+unterteilt: Die Grafik (Blitter, etc.) und Code (Prozessor). F&uuml;r jede
+Gruppe separat steht begrenzte Performance zur Verf&uuml;gung. Man kann den
+kleinsten und schnellsten Code haben, aber wenn der Blitter nur ein Pixel
+zuviel zeichnen muss, kann es passieren, dass das Spiel mit 25 FPS statt
+mit 50 FPS l&auml;uft, weil es auf den n&auml;chsten VBL (Bildschirm-Refresh) warten
+muss. Selbst wenn der Code alle verf&uuml;gbare CPU-Zeit ben&ouml;tigt - der Blitter
+kann immer noch eine Menge Grafik in dieser Zeit zeichnen.
+</P>
+<P>
+Im optimalen Fall sollte man soviel Code und Grafik bearbeiten lassen, wie
+&uuml;berhaupt in 1/50 s bearbeitet werden kann, um die Amiga/AMOS-Ressourcen
+voll zu nutzen.
+</P>
+<P>
+Ein paar Tipps: Vom Offensichtlichen zum Genialen ;) :
+</P>
+<P>
+1. Man benutze _nie_ mehr Farben (Bitplanes), als tats&auml;chlich ben&ouml;tigt
+werden, jede zus&auml;tzliche Bitplane kostet Zeit! (Eine schnellere CPU bringt
+hier keinen gro&szlig;en Unterschied.)
+</P>
+<P><B>Einschub:</B></P>
+<P>
+Die Hintergrundgrafiken von BabeAnoid belegen nur die ersten beiden
+Bitplanes eines 32-Farben-Screens. Es muss viel zwischen dem Hauptscreen
+und den beiden anderen Screens (Buffer) kopiert werden, um die Schatten und
+die Hintergrunderneuerung zu handhaben. Obwohl alle Screens 32 Farben
+haben, ist es manchmal m&ouml;glich, nur die ersten beiden Bitplanes unter
+Einsatz des &quot;screen copy&quot;-Kommandos zu kopieren.
+</P>
+<P>
+2. BOBs sollten nie gr&ouml;&szlig;er sein, als tats&auml;chlich notwendig ist. BOBs sind
+sehr langsam, und gro&szlig;e BOBs sind noch langsamer...
+</P>
+<P>
+3. Das Gesetz der 16: Wegen der Art, wie der Amiga (und ein Computer
+allgemein) aufgebaut ist, sollte die horizontale Gr&ouml;&szlig;e eines Grafikelements
+vorzugsweise durch 16 oder 8 teilbar sein, da dies im allgemeinen schneller
+bearbeitet werden kann (gerade Byteanzahl). Man sollte also ein BOB _nicht_
+33 Pixel lang machen, wenn man auch mit 32 Pixel leben kann. Dasselbe gilt
+f&uuml;r die Koordinaten, an denen eine Grafikaktion ihren Ausgangspunkt hat,
+man versuche immer, mit dem ersten Bit eines Bytes zu beginnen, also z.B.
+die Pixel 0, 8, 16, 24, 32, usw.
+</P>
+<P>
+(Ungl&uuml;cklicherweise sind die Bl&ouml;cke in BabeAnoid 12 Pixel gro&szlig;,
+ironischerweise w&auml;ren Blocks mit 16 Pixel Gr&ouml;&szlig;e in einigen Bereichen
+schneller gewesen und h&auml;tten es m&ouml;glicherweise sogar erlaubt, Bl&ouml;cke zu
+animieren)
+</P>
+<P>
+4. Wenn m&ouml;glich, sollte man Sprites anstelle von BOBs benutzen, weil diese
+mittels DMA dargestellt werden und daher weder CPU- noch Blitter-Zeit
+kosten. Man erstelle die Palette so, dass sie zu den Sprite-Paaren passt,
+um diese optimal einsetzen zu k&ouml;nnen.
+</P>
+<P>
+5. Positionierung: F&uuml;r einige kleinere Grafikelemente wie Raketen, Sterne,
+usw. kann man dasselbe Sprite in zwei (oder mehr) verschiedenen Positionen
+nutzen, indem man es in jedem neuen Frame an anderer Position darstellen
+l&auml;sst. Diese Elemente werden dann zwar flackern und manchmal zitternd
+dargestellt, aber dies kann durchaus ein erw&uuml;nschter Effekt sein. (Die
+sechs Sterne, die in &quot;BabeAnoid&quot; am unteren Bildschirmrand gescrollt
+werden, sind nur zwei Sprites... und dar&uuml;ber hinaus: Sie werden auch noch
+f&uuml;r andere Effekte genutzt, wie die fallende M&uuml;nze und den Laserstrahl.)
+</P>
+<P>
+6. Aufgaben aufteilen: Wenn m&ouml;glich, sollte man intensive Grafikoperationen
+in mehrere Teile aufteilen und je einen Teil pro Frame zeichnen lassen (die
+Routine, die die Wiederherstellung der Schatten und des Hintergrunds
+ausf&uuml;hrt, wird &uuml;ber den Zeitraum von drei bis vier Frames ausgef&uuml;hrt, um
+eine Verlangsamung des Spiels zu vermeiden).
+</P>
+<P>
+7. Die Ausf&uuml;hrungszeiten beachten: Einige AMOS-Kommandos sind wirklich
+langsam, und es gibt oft besseren Ersatz in manchen AMOS-Erweiterungen. Man
+kann die Zeiten messen, indem man die verschiedenen Kommandos/Routinen in
+einer Schleife laufen l&auml;sst und die ben&ouml;tigte Zeit stoppt. Damit l&auml;sst sich
+herausfinden, welches Kommando/welche Routine am besten/schnellsten l&auml;uft
+(man beachte, dass eine Methode, die auf einer Konfiguration sehr schnell
+l&auml;uft, nicht immer auch die beste L&ouml;sung auf einer anderen Konfiguration
+ist. Das ist oft abh&auml;ngig vom eingesetzten Prozessor, Fast-RAM und
+Grafikchip).
+</P>
+<P>
+8. Eigene Routinen? Wenn das Programm auf schnelle Amigas (040/060) mit
+Fast-RAM zielt, ist es m&ouml;glich, dass man eigene Speicherzugriffsroutinen
+(peek &amp; poke) schreiben kann, die wesentlich schneller sind als die
+eingebauten Kommandos. Man vermeide die Kommandos f&uuml;r Bit-Operationen von
+AMOS (und den Erweiterungen), da diese extrem langsam sind. Dagegen sind
+die Poke-, Doke-, Loke-, Peek-, usw. -Kommandos unheimlich schnell.
+</P>
+<P>
+(Die Info-Bildschirme mit den animierten Hintergr&uuml;nden zu Beginn von
+BabeAnoid werden mit einer Routine dargestellt, die eine Vierfach-
+Vergr&ouml;&szlig;erung in Echtzeit durchf&uuml;hrt, erreicht durch Konvertierung von Bytes
+in Longwords. Diese Routine kann auf einem 68060 in einer Sekunde 100
+160x128-16-Farben-Bilder auf volle Bildschirmgr&ouml;&szlig;e skalieren!)
+</P>
+<P>
+9. Prozeduren: Man braucht sich nicht vor den AMOS-Prozeduren zu f&uuml;rchten,
+sie werden genauso schnell ausgef&uuml;hrt wie anderer Code. Sie sind im
+Gegenteil ein ausgezeichneter Weg, den eigenen Code in Form zu halten -
+besonders, um die Hauptschleife in gro&szlig;en Programmen kurz zu fassen, da
+AMOS abst&uuml;rzt, wenn die Hauptschleife 30 KByte &uuml;berschreitet.
+</P>
+<P>
+10. Der heilige Gral: Der Schl&uuml;ssel zum Programmiererfolg ist: Tue nie
+etwas, was du nicht unbedingt tun musst! Man kann davon ausgehen, dass in
+den meisten Programmen 25 bis 50 Prozent der CPU-Zeit verschwendet werden,
+weil das Programm einige Schritte &ouml;fter ausf&uuml;hrt als tats&auml;chlich n&ouml;tig
+w&auml;re! (F&uuml;r Windows sch&auml;tzen wir mal, dass es 90 - 99% sind. ;) )
+</P>
+<P><B>Ein paar Beispiele daf&uuml;r:</B></P>
+<UL>
+<LI> Man sollte den Punktestand nicht grafisch aktualisieren, solange er sich
+nicht tats&auml;chlich ver&auml;ndert hat.
+</LI>
+<LI> Man sollte nicht jeden Frame eine &Uuml;berpr&uuml;fung der Tastatur durchf&uuml;hren,
+wenn eine &Uuml;berpr&uuml;fung alle f&uuml;nf Frames ausreichend ist.
+</LI>
+<LI> Man sollte die Tastatur nur _einmal_ abfragen und alle Tastatur-bezogenen
+Funktionen in einer Prozedur handhaben. Man sollte diese Prozedur _nicht_
+ausf&uuml;hren, wenn die Tastatur noch gar nicht benutzt wurde.
+</LI>
+</UL>
+<P>
+Ein guter Weg, die Arbeit vieler kleiner Routinen und zeitabh&auml;ngiger
+Animationen aufzuf&auml;chern, sind die &quot;rotierenden Variablen&quot;
+</P>
+<P><B>Beispiel:</B></P>
+<PRE>
+DO
+    ADD A,1,0 to 5
+        IF A=1: &quot;Do thing 1&quot;:ENDIF
+        IF A=2: &quot;Do thing 2&quot;:ENDIF
+        IF A=3: ...usw.
+LOOP
+</PRE>
+<P>
+(F&uuml;r die Nicht-AMOS-Programmierer: Dies f&uuml;hrt eine Reihe von f&uuml;nf Tasks
+aus, einen Task pro Frame &uuml;ber einen Zyklus von f&uuml;nf Frames.)
+</P>
+<P>
+Man kann auch ein Priorit&auml;ten-System anlegen, indem man eine &quot;Time
+Available&quot;(verf&uuml;gbare Zeit)-Variable nutzt, die immer bis auf 0
+heruntergez&auml;hlt wird und wieder hochgesetzt wird, wenn wichtige und gro&szlig;e
+Funktionen ausgef&uuml;hrt werden m&uuml;ssen.
+</P>
+<P><B>Beispiel:</B></P>
+<PRE>
+DO
+    ADD TA,-1,0 to TA: (REM reduziere TA bis TA auf 0 ist)
+        IF mouse key = 1: &quot;Dann Code ausf&uuml;hren, der &uuml;ber mehrere Frames hinweg Zeit ben&ouml;tigt.&quot;: ADD TA,10
+        IF TA = 0 and &quot;Punktezahl ist ver&auml;ndert&quot; then &quot;Punktezahl aktualisieren&quot;
+LOOP
+</PRE>
+<P>
+Dieser &quot;Code&quot; sorgt daf&uuml;r, dass eine Funktion niedriger Priorit&auml;t, wie die
+Aktualisierung des Punktestands, warten muss, bis eine Funktion h&ouml;herer
+Priorit&auml;t ausgef&uuml;hrt wurde, falls notwendig.
+</P>
+<P>
+Das waren die Tipps und Tricks von Richard Fagher. Sollte jemand Interesse
+an weiteren Tipps und Tricks haben, kann er sich gern an Richard Fagher
+direkt wenden (<A HREF="mailto:dawnbringer@hem.utfors.se">dawnbringer@hem.utfors.se</A>).
+</P>
+<P><B>Wolfgang Hosemann &lt;<A HREF="mailto:whose@gmx.de">whose@gmx.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Spiele6.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Spiele8.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

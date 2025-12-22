@@ -1,0 +1,82 @@
+From: magicsn@birdland.es.bawue.de (Steffen Haeuser)
+Newsgroups: comp.sys.amiga.misc
+Message-ID: <70000306233657581234@BIRDLAND.es.bawue.de>
+References: <342F4AEA.7B7581B6@gf.phase5.de>
+X-Mailer: fastnet2rfc V3.0 - MagicSN@Birdland.es.bawue.de
+Organization: Birdland BBS, Dettingen/Teck, South Germany, +49-7021-862428
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: PPC and games (was: PPC cards)
+Lines: 69
+Date: 02 Oct 1997 21:09:18
+Xcanpos: shelf.02/199710060501!0021352708
+Path: 195.95.96.10!news.unisource.be!News.Amsterdam.UnisourceCS!news.amsterdam.unisource.nl!newsgate.unisource.nl!newsgate.unisource.nl!surfnet.nl!howland.erols.net!newsfeed.nacamar.de!fu-berlin.de!news.belwue.de!news.bawue.de!luva.lb.bawue.de!birdland.es.bawue.de
+
+
+ ÿ° wd@gf.phase5.de schrieb : ÿ´
+
+Hi!
+
+wd> What Haage&partner says is complete nonsense. The PowerUp-CPUs work as a
+wd> real multiprocessing system with full parallel operation of both CPUs.
+wd> Even more than that: The PowerUp system software is ready to work with
+wd> ANY number of CPUs, and if there would be demand we could build High-End
+wd> boards with several PPCs on it (this is not a product announcement!). 
+
+wd> Smooth parallel operation of both CPUs is a question of the system
+wd> software, of course, and as Haage&Partner doesn't use our comprehensive
+wd> solution but their WarpUp kernel which hacks the hardware and is
+wd> completely incompatible to our system software and our libraries, this
+wd> is probbaly the reason for their problems. As they do not know the
+wd> functionality of the hardware beneath our HAL I can't see how they could
+wd> make use of all the functionality of the PowerUp Hardware. BTW, H&P's
+wd> concept of shared memory access is completely outdated for a solution
+wd> that shall conceptually direct towards future OS versions with
+wd> multiprocessing and memory protection, just to name a few advanced
+wd> features.
+
+Well, i think i have to loose some additional words about this statement :
+
+1. How do you deal with the Memory Problem ?
+
+PowerUP does not have "local" memory for the CPU. Which means if two CPUs work 
+at the same time (and assuming they also do quite some memory-accessing, which 
+normally is the case), HOW do you solve this problem ? If two CPUs would work 
+at a time (without local memory) memory access speed would only be 50% (if you 
+implement it in an optimal way). If you add more CPUs without local memory 
+this will get even WORSE. So, without "local" memory, you actually do not get 
+a speedup, but a slowdown. Prepare for a reality check !
+
+2. Smooth Parallel operation is a question of both, hardware and software (if 
+you add "local memory" and an efficient software, multiprocessoring would be 
+nice possible).
+
+3. Haage&Partner not using your software is no argument, why multiprocessoring 
+would be possible by you, but not by them. Let me explain: Internally your 
+software ALSO hacks the hardware. There is no other way to access the 
+hardware, than ... to access the hardware :) It might do the access 
+differently, okay... (BTW: WarpOS implementation is - at least the parts that 
+are not dependent from putting the PPC Chip to the existing system - 
+completely based on the PowerPC Documentation. It is not more a hack than 
+yours is. Actually, Sam Jordan is probably the Amiga-user with the most 
+knowledge about PPC Assembler language (he uses it quite a long time already, 
+now... since he finished coding his PPC ASM).
+
+4. I know for sure WarpOS already supports memory-protection (at least of PPC 
+Tasks).
+
+5. AFAIK (i am not an expert as to implementation of multiprocessoring, which
+is NOT a trivial task) everything you would need for it, is inside WarpOS
+(i mean multiprocessoring based on the limits - they are not many, okay, it is 
+quite a nice hardware, but there are some - of PowerUP)
+ 
+(Signalling functions, a function to declare noncached-memory). BTW, are the 
+signalling functions of ppc.library fixed in the meanwhile (Well, i guess 
+so... Ralph had quite some time for it, and i think he would not have been 
+given the job for the implementation if he would be incompetent... :) )
+
+6. Did you ever try the Multiprocessoring out ? If yes, you will probably have 
+noticed quite a slowdown, due to memory trouble. It would be very interesting 
+to see a demo of the ppc.library Multiprocessoring :) (With maybe an 
+alternative version that uses WarpOS and Context-Switch)
+
+Steffen Haeuser

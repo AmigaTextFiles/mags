@@ -1,0 +1,296 @@
+<HTML>
+<HEAD>
+<TITLE>How to Make Games Play (Part 2)</TITLE>
+</HEAD>
+<BODY>
+<H2>	How To Make Games Play (Part 2)</H2>
+
+	This is the second in a series of articles on how to construct
+Artificial Opponents (AOs) for games - strategic wargames to be
+specific.  The first article provided some background and some of the
+topics that will be covered.  This article will cover interfacing AO
+code with the game engine and cover the first AO for Invasion Forces -
+what it is, how it works (both overview and detail), and what will be in
+store next time.
+<P>
+	If you haven't read the first part of this series, please do.
+And check out my web page on the <A HREF="http://www.jlc.net/~bhough/IF.html">
+Invasion Forces</A> game, as well as Tony
+Belding's page on the game (linked to on my page) for an introduction.
+Without them, this won't be making too much sense.
+
+<H4>	Plug it in.  Plug it in.</H4>
+
+	For those of you attempting or about to attempt making an AO,
+one word of advice is this: <EM> Keep the interfaces (or API) for the game
+engine simple.</EM>  If possible, disconnect it from the human player's
+interface altogether - things will go much smoother.
+<P>
+	OK, sounds easy enough - even seems like common sense.  What
+does it mean?  Well, <I>game engine</I> in this context means the heart of
+the program which takes input from the user and the AO and keeps track
+of what happens overall - then parcels out information to the AO and the
+player(s) on what they can detect happened.  The AO can make moves and
+actions out of sight of the player(s) and vice versa (unless you design
+the AO to cheat using omniscience) - only the game engine knows all.
+<P>
+	The AO interfaces for Invasion Forces are fortunately few in 
+number and simple.  They are located together in one file 
+(<A HREF=cyber_interface.html>cyber_interfaces.c</A>) 
+that you can read to get more details - it's fairly
+short.	Basically, the AO performs the same actions as a human player -
+<OL>	
+<LI> Setting production on cities
+<LI> Naming units
+<LI> Moving units
+<LI> Exploring the map
+<LI> 'Looking' at the board to determine what action to take.
+<LI> Capturing cities
+<LI> Attacking enemy units
+<LI> Defending its own cities
+</OL>
+
+<H4>	What a 'Meta' For?</H4>
+
+	A good design for an AO can be based on a metaphor - a similarity
+in structure or behavior to something in the real-world.  This can make 
+things much simpler to follow, and will even suggest new ideas if the 
+metaphor is a good one. 
+<P>
+	For the AOs in Invasion Forces, I chose an ant colony as the 
+metaphor.  An ant colony to model Artificial Intelligence and run a strategic
+wargame?  Seems like an odd choice.  
+<P>
+	Well, an ant colony is made up of many individual ants who, through 
+communication, act in a coordinated manner as though they were a single 
+organism.  This is what I hope to accomplish with the AOs I design - a 
+modular approach that will end up seeming to behave like a single human-like
+player.
+<P>
+	So I chose the ant colony as my metaphor.  In keeping with this, I 
+had to decide on what was going to make up the colony.  In order to do this I 
+had to decide what to focus on.  The units themselves (all varied types) are 
+important, since they move, capture cities, and fight each other.  They are 
+the worker ants.  The terrain is important, since it will influences what 
+units are more appropriate for the location and where the units can move. The
+terrain is the world the ants live in.  But I decided to focus most on the 
+cities - after all, they are the crux of the game.  A city, in this metaphor,
+is the anthill and the queen ant.
+<P>
+	The centers of my colonies, then, are the cities.  They are the queen 
+ants - raising hoards of workers to carry out all the functions of the 
+anthill, explore the world, fight enemy ants, and conquer other anthills.
+
+
+<H4>	First Up</H4>
+
+	The design for AO #1 in Invasion Forces follows this philosophy
+and is very simple.  All the AO #1 specific code is in one, 600-line 'C'
+file, which is pretty small by any standards.  Of course, it is very 
+simple-minded, but that also makes it easy to follow. 
+<P>	In short, here is what it does (based on the list I made earlier):
+<OL>
+<LI> Production: Just makes Infantry units.
+<LI> Naming Units: Names them according to the city that made them.
+<LI> Moving Units: Units randomly wander on the map.
+<LI> Exploring the Map: The units will eventually explore all the
+		map they can reach given enough time and wandering
+<LI> Looking Around: The area around the city is examined each turn 
+		for enemy units. If any have been discovered all of the 
+		units the city owns are moved back to the city to defend 
+		or retake it.  When no enemy units are in sight, they go
+		back to wandering randomly.
+<LI> Capturing Cities: When a unit finds itself next to an enemy or
+		neutral city, it will attack it.
+<LI> Attacking the Enemy: When a unit find itself next to an enemy
+		unit it will attack it.  Note: Units from other cities
+		owned by the same AO player will not attack each other.
+<LI> Defending the City: No organized defense - when in trouble all
+		units are moved back towards the city until the danger
+		has passed.  Note: Units owned by one city will not come 
+		to the aid of a different city in trouble.
+</OL>
+	There are a vast number of shortcomings with this AO player, of 
+course.  Not the least of which is that there is no coordination between
+cities - each one is on its own. It's a start, nothing more.
+
+
+<H4>	Governors?</H4>
+
+	The center of the design is a concept I called a <B>Governor</B>.  The
+Governor is the 'central intelligence' that runs a city and all the units
+produced by that city.  An AO player will have one Governor for each city
+it has.  In order to stay modular, the Governor is only concerned about
+the area immediately surrounding the city it is attached to.  The idea is
+that eventually the Governors will communicate with each other, cooperate
+with production, patrolling, defense, and offense - and so appear to act 
+as a unified entity.
+<P>
+	All of the information needed by that Governor to function is 
+contained in the GovNode structure 
+(<A HREF=cyber_protos.html>see cyber_protos.h</A>).  These structures 
+are kept in a single linked list, much as the units and cities are kept in 
+linked lists.  This makes saving and restoring games for the AO simple, and 
+unlikely to change much from revision to revision.  
+<P>
+	Any information needed by the Governor in controlling it's units 
+from turn to turn will either be stored in the Governor structure itself, 
+or regenerated fresh each turn.  In this way the AO players can pick right
+up where they left off, seemlessly, from a restored game.
+
+
+<H4>	Order Up!</H4>
+
+	Another key to the design is the concept of orders for units. The
+<I>order</I> is simply a structure attached to a unit that contains information
+including the type of order, an origin location on the map, a destination
+location on the map, and some extra variables that can be used for whatever
+is needed (for that particular order).  Each turn, each unit belonging to
+the AO player is checked for orders.  If it has none, then the Governor that
+owns it issues it an order.  Then, for each move of each unit, the unit
+&quotlooks around&quot for enemy cities or units - and if it sees none, executes 
+it's orders (if any).
+<P>
+	The orders makes it easy for Governors to manage their units without
+being bothered by the move by move details.  The Governors can simply give
+units goals (orders) - and the units carry them out, improvising along the
+way as needed.  Thus the units operate autonomously, looking to the Governors
+for more instructions when needed.
+<P>
+	Examples of orders include <I>sentry mode</I> (the unit is ignored, and 
+not moved, while this order is in effect), <I>wander randomly</I> (the unit picks
+a direction at randon and tries to move in that direction), and <I>goto a
+location</I> (which uses the destination information of the order to try and
+move the unit towards that location, and signal when it can't find a way
+to get closer or when it has arrived).  Since the order is attached to the
+unit it gets saved and restored with the unit itself - so that units can
+pick up where they left off after a restore, seemlessly.
+<P>
+	An example of specialized information used by a specific order is
+the <I>goto a location</I> order.  The extra information used by it is a limit
+given it by the Governor ordering the move.  This limit is the total number
+of moves that the unit using that order will try to take towards it's
+destination before giving up.  This keeps the unit from getting trapped
+forever in terrain that will allow it to move around without ever getting
+any closer to its destination.  This will be of critical importance later
+in more advanced AOs using aircraft - since they have fixed fuel supplies
+they need a way of giving up before they run out of fuel and crash.
+
+ 
+<H4>	Details, Details</H4>
+
+	It is all very fine to say that AO #1 does this and that in short,
+but how do you actually get the behaviors (what little there are) to work?
+So here we go with the details of how it all gets accomplished.  You can
+follow along in the code (<A HREF=cyber1.html>cyber1.c</A>) as we go.  I'll go through the details
+of each of the eight actions outlined above, and explain how the job gets
+done for each:
+<OL>
+<LI> Production:  There is not a whole lot more to say here.  When
+the game engine asks for a unit type to build, an Infantry is chosen.  The
+neat part is finding the Governor that owns the city.  The list of Governors
+is searched for a city Governor with the same coordinates as the city (which
+is given by the game engine in the call to this function).  If one is not
+found then a new Governor is created for that city (this will be important
+in later AO opponents, and actually gets the very first Governor for each
+AO player created).
+<LI> Naming Units:  Each unit is named for its Governor - the Governors
+are named using an integer counter that gets incremented each time a new
+Governor is created - so they all have unique identifiers for the game.
+The units have their own counter, which is also incremented with each new
+unit built, so they end up with unique identifiers too.  The unit is then
+named <CODE>GovernorID/UnitID</CODE>.  
+This helps with debugging since I can track 
+not only what player owns a unit, but what city of that player owns it, and 
+track individual units in the game.
+<LI> Moving Units:  This is the real meat and potatoes of the AO
+player.  In order to move the units and give them some manner of independence,
+all units are given orders, then left alone to carry them out.  At the start
+of each turn each Governor for each AO player looks at each unit - and if it
+doesn't have any orders, it gives it some.  There are only two orders that
+AO #1 uses - <I>wander randomly</I>, and <I>goto a location</I> 
+(the Governor's city in this case).  
+<P>
+	The <I>wander randomly</I> order causes a unit to pick a direction at
+random and try to go in that direction.  The direction is selected again each
+turn.
+<P>
+	The <I>goto a location</I> order uses a lookup table found in 
+(<A HREF=cyber_data.html>cyber_data.c</A>) 
+to find the most likely directions given the unit's current 
+location and the destination.  Then, the three most likely direction are 
+used - the unit tries to move in that direction (for instance, if the 
+destination is East of the unit, it will try to move East, then move 
+NorthEast if it can't move East, then move SouthWest if neither of the other 
+two is possible) and gives up if it can't make any progress.  This very 
+closely approximates the method used by the original Empire game for moving
+units from one place to another - though IF uses hexes instead of a 
+rectangular grid.
+<P>
+	Yet another good point - <EM>for simple tasks, use lookup tables if you
+can</EM>.  They are easy, fast, simple to debug, and can mimic very difficult 
+behaviors.
+<LI> Exploring the Map:  This is basically handled by the game engine.
+The random wandering will eventually explore as much as unassisted Infantry
+units (i.e. not using Transport ships) can reach.  The game engine maintains 
+a map and a set of <I>icons</I> for each player.  The maps all start out totally 
+unexplored except for the area around the initial city for each player.  And 
+as each unit moves the hex it moves into and the six surrounding it are 
+filled in on the owning player's map.  The icons mark the locations of cities 
+and units on the player's map.
+<LI> Looking Around:  Both the individual units and the Governors
+<I>look around</I> each turn.  The Governors examine the area of the map in a 
+zone around the Governor's city, looking for enemy units and taking stock of
+what types of terrain are around it.  It counts terrain by type, enemy units 
+by type, cities, and friendly units (this is more than is needed by AO #1, 
+but will be needed by later, more advanced, AOs).
+<P>
+	After taking stock of its surroundings, the Governor will decide on
+what to do for the turn by selecting a mode.  For AO #1 there can be three
+modes - <EM>Taken</EM> (lost its city), <EM>Defend</EM> (enemy units are nearby), 
+<EM>Search</EM> (alls
+clear).  When changing modes, all the orders for all that Governor's units
+will be cleared (so that new orders can be given to suit the new situation). 
+<P>
+	After the Governor looks around it issues one of the two orders to
+any of its units that don't yet have orders (<I>wander randomly</I> or 
+<I>goto a location</I>).
+<LI> Capturing Cities:  Each unit will scan the six hexes surrounding
+the hex it is in using the map for the player that owns it.  If any one of 
+the six hexes contains a city that isn't owned by the player, it will move
+into that hex.  The game engine then takes over and determines if it captures
+the city or is destroyed in the attempt.  If it does capture the city, then 
+the AO is asked to set a production for it (see #1 above).
+<LI> Attacking the Enemy:  Each unit will scan the six hexes 
+surrounding the hex it is in using the map for the player that owns it.  If
+any of the hexes contains an enemy unit, it will move into that hex (to attack
+the enemy unit).  The game engine then takes over and determines if it can
+make the attack, and who wins or loses the battle if there is one.  For this 
+simple AO there is no real decision making done - units simply attack 
+whenever they can without regards to the circumstances.  If the attack was 
+not possible then the unit tries to attack the next enemy unit adjascent 
+(if any).
+<LI>	Defending the City:  When a Governor finds it's city threatened
+(by enemy units within it's area of interest), or captured, it clears all
+the orders held by any of it's units and gives them all the same order - 
+return to the city immediately.  This will cause the units that are returning 
+to &quot.notice&quot. the enemy units as they move next to them - and attack.  
+If they
+reach the city itself, the units will &quot.notice&quot. 
+that the city is in enemy 
+hands and will try to retake the city.  
+</OL>
+	As you can see, quite a lot of behavior can be obtained with a very
+suprisingly small amount of code.  Most of the code is devoted to operating
+the game engine to get simple tasks accomplished.  Only a very small amount
+of code actually tries to decide anything.  More advanced AOs will take 
+advantage of this code base, or at least build off of it, to make more complex
+and useful behaviors appear.
+<P>
+	In the next installment, I'll talk about some more complex behaviors 
+in AOs #2 and #3.  In the fourth installment, I'm planning on covering 
+Best Path algorithms.  Stay tuned and happy coding!
+<hr>
+<a href="default.html">Table Of Contents</a>
+</BODY>
+</HTML>

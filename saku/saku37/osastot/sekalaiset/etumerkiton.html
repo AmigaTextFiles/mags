@@ -1,0 +1,176 @@
+<!!!!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+		<title>Testit</title>
+		<meta name="generator" content="Handmade in Finland">
+	</head>
+
+	<body bgcolor="white" link="navy" alink="red" vlink="navy">
+		<center>
+			<br>
+			<font size="1" face="Trebuchet MS,Verdana,Arial,Helvetica">[ <a href="hakemisto.html" target="_self">Sekalaiset</a> ] [ <a href="../sivukartta.html" target="_self">Sivukartta</a> ]<br>
+				<br>
+			</font>
+			<table border="0" cellpadding="4" cellspacing="1" width="80%" bgcolor="navy">
+				<tr>
+					<td width="100%" bgcolor="navy" align="center"><font color="yellow" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular"><b>Etumerkitt&ouml;m&auml;n kokonaisluvun konvertoiminen ASCII-muotoon MC680x0:lla</b></font></td>
+				</tr>
+				<tr height="15">
+					<p>
+						<td width="100%" height="15" bgcolor="#d8ecfd" align="center"><font color="#000066" size="2" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Markus Ketola</font></td>
+					</p>
+				</tr>
+			</table>
+			<br>
+			<table border="0" cellpadding="4" cellspacing="1" width="80%" bgcolor="navy">
+				<tr>
+					<td width="50%" bgcolor="#d8ecfd">
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Konekieliohjelmoija t&ouml;rm&auml;nnee ennemmin tai my&ouml;hemmin tilanteeseen, jossa datarekisteriss&auml; oleva arvo olisi esim. debuggauksen vuoksi saatava tulostettua n&auml;kyviin. Korkeamman tason ohjelmointikielill&auml; muuttujan arvon tulostaminen k&auml;y kivuttomasti jonkin funktion (esim. C-kielen printf) tai k&auml;skyn (esim. Basicin print) avulla, mutta konekieliohjelmoijan on teht&auml;v&auml; kaikki itse.</font></p>
+						<p><b><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Algoritmi luvun hajottamiseksi yksitt&auml;isiksi digiteiksi</font></b></p>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">K&auml;sitelt&auml;v&auml; luku tulkitaan 10-j&auml;rjestelm&auml;n luvuksi.</font></p>
+						<ul>
+							<li><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Selvitet&auml;&auml;n luvun digittien m&auml;&auml;r&auml; n</font>
+							<li><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">jaetaan n:s digit ykk&ouml;siin</font>
+							<li><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">tyhjennet&auml;&auml;n edellisen jaon jakoj&auml;&auml;nn&ouml;s</font>
+							<li><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">jaetaan viel&auml; kerran 10:ll&auml;</font>
+							<li><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">nollataan kaikki muu paitsi jakoj&auml;&auml;nn&ouml;s;</font>
+							<li><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">haluttu digit on nyt jakoj&auml;&auml;nn&ouml;ksess&auml; [, poimitaan talteen]</font>
+							<li><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">v&auml;hennet&auml;&auml;n n:&auml;&auml; yhdell&auml;</font>
+							<li><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">toistetaan algoritmi&auml; kunnes n = 0.</font>
+						</ul>
+						<p><b><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Toteutus 32-bittisille kokonaisluvuille MC68040:lla</font></b></p>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Suurin mahdollinen positiivinen 32-bittinen kokonaisluku on 2^32 - 1 = 4294967295 ja pienin tietysti 0. Mutta miten saada helposti selville annetun luvun digittien m&auml;&auml;r&auml;? Joskus laskimella leikkiess&auml;ni keksin sattumalta kaavaan</font></p>
+						<div align="center">
+							<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">n = trunc(Log10(luku)) + 1</font></p>
+						</div>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">joka kertoo digittien m&auml;&auml;r&auml;n 10-j&auml;rjestelm&auml;n luvussa. Nolla tosin t&auml;ytyy k&auml;sitell&auml; erikseen, koska siit&auml; ei voi ottaa 10-kantaista logaritmia.</font></p>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Esimerkkirutiinissa lis&auml;t&auml;&auml;n annettuun lukuun 0.1 ennen kuin siit&auml; otetaan 10-kantainen logaritmi FPU:n FLOG10-k&auml;skyll&auml;. T&auml;m&auml; siksi, ett&auml; muutoin 10:n potensseista tulee kokonaisluvuksi katkaisun j&auml;lkeen ykk&ouml;sen verran liian pieni&auml; tulokseksi. T&auml;m&auml; on sik&auml;li outoa, ett&auml; luvuista 10n luulisi tulevan helposti tasaluku vastaukseksi. Testieni mukaan FLOG10-k&auml;sky antaa 10:st&auml; vastaukseksi noin &quot;1 - epsilon&quot;, eli jotain hyvin l&auml;hell&auml; 1:t&auml; olevaa. Tosin FPU:ssa on jokin rekisteri, joka m&auml;&auml;r&auml;&auml; mihin p&auml;in tulos py&ouml;ristet&auml;&auml;n, mutta rekisterist&auml; tied&auml;n vain sen olemassaolon. Muistelenkin jostain lukeneeni, ettei FPU:n k&auml;skyj&auml; suositella k&auml;ytett&auml;v&auml;n suoraan. Olisinkin k&auml;ytt&auml;nyt t&auml;ss&auml; matematiikkakirjastoja, jos vain omistaisin dokumentaatiota niiden k&auml;yt&ouml;st&auml;. Tosin C-kielell&auml; tekem&auml;ni kokeilut viittaavat siihen, ett&auml; kyseisill&auml; kirjastoillakin tulee vastaava ongelma eteen.</font></p>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Esimerkkirutiini:</font></p>
+						<pre><nobr>;-------------------------------------------------------------------------------
+; Integer2ASCII_32bit, '040 version.
+; Uses CPU registers D0-D3,D7 &amp; A2 and FPU register FP0.
+;
+; - Converts 32 bit unsigned integer given in D0 into ASCII, destination
+;   address (where the digits are stored) is given in A2
+;-------------------------------------------------------------------------------
+Integer2ASCII_32bit
+               moveq    #0,d2
+               moveq    #0,d7
+
+               cmp.l    #0,d0                ; Nolla tulostetaan erikseen,
+               beq.s    justzero             ; koska siit&auml; ei voi ottaa LOG10:t&auml;
+
+               fmove.l  d0,fp0               ; Konvertoitava numero FP0:aan
+
+; Lasketaan digittien m&auml;&auml;r&auml;, n = trunc(LOG10(number)) + 1
+
+               fadd.x   #0.1,fp0             ; Py&ouml;ristysongelman vuoksi
+               flog10.x fp0                  ; LOG10
+               fmove.l  fp0,d7               ; DBF-k&auml;skyn vuoksi +1:t&auml;
+                                             ; ei tarvita
+
+; Konvertoidaan annettu 32-bittinen kokonaisluku ASCII-muotooon
+
+dloop          moveq    #0,d2
+               moveq    #0,d3
+
+               move.l   d0,d1                ; Ty&ouml;kopio D0:sta
+
+               fmove.l  d7,fp0
+               ftentox.l   fp0               ; FP0 = D = 10^(k-1)
+               fmove.l  fp0,d3
+goon                                         
+               divs.l   d3,d1                ; Luku / D, jakoj&auml;&auml;nn&ouml;s tippuu
+                                             ; automaattisesti
+               divsl.l  #10,d2:d1            ; Jako 10:ll&auml; viel&auml; kerran;
+                                             ; jakoj&auml;&auml;nn&ouml;s menee D2:een, miss&auml;
+                                             ; haluttu digit nyt on.
+justzero       add.b    #'0',d2              ; Lis&auml;t&auml;&auml;n nollan ASCII-koodi
+                                             ; saatuun digittiin
+               move.b   d2,(a2)+             ; ja talletetaan saatu ASCII-arvo
+               dbf      d7,dloop</nobr></pre>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Otsikosta huolimatta yll&auml; olevan rutiinin pit&auml;isi toimia sellaisenaan MC68020+ ja FPU -yhdistelm&auml;ll&auml;.</font></p>
+						<p><b><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Toteutus 16-bittisille kokonaisluvuille MC68000:lla</font></b></p>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Suurin mahdollinen 16-bittinen positiivinen kokonaisluku on 2^16 - 1 = 65535, ja pienin tietysti taas nolla. Erona edelliseen rutiiniin on lis&auml;ksi digittien m&auml;&auml;r&auml;n selvitt&auml;mistapa: Nyt annettua lukua jaetaan 10:ll&auml;, kunnes kokonaisosa on nolla; jakojen m&auml;&auml;r&auml; vastaa luvun digittien m&auml;&auml;r&auml;&auml;.</font></p>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Esimerkkilistaus:</font></p>
+						<pre><nobr>;------------------------------------------------------------------------------
+; Integer2ASCII, k&auml;ytt&auml;&auml; rekistereit&auml; D0-D3,D7 &amp; A2, konvertoitava luku D0:aan
+;------------------------------------------------------------------------------
+               moveq    #0,d2
+               moveq    #0,d3
+
+; Lasketaan digittien m&auml;&auml;r&auml;
+
+               and.l    #$0000ffff,d0        ; Varmistetaan, ett&auml; luku on
+                                             ; kork. 16-bittinen
+; Lasketaan digittien m&auml;&auml;r&auml;
+
+               move.l   d0,d1
+amdigits       addq.l   #1,d2
+               divu     #10,d1
+               and.l    #$0000ffff,d1
+               cmp.w    #0,d1
+               bgt.s    amdigits
+               move.l   d2,d7                ; Digittien m&auml;&auml;r&auml;-1 D7:&auml;&auml;n
+               subq.l   #1,d7                ; (-1 DBF-k&auml;skyn vuoksi)
+
+; Muutetaan annettu 16-bittinen positiivinen kokonaisluku ASCII-versiokseen
+
+               lea      Luku,a2              ; Luvun ASCII-version osoite
+dsil           move.l   d0,d1                ; Ty&ouml;kopio D0:sta talteen
+
+               moveq    #1,d3                ; M&auml;&auml;ritet&auml;&auml;n 10 potssnsiin
+               move.l   d7,d2                ; digitin j&auml;rjestysnumero - 1
+potsil         subq.l   #1,d2                ;
+               cmp.l    #-1,d2               ;
+               ble.s    goon                 ;
+               mulu     #10,d3               ;
+               bra.s    potsil               ;
+
+goon           move.l   d3,d2                ; Jaetaan muutettava luku
+               divu     d2,d1                ; yll&auml; m&auml;&auml;ritetyll&auml; luvulla
+               and.l    #$0000ffff,d1        ; Nollataan jakoj&auml;&auml;nn&ouml;s
+               divu     #10,d1               ; Jaetaan viel&auml; 10:ll&auml;
+               swap     d1                   ; Otetaan jakoj&auml;&auml;nn&ouml;s ja nollataan
+               and.l    #$0000ffff,d1        ; muu osa luvusta; j&auml;ljell&auml; on
+                                             ; haettu digit!
+
+               add.l    #'0',d1              ; Lis&auml;t&auml;&auml;n digittiin 0:n ASCII-koodi
+               move.b   d1,(a2)+             ; ja kirjoitetaan digit ASCIIna
+               dbf      d7,dsil</nobr></pre>
+						<p><b><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Toteutus C-kielell&auml; :-)</font></b></p>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">C-kielell&auml; muuttajan arvon saisi tulostettua tietysti suoraan printf-funktiolla, mutta otin t&auml;m&auml;n esimerkin mukaan tuodakseni esiin, ett&auml; t&auml;ss&auml; C-versiossa kummittelee vastaava py&ouml;ristysongelma kuin FPU:n FLOG10:t&auml; k&auml;ytt&auml;v&auml;ss&auml; esimerkiss&auml;. Ongelmakohta on LOG10-funktion tuloksen sijoittaminen integer-muuttujaan - double-muuttujaan sijoittaessa tulee toki oikea arvo.</font></p>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Esimerkki:</font></p>
+						<pre><nobr>/* Lasketaan digittien m&auml;&auml;r&auml; */
+
+  n=(int)log10(0.1+(double)luku)             /* 0.1:ll&auml; avitetaan
+                                                &quot;py&ouml;ristyst&auml;&quot;              */
+
+/* Silmukka jossa luku hajotetaan yksitt&auml;isiksi digiteiksi */
+
+   for (i=n+1; i&gt;0; i--) {
+      jakaja = (int)pow(10,(double)(i-1));   /* M&auml;&auml;ritet&auml;&auml;n 10^n           */
+      apuluku = (int)luku / jakaja;          /* n:s digit ykk&ouml;siss&auml;        */
+      apuluku = apuluku % 10;                /* Jaetaan viel&auml; 10:ll&auml;;      */
+                                             /* jakoj&auml;&auml;nn&ouml;ksess&auml; n:s digit */ 
+      numero[n+1-i] = apuluku + '0';
+   }
+</nobr></pre>
+						<p><font face="Trebuchet MS,Verdana,Arial,Helvetica" size="2">Merkille pantavaa on, ett&auml; tekem&auml;ni kymmenkantaista logaritmia testaava ohjelma antaa eri vastauksen 68k-pohjaisessa Amiga-ymp&auml;rist&ouml;ss&auml; kuin Pentium-pohjaisessa Linux-ymp&auml;rist&ouml;ss&auml; siten, ett&auml; j&auml;lkimm&auml;isess&auml; ymp&auml;rist&ouml;ss&auml; ohjelman antama tulos on oikein! T&auml;m&auml; siis tilanteessa, jossa 10-kantainen logaritmi luvuista 10n katkaistaan integer-muuttujaan. Alla kuvat testiohjelman tuloksista eri ymp&auml;rist&ouml;iss&auml;. </font><font face="Trebuchet MS,Verdana,Arial,Helvetica"><font size="2">Ohessa viel&auml; <a href="ohjelmat.zip">paketti</a>, jossa ovat kaikki ohjelmat esimerkkilistauksineen.</font></font></p>
+						<div align="center">
+							<p><img src="kuvat/ikkuna_amiga.gif" width="343" height="59" border="0" alt=" "></p>
+							<p><img src="kuvat/ikkuna_linux.gif" width="323" height="96" border="0" alt=" "></p>
+						</div>
+					</td>
+				</tr>
+			</table>
+			<br>
+			<font size="1" face="Trebuchet MS,Verdana,Arial,Helvetica">[ <a href="hakemisto.html" target="_self">Sekalaiset</a> ] [ <a href="../sivukartta.html" target="_self">Sivukartta</a> ]<br>
+				<br>
+			</font></center>
+	</body>
+
+</html>

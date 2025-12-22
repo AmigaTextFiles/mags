@@ -1,0 +1,638 @@
+<html>
+ <head>
+  <title>Amiga E - interfaces graphiques</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Programmation&nbsp;: Amiga E - interfaces graphiques </font>par&nbsp;<a href="mailto:damien.guichard@wanadoo.fr">Damien&nbsp;Guichard</a></div><br><br><br>
+
+
+
+<font size="+1" color="#ccbb33">Troisième étape</font><br><br>
+
+Dans l'article précédent, on a introduit les structures fondamentales de l'AmigaOS et notamment les signaux de tâche,
+les listes d'attributs et les listes Exec. Dans cet article, on utilise ces notions pour expliquer comment créer
+des interfaces graphiques interactives. Dans le prochain article on améliorera nos interfaces graphiques avec des
+raccourcis-claviers, une interface Exchange et un port ARexx.<br><br>
+
+<font size="+1" color="#ccbb33">Intuition</font><br><br>
+
+Créer, gérer et fermer une fenêtre Intuition, se fait toujours selon le même procédé général&nbsp;:<br>
+
+<ul>
+<li>Fournir les WA_FLAGS, qui spécifient l'équipement de la fenêtre.
+<li>Fournir les WA_IDCMP, qui spécifient quels évènements sont notifiés.
+<li>Ouvrir la fenêtre via <B>OpenWindowTagList()</B>.
+<li>Le port de message de la fenêtre est <B>win.userport</B>.
+<li>Le signal de tâche correspondant est <B>Shl(1,win.userport.sigbit)</B>.
+<li>Attendre les signaux voulus, en plus du signal de port de fenêtre.
+<li>Lors de la réception d'un message par le port de fenêtre, il faut&nbsp;:
+<ul><li>1. Obtenir le message par <B>imsg:=GetMsg(win.userport)</B>.
+<li>2. L'évènement de fenêtre est <B>imsg.class</B>.
+<li>3. Eventuellement, le gadget concerné est <B>imsg.iaddress</B>.
+<li>4. Répondre au message par <B>ReplyMsg(imsg)</B>.
+<li>5. Lors d'un évènement IDCMP_REFRESHWINDOW il faut appeler BeginRefresh(),
+puis redessiner le contenu de la fenêtre, et ensuite appeler EndRefresh()
+avant de fermer la fenêtre, il faut vider le port de message.
+</ul>
+</ul>
+<br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'exec/ports'
+MODULE 'reqtools','intuition/intuition'
+
+ENUM ERR_OK,ERR_NOREQTOOLS,ERR_NOWINDOW
+
+CONST SIGNAL_BREAK=$1000
+
+DEF win:PTR TO window
+DEF iclass,icode,igad:PTR TO gadget
+
+PROC main() HANDLE
+  reqtoolsbase:=OpenLibrary('reqtools.library',37)
+  IF reqtoolsbase=NIL THEN Raise(ERR_NOREQTOOLS)
+  win:=OpenWindowTagList(NIL,
+     [WA_TITLE, 'My Window',
+      WA_FLAGS, WFLG_SIZEGADGET+WFLG_DEPTHGADGET+WFLG_CLOSEGADGET+
+                WFLG_DRAGBAR+WFLG_SIMPLE_REFRESH+WFLG_ACTIVATE,
+      WA_IDCMP, IDCMP_CLOSEWINDOW+IDCMP_REFRESHWINDOW,
+      WA_MINWIDTH,  140,
+      WA_MINHEIGHT, 35,
+      NIL])
+  IF win=NIL THEN Raise(ERR_NOWINDOW)
+  handle()
+EXCEPT DO
+  SELECT exception
+  CASE ERR_NOREQTOOLS
+    PrintF('Could not open reqtools.library v37+ !\\n')
+  CASE ERR_NOWINDOW
+    RtEZRequestA('Could not open window!','Ok',0,0,0)
+  ENDSELECT
+  IF win THEN CloseWindow(win)
+  IF reqtoolsbase THEN CloseLibrary(reqtoolsbase)
+ENDPROC
+
+PROC handle() HANDLE
+  DEF signals,winsig,imsg:PTR TO intuimessage
+  winsig:=Shl(1,win.userport.sigbit)
+  LOOP
+    signals:=Wait(winsig+SIGNAL_BREAK)
+    IF signals AND winsig
+      WHILE imsg:=GetMsg(win.userport)
+        iclass:=imsg.class
+        icode:=imsg.code
+        igad:=imsg.iaddress
+        ReplyMsg(imsg)
+        SELECT iclass
+        CASE IDCMP_REFRESHWINDOW
+          BeginRefresh(win)
+          EndRefresh(win,TRUE)
+        CASE IDCMP_CLOSEWINDOW
+          Raise(0)
+        ENDSELECT
+      ENDWHILE
+    ENDIF
+    IF signals AND SIGNAL_BREAK
+      Raise(0)
+    ENDIF
+  ENDLOOP
+EXCEPT
+  WHILE imsg:=GetMsg(win.userport)
+    ReplyMsg(imsg)
+  ENDWHILE
+ENDPROC
+</pre>
+</font></td></tr></table>
+
+Notez qu'il n'y a pas besoin d'ouvrir/fermer la intuition.library, c'est l'AmigaE qui s'en charge.<br><br>
+
+Pour plus d'information sur les flags WA_FLAGS,WA_IDCMP, sur OpenWindowTagList(),intuimessage, BeginRefresh() et
+EndRefresh(), voir les Autodocs de la intuition.library ainsi que les Includes intuition/intuition.h.<br><br>
+
+
+<font size="+1" color="#ccbb33">Gadtools</font><br><br>
+
+Si nous voulons des gadgets tout prêts à utiliser et des menus faciles à créer, alors Intuition n'est pas suffisant,
+il faut en plus un kit de construction de GUI.
+Gadtools est un bon candidat pour démarrer, plus tard vous choisirez BOOPSI, MUI, Reaction ou Feelin, mais d'abord
+il faut apprendre les techniques de base avec Gadtools.<br><br>
+
+Gadtools fonctionne à peu près comme Intuition, les différences sont&nbsp;:<br>
+
+<ul>
+<li>Vous devez ouvrir/fermer la gadtools.library.
+<li>GetMsg/ReplyMsg deviennent Gt_GetIMsg/Gt_ReplyIMsg.
+<li>BeginRefresh/EndRefresh deviennent Gt_BeginRefresh/Gt_EndRefresh.
+<li>Il y a une initialisation en plus à l'aide de GetVisualInfoA() et CreateContext().
+<li>Une fois la fenêtre ouverte il faut appeller Gt_RefreshWindow().
+</ul>
+
+Comme nous voulons aussi profiter des facilités de Gatools en matière de menus&nbsp;:<br>
+
+<ul>
+<li>On crée un menu à l'aide de CreateMenuA() et LayoutMenuA().
+<li>On libère ce menu avec ClearMenuStrip() et FreeMenus().
+</ul>
+
+C'est quand même du code plutôt rébarbatif, c'est pourquoi il est habile de le placer dans un module "gt_window",
+ensuite il n'y aura plus qu'à le paramétrer avec les options voulues&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT MODULE
+OPT EXPORT
+
+MODULE 'exec/ports'
+MODULE 'reqtools','intuition/intuition'
+MODULE 'gadtools','libraries/gadtools'
+
+ENUM ERR_OK,ERR_NOREQTOOLS,ERR_NOGADTOOLS,ERR_NOSCREEN,
+     ERR_NOVISUAL,ERR_NOCONTEXT,ERR_NOMENU,ERR_NOGADGET,ERR_NOWINDOW
+
+CONST SIGNAL_BREAK=$1000
+
+PROC gt_openwindow(windef,newmenu,winhandler) HANDLE
+  DEF win=NIL:PTR TO window,iclass,icode,igad
+  DEF signals,winsig,imsg:PTR TO intuimessage
+  DEF scr=NIL,visual=NIL,context,gadlist=NIL,menu=NIL
+  reqtoolsbase:=OpenLibrary('reqtools.library',37)
+  IF reqtoolsbase=NIL THEN Raise(ERR_NOREQTOOLS)
+  gadtoolsbase:=OpenLibrary('gadtools.library',37)
+  IF gadtoolsbase=NIL THEN Raise(ERR_NOGADTOOLS)
+  IF (scr:=LockPubScreen('Workbench'))=NIL THEN Raise(ERR_NOSCREEN)
+  IF (visual:=GetVisualInfoA(scr,NIL))=NIL THEN Raise(ERR_NOVISUAL)
+  IF (context:=CreateContext({gadlist}))=NIL THEN Raise(ERR_NOCONTEXT)
+  IF newmenu
+    IF (menu:=CreateMenusA(newmenu,NIL))=NIL THEN Raise(ERR_NOMENU)
+    IF LayoutMenusA(menu,visual,NIL)=FALSE THEN Raise(ERR_NOMENU)
+  ENDIF
+  IF (win:=windef(scr,context,visual,gadlist))=NIL THEN Raise(ERR_NOWINDOW)
+  IF menu THEN IF SetMenuStrip(win,menu)=FALSE THEN Raise(ERR_NOMENU)
+  Gt_RefreshWindow(win,NIL)
+  winsig:=Shl(1,win.userport.sigbit)
+  LOOP
+    signals:=Wait(winsig+SIGNAL_BREAK)
+    IF signals AND winsig
+      WHILE imsg:=Gt_GetIMsg(win.userport)
+        iclass:=imsg.class
+        icode:=imsg.code
+        igad:=imsg.iaddress
+        winhandler(imsg,iclass,icode,igad)
+      ENDWHILE
+    ENDIF
+    IF signals AND SIGNAL_BREAK
+      Raise(ERR_OK)
+    ENDIF
+  ENDLOOP
+EXCEPT DO
+  WHILE imsg:=Gt_GetIMsg(win.userport)
+    Gt_ReplyIMsg(imsg)
+  ENDWHILE
+  SELECT exception
+  CASE ERR_NOREQTOOLS
+    PrintF('Could not open reqtools.library v37+ !\\n')
+  CASE ERR_NOGADTOOLS
+    RtEZRequestA('Could not open gadtools.library v37+ !','Ok',0,0,0)
+  CASE ERR_NOSCREEN
+    RtEZRequestA('Could not lock Workbench screen!','Ok',0,0,0)
+  CASE ERR_NOVISUAL
+    RtEZRequestA('Could not get visual info!','Ok',0,0,0)
+  CASE ERR_NOCONTEXT
+    RtEZRequestA('Could not create window context!','Ok',0,0,0)
+  CASE ERR_NOMENU
+    RtEZRequestA('Could not create menu!','Ok',0,0,0)
+  CASE ERR_NOGADGET
+    RtEZRequestA('Could not create gadget!','Ok',0,0,0)
+  CASE ERR_NOWINDOW
+    RtEZRequestA('Could not open window!','Ok',0,0,0)
+  ENDSELECT
+  IF win THEN ClearMenuStrip(win)
+  IF menu THEN FreeMenus(menu)
+  IF win THEN CloseWindow(win)
+  IF gadlist THEN FreeGadgets(gadlist)
+  IF visual THEN FreeVisualInfo(visual)
+  IF scr THEN UnlockPubScreen(NIL,scr)
+  IF gadtoolsbase THEN CloseLibrary(gadtoolsbase)
+  IF reqtoolsbase THEN CloseLibrary(reqtoolsbase)
+  IF exception>ERR_NOWINDOW THEN ReThrow()
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+Voilà, maintenant nous pouvons ouvrir une fenêtre en appelant la fonction gt_openwindow() avec la définition de fenêtre
+et le gestionnaire approprié&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'intuition/intuition','gadtools'
+MODULE '*gt_window'
+
+DEF win
+
+PROC main()
+  gt_openwindow({windef},NIL,{winhandler})
+ENDPROC
+
+PROC windef(scr,context,visual,gadlist)
+  RETURN win:=OpenWindowTagList(NIL,
+    [WA_TITLE, 'My Window',
+     WA_FLAGS, WFLG_SIZEGADGET+WFLG_DEPTHGADGET+WFLG_CLOSEGADGET+
+               WFLG_DRAGBAR+WFLG_SIMPLE_REFRESH+WFLG_ACTIVATE,
+     WA_IDCMP, IDCMP_CLOSEWINDOW+IDCMP_REFRESHWINDOW,
+     WA_MINWIDTH,  140,
+     WA_MINHEIGHT, 35,
+     WA_GADGETS,   gadlist,
+     NIL])
+ENDPROC
+
+PROC winhandler(imsg,iclass,icode,igad)
+  SELECT iclass
+  CASE IDCMP_REFRESHWINDOW
+    Gt_BeginRefresh(win)
+    Gt_EndRefresh(win,TRUE)
+  CASE IDCMP_CLOSEWINDOW
+    Raise(ERR_OK)
+  ENDSELECT
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+
+<font size="+1" color="#ccbb33">Les menus Gadtools</font><br><br>
+
+En premier il faut ajouter IDCMP_MENUPICK dans les WA_IDCMP de votre fenêtre.
+Ensuite il faut fournir une structure <B>newmenu</B> complète.
+Alors, chaque fois qu'une entrée de menu est sélectionnée, le gestionnaire de fenêtre est appelé avec <B>iclass</B>
+qui vaut IDCMP_MENUPICK et <B>icode</B> qui désigne le numéro de menu sélectionné.<br><br>
+
+A partir de ce numéro de menu les deux fonctions suivantes extraient le numéro de l'article et le numéro du sous-article&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>PROC itemnum(n)                // menu item
+ENDPROC Shr(n,5) AND $3F
+
+PROC subnum(n)                 // menu sub item
+ENDPROC Shr(n,11) AND $1F
+</pre>
+</font></td></tr></table>
+<br>
+
+
+Voyez les Includes libraries/gadtools.h et intuition/intuition.h pour plus d'information sur les menus Gadtools.<br><br>
+
+
+<font size="+1" color="#ccbb33">Les gadgets Gadtools</font><br><br>
+
+La fonction CreateGadgetA() permet de créer et de lier un nouveau gadget Gadtools à une fenêtre.
+CreateGadgetA() attend comme arguments un type de gadget tel que SCROLLER_KIND ou LISTVIEW_KIND, ainsi qu'une
+structure <B>newgadget</B> initialisée et une liste d'attributs.
+La structure <B>newgadget</B> contient essentiellement les dimensions du gadget et le <B>visual</B> info.
+La liste d'attributs est spécifique au type de gadget, voyez les Includes libraries/gadtools.h pour davantage d'information.
+Vous n'avez pas à tester toutes les créations de gadgets, il suffit de tester la dernière création, car elle
+a échoué si l'une des précédentes a échoué.<br><br>
+
+Un gadget LISTVIEW_KIND peut recevoir une liste Exec comme contenu initial. Dans ce cas il nous incombe de créer la
+liste Exec avant la création du gadget LISTVIEW_KIND. <br><br>
+
+Autre chose, les coordonnées de gadgets sont données relativement au bord extérieur de la fenêtre, et non pas
+relativement au bord intérieur, c'est pourquoi il faut leur ajouter <B>offx</B> et <B>offy</B> tels qu'ils sont calculés.<br><br>
+
+Grâce à l'attribut WA_ZOOM notre fenêtre possède une position repliée.<br><br>
+
+Ce calendrier factice illustre la création d'une GUI complète, avec menu, à l'aide de Gadtools&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'intuition/intuition','intuition/screens','intuition/gadgetclass'
+MODULE 'gadtools','libraries/gadtools'
+MODULE 'utility/tagitem','graphics/rastport'
+MODULE 'exec/nodes','exec/lists'
+MODULE '*gt_window'
+
+DEF win
+
+PROC main()
+  DEF menu
+  menu:=[NM_TITLE,0,'Project',0,0,0,0,
+         NM_ITEM,0,'New','N',0,0,0,
+         NM_ITEM,0,'Load...','L',0,0,0,
+         NM_ITEM,0,'Save','S',0,0,0,
+         NM_ITEM,0,'Babbling',0,0,0,0,
+         NM_SUB,0,'aaargh','A',0,0,0,
+         NM_SUB,0,'hmmm','H',0,0,0,
+         NM_ITEM,0,NM_BARLABEL,0,0,0,0,
+         NM_ITEM,0,'Quit','Q',0,0,0,
+         0,0,0,0,0,0,0]:newmenu
+  gt_openwindow({windef},menu,{winhandler})
+ENDPROC
+
+PROC newlist()
+  DEF list:PTR TO mlh
+  NEW list
+  list.head:=list+4
+  list.tailpred:=list
+ENDPROC list
+
+PROC insert(list,name)
+  AddTail(list,NEW [0,0,0,0,name]:ln)
+ENDPROC
+
+PROC windef(scr:PTR TO screen,gad,visual,glist)
+  DEF offx,offy,labels=NIL
+
+  offx:=scr.wborleft
+  offy:=scr.wbortop+scr.rastport.txheight+1
+
+  gad:=CreateGadgetA(CYCLE_KIND,gad,
+    [offx+20,offy+9,155,16,NIL,scr.font,0,0,visual,0]:newgadget,
+    [GTCY_LABELS,
+     ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday',
+     NIL],
+     TAG_DONE])
+
+  gad:=CreateGadgetA(SLIDER_KIND,gad,
+    [offx+40,offy+36,135,16,NIL,scr.font,0,0,visual,0]:newgadget,
+    [GTSL_MIN,1,
+     GTSL_MAX,31,
+     GTSL_LEVELFORMAT,'\d[2]',
+     GTSL_MAXLEVELLEN,2,
+     TAG_DONE])
+
+  labels:=newlist()
+  insert(labels,'January')
+  insert(labels,'February')
+  insert(labels,'March')
+  insert(labels,'April')
+  insert(labels,'May')
+  insert(labels,'June')
+  insert(labels,'July')
+  insert(labels,'August')
+  insert(labels,'September')
+  insert(labels,'October')
+  insert(labels,'November')
+  insert(labels,'December')
+
+  gad:=CreateGadgetA(LISTVIEW_KIND,gad,
+    [offx+20,offy+63,155,100,NIL,scr.font,0,0,visual,0]:newgadget,
+    [GTLV_SCROLLWIDTH,20,
+     GTLV_LABELS,labels,
+     GTLV_SHOWSELECTED,NIL,
+     TAG_DONE])
+
+  IF gad=NIL THEN Raise(ERR_NOGADGET)
+
+  RETURN win:=OpenWindowTagList(NIL,
+    [WA_TITLE, 'Calendar Demo',
+     WA_FLAGS,  WFLG_DEPTHGADGET+WFLG_CLOSEGADGET+WFLG_DRAGBAR+
+                WFLG_SIMPLE_REFRESH+WFLG_ACTIVATE,
+     WA_IDCMP,  IDCMP_CLOSEWINDOW+IDCMP_REFRESHWINDOW+
+                IDCMP_GADGETDOWN+IDCMP_GADGETUP+IDCMP_MOUSEMOVE+IDCMP_MENUPICK,
+     WA_WIDTH,  200,
+     WA_HEIGHT, offy+176,
+     WA_ZOOM,   [0,offy,130,offy]:INT,
+     WA_GADGETS,      glist,
+     WA_NEWLOOKMENUS, TRUE,
+     WA_AUTOADJUST,   TRUE,
+     TAG_DONE])
+
+ENDPROC
+
+PROC itemnum(n)
+ENDPROC Shr(n,5) AND $3F
+
+PROC winhandler(msg,iclass,icode,igad)
+  SELECT iclass
+  CASE IDCMP_CLOSEWINDOW
+    Raise(ERR_OK)
+  CASE IDCMP_REFRESHWINDOW
+    Gt_BeginRefresh(win)
+    Gt_EndRefresh(win,TRUE)
+  CASE IDCMP_MENUPICK
+    IF itemnum(icode)=5 THEN Raise(ERR_OK)
+  ENDSELECT
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+
+Voyez les Includes libraries/gadtools.h pour davantage d'information sur les gadgets Gadtools.<br><br>
+
+
+<font size="+1" color="#ccbb33">Interaction</font><br><br>
+
+L'interaction avec les gadgets Gadtools est similaire à l'interaction avec les menus sauf que <B>class</B> est
+généralement IDCMP_GADGETUP et que <B>gad</B> désigne le gadget concerné par l'évènement.<br><br>
+
+Pour aider à l'identification de <B>gad</B> il est pratique de spécifier un <B>gadgetid</B> dans la structure
+newmenu. Ainsi la réaction à un évènement IDCMP_GADGETUP peut être sélectionnée en fonction de la valeur de <B>gad.gadgetid</B>.<br><br>
+
+La lecture et la mise à jour des attributs de gadgets ne sont pas symétriques.
+Par exemple, dans <B>gad.specialinfo.longint</B> on peut lire la valeur d'un gadget INTEGER_KIND. Par contre, pour
+écrire cette même valeur, on doit passer par un appel à la fonction Gt_SetGadgetAttrsA() qui évaluera l'étiquette GTIN_NUMBER.
+C'est ce qui permet à Gadtools d'actualiser l'affichage en plus de modifier la valeur.<br><br>
+
+Cette calculatrice sommaire illustre l'interaction entre plusieurs gadgets d'une GUI gadtools&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'intuition/intuition','intuition/screens'
+MODULE 'reqtools','gadtools','libraries/gadtools'
+MODULE 'utility/tagitem','graphics/rastport'
+MODULE '*gt_window'
+
+DEF win
+DEF display:PTR TO gadget
+DEF result=0
+DEF value=0
+
+PROC main()
+  DEF newmenu
+  newmenu:=[NM_TITLE,0,'Calculator',0,0,0,0,
+            NM_ITEM,0,'Reset','R',0,0,0,
+            NM_ITEM,0,'About','A',0,0,0,
+            NM_ITEM,0,'Quit','Q',0,0,0,
+            0,0,0,0,0,0,0]:newmenu
+  gt_openwindow({windef},newmenu,{winhandler})
+ENDPROC
+
+PROC windef(scr:PTR TO screen,gad,visual,glist)
+  DEF offx,offy
+
+  offx:=scr.wborleft
+  offy:=scr.wbortop+scr.rastport.txheight+1
+
+  gad:=display:=CreateGadgetA(INTEGER_KIND,gad,
+    [offx+10,offy+8,124,22,NIL,scr.font,0,0,visual,0]:newgadget,
+    NIL)
+
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+10,offy+36,40,20,'7',scr.font,7,0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+52,offy+36,40,20,'8',scr.font,8,0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+94,offy+36,40,20,'9',scr.font,9,0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+10,offy+58,40,20,'4',scr.font,4,0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+52,offy+58,40,20,'5',scr.font,5,0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+94,offy+58,40,20,'6',scr.font,6,0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+10,offy+80,40,20,'1',scr.font,1,0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+52,offy+80,40,20,'2',scr.font,2,0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+94,offy+80,40,20,'3',scr.font,3,0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+10,offy+102,40,20,'0',scr.font,0,0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+52,offy+102,40,20,'+',scr.font,"+",0,visual,0]:newgadget,
+    NIL)
+  gad:=CreateGadgetA(BUTTON_KIND,gad,
+    [offx+94,offy+102,40,20,'=',scr.font,"=",0,visual,0]:newgadget,
+    NIL)
+
+  IF gad=NIL THEN Raise(ERR_NOGADGET)
+
+  RETURN win:=OpenWindowTagList(NIL,
+    [WA_TITLE, 'Minicalc Demo',
+     WA_FLAGS,  WFLG_DEPTHGADGET+WFLG_CLOSEGADGET+WFLG_DRAGBAR+
+                WFLG_SIMPLE_REFRESH+WFLG_ACTIVATE,
+     WA_IDCMP,  IDCMP_CLOSEWINDOW+IDCMP_REFRESHWINDOW+
+                IDCMP_GADGETUP+IDCMP_MENUPICK,
+     WA_WIDTH,  150,
+     WA_HEIGHT, offy+136,
+     WA_ZOOM,   [0,offy,136,offy]:INT,
+     WA_GADGETS,      glist,
+     WA_NEWLOOKMENUS, TRUE,
+     WA_AUTOADJUST,   TRUE,
+     TAG_DONE])
+
+ENDPROC
+
+PROC itemnum(n)
+ENDPROC Shr(n,5) AND $3F
+
+PROC winhandler(msg,class,code,gad:PTR TO gadget)
+  SELECT class
+  CASE IDCMP_CLOSEWINDOW
+    Raise(ERR_OK)
+  CASE IDCMP_REFRESHWINDOW
+    Gt_BeginRefresh(win)
+    Gt_EndRefresh(win,TRUE)
+  CASE IDCMP_GADGETUP
+    IF gad=display
+      result:=result+gad.specialinfo::stringinfo.longint
+      Gt_SetGadgetAttrsA(display,win,NIL,[GTIN_NUMBER,result,0])
+      value:=0
+    ELSEIF (gad.gadgetid>=0) AND (gad.gadgetid<=9)
+      value:=Mul(10,value)+gad.gadgetid
+      Gt_SetGadgetAttrsA(display,win,NIL,[GTIN_NUMBER,value,0])
+    ELSEIF gad.gadgetid="+"
+      result:=result+value; value:=0
+      Gt_SetGadgetAttrsA(display,win,NIL,[GTIN_NUMBER,0,0])
+    ELSEIF gad.gadgetid="="
+      result:=result+value
+      Gt_SetGadgetAttrsA(display,win,NIL,[GTIN_NUMBER,result,0])
+      value:=0; result:=0
+    ENDIF
+  CASE IDCMP_MENUPICK
+    IF itemnum(code)=0
+      value:=0; result:=0
+      Gt_SetGadgetAttrsA(display,win,NIL,[GTIN_NUMBER,0,0])
+    ELSEIF itemnum(code)=1
+      RtEZRequestA('Demo: Mini Calculator\\nAuthor: Damien Guichard\\n','Ok',0,0,0)
+    ELSEIF itemnum(code)=2
+      Raise(ERR_OK)
+    ENDIF
+  ENDSELECT
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+
+<font size="+1" color="#ccbb33">Pour aller plus loin</font><br><br>
+
+Un tutoriel n'est ni exhaustif ni une référence.
+Un programme AmigaOS réaliste est fait de mille autres choses, non abordées ici, comme les écrans, les datatypes,
+les memory-pools, les processus, les devices, les fichiers IFF et bien d'autres encore.
+Savoir programmer c'est donc aussi savoir trouver de la documentation, et des exemples, le plus souvent en Anglais.
+Voici quelques liens pour démarrer.<br><br>
+
+La documentation indispensable c'est les Autodocs de Commodore, et c'est encore mieux dans le format AmigaGuide&nbsp;:
+<a href="http://de.aminet.net/pub/aminet/dev/misc/AmigaOS_guides.lha">de.aminet.net/pub/aminet/dev/misc/AmigaOS_guides.lha</a>.<br><br>
+
+Les non moins indispensables AmigaOS Includes&nbsp;:
+<a href="http://www.amiga.com/3.9/download/NDK3.9.lha">www.amiga.com/3.9/download/NDK3.9.lha</a>.<br><br>
+
+Le compilateur EC v3.3a de Wouter van Oortmerssen (version complète)&nbsp;:
+<a href="http://www.aminet.net/dev/e/amigae33a.lha">www.aminet.net/dev/e/amigae33a.lha</a> et <a href="http://www.aminet.net/dev/e/ec33a.lha</a>.<br><br>
+
+Le compilateur ECX de Leif Salomonsson (version démo)&nbsp;:
+<a href="http://home.swipnet.se/blubbe/ECX">home.swipnet.se/blubbe/ECX</a>.<br><br>
+
+L'Amiga-E mailing list&nbsp;:
+<a href="http://www.freelists.org/list/positron" target="_blank">www.freelists.org/list/positron</a>.<br><br><br>
+
+
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

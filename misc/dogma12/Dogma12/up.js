@@ -1,0 +1,12 @@
+document.write ('<div class="bubble_up">',
+'<table border="0" cellpadding="0" cellspacing="0" width="920">',
+'<tr valign="bottom" background="../gfx/main/back.png">',
+'<td width="115" border="0" align="center"><a href="../about/index.html"><img src="../gfx/main/1.png" alt="Колонка редакции" width="40" height="40" border="0" align="absmiddle" hspace="3"><font size="2">Редакция</font></a></td>',
+'<td width="115" border="0" align="center"><a href="../interview/index.html"><img src="../gfx/main/2.png" alt="Наши гости" width="40" height="40" border="0" align="absmiddle" hspace="3"><font size="2">Гости</font></a></td>',
+'<td width="115" border="0" align="center"><a href="../history/index.html"><img src="../gfx/main/3.png" alt="Хроника событий" width="40" height="40" border="0" align="absmiddle" hspace="3"><font size="2">Хроника</font></a></td>',
+'<td width="115" border="0" align="center"><a href="../focus/index.html"><img src="../gfx/main/4.png" alt="В фокусе" width="40" height="40" border="0" align="absmiddle" hspace="3"><font size="2">В фокусе</font></a></td>',
+'<td width="115" border="0" align="center"><a href="../exclusive/index.html"><img src="../gfx/main/5.png" alt="Xклюзив" width="40" height="40" border="0" align="absmiddle" hspace="3"><font size="2">Xклюзив</font></a></td>',
+'<td width="115" border="0" align="center"><a href="../utilities/index.html"><img src="../gfx/main/6.png" alt="Программы и утилиты" width="40" height="40" border="0" align="absmiddle" hspace="3"><font size="2">Утилиты</font></a></td>',
+'<td width="115" border="0" align="center"><a href="../games/index.html"><img src="../gfx/main/7.png" alt="Игротека" width="40" height="40" border="0" align="absmiddle" hspace="3"><font size="2">Игротека</font></a></td>',
+'<td width="115" border="0" align="center"><a href="../download/index.html"><img src="../gfx/main/8.png" alt="Download" width="40" height="40" border="0" align="absmiddle" hspace="3"><font size="2">Архив</font></a></td>',
+'</tr></table></div><div class="bubble">')

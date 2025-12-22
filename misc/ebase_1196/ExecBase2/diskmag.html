@@ -1,0 +1,229 @@
+<html><head><title>How To Code A Disk Mag</title></head><body>
+<h1 align=center>How To Code A Disk Mag</h1>
+<h3 align=center>Javier Loureiro</h3>
+<center><p><a href="mailto:derethor@arrakis.es">&lt;derethor@arrakis.es&gt;</a>
+</p></center>
+
+<h3>Introduction</h3>
+
+<p>
+During last year, a friend and I were coding a disk mag. We had
+some troubles and delays (as in all systems that  I coded :), but I learned
+some very interesting things. I wrote this article for people who want to
+code another one, helping to support the amiga scene.
+</p><p>
+Here, I won't to explain how to release it, and how to get
+articles, etc... I only was one of the coders, and this article is for
+them. It is hard to code a diskmag without a group to make the gfx and
+music for you, so this article is for the scene coders.
+</p>
+
+<h3>Well, Let's start!</h3>
+
+<p>
+The main language was C (no object oriented) and 680x0 asm to
+hard specific parts. We tried to make the code OS friendly, but a lot of
+parts aren't (especially the copper, and the music, of course).
+</p><p>
+The mag is a simple file, and it is very easy to install in HD. Only the
+fonts aren't in the main one. So, at last 2Mb of ram is needed to run the
+program.
+
+<h3>Functions</h3>
+
+<p>
+The main() function is very easy:
+<pre>
+main()
+    {
+        init();
+        handle();
+        end();
+    }
+
+</pre>
+
+</p><p>
+We initialize music, system, interrupts, and other things. And we handle 
+the input messages that the user sends us. When the user wants to quit, we
+restore the system.
+</p><p>
+<i>Handle</i> : Calls an asm function that tests mouse movements, key
+presses, mouse clicks and the joystick :). Returns a number that is the message
+that the user sent. This function isn't an interrupt, and doesn't use
+them. It moves the mouse, so if you press a button, you can't move the
+pointer during the execution of the function. Also, it returns the last key
+pressed, and updates the mouse coordinates.
+</p><p>
+When the asm function returns a value, the code enters a big case block to
+determine which function to call. If the user clicks, test
+if a button is bottom. If the user presses a key, make another case...
+<pre>
+void handle(void)
+{
+    test();	/* Check for the user's message */
+    while(quit)
+    {
+        switch(flag)
+        {
+            case KEY : 
+                switch(key)
+                {
+                    case UP : go up!
+                    case DOWN : go down!
+                    case M : toggle music!
+                }
+                break;
+            case LEFTBUTTON :
+                checkbutton()
+                switch(button)
+                {
+                    case MENU : prints menu!
+                    case MUSIC : toggle music!
+                }
+                break;
+       	}
+    }
+}
+
+</pre>
+</p><p>
+Of course, our finish routine is more and more complicated, but at the start
+it was very similar, and we will add new features while the program is
+in development.
+</p>
+
+<h3>Interface</h3>
+
+<p>
+We like to use the <b>graphics.library</b> features, so we dont need to
+write a lot of blitter code.
+</p><p>
+Let's define a rastport structure, filling in the bitplane adresses. Use the
+<i><tt>AllocRaster()</tt></i> function of the library. Later, we load a
+copperlist (in asm) with the bitplane struct...
+</p><p>
+Now, we have a rastport to use <i><tt>Text()</tt></i>, <i><tt>DrawImage()</tt></i>,
+etc... and we don't need to use complicated blitter routines.
+</p><p>
+The use of graphics.library simplifies a lot the work, and helps us to
+make more complicated text routines, etc...
+</p>
+
+<h3>Text</h3>
+<p>
+The <i><tt>writearticle()</tt></i> function writes current article in the
+rastport (of course :). Note that <i>current</i> is a global variable.
+</p><p>
+First, we clear the text, update the fields (author, section, page),
+and start to print the text.
+</p><p>
+In the text there are some codes to change the display:
+<ul>
+<li><b>colour</b>: change current pen.
+<li><b>font</b>: change current font.
+<li><b>link</b>: prints a link to another article (a button!)
+</ul>
+The use of move and text is very easy to use for this function.
+</p><p>
+When we find a link, we add a button to the list. So, the main
+menu it is very easy to configure. The link says where to jump. In the
+<i><tt>handle()</tt></i> function, we check if the mouse is in a link,
+and change the colour, so the user knows that is a link. Of course,
+the colour of a link may be different to the rest (we use a colour
+only for links). At last, in the begining of each <i><tt>writearticle()</tt></i>,
+we clear the last links from object table.
+</p><p>
+If we want to write the next page, we only put:
+<pre>
+    if(currentpage++&lt;lastpage)
+        writearticle();
+
+</pre>
+and so on.
+</p>
+
+<h3>Buttons</h3>
+<p>
+We use <i><tt>DrawImage()</tt></i> to this purpose. In a separate module
+we define a an <i><tt>Image</tt></i> structure for each button, and
+if we press one, we draw another button.
+</p><p>
+In the screen init, we add it to the object table, giving the
+corners of the image, in absolute coordinates.
+</p><p>
+To check if the mouse press is a button (and a link to another
+article) we compare the mouse coords with all buttons in the object table.
+</p>
+
+<h3>Interrupts</h3>
+<p>
+We only use the vblank interrupt. Only to make a colour fade, and play
+music. Use <i><tt>AddIntServer()</tt></i>, to this purpose.
+</p>
+
+<h3>Music</h3>
+<p>
+Not very complicated. Use a module player in the vblank interrupt.
+</p>
+
+<h3>Data Structures</h3>
+
+<p>
+Use a struct for the page:
+<pre>
+    struct page {
+        UBYTE   *text;
+        UWORD   other attributes;
+        }
+
+</pre>
+An article is an array of pages:
+<pre>
+    struct article {
+        struct page ar_page[MAXPAGE];
+        UWORD       other attributes;
+        }
+
+</pre>
+Also, a button:
+<pre>
+    struct button {
+        struct Image    *image;
+        WORD            x;
+        WORD            y;
+        }
+
+</pre>
+All global variables are in a struct:
+<pre>
+    struct Data {
+        UWORD   Currentpage;
+        UWORD   Currentarticle;
+        UWORD   others...
+        }
+</pre>
+</p>
+
+<h3>Finish</h3>
+<p>
+To code a mag, we need a lot of planification, and not a lot of
+code. When we have the main ideas, we make the display and the
+rastport. Later the <i><tt>handle()</tt></i> and the
+<i><tt>writearticle()</tt></i>. Go on adding new features in the
+case's, to the release.
+</p>
+<hr>
+<h3>Credits</h3>
+<p>
+<i>Ceibe</i> mag was coded by Jose Manuel Rodriguez and Javier Loureiro.
+</p>
+<address>
+If you like to contact by email:
+
+Jose Manuel Rodriguez <a href="mailto:josema@dc.fi.udc.es">&lt;josema@dc.fi.udc.es&gt;</a><br>
+Javier Loureiro <a href="mailto:derethor@arrakis.es">&lt;derethor@arrakis.es&gt;</a>
+</address>
+<hr>
+<a href="default.html">Table of Contents</a>
+</body></html>

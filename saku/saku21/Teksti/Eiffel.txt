@@ -1,0 +1,225 @@
+2
+1*
+{A                            Eiffel-ohjelmointikieli
+{A                            -----------------------
+
+{8                                Mikko Koivunalho
+{8                                 mikkoi@utu.fi
+
+  
+Eiffel on nuori ohjelmointikieli. Sen  ensimm‰inen  malli  julkistettiin  vuonna
+1985. 12 vuotta ei ole pitk‰ ik‰, varsinkaan kun ottaa huomioon, ett‰  kieli  on
+tullut laajemmin tunnetuksi vasta parina viime vuotena. Niinp‰ Eiffelill‰  onkin
+ollut hyv‰‰ aikaa puhdistautua alkuvaiheen virheist‰ ja suunnitteluvioista. Kui-
+tenkin sen m‰‰rittely‰ on muutettu merkitt‰v‰sti vain kerran, 1991, ja  nykyinen
+Eiffel-malli, Eiffel 3, on sittemmin pysynyt muuttamattomana.
+
+Eiffel-standardi on pysynyt samanlaisena, koska Eiffelin kehitys on p‰‰osin  yk-
+siss‰ k‰siss‰: Bertrand Meyerin ja ISE:n (Interactive Software Engineering),  ja
+kielen standardina pidet‰‰n Meyerin kirjaa "Eiffel, The Language". Nimens‰  Eif-
+fel on saanut ranskalaiselta insinˆˆrilt‰ Alexander Gustave  Eiffelilt‰  [efe'l]
+(1832-1923). Kielen suunnittelussa Meyer on seurannut Eiffelin omaa  ideologiaa,
+jonka mukaan rakenteiden itsens‰ (p‰‰osin rautaa, esim.  Eiffelin  torni)  tulee
+olla kaunista katseltavaa symmetrisyydess‰‰n, yksinkertaisuudessaan ja t‰sm‰lli-
+syydess‰‰n.
+
+Eiffel on uusi kieli, jonka suunnittelussa on tieten tahtoen hyl‰tty suuri jouk-
+ko vanhemmissa kieliss‰ k‰ytett‰vi‰ ohjelmointimetodeja ja otettu  k‰yttˆˆn  uu-
+sia. Paitsi ett‰ se on t‰ysiverinen oliosuuntautunut kieli, se  on  myˆs  pikku-
+tarkka ja perinteisiin kieliin n‰hden syntaksiltaan yksinkertainen  sek‰  ohjel-
+moijalta runsasta etuk‰teissuunnittelua vaativa.
+
+{6                                                                     ---------->
+Eiffelin filosofiaa ymm‰rt‰‰kseen on tarkasteltava perinteisi‰ kieli‰ ja  niiden
+ongelmia. Jo kauan ennen Eiffeli‰ ohjelmoinnin metodologian tutkijat  esittiv‰t,
+ett‰ mm. GOTO-komento ei miss‰‰n nimess‰ kuulu asialliseen ohjelmointiin,  koska
+se sallii ohjelman suoritusj‰rjestyksen t‰ydellisen rikkomisen. T‰m‰ ja  vastaa-
+vanlaiset piirteet, mm. funktion tai ohjelman keskeytys ennen loppua, on  t‰ysin
+poistettu Eiffelist‰.
+
+Edelleen Eiffelin syntaksia on radikaalisti yksinkertaistettu laittamalla siihen
+vain kolme suorituksenohjauslauseketta: yksi ehtolauseke, yksi toistolauseke  ja
+yksi valintalauseke (moniehto-, C:ss‰ switch). Perinteisiss‰  kieliss‰h‰n  n‰it‰
+on monissa ollut kasap‰in, esim. C-kielen  while-,  do-while-  ja  for-silmukat.
+Miksi laittaa monenlaisia toistolausekkeita sotkemaan ohjelmakoodia, kun  kerran
+yksi riitt‰‰ kaikkiin tarpeisiin hiukan sovittamalla?
+
+Eiffel on myˆs voimakkaasti tyypitetty kieli. Tavanomaisten  vanhoista  kielist‰
+tuttujen tyyppien kuten REAL, INTEGER ja BOOLEAN lis‰ksi siihen on "sis‰‰nraken-
+nettu" muita tyyppej‰, jotka useimmista kielist‰ puuttuvat kokonaan  tai  ne  on
+toteutettu kielen itsens‰ ulkopuolella, esim. vektori, lineaarinen  lista,  pino
+ja jono. 
+
+
+{DOliokieli
+
+Edell‰ kirjoitin "sis‰‰nrakennettu" lainausmerkeiss‰. Ilmaisu  sallittakoon  mi-
+nulle, vaikka nyt selit‰nkin, miksi n‰in ei oikeastaan voi olla: Eiffel on  puh-
+das oliokieli, joten kaikkien sen ominaisuuksienkin tulee olla olioita.
+
+
+
+{6                                                                     ---------->
+Tietorakenteet eli tietotyypit onkin kaikki toteutettu olioina.  Niinp‰  esimer-
+kiksi vektoria tai listaa voi kasvattaa tai kutistaa kulloisenkin olion  sis‰ll‰
+vaivaamatta p‰‰ohjelmaa. Muita erikoisia tietotyyppej‰ ovat mm. puu-tyyppi, jol-
+la on aina kaksi oksaa ja yksi juuri, tai graafi, viel‰  puurakennettakin  moni-
+puolisempi joukkotyyppi. Edell‰ mainittuja ja muita tyyppej‰ voidaan k‰ytt‰‰ mm.
+erityyppisen tiedon tallennukseen ja helppoon j‰rjest‰miseen. Muita  tietoraken-
+teita voi luoda omaan tarpeeseen  omina  olioinaan,  jotka  sitten  voi  liitt‰‰
+per‰kk‰in vaikka vektoriin tai jonoon.
+
+Ohjelmointia helpottaa myˆs automaattinen roskienker‰‰j‰, joka vapauttaa  niiden
+olioiden varaaman muistin, joihin ei en‰‰ ole osoitinta. T‰m‰ tietysti  hidastaa
+ohjelman suoritusta hivenen, mutta toisaalta  nopeuttaa  valtaisasti  sen  teke-
+mist‰, koska muistivuotoja ei synny. Niiden paikkailuunhan aikaa eniten tuhraan-
+tuu koodattaessa ja virheit‰ korjattaessa.
+
+
+{DEiffelin toteutus
+
+Nykyisiss‰ Eiffel-ymp‰ristˆiss‰ Eiffel-koodia ei suinkaan k‰‰nnet‰ suoraan kone-
+kieleen vaan k‰ytt‰en v‰likielen‰ C:t‰.
+Varsinainen ISE:n Eiffel on isojen koneiden kieli. Sen p‰‰tarkoitus on "program-
+ming in large", siis suurten ohjelmistojen ohjelmointi. Niinp‰  ISE:n  oma  Eif-
+fel-paketti on paljon muutakin kuin vain itse k‰‰nt‰j‰. Se on  p‰‰asiassa  Unix-
+purkeille tarkoitettu megojen kokoinen kokoelma ohjelmoijan tyˆkaluja,  valmiita
+kirjastoja ja oliokokoelmia mm. graafisen ymp‰ristˆn luomiseen tai  verkkosovel-
+lusten ohjelmointiin. ISE:n paketissa on jopa oma kieli,  LACE,  ACE-tiedostojen
+eli perinteisemmin "make"-tiedostojen tekemiseen (siis k‰‰nt‰misen ja  linkityk-
+sen m‰‰rittelyihin).
+
+{6                                                                     ---------->
+Sittemmin ISE on alkanut tehd‰ vastavanlaista  pakettia  myˆs  PC-yhteensopiviin
+(p‰tkitty, mutta toimiva malli on saatavilla ilmaiseksi Maailmanseitist‰, osoit-
+teesta http://www.eiffel.com). On myˆs olemassa ilmainen, GNU-lisenssill‰  levi-
+tett‰v‰ SmallEiffel-k‰‰nt‰j‰, jonka sorsakoodit on  valmiiksi  sovitettu  GNU  C
+-k‰‰nt‰jiin tusinassa eri laiteymp‰ristˆss‰ (ftp://ftp.loria.fr/pub/loria/genie-
+log/SmallEiffel). (K‰‰ntyy pienell‰ sovituksella myˆs mm. SAS C:ll‰.)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{6                                                                     ---------->
+{DEiffelin esimerkki-ohjelmap‰tki‰
+
+T‰rkein kysymys on tietenkin, millaista on Eiffelin  ohjelmakoodi.  Se,  pit‰‰kˆ
+ohjelmoija koodin ulkon‰ˆst‰, on vakavampi n‰kˆkohta kuin useasti  tullaan  aja-
+telleeksikaan. Koodin, siis siistityn koodin, tulee olla ennen kaikkea helppolu-
+kuista, jotta se kelpaisi malliksi. Samalla sen tulisi kertoa kielen rakenteesta
+ja sis‰isist‰ ratkaisuista. Ylemp‰n‰ kerroin hiukan Eiffelin  koodaamistyylist‰,
+mutta mit‰p‰ sanat merkitsisiv‰t ilman konkreettisia esimerkkej‰: 
+
+{C1. esimerkki: Hello_World.e
+
+{5class HELLO_WORLD
+{5     -- Se tutuin ohjelma... N‰in merkit‰‰n kommentit Eiffeliss‰!
+{5     -- Usein Eiffelill‰ ohjelmoidessa laitetaan vain yksi luokka
+{5     -- yhteen tiedostoon ja kerrotaan k‰‰nt‰j‰lle, mik‰ on juuriluokka,
+{5     -- josta suoritus alkaa.
+{5creation make  -- Mill‰ rutiinilla olio luodaan, jos ei spesifisesti m‰‰r‰t‰
+{5               -- jotakin toista luontioperaatiota.
+
+{5feature   -- Mit‰ ominaisuuksia luokalla on. Sek‰ rutiinit ett‰ tietoalkiot.
+
+{5     make is
+{5          do
+{5               io.put_string("Hello World.") -- io-luokka hoitaa io-toiminnot.
+{5          end
+
+{5end  -- HELLO_WORLD    Ohjelman suoritus p‰‰ttyy juuriluokan luontioperaation
+{5     -- suorituksen p‰‰ttymiseen.
+
+{6                                                                     ---------->
+{C2. esimerkki: Rutiinit
+
+Vaikkei se v‰ltt‰m‰tˆnt‰ olekaan (siis siihen ei pakoteta), esitet‰‰n  ett‰  ru-
+tiineja olisi kahdenlaisia: funktioita  ja  proseduureja.  Funktiot  suorittavat
+jonkin (lasku)toimituksen ja antavat palautteena  sen  arvon;  proseduurit  taas
+eiv‰t palauta mit‰‰n, mutta tekev‰t/muuttavat jotakin  tai  jonkin  muistipaikan
+arvoa. Ja yksi rutiini tietysti tekee mielell‰‰n  vain  yhden  asian.  Esimerkki
+funktion rakenteesta: 
+
+{5nimi(argumentit): TYYPPI is   -- otsikko ja palautettavan arvon tyyppi
+{5require                       -- (valinnainen) ehtolauseke argumentin arvon
+{5                              -- sopivuuden testaamiseksi, esim. arg >= 0
+{5local                         -- esitell‰‰n muuttujat
+{5     luku: INTEGER
+{5do
+{5                              -- itse rutiini
+{5     Result := mik‰liearvo    -- funktion palauttama arvo
+{5end                           -- rutiini loppuu ja arvo palautetaan kutsujalle
+{5                              -- vasta end-sanaan tultaessa. rutiinia ei voi
+{5                              -- keskeytt‰‰.
+
+
+
+
+
+
+
+
+
+{6                                                                     ---------->
+{C3. esimerkki: toistolauseke
+
+Kuten jo aikaisemmin mainittiin, Eiffeliss‰ on perinteisiin kieliin n‰hden v‰h‰n
+rakenteita kontrollivuon ohjaukseen, mutta ne ovat monipuolisia. Alla  on  malli
+Eiffelin toistolausekkeesta, loop-lauseesta: 
+
+{5from           -- from-sanan alle laitetaan toistolauseen alustukseen
+{5               -- tarvittava koodi, esim. muuttujien alkuarvot.
+{5invariant      -- (valinnainen) Ehtolauseke, jonka on oltava voimassa jokaisen
+{5               -- kierroksen alussa, jotta silmukka toimisi oikein (erityisen
+{5               -- t‰rke‰ ensimm‰isell‰ ja viimeisell‰ kierroksella)
+{5variant        -- (valinnainen) on p‰invastainen laskutoimitus kuin se mik‰
+{5               -- suoritetaan jokaisella kierroksella; kokonaislukuarvoinen
+{5               -- laskutoimitus, jonka tuloksen t‰ytyy olla positiivinen.
+{5               -- Varmistaa, ett‰ suorituskertoja on ‰‰rellinen m‰‰r‰.
+{5until          -- lopetusehto
+{5loop
+{5               -- T‰h‰n v‰liin itse silmukka.
+{5end
+
+Tuntuiko pitk‰lt‰ ja hankalalta? Mutta t‰llaisten juttujen miettiminen etuk‰teen
+tekee kummasti debuggauksesta helpompaa ja nopeampaa. Luulisi, ett‰ Meyer  olisi
+laittanut toistolauseen loppuun vastaavan toiminnon kuin alun from-lause huoleh-
+timaan toiston j‰lkeisist‰ toimenpiteist‰. Olisiko unohtanut vai pit‰nyt  turhan
+hankalana? 
+
+
+
+
+{6                                                                     ---------->
+{DKenelle Eiffel?
+
+Hankala kysymys. Helpompi kai olisi vastata p‰invastaiseen: Eiffel  ei  ainakaan
+miss‰‰n nimess‰ ole perinteisen mallin hakkerin kieli. Eiffel-koodin  kanssa  ei
+voi helposti r‰pelt‰‰ tai oikaista. Ohjelman suunnitteluun t‰ytyy uhrata aikaa.
+
+Toisaalta aikaa ei kannata uhrata pienten sovellusten tekemiseen,  mutta  ammat-
+tiohjelmoijille Eiffel voisi olla mannaa. Apuneuvoineen se soveltuu  isojen  oh-
+jelmien tekemiseen.
+
+Mik‰‰n jokapaikan jyr‰ Eiffel ei ole, mutta ainakin minun suosiostani se kilpai-
+lee tasaveroisesti C++:n kanssa (raskaassa sarjassa).
+

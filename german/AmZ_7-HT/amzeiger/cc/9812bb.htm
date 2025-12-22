@@ -1,0 +1,539 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 12/98 - BlitzBasic Kurs /4</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>BlitzBasic - Kurs/4</H1>von<BR><A HREF="mailto:Thomas@deutschland.de">Thomas Krippner</A></DIV>
+
+<p>[Anmerkung: Thomas hat uns den Kurs zur Verf&uuml;gung gestellt, ich habe
+inhaltlich kaum etwas ge&auml;ndert. Ansonsten stehen meine Kommentare in
+eckigen Klammern, wobei ich nur Vermutungen anstellen kann, was
+Blitz-Basic angeht. Red.CC]</P>
+
+
+<P><H3><B>Teil 4: Window  mit Propgadget und Peek-Programmierung</B></H3></P>
+
+<P>Im letzten Kursteil hatten wir ja bereits das Blitten von einer Bitmap
+in ein Window. Dieses soll heute erkl&auml;rt werden und den praktischen
+Nutzen zeigen. Auﬂerdem bekommen wir es zum ersten mal mit User-Gadgets
+und den IDCMP-Flags zu tun.</P>
+
+<P>Der kleine Ausflug zum Schluﬂ ins Reich der Peeks und Pokes ist die
+Vorbereitung auf Teil 5.</P>
+
+<P><B>Und nun gehts los:</B></P>
+
+<P>Macht es Sinn, die Bitmap in ein Fenster zu legen, wenn es doch m&ouml;glich
+ist von BB2 aus in ein Fenster zu blitten und zu zeichnen? Warum dann
+also noch die Bitmap?</P>
+
+<P>Stellen wir uns folgende Situation vor: </P>
+
+<P>Das Programm zeichnet eine Grafik, die eine sehr lange Rechenzeit hat
+und der Benutzer soll dessen Fenstergr&ouml;ﬂe selber bestimmen k&ouml;nnen.
+Desweiteren soll der Benutzer mit Hilfe der Proportional-Gadgets jede
+Stelle der Grafik sehen k&ouml;nnen, egal wie groﬂ das Fenster ist.</P>
+
+<P>Es w&uuml;rde somit beim Scrollen durch das Fenster eine immense Rechenzeit
+aufgewendet werden. Aus diesem Grund zeichnen wir das alles mit den
+schnellen BB2 Befehlen auf eine Bitmap und Kopieren dann diese in unser
+Fenster.</P>
+
+<P>Hier das Beispiel:</P>
+
+<P>- Window mit Proportional Gadgets und einer Bitmap</P>
+
+<HR><PRE>
+  WBStartup
+  NEWTYPE.screeninfo
+         id.l
+         width.l
+         height.l
+         _depth.w
+         overscan.w
+         autoscroll.w
+         bmapwidth.l
+         bmapheight.l
+  End NEWTYPE
+
+  NEWTYPE.WS
+         _screen.l
+  End NEWTYPE
+
+  NEWTYPE.pt
+         x.w
+         y.w
+  End NEWTYPE
+
+  Dim p.pt(20)
+
+
+
+  WBenchToFront_
+
+
+  WbToScreen 0
+
+  FindScreen 0
+
+  ; Die Gadgets
+
+  PropGadget 0,-3,-8,$18000+4+8+64,1,-20,8
+  PropGadget 0,-14,10,$11000+2+16+128,2,12,-20
+
+  ; Ende Der Gadgets
+
+  *sc.screeninfo=ASLScreenRequest(31)
+
+  If *sc
+         Dim scrtags.TagItem(8)
+
+         col.w=-1
+
+         scrtags(0)\ti_Tag=#SA_Left,0
+         scrtags(1)\ti_Tag=#SA_Top,0
+         scrtags(2)\ti_Tag=#SA_Width,*sc\width
+         scrtags(3)\ti_Tag=#SA_Height,*sc\height
+         scrtags(4)\ti_Tag=#SA_Depth,*sc\_depth
+         scrtags(5)\ti_Tag=#SA_Overscan,*sc\overscan
+         scrtags(6)\ti_Tag=#SA_AutoScroll,*sc\autoscroll
+         scrtags(7)\ti_Tag=#SA_DisplayID,*sc\id
+         scrtags(8)\ti_Tag=#SA_Pens,&col
+
+         ScreenTags 0,&quot;BB2-Kurs von Thomas Krippner&quot;,&scrtags(0)
+
+         Use Screen 0
+
+         *Scr.WS=Addr Screen (0)
+
+         FH.w=Peek.w(Peek.l(*Scr\_screen+40)+4)
+
+         0,0,FH+3,Peek.w(*Scr\_screen+12),Peek.w(*Scr\_screen+14)-(FH+3), $1|$2|$1000|$400|$8,&quot;Grafik Beispiel&quot;,1,2,0
+         Wi0=ActiveWindow
+
+         BitMap 1,Peek.w(*Scr\_screen+12),Peek.w(*Scr\_screen+14),2
+
+         Use BitMap 1
+
+         For q = 0 To 19
+
+                p(q)\x=(InnerWidth/2)+Sin(2*q*Pi/20)*((InnerWidth/2)-1)
+                p(q)\y=(InnerHeight/2)+Cos(2*q*Pi/20)*((InnerHeight/2)-1)
+
+         Next q
+
+         For q = 0 To 18
+
+                For w = q+1 To 19
+
+                 Line p(q)\x,p(q)\y,p(w)\x,p(w)\y,1
+
+                Next w
+
+         Next q
+
+         x=0:y=0
+         Gosub GGGroesse
+
+         BitMaptoWindow 1,0,0,0,0,0,WindowWidth,WindowHeight
+
+         Repeat
+
+                FlushEvents
+
+                ev.l=WaitEvent
+
+                If Wi0 = ActiveWindow
+
+                 If ev=$2
+
+                  WCls
+
+                  x=HPropPot(0,1)
+
+                  y=VPropPot(0,2)
+
+                  Gosub GGGroesse
+
+                  ev=$20
+
+                 End If
+
+                 If ev = $20
+
+                  x=HPropPot(0,1)*Peek.w(*Scr\_screen+12)
+
+                  y=VPropPot(0,2)*Peek.w(*Scr\_screen+14)
+
+
+                  x=QLimit (HPropPot(0,1)*(Peek.w(*Scr\_screen+12)-InnerWidth),0,(Peek.w(*Scr\_screen+12)-InnerWidth))
+
+                  y=QLimit (VPropPot(0,2)*(Peek.w(*Scr\_screen+14)-InnerWidth),0,(Peek.w(*Scr\_screen+14)-InnerHeight))
+
+                  BitMaptoWindow 1,0,x,y,0,0,InnerWidth,InnerHeight
+
+                 End If
+
+                End If
+
+         Until ev = $200
+
+  End If
+
+  End
+
+  .GGGroesse
+
+  SetHProp 0,1,x,WindowWidth/Peek.w(*Scr\_screen+12)
+  SetVProp 0,2,y,WindowHeight/Peek.w(*Scr\_screen+14)
+
+  Redraw 0,1
+  Redraw 0,2
+  Return
+</PRE>
+[Als Datei in <A HREF="../amz1298/bin.lha">Bin</A> zu finden.]
+
+<HR>
+
+<P>Unter Gadgets erzeugen wir zwei Proportional-Gadgets, die wir in den
+Fensterrand integrieren. F&uuml;r die Flags der Gadgets ist wie immer das
+BB2-Handbuch zust&auml;ndig !!!</P>
+
+<P>Im Bereich des Windows haben wir eine 0 angeh&auml;ngt, um die Gadgetliste
+0 an unser Window zu &uuml;bertragen (GTL). Nachdem wir unseren Screen
+ge&ouml;ffnet haben, &ouml;ffnen wir eine Bitmap mit der Nummer 1 und den Ausmaﬂen
+unseres Screens.</P>
+
+<P>Dieses erkl&auml;ren wir mit Use Bitmap 1 zum Ein- und Ausgabeger&auml;t. Dann
+wird die Grafik berechnet und in die Bitmap gezeichnet. Jetzt springt
+das Programm nach GGGroesse. Die Gr&ouml;ﬂe des Gadget-Body wird nun bestimmt.</P>
+
+<P>SetHprop GadgetListe,Identit&auml;t,Anfang,Gr&ouml;ﬂe</P>
+
+<P>Gadgetliste und Identit&auml;t sind klar 0,1 im ersten Fall.</P>
+
+<P>Am Anfang soll das Gadget ganz links bzw. ganz oben stehen, dies sind
+die Positionen 0 (x=0 und y =0).</P>
+
+<P>Jetzt der schwere Teil: Die Werte des Gadgets liegen zwischen 0 und 1,
+daﬂ heiﬂt, er gibt keine Pixel aus, sondern einen Wert zwischen 0 und 1
+der proportional die Lage des Bodys wiedergibt.</P>
+
+<P>Ein Beispiel: 0.5 w&auml;re immer die Mitte des Windows, egal ob das Window
+10 Pixel hoch ist oder 1000 Pixel.</P>
+
+<P>Also m&uuml;ssen wir unseren Body auch dementsprechend setzten. Die Gr&ouml;ﬂe des
+Windows geteilt durch die Gr&ouml;ﬂe der Grafik gibt uns einen Wert mit dem
+die Intuition-Library arbeiten kann.</P>
+
+<P>Ein Beispiel: Das Window ist 100 Pixel und die Grafik 200 Pixel hoch,
+Body-Gr&ouml;ﬂe damit 0.5, d h. der K&ouml;rper des Gadgets nimmt die H&auml;lfte des
+Windows ein. Klingt kompliziert, ist es aber nicht, hier hilft nur
+Praxis und Ausprobieren. </P>
+
+<P>Das Programm zeichnet die Propgadgets nach dem Berechnen mit Redraw neu
+und springt wieder zum Ausgangspunkt.</P>
+
+<P>Mit dem Befehl BitMaptoWindow wird der Inhalt der Bitmap auf das Window
+&uuml;bertragen.</P><PRE>
+
+BitMaptoWindow
+BitMap,Window,StartScreenX,StartScreenY,ZielWindowX,ZielWindowY,Breite,H&ouml;he
+
+StartScreenX (Bitmap)
+Anfangsvertikalepunkt der &Uuml;bertragung
+
+StartScreenY (Bitmap)
+Anfangshorizontalpunkt der &Uuml;bertragung
+
+ZielWindowX (Window)
+Endpunkt von StartScreenX
+
+ZielWindowY (Window)
+Endpunkt von StartScreenY
+
+Breite und H&ouml;he
+Zu &uuml;bertragende Gr&ouml;ﬂe in Pixel
+</PRE>
+<P>Jetzt sehen wir erst die Grafik auf unserem Window. Daf&uuml;r wird sie nicht
+erst aufgebaut, sondern ist sofort da.</P>
+
+<P>Und schon sind wir in der Repeat-Schleife.</P>
+
+<P>Wenn der Anwender das Window verkleinert, liefert ev.l=$2. In den
+Variablen x und y wird die momentane Position der Gadget-Bodys
+eingetragen. Da Intution das Window automatisch vergr&ouml;ﬂert und damit
+auch unsere Gadgets, die wir ja in den Fensterrand eingetragen haben,
+m&uuml;ssen wir uns jetzt um die korrekte Gr&ouml;ﬂe der Bodys k&uuml;mmern. Durch das
+Springen nach GGGroesse werden unsere Gadget-Bodys neu berechnet und
+gezeichnet. Die Position der Bodys ist jetzt nicht Null, sondern die
+vom User eingestellte Position.</P>
+
+<P>Die Variable ev setzen wir nun auf $20, so als ob der User die Gadgets
+bet&auml;tigt h&auml;tte. In dieser Schleife wird die Position der Bodys wieder
+in x und y geschrieben. Diesmal aber mit der Gr&ouml;ﬂe der Grafik
+multipliziert und somit erhalten wir die Position der Grafik wieder.</P>
+
+<P>Beispiel: Die Grafik ist 200 Pixel hoch, der Body steht auf 0.5, also
+der H&auml;lfte des Windows, Resultat ist 100 Pixel (die H&auml;lfte der Grafik).</P>
+
+<P>In QLimit stellen wir noch fest, ob der Wert in x oder y gr&ouml;ﬂer ist, als
+die Grafik breit oder hoch, das w&uuml;rde n&auml;mlich zu Fehldarstellungen f&uuml;hren.
+Sollte dies aber der Fall sein, wird einfach die gr&ouml;ﬂte m&ouml;gliche Position
+an x oder y gegeben. Zum besseren Verst&auml;ndnis l&ouml;schen Sie einfach diese
+Funktionen in dem Beispiel und bewegen den Body.</P>
+
+<P>Das ist schon alles.</P>
+
+<HR>
+
+<P>Ein Sch&ouml;nheitsfehler bleibt. Wenn der Body mit der Maus genommen wird
+geht die Grafik nicht mit, das werden wir jetzt &auml;ndern!</P><PRE>
+
+  If ev = $20
+
+         Repeat
+
+                x=HPropPot(0,1)*Peek.w(*Scr\_screen+12)
+
+                y=VPropPot(0,2)*Peek.w(*Scr\_screen+14)
+
+
+                x=QLimit (HPropPot(0,1)*(Peek.w(*Scr\_screen+12)-InnerWidth),0,(Peek.w(*Scr\_screen+12)-InnerWidth))
+
+                y=QLimit (VPropPot(0,2)*(Peek.w(*Scr\_screen+14)-InnerWidth),0,(Peek.w(*Scr\_screen+14)-InnerHeight))
+
+                BitMaptoWindow 1,0,x,y,0,0,InnerWidth,InnerHeight
+
+         Until Joyb(0) = 0
+
+  End If
+</PRE>
+[Als Datei in <A HREF="../amz1298/bin.lha">Bin</a> zu finden.]
+
+<P>Durch Erg&auml;nzung der $20 Schleife mit einem einfachen &quot;Warten auf
+Maustaste loslassen&quot; Joyb(0)=0 berechnet das Programm jede Position der
+Bodys bis der Benutzer die Maustaste losl&auml;ﬂt.</P>
+
+<P>Aber Achtung: Wenn der Benutzer die Maus mit Hilfe der Tastatur bewegt,
+stellt das das Programm nicht fest!</P>
+
+<P>Wir m&uuml;ssen also die Maus abfragen und nicht nur den Port 0 des Amigas.
+Das geschieht &uuml;ber Intuition bzw. &uuml;ber die IDCMP-Flags (die wir unserem
+Window mitgeben). Diese Flags bestimmen, ob wir eine Meldung von Intuition
+bekommen oder nicht. Geben Sie einfach mal am Anfang des Programms
+&quot;DefaultIDCMP $8&quot; ein. Sie sehen, daﬂ das Programm nun nicht mehr
+reagiert, also m&uuml;ssen Sie es abbrechen und mit der Esc-Taste beenden. </P>
+
+<P>Der Grund ist, daﬂ WaitEvent jetzt von Intuition nur noch die gedr&uuml;ckte
+Maustaste empf&auml;ngt. Daﬂ WaitEvent beim Start Informationen von Intuition
+erh&auml;lt, ohne IDCMP-Flags gesetzt zu haben, liegt daran, daﬂ BB2 beim Start
+die wichtigsten IDCMP-Flags setzt. Den $10 setzt BB2 nicht standardm&auml;ﬂig
+und deshalb erg&auml;nzen wir unser Programm nach dem &quot;;ENDE DER GADGETS&quot;
+um folgende Zeile:</P>
+
+ <P>AddIDCMP $10</P>
+
+<P>Bedeutung: Addiere zu den bestehenden IDCMP-Flags das Mauszeiger-
+Bewegungsflag hinzu. Alle Flags stehen im BB2-Handbuch bei Windows
+beschrieben.</P>
+
+<P>Nun Schreiben wir noch in unsere $20 Schleife statt &quot;Until Joyb(0)&quot;
+einfach &quot;Until WaitEvent &lt;&gt; $10&quot; und das Programm bleibt solange in der
+Schleife, wie die Maus bewegt wird.</P>
+
+<P>Es gibt noch eine Variante eine Bitmap auf ein Window zu bringen, in
+diesem Fall wird aber das Fenster fest an die Bitmap gebunden.</P>
+<PRE>
+- SuperBitmap und Windows
+
+  WBStartup
+  NEWTYPE.screeninfo
+         id.l
+         width.l
+         height.l
+         _depth.w
+         overscan.w
+         autoscroll.w
+         bmapwidth.l
+         bmapheight.l
+  End NEWTYPE
+
+  NEWTYPE.WS
+         _screen.l
+  End NEWTYPE
+
+  NEWTYPE.pt
+         x.w
+         y.w
+  End NEWTYPE
+
+  Dim p.pt(20)
+
+
+  WBenchToFront_
+
+
+  WbToScreen 0
+
+  FindScreen 0
+
+  ; Die Gadgets
+
+  PropGadget 0,-3,-8,$18000+4+8+64,1,-20,8
+  PropGadget 0,-14,10,$11000+2+16+128,2,12,-20
+
+  ; Ende Der Gadgets
+
+  *sc.screeninfo=ASLScreenRequest(31)
+
+  AddIDCMP $10
+
+  If *sc
+         Dim scrtags.TagItem(8)
+
+         col.w=-1
+
+         scrtags(0)\ti_Tag=#SA_Left,0
+         scrtags(1)\ti_Tag=#SA_Top,0
+         scrtags(2)\ti_Tag=#SA_Width,*sc\width
+         scrtags(3)\ti_Tag=#SA_Height,*sc\height
+         scrtags(4)\ti_Tag=#SA_Depth,*sc\_depth
+         scrtags(5)\ti_Tag=#SA_Overscan,*sc\overscan
+         scrtags(6)\ti_Tag=#SA_AutoScroll,*sc\autoscroll
+         scrtags(7)\ti_Tag=#SA_DisplayID,*sc\id
+         scrtags(8)\ti_Tag=#SA_Pens,&col
+
+         ScreenTags 0,&quot;BB2-Kurs von Thomas Krippner&quot;,&scrtags(0)
+
+         Use Screen 0
+
+         *Scr.WS=Addr Screen (0)
+
+         FH.w=Peek.w(Peek.l(*Scr\_screen+40)+4)
+
+
+         BitMap 1,Peek.w(*Scr\_screen+12),Peek.w(*Scr\_screen+14),2
+
+         Use BitMap 1
+
+         For q = 0 To 19
+
+                p(q)\x=(Peek.w(*Scr\_screen+12)/2)+Sin(2*q*Pi/20)*((Peek.w(*Scr\_screen+12) /2)-1)
+
+                p(q)\y=(Peek.w(*Scr\_screen+14)/2)+Cos(2*q*Pi/20)*((Peek.w(*Scr\_screen+14) /2)-1)
+
+         Next q
+
+         For q = 0 To 18
+
+                For w = q+1 To 19
+
+                 Line p(q)\x,p(q)\y,p(w)\x,p(w)\y,1
+
+                Next w
+
+         Next q
+
+         Window 0,0,FH+3,Peek.w(*Scr\_screen+12),Peek.w(*Scr\_screen+14)-(FH+3),$1489,&quot;Grafik Beispiel&quot;,1,2,0,1
+         Wi0=ActiveWindow
+
+         x=0:y=0
+         Gosub GGGroesse
+
+         PositionSuperBitMap 0,0
+
+         Repeat
+
+                FlushEvents
+
+                ev.l=WaitEvent
+
+                If Wi0 = ActiveWindow
+
+                 If ev=$2
+
+                  x=HPropPot(0,1)
+
+                  y=VPropPot(0,2)
+
+                  Gosub GGGroesse
+
+                  PutSuperBitMap ; Neu Zeichnen des Windows
+
+                 End If
+
+                 If ev = $20
+
+                  Repeat
+
+                        x=HPropPot(0,1)*Peek.w(*Scr\_screen+12)
+
+                        y=VPropPot(0,2)*Peek.w(*Scr\_screen+14)
+
+
+                        x=QLimit(HPropPot(0,1)*(Peek.w(*Scr\_screen+12)-InnerWidth),0,(Peek.w(*Scr\_screen+12) -InnerWidth))
+
+                        y=Qlimit(VPropPot(0,2)*(Peek.w(*Scr\_screen+14)-InnerWidth),0,(Peek.w(*Scr\_screen+14) -InnerHeight))
+                        PositionSuperBitMap x,y
+
+                  Until WaitEvent &lt;&gt; $10
+
+                 End If
+
+                End If
+
+         Until ev = $200
+
+  End If
+
+  End
+
+  .GGGroesse
+
+  SetHProp 0,1,x,WindowWidth/Peek.w(*Scr\_screen+12)
+  SetVProp 0,2,y,WindowHeight/Peek.w(*Scr\_screen+14)
+
+  Redraw 0,1
+  Redraw 0,2
+  Return
+</PRE>
+[Als Datei in <A HREF="../amz1298/bin.lha">Bin</a> zu finden.]
+<HR>
+
+<P>Hierbei gilt es zu beachten, daﬂ das Window um den Parameter 1 erweitert
+wurde. Dies ist die Angabe der Bitmap, es bewirkt auﬂerdem, daﬂ die Flags
+den Wert $80 enthalten.</P>
+
+<P>Ich habe hier mit Absicht einmal die Werte addiert, um zu demonstrieren,
+daﬂ dieses auch geht. Die Bitmap muﬂ vor dem Window erstellt werden und
+das ist meiner Meinung nach der groﬂe Nachteil, denn &Auml;nderungen werden
+nur ungern geduldet. Die Parameter zum Befehl PositionSuperBitmap ist
+die linke oberste Ecke der Grafik, die auf das Window geblittet werden
+soll.</P>
+
+<P>Es ist eigentlich egal, ob Sie mit Superbitmap oder mit BitmaptoWindow
+arbeiten. Die Geschwindigkeit ist der Vorteil der Superbitmap und die
+Flexibilit&auml;t der Vorteil des BitmapToWindow-Befehls. Auch hier gilt
+wieder: Experimentieren ist das Beste, was Sie machen k&ouml;nnen.</P>
+
+<P>Das war es f&uuml;rs Erste mit dem Thema, mehr davon in Teil 5.</P>
+
+<P>[Soweit 4. Teil. Nummero 5 folgt in AmZeiger-Ausgabe 8.]</P>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9812lot.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz1298/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../kw/9812inst.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>
+

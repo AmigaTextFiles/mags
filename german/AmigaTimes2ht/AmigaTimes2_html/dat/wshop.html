@@ -1,0 +1,476 @@
+<HTML>
+<HEAD>
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.0//EN">
+<META NAME="author" CONTENT="Mario Nitschke / HTML-Konvertierung Marcel Hanson">
+<META NAME="description" CONTENT="AMIGA TIMES 01/97 - Deutsches AMIGA Games und Info Magazin">
+<META NAME="keywords" CONTENT="Amiga,Information,Spiele,deutsch,Tips">
+<!-- PROGRAM="WebPlug v1.21 © 1996-97 Esteve Boix" -->
+<TITLE>AMIGA TIMES 02/97 - Programmierkurs Assembler - Teil 1</TITLE>
+</HEAD>
+
+<BODY  BACKGROUND="../images/bg.gif" BGCOLOR="#A4A4E1" TEXT="#000000" LINK="#FF0000" ALINK="#F00000" VLINK="#AA0000">
+
+<DIV ALIGN=CENTER>
+<TABLE BORDER=0>
+<TR>
+<TD>
+<A HREF="edit.html"><IMG SRC="../images/edit.gif" ALT="Editorial" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD>
+<TD>
+<A HREF="inhalt.html"><IMG SRC="../images/inh.gif" ALT="Inhalt" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD>
+<TD>
+<A HREF="impressum.html"><IMG SRC="../images/impr.gif" ALT="Impressum" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD></TR></TABLE></DIV><HR>
+
+<DIV ALIGN=LEFT>
+<H2>Programmieren in Assembler - Kurs Teil 1</H2>
+
+<P>
+<H3>Vorwort</H3>
+
+<P>
+Dies ist der allererste Kurs den ich schreibe. Wenn also irgendwo falsche
+Informationen zu finden sind, oder es zu einigen Routinen bessere L&ouml;sungen
+gibt: Sorry, ich bin nur ein Hobbyprogrammierer und programmiere nur
+nebenbei in meiner Freizeit. Irgendwelche W&uuml;nsche oder Kritik zu diesem
+Kurs k&ouml;nnt ihr direkt als Leserbrief an die AmigaTimes schicken.
+ 
+<P>
+<H3>Einleitung</H3>
+
+<P>
+Wolltet ihr schon immer mal tolle Intros oder Demos schreiben? Bunte B&auml;lle
+&uuml;ber den Screen jagen und Schrift springen lassen? Dann habt ihr jetzt die
+Gelegenheit dies zu erlernen. Alles was ihr dazu braucht ist irgend ein
+Amiga und etwas Geduld. Die n&ouml;tige Software konnten wir leider aus Platzmangel
+nicht dem Mag beilegen, wer es haben m&ouml;chte, es ist im Aminet
+unter "....." zufinden. Ein anderer Assembler, z.B. von Maxon, geht auch!
+ 
+<P>
+<H3>Inhalt</H3>
+
+<P>
+So, nun mal ein &Uuml;berblick was der Kurs so bietet:
+<UL>
+<LI>Copper und Copperanimationen
+<LI>Anzeigen von Bildern, Scrolling und andere Effekte
+<LI>Sprites und deren Animation
+<LI>BOBs und Laufschriften mit dem Blitter
+<LI>Bootblock-Programmierung
+<LI>Musik
+</UL>
+
+<P>
+Diese Themen werden dann &uuml;ber die einzelnen Teile des Kurses verteilt sein,
+aber nicht in dieser Reihenfolge.
+ 
+<P>
+<H3>Computer sind doof...</H3>
+
+<P>
+Im Grunde genommen ist unser Amiga genau so dumm wie diese Intel-Dinger.
+Er kann gerade mal bis 1 z&auml;hlen. Ursache ist, da&szlig; die elektrischen Schaltkreise
+im Amiga nur zwei Zust&auml;nde annehmen k&ouml;nnen, n&auml;mlich Strom an oder
+Strom aus. Eine ganze Menge dieser Schaltkreise bilden nun den Prozessor,
+das Herz des Computers. Mehrere Millionen Schaltkreise bilden den Speicher.
+Ein Programm ist nichts anderes als ein bestimmter Zustand des Speichers.
+Der eine Zustand hei&szlig;t 0, der andere 1. Ein Programm k&ouml;nnte also so aussehen:
+
+<P>
+1001100101011101110101100011010111101011010110101010111010110101010101
+<P>
+Sieht bl&ouml;d aus, nicht wahr? Tja, das ist Maschinensprache, mehr nicht.
+ 
+<P>
+<H3>Assembler</H3>
+
+<P>
+Nun will man sein Programm ja nicht aus lauter Nullen und Einsen schreiben,
+also wurde 1950 Assembler entwickelt. Statt 0 und 1 schreibt man nun daf&uuml;r
+Mnemonics. Das sind nur Abk&uuml;rzungen f&uuml;r bestimmte 0-1-Folgen. Nun kann der
+arme Amiga aber keine Mnemonics lesen, also mu&szlig; man diese wiederrum in
+Nullen und Einsen &uuml;bersetzen. Genau das macht ein Assembler. Assembler
+ist nun zum einen die Sprache selber und zum anderen das &Uuml;bersetzungsprogramm.
+Und genau so einen Assembler brauchen wir f&uuml;r den Kurs. Nun gibt
+es f&uuml;r den Amiga Assembler wie Sand am Meer. Ich habe mich dazu entschlossen
+den Kurs f&uuml;r "TFA AsmOne" zu schreiben. Es handelt sich dabei um
+eine modifizierte PD-Version des Assemblers AsmOne.
+ 
+<P>
+<H3>Installation von AsmOne v1.29</H3>
+
+<P>
+Wenn ihr die oben gezeigten Listings blo&szlig; seht, habt ihr auch nichts davon.
+Also werden wir erstmal den Assembler installieren. Entpackt die Datei
+"AsmOne.lha" irgendwo hin (z.B nach RAM:). Danach kopiert die Datei
+"AsmOne" in ein Verzeichnis eurer Wahl und die Dateien "RegsData" und
+"AGA.guide" nach "S:". Die Datei "ASM-One.Pref" kommt nun noch nach
+"SYS:Prefs/Env-Archive". Das war's auch schon.
+ 
+<P>
+<H3>Bits und Bytes</H3>
+
+<P>
+Diese am Anfang genannten Nullen und Einsen haben nat&uuml;rlich auch einen
+Namen, man nennt sie Bits. Ein Bit ist die kleinste Informationseinheit die
+ein Computer kennt. Es kann nur die Zust&auml;nde 0 oder 1 aufnehmen. 8 Bit
+zusammengefa&szlig;t nennt man ein Byte. Zwei zusammengefa&szlig;te Bytes nennt man ein
+Wort. Vier zusamengefa&szlig;te Bytes nennt man Langwort.
+ 
+<P>
+<H3>Bin&auml;r und Hexadezimal</H3>
+
+<P>
+Bei der Assemblerprogrammierung werden Zahlen meisst bin&auml;r oder hexadezimal
+angegeben. Bin&auml;re Zahlen k&ouml;nnen nur aus den Ziffern 0 und 1 bestehen,
+hexadezimale aus 0-F. Damit man nun unterscheiden kann, um was f&uuml;r eine Zahl es
+sich handelt, stellt man hexadezimalen Zahlen ein $ voran (z.B. $A) und
+bin&auml;ren ein % (z.B. %0011). Um Zahlen nun zwischen den einzelnen Zahlensystemen
+umzurechnen werden wir den AsmOne nutzen.
+ 
+<P>
+<H3>Speicher</H3>
+
+<P>
+Nun wollen wir uns mal das Ged&auml;chtnis des Amigas anschauen: den Speicher.
+Im Amiga gibt es ChipRAM und FastRAM. Im ChipRAM handtieren vorrangig die
+Customchips (die f&uuml;r Grafik und Sound). Will die CPU dann auf den Speicher
+zugreifen, mu&szlig; sie warten bis die CustomChips fertig mit der Arbeit sind.
+Das ist auch der Grund warum Amigas die nur ChipRAM besitzen so langsam
+sind. Im FastRAM kann nur die CPU werkeln, die CustomChips haben da drauf
+keinen Zugriff. Ein Computer mit FastRAM ist deshalb auch schneller als
+einer ohne. Die ersten 512 KByte ChipRAM befinden sich bei den Adressen
+$000000 bis $080000, geht der Speicher bis $100000 haben wir 1 MByte
+ChipRAM, bis $200000 dann 2 MByte. Alles was &uuml;ber $200000 geht ist dann
+FastRAM.
+
+<P>
+<H3>Spezielle Adressen</H3>
+
+<P>
+Extrem wichtige Adressen sind $dffxxx, $bfexxx und $bfdxxx. Von $dff000
+bis $dff1fe finden wir die CustomChips, die f&uuml;r Grafik und Sound zust&auml;ndig
+sind. Bei dem alten Amigas heissen sie Agnus, Denise und Paula. Bei den
+neueren AGA-Amigas heissen sie Lisa (ehemals Agnus), Alice (ehemals Denise)
+und Paula (funktional unver&auml;ndert). Von $bfe000 bis $bfef01 finden wir den
+CIAA, zust&auml;ndig z.B. f&uuml;r die Kontrolle des Parallelports und des Serialports.
+Analog dazu gib es noch den CIAB, zu finden ab Adresse $bfd000.
+Diese speziellen Adressen werden auch Register genannt.
+ 
+<P>
+<H3>CPU - Central Processing Unit</H3>
+
+<P>
+Assembler ist immer an eine bestimmte CPU gebunden. Wir werden hier f&uuml;r
+Prozessoren der 68000er Familier von Motorola Programme schreiben. Dazu
+sollten wir zumindest grob wissen wie diese Prozessoren aussehen. Eine
+68000er-CPU hat 8 Datenregister (D0-D7), 7 Adre&szlig;register (A0 - A6), einen
+Stackpointer (A7), einen Programmz&auml;hler (PC) und ein Statusregister (SR).
+Jedes dieser Register ist 32 Bit breit. In Datenregistern kann man Bytes,
+Worte oder Langworte ablegen. In den Adressregistern ist der Typ Byte nicht
+m&ouml;glich. Die restlichen Registern sind immer "long".
+ 
+<P>
+<H3>Adressierungsarten</H3>
+
+<P>
+So, nun habt ihr erstmal genug Hintergrundwissen um mit der Assembler-
+programmierung beginnen zu k&ouml;nnen. Tja, dann kommt nun der wohl f&uuml;r
+Anf&auml;nger schwierigste Teil von Assembler: die Adressierungsarten. Wenn ihr
+die alle verstanden habt, wird der Rest nur noch ein Kinderspiel. Eine CPU
+ist um so besser, je mehr sinvolle Adressierungsarten sie hat, und hier
+gl&auml;nzt der 68000 ganz besonders. Dann mal los:<BR>
+
+<P>
+<DL>
+<DT><B>1. Register direkt:</B> move.l a3,a4
+<DD>
+Hier wird der Inhalt des Adressregisters A3 nach A4 kopiert. Move hei&szlig;t
+kopiere, obwohl es w&ouml;rtlich &uuml;bersetzt bewege heissen sollte. Das "l"
+bedeutet, da&szlig; wir das ganze Register (was ja 32 Bit breit ist) kopieren
+wollen, also ein Langwort, darum auch das "l". Wollen wir nur ein Wort
+kopieren, schreiben wir "move.w", f&uuml;r ein Byte w&uuml;rden wir "move.b"
+schreiben.
+<P>
+<DT><B>2. Adressregister indirekt (ARI):</B> move.l (a3),(a4)
+<DD>
+Die Inhalte der Register werden als Adressen gesehen. Hat z.B. A3
+den Wert 4711 und A4 den Wert 5711, dann wird ein Langwort von Adresse
+4711 nach 5711 kopiert.
+<P>
+<DT><B>3. Adressregister indirekt mit Postinkrement:</B> move.w (a0)+,d0
+<DD>
+Im Klartext: Kopiere das Wort, auf das A0 zeigt nach D0 und erh&ouml;he
+(post) A0 um 2. Zwei deshalb, weil ein Wort zwei Byte hat. M&ouml;chte man
+z.B. um 1 erh&ouml;hen, m&uuml;sste man "move.b (a0)+,d0" schhreiben (ein Byte
+kopieren und dann um 1 erh&ouml;hen).
+<P>
+<DT><B>4. Adressregister indirekt mit Predekrement :</B> move.l d0,-(a5)
+<DD>
+In diesem Fall wird vorab (pre) 4 (ein Langwort hat 4 Byte) von A5
+subtrahiert, dann wird D0 dahin kopiert, wohin A5 nun zeigt.
+<P>
+<DT><B>5. Adressregister indirekt mit Adressdistanz:</B> move.w -100(a0),d0
+<DD>
+W&auml;re A0=500, w&uuml;rde das Wort von Adresse 400 nach D0 kopiert.
+<P>
+<DT><B>6. Adressregister indirekt mit Adressdistanz und Index:</B> move.w 100(a0,d0),4711
+<DD>
+100 ist die Adressdistanz, A0 enth&auml;lt die Basisadresse, in D0 steht
+der Index. Alle drei werden addiert. Die Summe ist eine Adresse, das
+Wort, welches da steht, wird ins Ziel (hier Adresse 4711) kopiert.
+<P>
+<DT><B>7. Absolute Adressierung:</B> move.w 4711,5713
+<DD>
+Hier wird das Wort von Adresse 4711 nach Adresse 5713 kopiert.
+<P>
+<DT><B>8. Konstanten-Adressierung:</B> move.l #65,d0 oder move.l #'A',d0
+<DD>
+Um eine Konstante zu kopieren, braucht man dem Zeichen nur ein #
+vorzusetzen.
+<P>
+<DT><B>9. PC-relative Adressierung</B>
+<DD>
+Hier mu&szlig; ich mal was erkl&auml;ren, damit ihr diese Feature auch w&uuml;rdigen
+k&ouml;nnt. Sobald wir in einem Assembler-Programm eine absolute Adresse
+angeben, ist unser Programm an einem Ort im Speicher gebunden. Der von
+uns geplante Adressbereich kann aber nun schon belegt sein, also mu&szlig;
+unser Programm auch an einem anderen Ort laufen k&ouml;nnen. Dazu gibt es
+zwei M&ouml;glichkeiten. Erstens, unser Programm ist verschiebbar. Daf&uuml;r
+sorgt der Assembler, indem er in unserem Programm eine Tabelle aller
+absoluten Adresse speichert. Der Lader (ein Teil des Betriebssystems)
+kann dann diese Adresse korrigieren, indem er die Differenz zwischen
+geplanter und tats&auml;chlicher Startadresse auf alle absoluten Adressen
+laut Tabelle addiert. Die zweite M&ouml;glichkeit ist, unser Programm lageunabh&auml;ngig
+zu schreiben. Wir d&uuml;rfen dann nat&uuml;rlich keine absoluten
+Adressen verwenden, und genau da brauchen wir die PC-relative
+Adressierung. Dabei wird die Adresse gerechnet als aktueller Stand des
+PC (Program Counter) und den Offset. Der Offset ist auf -32768...
+32767 begrenzt. Hier noch ein Beispiel: move.w 100(pc),d0
+<P>
+<DT><B>10. PC-relativ mit Adressdistanz und Index:</B> move.w 100(pc,a0.w),d0
+<DD>
+Hier gilt sinngem&auml;&szlig; das f&uuml;r "Adressregister indirekt mit Adressdistanz
+und Index", nur das die Basisadresse hier PC+2 ist.
+</DL>
+
+<P>
+So, nun wollen wir uns mal wieder der Hardware des Amigas widmen.
+ 
+<P>
+<H3>Der Copper</H3>
+
+<P>
+Um zu erkl&auml;ren was der Copper ist und wozu er gut ist, solltet ihr erstmal
+wissen wie ein Bild vom Amiga auf dem Monitor erzeugt wird. Was Ich hier
+schreibe gilt f&uuml;r Monitore mit Kathodenstrahlr&ouml;hre und nicht f&uuml;r LCD- oder
+Plasmabildschirme. In der Kathodenstrahlr&ouml;hre gibt es einen Rasterstrahl,
+der wenn er auf die Bildschirmfl&auml;che trifft, diese dann an diesem Punkt
+zum leuchten bringt. Um nun ein ganzes Bild darzustellen f&auml;ngt der Strahl
+oben links an zu "zeichnen", bewegt sich dann Punkt f&uuml;r Punkt nach rechts
+bis zum Zeilenende, und f&auml;ngt danach das ganze Spiel f&uuml;r die n&auml;chste Zeile
+nocheinmal an. Das alles geht so schnell, da&szlig; man es nicht sieht. In einer
+Sekunde wird das Bild 50 mal (sofern es sich um ein PAL-System (50 Hz)
+handelt) neu aufgebaut. Damit der Strahl nun wei&szlig; wo ein Punkt auf den
+Bildschirm hin soll, bekommt er seine Informationen vom Copper, einen Teil
+des Customchips Agnus. Mit diesem Copper kann man nun den Strahl steuern,
+und so jede Menge sch&ouml;ne Effekte auf den Bildschirm zaubern.
+ 
+<P>
+<H3>Die Copperliste</H3>
+
+<P>
+Und woher soll der Copper nun wissen, was er zu tun hat? Ganz einfach: er
+arbeitet eine Liste mit Anweisungen ab, die Copperliste. In dieser Liste
+stehen spezielle Befehle f&uuml;r den Copper, n&auml;mlich MOVE, WAIT und SKIP. Mehr
+Befehle kennt der Copper nicht. Mit MOVE k&ouml;nnen wir Daten in die Custom-
+Register schreiben. Als ersten Operanden wird der Wert angegeben, als
+zweiten das Register. Mit WAIT k&ouml;nnen wir auf eine bestimmte Position des
+Rasterstrahls warten. Der erste Operand setzt sich aus auf die zu wartende
+Position zusammen (X- und Y-Koordinate) und der zweite aus einer Bitmaske,
+die den WAIT-Befehl genauer beschreibt (z.B. nur auf horizontale Position
+warten und die vertikale ignorieren). Mit SKIP kann man die n&auml;chste An-
+weisung in der Liste &uuml;berspringen, wenn der Rasterstrahl eine bestimmte
+Position erreicht hat. Der erste Operand beinhaltet die Position und der
+zweite eine Bitmaske (wie bei WAIT, bloss Bit 0 ist 1). Wir werden hier nur
+MOVE und WAIT benutzen. SKIP habe Ich pers&ouml;nlich noch nie benutzt.
+ 
+<P>
+<H3>Unsere erste Copperliste</H3>
+
+<P>
+Nun wollen wir unsere erste Copperliste schreiben. Ziel ist es, zwei blaue
+Farbverl&auml;ufe auf den Bildschirm zu bringen. Als erstes m&uuml;ssen wir die
+Copperliste der Workbench sichern, damit der Amiga nach Beendigung unseres
+Programms nicht abst&uuml;rzt. Nat&uuml;rlich werden wir nicht die gesamte Liste
+abspeichern, sondern nur die Adresse ab wo sie sich im Speicher befindet.
+Die Adresse der Copperliste steht im Register COP1LC ($dff080). Da dieses
+Register nur ein Schreibregister ist, k&ouml;nnen wir da keine Adresse auslesen.
+Einen Weg gibt es aber dennoch, und zwar &uuml;ber das Betriebsystem. Im ROM
+existiert die "graphics.library", mit deren Hilfe wir die Adresse der
+Copperliste der Workbench in Erfahrung bringen k&ouml;nnen. Um zu verstehen was
+eine Library ist, werde Ich euch erstmal das Konzept der Libraries er-
+kl&auml;ren.
+ 
+<P>
+<H3>Shared-Libraries</H3>
+
+<P>
+Eine Shared-Library ist eine Ansammlung von Funktionen die jedes Programm
+benutzen kann. Um nun Funktionen aus einer Library zu nutzen mu&szlig; man
+diese erst &ouml;ffnen. Die Library wird dann gegebenenfalls in den Speicher
+geladen und von nun an kann das Programm daraus Funktionen benutzen. Am
+Ende mu&szlig; das Programm die Library wieder schlie&szlig;en. Und wie &ouml;ffnen wir nun
+so eine Library? Ganz einfach, mit der Funktion "OpenLibrary" der
+"exec.library". Na toll, und wie bekomme ich die "exec.library" auf, wenn
+die Funktion zum &Ouml;ffnen in dieser enthalten ist? Auch ganz einfache, die
+"exec.library" ist immer offen. Zum Nutzen einer Funktion aus einer Library
+brauchen wir die Basis-Adresse der Library und den Library-Vector-Offset
+der gew&uuml;nschten Funktion. Die Basis-Adresse erhalten wir als Ergebnis der
+Funktion "OpenLibrary", die LVOs mu&szlig; man wissen. Noch ein Problem: Wie
+erhalte ich die Basis-Adresse der "exec.library" wenn die sowieso offen
+ist und ich kein "OpenLibrary" anwenden kann? Tja, auch ganz simpel, die
+Basis-Adresse der "exec.library" ist $4. Diese Adresse ist fest und &auml;ndert
+sich nie. Doch nun schauen wir und die Funktion "OpenLibrary" genauer an:
+Prototyp: struct Library * library=OpenLibrary(STRPTR name, ULONG version);
+                                                     A1            D0 
+Im Adressregister A1 mu&szlig; der Name der Library rein (genauer gesagt ein
+Zeiger dadrauf, bzw. die Adresse ab wo der Name im Speicher steht) und im
+Datenregister D0 kommt die gew&uuml;nschte Version der Library rein.
+
+<P>
+Hier noch eine &Uuml;bersicht aller Versionen:
+
+<P>
+<TABLE BORDER=1 ALIGN=CENTER>
+<TR><TD ALIGN=CENTER>
+<B>Version</B>
+</TD><TD ALIGN=CENTER>
+<B>Kickstart Version</B>
+</TD></TR>
+<TR>
+<TD ALIGN=CENTER>
+30</TD><TD>1.0 (nicht mehr unterst&uuml;tzt)</TD></TR>
+<TR><TD ALIGN=CENTER>31</TD><TD>1.1 (nur NTSC, nicht mehr unterst&uuml;tzt)</TD></TR>
+<TR><TD ALIGN=CENTER>32</TD><TD>1.1 (nur PAL, nicht mehr unterst&uuml;tzt)</TD></TR>
+<TR><TD ALIGN=CENTER>33</TD><TD>1.2 (veraltet)</TD></TR>
+<TR><TD ALIGN=CENTER>34</TD><TD>1.3 (veraltet)</TD></TR>
+<TR><TD ALIGN=CENTER>35</TD><TD>spezielle Version zur Unterst&uuml;tzung des Monitors A2024</TD></TR>
+<TR><TD ALIGN=CENTER>36</TD><TD>2.00 bis 2.02 (voller Fehler)</TD></TR>
+<TR><TD ALIGN=CENTER>37</TD><TD>2.04 bis 2.05 (fast alle Fehler der Version 36 behoben)</TD></TR>
+<TR><TD ALIGN=CENTER>38</TD><TD>2.1 (nur Erweiterung der diskresidenten Libraries)</TD></TR>
+<TR><TD ALIGN=CENTER>39</TD><TD>3.0</TD></TR>
+<TR><TD ALIGN=CENTER>40</TD><TD>3.1 (das z.Zt. aktuellste OS)</TD></TR>
+</TABLE>
+ 
+<P>
+<A NAME="re1"></A>
+So, diese Informationen sollten reichen. Klickt <A HREF="list01.html">hier</A> drauf und ihr seht
+ein kommentiertes Assemblerlisting zum &Ouml;ffnen der "graphics.library".
+ 
+<P>
+Wenn wir nun die Basisadresse der "graphics.library" haben, brauchen wir
+nur noch $26 hinzuaddieren und wir finden an dieser Adresse die Adresse
+der aktuellen Copperliste. Diese Adresse speichern wir ab und schreiben
+anschlie&szlig;end die Adresse unserer Copperliste in das Register COP1LC
+($dff080). Nur m&uuml;ssen wir nur noch den Inhalt des Registers COPJMP1
+($dff088) &auml;ndern, und schon arbeitet der Copper unsere Liste ab. COPJMP1
+ist ein Stroberegister, da&szlig; hei&szlig;t man mu&szlig; nur den Inhalt des Registers
+&auml;ndern und schon wird eine Aktion ausgel&ouml;st.
+ 
+<P>
+<H3>Aufbau einer Copperliste</H3>
+<A NAME="re2"></A>
+
+<P>
+Um nun z.B. die Werte der Farbe Rot in das Register COLOR00 ($dff0180) zu
+schreiben w&uuml;rde man f&uuml;r den Prozessor einfach "move.l #f00,dff0180"
+schreiben. Das "#" bedeutet, da&szlig; der Wert als Konstante und nicht als
+Adresse anzusehen ist. Der Farbwert setzt sich aus drei Werten zusammen.
+Der erste Wert bestimmt den Rotanteil der Farbe, der zweite den Gr&uuml;nanteil
+und der dritte den Blauanteil. Bei OCS/ECS-Amigas kann jeder Farbanteil
+einen Wert von $0 bis $F (dez. 15) haben. Da eine Copperliste nur Daten im
+Speicher sind, schreiben wir die Daten mit der Assemblerdirektive "dc" in
+den Speicher: dc.w $180,$f00. Als erstes das Register und als zweites den
+Wert. Da wir hier jeweils ein Wort in den Speicher schreiben, m&uuml;ssten wir
+eigentlich "dc.w $0180,$0f00" schreiben, aber in Copperlisten k&ouml;nnen wir
+die Null nach dem Dollarzeichen einfach weglassen. Nun k&ouml;nnten wir unsere
+erste Copperliste schreiben. Klickt <A HREF="list02.html">hier</A> drauf um das fertige
+Programm zu sehen.
+ 
+<P>
+Nur ein Listing sehen bringt ja auch nichts, also starten wir schnell mal
+den Assembler.
+ 
+<P>
+<H3>Start und Bedienung von AsmOne</H3>
+
+<P>
+Nach dem Start werdet ihr gefragt was f&uuml;r Speicher und wieviel Speicher
+AsmOne nutzen soll. F&uuml;r unsere Zwecke tippt "c" f&uuml;r ChipRAM und anschliessend "200".
+Das hei&szlig;t wir haben 200 KByte ChipRAM f&uuml;r AsmOne reserviert.
+Nun solltet ihr noch einige Einstellungen vornehmen: Menupunkt Assembler/
+Preferences/Environment f&uuml;r allgemeine Einstellungen und Assembler/
+Preferences/Assembler f&uuml;r den Assembler selber. Lasst einfach alle Einstellungen
+so wie sie sind, nur bei "Default Dir" bei den allgemeinen Einstellungen
+k&ouml;nnt ihr euer Startverzeichnis eintragen. Dieses Verzeichnis
+wird dann immer beim Laden oder Speichern gew&auml;hlt. Bei den Assembler-Einstellungen
+solltet ihr noch die richtige CPU anw&auml;hlen, der Rest kann so bleiben.
+Nun k&ouml;nnt ihr mit dem Befehl "v &lt;verzeichnis" in das Verzeichnis
+wechseln wo sich die Listings befinden. Mit "r &lt;dateiname" wird das Listing
+eingelesen. Mit ESC k&ouml;nnt ihr dann in den Editor gelangen. Dr&uuml;ckt ihr nochmal ESC,
+verlasst ihr den Editor wieder. Mit "a" wird der Assembler gestartet.
+Mit "wo" k&ouml;nnt ihr euer Programm als ausf&uuml;hrbares Programm
+speichern. Mit "=r" k&ouml;nnt ihr euch Informationen &uuml;ber alle Register der
+CustomChips Auskunft geben lassen. Wollt ihr z.B. etwas &uuml;ber das Register
+COP1LC ($dff080) wissen, schreibt ihr nur "=r cop1lc" oder "=r 080". Um
+nun Zahlen zwischen den einzelnen Zahlensystemen umrechnen zu k&ouml;nnen,
+tippt z.B. "? 10". Nun seht ihr die dezimale Zahl 10 erst als hexa-
+dezimale Zahl, dann als dezimale Zahl, dann als ASCII-Zeichen und zuletzt
+als bin&auml;re Zahl. Nur mal so nebenbei, ihr k&ouml;nnt nat&uuml;rlich auch die Menus
+nutzen.
+ 
+<P>
+<H3>Copperanimationen</H3>
+<A NAME="re3"></A>
+
+<P>
+Nun wollen wir mal einen roten Balken auf den Bildschirm bringen und ihn
+hoch und runter bewegen. Das Einzige was wir dazu tun m&uuml;ssen, ist vor jedem
+Bildschirmaufbau die WAITs in der Copperliste &auml;ndern. Erstmal m&uuml;ssen wir
+aber zwei Probleme bew&auml;ltigen: 1. Wie bekommen wir in Erfahrung wann der
+Copper den Bildschrim neu aufbauen will? 2. Wie kommen wir an die WAITs in
+der Copperliste um sie zu &auml;ndern? Das erste Problem ist ganz einfach zu
+l&ouml;sen: Im Register VHPOSR ($dff006) ist die gegenw&auml;rtige Position des
+Rasterstrahl enthalten. Nun m&uuml;ssen wir auf Zeile 255 warten, dann &auml;ndern
+wir unsere Copperliste und warten anschlie&szlig;end auf Zeile 0. Das zweite
+Problem ist auch einfach zu l&ouml;sen: Wir setzen vor jedem Wait in der Copper-
+liste ein Symbol und k&ouml;nnen dann &uuml;ber diese Symbole auf die WAITs zu-
+greifen. Wir k&ouml;nnen nat&uuml;rlich auch nur vor das erste und letzte WAIT ein
+Symbol setzen und dann mit der Adressierungsart "Adressregister indirekt
+mit Adressdistanz" auf alle folgenden WAITs zugreifen. Wie das alles in der
+Praxis funktioniert, k&ouml;nnt ihr <A HREF="list03.html">hier</A> sehen.
+
+<P>
+<A NAME="re4"></A>
+Nicht &uuml;bel, oder? Wie k&ouml;nnen nat&uuml;rlich auch die horizontalen WAITs &auml;ndern.
+Zu beachten ist nur, da&szlig; ihr immer ungerade Werte in die horizontale Posi-
+tion schreibt (darum warten wir auch immer auf $07 und nicht auf $06).
+Nehmt ihr gerade Werte, riskiert ihr einen Absturz des Coppers. Der gr&ouml;&szlig;te
+Wert f&uuml;r eine horizontale Positon ist &uuml;brigens $e1. So, nun klickt noch
+<A HREF="list04.html">hier</A> drauf, und ihr seht ein Beispielprogramm f&uuml;r
+horizontale Bewegungen.
+ 
+<P><HR>
+
+<P>
+Ok, das war nun der erste Teil des Kurses, der zweite folgt sogleich. Naja,
+jedenfalls in zwei Monaten (es sei denn die AmigaTimes erscheint irgendwann
+mal jeden Monat). Na dann: viel Gl&uuml;ck beim Programmieren.
+
+</DIV>
+
+</BODY>
+</HTML>
+

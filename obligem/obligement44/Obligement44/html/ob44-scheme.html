@@ -1,0 +1,351 @@
+<html>
+ <head>
+  <title>Scheme - les données</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Programmation&nbsp;: Scheme - les données </font>par&nbsp;<a href="mailto:damien.guichard@wanadoo.fr">Damien&nbsp;Guichard</a></div><br><br><br>
+
+<font size="+1" color="#ccbb33">Scheme, ça donne - Partie 2</font><br><br>
+
+<font size="+1" color="#ccbb33">Rappel des bases du langage Scheme</font><br><br>
+
+Scheme est un langage de programmation élégant et expressif qui trouve de nombreuses applications dans
+l'intelligence artificielle.
+L'Amiga est depuis très longtemps équipé d'interpréteurs Scheme évolués et d'une étonnante compacité comme
+"Scheme.lha" et "SIOD.lha" (dispo sur Aminet) qui conviendront à merveille pour tester les exemples qui suivent.<br><br>
+
+Un rapide rappel des commandes :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">(define (succ n) (+ n 1))            ;; la définition de fonction "define"
+(succ 0)                             ;; l'appel de fonction "(..)"
+(define start 0)                     ;; la définition de variable "define"
+(set! start 1)                       ;; l'affectation de variable "set!"
+(define (min a b) (if (< a b) a b))  ;; la conditionnelle "if"
+(begin (set! a b) (set! b c) c)      ;; la séquence "begin"
+</font></pre>
+</font></td></tr></table>
+<br>
+
+Pour plus d'informations voir l'<a href="http://obligement.free.fr/articles/scheme.php" target="blank">article précédent</a>
+dans Obligement n°43.<br><br>
+
+<font size="+1" color="#ccbb33">Plus de commandes</font><br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">#t                     ;; le vrai
+#f                     ;; le faux
+(or a b)               ;; le "ou" logique
+(and a b)              ;; le "et" logique
+(abs x)                ;; la valeur absolue
+(quotient a b)         ;; division entière: le quotient
+(remainder a b)        ;; division entière: le reste
+(display "hello")      ;; affiche un texte
+(newline)              ;; affiche un retour à la ligne   
+</font></pre>
+</font></td></tr></table>
+<br>
+
+Par exemple la somme des "n" premiers entiers :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">(define (integers-sum n)
+  (quotient (* n (+ n 1)) 2)
+)
+</font></pre>
+</font></td></tr></table>
+<br>
+
+<font size="+1" color="#ccbb33">Les tableaux</font><br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">(make-vector n)        ;; renvoie un nouveau tableau indicé de 0 à n-1
+(vector-ref a i)       ;; renvoie l'élément d'indice "i" du tableau "a"
+(vector-set! a i val)  ;; affecte "val" à l'élément "i" du tableau "a"
+(display a)            ;; affiche le tableau "a"
+</font></pre>
+</font></td></tr></table>
+<br>
+
+Voici en plus une fonction qui permute les deux éléments "i" et "j" d'un tableau "a" :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">(define (swap! a i j)
+  (define tmp 0)
+  (set! tmp (vector-ref a j))
+  (vector-set! a j (vector-ref a i))
+  (vector-set! a i tmp)
+)
+</font></pre>
+</font></td></tr></table>
+<br>
+
+Et aussi une qui crée un tableau-interval qui contient tous les entiers de "a" à "b" :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">(define (vector-interval a b)
+  (set! b (+ b 1))
+  (define result (make-vector (- b a)))
+  (define i 0)
+  (define (loop)
+    (if (< a b)
+      (begin
+        (vector-set! result i a)
+        (set! i (+ i 1))
+        (set! a (+ a 1))
+        (loop)
+      )
+    )
+  )
+  (loop)
+  result
+)
+</font></pre>
+</font></td></tr></table>
+<br>
+
+<font size="+1" color="#ccbb33">Le moteur d'intelligence artificielle</font><br><br>
+
+C'est en fait une routine qui teste toutes les permutations possibles sur un ensemble d'éléments. De nombreux problèmes
+mettent en jeu un échantillon d'éléments et une règle qui indique quelles permutations sont valides.
+Ce qu'il nous faut c'est donc une routine qui, étant donnés un échantillon et une règle, affiche toutes les permutations valides.
+L'échantillon est représenté par le tableau "the-array". 
+La règle est représentée par la fonction "partial-solution?".<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">(define (total-solution the-array partial-solution?)
+  (define (found-solution)
+    (display the-array)
+    (newline)
+  )
+ (define (search-solution) 
+    (define i top)
+    (define (loop)
+      (if (< i (vector-length the-array))
+        (begin
+          (swap! the-array i top)
+          (if (partial-solution? the-array top)
+            (begin
+              (set! top (+ top 1))
+              (if (= top (vector-length the-array))
+                (found-solution)
+                (search-solution)
+              )
+              (set! top (- top 1))
+            )
+          )
+          (swap! the-array i top)
+          (set! i (+ i 1))
+          (loop)
+        )
+      )
+    )
+    (loop)
+  )
+  (define top 0)
+  (search-solution)
+)
+</font></pre>
+</font></td></tr></table>
+<br>
+
+Comment procède cette routine ?<br><br>
+
+C'est en fait plus simple qu'il n'y paraît :<br>
+
+<ol>
+<li>On "swap!" deux éléments, et on teste la règle
+<li>Si la règle est encore vérifiée, alors on cherche l'élément suivant
+<li>Sinon on "swap!" à nouveau les deux éléments pour restaurer l'état antérieur, puis on retourne à l'étape 1.
+<li>Quand on a trouvé tous les éléments on affiche le tableau avec "found-solution"
+</ol>
+<br>
+
+Ce moteur peut maintenant être réutilisé pour toutes sortes de problèmes de permutation.<br><br>
+
+<font size="+1" color="#ccbb33">Le problème des 8 reines</font><br><br>
+
+Il consiste à placer 8 reines sur un échiquier sans qu'aucune soit menacée de prise.
+La règle qui valide une permutation des reines est donc une fonction qui renvoie vrai seulement si aucune reine est menacée.
+L'échantillon est le tableau "the-array" qui contient la rangée de chaque reine, "top" est le nombre de colonnes à examiner :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">(define (partial-queens-solution? the-array top)
+  (define q 0)
+  (define x 0)
+  (define dy 0)
+  (define result #t)
+  (set!  q (vector-ref the-array top))
+  (set!  x (- top 1))
+  (define (loop)
+    (if (>= x 0)
+      (begin
+        (set! dy (- q (vector-ref the-array x)))
+        (if (or (= (- x top) dy) (= (- top x) dy))
+          (set! result #f)
+          (begin (set! x (- x 1)) (loop))
+        )
+      )
+    )
+  )
+  (loop)
+  result
+)
+</font></pre>
+</font></td></tr></table>
+<br>
+
+La fonction "queens-solutions" appelle le moteur de recherche avec l'échantillon et la règle appropriés au problème des "n" reines :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">(define (queens-solutions n)
+  (total-solution
+    (vector-interval 1 n) partial-queens-solution?)
+)
+</font></pre>
+</font></td></tr></table>
+<br>
+
+Le problème des 8 reines a 92 solutions :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">:=> (queens-solutions 8)
+</font></pre>
+</font></td></tr></table>
+<br>
+
+<font size="+1" color="#ccbb33">Le problème de la pyramide</font><br><br>
+
+Il s'agit de créer une pyramide de chiffres consécutifs telle que chaque chiffre est la différence de ses deux
+chiffres inférieurs, voici par exemple une pyramide à 4 étages :
+
+<table border="0" width="100%"><tr><td>
+<pre><font size="-1">
+   3
+  2 5
+ 7 9 4
+8 1 10 6
+</font>
+</td></tr></table>
+<br>
+
+Et maintenant la définition de la règle adéquate :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">(define (partial-pyramid-solution? a top)
+  (define level 1)
+  (define (loop)
+    (if (<= (integers-sum level) top)
+      (begin (set! level (+ level 1)) (loop))
+    ) 
+  )
+  (loop)
+  (if (= top (integers-sum (- level 1)))
+    #t
+    (=
+      (vector-ref a (- top level))
+      (abs
+        (- (vector-ref a top)
+           (vector-ref a (- top 1))))
+    )
+  )
+)
+</font></pre>
+</font></td></tr></table>
+<br>
+
+Il ne reste plus qu'à créer l'échantillon et appeler le moteur de recherche "total-solution" :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">(define (pyramid-solutions n)
+  (total-solution
+    (vector-interval 1 (integers-sum n))
+    partial-pyramid-solution?)
+)
+</font></pre>
+</font></td></tr></table>
+<br>
+
+Voyons ce que ça donne à 5 étages, ça peut prendre quelques longues minutes de calcul, mais ça vaut le coup :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">:=> (pyramid-solutions 5)
+#(5 4 9 7 11 2 8 1 12 10 6 14 15 3 13)
+#(5 9 4 2 11 7 10 12 1 8 13 3 15 14 6)
+()
+</font></pre>
+</font></td></tr></table>
+<br>
+
+Il y n'a qu'une seule solution (et son symétrique bien sûr) :
+
+<table border="0" width="100%"><tr><td>
+<pre><font size="-1">
+     5
+    4 9
+   7 11 2
+  8 1 12 10
+6 14 15 3 13
+</font></pre>
+</td></tr></table>
+<br>
+
+En fait, à partir de 6 étages le problème de la pyramide n'a plus de solution.<br><br>
+
+<font size="+1" color="#ccbb33">Pour aller plus loin</font><br><br>
+
+Les interpréteurs "Scheme.lha", "SIOD.lha", "scm.lha" et "UMBScheme212.lha", sont tous disponibles sur Aminet dans le répertoire /Dev/Lang.<br><br>
+
+<b>Deux bons textes d'introduction à Scheme :</b><br><br>
+
+<a href="http://mitpress.mit.edu/sicp/" target="_blank">mitpress.mit.edu/sicp/</a><br>
+<a href="http://www.scheme.com/tspl2d/index.html" target="_blank">www.scheme.com/tspl2d/index.html</a><br><br>
+
+<b>Plus de docs sur Scheme :</b><br><br>
+
+<a href="http://www.schemers.org/" target="_blank">www.schemers.org</a><br>
+<a href="http://www.cs.indiana.edu/scheme-repository/home.html" target="_blank">www.cs.indiana.edu/scheme-repository/home.html</a><br>
+<a href="http://www.swiss.ai.mit.edu/projects/scheme/" target="_blank">www.swiss.ai.mit.edu/projects/scheme</a><br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

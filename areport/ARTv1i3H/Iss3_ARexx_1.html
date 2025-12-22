@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 3.0//EN">
+<!-- This document follows the HTML 3.0 standard -->
+
+<html>
+  <head>
+    <title>ARexx Tutorial</title>
+  </head>
+  <body>
+
+    <h1 align="left">Arexx Tutorial</h1>
+    <h3 align="right">By Josef Faulkner (panther@gate.net)</h3>
+
+    <hr>
+
+    <h2>1.0 - Introduction</h2>
+
+    <p>I am assuming you know what Arexx is and the history behind it.
+      If you don't know, this information is readily available in the
+      first chapter of the Arexx User's Guide that comes with
+      Workbench.  This book is also a very handy reference, so dont
+      lose it! :)</p>
+
+    <p>If you are familiar with any programming language from Basic to
+      C, you will have no problem picking up Arexx.  Arexx is one of
+      the easiest languages to learn and to work with.  When writing
+      arexx programs, you do not need to deal with silly line numbers
+      (as in basic), or worry that the computer will crash if it
+      doesnt correctly open a library (as in C).  Arexx is very
+      difficult to crash on its own, so feel free to explore it.</p>
+
+    <p>Arexx is one of the things that makes the Amiga one of the best
+      Personal Computers anyone can own.  The Amiga was designed to
+      multitask in such a way that even operating systems built 10
+      years later still have yet to fully close the gap on the
+      efficiency and integration of the Amiga multitasking
+      environment.  Arexx takes advantage of the Amiga's ability to
+      multitask by allowing us to <b>greatly</b> customize our
+      favorite applications.  However, it is not necessary to write
+      arexx scripts for programs, but to write an entire program in
+      Arexx, independent of any applications.</p>
+
+    For example:
+    <pre>
+  /* calc.rexx - A simple command line calculator */
+  parse arg args
+  interpret 'say 'args
+  exit
+  /* End */
+    </pre>
+
+    <p>Don't worry about what this says yet, I plan to explain all of
+      this later.  To use this script, cut it out, and save it as
+      <samp>rexx:calc.rexx</samp>.  Be sure to include the comment at the
+      top.  To use it, type <samp>rx calc 2+2</samp> in the CLI.  This
+      will also be a helpful debugging tool later on.</p>
+
+    <h2>1.1 - Making sure everything is in place</h2>
+    
+    <p>Arexx needs a few things in place in order for it to work.
+      Workbench handles most of this, but it seems to have left out
+      some important details.</p>
+    <ol>
+      <li> <em>Getting the Rexx: directory straight.</em>
+	<ul>
+	  <li> Make a directory on your <samp>SYS:</samp> partition
+	    named <samp>Rexx:</samp> 
+	  <li> Edit your <samp>S:Startup-Sequence</samp> and change
+	    the line that says 
+	    <b><code>Assign >NIL: REXX: S:</code></b> to <b><code>Assign >NIL:
+	      REXX: SYS:Rexx</code></b>
+	</ul>
+      <li> <em>Making sure RexxMast is run.</em>
+	<ul>
+	  <li>Add this line to <samp>S:User-Startup</samp>: <b><code>Run
+	      >NIL: SYS:System/Rexxmast >NIL:</code> </b>
+	</ul>
+      <li> <em>Making sure RexxC is in the path</em>
+	<ul>
+	  <li> If you are running WB2.1, I dont think RexxC is put in
+	    the path on installation, so you will have to add it in
+	    your <samp>S:Startup-Sequence</samp>.
+	  <li> Look in your <samp>S:Startup-Sequence</samp> file for
+	    your <samp>path</samp> statement, and add <b><samp>RexxC:</samp></b>
+	    after <samp>SYS:Utilities/</samp>.
+	  <li> I also recommend adding <b><code>REXX:</code></b> to (end of)
+	    the path, so that you can later protect your arexx scripts
+	    with the script bit, and run them like a regular AmigaDOS
+	    command.
+	</ul>
+      <li> <em>File check</em>
+	<ul>
+	  <li> Be sure the following files are in your
+	    <samp>SYS:RexxC/</samp> directory:<br> <code>TS TCC RXC
+	    TCO WaitForPort HI RXSET RX RXLIB TE</code>
+	</ul>
+    </ol>
+
+    <h2>1.2 - Usage</h2>
+
+    <p>There are two ways you can run an Arexx command.  One is to use
+      the RX command located in the SYS:RexxC directory, the other is
+      to use the script file flag to tell AmigaDOS that the script is
+      a command.<br>
+
+    Examples:<br>
+
+    <samp>
+      1> <b>rx calc.rexx 2+2</b><br>
+      4<br>
+      1><br>
+      <br>
+      1> <b>protect rexx:calc.rexx +S</b><br>
+      1> <b>calc.rexx 2+2</b><br>
+      4<br>
+      1>
+    </samp>
+    </p>
+    
+    <p>The second method requires that REXX: is added to your path.</p>
+
+    <h2>1.3 - Comments</h2>
+      
+    <p>All arexx script files must begin with a comment.  This comment
+      tells the arexx interpreter, as well as AmigaDOS with +S files,
+      that this is an Arexx script.<br>
+      
+      Example:<br>
+      
+      <code>/* This is a comment */</code>
+    </p>
+
+    <p>It doesnt matter what you put in the comment, however it is
+      standard practice to at least include a short description of
+      what the program does.  However, try to minimize long comments
+      at the beginning of frequently used scripts, as it might slow
+      down the execution of the script.  It is best to put long
+      descriptions and such at the end of the arexx script, so that it
+      isnt scanned by the interpreter.</p>
+
+    <p>Unlike C, comments may be nested in Arexx, although I dont see much use
+      for it :)</p>
+
+    <h2>1.4 - Variables</h2>
+    
+    <p>All variables in Arexx are stored as strings.  However, when
+      numerical operations are done, Arexx will automatically treat a
+      string holding numbers to a number, do the operation, then store
+      the result back in a string.  This has great advantages, since
+      you wont have to do any casting, and you can mix numbers with
+      strings very easily.</p>
+
+    <p>For example, in lower level languages, if you wanted a user to
+      be able to enter either a string or a number into a variable,
+      you have to read their input into a string, then if that string
+      is a number, convert it to a number variable.  In arexx, you
+      simply take the input, and then you can immediately use it
+      however you wish.</p>
+
+    Example:
+    <pre>
+  /* ( variable.rexx ) - Shows how variables can be used */
+  variable='TEXT'
+  say variable
+  variable=variable' '15   /* Puts the string "15" as another word */
+  say variable
+  say word(variable,2)*2   /* word() is a function that returns a specified */
+                           /* word from a string.  In this case we are      */
+                           /* looking at the second word, which is 15.      */
+                           /* This will say 30 as the answer since we are   */
+                           /* multiplying the second word of variable by 2  */
+  exit
+    </pre>
+
+    <p>Concatenation is joining two strings together.  When we put the
+      15 in variable, we told arexx to leave a space so that 15 would
+      be the second word.  If you do not want a space, you can join
+      two strings using the || operator (two pipes).</p>
+
+    <h2>Appendix A</h2>
+
+    <h3>Arithmetic Operators</h3>
+
+<pre>
+  Char  Operation          Pri
+  ----- ------------------ ---
+   **   Exponentiation      7
+   /    Division            6
+   %    Integer Division    6
+   //   Modulo (Remainder)  6
+   +    Addition            5
+   -    Subtraction         5
+</pre>
+
+    <h3>Comparison Operators</h3>
+<pre>
+  Char  Operation
+  ----- ------------------------
+   ==   Exact equality
+   ~==  Exact Inequality
+   =    Equality
+   ~=   Inequality
+   >    Greater Than
+   >=   Greater Than or Equal To -.
+   ~<   Not Less Than            -`-- Same thing
+   <    Less Than
+   <=   Less Than or Equal To    -.
+   ~>   Not Greater Than         -`-- Same thing
+</pre>
+
+    <h3>Logical Operators</h3>
+<pre>
+  Char Type Pri
+  ---- ---- ---
+   ~   NOT   8
+   &   AND   2
+   |   OR    1
+   ^   XOR   1
+</pre>
+
+    <h3>Other Characters</h3>
+<pre>
+  Char Description
+   :   Procedure/Function Label
+   ()  Group operators and operands to override priorites
+   ;   Statement Terminator
+   ,   Marks a continuation of a line (to a new line)
+</pre>
+
+    <hr>
+<h5>Written exclusively for Amiga Report Technical Journal</h5>
+  </body>
+</html>

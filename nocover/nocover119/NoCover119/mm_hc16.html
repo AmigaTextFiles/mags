@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+
+<HTML>
+<HEAD>
+<META name="generator" content="HTML Tidy, see www.w3.org">
+<META name="AUTHOR" content="Thomas Nawroth">
+<META name="DESCRIPTION" content="Ein Computer-Magazin von 1984">
+
+<TITLE>Happy Computer</TITLE>
+</HEAD>
+
+<BODY bgcolor="#fffff4" background="images/mm_hc16b.gif">
+<TABLE border="0" cellpadding="8">
+<TR>
+<TD>
+<CENTER>
+<IMG src="Images/mm_hc16a.gif"><BR>
+<I>Folge 16</I>
+</CENTER>
+<BR>
+
+<H1 align="CENTER">N&uuml;tzliches f&uuml;r die
+Drachen</H1>
+
+<P><B>Zwei kleine Routinen erleichtern das Arbeiten mit dem Dragon 32 und
+dem Dragon 64.</B></P>
+
+<P>Das Programm "Y/Z" vertauscht softwarem&auml;&szlig;ig die Y-Taste mit
+der Z-Taste. Da sich die Tasten des Dragon einfach abziehen und umstecken
+lassen, erh&auml;lt man so ein Ger&auml;t mit deutscher
+QWERTZ-Tastatur.<BR>
+
+Da der Dragon keine Umlaute kennt, werden diese bei Textausgaben auch nicht
+ber&uuml;cksichtigt. Das Programm untersucht Strings nach Umschreibungen
+(ae, oe, ue, AE, OE, UE, sz) und ersetzt die Zeichen durch den
+entsprechenden ASCII-Code oder einen anderen vom Benutzer festzulegenden
+Code.<BR>
+
+Die Routinen sind in beiden Programmen in DATA-Zeilen abgelegt und
+k&ouml;nnen im Speicher beliebig verschoben werden. Das fertige
+Maschinenprogramm wird mit "CSAVEM" abgespeichert.</P>
+
+<P>(Bernd Knechtel/hg)</P>
+
+<PRE>
+0 CLS
+1 RESTORE
+2 CLEAR200.32559:A=32560
+3 READ A$:IF A$="XX" THEN 7
+4 B=VAL("&amp;H"+A$)
+5 POKE A+C,B:D=D+B:C=C+1
+6 GOTO 3
+7 IF D&lt;&gt;18740 THEN PRINT"ERROR IN DATA":END
+8 EXEC A
+9 PRINT"ALLES OK. DAS PROGRAMM IST      AKTIVIERT."
+10 DEL-
+11 DATA FF,A7,84,BF,01,E7,9F,9D
+12 DATA 10,9F,7E,86,7E,B7,01,67
+13 DATA C6,60,8E,04,00,1F,12,E7
+14 DATA 80,8C,06,00,25,F9,1F,51
+15 DATA 30,88,2A,A6,80,81,0C,27
+16 DATA 04,A7,A0,20,F6,86,05,8E
+17 DATA FF,FF,30,1F,8C,00,00,26
+18 DATA F9,4A,81,00,26,F1,8E,04
+19 DATA 00,E7,80,8C,06,00,25,F9
+20 DATA 20,61,59,6F,5A,60,41,55
+21 DATA 53,54,41,55,53,43,48,60
+22 DATA 60,72,6E,70,60,60,60,60
+23 DATA 60,60,60,60,60,60,60,60
+24 DATA 60,60,43,4F,50,59,52,49
+25 DATA 47,48,54,60,42,59,60,42
+26 DATA 45,52,4E,44,60,4B,4E,45
+27 DATA 43,48,54,45,4C,60,71,79
+28 DATA 78,74,4C,49,43,45,4E,43
+29 DATA 45,44,60,54,4F,60,7A,60
+30 DATA 48,41,50,50,59,60,43,4F
+31 DATA 4D,50,55,54,45,52,60,60
+32 DATA 60,60,0C,1F,51,30,06,BF
+33 DATA 01,68,39,81,5A,26,03,86
+34 DATA 59,39,81,59,26,03,86,5A
+35 DATA 39,81,7A,26,03,86,79,39
+36 DATA 81,79,26,02,86,7A,39,XX
+
+</PRE>
+<B>Listing zu "Y/Z"</B><BR>
+<HR>
+<PRE>
+0 CLS
+1 CLEAR200,32562:A=32563
+2 READ A$:IF A$="XX" THEN 5
+3 B=VAL("&amp;H"+A$):POKE A+C,B
+4 D=D+B:C=C+1:GOTO 2
+5 IF D&lt;&gt;17993 THEN PRINT"ERROR IN DATA":END
+6 DEF USR0=A
+7 PRINT"ALLES OK."
+8 PRINT"DER PROGRAMMAUFRUF LAUTET:","A=USR0(VARPTR(A$))"
+9 DEL-
+10 DATA 20,40,00,5B,5C,5D,7B,7C
+11 DATA 7D,7E,7E,00,00,55,4D,4C
+12 DATA 41,55,54,20,43,4F,4E,56
+13 DATA 45,52,54,45,52,20,31,2E
+14 DATA 31,20,43,4F,50,59,52,49
+15 DATA 47,48,54,20,31,39,38,34
+16 DATA 20,42,59,20,42,45,52,4E
+17 DATA 44,20,4B,4E,45,43,48,54
+18 DATA 45,4C,BD,8B,2D,1F,01,A6
+19 DATA 84,B7,4E,2C,B7,4E,2D,10
+20 DATA AE,02,EC,A4,10,83,41,45
+21 DATA 26,05,E6,8C,A6,20,51,10
+22 DATA 83,4F,45,26,05,E6,8C,9C
+23 DATA 20,46,10,83,55,45,26,05
+24 DATA E6,8C,92,20,3B,10,83,61
+25 DATA 65,26,05,E6,8C,88,20,30
+26 DATA 10,83,6F,65,26,06,E6,8D
+27 DATA FF,7D,20,24,10,83,75,65
+28 DATA 26,05,E6,8D,FF,72,20,18
+29 DATA 10,83,53,5A,26,06,E6,8D
+30 DATA FF,67,20,0C,10,83,73,7A
+31 DATA 26,0F,E6,8D,FF,5C,20,00
+32 DATA A6,8D,FF,4E,ED,A0,7A,4E
+33 DATA 2C,7A,4E,2D,31,21,BC,4E
+34 DATA 2D,22,8F,4F,F6,4E,2C,7E
+35 DATA 8C,37,39,XX
+
+</PRE>
+
+<B>Listing zu "Umlaute"</B><BR>
+
+<HR>
+
+<BR>
+In der n&auml;chsten NoCover gibt es die "Ideenecke".
+<BR>
+<BR>
+
+<TABLE align="CENTER" border="3">
+<TR bgcolor="#ffffff">
+<TD><A href="mailto:">Thomas Nawroth</A></TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+</TABLE>
+<BR>
+</BODY>
+</HTML>
+

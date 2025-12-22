@@ -1,0 +1,147 @@
+\T
+
+þ==================================================
+þ --> EN PRATIQUE : PROGRAMMATION EN ASSEMBLEUR par Jay
+þ==================================================
+
+   (NDDaff : Attention, dans les exemples de code, des "-" remplacent les "tir_s de bas
+de ligne" car notre moteur en Blitz Basic ne peut afficher ce caract_re)
+
+÷   C'est quoi l'Assembleur ?
+   L'assembleur est le langage de programmation par excellence. Vous connaissez
+certainement le basic. Sur Amiga, les 3 basic principaux sont : l'Amos, le Blitz et le
+HiSoft Basic. Quand vous programmez en Basic, vous utilisez des instructions texte
+_vidente telles que print (imprimer) qui sont ensuite soit compil_es soit interpr_t_es.
+Le probl_me est qu'a pars les instructions fournit dans le Basic, vous ne pouvez pas
+vraiment faire ce que vous voulez. La programmation en Assembleur est totalement
+diff_rente. Grace a l'Asm, il vous est possible de faire n'importe quoi. Vous n'utiliser
+plus que des instructions pr_-fabriqu_es... Au contraire, vous allez directement taper
+dans le Hardware de l'Amiga pour faire votre programme. On comprend vite pourquoi les
+codeurs de d_mos ont choisis l'Assembleur : au lieux d'utiliser de lentes instructions
+de Basic, ils peuvent aller bidouiller chaque composante de la carte m_re de l'Amiga
+pour faire de la 3D toujours plus rapide et plus bourrine.
+
+÷   Les registres
+   Bon, pour coder en Assembleur, il faut que vous compreniez bien une chose essentielle.
+Quoi que vous vouliez faire, vous allez forcement utiliser les registres. D'un cot_, on a
+les registres d'adressage et de l'autre, les registres de donn_es.
+
+ö
+
+\T
+
+ REGISTRES         REGISTRES
+ D'ADRESSAGE      DE DONNEES
+ -----------------------------
+ A(0)                D(0)
+ A(1)                 D(1)
+ A(2)                D(2)
+ A(3)                D(3)
+ A(4)                D(4)
+ A(5)                D(5)
+ A(6)                D(6)
+ -----------------------------
+
+
+ ^ les registres d'adressages :
+   Ces derniers servent a stocker des adresses... Sans d_conner ??? Par exemple, si vous
+ouvrez une library, vous stocker son adresse au hazard en A(6). Les registres d'adresses
+sont au nombre de 7 a savouir de A(0) a A(6).
+
+ ^ les registres de donn_es :
+   Idem que les registres d'adressages : Au nombre de 7 (de D(0) a D(6)), ils servent a
+stocker des donn_es num_riques ou textuelles.
+
+÷   Exemples siou plait m'sieur !
+   Bon, puisque vous insistez lourdement, je vais vous donner des petits exemples... On ne
+va voir ici un programme complet, mais juste des instructions au hazard pour vous
+instruire un peu.
+
+
+ö
+
+\T
+
+
+
+ ^ Bouge de la...
+   Bon, je vous ai parl_ des registres de donn_es et d'adressages. Maintenant, on va voir
+comment on peut d_placer le contenue de D(0) en D(4).
+
+å   move D(0),D(4)
+
+   Et ouaip, c'est pas plus compliqu_ que ca. Move est l'instruction qui sert a d_placer
+et on lui pr_cise ici que c'est le contenue de D(0) qui bouge en D(4). Et si on voulait
+d_placer le contenu du registre d'adressage A(5) en A(3) ?
+
+move A(5),A(3)
+
+   Autrement dit, l'instruction est exactement le m_me sauf qu'on remplace nos deux
+registres de donn_es (D(0) et D(4)) par deux registres d'adressages (A(5) et A(3).
+
+
+ ^ Va voir ailleur si j'y suis
+   Bon, si vous voulez vous mettre a l'Assembleur, c'est que vous avez surement d_ja un
+peu touch_ au Basic. En Basic, on utilise une instruction toute conne pour aller a un
+endroit du programme... Gosub. En Assembleur, cette instruction existe aussi mais ne
+poss_de pas le nom, c'est JSR. De la m_me mani_re que le Basic, on place des _tiquettes
+dans le code et on peux s'y rebdre quand on veux. Aller, tr_ve de blabla, un exemple :
+
+ö
+
+\T
+
+
+
+å   -Rulez
+å   JSR   -AcidOZine
+å   move  d(1),d(4)
+å   -AcidOZine
+å   JSR   -Rulez
+
+
+   Bon, dans l'exemple a la con que je viens de faire, on utilise deux instructions
+diff_rentes : move dx,dx que l'on a vu pr_c_demment et JSR -XXX que l'on est en train
+de voir. A savoir que JSR, c'est les initiales de Jump to Sub Routine qui veux dire
+Saute a la sous routine dont le nom est plac_ juste apr_s JSR.
+
+
+   Pour en venir a ce petit programme : la premi_re ligne est une _tiquette. La
+deuxi_me ligne dit a l'ordinateur de sauter a la sous routine -AcidOZine. La troisieme
+ligne d_place le contenu de d(1) en d(4). La quatri_me est l'_tiquette -AcidOZine et
+la cinqui_me dit de sauter a l'_tiquette -Rulez. Donc, dans le concret, l'ordinateur
+passe la premi_re ligne puis en ob_issant aux ordres de JSR, saute a l'_tiquette
+-AcidOZine. Arriv_ la, il rencontre une autre instruction JSR qui lui dit d'aller a
+l'_tiquette -Rulez et il recommence a l'infinie sans jamais s'arr_ter... Et notre
+instruction move, la dedans, elle sert a quoi ? Bin a que dalle puisque on saute par
+dessus, mais ca fesait plus style avec move entre les deux.
+
+ö
+
+\T
+
+
+
+ INSTRUCTIONS     CA SERT A QUOI
+ ---------------------------------
+ ADD                ADDITION
+ ADDA              ADDITION AVEC RESULTAT
+                     STOCKE EN Ax
+ AND                ET LOGIQUE
+ SUB                SOUSTRACTION
+ JSR                SAUT A UNE
+                      SOUS ROUTINE
+ MOVE               DEPLACER
+ MOVEQ              DEPLACER VITE
+ OR                  OU
+ TST                TEST
+ ----------------------------------
+
+
+
+÷   Conclusion
+   Bon, je vais m'arr_ter la pour ce num_ro ci. En attendant, mattez les deux tableaux et
+essayer de bien cogitter tous ca pour la prochaine fois... car les choses s_rieuses vont
+bientot commencer !!!
+
+ö 

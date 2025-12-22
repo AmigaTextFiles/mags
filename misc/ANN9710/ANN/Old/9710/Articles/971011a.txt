@@ -1,0 +1,84 @@
+From: fnf@toadfish.ninemoons.com (Fred Fish)
+Newsgroups: comp.sys.amiga.programmer,comp.sys.amiga.applications,comp.sys.amiga.games,comp.sys.amiga.misc
+Subject: Re: Is ELF right for the Amiga?
+Date: 6 Oct 1997 22:31:13 -0700
+Organization: A poorly-installed InterNetNews site
+Lines: 72
+Message-ID: <61chf1$qrl$1@toadfish.ninemoons.com>
+References: <7473.7218T1319T1054@inter.nl.net>
+NNTP-Posting-Host: 208.226.30.111
+Path: 195.95.96.10!news.unisource.be!planetinternet.be!News.Amsterdam.UnisourceCS!cosy.sbg.ac.at!newsfeed.Austria.EU.net!newscore.univie.ac.at!newsfeed.ecrc.net!4.1.16.34.MISMATCH!cpk-news-hub1.bbnplanet.com!news.bbnplanet.com!newsfeed.internetmci.com!207.0.56.122!news.eli.net!news.inconnect.com!not-for-mail
+Xref: 195.95.96.10 comp.sys.amiga.programmer:104875 comp.sys.amiga.applications:59947 comp.sys.amiga.games:116078 comp.sys.amiga.misc:156310
+
+In article <7473.7218T1319T1054@inter.nl.net>,
+Hans Guijt  <hguijt@inter.nl.net> wrote:
+>>The ELF format was
+>>selected by the Tool Interface Committee as a portable object file format
+>>that works on different operating systems running on the 32-bit Intel
+>>Architecture.
+
+>In other words:
+>* ELF is specifically meant for the Intel environment.
+
+What you were apparently looking at is the document prepared by
+Intel's internal standards committee, so naturally there will be an
+Intel slant in places.  ELF works just fine for lots of other CPU
+families including MIPS, Alpha, Sparc, PPC, SH, and others that the
+GNU tools support.
+
+>* ELF fills a gap that never existed on the Amiga, namely non-compatible
+>object files.
+
+I guess I don't get your point here.  ELF is simply another object and
+executable file format, that happens to have a lot of support in the
+software tools industry.  Certainly much more than AmigaOS hunk
+format.  Why is this a bad thing if it allows tools vendors like say
+Metrowerks to migrate to a future AmigaOS with one less thing to worry
+about.
+
+>The ELF specification has a great deal of support for C++ executables,
+>specifically in the UNIX environment. To be precise, it has specific
+>sections that contain automatic global constructors and destructors.
+
+These are simply conventions for naming the sections.  There is nothing
+any different about an ELF section containing global constructors than
+an ELF section containing any other sort of data.
+
+>Unfortunately ELF has no support whatsoever for Amiga-specific hunktypes,
+>such as CHIPRAM-specific hunks.
+
+Huh?  It is pretty trivial to set things up so that data that is
+supposed to be loaded into Amiga "chip ram" goes into a section that
+is named something like ".chip" and whatever part of the OS loads that
+in knows to load it into chip ram.  Gcc and the rest of the GNU tool
+chain already has support in place to support the "chip" C keyword, it
+just hasn't been used yet because of the primitive "a.out" object file
+format that the tools currently use by default.
+
+>Any icon, sound effect, sprite, etc.
+>that is embedded in a program MUST be loaded into CHIPRAM, and ELF does not
+>allow this.
+
+I don't know where you got this idea, but it is simply wrong.
+
+>ELF-style executables are compiled for use at a specific, absolute address.
+>There is no method available to allow relocation of executables.
+
+Again, this may be accurate for typical use in UNIX systems, but it
+has nothing to do with the ELF format itself.  On the BeOS for
+example, the GNU tools produce fully relocatable XCOFF executables
+(the equivalent of what you want for AmigaOS), which are then passed
+to the Metrowerks linker for addition of the runtime libraries and
+final relocation.  It would be absolutely no problem to generate ELF
+executables that are fully relocatable.  If you want scatter loaded
+executables, you can either change the tools to not combine code
+sections from different input files into a single code section, or you
+can use a linker script that allows you complete control over how the
+contents of every section of every input file are combined to generate
+whatever arbitrary output sections you want.
+
+>This is a serious problem for AmigaOS
+
+I don't believe there is a problem.
+
+-Fred

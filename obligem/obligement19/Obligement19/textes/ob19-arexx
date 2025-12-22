@@ -1,0 +1,257 @@
+\T
+
+=========================
+ --> EN PRATIQUE : AREXX par Grendel                                    Cours No 1
+=========================
+
+   A la demande de Daff (David Brunet), voici pour les lecteurs du E-zine Obligement
+une s_rie de cours sur la programmation ARexx (l'_quivalent de Rexx sur le PC (Papier
+Chiotte) du voisin).
+
+~   Recommendations :
+   Pour pouvoir utiliser les scripts ARexx, vous devez obligatoirement lancer
+l'interpr_teur RexxMast, m_me si le script est compil_.
+
+Deux solutions existes :
+a) - D_placer le programme RexxMast et son icone dans le r_pertoire WBStartup.
+b) - Editer le fichier s:startup-sequence et s:user-startup
+
+Pour la solution b) proc_dez comme suit :
+
+Apr_s la commande Resident >nil: Execute PURE ajouter
+Resident >nil: Sys:System/RexxMast PURE
+cr_ez un nouveau r_pertoire par exemple sources-arexx dans votre disquette ou
+partition syst_me et remplacez assign >nil: rexx: sys:s par
+                                  assign >nil: rexx: sys:arexx-sources
+pour _viter que le r_pertoire s: ou se trouve certaines config de logiciels et
+sauvegardes de scores pour certains jeux ne deviennent un vrai foutoir.
+Sauver et _diter le fichier s:user-startup. Ajouter dans ce fichier :
+
+ö
+
+\T
+
+Run <>nil: RexxMast ; Plus rapide (R_side en m_moire) et est lanc_ a
+                       ; chaque d_marrage de l'amiga
+
+   ARexx poss_de des librairies de fonctions tr_s utiles (l'_quivalent des includes
+pour d'autres langages). Celles-ci peuvent _tre charg_es a chaque lancement de l'Amiga.
+Gain de temps lors de l'ex_cution des programmes. Pour les charger, _diter votre
+fichier user-startup et ins_rez ce qui suit a la fin du fichier.
+
+RXLib >nil: rexxsupport.library 0,-30   ; ( 0=priorit_ -30=offset )
+                                           ; l'offset varie avec certaines
+                                           ; librairie
+
+RXLib >nil: rexxreqtools.library -5,-30 ; Passerelle pour l'utilisation de
+                                           ; reqtools.library
+                                           ; (c) Nico Francois (Un Belge)
+                                           ; rexxreqtools.library
+                                           ; (c) Rafael d'Halleyweyn
+                                           ; (encore un Belge).
+
+Les librairies doivent obligatoirement se trouver dans votre r_pertoire LIBS:
+
+   J'ai utilis_ ceci car j'utilise fr_quement ce langage, ce n'est pas le meilleur,
+ce n'est pas hyper rapide, mais c'est utile, On en a marre de taper des lignes de
+commandes dans un Shell ? Solution on prend un _diteur de texte on cr_e un programme
+ARexx qui le fait pour nous.
+
+ö
+
+\T
+
+Attention !!!! : Un programme ARexx doit toujours commencer par une ligne de commentaire,
+en voici un exemple :
+
+   /* Commentaire */ 
+
+Assez de recommendations, utilisons donc ce langage.
+
+~   Modifications de commandes AmigaDOS
+
+On va utiliser la commande List all.
+
+ARexx poss_de la commande...
+- address command "commande a ex_cuter". /* Lance une commande AmigaDOS */
+- arg variable. /* R_cup_ration d'argument dans un shell */
+- parse arg variable /* Place l'argument dans la variable */
+
+ ^ Version No 1 :
+
+/* Full dir */
+arg argument_utilisateur
+parse var argument_utilisateur
+address command "list all "argument_utilisateur
+/* Fin du programme (petit mais ca fonctionne) */
+exit
+
+ö
+
+\T
+
+Sauver ce script dans (c:fdir) ouvrez un shell et tapez "protect c:fdir +es"
+(ex_cutable et script)
+
+ensuite tapez :
+fdir (Listage complet du r_pertoire courant)
+fdir c: (Listage complet du r_pertoire c:)
+
+Quittez le shell allez dans le r_pertoire c: et double-cliquez fdir, vous remarquerez
+qu'une fen_tre de type shell s'ouvre pour inscrire les donn_es fournies par la
+commande AmigaDos List.
+
+Nous allons a pr_sent utilisez plusieurs options de la commande list a l'aide d'un
+menu, vous allez voir que ce n'est pas plus compliqu_ que le basic, c'est m_me plus
+simple.
+
+ ^ Version No 2 :
+
+/***************************************************************
+ Full dir 2
+ (On reprend les deux premi_res lignes du programme pr_c_dent)
+****************************************************************/
+
+arg argument utilisateur
+parse var argument utilisateur
+
+ö
+
+\T
+
+/*********************************************************************
+ Cr_ation du menu :
+ - On utilise call open() (ouverture d'une fen_tre ou d'un fichier).
+ - select, when, otherwise, return (If Then Else, en plus fiable, et oui,
+                                       If Then Else est aussi dans le langage
+                                       ARexx).
+ - writeln() (Que vois-je ! ne serait-ce point une fonction utilis_e en
+                 Pascal ? Ah que Houi comme dirait l'autre).
+ - readch() (et de deux - fonction Pascal).
+ - call (Appel d'une fonction).
+ - close() (fermeture d'une fen_tre ou d'un fichier).
+ - une virgule indique que l'on continue sur la ligne suivante.
+*********************************************************************/
+
+call open(stdout,"con:0/14/640/128/ Fdir 2 :,
+          version du fanzine Obligement/Close/Wait")
+
+/*********************************************************************
+ Explications :
+ stdout - variable (standard Output), stderr = console d'erreur ARexx.
+ con:    - Type de fen_tre (type shell - Raw: peut aussi _tre utilis_).
+ 0/14/640/128 -   0 bord gauche de la fen_tre, si on met 20 on d_place le
+                    bord gauche de 20 pixels vers la droite.
+                 14 descend la fen_tre de 14 pixels.
+                640 Longueur de la fen_tre en pixels.
+                128 Largeur de la fen_tre en pixels.
+
+ö
+
+\T
+
+ Fdir 2 : version du fanzine Obligement - Titre de la fen_tre.
+ L'option Close - Ajoute un gadget de fermeture a la fen_tre.
+ L'option Wait  - Ne ferme la fen_tre que lorsque l'utilisateur clique le
+                  gadget de fermeture.
+*********************************************************************/
+
+call writeln(stdout,"1. All - Toutes les options")
+call writeln(stdout,"2. NoDates - Pas de date")
+call writeln(stdout,"3. NoHead - Pas d'ent_te")
+call writeln(stdout,"4. Quick - Uniquements les noms de fichiers")
+call writeln(stdout,"5. Block - Taille en block pas en octets")
+
+/*********************************************************************
+ Explication :
+ writeln(stdout," Texte ")
+ stdout       - variable utilis_e lors de l'ouverture de notre fen_tre
+                ( call open(variable,"etc.").
+ " Texte "    - texte a afficher dans la fen_tre.
+*********************************************************************/
+
+esc="1b"x       /* "1b"x =  caract_re 1b en hexad_cimal */
+cls=escII"63"x  
+
+ö
+
+\T
+
+/*************************************************************
+  cls=escII"63"x
+  Efface le contenu d'une fen_tre (II = concat_nation) donc
+  "1b"x et "63"x
+**************************************************************/
+
+call open(stderr,"con:0/175/250/56/ Tapez le chiffre de l'option d_sir_e : ")
+option=readch(stderr,1) /* Lire un caract_re dans la fen_tre stderr */
+call close(stderr)      /* Fermer la fen_tre stderr - on en a plus besoin */
+
+/**************************************
+ Routines menu :
+ nous allons devoir cr_er des
+ sous-routines (type goto en basic)
+ vous allez voir c'est simple.
+***************************************/
+select              /* Activation de la s_lection */
+when option=1 then
+call list1          /* Si on a choisi l'option 1 goto list1 */
+when option=2 then
+call list2
+when option=3 then
+call list3
+when option=4 then
+call list4
+when option=5 then
+call list5
+ö
+\T
+
+otherwise
+call erreur         /* Option inconnue, faute de frappe (une lettre) */
+return              /* Retourne le r_sultat option                     */
+/* Les sous-routines (n'oubliez pas les :) */
+list1:
+call writeln(stdout,cls)
+address command "c:list all "argument utilisateur
+exit
+list2:
+call writeln(stdout,cls)
+address command "c:list nodates "argument utilisateur
+exit
+list3:
+call writeln(stdout,cls)
+address command "c:list nohead "argument utilisateur
+exit
+list4:
+call writeln(stdout,cls)
+address command "c:list Quick "argument utilisateur
+exit
+list5:
+call writeln(stdout,cls)
+address command "c:list block "argument utilisateur
+exit
+
+ö
+
+\T
+
+
+
+
+
+
+  Dans la finale nous utiliserons la librairie de fonction ARexx Rexxreqtools.library
+pour une requ_te d'information, une interface graphique et la s_lection du r_pertoire
+(Du tout a la souris de Mister Miga).
+
+
+  Et voila, la modification de commandes AmigaDOS n'est pas plus compliqu_e que ca. De
+plus, le script est court et efficace on peut mettre dir aux oubliettes.
+
+
+Votre premi_re lecon s'ach_ve ici, Oh Non !!!!!, Ben si !!!.
+A la prochaine pour de nouvelles aventures de ARexxMan VS PCShmurz.
+
+
+ö

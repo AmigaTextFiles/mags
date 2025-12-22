@@ -1,0 +1,84 @@
+<HTML>
+<HEAD>
+<TITLE>
+SCSI DEVICE
+</TITLE>
+</HEAD>
+
+<BODY>
+<H3>SCSI.DEVICE V 43.18 ve CD-ROM  </H3>
+<P>
+
+Amiga International (eskiden Amiga Technologies idi) sürekli olarak
+güncelleþtirdiði scsi.device 'ýn 43.18 nolu versiyonunu kullanýcýlara test
+için sundu. Test için çünkü halen içinde bug/eksiklik barýndýrabiliyor.
+<P>
+Peki ne yenilikleri var? Benim gözüme çarpan en önemli yenilik, yarým
+yamalak da olsa ata/atapi desteði. Yani bilgisayarýmýza baðlý her hangi bir
+atapi cd-rom sürücüyü bu yeni scsi.device ile kullanmak mümkün. Böylece
+ortalýklarda fellik fellik atapi.device ya da cd.device gibi dosyalarý
+aramamýza gerek kalmayacak. Ama bir cd file system 'e her durumda ihtiyaç
+var (kimbilir belki FFS'in yeni versiyonu cd sürücüleri de destekler). Bu
+cd file systemler; AmiCDFS, AsimCDFS, CacheCDFS gibi programlardýr.
+Bunlardan birini bilgisayarýnýza yuklemeden once bir cd surucu
+baglamalýsýnýz. Bunlardan birini edinip yükledikten sonra iþ, sadece
+scsi.device 'i yüklemeye kalýyor. Bunun için önce arþivi uygun bir yere
+açýyoruz. `DH1:scsidev' diye bir dizine açtýk diyelim. Sonra startup-sequence
+dosyasýnýn en baþýna (kickstart da diskten yükleniyorsa ondan bir satýr
+sonrasýna),
+<P>
+dh1:scsidev/loadv43module >nil: dh1:scsidev/aXXXX.ld.strip reboot
+<P>
+satýrýný ekliyoruz. Böylece makinamýz ilk açýldýðýnda eski scsi.device 'ýn
+yerine yenisini yükleyecek ve reboot olacak. Bunu, ilgili modülü
+bilgisayarýmýza yükleyerek yaptýk. Yukarýda aXXXX.ld.strip olarak geçen
+modül adý, her model için ayrý ayrý yazýlmýþtýr. Bunlarýn listesi þu
+þekildedir:
+<P>
+a300.ld.strip............A1200 IDE     <BR>
+a600.ld.strip............A600 IDE      <BR>
+a1000.ld.strip...........A4000(T) IDE  <BR>
+a4000t.ld.strip..........A4000T SCSI   <BR>
+scsidisk.ld.strip........A3000(T) SCSI <BR>
+<P>
+Bilgisayarýnýzýn modeline uygun olan modül dosyasýný seçip kullanýn. Peki
+bundan sonra cd sürücümüz çaliþacak mý? Hayýr. Önce onu mount etmeliyiz.
+Bunun için bir CD0 dosyasý gerekli. Bu dosyayý, cd file system 'ler otomatik
+olarak yaratýrlar. Size sadece device adý olarak scsi.device yazmanýz kalýr.
+Sonra bu CD0 dosyasýný wb-startup çekmecesine koyarsanýz, cd sürücünüz her
+açýlýþta emrinize amade olacaktýr. Olmaya da bilir tabi. Zira benim sistemim
+zaman zaman açýlmamazlýk yapabiliyor bu CD0 mount iþlemi yüzünden. Bilgisayariniz
+boot ederken takýlýrsa, cd sürücünüze bir cd takýp resetleyin. Bazen boyle yapýnca
+takýlmadan açýlýyor. Bu da bir bug ve bunu en kýsa sürede ilgililere rapor etmek
+gerekiyor.
+<P>
+Bütün bunlar, yeni iþletim sistemi sürümünün birer çalýþmasý diyebiliriz.
+Bu ve buna benzer dosyalarý belli bir süre kullandýktan sonra istek,
+þikayet, bug raporu gibi iletmek istediklerinizi, rapor formatýnda
+hazýrlayýp ilgili yere gönderiyorsunuz. Kullanýcýlarýn gönderdikleri
+doðrultusunda da daha iyisi elde edilmek üzere çalýþýlýyor. Bunun bir test
+olduðunu ve sürekli kullanmamanýz gerektiðini hatýrlatýrým. Zaten belli bir
+süre sonra device 'ýn kendisi yazýlý olarak uyarýyor ve kendini
+kullandýrtmýyor :-)
+<P>
+Yukarýda adý geçen dosyalarla ilgili yerler:
+<P>
+scsi.device 43.18 :            
+Amiga Haber sayý 15 veya
+ftp://ftp.amiga.de/pub/Public/PublicBETA/SCSI_IDE43_18.lha
+atapi.device :
+ftp://wuarchive.wustl.edu/systems/amiga/aminet/disk/cdrom/atapi.lha
+<P>
+amiCDFS :
+ftp://wuarchive.wustl.edu/systems/amiga/aminet/disk/cdrom/amicdfs238.lha
+<P>
+asimCDFS :
+http://www.asimware.com
+<P>
+report (CBM - bug raporu hazýrlama programý) :
+ftp://ftp.amiga.de/pub/Public/Tools/report.lha
+
+Deniz Türkmen
+
+</BODY>
+</HTML>

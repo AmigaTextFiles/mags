@@ -1,0 +1,68 @@
+5
+1*
+
+{3                             Quantum Bigfoot 6,5 Gt
+{3                             ----------------------
+
+                               Janne Pikkarainen
+
+
+5,25 tuuman kiintolevyn yleistymisen myötä levytila on nykyään huomattavan  hal-
+paa. 6,5 gigan levy irtoaa reilulla kahdellatuhannella markalla, ja niinpä  sel-
+lainen ilmestyi koneeseeni.
+
+
+{3Asentaminen
+{3-----------
+
+Levyn fyysisen asennuksen jälkeen tiedossa  oli  vaativaa  bittien  nypläämistä.
+Amigan vanha FastFileSystem tukee maksimissaan neljän gigan  levyjä,  scsi.devi-
+cestä nyt puhumattakaan. Tätä en muistanut ajoissa, ja muutaman eri osiointi- ja
+alustuskerran yhteydessä tuli manattua suunnilleen kaikki  eteen  tulevat  asiat
+herra sarvipään kotimajaan. Tilanne alkoi kuitenkin pikkuhiljaa hahmottua.  Joka
+ikinen kerta neljän gigan alustamisen jälkeen checksum error -räpätykset  alkoi-
+vat.
+
+Muistelin Amiga Internationalin julkaisseen FFS-päivityksen. Tieni  kävi  Amigan
+FTP-palvelimelle (ftp.amiga.de), josta löytyi FFS-päivityksen lisäksi myös  kor-
+vaamaton SCSI_IDE.devicen patchi. Ei muuta kuin asentamaan ja rohkeasti  alusta-
+mista kokeilemaan.
+
+Hiphurrah. Muutaman hetken jälkeen levy oli kuin olikin  täysin  alustettu.  Nyt
+konetta kehtaa näyttää kenelle tahansa PC-käyttäjällekin - onhan  minulla  kolme
+kahden gigan osiota ja yksi pienempi osio, ja klusterikoko on silti vain 512 ta-
+vua. Info-komento näyttää seuraavaa: 
+
+Unit      Size    Used    Free Full Errs   State    Type    Name
+DH6:    329.5M   12.1M  317.4M   4%    0 read/write FFS     JPnet4
+DH5:      1.9G   75.9M    1.8G   4%    0 read/write FFS     JPnet3
+DH4:      1.9G    1.1G  849.3M  56%    0 read/write FFS     JPnet2
+DH3:      1.9G    1.8G  115.0M  94%    0 read/write INT-FFS JPnet
+   
+
+{3Käytäntö
+{3--------
+
+Bigfootin nykyisiä malleja ei vaivaa vanhojen paljon parjattu bugi  ja  ne  ovat
+käytössä varsin luotettavia. Oma levyni on ollut käytössä 24 tuntia vuorokaudes-
+sa kesäkuusta lähtien, eikä minkäänlaisia ongelmia  alkusählinkien  jälkeen  ole
+esiintynyt. Myös käyntiääni on vanhaan Seagateeni verrattuna mukavan  hiljainen,
+levy ei lämpene liikaa ja on taatusti tarpeeksi nopea.
+
+5,25 tuuman levyjen hakuaika ei ole markkinoiden nopeimmasta päästä, mutta  noin
+13 millisekuntia on täysin riittävä. Sen sijaan ne pärjäävät pitkien tiedostojen
+(kuten animaatioiden) käsittelyssä mainiosti. Jokainen ohjelma  kertoo  jatkuvan
+lukunopeuden olevan 2-2,5 megaa sekunnissa. Pullonkaulaksi testikoneessa muodos-
+tui A1200:n aneemisen hidas IDE-väylä.
+
+Kannattaa ehdottomasti etsiä käsiinsä RDBFlags-ohjelma (tai vastaava, jolla  voi
+muuttaa levyn RDB:tä) ja laittaa siirtotavaksi "synchronous".  Tällöin  levyope-
+raatiot vievät CPU-tehoa "asynchronous"-moodia enemmän, mutta nopeus nousee  1,2
+megasta sekunnissa hieman yli kahteen megaan! CPU-tehon kulutuksen kasvu ei  ko-
+vin huima ole, asynchronous-moodissa Executiven CPU-mittari näyttää isojen  tie-
+dostojen kopioinnin aikana  noin  kolmeatoista  prosenttia,  synchronous-tilassa
+vastaava lukema on 21 %. Voi olla, että joissakin  levyissä/ohjaimissa  synchro-
+nous on jo valmiiksi päällä. Asia kannattaa tarkistaa, jotta levystä  saataisiin
+kaikki mahdollinen irti. Myös muiden IDE-levyjen kuin Bigfootin omistajien  kan-
+nattaa kokeilla samaa temppua, jos koneessa on nopea  prosessori.  Levyn  nopeus
+voi nousta yllättävän paljon.

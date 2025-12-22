@@ -1,0 +1,262 @@
+9
+1*
+{1TESTISSÄ GVP A530-TURBO
+{1=======================
+
+{1TANELI KORHONEN
+
+{1JOHDANTO
+{1========
+
+    A530  on  GVP:n valmistama lisälaitekombinaatio Amiga 500:lle. Turbosta
+    löytyy   40MHz  68EC030-prosessori,  lisämuistipaikat  aina  kahdeksaan
+    megatavuun   asti,   SCSI-ohjain   sekä   GVP:n   Minislot.   Laite  on
+    luonnollisesti  ulkoinen,  kytketään Amigan vasemmassa kyljessä olevaan
+    laajennusporttiin ja sisältää oman virtalähteen.
+
+    Testilaitteistona  A500 (Kickstart 2.0, 1MB Chip), A530 (120MB Quantum,
+    4MB 32-bit Fast) sekä jotain muuta tauhkaa (levyasemia jne).
+
+{1YLEISTÄ
+{1=======
+
+    Ensivaikutelma  on  vaikuttava:  ulkonäkö miellyttää silmää ja mukailee
+    tarkasti Amigan uljaita muotoja.  Kotelossa on kolme lediä joista näkee
+    onko  laitteessa  virta  päällä,  onko  turbo  päällä  ja onko kovalevy
+    lukemisen/kirjoituksen  kohteena.   Lisäksi  kotelon  päällä on kytkin,
+    jolla  turbon  voi  helposti  kytkeä  pois  päältä/päälle  (hoituu myös
+    ohjelmallisesti)  demojen (tai pelien) toimimattomuuden takia.  Samalla
+    valitettavasti  myös  lisämuisti  ja kovalevy, joista olisi voinut olla
+    iloa   myös  demoissa  (tai  peleissä),  lähtevät  käytöstä.   Laitteen
+    käyttöönotto  on  helppoa:   poistetaan  laajennusportin  suojaläpyskä,
+    vekotin  painetaan  laajennusporttiin  ja laitetaan virtajohto seinään.
+    Kovalevylle on valmiiksi asennettu Workbench 1.3 ja 2.0, ja ensimmäisen
+    bootin yhteydessä tunnistetaan koneessa oleva Kickstart-ROMin versio ja
+    valitaan sen mukaan käytettävä Workbench.
+
+{1PROSESSORISTA
+{1=============
+
+    Prosessorin    maaginen   EC-merkintä   kenties   kummastuttaa   asiaan
+    perehtymätöntä  henkilöä.  Kyseessä on normaali 68030-prosessori, josta
+    muistinhallintayksikkö   (MMU)  on  jätetty  testaamatta.   Testaus  on
+    kallista   puuhaa   ja   näin  saadaan  laskettua  prosessorin  hintaa.
+    Tavalliselle  käyttäjälle  MMU:lla ei ole varsinaista merkitystä; sillä
+    on         käyttöä         tietyissä         virtuaalimuistiohjelmissa,
+    virheenetsintäohjelmissa   ja  joissain  muissa  sovelluksissa.   MMU:n
+    avulla  voi  myös  siirtää Kickstart ROMin 32-bittiseen muistiin koneen
+    toiminnan  nopeuttamiseksi.   A530  sisältää  jonkinlaista  kovoa, joka
+    mahdollistaa   Kickstart  ROMin  siirron  32-bittiseen  muistiin  ilman
+    MMU:takin   (vaatii   tosin   vähintään  2MB  Fast-tyyppistä  muistia).
+    Lisäksi,  jos hyvä tuuri käy, voi saada laitteen, jossa on toimiva MMU.
+    Sanoikohan  Motorola,  jonka mukaan 70% 68EC030-prosessoreista sisältää
+    toimivan  MMU:n.  [40 Megahertsin  68030-prosessoria  ei  pitäisi  olla
+    olemassa vaan nämä kaikki ovat EC-malleja. -Kovanen]  68030:sta  löytyy
+    prosessorin  sisäisiä  välimuisteja  kahta eri tyyppiä: Data  Cache  ja
+    Instruction  Cache.  Näiden eroavaisuuksista en ole tarkemmin selvillä, 
+    edellinen lienee dataa varten ja jälkimmäinen käskyjä varten. ==:*3 Li-
+    säksi löytyy Data- ja Instruction Burst-moodit joilla voi myös  nopeut-
+    taa prosessorin toimintaa. A530:n kanssa Burst-moodeista ei  valitetta-
+    vasti  ole  hyötyä, koska niiden käyttäminen vaatii Static Column-tyyp-
+    pistä muistia (A3000:sta tuttu), eikä A530:n sellaista saa. Prosessorin
+    kellotaajuus  on  40  MHz, joka erään lähteen mukaan tarkoittaa n.  60%
+    suurempaa laskutehoa kuin 25MHz 68030.  Käytännössä nopeus on n.  1.5 x
+    A3000 (25MHz-malli) graafisia ominaisuuksia lukuunottamatta.
+
+
+{1SISÄLMYKSET
+{1===========
+
+    Kotelon  sisältä  löytyy  kaksi  kappaletta  SIMM-paikkoja, joihin  voi
+    laittaa  1-2  kpl  1MB SIMMiä, 1-2 kpl 4MB SIMMiä tai 1MB + 4MB SIMMejä
+    yksi   kappale   kumpaakin.    Ohjekirja   mainitsee  tällaisen  olevan
+    mahdotonta,  mutta  käytännössä  kuuleman  mukaan  tämä  toimii,  tosin
+    aiheuttaen  pieniä  sekaannuksia  joidenkin  ohjelmien  kanssa (antavat
+    muistin määräksi 8MB), ja kun viisi megaa täyttyy, kaatuu kone.  Muisti
+    on  32-bittistä  (nopeus 60ns), mikä on olennaista turbokorttien täyden
+    tehon  hyödyntämiseksi  (jos  käytössä on pelkkää Chip-muistia, SysInfo
+    antaa   koneen   nopeudeksi   0.7  x  perus-A500).   Laitteessa  joutuu
+    käyttämään  GVP:n  omia  SIMMejä (eli tavalliset eivät käy) mikä nostaa
+    muistin      hintaa     mutta     toisaalta     poistaa     mahdolliset
+    yhteensopivuusongelmat   eri  valmistajien  tekemien  SIMMien  välillä.
+    Kotelon  sisältä löytyy myös kanta 40MHz 68882-matematikkaprosessorille
+    (hitaampien   käyttäminen   voi   manuaalin  mukaan  aiheuttaa  vakavaa
+    vahinkoa).   Sen hinta valitettavasti on suhteellisen korkea, joten sen
+    hankkiminen   jää  omalta  kohdaltani  tulevaisuuteen  (olettaen,  että
+    välttämätöntä tarvetta esiintyy).  Kotelon mataluudesta johtuen kotelon
+    sisälle  sopii  vain 1" korkea kovalevy, mikä tosin ei suurempi ongelma
+    ole  sillä  1"  korkeita  levyjä  löytyynee  aina  gigatavuun asti.  Ja
+    ulkoisesti saa lisää.
+
+
+
+{1KOVALEVYPUOLI
+{1=============
+
+    SCSI-ohjain on sama kuin GVP Series II-ohjaimessa.  Ohjain on riittävän
+    nopea  (tosin  olin hieman hämmentynyt kun LP120S Quantumini nopeudeksi
+    testiohjelmat ilmoittavat n.  1.1MB/s, myyjän mukaan nopeuksien pitäisi
+    kivuta   yli  kahden  megan  sekunnissa.   Jälkeenpäin  sain  kuitenkin
+    tietooni,  että ko.  levyllä ei ole mahdollista kivuta paljon yli yhden
+    megan  sekunnissa,  240MB  Quantum  juoksisikin  jo  yli  kahden  megan
+    sekuntivauhtia.    Odottelen   innolla  tilaisuutta  päästä  testaamaan
+    ohjainta 240MB Quantumin kanssa) ja käyttää DMA:ta eli ei juurikaan syö
+    prosessoriaikaa  ja  näin  hidasta  konetta.  A530:n takana on ulkoinen
+    25-piikkinen  SCSI-liitin  johon voi liittää lisää SCSI-laitteita kuten
+    kovalevyjä, nauhavarmistusasemia ym.
+
+
+{1MINISLOT
+{1========
+
+    Minislotista en omaa kokemuksia; siihen on tällähetkellä saatavana vain
+    PC-emulaattori  (16MHz  286)  ja tässä mainitsemattomasta syystä en ole
+    kovin  innokas ko.  emulaattoria hankkimaan mutta muistelen sen saaneen
+    hyviä arvosanoja testeissä.
+
+
+
+
+
+
+
+{1SOFTA
+{1=====
+
+    Ohjelmisto    toimitetaan    laitteen    mukana    levykkeellä    (sekä
+    todennäköisesti  myös  kovalevyltä, ostin oman A530:ni ilman kovalevyä)
+    jolta  löytyy omat hakemistonsa 68030-turboa varten, lisämuistia varten
+    ja  SCSI-ohjainta varten.  68030-hakemistosta löytyy GvpCpuCtrl-niminen
+    ohjelma  jolla  voi  siirtää  Kickstart  ROMin  32-bittiseen  muistiin,
+    siirtää  SuperVisor  Stack Pointerin (mikälie...) 32-bittiseen muistiin
+    koneen    nopeuttamiseksi    edelleen    (vaikuttaa    kuulemma    vain
+    68040-prosessorien kanssa) sekä mahdollisuus bootata kone Amigan omalla
+    68000-prosessorilla    (hidastaa   konetta   merkittävästi).    Lisäksi
+    hakemistosta  löytyy  SetCpu-niminen  ohjelma  jolla  voi hoitaa samoja
+    asioita  kuin  Workbenchin CPU-komenolla eli laittaa päälle/pois päältä
+    prosessorin  välimuisteja  sekä  hoidella  muita prosessoriin liittyviä
+    juttuja.   CPU-ohjelman  käyttö on myös mahdollista, mutta sillä ei voi
+    siirtää  Kickstart ROMia 32-bittiseen muistiin vaan tähän tarkoitukseen
+    täytyy   käyttää   GvpCpuCtrl-ohjelmaa.    Memory-hakemistosta   löytyy
+    ohjelmat muistin testausta varten.
+
+    SCSI-hakemistosta  löytyy  FastPrep sekä ExpertPrep-ohjelmat joilla voi
+    muutella  kovalevyn  asetuksia  ja  esim.   partitioida  (jakaa  osiin)
+    kovalevyn.        FastPrep       eroaa      ExpertPrepistä      lähinnä
+    yksinkertaisuudellaan;  sitä  osaa  käyttää  aloittelijakin (luulisin).
+    Kokeneempi   käyttäjä   tuntenee   itsensä   turhautuneeksi  FastPrepin
+    suppeuden kanssa.  Lisäksi hakemistosta löytyy GVPScsiCtrl-ohjelma joka
+    mahdollistaa  joitakin  normaalikäyttöön  tarpeettomia toimintoja, sekä
+    ohjelma  nimeltä SCSIMaskFix, jolla voi vaihtaa ExpertPrepistä löytyvää
+    DMA  Mask-asetuksen  arvoa, jos käytössäoleva kovalevy ei tue suurempaa
+    arvoa.   DMA  Mask  vaikuttaa  kovalevyn  nopeuteen, ja jos DMA Mask on
+    liian  pieni,  kovalevy  voi  olla hitaampi.  Liian suurella arvolla ja
+    hitaalla levyllä tulos ei kenties ole hyvä.  Sokerina pohjalla on vielä
+    SystemInfo-niminen  hakemisto,  josta  löytyy  GVPInfo-niminen  ohjelma
+    jonka  avulla voi nähdä erinäisiä tietoja A530:n eri osista sekä muusta
+    laitteistosta.
+
+    Dokumentointi  on  hoidettu  kahden  n.   60-sivuisen  kirjasen avulla.
+    Toinen    käsittelee    A530:ä    yleensä,    toinen    FastPrep-    ja
+    ExpertPrep-ohjelmia.    Dokumentointi   on   suoritettu  erinomaisesti;
+    kuvitus on runsasta, mukana on esimerkkejä ja oppaat ovat kaikin puolin
+    kattavia.
+
+{1NOPEUS
+{1======
+
+    SysInfo  3.22 antaa seuraavanlaisia tuloksia kun kone on bootattu ilman
+    Startup-Sequencea,  molemmat  cachet  ovat  päällä  ja Kickstart ROM on
+    32-bittisessä  muistissa  (oman  startuppini kanssa nopeusero A500:seen
+    putoaa 11.41:een):
+
+        SPEED COMPARISONS AGAINST KNOWN MODELS & PERIPHERALS
+        A500 512k or A600 with 1MB CHIP ONLY.........  11.51
+        B2000, A2000, A1000 or A500 with fast ram....   8.71
+        A1200/14 68EC020 ICACHE 2MB CHIP ONLY........   5.00
+        A2500/14 A2620 68020 card....................   2.96
+        A3000/25 68030 ICACHE IBURST DCACHE NODBURST.   1.31
+        A4000/25 68040 ICACHE DCACHE COPYBACK........   0.33
+        Speed of Chip Memory vs A600 Chip Memory.....   1.89
+        Nics Comment................................. Smell the Rubber?
+        CPU speed in MHz............................. 42.70
+
+    Jukka  Marinin  tekemä  SSSpeed  0.56-ohjelma  antaa  tuloksiksi (ilman
+    Startup-Sequencea)   seuraavaa:    (200%   tarkoittaa   kaksinkertaista
+    nopeutta perus-viissataseen verrattuna)
+
+        CPU/FPU performance results:          Program execution speed:
+
+                Integer        String           CHIP RAM        FAST RAM
+        CPU       1534%         1059%                51%            578%
+
+    Chip-muistin  hitaus  (joka  johtuu  siitä, että chip-muistia joudutaan
+    käsittelemään  16-bittisen  väylän kautta) tulee esiin lähinnä joissain
+    demoissa kaikkien toimintojen hidastuessa noin puoleen.
+
+
+{1YHTEENSOPIVUUS
+{1==============
+
+    Hyötyohjelmien  kanssa  yhteensopivuus  on suunnilleen 100%.  Demot (ja
+    pelit)  ovatkin  jo  ongelmallisempia:   turbon saatuani luonnollisesti
+    kävin  läpi  suurimman  osan  demoistani  yllättävän  pieni  osa  toimi
+    täydellisesti.   Uusimmista  demoista yllättävän suuri osa toimii.  Jos
+    demo  ei  toimi,  on  helppoa kytkeä turbo pois päältä kytkimellä demon
+    katselun  ajaksi.   Pelejä  en kovin paljoa ole testaillut.  Moniajossa
+    toimivat  pelit  toiminevat  hyvin, muista peleistä suuri osa toiminee.
+    Ja tässäkin tapauksessa voi turbon sammuttaa pelin ajaksi.
+
+
+
+
+{1LAAJENNETTAVUUS
+{1===============
+
+    8MB  32-bit  Ram,  40 MHz 68882, PC-emulaattori (286-16) sekä kovalevyä
+    kukkaron mukaan.
+
+
+{1TAKUU
+{1=====
+
+    Suomessa 1 vuosi (USAssa ja Englannissa 2 vuotta.)
+
+
+{1KÄYTTÖKOKEMUKSIA
+{1================
+
+    Nyt olen hallussapitänyt A530:ä vajaat puolisen vuotta, enkä kertaakaan
+    ole  ostostani  katunut.   Koneen  käyttäminen  ei  ole  turbon saannin
+    jälkeen  ollut  samanlaista kuin ennen.  Turha odottelu on jäänyt pois,
+    voi  moniajella  paremmin, käyttää raskaampia  sovelluksia, nopeammissa
+    tiedonsiirroissa  kone  ei  tahmo jne.  Ongelmia ei ole juurikaan ollut
+    (lukuunottamatta   demoja)   eikä   entinen   käyttöympäristö  vaatinut
+    juurikaan  muutoksia  turbon  myötä  (Protrackeriin  piti  laittaa  DMA
+    Waittia lisää).
+
+    Kovalevyn  kanssa tosin yksi pienehkö ongelma esiintyy (ei vielä tietoa
+    johtuuko   kovalevystä,   mikä  on  mahdollista):   boottauksen  alussa
+    kovalevyohjain  käy  läpi  kaikki SCSI-osoitteet muiden SCSI-laitteiden
+    löytymisen toivossa, ja tämä hidastaa käynnistystä.  16-bittinen Chippi
+    myös itkettää, mutta sehän ei ole A530:n vika.
+
+
+{1RISUT / RUUSUT
+{1==============
+
+    Risut:  max. vain 8MB kallista RAMia
+
+    Ruusut: helppokäyttöisyys, nopeus, hyvä dokumentointi / ohjelmisto,
+            erinomainen asiakaspalvelu (no names mentioned), ulkonäkö,
+            hiljainen tuuletin (A590:n jälkeen oli vaikeuksia uskoa, että
+            tuuletin todella pyörii)
+
+
+    Suosittelen hankintaa lämpimästi, jos koneenvaihto uudempaan ei ole
+    mahdollista/välttämätöntä/mitä hyvänsä, mutta nopeutta halutaan lisää.
+    Nopeutta tulee lisää, ja kone säilyy erittäin käyttökelpoisena
+    tulevaisuudessakin.
+
+    A530 ei ole enää maahantuojan ohjelmistossa, joten ainoa keino turbon
+    hankkimiseksi on käytettynä ostaminen.

@@ -1,0 +1,459 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Workshops.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops2.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Workshops
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="Inhalt"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H1>Workshops / Hintergrundberichte / Buchvorstellungen</H1>
+<H2>1. Einf&uuml;hrung in die Reaction-Programmierung (von Martin R. Elsner)</H2>
+<P><B>Teil 3: Images und Gadgets</B></P>
+<P>
+Diesmal habe ich eine Beschreibung der wichtigsten Fensterelemente
+zusammengestellt. Informationen &uuml;ber Images und Gadgets findet man genauso wie
+f&uuml;r die sonstigen Klassen in den Autodocs, zur Not auch noch in den
+Include-Files im Verzeichnis includes:images bzw. includes:gadgets.
+</P>
+<P>
+Trotzdem m&ouml;chte ich hier kurz die einzelnen Objekte, ihren Sinn, ihre Vor- und
+Nachteile und Besonderheiten beschreiben. Denn nur wenn man alle M&ouml;glichkeiten
+kennt, die die BOOPSI-Objekte bieten, findet man die optimalen Bedienelemente
+f&uuml;r die eigene Oberfl&auml;che.
+</P>
+<P>
+Zur Erinnerung: Im Gegensatz zum Gadget-System von Intuition gibt es keine
+vordefinierte Menge von Objekten - jeder kann sein eigenes Image oder Gadget
+schreiben. Hier m&ouml;chte ich auch noch mal Stephan Rupprecht danken, der mir f&uuml;r
+mein ClassAction den Quelltext f&uuml;r ein Icon-Gadget zur Verf&uuml;gung gestellt hat,
+das auf einfache Art einen Button um die Darstellung eines Glowicons
+erweitert. Ich werde mich hier an der Liste der Standardobjekte orientieren,
+wie man sie in ReActor vorfindet.
+</P>
+<P>
+Die Liste ist relativ lang und sollte nicht von oben bis unten durchgelesen
+werden, sondern man sollte die Gadgets z.B. mit ReActor direkt ausprobieren,
+um dabei einen &Uuml;berblick &uuml;ber die interessanten Objekte und ihre Funktionsweise
+zu erhalten.
+</P>
+<P>
+Zun&auml;chst zu den Images. In ReActor findet man diese in einem separaten
+Untermen&uuml; &quot;Image&quot;. Ich habe schon darauf hingewiesen, dass Images mit
+LAYOUT_AddImage statt LAYOUT_AddChild hinzugef&uuml;gt werden m&uuml;ssen. Sie m&uuml;ssen
+anders behandelt werden als Gadgets, auch wenn sie zum Teil &auml;hnlich aussehen.
+Das bedeutet, dass auch Funktionen wie SetGadgetAttrs() hier nicht angewendet
+werden k&ouml;nnen bzw. m&uuml;ssen (SetAttrs() reicht in den meisten F&auml;llen aus, zur Not
+kann man auch mit RefreshGList() das Layout neu zeichnen).
+</P>
+<P><B>BEVEL</B></P>
+<P>
+hei&szlig;t eigentlich nur &quot;Kante&quot; und ist auch nur f&uuml;r solche Zwecke zu gebrauchen,
+also z.B. um eine Trennlinie zwischen zwei Objekte zu setzen oder eine
+&Uuml;berschrift &uuml;ber ein Objekt (Text dann mit BEVEL_Label setzen).
+</P>
+<P>
+In vielen F&auml;llen wird man statt Bevels Layouts mit den gleichen Eigenschaften
+benutzen, um Objekte zu gruppieren.
+</P>
+<P>
+<B>BITMAP und<BR>
+PENMAP</B>
+</P>
+<P>
+erm&ouml;glichen es, ein eigenes Bild anzuzeigen. Man kann sowohl ein Bild f&uuml;r den
+ausgew&auml;hlten wie f&uuml;r den nicht ausgew&auml;hlten Zustand angeben. ReActor l&auml;dt die
+Bilddaten aus der Datei und bindet sie direkt in die zugeh&ouml;rige *.o-Datei ein,
+w&auml;hrend bei der Angabe im Quelltext die Daten vom Objekt aus der Datei geladen
+werden, sodass dann ein Verschieben oder L&ouml;schen der Datei zu Problemen f&uuml;hrt.
+Da die Objekte Datatypes unterst&uuml;tzen, kann alles eingebunden werden, was &uuml;ber
+die Datatypes als Grafik erkannt wird.
+</P>
+<P>
+Einer Penmap kann im Quelltext kein Dateiname &uuml;bergeben werden, sondern nur
+Bilddaten im &quot;Chunky-Format&quot;. Schade eigentlich, denn durch die M&ouml;glichkeit,
+Bilder auch zu skalieren, besitzt die Penmap eine Eigenschaft, die man bei
+einer Bitmap nur mit BitMapScale() aus der graphics.library nachbilden kann.
+Mit Hilfe von BITMAP_Masking bzw. PENMAP_Transparent und PENMAP_MaskBlit lassen
+sich Bilder auch transparent darstellen.
+</P>
+<P>
+<B>GLYPH und<BR>
+DRAWLIST</B>
+</P>
+<P>
+wird man selten allein verwenden. Es handelt sich um Standardsymbole wie Pfeile
+und die bekannten &quot;Datei &ouml;ffnen&quot;-Bilder. Vorteilhaft ist, dass die Bilder
+skaliert werden und sich der Gr&ouml;&szlig;e des Images anpassen. Wer Standardgrafiken
+ben&ouml;tigt, kann direkt einen Button erzeugen und dort die Eigenschaft
+&quot;AutoButton&quot; nutzen. Die Drawlist bietet im Gegensatz zum Glyph die M&ouml;glichkeit,
+eigene Symbole zu erzeugen. Dazu muss ein Array von Zeichenbefehlen &uuml;bergeben
+werden, die dann ausgewertet werden und ein entsprechend skaliertes Bild
+ergeben. F&uuml;r den Programmierer ist meist das Zeichen einer Grafik und das
+Einbinden mittels Bitmap oder Penmap einfacher.
+</P>
+<P><B>LABEL</B></P>
+<P>
+ist eines der am h&auml;ufigsten ben&ouml;tigten Elemente. Viele Gadgets bieten zwar Platz
+zur Eingabe von Text oder zur Darstellung von Informationen, sie ben&ouml;tigen aber
+einen Titel bzw. eine kurze Beschreibung. Ein Label eignet sich aber nicht nur
+f&uuml;r die Anzeige eines Wortes vor einem Gadget (mit LABEL_Text angeben, nicht mit
+GA_Text!), sondern kann auch mehrere Texte (inklusive Zeilenumbruch!)
+und sogar Grafiken enthalten. Wenn allerdings auch Unterstriche im Text
+dargestellt werden sollen, sollte LABEL_Underscore z.B. auf 0 oder auf ein
+sonst unbenutztes Zeichen gesetzt werden. Eine Ausrichtung der Labels in einem
+Layout kann &uuml;brigens mit LAYOUT_LabelColumn, LAYOUT_LabelWidth und
+LAYOUT_AlignLabels realisiert werden.
+</P>
+<P>
+Eine Alternative zur einfachen Textdarstellung ist die Erzeugung eines Buttons
+(siehe dort).
+</P>
+<P>
+So, nun zu den Gadgets. Die BOOPSI-Gadgets bieten eigentlich alles, was man als
+Programmierer ben&ouml;tigt, auch wenn die Funktionalit&auml;t manchmal nicht optimal ist.
+Als Delphi-Programmierer vermisse ich vor allem die M&ouml;glichkeit, in einfacher
+Weise auf verschiedene Ereignisse zu reagieren, z.B. Mausklick mit rechter
+Maustaste &uuml;ber einem Objekt. Dass dies nicht implementiert ist, h&auml;ngt allerdings
+mit der Amiga-Architektur zusammen und kann den Gadget-Entwicklern nicht
+angelastet werden.
+</P>
+<P>
+M&ouml;chte man &uuml;ber das Anklicken eines Gadgets informiert werden, muss GA_ID und
+GA_RelVerify gesetzt werden (im Quelltext muss daf&uuml;r gesorgt werden, dass GA_ID
+einen im Fenster bzw. in der Page eindeutigen Wert erh&auml;lt). Von den
+Standard-Gadgetattributen (GA_...) sind vor allem GA_ReadOnly und GA_Disabled
+von Interesse, weil damit die Bearbeitung verhindert (z.B. bei String-Gadgets)
+bzw. das Gadget ausgeschaltet werden kann (z.B. bei Buttons).
+</P>
+<P><B>BUTTON (NUMBER,TEXTBUTTON,TEXTLINE)</B></P>
+<P>
+ist einfach ein Knopf, also im einfachsten Fall ein &quot;Ok&quot; oder &quot;Cancel&quot;. Statt
+einem Text kann ein Button auch einen Integer-Wert (was in Reactor als Number
+bezeichnet wird), ein Image oder ein Glyph (&quot;AutoButton&quot;) erhalten. Durch
+BUTTON_PushButton kann der Button - &auml;hnlich der CheckBox - zwischen ausgew&auml;hlt
+und unausgew&auml;hlt umgeschaltet werden.
+</P>
+<P>
+&Uuml;brigens kann man einen Button auch nur zum Anzeigen von Text benutzen - mit den
+Eigenschaften GA_ReadOnly=TRUE, BUTTON_BevelStyle=BVS_NONE und
+BUTTON_Transparent=TRUE (was in ReActor als Textline bezeichnet wird)
+ist das Aussehen kaum anders als bei einem Label, mit einem wichtigen
+Unterschied: sollte der Text w&auml;hrend der Laufzeit ge&auml;ndert werden, ohne dass das
+Layout neu berechnet wird oder werden soll, so wird ein Button den Text an der
+richtigen Stelle abschneiden, w&auml;hrend ein Label in jedem Fall den vollen Text
+ausgibt und gegebenenfalls andere Objekte &uuml;berschreibt.
+</P>
+<P><B>CHECKBOX</B></P>
+<P>
+ist ein an/aus- oder ja/nein-Schalter, wie man ihn h&auml;ufig aus den Prefs-
+Programmen kennt. Au&szlig;er GA_Text kann man hier die Ausrichtung des Textes und die
+Farben angeben. GA_Selected gibt dann den aktuellen Status an.
+</P>
+<P>
+ACHTUNG: Eine Checkbox wird (jedenfalls in der mir vorliegenden Version) durch
+SetGadgetAttrs() nicht aktualisiert!! Nach einer &Auml;nderung ist der Aufruf von
+RefreshGList() n&ouml;tig!
+</P>
+<P><B>CHOOSER</B></P>
+<P>
+ist die einfachste M&ouml;glichkeit, eine Liste von Auswahlm&ouml;glichkeiten anzubieten.
+Es gibt zwei Arten von Choosern: m&ouml;chte man einen Zustand darstellen, wie es
+z.B. der aktuelle Zeichensatz in einem Textverarbeitungsprogramm ist, so erzeugt
+man einen PopUp-Chooser (CHOOSER_PopUp=TRUE). Hier enth&auml;lt das Gadget immer den
+aktuell ausgew&auml;hlten Wert. M&ouml;chte man dagegen dem Benutzer eine Liste von
+Befehlen an die Hand geben, z.B. als Ersatz f&uuml;r mehrere Buttons oder ein Men&uuml;,
+so setzt man CHOOSER_DropDown=TRUE und erh&auml;lt ein Gadget, in dem immer nur der
+CHOOSER_Titel angezeigt wird. Die Liste der Eintr&auml;ge wird mit CHOOSER_Labels
+&uuml;bergeben; f&uuml;r die Kontrolle dieser Liste stehen AllocChooserNode(),
+FreeChooserNode(), GetChooserNodeAttrs() und SetChooserNodeAttrs() zur
+Verf&uuml;gung. Wie bei allen Listen sollte die Liste bei &Auml;nderungen erst mit
+</P>
+<PRE>
+SetGadgetAttrs(gadget,intuiwin,NULL,CHOOSER_Labels,NULL,TAG_END)
+</PRE>
+<P>
+abgeh&auml;ngt und danach mit
+</P>
+<PRE>
+SetGadgetAttrs(gadget,intuiwin,NULL,CHOOSER_Labels,list,TAG_END)
+</PRE>
+<P>
+wieder eingetragen werden (wer Probleme mit der Listenerzeugung hat, wird im
+n&auml;chsten Teil mehr dar&uuml;ber erfahren).
+</P>
+<P>
+Man sollte nicht vergessen, CHOOSER_MaxLabels auf einen Wert zu
+setzen, der gro&szlig; genug ist, und CHOOSER_AutoFit=TRUE zu setzen, damit der
+Chooser breit genug wird.
+</P>
+<P><B>CLICKTAB</B></P>
+<P>
+ist eine gute M&ouml;glichkeit, viele Informationen in einem Fenster unterzubringen,
+bei denen eine gleichzeitige Anzeige unm&ouml;glich ist oder eine Gruppierung
+sinnvoll ist; bestes Beispiel ist der ClickTab im Drucker-Voreinsteller, mit dem
+man zwischen Druckertyp, Seitengr&ouml;&szlig;e und Einstellungen hin- und herschalten
+kann. Ich werde im n&auml;chsten Teil gesondert auf den ClickTab eingehen.
+</P>
+<P><B>COLORWHEEL</B></P>
+<P>
+ist eine sch&ouml;ne M&ouml;glichkeit zur Festlegung einer Farbe. Ein Farbrad wird
+angezeigt, in dem ein Punkt die aktuelle Farbe kennzeichnet. Au&szlig;er den
+Eigenschaften zur Ermittlung der ausgew&auml;hlten Farbwerte im HSB- oder RGB-Modell
+und zur Darstellung des Rades ist es auch m&ouml;glich, einen Gradientslider
+anzugeben, der die Helligkeit der Farbe kontrolliert und direkt mit dem
+ColorWheel zusammenarbeitet, ohne Mehraufwand f&uuml;r den Programmierer.
+Bei der Verwendung sollte man - z.B. durch den Gradientslider - daf&uuml;r sorgen,
+dass die aktuelle Farbe irgendwo angezeigt wird, da das ColorWheel selbst nur
+die Position im Rad anzeigt.
+</P>
+<P><B>DATEBROWSER</B></P>
+<P>
+ist ein einfacher Kalender; er zeigt die Tage eines Monats an, den man mit den
+Eigenschaften DATEBROWSER_Year und DATEBROWSER_Month angeben kann. Leider werden
+diese Werte (Jahr und Monat) nicht im Gadget angezeigt, k&ouml;nnen aber z.B. durch
+ein zus&auml;tzliches Label oder einen Chooser per Hand gesetzt werden.
+</P>
+<P>
+Bei Mehrfachselektion bekommt man in DATEBROWSER_SelectedDays ein Langwort, in
+dem jedes Bit einem Tag des Monats entspricht (bis auf das 32. Bit ;)
+und gesetzt ist, wenn der Tag ausgew&auml;hlt ist - gut, dass es keinen Monat mit
+33 Tagen gibt ...
+</P>
+<P>
+Weiter bietet das Gadget die M&ouml;glichkeit, den Wochentag des ausgew&auml;hlten Datums
+und den ersten Wochentag des Monats zu ermitteln. Man sollte daran denken, dass
+Wochen nach englischer Sitte mit dem Sonntag beginnen und daher 0 f&uuml;r Sonntag,
+..., 6 f&uuml;r Samstag steht.
+</P>
+<P><B>FUELGAUGE</B></P>
+<P>
+ist eine sch&ouml;ne Verlaufsanzeige f&uuml;r alle Aktionen, die so lange dauern, dass
+der Benutzer ungeduldig wird ;)
+Mit FUELGAUGE_Min, FUELGAUGE_Max und FUELGAUGE_Level kann man den
+Fortschrittsverlauf an die eigenen Bed&uuml;rfnisse anpassen, man kann eine
+automatische Prozentanzeige aktivieren und die Anzahl der Unterteilungsstriche
+angeben.
+</P>
+<P>
+<B>GETFILE,<BR>
+GETFONT und<BR>
+GETSCREENNMODE</B>
+</P>
+<P>
+kann man in fast jedem Programm gebrauchen, sie erleichtern die Auswahl von
+Dateien, Zeichens&auml;tzen oder Bildschirmmodi ungemein. Im Fenster selbst erscheint
+dann nur noch ein Stringgadget mit dem aktuellen Text und ein Button mit einem
+passenden Glyph. Die Gadgets haben ein paar Besonderheiten vorzuweisen: das
+&Ouml;ffnen des Requesters geschieht nicht automatisch, sondern muss nach dem
+Erhalten eines GadgetUp-Events mit DoMethod(gadget,GFILE_REQUEST) (bzw.
+GFONT_REQUEST oder GSM_REQUEST) selbst vorgenommen werden - dies kann man
+dadurch aber auch an ganz anderen Stellen, ohne dass jemand auf den Button
+geklickt hat. GetFile bietet auch die M&ouml;glichkeit, gleich mehrere Dateien
+auszuw&auml;hlen, die dann als Liste unter GETFILE_Filelist erh&auml;ltlich ist, wobei man
+das abschlie&szlig;ende DoMethod(gadget,GFILE_FREELIST) zum Freigeben der Liste nicht
+vergessen sollte.
+</P>
+<P>
+GetFile ist auch das einzige der drei Gadgets, das eine direkte Eingabe ins
+Stringgadget erlaubt - wovon ich aber abrate (also GETFILE_ReadOnly auf TRUE
+setzen), da man in diesem Fall kein GadgetUp-Ereignis erh&auml;lt, sondern
+umst&auml;ndlich das Event umleiten muss (siehe dazu die Autodocs). &Uuml;brigens bekommt
+man mit der sehr sinnvollen Eigenschaft GETFILE_FullFileExpand im Gegensatz zu
+GETFILE_FullFile nicht nur den vollen Dateinamen, sondern auch den entsprechend
+aufgel&ouml;sten Namen (er enth&auml;lt keine relativen Pfade mehr) - der dann f&uuml;r die
+Datei eindeutig ist. Somit erkennt man direkt, dass sys:c/copy und c:copy f&uuml;r
+dieselbe Datei stehen!
+</P>
+<P><B>GRADIENTSLIDER</B></P>
+<P>
+h&ouml;rt sich an wie Slider, ist aber etwas anders aufgebaut: Man muss bei der
+Erzeugung ein Array von Pens (also Farbindizes bezogen auf die aktuelle Palette,
+siehe ObtainBestPen() in der graphics.library) angeben, das mit 0 abgeschlossen
+ist; diese Farben bilden dann von links nach rechts oder von oben nach unten
+einen Farbverlauf, vom System noch durch &quot;Dithering&quot; gegl&auml;ttet. Z.B. k&ouml;nnte man
+gr&uuml;n, gelb und rot angeben, um einen Verlauf von gr&uuml;n nach rot darzustellen. In
+GRAD_CurValue findet man dann den vom User eingestellten Farbwert.
+</P>
+<P>
+<B>IC und<BR>
+MODEL</B>
+</P>
+<P>
+sind mal was ganz anderes, n&auml;mlich keine Oberfl&auml;chenelemente, sondern
+&quot;Schaltzentralen&quot;; IC bedeutet InterConnection, es handelt sich um eine
+Verbindung zwischen BOOPSI-Objekten. Hier nur eine kurze Einf&uuml;hrung:
+Zugrunde liegt die Idee, dass manche Objekte zusammenh&auml;ngende Funktionalit&auml;ten
+besitzen, im einfachsten Fall soll z.B. ein Gadget immer dann disabled sein,
+wenn auch ein anderes disabled ist. Allgemein sollen Eigenschaften, die in einem
+Gadget ge&auml;ndert werden, direkt an andere &uuml;bertragen werden.
+</P>
+<P>
+Eine einfache M&ouml;glichkeit ist die Angabe von ICA_Target und ICA_Map f&uuml;r das
+erste Gadget, wobei ICA_Target auf das Ziel, also das zweite Gadget gesetzt
+wird, und ICA_Map bekommt ein TagItemArray mit den Eigenschaften beider
+Gadgets, falls diese verschieden sind.
+</P>
+<P>
+Eine zweite M&ouml;glichkeit ist die Angabe eines IC oder Models als ICA_Target.
+Diese k&ouml;nnen zus&auml;tzlich ein IDCMPUPDATE-Ereignis erzeugen, das die Anwendung
+dann auswerten kann, und ein Model kann sogar mehrere Gadgets aktualisieren,
+die dann mit der Methode OM_ADDMEMBER hinzugef&uuml;gt werden m&uuml;ssen.
+Wer das nicht verstanden hat, kann es getrost wieder vergessen, denn den
+gleichen Effekt kann man meist leichter in einer eigenen Ereignisbehandlung
+erreichen.
+</P>
+<P>
+<B>LAYOUT und<BR>
+PAGE</B>
+</P>
+<P>
+ist die schon beschriebene Gruppeneinteilung der Fensterobjekte. Hier gibt es
+relativ viele Eigenschaften, mit denen man die Darstellung &auml;ndern kann, z.B.
+die Abst&auml;nde und Gr&ouml;&szlig;enverteilungen oder die Ausrichtung der Labels.
+Die in ReActor angegebenen Untertypen sind bis auf die Page (die aber auch in
+layout.gadget enthalten ist) nur Layouts mit verschieden vordefinierten
+Eigenschaften; nach dem Speichern und Laden werden sie auch als Layout
+angezeigt.
+</P>
+<P>
+Die Page wird nur f&uuml;r Clicktabs ben&ouml;tigt; jede Seite bzw. Karteikarte entspricht
+dabei einem Layout der Page, die ansonsten wie ein normales Layout funktioniert.
+</P>
+<P><B>LISTBROWSER</B></P>
+<P>
+ist eines der komplexesten BOOPSI-Objekte. Im Grunde handelt es sich um die
+Anzeige einer Liste irgendwelcher Objekte. Dabei kann es sich, wie bei einem
+Filerequester, einfach um eine Menge Strings handeln, es kann sich aber auch
+- wie in ClassAction - um eine zweidimensionale Anzeige handeln, bei der jede
+Zeile noch einmal verschiedene Grafiken oder Texte in der Form mehrerer
+Spalten enth&auml;lt. Da die Programmierung auch entsprechend komplex ist, werde
+ich im n&auml;chsten Teil gesondert auf den Listbrowser eingehen.
+</P>
+<P><B>PALETTE</B></P>
+<P>
+ist die einfachste Art, eine Farbauswahl zu implementieren. Man kann die Anzahl
+der darzustellenden Farben angeben und erh&auml;lt eine Menge von Buttons in den
+Farben des aktuellen Screens. In den Autodocs wird direkt darauf hingewiesen,
+dass eine solche Auswahl bei mehr als 16 Farben nicht mehr optimal ist. Ich
+rate in solchen F&auml;llen ganz von einem solchen Gadget ab und schlage die direkte
+Festlegung der Farbwerte vor, was bei den heute &uuml;blichen 16- oder 24-Bit-Modi
+der sinnvollere Weg ist; falls man trotzdem ein Palette-Objekt benutzen m&ouml;chte
+oder muss, gibt es dort auch M&ouml;glichkeiten, die angezeigten Farben mit
+PALETTE_ColourOffset und PALETTE_ColourTable einzuschr&auml;nken, sodass man z.B. mit
+ein paar Pfeilbuttons alle Farben anschauen und ausw&auml;hlen kann.
+</P>
+<P><B>RADIOBUTTON</B></P>
+<P>
+ist eigentlich eine Gruppe von CheckBoxes - mit der Einschr&auml;nkung, dass immer
+nur eine der Optionen ausgew&auml;hlt sein darf. Ich habe noch nie Radiobuttons
+benutzt, da man den gleichen Effekt auch mit einem Chooser realisieren kann,
+der weniger Platz ben&ouml;tigt. Der einzige Vorteil des Radiobuttons ist, dass
+man s&auml;mtliche Optionen auf einen Blick erkennt. Auch in der Programmierung ist
+der Radiobutton dem Chooser sehr &auml;hnlich: mit RADIOBUTTON_Labels &uuml;bergibt man
+wieder eine Liste der einzelnen Optionen, die mit den Funktionen
+AllocRadioButtonNode(), FreeRadioButtonNode(), GetRadioButtonNodeAttrs() und
+SetRadioButtonNodeAttrs() bearbeitet werden kann, RADIOBUTTON_Selected liefert
+die Nummer des ausgew&auml;hlten Eintrags.
+</P>
+<P><B>SLIDER</B></P>
+<P>
+ist eine Schieber, mit dem man z.B. Intensit&auml;t, Lautst&auml;rke, Gr&ouml;&szlig;e etc., in einem
+Bereich SLIDER_Min bis SLIDER_Max einstellen kann. Au&szlig;er der Ausrichtung und der
+Skalierung des Bereichs k&ouml;nnen sogar eigene Grafiken angegeben werden.
+</P>
+<P><B>SPACE</B></P>
+<P>
+ist eigentlich nichts, aber ein sehr praktisches Nichts: Layouts haben die
+Eigenschaft, den verf&uuml;gbaren Raum zwischen den Gadgets gleichm&auml;&szlig;ig zu verteilen
+(worauf man auch mit LAYOUT_ShrinkWrap und LAYOUT_EvenSize Einfluss nehmen
+kann). In vielen F&auml;llen sieht dies allerdings nicht besonders sch&ouml;n aus,
+besonders wenn das Fenster vom Benutzer sehr stark vergr&ouml;&szlig;ert wird. Dann sollte
+man einfach ein Space in das Layout setzen und gegebenenfalls die
+Gr&ouml;&szlig;enverteilung mit CHILD_WeightedWidth/Height umstellen. Man kann ein
+Space auch zur Gruppierung von Objekten nutzen, indem zwischen den Gruppen
+jeweils ein Exemplar eingef&uuml;gt wird, das dann sinnvoller Weise einen positiven
+Wert in SPACE_MinWidth/Height erh&auml;lt.
+</P>
+<P><B>SPEEDBAR</B></P>
+<P>
+ist eine sch&ouml;ne M&ouml;glichkeit, dem Benutzer ein grafikbasiertes Men&uuml; anzubieten.
+Dabei handelt es sich um eine horizontale oder vertikale Anordnung von Images,
+die als Liste organisiert ist. Dazu aber n&auml;chstes Mal mehr.
+</P>
+<P>
+<B>STRING und<BR>
+INTEGER</B>
+</P>
+<P>
+sind die einfachste M&ouml;glichkeit, Buchstaben oder Zahlen durch den Benutzer
+eingeben zu lassen. Beide lassen die Angabe einer mindestens sichtbaren und
+einer h&ouml;chstens zul&auml;ssigen L&auml;nge zu, bei Integer kann auch eine untere und
+obere Schranke angegeben werden. Das Integer-Objekt bietet optional zwei
+n&uuml;tzliche Pfeile, mit denen die Zahl ver&auml;ndert werden kann. Ein String-Objekt
+kann durch STRINGA_HookType dazu veranlasst werden, nur bestimmte Zeichen
+zuzulassen oder sie anders darzustellen, z.B. als Passwort oder in
+Gro&szlig;buchstaben. Mit STRINGA_EditHook kann man sogar eine eigene Funktion
+angeben, die dann statt der eingebauten Hooks die Eingabe &uuml;berwacht. Au&szlig;erdem
+gibt es zwei M&ouml;glichkeiten, keine &Auml;nderung am Inhalt zuzulassen: mit
+GA_ReadOnly, das auch bei anderen Gadgets funktioniert, kann das Gadget gar
+nicht aktiviert werden, w&auml;hrend mit STRINGA_FixFieldMode nur die direkte
+&Auml;nderung abgelehnt wird, so dass man den Text noch kopieren kann.
+</P>
+<P><B>TAPEDECK</B></P>
+<P>
+ist eine gute M&ouml;glichkeit, einfach und schnell die n&ouml;tigen Kontrollbuttons f&uuml;r
+die Wiedergabe von Musik, Animationen oder &auml;hnlichen Daten zu erzeugen.
+Setzt man TDECK_Tape auf TRUE, so erh&auml;lt man Zur&uuml;ckspulen, Wiedergabe,
+Vorspulen, Stoppen und Pause, bei TDECK_Tape=FALSE entfallen Stop und Pause,
+daf&uuml;r ist ein Verlaufsbalken zu sehen, der mit TDECK_Frames und
+TDECK_CurrentFrame gesteuert werden kann.
+</P>
+<P>
+TDECK_Mode gibt den gerade ausgew&auml;hlten Modus an, also BUT_REWIND, BUT_PLAY etc.
+</P>
+<P><B>TEXTEDITOR</B></P>
+<P>
+ist eines der n&uuml;tzlichsten Gadgets - man erh&auml;lt mit wenigen Quelltext-Zeilen
+einen kompletten Texteditor, der sogar Copy&amp;Paste-M&ouml;glichkeiten bietet.
+Au&szlig;er den selbsterkl&auml;renden GA_TEXTEDITOR_Contents und GA_TEXTEDITOR_ReadOnly
+bietet es keine zus&auml;tzlichen Eigenschaften.
+</P>
+<P>
+Noch ein Hinweis zum Erzeugen der Objekte im Quelltext: u.a. f&uuml;r ColorWheels
+existiert kein COLORWHEEL_GetClass(), wie man es erwarten k&ouml;nnte; in diesem Fall
+&ouml;ffnet man die Gadget-Library wie gewohnt mit OpenLibrary(), gibt aber beim
+Erzeugen den Namen der Klasse an:
+</P>
+<PRE>
+  NewObject( NULL,&quot;colorwheel.gadget&quot;,...,TAG_END )
+</PRE>
+<P>
+So, das soll's mal wieder gewesen sein, n&auml;chstes Mal werde ich noch genauer auf
+Clicktab, Speedbar und Listbrowser eingehen, wobei die Listenverwaltung nicht zu
+kurz kommen soll. Au&szlig;erdem werde ich das Geheimnis der schon mehrmals erw&auml;hnten
+Hooks l&uuml;ften!
+</P>
+<P>
+Ansonsten w&uuml;nsche ich viel Spa&szlig; beim Ausprobieren der vielen Objekte,
+</P>
+<P>
+euer Martin R. Elsner &lt;<A HREF="mailto:email@martin-elsner.de">email@martin-elsner.de</A>&gt;
+</P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops2.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

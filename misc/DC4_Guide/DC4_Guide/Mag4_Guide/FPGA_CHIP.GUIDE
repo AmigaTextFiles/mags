@@ -1,0 +1,180 @@
+@database FPGA_Chip.html
+@remark Converted with HTML2Guide ©1997 Mark Harman
+@wordwrap
+
+@node MAIN "FPGA_Chip.html"
+@{"b"}The chip with an identity crisis! - By Alan Graham - 25/6/97@{"ub"} 
+ 
+A new era in modern computing is opening with the design of a micro 
+chip that can rewire itself on the fly. It will bridge the gap 
+between specialised Application Specific Integrated Circuits (ASICs) 
+and standard programmable processors which operate from binary coded 
+instructions. 
+ 
+A programmable processor is, for example a 68030.  It can be 
+programmed to do anything feasibly possible within the computer.  An 
+example af an ASIC is a 3D graphics processor - it can map polygons 
+faster than a 68030, but is severely limited in its uses. This is 
+because its internal architecture is designed solely for 3D 
+manipulation. 
+ 
+The Field Programmable Gate Array (FPGA) will unite these two 
+disciplines of microchip design by actually modifying its architecture 
+to suit each task given to it. In most microchips the functions of 
+internal logic gates are fixed as AND, OR, NAND, NOR or XOR, whereas 
+an FPGA can reconfigure its logic gates, and thus completely change 
+the function of the processor. This should combine the power of ASICs 
+and programmable processors to give a chip which is fast, versatile, 
+small, cheap and more power efficient. 
+ 
+The first FPGAs required at least several seconds to reconfigure - 
+this was deemed good enough for engineers and scientists who wanted 
+to test and emulate design changes to existing processors or upgrade 
+their FPGA based processor. The technological advancement that has 
+made designers seriously consider using FPGAs is the shortening of 
+reconfigurement times. Todays FPGAs can reprogramme in 1 millisecond 
+and it is expected that times will drop to below 100 microseconds 
+within 2 years. It is believed by some that FPGAs will eventually be 
+able to automatically change in response to differing input data or 
+environment. This is likely as, in line with standard microchip 
+design, the power and complexity of a FPGA doubles every 18 months. 
+ 
+Computers will take advantage of configurable microchips in many 
+different ways. At its simplest, the chip will simply mutate from one 
+type of chip to another as requested - the hardware equivalent of 
+quitting one program and then running another. Slower reconfiguration 
+times are not a problem in this case, and it is already feasible to 
+use a FPGA for this purpose. 
+ 
+Upon the advent of faster reconfiguration, "dynamic design swapping" 
+can occur. This is when a FPGA will reconfigure rapidly between tasks 
+in rapid succession. This can be more easily understood if Imagine, 
+QuickLHA and OctaMED were all running on the Amiga. Each program 
+requires subtly different properties from the processor, so it would 
+reconfigure between tasks to suit the next instruction. This would 
+obviously require an immensely powerful FPGA with a reconfigurement 
+time of less than a few clock pulses if it is to work efficiently. 
+Assuming this stage of design can be reached, there is another 
+interesting use for FPGAs. 
+ 
+One of the most demanding tasks a computer does - and one that a human 
+brain can ironically do with considerate ease - is pattern matching. 
+This process is obviously used in tasks such as hand-writing 
+recognition, face identification and fingerprint recognition but is 
+also used substantially in database searches, file compressors, and 
+encryption. Usually pattern matching involves comparing a stream of 
+bits, which digitally represent the template to be searched for with 
+a collection of data bits which are the files to be searched for. 
+Every similarity, whether it be a character or pixel, between the 
+reference model and the data is noted, and when a particular file has 
+an amount of similarities set above a certain threshold, recognition 
+is declared. Obviously, if this process can be done in more detail, 
+with more complex reference models, then the results should be more 
+accurate. 
+ 
+By configuring a FPGA (Even configurable processors need configuring - 
+a testament to how "dumb" computers are!!) to automatically model 
+itself to the particular template used, the processor can become more 
+efficient even using simple AND pattern recognition. See the diagram 
+below about AND gate pattern matching.  The Target Image is what is being 
+searched for, while the Candidate Image is one of the files being 
+examined. 
+ 
+ 
+Candidate      Binary 
+  Image    Representation 
+ 
+          0000000 
+              0000000 
+              0000000 
+   #          0001000                         Pixels  
+  ##          0011000 ---                in common 
+  ####        0011110        |   AND Gate      
+  ###         0011100        |   Function     0000000 
+              0000000        |                0000000   Adder   Result 
+              0000000        |      &         0000000 
+                                 &         0001000    ---      --- 
+                                 &&&    0011000 | + |  | 9 | 
+  Target       Binary           &&&        0011100    ---      --- 
+  Image    Representation    |     &&&       0011100 
+                             |                0000000  
+       0000000        |                0000000  
+              0000000        | 
+   #          0001000        | 
+   #          0001000        | 
+  ###         0011100 --- 
+  ###         0011100 
+  ###         0011100 
+       0000000 
+              0000000 
+ 
+ 
+The circuit compares each bit of the target image to the relevant bit 
+of the image on file. Using AND gates, when there is a match, a 1 is 
+the result and when not a match a 0 is the result. Simply by taking the 
+value of the adder, it can be decided whether the file contains a 
+similarity to the reference model.  In this case there are nine 
+similarities between target and candidate images.  Given that there is 
+a maximum result of 11, this would probably be considered a match by 
+the computer. 
+ 
+Similarly, FPGAs have been used to great success in file encryption. 
+Encryption involves the use of an encrypted file and its key - the 
+"word" in the key has to be used to encrypt and decrypt the data. By 
+modelling the FPGA around the key, encryption and decryption is far 
+faster, and can allow multiple keys from different users to be held, 
+allowing all decryption to happen automatically as the FPGA receives 
+the message, selects the key and decrypts it. In a situation where 
+two people are exchanging data over a network, the exchange can be 
+made secure by the FPGA. Indeed, in a few years, an "encryption FPGA" 
+may become standard on all computers or modems. 
+ 
+Although the FPGA excels at pattern recognition and file encryption, 
+its design makes it ill-suited to most numeric operations such as 
+high-precision multiplication or floating point calculations. These 
+calculations are better suited to the dedicated multiplier circuits 
+found in standard micro processors, rather than the logic gate based 
+FPGA circuits. As well as this, as FPGAs contain very little on-chip 
+memory for storage of intermediate results, very large memory space 
+is needed for calculations. As data has to be transferred to and from 
+main memory during calculations, the FPGA becomes inefficient in both 
+power and speed. 
+ 
+Researchers are trying to overcome these difficulties by developing 
+advanced FPGAs that also house on-chip memory and multiplier 
+circuits. Another researcher is trying to join the standard 
+microprocessor and FPGA to build a Dynamic Instruction Set Computer 
+(DISC). This chip will use the microprocessor for numeric calculations 
+and to control the FPGA, which will carry out most of the tasks. This 
+system works by holding different specified processor maps in memory - 
+each one refers to a current task - and configuring the FPGA to the 
+relevent map whenever that task is being executed. There is also 
+development that would allow standard programs to operate on a 
+similar FPGA equipped computer through a compiler which creates the 
+perfect micro chip for each program. 
+ 
+The future of FPGA is varied, depending on which research scientist 
+you interview, as obviously everyone wants their technique to be used 
+in the future. However it seems unlikely that FPGAs will ever fully 
+replace programmable processors, but their concept may be used on 
+other areas of electronics. Most electronic devices, from toasters to 
+video recorders, have a number of integrated circuits on them. In the 
+future, production costs may decrease for electrical items such as 
+these. as many processors could be replaced by a single FPGA and 
+controller chip. It seems evident that a hybrid programmable 
+processor and FPGA will be the most useful set up, and, in 10 years 
+time computers will include a mix of software- programmable hardware 
+and hardware-configurable logic. 
+ 
+This  article is based on information hot off the press of Scientific 
+American - expect it to be in Tomorrow's World around Autumn!! 
+ 
+@{"b"}Bibliography@{"ub"} 
+ 
+Scientific American - June 1997 - "Configurable Computing" 
+ 
+@{"b"}Alan Graham.@{"ub"} 
+  
+ 
+@endnode
+

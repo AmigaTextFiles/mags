@@ -1,0 +1,1408 @@
+<html>
+ <head>
+  <title>Trance</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="14,85,74,105" href="../index.html" alt="Intro">
+  <area shape="rect" coords="90,85,184,105" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="200,85,302,105" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="318,85,430,105" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="442,85,512,105" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="526,85,630,105" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="648,85,746,105" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#113333" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Labo&nbsp;: Trance </font>par&nbsp;<a href="mailto:cdecanini@yahoo.com">Christophe&nbsp;Decanini</a> et <a href="mailto:obligement@free.fr">David&nbsp;Brunet</a></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">1) Présentation</font><br><br>
+
+Trance est l'émulation 68k JIT de MorphOS. JIT signifie une compilation Just In Time. Trance accélère énormément
+l'émulation 68k par rapport à l'émulation classique grâce à un système de cache et à une réutilisation du code
+traduit.<br><br>
+
+Trance a été livré aux utilisateurs beta2 depuis la version 1.4 de MorphOS. Il est activé par défaut, il est
+exécuté depuis la startup-sequence. Pour le désactiver, vous pouvez créer la variable NOTRANCE dans ENV: puis rebooter.
+Pour se faire, entrez dans un shell la ligne "setenv save NOTRANCE 1". Et pour l'activer de nouveau, tapez la
+ligne "delete envarc:NOTRANCE".<br><br>
+
+Trance se compose d'un exécutable situé dans le répertoire C de MorphOS et une librairie dans le tiroir Libs:.
+La version utilisée pour ce test est la 50.5.
+Il existe un moniteur JIT appelé Trancestats qui affiche le nombre d'instructions émulées, le pourcentage de code traduit ainsi
+que le montant de mémoire utilisé par le JIT.<br><br>
+
+J'ai réalisé des tests avec Trancestats pour voir combien de code était émulé et combien de code était traduit.
+Le pourcentage de code traduit varie de 50 à 95%. Plus vous lancez de code similaire, plus le JIT est utilisé.<br><br>
+
+<div align="center">
+<img src="../gfx/trancestats.jpg" border="0" width="373" height="155" alt="Trancestats"><br><br>
+</div>
+
+Le JIT ne se met pas en route forcément dès le lancement d'une application 68k. Il se lance lorsqu'il aperçoit
+qu'un code 68k est utilisé de façon répétitive. Par exemple, le rendu d'une image peut être long pour
+les premières lignes mais s'accélérer par la suite.<br><br>
+
+On sait que la performance et la compatibilité ne sont pas synonymes, il y aura donc quelques compromis.
+Par exemple, pour garantir une vitesse suffisante, l'émulation de la FPU n'est pas exacte. Malgré tout, cela n'affectera
+pas l'utilisateur de tous les jours.<br><br>
+
+<font size="+1" color="#ccbb33">2) Cas pratiques</font><br><br>
+
+Tous ces cas pratiques ont été réalisés sur MorphOS 1.4 et un Pegasos G3/600 MHz. Nous avons testés différents programmes
+qui ont des versions 68k et PPC pour voir comment le JIT se comportait par rapport au code natif. Attention tout de même
+car les tests ont utilisé les versions PowerUP ou WarpUP quand les versions natives MorphOS n'étaient pas disponibles,
+ce qui peut modifier les résultats.<br><br>
+
+<font size="+1" color="#ccbb33">2.1) Tests de performance</font><br><br>
+
+Certains programmes produisent des hits (avec ou sans JIT). Quand cela arrive, les informations de debug sont envoyés
+au port série et ralentissent dramatiquement les tests. Les tests avec AmiGod et SysSpeed ont été exclus pour ces
+raisons.<br><br>
+
+Ces tests de performance dépendent de plusieurs facteurs qui donnent des résultats variables&nbsp;:<br>
+
+<ul>
+<li>Le code 68k à émuler et le code PPC de traduction utilisé pour cela.
+<li>Les composants sur lesquels le programme dépendra le plus (processeur, FPU, cache de mémoire, mémoire).
+<li>Le code 68k et le code natif PPC utilisent différentes optimisations (et ont pu être compilées avec différents compilateurs).
+<li>Certaines applications appellent plus de librairies natives ce qui les rend plus rapides.
+</ul>
+
+Les benchmarks graphiques et pour le disque dur n'ont pas montré de différences notables, que ce soit avec ou sans le JIT.
+Les modules natifs MorphOS (IDE, CGX) font le plus gros du travail. Le peu d'instructions 68k n'ont pas d'impact sur les performances.<br><br>
+
+Pour avoir une idée sur la vitesse du JIT, des comparaisons ont été faites entre l'émulation statique, le JIT et
+le code natif contre un 68060 à 50 MHz.<br><br>
+
+Bytemark et Amigamark ont été utilisés. Ils ont l'avantage d'exister en 68k et en code MorphOS.<br><br>
+
+<b>Émulation statique contre 68060/50 MHz&nbsp;:</b><br><br>
+
+L'utilisation intense du processeur en émulation statique montre, en moyenne, une vitesse qui se situe
+entre 70% et 130% d'un 68060. Or, il y a quelques variations. Par exemple, si le code nécessite des opérations
+mémoire, il peut aller à plus de 400%. Les performances peuvent aussi s'effondrer (moins de 20% de la vitesse
+du 68060) si l'on utilise des programmes de cryptage/décryptage.<br>
+L'émulation FPU est généralement plus rapide que celle du CPU (de 150% à 800%) et peut devenir incroyablement
+rapide quand certaines instructions FPU sont nécessaires (jusqu'à 2200% pour le test Fourier).<br><br>
+
+Plus il y a d'instructions à exécuter, plus l'émulation est lente. À cause des différentes manières
+dont sont codées les applications, les performances de l'émulation statique sont très variables
+d'une application à l'autre.<br><br>
+
+La conclusion est que l'émulation statique, qui fonctionne très bien, ne fournit pas en moyenne un gain de
+vitesse significatif comparé à un 68060 (à l'exception des quelques instructions FPU).<br><br>
+
+<b>JIT contre 68060&nbsp;:</b><br><br>
+
+L'accélération fournie par le JIT est beaucoup plus fréquente que l'émulation statique.
+Cela tourne, en moyenne, de 5 à 11 fois la vitesse du 68060 (alors que l'émulation statique
+va de 0.17 à 4 fois).<br>
+Alors qu'il fait tourner le code 68k beaucoup plus vite, le JIT demeure affecté par le type de code
+qu'il exécute tout comme l'émulation statique. Par exemple, le cryptage/décryptage est 4 fois plus rapide
+qu'un 68060. C'est vraiment très rapide si l'on considère que l'émulation statique fait tourner le même
+code à seulement 20% de la vitesse du 68060 (le JIT est 20 fois plus rapide) mais c'est lent comparé
+à l'accélération qu'offre les programmes nécessitant plus d'opérations mémoire (7 à 11 fois la vitesse du 68060).<br>
+L'émulation de la FPU est également plus véloce en moyenne que l'émulation CPU avec des vitesses comprises
+entre 6 et 30 fois celle du 68060 (et jusqu'à 53 fois avec le test Fourier).<br><br>
+
+Le JIT, dans la plupart des cas, vous donnera une grande accélération par rapport à un système sur 68060.
+Les résultats parlent d'eux-mêmes et montrent combien il est important d'avoir un JIT optimisé à la place
+d'une émulation statique. Pour sa fréquence, le 68060 est un processeur puissant pour les calculs
+sur les entiers mais faible pour les calculs en virgule flottante. En émulation sur un G3, l'émulation
+FPU est fortement accélérée.<br><br>
+
+<b>JIT contre code natif&nbsp;:</b><br><br>
+
+Comparer les vitesses du JIT à celles des versions natives est un bon moyen de mesurer les performances du JIT et comprendre
+ce qui affecte ses performances.<br><br>
+
+Les résultats sont extrèmement variables. Selon ce qui est exécuté, le JIT est entre 20% et 80% de la vitesse du code natif.
+Par exemple, le JIT a de faibles performances dans les opérations de crypatge/décryptage (25% de la vitesse en natif)
+et avec libjpeg (16% en écriture, 40% en lecture). Il a de bons résultats pour la compression/décompression (60% de la
+vitesse en natif) et jusqu'à 83% pour le tri de chaines de caractères.<br><br>
+
+Pour la FPU, c'est aussi très variable car la vitesse varie de 23% à 67% de la vitesse en natif.<br><br>
+
+Nous pouvons conclure que même si le JIT est efficace, les ports natifs d'applications gourmandes en CPU
+sont les bienvenus.<br><br>
+
+<b>Note&nbsp;:</b> une nouvelle version d'Amigamark 68k donne de bien meilleurs résultats pour les opérations de
+cryptage et de décryptage. Avec cette version la JIT obtient 53 à 73% de la vitesse de la version
+native. La précédente version était certainement très peu optimisée. Cela montre qu'il est difficile de
+généraliser les résultats de ces tests.<br><br>
+
+<font size="+1" color="#ccbb33">2.2) Applications</font><br><br>
+
+Tout le monde sait que les tests de performances réalisés avec des programmes de tests ne sont pas le meilleur
+moyen pour savoir si un ordinateur est assez rapide pour accomplir une certaine tâche. La meilleure solution
+est de le tester avec les applications que vous utilisez.<br><br>
+
+Nous avons choisi de tester des applications d'Aminet existant en 68k et PPC. Ceci a l'avantage de rendre
+possible les comparaisons avec la version native et de rendre facile les comparaisons avec les autres
+systèmes. Malgré tout, cela limite le nombre d'applications.<br><br>
+
+<b>Lame et Pegase&nbsp;:</b><br>
+Sans Trance, Lame est un peu plus rapide que sur 68060. Le JIT multiplie la vitesse de Lame par 5.
+Cela semble bon au premier regard mais ce n'est que 23% de la vitesse de la version native PowerUP.<br>
+Pegase donne des résultats très similaires exepté pour la version native qui n'est pas beaucoup
+plus rapide par rapport à Trance. On peut donc penser que Pegase 68k est extrèmement optimisé en comparaison
+de sa version PPC.<br><br>
+
+<b>Wildfire 7&nbsp;:</b><br>
+Wildfire est un cas particulier ici. Il est constitué d'une interface principale (68k) et de modules
+de rendu (68k ou PPC selon disponibilité). Pour ces raisons, comparer les vitesses en JIT et en natif
+n'a pas pas beaucoup de sens puisque la plupart des opérateurs de scripts sont en 68k.<br>
+Ce fut un test très intéressant pour moi puisqu'il m'a permis de découvrir un problème dont je n'étais pas
+au courant&nbsp;: les problèmes de synchronisation de tâches.<br>
+Quand on lance les modules de rendu PPC avec l'interface 68k (Trance activé), il se peut qu'il y ait des problèmes
+entre les tâches. Cela peut tourner pendant un moment et puis une désynchronisation peut faire qu'une tâche
+attende une autre tâche alors que l'autre est déjà faite.<br>
+Avec le JIT désactivé et en utilisant les modules de rendu 68k, la vitesse moyenne de Wildfire est de 1 à 2 fois celle d'un
+68060. Avec le JIT activé, Wildfire est 5 à 10 fois plus rapide qu'un 68060.
+Le JIT fournit 2.67 à 7 fois la vitesse de l'émulation statique. La moyenne tourne autour de 5 fois.
+Avec le JIT activé et l'utilisation mixée de modules de rendu 68k et PPC, Wildfire est alors 5 à 16 fois
+plus véloce que le 68060. Malgré tout, dans ce mode mixte, on peut gagner du temps mais les quelques secondes
+que vous aurez économisées en utilisant le PPC seront gâchées par le fait de redémarrer Wildfire si vous rencontrez
+le problème de synchronisation de tâches.<br><br>
+
+<b>LHA&nbsp;:</b><br>
+(l'archivage et l'extraction ont été faites de la RAM à la RAM).
+Avec la simple émulation statique, LHA est 10% à 25% plus rapide que sur 68060. Trance élève le niveau
+à 5.67 fois la vitesse du 68060 pour l'archivage mais seulement 2.14 fois pour le désarchivage.<br>
+La version native de LHA est 15 fois plus véloce pour l'archivage et 9 fois pour le désarchivage.
+Trance atteind 25% à 35% de la vitesse de la version native.<br><br>
+
+<b>Turbo Calc&nbsp;:</b><br>
+Les tris dans un tableur prennent en compte la vitesse du processeur mais aussi celle de la mémoire.
+Pour un tri d'un tableau contenant 5823 lignes et 11 colonnes, l'émulation statique met 131 secondes
+tandis qu'avec Trance, ce même tri met 16.50 secondes soit 7.9 fois plus vite. Le format spécifique de
+Turbo Calc n'est pas très optimisé&nbsp;: une convertion du tableau au format Excel 5 permet de voir
+une accélération de facteur 4. Donc si un jour un tableur optimisé et natif PowerPC arrive sur MorphOS,
+le tri de gros tableau se fera quasi instantanément.<br><br>
+
+<b>Nightlong&nbsp;:</b><br>
+L'un des tous meilleurs jeux d'aventure de l'Amiga possède une version 68k qui est quasiment
+inutilisable sur 68040 et moins. La version PowerPC est parfaite point de vue vitesse et nous allons
+donc nous attarder sur la version 68k. En émulation classique, MorphOS fait tourner Nightlong de façon
+assez moyenne, mais c'est bien mieux que sous 68040&nbsp;! Le personnage est parfois lent, le déplacement
+du curseur est souvent saccadé, les animations ne sont pas fluides et le préchargement des scènes
+cinématiques est bien long. Trance permet à Nightlong 68k de rivaliser de vitesse avec la version PPC,
+le curseur se déplace rapidement, les chargements sont rapides, il n'y a que les animations qui souffrent
+d'une fluidité douteuse mais c'est un problème inhérent à Nightlong lui-même, pas à Trance. Le jeu original
+plantait parfois et c'est aussi le cas avec Trance, mais dans une moindre mesure.<br><br>
+
+<b>Alien Breed 3D 2&nbsp;:</b><br>
+Grâce au patch RTG/AHI disponible sur Aminet, Alien Breed 3D 2 était utilisable sur les
+Amiga équipés de carte graphique. Bonne surprise, ce jeu de Team 17 est aussi compatible avec MorphOS sur
+Pegasos&nbsp;! En lançant le jeu la première fois, Trance ne se met pas systématiquement en route. L'animation
+est fluide (15 images par seconde) en plein écran mais dès qu'un nouveau tableau est chargé (ou qu'on lance
+AB3D2 une seconde fois), Trance est activé et propulse l'animation à 50 fps, soit le maximum possible pour 
+ce jeu&nbsp;! A sa sortie, Alien Breed 3D 2 avait été jugé trop lent et il n'était vraiment jouable que sur
+68060. Maintenant, le jeu a vieilli mais demeure certainement le plus abouti dans le genre "ambiance oppressante"
+et c'est le bon moment de le (re)découvrir avec une telle vitesse. Seul regret concernant l'utilisation de Trance,
+les ombres et les différents jeux de lumières sont désactivés, c'est assez dommage surtout quand on sait que
+c'est un gros point fort d'Alien Breed 3D 2.<br><br>
+
+<b>Duke Nukem&nbsp;:</b><br>
+Récemment porté sur AmigaOS et MorphOS, l'ancienne vedette des jeux d'action avec vue subjective
+n'a pas vraiment une version 68k optimisée. Le menu est peu réactif et le jeu rame (5 à 6 fps), même avec des graphismes
+peu détaillés. Trance permet d'amener l'animation à un niveau beaucoup plus fluide&nbsp;: on flirte avec les 40-50 fps
+(640x480, détail au max) ce qui est presque au niveau de la version native MorphOS (60 fps). Aucun trouble de compatibilité
+n'a été remarqué quand Duke Nukem est lancé avec Trance.<br><br>
+
+<b>Feeble Files&nbsp;:</b><br>
+Avec une émulation interprétée, Feeble Files est plus rapide que sur 68k. Avec Trance, la
+vitesse d'animation n'a pas grand chose de plus, tout est déjà bien fluide, sauf le déplacement du curseur.
+Notons que cette lenteur est aussi présente dans la version PowerPC. Du côté de la compatibilité, tout
+semble fonctionner sans le moindre bogue. <br><br>
+
+<b>Software Tycoon&nbsp;:</b><br>
+Le jeu se traine sur 68k et en émulation interprétée. On peut même dire que c'est injouable.
+Trance booste énormément Software Tycoon, il devient d'une légèreté incroyable. La version 68k a des graphismes
+en 8 bits et celle de MorphOS sont en 16 bits et on remarque que la version 68k avec Trance activée dépasse en
+vitesse la version native MorphOS. Mais je crains que ce tout petit écart de fluidité se soit pas assez décisif
+pour les possesseurs de Pegasos qui resteront évidemment sur la version MorphOS bien plus jolie et suffisemment
+rapide. Là encore, Trance fait bien son boulot et tout marche nickel.<br><br>
+
+<b>Tales Of Tamar&nbsp;:</b><br>
+Ne nécessitant pas une grosse config, Tales Of Tamar n'aura en théorie peu de gain avec Trance.
+Dans la pratique, cela se justifie, on a seulement droit à une légère amélioration du point de vue de la réactivité.
+Les quelques bogues de la version originale lorsqu'elle tourne sur MorphOS ne sont pas fixés avec Trance (on plante plus
+vite&nbsp;;-).<br><br>
+
+<b>Fields Of Battle&nbsp;:</b><br>
+Dans ce jeu, aucune animation n'est à gérer ni aucun effet 3D. Le processeur calcul uniquement
+les différents tours des joueurs utilisés par l'ordinateur (intelligence artificielle). Le ratio entre
+Trance activé/désactivé est de l'ordre de 3 à 6 selon les phases. Fields Of Battle est proposée en plusieurs
+versions selon le processeur, et on remarque que la version 68060 tourne, en moyenne, 1.5 fois plus
+vite que la version 68020 sans FPU, toutes les deux avec Trance activé. La compatibilité, quant à elle,
+ne souffre d'aucun défaut.<br><br>
+
+<b>Foundation&nbsp;:</b><br>
+Sur MorphOS 1.3, ce jeu de stratégie mettait un temps interminable pour se charger, la seule
+explication venait du fait que Foundation charge énormément de fichiers compressés et qu'il doit naturellement
+les décompacter au début de chaque niveau&nbsp;: l'attente prennait plusieurs minutes&nbsp;! Avec MorphOS 1.4 et sans
+Trance, c'est bien mieux&nbsp;: 19 secondes pour charger le premier niveau. Par contre, l'animation reste
+saccadée en 640x480. La mise en route de Trance permet de gagner très légèrement en vitesse&nbsp;: 18 secondes
+pour le chargement du premier niveau et animation un poil plus rapide mais encore insuffisant pour jouer
+confortablement. Le pire dans tout ça, c'est que Foundation tourne super bien sur Amithlon (machine de test&nbsp;:
+PC Athlon à 1.4 GHz) et même en 1024x768&nbsp;! Trance a trouver là un jeu qui lui résiste. De plus, avec cette émulation
+JIT, un bogue génant apparait&nbsp;: on ne peut plus accéder au petit panel de base durant le jeu.<br><br>
+
+<font size="+1" color="#ccbb33">3) Résultats des courses</font><br><br>
+
+Mesurer l'efficacité de Trance est difficile car il dépend de plusieurs paramètres. L'émulation statique
+est un peu plus rapide qu'un 68060. Dans la plupart des cas, le JIT donne, en moyenne, 5 fois la vitesse
+de l'émulation statique. Un utilisateur qui lance exclusivement des programmes 68k aura une accélération globale
+plus rapide car la plupart des applications utilisent des composants natifs de l'OS. En outre, Trance
+est rarement proche de la vitesse des versions natives MorphOS. Si une version PPC (MorphOS, PowerUP, MorphOS)
+d'une application est disponible, c'est elle qu'il faudra choisir en priorité et non la version 68k avec Trance.
+Et pour les rares applications 68k qui ne se lancent pas avec Trance (dans ce cas, envoyez un report de bogue à la MorphOS
+Team), il a toujours le recours à l'émulation statique.<br><br>
+
+<font size="+1" color="#ccbb33">Annexe</font><br><br>
+
+Voici le tableau récapitulatif de différents tests de rapidité sous émulation statique <font color="#ccbb33"><b>(Sta)</b></font>,
+émulation JIT <font color="#ccbb33"><b>(JIT)</b></font>, natif <font color="#ccbb33"><b>(Nat)</b></font> et 68060 à 50 MHz
+<font color="#ccbb33"><b>(060)</b></font>.<br><br>
+
+<table width="100%" border="1" align="center" bgcolor="#222222" cellspacing="1" cellpadding="1">
+<tr><td align=right><font size="-1"></td>
+<td align=center><font size="-1" color="#ccbb33"><b>Sta</b></td>
+<td align=center><font size="-1" color="#ccbb33"><b>JIT</b></td>
+<td align=center><font size="-1" color="#ccbb33"><b>Nat</b></td>
+<td align=center><font size="-1" color="#ccbb33"><b>060</b></td>
+<td></td>
+<td align=center><font size="-1" color="#ccbb33"><b>JIT/Sta</b></td>
+<td align=center><font size="-1" color="#ccbb33"><b>JIT/Nat</b></td>
+<td align=center><font size="-1" color="#ccbb33"><b>Sta/060</b></td>
+<td align=center><font size="-1" color="#ccbb33"><b>JIT/060</b></td>
+<td align=center><font size="-1" color="#ccbb33"><b>Nat/060</b></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>Bytemark (020-881 for 68k and emu)</B></td>
+</tr>
+<tr><td align=left><font size="-1">Numeric sort (CPU)</td>
+<td align=right><font size="-1">12,06</td>
+<td align=right><font size="-1">137,2</td>
+<td align=right><font size="-1">247</td>
+<td align=right><font size="-1">19,3</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>11,38</I></td>
+<td align=right><font size="-1"><I>0,56</I></td>
+<td align=right><font size="-1"><I>0,62</I></td>
+<td align=right><font size="-1"><I>7,11</I></td>
+<td align=right><font size="-1"><I>12,80</I></tr>
+<tr><td align=left><font size="-1">String sort (MEM)</td>
+<td align=right><font size="-1">4,37</td>
+<td align=right><font size="-1">9,97</td>
+<td align=right><font size="-1">12</td>
+<td align=right><font size="-1">0,95</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,28</I></td>
+<td align=right><font size="-1"><I>0,83</I></td>
+<td align=right><font size="-1"><I>4,60</I></td>
+<td align=right><font size="-1"><I>10,49</I></td>
+<td align=right><font size="-1"><I>12,63</I></tr>
+<tr><td align=left><font size="-1">Bitfield (MEM)</td>
+<td align=right><font size="-1">2853472</td>
+<td align=right><font size="-1">43790191</td>
+<td align=right><font size="-1">85380436</td>
+<td align=right><font size="-1">6616861</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>15,35</I></td>
+<td align=right><font size="-1"><I>0,51</I></td>
+<td align=right><font size="-1"><I>0,43</I></td>
+<td align=right><font size="-1"><I>6,62</I></td>
+<td align=right><font size="-1"><I>12,90</I></tr>
+<tr><td align=left><font size="-1">FPU emu (CPU)</td>
+<td align=right><font size="-1">1,29</td>
+<td align=right><font size="-1">8,1</td>
+<td align=right><font size="-1">306</td>
+<td align=right><font size="-1">1,11</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>6,28</I></td>
+<td align=right><font size="-1"><I>0,03</I></td>
+<td align=right><font size="-1"><I>1,16</I></td>
+<td align=right><font size="-1"><I>7,30</I></td>
+<td align=right><font size="-1"><I>275,68</I></tr>
+<tr><td align=left><font size="-1">Fourier (CPU)</td>
+<td align=right><font size="-1">2800</td>
+<td align=right><font size="-1">6708,7</td>
+<td align=right><font size="-1">11611</td>
+<td align=right><font size="-1">126,44</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,40</I></td>
+<td align=right><font size="-1"><I>0,58</I></td>
+<td align=right><font size="-1"><I>22,14</I></td>
+<td align=right><font size="-1"><I>53,06</I></td>
+<td align=right><font size="-1"><I>91,83</I></tr>
+<tr><td align=left><font size="-1">Assignment (MEM)</td>
+<td align=right><font size="-1">0,12</td>
+<td align=right><font size="-1">1,9</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">0,16</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>15,83</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,75</I></td>
+<td align=right><font size="-1"><I>11,88</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td align=left><font size="-1">Idea (MEM)</td>
+<td align=right><font size="-1">34,03</td>
+<td align=right><font size="-1">203,92</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">32,8</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,99</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>1,04</I></td>
+<td align=right><font size="-1"><I>6,22</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td align=left><font size="-1">Huffman (Mix)</td>
+<td align=right><font size="-1">17,12</td>
+<td align=right><font size="-1">147,39</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">16,45</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>8,61</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>1,04</I></td>
+<td align=right><font size="-1"><I>8,96</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td align=left><font size="-1">Neural net (FPU)</td>
+<td align=right><font size="-1">0,33</td>
+<td align=right><font size="-1">1,49</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">0,16</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>4,52</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>2,06</I></td>
+<td align=right><font size="-1"><I>9,31</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td align=left><font size="-1">LU decomposition (FPU)</td>
+<td align=right><font size="-1">10,73</td>
+<td align=right><font size="-1">45,49</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">7,4</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>4,24</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>1,45</I></td>
+<td align=right><font size="-1"><I>6,15</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>Amigamark</B></td>
+</tr>
+<tr><td align=left><font size="-1">Bogomips</td>
+<td align=right><font size="-1">70,6</td>
+<td align=right><font size="-1">480</td>
+<td align=right><font size="-1">1200</td>
+<td align=right><font size="-1">99,41</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>6,80</I></td>
+<td align=right><font size="-1"><I>0,40</I></td>
+<td align=right><font size="-1"><I>0,71</I></td>
+<td align=right><font size="-1"><I>4,83</I></td>
+<td align=right><font size="-1"><I>12,07</I></tr>
+<tr><td align=left><font size="-1">Dhrystones</td>
+<td align=right><font size="-1">60877</td>
+<td align=right><font size="-1">441044</td>
+<td align=right><font size="-1">829627</td>
+<td align=right><font size="-1">90142</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>7,24</I></td>
+<td align=right><font size="-1"><I>0,53</I></td>
+<td align=right><font size="-1"><I>0,68</I></td>
+<td align=right><font size="-1"><I>4,89</I></td>
+<td align=right><font size="-1"><I>9,20</I></tr>
+<tr><td align=left><font size="-1">FiboMHz</td>
+<td align=right><font size="-1">38,04</td>
+<td align=right><font size="-1">136,53</td>
+<td align=right><font size="-1">321,28</td>
+<td align=right><font size="-1">28,09</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>3,59</I></td>
+<td align=right><font size="-1"><I>0,42</I></td>
+<td align=right><font size="-1"><I>1,35</I></td>
+<td align=right><font size="-1"><I>4,86</I></td>
+<td align=right><font size="-1"><I>11,44</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>LibJPEG</B></td>
+</tr>
+<tr><td align=left><font size="-1">Writing RGB</td>
+<td align=right><font size="-1">5,28</td>
+<td align=right><font size="-1">34,4</td>
+<td align=right><font size="-1">179,63</td>
+<td align=right><font size="-1">7,04</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>6,52</I></td>
+<td align=right><font size="-1"><I>0,19</I></td>
+<td align=right><font size="-1"><I>0,75</I></td>
+<td align=right><font size="-1"><I>4,89</I></td>
+<td align=right><font size="-1"><I>25,52</I></tr>
+<tr><td align=left><font size="-1">Reading RGB</td>
+<td align=right><font size="-1">11,79</td>
+<td align=right><font size="-1">134,42</td>
+<td align=right><font size="-1">309,27</td>
+<td align=right><font size="-1">16</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>11,40</I></td>
+<td align=right><font size="-1"><I>0,43</I></td>
+<td align=right><font size="-1"><I>0,74</I></td>
+<td align=right><font size="-1"><I>8,40</I></td>
+<td align=right><font size="-1"><I>19,33</I></tr>
+<tr><td align=left><font size="-1">Writing YUV</td>
+<td align=right><font size="-1">6,23</td>
+<td align=right><font size="-1">35,45</td>
+<td align=right><font size="-1">205,9</td>
+<td align=right><font size="-1">7,85</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,69</I></td>
+<td align=right><font size="-1"><I>0,17</I></td>
+<td align=right><font size="-1"><I>0,79</I></td>
+<td align=right><font size="-1"><I>4,52</I></td>
+<td align=right><font size="-1"><I>26,23</I></tr>
+<tr><td align=left><font size="-1">Reading YUV</td>
+<td align=right><font size="-1">11,71</td>
+<td align=right><font size="-1">134,34</td>
+<td align=right><font size="-1">308,97</td>
+<td align=right><font size="-1">16,09</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>11,47</I></td>
+<td align=right><font size="-1"><I>0,43</I></td>
+<td align=right><font size="-1"><I>0,73</I></td>
+<td align=right><font size="-1"><I>8,35</I></td>
+<td align=right><font size="-1"><I>19,20</I></tr>
+<tr><td align=left><font size="-1">Writing CMYK</td>
+<td align=right><font size="-1">2,52</td>
+<td align=right><font size="-1">13,9</td>
+<td align=right><font size="-1">90,53</td>
+<td align=right><font size="-1">3,15</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,52</I></td>
+<td align=right><font size="-1"><I>0,15</I></td>
+<td align=right><font size="-1"><I>0,80</I></td>
+<td align=right><font size="-1"><I>4,41</I></td>
+<td align=right><font size="-1"><I>28,74</I></tr>
+<tr><td align=left><font size="-1">Reading CMYK</td>
+<td align=right><font size="-1">11,22</td>
+<td align=right><font size="-1">87,14</td>
+<td align=right><font size="-1">224,79</td>
+<td align=right><font size="-1">13,54</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>7,77</I></td>
+<td align=right><font size="-1"><I>0,39</I></td>
+<td align=right><font size="-1"><I>0,83</I></td>
+<td align=right><font size="-1"><I>6,44</I></td>
+<td align=right><font size="-1"><I>16,60</I></tr>
+<tr><td align=left><font size="-1">Writing YCCK</td>
+<td align=right><font size="-1">3,88</td>
+<td align=right><font size="-1">21,68</td>
+<td align=right><font size="-1">134,08</td>
+<td align=right><font size="-1">4,81</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,59</I></td>
+<td align=right><font size="-1"><I>0,16</I></td>
+<td align=right><font size="-1"><I>0,81</I></td>
+<td align=right><font size="-1"><I>4,51</I></td>
+<td align=right><font size="-1"><I>27,88</I></tr>
+<tr><td align=left><font size="-1">Reading YCCK</td>
+<td align=right><font size="-1">9,62</td>
+<td align=right><font size="-1">96,76</td>
+<td align=right><font size="-1">225,49</td>
+<td align=right><font size="-1">12,07</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>10,06</I></td>
+<td align=right><font size="-1"><I>0,43</I></td>
+<td align=right><font size="-1"><I>0,80</I></td>
+<td align=right><font size="-1"><I>8,02</I></td>
+<td align=right><font size="-1"><I>18,68</I></tr>
+<tr><td align=left><font size="-1">Writing GRAYSC</td>
+<td align=right><font size="-1">9,97</td>
+<td align=right><font size="-1">55,36</td>
+<td align=right><font size="-1">353,09</td>
+<td align=right><font size="-1">12,72</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,55</I></td>
+<td align=right><font size="-1"><I>0,16</I></td>
+<td align=right><font size="-1"><I>0,78</I></td>
+<td align=right><font size="-1"><I>4,35</I></td>
+<td align=right><font size="-1"><I>27,76</I></tr>
+<tr><td align=left><font size="-1">Reading GRAYSC</td>
+<td align=right><font size="-1">47,75</td>
+<td align=right><font size="-1">341,19</td>
+<td align=right><font size="-1">949,18</td>
+<td align=right><font size="-1">59,16</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>7,15</I></td>
+<td align=right><font size="-1"><I>0,36</I></td>
+<td align=right><font size="-1"><I>0,81</I></td>
+<td align=right><font size="-1"><I>5,77</I></td>
+<td align=right><font size="-1"><I>16,04</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td align=left><font size="-1">Mars chiper</td>
+<td align=right><font size="-1">0,35</td>
+<td align=right><font size="-1">4,68</td>
+<td align=right><font size="-1">23,2</td>
+<td align=right><font size="-1">2,08</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>13,37</I></td>
+<td align=right><font size="-1"><I>0,20</I></td>
+<td align=right><font size="-1"><I>0,17</I></td>
+<td align=right><font size="-1"><I>2,25</I></td>
+<td align=right><font size="-1"><I>11,15</I></tr>
+<tr><td align=left><font size="-1">Encrypting</td>
+<td align=right><font size="-1">1,89</td>
+<td align=right><font size="-1">41,36</td>
+<td align=right><font size="-1">158,18</td>
+<td align=right><font size="-1">10,03</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>21,88</I></td>
+<td align=right><font size="-1"><I>0,26</I></td>
+<td align=right><font size="-1"><I>0,19</I></td>
+<td align=right><font size="-1"><I>4,12</I></td>
+<td align=right><font size="-1"><I>15,77</I></tr>
+<tr><td align=left><font size="-1">Decrypting</td>
+<td align=right><font size="-1">1,89</td>
+<td align=right><font size="-1">42,53</td>
+<td align=right><font size="-1">160,5</td>
+<td align=right><font size="-1">10,47</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>22,50</I></td>
+<td align=right><font size="-1"><I>0,26</I></td>
+<td align=right><font size="-1"><I>0,18</I></td>
+<td align=right><font size="-1"><I>4,06</I></td>
+<td align=right><font size="-1"><I>15,33</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td align=left><font size="-1">MD5 checksuming</td>
+<td align=right><font size="-1">14,41</td>
+<td align=right><font size="-1">231,38</td>
+<td align=right><font size="-1">342,71</td>
+<td align=right><font size="-1">26,59</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>16,06</I></td>
+<td align=right><font size="-1"><I>0,68</I></td>
+<td align=right><font size="-1"><I>0,54</I></td>
+<td align=right><font size="-1"><I>8,70</I></td>
+<td align=right><font size="-1"><I>12,89</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>Serpent cipher</B></td>
+</tr>
+<tr><td align=left><font size="-1">Encryting</td>
+<td align=right><font size="-1">0,83</td>
+<td align=right><font size="-1">18,67</td>
+<td align=right><font size="-1">78,93</td>
+<td align=right><font size="-1">4,41</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>22,49</I></td>
+<td align=right><font size="-1"><I>0,24</I></td>
+<td align=right><font size="-1"><I>0,19</I></td>
+<td align=right><font size="-1"><I>4,23</I></td>
+<td align=right><font size="-1"><I>17,90</I></tr>
+<tr><td align=left><font size="-1">Decrypting</td>
+<td align=right><font size="-1">0,9</td>
+<td align=right><font size="-1">19,46</td>
+<td align=right><font size="-1">79,83</td>
+<td align=right><font size="-1">4,69</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>21,62</I></td>
+<td align=right><font size="-1"><I>0,24</I></td>
+<td align=right><font size="-1"><I>0,19</I></td>
+<td align=right><font size="-1"><I>4,15</I></td>
+<td align=right><font size="-1"><I>17,02</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>Zlib functions (v1.1.4)</B></td>
+</tr>
+<tr><td align=left><font size="-1">Def (def compr - def strat)</td>
+<td align=right><font size="-1">0,16</td>
+<td align=right><font size="-1">1,62</td>
+<td align=right><font size="-1">2,76</td>
+<td align=right><font size="-1">0,15</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>10,12</I></td>
+<td align=right><font size="-1"><I>0,59</I></td>
+<td align=right><font size="-1"><I>1,07</I></td>
+<td align=right><font size="-1"><I>10,80</I></td>
+<td align=right><font size="-1"><I>18,40</I></tr>
+<tr><td align=left><font size="-1">Inf (def compr - def strat)</td>
+<td align=right><font size="-1">1,01</td>
+<td align=right><font size="-1">9,61</td>
+<td align=right><font size="-1">16,47</td>
+<td align=right><font size="-1">1,23</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>9,51</I></td>
+<td align=right><font size="-1"><I>0,58</I></td>
+<td align=right><font size="-1"><I>0,82</I></td>
+<td align=right><font size="-1"><I>7,81</I></td>
+<td align=right><font size="-1"><I>13,39</I></tr>
+<tr><td align=left><font size="-1">Def (best speed - def strat)</td>
+<td align=right><font size="-1">0,17</td>
+<td align=right><font size="-1">1,75</td>
+<td align=right><font size="-1">3,07</td>
+<td align=right><font size="-1">0,17</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>10,29</I></td>
+<td align=right><font size="-1"><I>0,57</I></td>
+<td align=right><font size="-1"><I>1,00</I></td>
+<td align=right><font size="-1"><I>10,29</I></td>
+<td align=right><font size="-1"><I>18,06</I></tr>
+<tr><td align=left><font size="-1">Inf (best speed - def strat)</td>
+<td align=right><font size="-1">0,99</td>
+<td align=right><font size="-1">9,51</td>
+<td align=right><font size="-1">16,31</td>
+<td align=right><font size="-1">1,18</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>9,61</I></td>
+<td align=right><font size="-1"><I>0,58</I></td>
+<td align=right><font size="-1"><I>0,84</I></td>
+<td align=right><font size="-1"><I>8,06</I></td>
+<td align=right><font size="-1"><I>13,82</I></tr>
+<tr><td align=left><font size="-1">Def (best compr - def strat)</td>
+<td align=right><font size="-1">0,16</td>
+<td align=right><font size="-1">1,62</td>
+<td align=right><font size="-1">2,76</td>
+<td align=right><font size="-1">0,15</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>10,12</I></td>
+<td align=right><font size="-1"><I>0,59</I></td>
+<td align=right><font size="-1"><I>1,07</I></td>
+<td align=right><font size="-1"><I>10,80</I></td>
+<td align=right><font size="-1"><I>18,40</I></tr>
+<tr><td align=left><font size="-1">Inf (best compr - def strat)</td>
+<td align=right><font size="-1">1,01</td>
+<td align=right><font size="-1">9,61</td>
+<td align=right><font size="-1">16,46</td>
+<td align=right><font size="-1">1,28</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>9,51</I></td>
+<td align=right><font size="-1"><I>0,58</I></td>
+<td align=right><font size="-1"><I>0,79</I></td>
+<td align=right><font size="-1"><I>7,51</I></td>
+<td align=right><font size="-1"><I>12,86</I></tr>
+<tr><td align=left><font size="-1">Def (def compr - filtered)</td>
+<td align=right><font size="-1">0,16</td>
+<td align=right><font size="-1">1,62</td>
+<td align=right><font size="-1">2,77</td>
+<td align=right><font size="-1">0,17</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>10,12</I></td>
+<td align=right><font size="-1"><I>0,58</I></td>
+<td align=right><font size="-1"><I>0,94</I></td>
+<td align=right><font size="-1"><I>9,53</I></td>
+<td align=right><font size="-1"><I>16,29</I></tr>
+<tr><td align=left><font size="-1">Inf (def compr - filtered)</td>
+<td align=right><font size="-1">1,02</td>
+<td align=right><font size="-1">9,75</td>
+<td align=right><font size="-1">16,59</td>
+<td align=right><font size="-1">1,18</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>9,56</I></td>
+<td align=right><font size="-1"><I>0,59</I></td>
+<td align=right><font size="-1"><I>0,86</I></td>
+<td align=right><font size="-1"><I>8,26</I></td>
+<td align=right><font size="-1"><I>14,06</I></tr>
+<tr><td align=left><font size="-1">Def (best speed - filtered)</td>
+<td align=right><font size="-1">0,17</td>
+<td align=right><font size="-1">1,75</td>
+<td align=right><font size="-1">3,07</td>
+<td align=right><font size="-1">0,15</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>10,29</I></td>
+<td align=right><font size="-1"><I>0,57</I></td>
+<td align=right><font size="-1"><I>1,13</I></td>
+<td align=right><font size="-1"><I>11,67</I></td>
+<td align=right><font size="-1"><I>20,47</I></tr>
+<tr><td align=left><font size="-1">Inf (best speed - filtered)</td>
+<td align=right><font size="-1">0,99</td>
+<td align=right><font size="-1">9,54</td>
+<td align=right><font size="-1">16,31</td>
+<td align=right><font size="-1">1,28</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>9,64</I></td>
+<td align=right><font size="-1"><I>0,58</I></td>
+<td align=right><font size="-1"><I>0,77</I></td>
+<td align=right><font size="-1"><I>7,45</I></td>
+<td align=right><font size="-1"><I>12,74</I></tr>
+<tr><td align=left><font size="-1">Def (best compr - filtered)</td>
+<td align=right><font size="-1">0,16</td>
+<td align=right><font size="-1">1,62</td>
+<td align=right><font size="-1">2,77</td>
+<td align=right><font size="-1">0,21</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>10,12</I></td>
+<td align=right><font size="-1"><I>0,58</I></td>
+<td align=right><font size="-1"><I>0,76</I></td>
+<td align=right><font size="-1"><I>7,71</I></td>
+<td align=right><font size="-1"><I>13,19</I></tr>
+<tr><td align=left><font size="-1">Inf (best compr - filtered)</td>
+<td align=right><font size="-1">1,02</td>
+<td align=right><font size="-1">9,78</td>
+<td align=right><font size="-1">16,6</td>
+<td align=right><font size="-1">1,28</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>9,59</I></td>
+<td align=right><font size="-1"><I>0,59</I></td>
+<td align=right><font size="-1"><I>0,80</I></td>
+<td align=right><font size="-1"><I>7,64</I></td>
+<td align=right><font size="-1"><I>12,97</I></tr>
+<tr><td align=left><font size="-1">Def (def compr - huffman)</td>
+<td align=right><font size="-1">0,23</td>
+<td align=right><font size="-1">2,57</td>
+<td align=right><font size="-1">4,01</td>
+<td align=right><font size="-1">0,25</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>11,17</I></td>
+<td align=right><font size="-1"><I>0,64</I></td>
+<td align=right><font size="-1"><I>0,92</I></td>
+<td align=right><font size="-1"><I>10,28</I></td>
+<td align=right><font size="-1"><I>16,04</I></tr>
+<tr><td align=left><font size="-1">Inf (def compr - huffman)</td>
+<td align=right><font size="-1">1,02</td>
+<td align=right><font size="-1">9,76</td>
+<td align=right><font size="-1">16,6</td>
+<td align=right><font size="-1">1,28</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>9,57</I></td>
+<td align=right><font size="-1"><I>0,59</I></td>
+<td align=right><font size="-1"><I>0,80</I></td>
+<td align=right><font size="-1"><I>7,63</I></td>
+<td align=right><font size="-1"><I>12,97</I></tr>
+<tr><td align=left><font size="-1">Def (best speed - huffman)</td>
+<td align=right><font size="-1">0,24</td>
+<td align=right><font size="-1">2,74</td>
+<td align=right><font size="-1">4,52</td>
+<td align=right><font size="-1">0,25</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>11,42</I></td>
+<td align=right><font size="-1"><I>0,61</I></td>
+<td align=right><font size="-1"><I>0,96</I></td>
+<td align=right><font size="-1"><I>10,96</I></td>
+<td align=right><font size="-1"><I>18,08</I></tr>
+<tr><td align=left><font size="-1">Inf (best speed - huffman)</td>
+<td align=right><font size="-1">1,02</td>
+<td align=right><font size="-1">9,76</td>
+<td align=right><font size="-1">16,61</td>
+<td align=right><font size="-1">1,28</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>9,57</I></td>
+<td align=right><font size="-1"><I>0,59</I></td>
+<td align=right><font size="-1"><I>0,80</I></td>
+<td align=right><font size="-1"><I>7,63</I></td>
+<td align=right><font size="-1"><I>12,98</I></tr>
+<tr><td align=left><font size="-1">Def (best compr - huffman)</td>
+<td align=right><font size="-1">0,23</td>
+<td align=right><font size="-1">2,57</td>
+<td align=right><font size="-1">4,01</td>
+<td align=right><font size="-1">0,22</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>11,17</I></td>
+<td align=right><font size="-1"><I>0,64</I></td>
+<td align=right><font size="-1"><I>1,05</I></td>
+<td align=right><font size="-1"><I>11,68</I></td>
+<td align=right><font size="-1"><I>18,23</I></tr>
+<tr><td align=left><font size="-1">Inf (best compr - huffman)</td>
+<td align=right><font size="-1">1,02</td>
+<td align=right><font size="-1">9,74</td>
+<td align=right><font size="-1">16,59</td>
+<td align=right><font size="-1">1,28</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>9,55</I></td>
+<td align=right><font size="-1"><I>0,59</I></td>
+<td align=right><font size="-1"><I>0,80</I></td>
+<td align=right><font size="-1"><I>7,61</I></td>
+<td align=right><font size="-1"><I>12,96</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>FPU query</B></td>
+</tr>
+<tr><td align=left><font size="-1">Integral df(x)/f(x)</td>
+<td align=right><font size="-1">26,04</td>
+<td align=right><font size="-1">71,67</td>
+<td align=right><font size="-1">168,1</td>
+<td align=right><font size="-1">2,47</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,75</I></td>
+<td align=right><font size="-1"><I>0,43</I></td>
+<td align=right><font size="-1"><I>10,54</I></td>
+<td align=right><font size="-1"><I>29,02</I></td>
+<td align=right><font size="-1"><I>68,06</I></tr>
+<tr><td align=left><font size="-1">PI</td>
+<td align=right><font size="-1">21,7</td>
+<td align=right><font size="-1">59,1</td>
+<td align=right><font size="-1">102,51</td>
+<td align=right><font size="-1">2,42</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,72</I></td>
+<td align=right><font size="-1"><I>0,58</I></td>
+<td align=right><font size="-1"><I>8,97</I></td>
+<td align=right><font size="-1"><I>24,42</I></td>
+<td align=right><font size="-1"><I>42,36</I></tr>
+<tr><td align=left><font size="-1">Integral of sin(x) from 0 to PI/3</td>
+<td align=right><font size="-1">27,98</td>
+<td align=right><font size="-1">75,97</td>
+<td align=right><font size="-1">291,68</td>
+<td align=right><font size="-1">3,43</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,72</I></td>
+<td align=right><font size="-1"><I>0,26</I></td>
+<td align=right><font size="-1"><I>8,16</I></td>
+<td align=right><font size="-1"><I>22,15</I></td>
+<td align=right><font size="-1"><I>85,04</I></tr>
+<tr><td align=left><font size="-1">Integral of cos(x) from 0 to PI/3</td>
+<td align=right><font size="-1">24,48</td>
+<td align=right><font size="-1">73,05</td>
+<td align=right><font size="-1">199,99</td>
+<td align=right><font size="-1">4,18</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,98</I></td>
+<td align=right><font size="-1"><I>0,37</I></td>
+<td align=right><font size="-1"><I>5,86</I></td>
+<td align=right><font size="-1"><I>17,48</I></td>
+<td align=right><font size="-1"><I>47,84</I></tr>
+<tr><td align=left><font size="-1">Integral of tan(x) from 0 to PI/3</td>
+<td align=right><font size="-1">28,55</td>
+<td align=right><font size="-1">70,3</td>
+<td align=right><font size="-1">214,93</td>
+<td align=right><font size="-1">3,31</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,46</I></td>
+<td align=right><font size="-1"><I>0,33</I></td>
+<td align=right><font size="-1"><I>8,63</I></td>
+<td align=right><font size="-1"><I>21,24</I></td>
+<td align=right><font size="-1"><I>64,93</I></tr>
+<tr><td align=left><font size="-1">Integral of sin(x)*cos(x) from 0 to PI/4</td>
+<td align=right><font size="-1">29,82</td>
+<td align=right><font size="-1">79,31</td>
+<td align=right><font size="-1">348,21</td>
+<td align=right><font size="-1">3,57</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,66</I></td>
+<td align=right><font size="-1"><I>0,23</I></td>
+<td align=right><font size="-1"><I>8,35</I></td>
+<td align=right><font size="-1"><I>22,22</I></td>
+<td align=right><font size="-1"><I>97,54</I></tr>
+<tr><td align=left><font size="-1">Int 0 to sa of 1/(x+1), (x/(x*x+1)), x*x/(x*x*x+1)</td>
+<td align=right><font size="-1">15,37</td>
+<td align=right><font size="-1">37,22</td>
+<td align=right><font size="-1">55,43</td>
+<td align=right><font size="-1">2,06</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,42</I></td>
+<td align=right><font size="-1"><I>0,67</I></td>
+<td align=right><font size="-1"><I>7,46</I></td>
+<td align=right><font size="-1"><I>18,07</I></td>
+<td align=right><font size="-1"><I>26,91</I></tr>
+<tr><td align=left><font size="-1">Int sin(x)*cos(x)*cos(x) from 0 to PI/3</td>
+<td align=right><font size="-1">30,49</td>
+<td align=right><font size="-1">81,32</td>
+<td align=right><font size="-1">333,62</td>
+<td align=right><font size="-1">3,44</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,67</I></td>
+<td align=right><font size="-1"><I>0,24</I></td>
+<td align=right><font size="-1"><I>8,86</I></td>
+<td align=right><font size="-1"><I>23,64</I></td>
+<td align=right><font size="-1"><I>96,98</I></tr>
+<tr><td align=left><font size="-1">MFLOPS(1)</td>
+<td align=right><font size="-1">23,42</td>
+<td align=right><font size="-1">63,73</td>
+<td align=right><font size="-1">130,1</td>
+<td align=right><font size="-1">2,67</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,72</I></td>
+<td align=right><font size="-1"><I>0,49</I></td>
+<td align=right><font size="-1"><I>8,77</I></td>
+<td align=right><font size="-1"><I>23,87</I></td>
+<td align=right><font size="-1"><I>48,73</I></tr>
+<tr><td align=left><font size="-1">MFLOPS(2)</td>
+<td align=right><font size="-1">22,13</td>
+<td align=right><font size="-1">56,46</td>
+<td align=right><font size="-1">116,85</td>
+<td align=right><font size="-1">2,79</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,55</I></td>
+<td align=right><font size="-1"><I>0,48</I></td>
+<td align=right><font size="-1"><I>7,93</I></td>
+<td align=right><font size="-1"><I>20,24</I></td>
+<td align=right><font size="-1"><I>41,88</I></tr>
+<tr><td align=left><font size="-1">MFLOPS(3)</td>
+<td align=right><font size="-1">26,49</td>
+<td align=right><font size="-1">69,73</td>
+<td align=right><font size="-1">196,98</td>
+<td align=right><font size="-1">3,2</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,63</I></td>
+<td align=right><font size="-1"><I>0,35</I></td>
+<td align=right><font size="-1"><I>8,28</I></td>
+<td align=right><font size="-1"><I>21,79</I></td>
+<td align=right><font size="-1"><I>61,56</I></tr>
+<tr><td align=left><font size="-1">MFLOPS(4)</td>
+<td align=right><font size="-1">28,65</td>
+<td align=right><font size="-1">78,2</td>
+<td align=right><font size="-1">296,91</td>
+<td align=right><font size="-1">3,58</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,73</I></td>
+<td align=right><font size="-1"><I>0,26</I></td>
+<td align=right><font size="-1"><I>8,00</I></td>
+<td align=right><font size="-1"><I>21,84</I></td>
+<td align=right><font size="-1"><I>82,94</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>FxPaint (IO bench)</B></td>
+</tr>
+<tr><td align=left><font size="-1">I/O load picture</td>
+<td align=right><font size="-1">0,09</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">0,07</td>
+<td align=right><font size="-1">0,16</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,56</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,44</I></tr>
+<tr><td align=left><font size="-1">I/O save picture</td>
+<td align=right><font size="-1">0,74</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">0,06</td>
+<td align=right><font size="-1">0,81</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,91</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,07</I></tr>
+<tr><td align=left><font size="-1">F/X zoomblur</td>
+<td align=right><font size="-1">18,13</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">2,5</td>
+<td align=right><font size="-1">21,39</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,85</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,12</I></tr>
+<tr><td align=left><font size="-1">F/X waves</td>
+<td align=right><font size="-1">120,82</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">5,6</td>
+<td align=right><font size="-1">144,77</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,83</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,04</I></tr>
+<tr><td align=left><font size="-1">F/X lightsource</td>
+<td align=right><font size="-1">16,32</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">3,41</td>
+<td align=right><font size="-1">17,18</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,95</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,20</I></tr>
+<tr><td align=left><font size="-1">F/X pixelise</td>
+<td align=right><font size="-1">3,67</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">0,9</td>
+<td align=right><font size="-1">4,01</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,92</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,22</I></tr>
+<tr><td align=left><font size="-1">MEM: byte fill 100</td>
+<td align=right><font size="-1">1,09</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">0,09</td>
+<td align=right><font size="-1">1,08</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>1,01</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,08</I></tr>
+<tr><td align=left><font size="-1">DRW: Ellipse silent</td>
+<td align=right><font size="-1">11,95</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">3,06</td>
+<td align=right><font size="-1">8,11</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>1,47</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,38</I></tr>
+<tr><td align=left><font size="-1">DRW: Line silent</td>
+<td align=right><font size="-1">4,29</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">1,34</td>
+<td align=right><font size="-1">2,91</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>1,47</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,46</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>Encoder MP2/MP3</B></td>
+</tr>
+<tr><td align=left><font size="-1">Lamebeta 060 -h, Pup, Play/CPU</td>
+<td align=right><font size="-1">0,0988</td>
+<td align=right><font size="-1">0,4938</td>
+<td align=right><font size="-1">2,2423</td>
+<td align=right><font size="-1">0,0773</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,00</I></td>
+<td align=right><font size="-1"><I>0,22</I></td>
+<td align=right><font size="-1"><I>1,28</I></td>
+<td align=right><font size="-1"><I>6,39</I></td>
+<td align=right><font size="-1"><I>29,01</I></tr>
+<tr><td align=left><font size="-1">Pegase (s)</td>
+<td align=right><font size="-1">508</td>
+<td align=right><font size="-1">98</td>
+<td align=right><font size="-1">82</td>
+<td align=right><font size="-1">641</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>0,19</I></td>
+<td align=right><font size="-1"><I>1,20</I></td>
+<td align=right><font size="-1"><I>0,79</I></td>
+<td align=right><font size="-1"><I>0,15</I></td>
+<td align=right><font size="-1"><I>0,13</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>Wildfire 7.14 demo</B></td>
+</tr>
+<tr><td align=left><font size="-1">BalanceGradNet</td>
+<td align=right><font size="-1">21,98</td>
+<td align=right><font size="-1">5,56</td>
+<td align=right><font size="-1">4,76</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>0,25</I></td>
+<td align=right><font size="-1"><I>1,17</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td align=left><font size="-1">Circle</td>
+<td align=right><font size="-1">1,29</td>
+<td align=right><font size="-1">3,43</td>
+<td align=right><font size="-1">4,83</td>
+<td align=right><font size="-1">0,45</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>2,66</I></td>
+<td align=right><font size="-1"><I>0,71</I></td>
+<td align=right><font size="-1"><I>2,87</I></td>
+<td align=right><font size="-1"><I>7,62</I></td>
+<td align=right><font size="-1"><I>10,73</I></tr>
+<tr><td align=left><font size="-1">Cube</td>
+<td align=right><font size="-1">0,05</td>
+<td align=right><font size="-1">0,23</td>
+<td align=right><font size="-1">0,36</td>
+<td align=right><font size="-1">0,03</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>4,60</I></td>
+<td align=right><font size="-1"><I>0,64</I></td>
+<td align=right><font size="-1"><I>1,67</I></td>
+<td align=right><font size="-1"><I>7,67</I></td>
+<td align=right><font size="-1"><I>12,00</I></tr>
+<tr><td align=left><font size="-1">CubeOpen</td>
+<td align=right><font size="-1">0,05</td>
+<td align=right><font size="-1">0,29</td>
+<td align=right><font size="-1">0,54</td>
+<td align=right><font size="-1">0,04</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,80</I></td>
+<td align=right><font size="-1"><I>0,54</I></td>
+<td align=right><font size="-1"><I>1,25</I></td>
+<td align=right><font size="-1"><I>7,25</I></td>
+<td align=right><font size="-1"><I>13,50</I></tr>
+<tr><td align=left><font size="-1">CubeOpen2</td>
+<td align=right><font size="-1">0,05</td>
+<td align=right><font size="-1">0,27</td>
+<td align=right><font size="-1">0,47</td>
+<td align=right><font size="-1">0,04</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,40</I></td>
+<td align=right><font size="-1"><I>0,57</I></td>
+<td align=right><font size="-1"><I>1,25</I></td>
+<td align=right><font size="-1"><I>6,75</I></td>
+<td align=right><font size="-1"><I>11,75</I></tr>
+<tr><td align=left><font size="-1">FeedbackRotate3</td>
+<td align=right><font size="-1">0,34</td>
+<td align=right><font size="-1">1,87</td>
+<td align=right><font size="-1">3,02</td>
+<td align=right><font size="-1">0,31</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,50</I></td>
+<td align=right><font size="-1"><I>0,62</I></td>
+<td align=right><font size="-1"><I>1,10</I></td>
+<td align=right><font size="-1"><I>6,03</I></td>
+<td align=right><font size="-1"><I>9,74</I></tr>
+<tr><td align=left><font size="-1">Genlock3DWave</td>
+<td align=right><font size="-1">0,06</td>
+<td align=right><font size="-1">0,45</td>
+<td align=right><font size="-1">0,78</td>
+<td align=right><font size="-1">0,04</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>7,50</I></td>
+<td align=right><font size="-1"><I>0,58</I></td>
+<td align=right><font size="-1"><I>1,50</I></td>
+<td align=right><font size="-1"><I>11,25</I></td>
+<td align=right><font size="-1"><I>19,50</I></tr>
+<tr><td align=left><font size="-1">ParPlotShadow</td>
+<td align=right><font size="-1">0,2</td>
+<td align=right><font size="-1">1,16</td>
+<td align=right><font size="-1">1,49</td>
+<td align=right><font size="-1">0,16</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,80</I></td>
+<td align=right><font size="-1"><I>0,78</I></td>
+<td align=right><font size="-1"><I>1,25</I></td>
+<td align=right><font size="-1"><I>7,25</I></td>
+<td align=right><font size="-1"><I>9,31</I></tr>
+<tr><td align=left><font size="-1">ParticuleFade</td>
+<td align=right><font size="-1">1,33</td>
+<td align=right><font size="-1">5,34</td>
+<td align=right><font size="-1">6,88</td>
+<td align=right><font size="-1">1,13</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>4,02</I></td>
+<td align=right><font size="-1"><I>0,78</I></td>
+<td align=right><font size="-1"><I>1,18</I></td>
+<td align=right><font size="-1"><I>4,73</I></td>
+<td align=right><font size="-1"><I>6,09</I></tr>
+<tr><td align=left><font size="-1">ParticuleLineRain</td>
+<td align=right><font size="-1">1,39</td>
+<td align=right><font size="-1">6,38</td>
+<td align=right><font size="-1">7,58</td>
+<td align=right><font size="-1">1,25</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>4,59</I></td>
+<td align=right><font size="-1"><I>0,84</I></td>
+<td align=right><font size="-1"><I>1,11</I></td>
+<td align=right><font size="-1"><I>5,10</I></td>
+<td align=right><font size="-1"><I>6,06</I></tr>
+<tr><td align=left><font size="-1">ParticuleScale</td>
+<td align=right><font size="-1">1,42</td>
+<td align=right><font size="-1">6,26</td>
+<td align=right><font size="-1">6,54</td>
+<td align=right><font size="-1">1,25</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>4,41</I></td>
+<td align=right><font size="-1"><I>0,96</I></td>
+<td align=right><font size="-1"><I>1,14</I></td>
+<td align=right><font size="-1"><I>5,01</I></td>
+<td align=right><font size="-1"><I>5,23</I></tr>
+<tr><td align=left><font size="-1">Plasma</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">2,76</td>
+<td align=right><font size="-1">4,2</td>
+<td align=right><font size="-1">0,32</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,66</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>8,63</I></td>
+<td align=right><font size="-1"><I>13,13</I></tr>
+<tr><td align=left><font size="-1">PolarMosaic</td>
+<td align=right><font size="-1">0,34</td>
+<td align=right><font size="-1">1,85</td>
+<td align=right><font size="-1">2,99</td>
+<td align=right><font size="-1">0,18</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,44</I></td>
+<td align=right><font size="-1"><I>0,62</I></td>
+<td align=right><font size="-1"><I>1,89</I></td>
+<td align=right><font size="-1"><I>10,28</I></td>
+<td align=right><font size="-1"><I>16,61</I></tr>
+<tr><td align=left><font size="-1">Rot+Pixel+Merge</td>
+<td align=right><font size="-1">0,54</td>
+<td align=right><font size="-1">2,69</td>
+<td align=right><font size="-1">3,92</td>
+<td align=right><font size="-1">1,08</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>4,98</I></td>
+<td align=right><font size="-1"><I>0,69</I></td>
+<td align=right><font size="-1"><I>0,50</I></td>
+<td align=right><font size="-1"><I>2,49</I></td>
+<td align=right><font size="-1"><I>3,63</I></tr>
+<tr><td align=left><font size="-1">RunningsNumbers</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td align=left><font size="-1">Shadows2</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">0,16</td>
+<td align=right><font size="-1">0,26</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,62</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td align=left><font size="-1">ShadowCow2</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">0,56</td>
+<td align=right><font size="-1">0,8</td>
+<td align=right><font size="-1">0,07</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,70</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>8,00</I></td>
+<td align=right><font size="-1"><I>11,43</I></tr>
+<tr><td align=left><font size="-1">Text3D</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1">0,73</td>
+<td align=right><font size="-1">1,29</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>0,57</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td align=left><font size="-1">Wave Refract</td>
+<td align=right><font size="-1">0,24</td>
+<td align=right><font size="-1">1,37</td>
+<td align=right><font size="-1">2,45</td>
+<td align=right><font size="-1">0,16</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,71</I></td>
+<td align=right><font size="-1"><I>0,56</I></td>
+<td align=right><font size="-1"><I>1,50</I></td>
+<td align=right><font size="-1"><I>8,56</I></td>
+<td align=right><font size="-1"><I>15,31</I></tr>
+<tr><td align=left><font size="-1">ZoomRotate</td>
+<td align=right><font size="-1">0,69</td>
+<td align=right><font size="-1">3,8</td>
+<td align=right><font size="-1">5,64</td>
+<td align=right><font size="-1">0,64</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>5,51</I></td>
+<td align=right><font size="-1"><I>0,67</I></td>
+<td align=right><font size="-1"><I>1,08</I></td>
+<td align=right><font size="-1"><I>5,94</I></td>
+<td align=right><font size="-1"><I>8,81</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>LHA</B></td>
+</tr>
+<tr><td align=left><font size="-1">Lha a big directory (69 Mb)</td>
+<td align=right><font size="-1">389</td>
+<td align=right><font size="-1">75</td>
+<td align=right><font size="-1">28</td>
+<td align=right><font size="-1">425</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>0,19</I></td>
+<td align=right><font size="-1"><I>2,68</I></td>
+<td align=right><font size="-1"><I>0,92</I></td>
+<td align=right><font size="-1"><I>0,18</I></td>
+<td align=right><font size="-1"><I>0,07</I></tr>
+<tr><td align=left><font size="-1">Lha x 3 files (15 Mb)</td>
+<td align=right><font size="-1">38</td>
+<td align=right><font size="-1">22</td>
+<td align=right><font size="-1">5</td>
+<td align=right><font size="-1">47</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>0,58</I></td>
+<td align=right><font size="-1"><I>4,40</I></td>
+<td align=right><font size="-1"><I>0,81</I></td>
+<td align=right><font size="-1"><I>0,47</I></td>
+<td align=right><font size="-1"><I>0,11</I></tr>
+<tr><td colspan="11">&nbsp; </td>
+</tr>
+<tr><td colspan="11" align=left><font size="-1"><B>LwshowPPC 1.6 testmode (s)</B></td>
+</tr>
+<tr><td align=left><font size="-1">160x120</td>
+<td align=right><font size="-1">217,52</td>
+<td align=right><font size="-1">46,45</td>
+<td align=right><font size="-1">11,48</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>0,21</I></td>
+<td align=right><font size="-1"><I>4,05</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td align=left><font size="-1">320x240</td>
+<td align=right><font size="-1">240,22</td>
+<td align=right><font size="-1">51,3</td>
+<td align=right><font size="-1">13,55</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>0,21</I></td>
+<td align=right><font size="-1"><I>3,79</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+<tr><td align=left><font size="-1">640x480</td>
+<td align=right><font size="-1">292,33</td>
+<td align=right><font size="-1">63,97</td>
+<td align=right><font size="-1">22,25</td>
+<td align=right><font size="-1">-</td>
+<td align=right><font size="-1"></td>
+<td align=right><font size="-1"><I>0,22</I></td>
+<td align=right><font size="-1"><I>2,88</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></td>
+<td align=right><font size="-1"><I>-</I></tr>
+</table>
+
+<br><br>
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

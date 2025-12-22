@@ -1,0 +1,185 @@
+5
+1
+6 DNet.IFF 0 0*
+
+{3                           DNet - köyhän miehen SLIP
+{3                           -------------------------
+
+                                  Lauri Aalto
+
+
+PC-ihmiset usein tapaavat retostella WinSockillaan ja väittävät, ettei  Amigalle
+löydy yhtä yksinkertaista liityntätapaa. He ovat  väärässä.  DNet  oli  olemassa
+paljon ennen nykyisiä Windows-versioita (3.x): vuonna 1987 Matthew  Dillon  jul-
+kaisi ensimmäisen version DNetistä. Nykyiset versiot eivät kuitenkaan  ole  enää
+hänen ylläpitämiään.
+
+DNet on siis itse asiassa linkkiprotokolla, joten oikeampi nimi sille voisi olla
+DLink. DNet-nimi oli kuitenkin jo vakiinnuttanut asemansa, joten se  sai  jäädä.
+DNetillä voidaan muodostaa yhteyksiä Amigan ja Amigan tai Amigan ja  UNIX-koneen
+välille. Avoimia yhteyksiä voi olla samanaikaisesti useita, joten voit seikkail-
+la toisen koneen komentotulkissa, siirtää tiedostoja ja keskustella  samaan  ai-
+kaan ilman, että asiakasohjelmien itsensä tarvitsee välittää muista yhteyksistä.
+Käytännössä yhteydet hoidetaan sarjaportin kautta. Internet-yhteyksiin  DNet  on
+hieman rajoittuneempi kuin SLIP-yhteys (SLIP = Serial Line Internet Protocol)  -
+kone käyttää DNet-yhteydessä isäntäkoneen TCP/IP-osoitetta eikä  omaansa,  joten
+yhteydenotot maailmalta DNet-Amigaan päin eivät ole mahdollisia  ilman  asianmu-
+kaisten palvelinohjelmistojen ohjelmointia Internet-koneeseen (yleensä UNIX).
+
+
+{3Palvelimet ja asiakkaat
+{3-----------------------
+
+DNet-kokonaisuus koostuu palvelimista (serverit)  ja  asiakasohjelmista  (klien-
+tit). Klientit hoitavat liikenteensä ulkomaailmaan DNet-pääserverin kautta, mikä
+mahdollistaa useat samanaikaiset virtuaaliyhteydet. Teoriassa yhteyksiä voi olla
+rajoittamaton määrä, mutta käytännössä klienttien muistinkulutus ja  DNetin  it-
+sensä asettama 64 kanavan rajoitus purevat. Tosin normaalikäytössä klienttejä on
+maksimissaankin vain muutama käytössä samanaikaisesti.
+
+Jotta DNet-pääserveri tietäisi, mikä serveri tulisi klientille  käynnistää  toi-
+sessa koneessa, käyttää DNet tarkoitukseen portteja. Molemmissa  koneissa  tulee
+tätä varten olla dnet.servers-tiedosto, jossa määritellään serverityypin  portin
+numero (joka esimerkiksi terminaali-ikkunapalvelimella on 8195), itse serveri ja
+sen työhakemisto.
+
+Perusklienttejä ovat mm. PutFiles ja GetFiles (tiedostojen siirtoon) sekä  DTerm
+(terminaali-ikkunaserveri). Erikoisena "klienttinä" mainittakoon vielä  dnet.de-
+vice, joka emuloi tavallista serial.deviceä, mutta avaa  yhteydet  DNet-kanavina
+käyttäen portinnumerona laitteen unit-numeroa. Näin käyttäjä voi käyttää  mieli-
+terminaaliohjelmaansa aivan normaaliin tapaan sillä erotuksella, että niitä  voi
+olla useampiakin samanaikaisesti päällä.
+
+
+{3Käyttö on yksinkertaista
+{3------------------------
+
+DNetin käyttö on hyvin  yksinkertaista  pääprosessin  käyntiinsaamisen  jälkeen.
+Klientit käynnistetään aivan normaalien ohjelmien tapaan, ja ne komentavat  itse
+pääprosesseja käynnistämään  tarvitsemansa  serverit,  eikä  käyttäjän  tarvitse
+välittää likaisista töistä.
+
+DNet ei kuitenkaan ole täysin luotettava. Itse ainakin olen saanut DNetin mones-
+ti täysin tukkoon, jolloin ei ole auttanut  muu  kuin  pääprosessin  poistaminen
+julmasti QuitDNet-ohjelmalla ja uudelleenkäynnistäminen. Totaaliset jumiutumiset
+ovat onneksi kuitenkin harvinaisia.
+
+Eniten DNetissä kuitenkin kummastuttaa prioriteettirajojen jyrkkyys - esimerkik-
+si AMosaicilla isojen tiedostojen imuroiminen pysäyttää imuroinnin ajaksi kaikki
+muut DNet-klientit, jotka kyllä jatkavat imuroinnin keskeydyttyä.
+
+
+{3Kenelle DNet sopii?
+{3-------------------
+
+DNet kaikessa rajoittuneisuudessaan monipuolistaa tavallisen UNIX-komentotulkki-
+tunnuksen omaavien mahdollisuutta käyttää Internettiä hyväkseen mitä moninaisim-
+pien klienttien avulla. SLIP-yhteyttä se ei voita, mutta tarjoaa kuitenkin vaih-
+toehdon. Kaiken lisäksi DNet-toimii hienosti myös 7-bittisten  yhteyksien  läpi,
+toisin kuin SLIP, joka vaatii myös raskaampaa ohjelmistoa mutta myös  mahdollis-
+taa monipuolisemman verkkoliikennöinnin.
+
+Kahden Amigan toisiinsa liittämiseksi DNettiä ei juuri kannata käyttää  sen  tai
+itse asiassa sarjaportin hitauden vuoksi. Amigoiden yhteenliittämiseen ParNet on
+nopeampi ja parempi ratkaisu.
+
+DNet siis sopii hyvin henkilöille, joilla on shell-tunnus johonkin  Internetissä
+kiinni olevaan UNIX-koneeseen ja jotka haluavat käyttää sitä vaikkapa modeemitse
+sarjaportin välityksellä. DNet vaatii silti  kokemusta  AmigaShellin  ja  UNIXin
+käytöstä, muttei silti missään nimessä mikään guru tarvitse olla -  kunhan  vain
+hallitsee perusasiat.
+
+
+
+
+{3Kuinka asennat DNetin
+{3---------------------
+
+Koska DNet ei ole mitään helpoimpia asennettavia eikä dokumentaatiokaan ole  ol-
+lut vuosiin ajan tasalla, kerromme nyt hieman, miten saat DNetin asennettua UNI-
+Xin ja Amigan välille. Kahden  Amigan  edulliseen  yhteenliittämiseen  kannattaa
+käyttää vaikkapa ParNet-ohjelmistoa.
+
+Ensin tulee tietenkin hankkia itse ohjelmistot. Amiga-puolen  ohjelmat  löytyvät
+mm. Aminetista, comm/net-hakemistosta  löytyy  DNET_TNA302bin.lha-paketti,  joka
+sisältää (tällä hetkellä) uusimmat Amiga-binäärit. Samasta  hakemistosta  löytyy
+myös  paljon  muuta  DNet-softaa.  Aminet-sitejä   ovat   mm.   ftp.luth.se   ja
+ftp.wustl.edu, samoin Aminetin tiedostoja on myös saatavilla mm. CD-ROM-levyillä
+ja useista Amiga-purkeista.
+
+UNIX-puolelle vaaditaan  myös  ohjelmistoja,  mikä  onkin  hieman  triviaalimpaa
+UNIX-rautojen erilaisuuksien vuoksi. Ensin kannattaakin siis katsella, josko sa-
+massa koneessa jollakulla muulla olisi  jo  DNet  asennettuna,  jolloin  sinulta
+säästyisi sen asentamisen vaiva. Mikäli asia ei kuitenkaan näin  ole,  kannattaa
+ottaa selville UNIX-työaseman käyttöjärjestelmä ja sen versio ja mennä  Aminetin
+misc/UNIX-hakemistosta etsimään käyttöjärjestelmällesi sopivia  vanhempia  UNIX-
+binääreitä.  Mikäli  koneelle,  jossa  tunnus  on,  ei  löydy  valmiina  sopivia
+binääreitä, pitää ne kääntää itse. Käännös joudutaan myös tekemään, jotta  esim.
+AMosaic tai dftp toimisivat,  koska  sinternet/sinterlink-palvelimia  ei  tullut
+vanhempien versioiden mukana.
+
+Uusimmat   UNIX-puolen   lähdekoodit   löytyvät   hakemistosta    ftp://ftp.net-
+com.com/pub/og/ogre/dnet ja ne saadaan kääntymään  purkamalla  paketti  sopivaan
+hakemistoon ja ajamalla maken. DNetin pitäisi kääntyä siististi  4.x  BSD-linjan
+UNIXeilla, muilla joutuu luultavasti  repimään  hiuksiaan  pitkään,  ennen  kuin
+käännös sujuu ongelmitta.
+
+UNIX-päässä varsinainen asennus on helpompaa. DNet-binäärit kopioidaan  johonkin
+hakemistoon ja asetetaan niille ajo-oikeudet kirjoittamalla 'chmod 755 *'  hake-
+mistossa. Tiedosto dnet.servers pitää myös kopioida jonnekin. Sen sijainnilla ei
+ole väliä, kunhan vain sinulla on lukuoikeudet ko. hakemistoon.
+
+Sen  jälkeen  editoidaan  .login-  tai  .cshrc-tiedostoa   asettamaan   DNETDIR-
+ympäristömuuttuja hakemistoon, unohtamatta lopusta kauttaviivaa:
+
+setenv DNETDIR ~/dnet/
+
+asettaa DNETDIR-ympäristömuuttujan oman kotihakemiston alta löytyvään  dnet-ali-
+hakemistoon. Lopuksi vielä editoidaan  dnet.servers-tiedosto  omaan  ympäristöön
+sopivaksi, eli käytännössä asetetaan servereiden polut oikeiksi.
+
+Amiga-puolella asennus on hieman monimutkaisempaa. S:-hakemistoon tulee kopioida
+tiedostot dnet.config ja dnet.servers (Amiga-puolen versio). Normaalikäytössä ei
+tiedostoihin tarvitse koskea, mutta niiden on kuitenkin hyvä olla olemassa.
+
+Eniten ongelmia aiheuttava osuus asennuksessa on kuitenkin optimaalisten asetus-
+ten löytäminen DNet-protokollalle. Usein käyttäjät luulevat voivansa käyttää te-
+hokkaampia  moodeja,  vaikka  todellisuudessa  joku  modeemipankki  tai  muu  ei
+päästäkään kaikkia merkkejä lävitseen. Seuraavanlaisen komentorivin pitäisi toi-
+mia normaalilla V.32bis-modeemilla, mikäli normaalit serial-asetukset ovat  kun-
+nossa:
+
+dnet -m1 -h1
+
+-m1 asettaa 7-bittisen pakettimoodin päälle, koska on todennäköistä, ettei  joku
+ketjun lenkki kuitenkaan päästä kaikkia kahdeksaa bittiä muuttumattomina  lävit-
+seen. -h1 kytkee linjan katkeamisen tunnistuksen päälle.
+
+DNet-ikkunan auettua soitetaan normaalisti  UNIX-koneelle,  loggaudutaan  sisään
+omalla tunnuksella ja käynnistetään dnet ilman mitään parametrejä. Ikkunan tuli-
+si tässä vaiheessa kadota ja DTerm-ikkunan aueta noin kymmenen  sekunnin  kulut-
+tua. Mikäli näin ei tapahdu, tulee asetukset  tarkistaa  ja  yrittää  uudelleen.
+Sitten sinulla onkin jo DNet toimintakunnossa.
+
+Ongelmatilanteissa kannattaa kääntyä Netin puoleen ja  kysyä  vaikkapa  Usenetin
+uutisryhmissä apua. Myös tämän jutun kirjoittajaa saa koettaa härnätä  sähköpos-
+tilla osoitteeseen lauri.aalto@fipnet.fi. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(Kuva seuraavalla sivulla.)
+
+
+

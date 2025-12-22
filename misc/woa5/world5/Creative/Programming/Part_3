@@ -1,0 +1,238 @@
+>>B00T CAMP>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WOA
+
+[1mBack Again from the Trenches[0m
+
+   Welcome back!  Last time, we pushed ARexx to the limits with a graphical 
+interface and multimedia, and got a real workout in planning and design. This 
+time, though, I want to focus entirely on process, as we go through the 
+requirements and design of a very large program.  Since no one has made any 
+requests, I thought I'd choose something that would be a good base for other 
+software: a multi-user 3D environment.  Don't be alarmed.  This topic will be 
+spread out over several articles, as I cover process and design concepts along 
+the way.  I was not originally going to do something quite this bold, but I've 
+had to learn the inner workings of TCP/IP against my will, so I may as well 
+pass along the wisdom.  I'd also like to make one reading recommendation.
+
+   Microsoft did one good thing in my life, honest.  They published Code 
+Complete, by Steve McConnell.  Although like most paperback technical books,
+especially those that say something about 21 days, Code Complete was thicker 
+than it needed to be, I really would recommend it.  (ISBN 1-55615-484-4) 
+http://www1.fatbrain.com/asp/bookinfo/bookinfo.asp?theisbn=1556154844.
+
+Amidst several curses in my academic experience, buying Code Complete was the 
+blessing I had been waiting for.  This, coming from a programmer who once 
+downloaded freeware specifically to replace the Microsoft logo from their OS.
+
+   The book does much to cement evidence behind good software development 
+methodology.  I firmly believe that the quality of a programmer, over time, 
+is best measured by habits and communication.  It's the only ruler that lasts 
+long enough to be compatible across the years; my Pascal programming skills 
+are worthless now, and I'm fairly certain it, like a legacy of other 
+programming languages now forgotten, isn't even lingering in even the most 
+recluse bastions of academia.
+
+[1mThe Tower of Babel[0m
+
+   Proof of this is the ebb and flow of the flavor of programming languages.  
+Java, which is a C++ -flavored Object-Oriented Language, marks a return to the 
+past, in many ways.  Its bytecode is effectively a portable program object 
+file, which is a term for compiled, but not assembled code; this marks a step 
+forwards in programming, from a commercial standpoint.  Java, though, isn't a 
+linguistically novel programming language, and is just another object 
+language.  Even with REBOL, much is borrowed from the past.  Actually, on the 
+REBOL mailing list, there was a healthy run of speculations as to the origins 
+of its form.  Like in painting, much of the new work resembles the old work.  
+Unlike in painting, programming languages are have not evolved into something 
+more beautiful and alike to the subject described.
+
+   I liken this language phenomenon to what I believe was a historical Tower 
+of Babel.  It is recorded that the people of the world once thought so much of 
+themselves, that they aspired to build a tower to God, to reach heaven, 
+perhaps.  Because they all spoke one language, they were able to go pretty 
+far.  God eventually gave us all a dose of humility, and caused us to diverge 
+linguistically, and in short order, because suddenly we all were babbling to 
+one another, unintelligibly, the tower was left unfinished.  Even if you have
+reasons to deny the historical accuracy of the Tower of Babel, it is indeed a 
+phenomenon in languages, whether coded or spoken.  New programming languages 
+will beckon to old, but be different enough that Portuguese is not Spanish, 
+and Spain's Spanish is not the Spanish of Central and South America.  So, too, 
+Java is not C++, nor is REBOL Smalltalk, nor ARexx Rexx.
+
+   With that said, allow me to steer B00T CAMP more clearly on the course of 
+methodology and practice, concepts and documentation.  Programming may perhaps 
+be an endless ocean of discourse, but there are many vessels of language at 
+sea, and many more to be christened, so I would rather educate on the 
+principles of navigating through a project, holding to a tact, and how to 
+bring a software voyage into port.  The alternative is to speak endlessly of 
+the riggings of one language or another, and become lost in the developmental 
+history of programming.
+
+[1mPlanning the Voyage[0m
+
+   As with any ocean journey, plans must be made to prepare for it.  A course 
+must be set, supplies accounted for, and a ship must be chosen.  Usually, the
+course or the destination determines the ship.  One would never take a river 
+boat into the Atlantic, for instance.  So, too, one would never attempt to 
+write a 3D computer game in Perl.  Since I've already revealed our destination,
+it is now a matter of setting a course.
+
+   Software has several technical terms for the course of a computer program.  
+Many call it Specifications or Requirements, or even a combination of the two 
+words.  The general meaning is quite simple: what a program must do, 
+explicitly.  I really mean explicitly, though.  If you think about the goal of 
+a multi-user 3D environment, there's an awful lot that needs to be 
+determined.  Several questions come up.  How will it be used?  What will it 
+do?  What hardware will it run on?  These and similar questions are answered 
+in the software "Course" or "Requirements."  My previous articles have been 
+including these as part of a Software Plan, but I really should extend some 
+caution in the use of that term, because on bigger projects, it means 
+something more specific.  
+
+   I happen to like that term as it is for smaller projects, but as you might 
+expect, it can mean more than one thing to some people.  A Software Project 
+Plan is a combination of a detailed crew manifest, ship's inventory, and a 
+time table.  It lists who is working on the software and what each person is 
+responsible for, what tools will be used, and how long the project will take, 
+broken down by tasks.  In hindsight, these things look like little more than 
+wild guesses, and may seem useless from that vantage.  Projects never meet 
+their schedule exactly, and the number of people on a project is not always 
+consistent.  Sometimes, things are needed which were unforeseen from the 
+beginning.  Still, if you think of this document as a Project Manifest, it 
+seems much more purposeful.  When leaving port, a captain has to register with 
+his port master who and what he is taking on the voyage, where they are going, 
+and when he and his crew will be back.  For big companies, this makes sense. 
+They need to manage their resources, and people's time, but more importantly, 
+the total cost, which includes in some cases licensing for computer programming
+languages and proprietary libraries.
+
+[1mThe Great Barrier Reef[0m
+
+   Questions relating to how a requirement is met belong in the Design 
+document, which is quite separate from the requirements themselves.  Think of 
+it as the Captain's orders to the crew.  In software development, it is 
+important to know what the design is in advance, because the individual 
+decisions can often be implemented in several hours, and require several 
+decisions to be made.  Unlike on a ship, your orders cannot be handed out to 
+the crew as needed, since there really is no vantage in software development 
+to observe what the entire crew is doing at any given point in time.  
+Consider a ship travelling through a coral reef.  A captain's orders would 
+probably be presented ahead of time to the crew, because navigating a coral 
+reef requires very many instructions in a short and critical period of time, 
+and it requires the crew be expecting the orders as they come.
+
+   Most of the problem solving in software development occurs in design.  Some 
+developers take software design all the way down to psuedocode, which they 
+use as the "comment" basis for the actual software.  I've done that in the 
+past, especially for confusing code.  There is a certain finesse to determining
+the right amount of detail in your crew's orders.  On the one hand, the rules 
+need to be explicit enough to be unmistakable, but on the other, they should 
+not be elementary.
+
+   The Software Design Document can become the greatest barrier to the 
+project for a programmer, because it is the greatest source of communication.  
+It is also given to regular and often drastic changes.  In the book I 
+referenced earlier, Code Complete, there are lengthy debates included about
+the order and manner of development, and it concludes that some ways are 
+better for some things, and others are better in other circumstances.
+
+   I happen to think that programming is most difficult when the project is 
+quite large and there is much work to be done.  For this reason, I'm going to 
+stand out on my own gangplank here and say that none of the methods described 
+in Code Complete are correct.  The reason for this is the premise: the crew 
+won't follow orders if they aren't spelled out ahead of time.  My perspective 
+is less condescending, however.  I trust my crew.  Sure, when we are headed 
+into difficult waters, I'll review the orders ahead of time, but I am not 
+handing everyone a copy of a 6-month list of orders.  It is entirely likely 
+that the orders will slip overboard, become horribly revised, and eventually 
+not resemble the original at all. This sounds familiar, doesn't it?  The 
+Software Project Plan is also given to revisions.  But the requirements, they 
+tend to stay pretty close to the original, with a few notes in the margins.
+
+   For this reason, I've come up with a different way of doing Software 
+Design.  Keeping consistent with our pelagic theme, consider the orders being 
+given out every day at the morning, when the waters are calm.  A software 
+design that is based on the incremental execution of the software requirements 
+is not lost to forgetfulness.  This also allows for corrections to occur 
+during the voyage.  In my current work project, my Software Design Document, 
+which is almost finished (as well as the software itself), the document has 
+gone from 50 pages to 23 pages, and up to 40 again, over the course of 
+development.  I have rewritten everything several times, even before the 
+development for a section of software began.  Evidently, either everyone is 
+really bad at writing this sort of document, or it apparently happens all the 
+time.
+
+[1mFrom the Gunwhale[1m
+
+   And now, in review, let me restate what has been covered here.  A Software 
+Requirements Specification is like the course and mission of a ship's voyage, 
+which can often be very complex, and it must be written out ahead of time; it 
+describes the goals of the voyage.  Once that document has been served, a 
+Software Project Plan, or manifest for the voyage must be filed with 
+management or the port master, so costs and time at sea are understood ahead 
+of time.  The expectation is that this is given to fluctuation, but perhaps 
+the winds will be with us.  All discrepancies to the Software Project Plan 
+will be recorded in a Captain's Log, which must be submitted to the management 
+as often as possible, or upon successful return.  The Software Design is to 
+be handled at the discretion of the captain and his understanding of his crew, 
+either on an as-needed basis, or all at once, depending on the complexity or 
+need.  These "Captain's Orders" will describe in suitable detail what the crew 
+must do to maintain course.
+
+   In commercial software development, there's one little discretion between 
+the ocean and software development: software has to sail itself.  That's why 
+there's a whole grotto of amazing and cloudy terms for software testing 
+documents.  The whole process is very meticulous, but regardless of what it is 
+called or over-classified as, testing is the process of confirming that the 
+Software Design has been implemented correctly by the crew, and that the 
+implementation meets the requirements of the Software Specifications.  An 
+intelligent woman told me once that the goal of testing is about evidence and 
+following tracks.  This made me think of a detective for some reason.
+
+   Consider a captain who has to deliver bananas from Brasil to Boston.  When 
+the bananas arrive, the captain has the cargo unloaded, receives payment, and 
+leaves.  Two months later, a messenger delivers a complaint to management of 
+the captain's shipping lines, saying the bananas were black as soot, and 
+half-eaten by rats.  The captain will have to report to management about this 
+failure.  A good captain will have his crew inspect the bananas on the dock, 
+ensure they are carefully and safely stowed, and make sure that rats aren't 
+scurrying around below deck.  A record of inspection and the process of 
+inspection, as well as which crew was responsible for the task, all of this
+consists of testing.  In software, the tasks are virtually identical.  Every 
+aspect of the Software Requirements must be tested and reported.  Sometimes, 
+it is acceptable that certain tests fail partially.  The rules of testing are 
+often written out ahead of time, and are largely reusable.  Such a document 
+would usually be written by management or someone serving management, such as 
+a port inspector; you wouldn't want to know the real name for such a person 
+in software development.  I went cross-eyed the first time I heard the job 
+title.
+
+   On parting thoughts, I would like to recommend another book for those of 
+you who are wanting to experience life at sea: Tales of the Sea, by Joseph 
+Conrad, ISBN 0-89009-801-8.  It's the only book I've read lately that has me 
+opening my dictionary on a regular basis, and I really enjoy the richness of 
+it.  Next issue, you can count on several exciting developments.  In the mean 
+time, I would really welcome some feedback at this point.  I have heard that 
+one individual is using my examples for a larger project, and I must say I'm 
+quite honored.  I just hope it's something a little more dignified than making 
+the Amiga sing drunken sailor songs, unless of course it's a game about 
+sailors!
+
+Feedback? Send it to jcsky@visi.com
+
+>>>W<<<<<
+>>>>O<<<<
+>>>>>A<<<
+
+
+
+
+
+
+   
+
+
+
+
+
+
+

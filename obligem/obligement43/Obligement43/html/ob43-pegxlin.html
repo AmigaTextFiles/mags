@@ -1,0 +1,265 @@
+<html>
+ <head>
+  <title>Configurer Debian/PegXLin</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique : configuration sous Debian/PegXLin </font>par&nbsp;<a href="mailto:sebastien.dallasta@wanadoo.fr">Sébastien&nbsp;Dallasta</a></div><br><br><br>
+
+Voici quelques petites astuces de configuration sous Debian/PegXLin.<br><br>
+
+<font size="+1" color="#ccbb33">Le scanner</font><br><br>
+
+Il existe SANE et QuiteInSane, une suite logiciel pour les scanners. Pour les configs, c'est simple - pour une fois.<br>
+Allez dans /etc/sane.d. Là, vous trouverez tout. La plupart des scanners sont reconnus par leur marque respective : Epson,
+Canon, HP, Artec, Umax, AGFA, Apple, Nec, Mustek, Microtek, Sharp, etc. Il faut tout simplement enlever une # pour les USB.<br><br>
+
+<b>Exemple :</b><br><br>
+
+Scanner Epson Perfection 1660 Photo USB<br>
+Enlevez la # de la derniere ligne.<br><br>
+
+<pre><font size="-1">
+# epson.conf
+#
+# here are some examples for how to configure the EPSON backend
+#
+# SCSI scanner:
+scsi EPSON
+#
+# Parallel port scanner:
+#pio 0x278
+#pio 0x378
+#pio 0x3BC
+#
+# USB scanner - only enable this if you have an EPSON scanner. It could
+#               otherwise block your non-EPSON scanner from being
+#               recognized.
+#		Depending on your distribution, you may need either the
+#		first or the second entry.
+#usb /dev/usbscanner0
+usb /dev/usb/scanner0
+</font></pre>
+
+Sauvergardez le fichier et voilà votre scanner disponible dans toutes les applications qui peuvent s'en servir.
+C'est aussi simple que cela :-). Si seulement tout pouvait être aussi simple, ce serait merveilleux...
+Mais attention, le nom de votre scan n'est pas forcement reconnu. En ce qui me concerne, il m'affiche "Epson GT-8300" ????.
+Du moment que ça marche, je ne me pose pas de question.<br><br>
+
+<font size="+1" color="#ccbb33">Localisation en Français</font><br><br>
+
+Tapez : dpkg-reconfigure locales<br><br>
+
+1) Select locales to be generated : cochez :<br>
+	en_US ISO-8859-1<br>
+	fr_FR ISO-8859-1<br>
+	fr_FR.UTF-8 UTF-8<br>
+	fr_FR@euro ISO-8859-15<br><br>
+
+2) Which locale should........<br>
+Répondre : fr_FR<br>
+Il va générer les locales, et vous voilà avec vos logiciels en Français. Miracle, non ?<br><br>
+
+<font size="+1" color="#ccbb33">Les DVD</font><br><br>
+
+"UDF not supported by the Kernel !". Que faire ? Alors là, c'est pas la joie. Créez un répertoire (DVD) là où se trouve
+la racine du système (CDROM, ETC, VAR,...). Lancez un shell et tapez :<br><br>
+
+mount -t iso9660 /dev/scd(X) /dvd<br><br>
+
+Où "X" correspond à votre lecteur DVD sur la chaine d'emulation SCSI. Oui, mais je sens la question : "Il est marrant,
+mais comment je peux savoir où il est ?". C'est simple, lancez le "Centre d'informations" ou "Information center" si vous
+préférez et là allez dans SCSI : Miracle, il affiche tout ce dont j'ai besoin et dans l'ordre en plus.
+Chez moi, par exemple, c'est SCD1.<br>
+Attention : il est possible que certaines applications vous demandent "/dev/dvd" comme source DVD.
+Là aussi c'est simple. Il suffit juste de configurer l'application en question et si ce n'est pas possible,
+créez un répertoire "DVD" dans /dev et tapez :<br><br>
+
+mount -t iso9660 /dev/scd(X) /dev/dvd
+
+Et le tour est joué. A savoir que la plupart des lecteurs DVD sont reconnus mais pas les DVD eux même car
+ils sont cryptés. Il vous faudra installer la Libdvdcss2 pour pouvoir les lire :'(.
+Dommage mais c'est comme ça...<br><br>
+
+<font size="+1" color="#ccbb33">Le pavé numérique</font><br><br>
+
+Je vous conseille d'allumer votre pavé numérique lors du chargement de votre server X.
+Pour cela, Cliquez sur la clé de la barre de menu puis sur périphériques et... clavier.
+Actvez NumLock on KDE startup.<br><br>
+
+<font size="+1" color="#ccbb33">La configuration du server X</font><br><br>
+
+Cliquez encore sur la clé, périphériques et X affichage.<br><br>
+
+<table width="100%"><tr><td>
+<a href="../gfx/pegxlin_maconfig.jpg" target="_blank"><img src="../gfx/pegxlin_maconfig_small.jpg" border="1" alt="Ma config PegXLin" width="200" height="158" hspace="7" align="left"></a>
+
+Là, je ne peux pas vraiment m'étendre sur le sujet car chacun à sa propre machine. Ce n'est pas trop conpliqué à
+comprendre. Attention : si vous vous plantez dans votre config, il est possible que ça plante. Dans l'ensemble,
+je ne pense pas que cela puisse vous poser des problèmes vu la simplicité.<br><br>
+<font size="-1">(cliquez sur l'image pour l'agrandir)</font>
+</td></tr></table><br><br>
+
+
+<font size="+1" color="#ccbb33">La place</font><br><br>
+
+Linux est très lourd. Vous avez pu vous en rendre compte. Il existe beaucoup de fichiers qui "ne serve pas à rien mais qu'on peux effacer".
+Par example, les fichiers .LOG qui vous indiquent "qui fait quoi". C'est utile lors de plantage mais cela prend de la place.
+Allez dans /var/log pour vous en rendre compte.<br><br>
+
+9.8 Mo. C'est peut être pas beaucoup mais il faut dire que c'est juste en 3 jours. Ces pu... BIP de fichiers peuvent vite dépasser
+les 10 Mo chacun, imaginez un peu. Je vous conseille de les effacer de temps en temps ça fait pas de mal croyez moi.
+Ah, j'allais oublié aussi cette option qui fait beaucoup de choses.<br><br>
+
+<img src="../gfx/pegxlin_option.jpg" border="1" alt="Option du navigateur" width="377" height="296" hspace="5" align="left"></a>
+
+Vous voyez cette icône ? Elle sert à faire une prévisualisation des fichiers : coooolll ! Oui mais attention ! Lorsqu'on l'active,
+elle créé un répertoire ".thumbnails" en bleu sur l'image qui sert de cache. Ces petits timbre-poste, eux aussi, prennent
+beaucoup de place. Pour cela, désactivez cette option mais avant, faites là apparaitre en "barre de menu". Dans
+"Configuration -> Toolbars -> Afficher barre d'outils supplémentaire" Lorsque vous laissez le pointeur dessus elle indique
+"Show Previews". Pourtant, n'hésitez pas à vous en servir, ça aide beaucoup. De temps en temps, allez dans /root et effacez
+ce répertoire. Aucune crainte à avoir, pas de pitié, massacrez le :-).<br><br>
+
+<font size="+1" color="#ccbb33">Un souci avec XINE ?</font><br><br>
+
+Un fort bruit de fond ? Baissez juste cette option et tout ira mieux :-). Pour ce qui est des DVD, il vous faudra un Bi
+G5 à 4 GigaHertz pour les lire correctement. Je ne comprend pas d'ailleurs, la doc indique qu'un simple PII 400 Mhz
+peux lire un DVD. Chez moi, ça fonctionne au ralenti si vous arrivez à faire mieux, je suis preneur.<br><br>
+
+<font size="+1" color="#ccbb33">Ma partition MorphOS sous Linux</font><br><br>
+
+Créez un répertoire /morphos. Puis tapez :<br><br>
+
+mount -t affs /dev/hda(X) /morphos<br><br>
+
+Où (X) correspond à votre partition MorphOS. Ex : hda1.<br>
+Attention : il est possible d'écrire sur cette partition. Une erreur d'effacement et vous perdez MorphOS + Linux
+(si en plus vous n'avez pas de chance). Hé oui, il est possible d'écrire et d'effacer sur cette partition. C'est
+utile lorsque l'on veut échanger des fichiers entre ces deux systèmes.<br><br>
+
+<font size="+1" color="#ccbb33">Une rectification...</font><br><br>
+
+J'ai parlé des port IEEE1394 FireWire. Bon, je ne reviens pas sur ce que j'ai dis, qu'ils fonctionnaient mais, je dois avoué
+que là, je n'ai pas été assez clair : ils fonctionnent C'est Vrai, ils apparaissent c'est vrai aussi, ils
+sont reconnuent là c'est une autre histoire... Il faut passer par une mise à jour (version 2.4.22).
+En effet, le noyau de Linux PegXLin n'est pas compilé pour ce type de choses.
+Il faudra en plus installer quelques Libs, devices, logiciels, etc. pour arriver à nos fins.
+Voici quelques explications...<br><br>
+
+Ce qu'il faut :<br>
+
+<ul>
+<li>Enormement de patience.
+<li>Le Kernel 2.4.22.
+<li>Un périphérique FireWire (Caméscope, magnéto...).
+<li>Un cable.
+<li>Les logiciels.
+<li>Les 7 cédés de la Debain ou une connexion rapide (pour télécharger les logiciels...).
+</ul>
+<br>
+
+Mettre à jour PegXLin en copiant tout simplement les fichiers Config-2.4.22, System.map-2.4.22, Vmlinuz-2.4.22
+dans <b>/boot</b> puis Pegasoslinux (le gros fichier compressé) dans <b>/usr/src</b>. Copiez aussi vmlinuz-2.4.22
+sur votre partition de boot (où se trouve boot.img et PegXLin) et renommez là en ce que vous voulez. Ex : PegXLin22.<br><br>
+
+Faites ensuite un reset et bootez sur la nouvelle image en tapant par votre ligne de commande habituelle sauf "pegxlin" qui est
+remplacé par "pegxlin22". Exmeple : boot Pegxlin22 video=tdfx hdc=ide-scsi hdd=ide-scsi l2cr=0x800000000.<br><br>
+
+Voilà qu'il indique des erreurs. Le server son ne s'active pas ! C'est juste un problème avec les "Module ALSA" (Tiens,
+il faut plus des gateaux ?). Ne vous en souciez pas. Il n'y aura pas que cela qui ne marchera plus d'ailleur :'(.
+Chez moi, le scanner, la connexion Internet et bien d'autres choses ne fonctionnent plus mais bon...<br><br>
+
+Donc, vous voilà sous Pegxlin 2.4.22, passons aux choses sérieuse.<br><br>
+
+Tapez :<br><br>
+
+lsmod (pour vérifier qu'il n'y sont pas)<br>
+modprobe dv1394<br>
+modprobe raw1394<br><br>
+
+Cherchez et installez le logiciel GScanBus qui sert à vérifier ce qu'il y a sur les ports.
+Idem pour DVGrab et Kino qui servent eux, à grabber du DV. Kino est une interface graphique pour DVGrab.
+Voilà en résumé l'essentiel des étapes. Il faudrait qu'il y ait une mise à jour de Pegxlin (si ce n'est pas deja fait)
+pour clarifier tout cela.<br><br>
+
+<font size="+1" color="#ccbb33">La compilation</font><br><br>
+
+Pour pouvoir mettre à jour PegXLin, il faudra compiler le noyau Linux. Ceci est une étape pour laquelle je ne vous serai
+pas d'un grand secours mais voici ce que cela peux donner.<br><br>
+
+Il vous faut pour cela :<br>
+
+<ul>
+<li>Les cédé Debian.
+<li>Source Kernel >2.4.21benh2.
+<li>Du temps.
+<li>GCC 2.95 avec la base 3.0 car il parait que la base 3.3 ne marche pas.
+<li>G++.
+<li>Tcl/Tk pour xconfig.
+<li>Python 2.2.
+</ul>
+<br>
+
+Attention : PegXLin a déjà GCC d'installé mais il ne fonctionne pas. Pour cela il faut enlever tout ce qui concerne la
+version 3.3 de G++ et GCC.<br><br>
+
+<b>1)</b> Décompressez (non pas vous) le source Kernel dans /usr/src. Un répertoire Pegasoslinux apparait.<br>
+<b>2)</b> Lancez un shell puis tapez : cd /usr/src. L'expression "debian:/usr/src#" doit apparaitre. Pour en être sûr tapez : dir.<br>
+<b>3)</b> Renommez le répertoire "pegasoslinux" en "2.4.22".<br>
+<b>4)</b> Faites un lien symbolique du répertoire Linux en tapant : ln -s 2.4.22 linux.<br>
+<b>5)</b> Tapez ensuite : make config (ou xconfig c'est mieux) puis sélectionnez vos options. Cliquez sur Save&Exit.<br>
+<b>6)</b> Tapez : make dep (ça prends quelques instants).<br>
+<b>7)</b> Puis tapez : make zImage (avec un i majuscule). Attendez environ 30 minutes.<br>
+<b>8)</b> Une fois terminé allez dans /usr/src/linux/arch/ppc/boot/images et copiez l'image sur votre partition de boot en la
+renommant comme vous voulez. Si vous avez mis des parties du Kernel en module, tapez : make modules puis make modules_install.<br>
+<b>9)</b> Rebootez.<br><br>
+
+A vous de voir la catastrophe que vous venez de faire :-). Ne me demandez pas comment on fait pour l'éviter car je n'en sais
+rien. Je vous donne juste les infos brutes de forme comme j'ai pu les découvrir. J'ai essayé pas mal de choses mais je ne
+suis pas arrivé à en faire vraiment ce que je voulais.<br><br>
+
+Voilà. Une autre petite chose pour terminer. PegXLin sur AmigaOne ? C'est possible ! D'ailleurs ça tourne un peu mieux (G4 933 MHz).
+Si l'auteur de PegXLin me l'autorise, je vous dirai comment on fait pour l'installer, sinon ce sera à vous de le découvrir.<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>
+

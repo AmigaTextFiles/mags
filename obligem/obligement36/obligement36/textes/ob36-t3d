@@ -1,0 +1,150 @@
+\T
+
+ --> EN PRATIQUE : TORNADO 3D par Arg
+======================================
+
+   La rubrique Tornado 3D risque fort de ne plus _tre prochainement, tout simplement
+pour cause d'_volution du mat_riel. Tornado 3D reste un logiciel de 3D d'excellente
+facture et je p_se actuellement le pour ou le contre d'une _volution mat_rielle
+vers une carte Aone ou un Pegasos (quand tout ce petit monde sera disponible). Dans
+ces deux cas, Tornado 3D ne fonctionnera pas car un dongle a brancher sur le port 
+joystick d'un "Classic" est n_cessaire.
+
+   Bref, vous n'en avez que faire mais bon moi j'aime bien T3D et en changer pour un 
+autre m'attristerait. Mais bon un programme de 3D tournant sur une b_cane d'au moins 
+600 Mhz c'est quand m_me bien. Je tacherais dans l'avenir de voir et d'acqu_rir 
+diff_rents logiciels de 3D et vous tenir au courant de leur compatibilit_ avec 
+les nouvelles b_canes. Je sais que Cin_ma 4D fonctionne, parait-il, a merveille 
+sur un Pegasos + MorphOS. Real 3D parait-il _galement. Alors, qui vivra verra.
+
+   En attendant, j'ai _t_ voir sur le net ce qui se passait sur T3D, et bien en 
+d_finitive on trouve plus de sites commerciaux qui vendent le programme que de gens 
+qui s'en servent ! A l'avenir, si j'ai le temps je ferai une compilation de tout 
+ce que j'ai _crit sur T3D et mettrai ca sur le web.
+
+   Pour que tout le monde en profite, voici ce que j'ai r_cup_r_ de meilleur et de 
+plus int_ressant mais aussi de plus pratique en "tips" et autre "tut" pour bien 
+travailler sur T3D. Ce qui suit est un peu en vrac, mais j'ai d_couvert 
+personnellement plein de choses tr_s utiles.
+
+ö
+
+\T
+
+~   Tips au clavier :
+
+- Tout d_s_lectionner : taper sur la barre d'espace
+- Transform panel : "A+t" (et pas touche de fonction-x comme avec les autres 
+  panels) le Transform panel permettant de positionner l'objet pr_alablement
+  s_lectionn_ "au clavier" et pas "a la souris".
+- A+i : pour renommer
+
+~   Pour optimiser l'affichage des facettes de l'objet, notamment vu de l'int_rieur :
+
+Il arrive parfois que l'on ait besoin de placer la cam_ra a l'int_rieur d'un 
+objet (un simple cube pour une pi_ce, un tube pour un tunnel, etc.) il faut 
+d'abord passer en mode "Polygon" puis triangulariser avec : (modify/detail/make
+tris), puis "edit polygons mode" pour inverser les normales. Ce qui aura pour 
+effet d'afficher et de calculer correctement toutes les faces de l'objet, 
+notamment internes.
+
+~   Pour modeler un objet selon l'image d'une texture :
+
+~1) technique de base
+
+   Sous ce titre un tantinet obtu, nous allons oublier les objets froids et lisses
+par d_faut fournis dans tous les programmes de 3D.
+
+   Cr_ez n'importe quel objet. Charger une texture fournie (mat) de type "clouds"
+dans le panel de texture (F7). Juste au-dessus, faites d_filer le mini menu et 
+
+ö
+
+\T
+
+choisissez "displacement" (5% peut suffire) validez tout cela, passez en mode 
+animation et vous pourrez apercevoir que la texture s'est appliqu_e en 3D dans 
+la "chair" de l'objet. Une nouvelle texture est tout a fait applicable en seconde
+couche.
+ 
+~2) Mise en pratique
+
+~2.1) Cr_ation d'un fond sous-marin. 
+
+   La difficult_ r_sidant dans le fait qu'il faut simuler une mati_re (l'eau) alors
+qu'il n'y en a pas.
+
+   Cr_ation d'un fond sablonneux avec un simple plan, plac_ a l'horizontale. Passez
+en mode texture (F7), chargez la texture "metal env" ainsi que "l'ast_roidbump map".
+Comme expliqu_ ci-dessus, transformez votre plan en lui appliquant la metal env map 
+en tant displacement map. La map asteroidbump map servira de texture pour le bump
+mapping avec un taux de 80 en hauteur. Passez en mode animation, puis revenez dans
+le modeleur.
+
+   Retournez dans (F7) et trouvez une couleur qui ressemble a un fond sablonneux. 
+Pour rajouter un effet un peu trouble (ce qui va simuler la texture de l'eau), 
+allons dans le world panel (F5), en bas a gauche il y a de quoi triturer les effets 
+sur le brouillard. Early fog a 70%. Il faut _galement trouver une couleur de fond 
+qui ira bien avec la sc_ne, on peut toujours essayer les valeurs r=0, g=141, b=104.
+
+   Cr_ez un "spot light" a la verticale du plan. Allez dans (F7) et utilisez la 
+"cloudtexture" sur ce spotlight (multipliez la fonction "tile" par 2).
+
+ö
+
+\T
+
+
+   Entrez dans le light panel et choisissez une couleur bleu sombre, verdatre pour 
+ce spotlight.
+
+   Plan que vous pouvez d_s a pr_sent mettre a l'_chelle qui vous convient "s".
+
+   Il ne reste plus qu'a trouver un angle de vue int_ressant et placer quelques
+objets (sous-marins ?).
+
+
+~2.2) Animation par "bones".
+
+   L'animation par key frame a d_ja _t_ abord_e mais il reste une vision de taille
+a mettre en oeuvre : les bones. Les "bones" ou "os" en Francais vont servir, comme 
+leur nom l'indique, a articuler un objet.
+
+   Pour d_buter, deux simples cylindres suffisent. Un seul d'ailleurs pour commencer
+car le copier/coller est une aisance dont on ne saurait se passer.
+
+   Cr_ons un premier cylindre. Cr_ons ensuite trois "bones", (bouton "bones") a la v
+verticale, dans le cylindre vous aurez besoin de les mettre a l'_chelle, les 
+d_placer, repositionner, etc.). Le premier servira de "bone" "parent" pour lier 
+les bones "enfants", ce premier "bone" pourra _tre tout petit ou plac_ au-dessus 
+du membre sans craindre le moindre soucis. Les deux "bones" suivants, pourront 
+alors simuler un membre par exemple.
+
+ö
+
+\T
+
+Pour construire la hi_rarchie :
+
+   S_lectionnez le premier "bone" (le parent), maintenir la touche shift enfonc_e, 
+puis s_lectionnez le "bone" suivant, et enfin, le dernier. A+g pour grouper cette 
+s_lection.
+
+   S_lectionnez le cylindre, touche shift enfonc_e, s_lectionnez ensuite le "bone" 
+parent de votre hi_rarchie squelettique, A+g pour le tout, voila votre premier 
+membre dument ossifi_.
+
+   Attention, allez dans le menu "bones" et faites un "freeze bones".
+
+   Un petit copier-coller (A+c/A+v), positionnez la copie du membre a cot_ du 
+pr_c_dent, et voila deux jambes. Vous pouvez ensuite passer en mode animation et 
+positionner vos objets ossifi_s a l'aide de rotations par exemple.
+
+   Je rappelle qu'il est toujours conseill_ de sauver son projet ou son objet 
+r_guli_rement, apr_s chaque _tape.
+
+   Voila, j'esp_re que le bout de chemin que nous avons pass_ ensemble vous aura _t_ 
+agr_able. J'esp_re a bientot avec une carte Aone flambant neuve ou peut-_tre sur un 
+autre programme de 3D.
+
+ö

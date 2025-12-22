@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><TITLE>The Ball</TITLE></HEAD>
+<BODY>
+
+ <HR>
+ <B>The Ball</B><BR>
+ <I>Petri Keckman</I>
+ <HR>
+
+ <P>
+Tarkoitukseni oli jotain hyödyllistä(?) tehdäkseni ohjelmoida
+3D-Amiga-Boing-pallon piirtävä ohjelma. Vaihtelun vuoksi halusin tehdä sen
+C-kielellä ja Dice-kääntäjällä, joka kerran on tullut hankittua. Ei oikein
+onnistunut. Mutta pakko oli taas saada Sakulle jokin ohjelma aikaiseksi ja
+kehitysprojektin ensi raakile löytyy Ohjelmat-hakemistosta:
+ </P>
+
+ Directory "Ohjelmat" on Tuesday 22-Jun-99<BR>
+ <TABLE>
+  <TR><TD><A HREF="ohjelmat/ball.c">Ball.c</A><TD>7419<TD>----rwed<TD>Today<TD>18:58:26
+  <TR><TD><A HREF="ohjelmat/ball.exe">Ball.exe</A><TD>11624<TD>----rwed<TD>Today<TD>18:58:26
+ </TABLE>
+
+ <P>
+Vaikka ensi versio piirtää vain yhden staattisen kuvan, ohjelma laskee
+ensin 3600 kpl sinejä ja kosineja taulukkoon, jotta pyöritysanimaatio olisi
+sitten nopeampaa kun se valmistuu (siis ohjelma joka sen tekisi - tai ensin
+pitäisi ohjelmoida se ohjelma, joka ohjelmoisi...). Samoin aloituksessa
+kuluu hieman aikaa, koska kaikki pallon pintaa määrittelävät pisteet myös
+taulukoidaan. Alkupisteet lasketaan pallokoordinaateilla, joiden annetaan
+kulkea toisen 180 astetta ja toisen 360 astetta.
+ </P>
+
+ <P ALIGN=CENTER><IMG SRC="kuvat/ball256.gif" WIDTH=640 HEIGHT=512></P>
+
+ <P>
+Ball vaatii AGA:n, koska värejä käytetään 256, joista 126 liu'utetaan
+mustasta punaiseen ja toiset 126 mustasta valkoiseen. Värit 0-4 on
+säästetty muuhun käyttöön. Alkuperäinen Boing-pallo on varmasti toteutettu
+paljon yksinkertaisemmalla tavalla kuin tässä: minä yritän pisteen
+järjestysnumeron perusteella päätellä sen väriä (punainen vai musta), ja
+kun pisteet on laskettu pallokoordinaateilla, eivät ne yksinkertaisella
+tavalla tule. Äh! Huomasin että lasken värinkin joka kerta
+Piirto-aliohjelmassa uudestaan, vaikka senkin olisi voinnut tallettaa
+tietuerakenteeseen,
+ </P>
+
+ <TABLE>
+  <TR><TD>struct<TD>piste{
+  <TR><TD><TD>int x;<TD>/* alkuperäiset x,y.z */
+  <TR><TD><TD>int y;
+  <TR><TD><TD>int z;
+  <TR><TD><TD>float xt;<TD>/* kierretyt */
+  <TR><TD><TD>float zt;
+  <TR><TD><TD>float yt;
+  <TR><TD><TD>int xscr,yscr;<TD>/* screenin x ja y */
+  <TR><TD>};
+ </TABLE>
+
+ <P>
+joka pisteillä on. Pallon pinta täyttyy siis pisteillä, jotka saadaan
+pallokoordinaateilla a ja b,
+ </P>
+
+ <P>
+ pisteet=(struct piste*) calloc(1,sizeof(struct piste));<BR>
+ for (a=0; a<=1800; a=a+aske)<BR>
+ {
+ <UL>
+  for (b=0; b<=3600; b=b+aske)<BR>
+  {
+  <UL>
+   pisteet=(struct piste*) realloc(pisteet,(i+1)*sizeof(struct piste));<BR>
+   pisteet[i].x=r*cosi[b]*sini[a];<BR>
+   pisteet[i].y=r*sini[b];<BR>
+   pisteet[i].z=r*cosi[b]*cosi[a];<BR>
+   i++;
+  </UL>
+  }
+ </UL>
+ }
+
+ <P>
+sellaisessa järjestyksessä, että se olisi sama kuin kulkisi ensin maapallon
+ympäri yhteen suuntaan (360 astetta) ja sitten pikkuisen toiseen suuntaan.
+Toiseen suuntaan ei tarvitse siis mennä kuin 180 astetta, niin koko pallo
+tulee täytettyä pisteillä. Kaksi peräkkäistä pistettä ja edellisen
+kierroksen vieruspisteet muodostavat yhden laatan, joka väritetään käyttäen
+AreaMove-, AreaDraw- ja AreaEnd-funktioita.
+ </P>
+
+ <P>
+Eiköhän tässä olekin dokumenttia ihan tarpeeksi näin kesätunnelmiin.
+Ainakin tätä kirjoittaessa on sellainen juhannusviikon alkupäivien
+painostava helle, että pitää ruveta viettämään keskipäivän siestaa.
+ </P>
+
+</BODY>
+</HTML>

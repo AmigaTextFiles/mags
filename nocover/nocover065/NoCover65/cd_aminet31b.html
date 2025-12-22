@@ -1,0 +1,158 @@
+<html>
+<head>
+<meta name="author" content="Wolf Zimmer">
+<title>Wildfire7</title>
+</head>
+<body text=black link=blue alink=red bgcolor=#e5cdc9><br>
+
+<hr>
+
+<h1><b><center>Wildfire&quot;s Konzept </center></b></h1>
+
+<hr>
+
+<h4><b>&Uuml;berblick</b></h4>
+
+<p>Wildfire7\PPC ist die zweite Generation unseres Versuchs ein neues
+und m&auml;chtiges Konzept zur Bild-und Animationsbearbeitung
+zu erzeugen. </p>
+
+<p>Der &quot;normale&quot; Weg der Bildbearbeitung ist es,
+eine oder mehrere Operationen (z.B. Skalieren, Mischen, ...)
+auf ein Eingabe-Bild anzuwenden. Zum Schluss wird das Ergebnis abgespeichert
+und normalerweise gehen alle Informationen &uuml;ber die
+Art und Weise der Ver&auml;nderung verloren. </p>
+
+<p>Der &quot;normale&quot; Weg der Animationsbearbeitung ist es, eine Animation
+von einem Format in ein anderes zu konvertieren, mehrere Animationen
+zu kombinieren oder einige vordefinierte Effekte auf Animationen
+anzuwenden. </p>
+
+<p>In Wildfire\7 PPC sind diese beiden Operationen nur zwei ganz
+einfache Spezialf&auml;lle des einzigartigen Konzeptes:
+
+<ul>
+
+<li><b>Abstrakte Grafik &quot;Str&ouml;me&quot; (Streams)</b><br> Anstelle von
+dem einlesen von einzelnen Bildern oder Animationen bearbeitet Wildfire
+sogenannte &quot;Streams&quot;. Nat&uuml;rlich werden im Endeffekt nichts
+anderes als Einzelbilder oder Animationen gelesen/gespeichert, aber f&uuml;r den
+Prozess der Bildbearbeitung ist der spezielle Typ der Grafiken nicht von
+Interesse. </p>
+
+<p><i>Beispiel: </i> Wenn Sie ein einfaches Bild mit einem
+&quot;gew&ouml;hnlichen&quot; Bildbearbeitungsprogramm um 30 Grad drehen
+wollen, laden Sie es ein, drehen es um 30 Grad und speichern es wieder ab. Aber
+wie f&uuml;hren Sie dies bei einer MPEG Animation mit 32 Bildern aus? In
+Wildfire geben Sie zuerst den type der Eingabe auf der Projekt Seite an. Es
+macht hierbei keinen Unterschied, ob es sich um ein einzelnes Bild oder eine
+Animation handelt. (wenn wir die unterschiedlichen Berechnungszeiten einmal
+ausser acht lassen) Danach definieren Sie den Prozess der Rotation des
+&quot;Streams&quot; um 30 Grad. Diese Definition nennt man
+&quot;Prozess&quot; und sie wird auf der Effekte Seite vorgenommen. Wenn Sie
+eine Eingabe, einen Prozess und eine Ausgabe definiert haben, liegt Ihnen eine
+sogenannte &quot;Session&quot; vor. Diese &quot;Session&quot; k&ouml;nnen
+Sie nun mittels des Menus abspeichern. Abh&auml;ngig davon, was Sie als Ausgabe
+w&uuml;nschen, k&ouml;nnen Sie nun den &quot;Einzel Bild&quot; oder
+&quot;Konvertieren&quot; Knopf auf der Projekt Seite dr&uuml;cken. </p></li>
+
+<p><li><b>&Uuml;berlagerung von Effekten</b><br>
+
+Jeder &quot;Prozess&quot; ist eine &Uuml;berlagerung von einem oder mehrerer
+Effeekte. Wildfire\7 PPC enth&auml;lt &uuml;ber 100 Effekt-PlugIns, die (fast)
+uneingschr&auml;nkt kombiniert werden k&ouml;nnen. Die Kombination der Effekte
+wird auf der Effekt Seite dargestellt. Dot k&ouml;nnen Sie so viele Effekte wie
+sie wollen verkn&uuml;pfen. </p>
+
+<p><i>Beispiel: </i> Um die Augen einer h&uuml;bschen Frau zu vergr&ouml;ssern,
+w&uuml;rden Sie zuerst die entsprechende Region aus dem Bild herausschneiden
+(Effekt: Crop) und dann diesen Bereich vergr&ouml;ssern (Effekt: Scale). Das ist
+eine &Uuml;berlagerung von zwei Effekten: &quot;Crop&quot; und
+&quot;Scale&quot;. (Wildfire unterst&uuml;tzt auch nicht-lineare Effkt
+&Uuml;berlagerungen, dies ist aber ein anderes Kapitel). </p></li>
+
+<p><li><b>Bild Puffer</b><br> Sie sind nat&uuml;rlich nicht darauf
+eingeschr&auml;nkt, nur ein Bild gleichzeitig zu bearbeiten. (Es gibt eigentlich
+keine Einschr&auml;nkung) In allen Beispielen bisher war das der Fall. Eine
+Animation wurde geladen, dann bearbeitet (rotiert, ausgeschnitten,
+vergr&ouml;ssert) und dann gespeichert. Jedoch gibt es viele Effekte, die mehr
+als nur eine Eingabe verwenden. </p>
+
+<p><i>Beispiel: </i> Um ein Bild zu erzeugen, auf dem sich ein Ball und eine
+Textzeile befindet, w&uuml;rden Sie einen Hintergrund erzeugen, dann den Ball
+und den Text und zum Schluss alle 3 Bilder miteinander composen (mischen), um
+das Ausgabebild zu erhalten. </p>
+
+<p>Solche (etwas komplizierteren) Operationen werden mittels der sogenannten
+&quot;Temp-Puffer&quot; in Wildfire gel&ouml;st. Als Vorgabe werden alle
+Operatoren auf das &quot;Standard&quot; Bild angewandt. Dieses
+&quot;Standard&quot; Bild (das Bild, was als Einzelbild geladen oder aus einer
+Animation extrahiert wurde) befindet sich immer in einem Puffer, dem sogenannten
+&quot;Stream&quot; Puffer. Weiterhin gibt es 11 andere Puffer: 7 Temp-Puffer
+und 4 3D Puffer (ignorieren Sie die 3D Puffer erst einmal). </p>
+
+<p>Jedes Effekt PlugIn hat mindestens zwei Parameter: den Namen des Eingabe
+Puffers (das zu ver&auml;ndernde Bild) und den Namen des Ausgabe Puffers (das
+moifizierte Resultat). Als Vorgabe sind diese beiden Werte als
+&quot;Stream&quot; initialisiert. Im linearen Effekt Modus k&ouml;nnen Sie
+dies ver&auml;ndern und auch jeden der 7 Temp Puffer als Ein-und Ausgabe
+verwenden. Somit k&ouml;nnen Sie gleichzeitig 8 Bilder zur gleichen Zeit im
+Speicher behalten und mittels zweier Spezieller PlugIns weitere Bilder jederzit
+laden oder speichern. Einige Effkt-PlugIns haben mehrere m&ouml;gliche Eingaben.
+Somit kann man damit Bilder kombinieren. </p>
+
+<p><i>Beispiel: </i> Um eine Animation in eine andere &Uuml;brzublenden,
+w&uuml;rden Sie zuerst die erste Animation als Eingabe auf der Projekt Seite
+einstellen. Dann w&uuml;rden Sie einen LoadAnim Effekt hinzuf&uuml;gen, mit dem
+Sie eine andere Animation Bild f&uuml;r Bild in einen Puffer einladen
+k&ouml;nnen. Nehmen wir einfach an, Sie w&auml;hlen &quot;Temp1&quot; als
+denjenigen Puffer aus. Weiterhin ben&ouml;tigen Sie einen Effekt, mit dem man
+die Bilder der ersten Animation (im &quot;Stream&quot; Puffer) mit den Bildern
+der zweiten Animation (im &quot;Temp1&quot; Puffer) kombinieren kann. Dieser
+Effekt nennt sich in Wildfire &quot;Compose&quot;. Er hat zwei Eingaben, dem
+Vordergrund und den Hintergrund. Sie w&uuml;rden &quot;Stream&quot; als
+Vordergrund und &quot;Temp1&quot; als Hintergrund ausw&auml;hlen und mittels
+des Misch-Wertes dem Effekt &quot;mitteilen&quot;, wie stark man den
+Hintergrund durch den Vordergrund hindurch sehen kann. Und schon haben Sie beide
+Bilder miteinander kombiniert und erhalten das Ergebis im Ausgabe Puffer.
+</p></li>
+
+<p><li><b>Variablen (Envelopes)</b><br> Anstatt nur fest vorgegeben zu sein,
+kann jeder Parameter eines Effektes zeitabh&auml;ngig animiert werden. Anstelle
+eines festen Wertes benutzt man in Wildfire dazu eine Variable. Der zeitliche
+Verlauf der Variablen wird durch eine Spline-Kurve, den sogenannten
+&quot;Envelop&quot;, definiert. Somit kann man bei jedem beliebigen Bild der
+Animation/Sequenz die Effekt Parameter &uuml;ndern. </p>
+
+<p><i>Beispiel: </i> Wir rotieren die schon oben erw&auml;hnte MPEG Animation
+nicht um einen festen Winkel von 30 Grad, sondern variieren den Winkel im Laufe
+der Animation von 0 Grad bis zu 360 Grad. Stellen Sie einfach im
+&quot;Rotate&quot; Effekt ein, dass der Winkel mittels einer Variablen
+berechnet werden soll. Sie k&ouml;nnen einen Start-und einen Endpunkt der
+benutzten Spline Kurve bestimmen. Nat&uuml;rlich k&ouml;nnen auch so viele
+St&uuml;tzpunkte, wie Sie m&ouml;chten, verwendet werden. In unserem Beispiel
+benutzen Sie einfach bei Bild 0 einen Wert von 0 Grad und beim letzten Bild
+Ihrer Animation einen Wert von 360 Grad. Alle Zwischenschritte werden
+abh&auml;ngig von der Anzahl der Bilder automatisch berechnet. </p></li></ul>
+
+<p>Um es ganz einfach auszudr&uuml;cken, man kann Wildfire als eine Kombination
+eines (sehr m&auml;chtigen) Bildverarbeitungsprogrammes und eines
+Animations-Konverters ansehen. Somit besteht aus aus zwei
+Haupt-Programmteilen:<br>
+
+Der Konverter und der Spezial Effekt Prozessor.<br>
+
+Im Konverter (auf der Projekt Seite) w&auml;hlen Sie den
+Grafik-&quot;Stream&quot; aus und im Prozessor bestimmen Sie die
+Spezialeffekte (deshalb wird diese Seite auch Effekte genannt), die Variablen,
+die Berechnungs-Einstellungen u.s.w.<br>
+
+Lesen Sie bitte mehr dar&uuml;ber in den folgenden Abschnitten!
+
+</p>
+
+<a href=cd_aminet31.html#wf1> Zur&uuml;ck </a>
+<hr>
+<br>
+</body>
+</html>

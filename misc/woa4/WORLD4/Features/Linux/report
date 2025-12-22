@@ -1,0 +1,861 @@
+@database "Amiga Choose Linux"
+@wordwrap
+@node main "Amiga Choose Linux over QNX"
+
+@{B}Amiga Ditch QNX in favour of Linux@{ub}
+
+Welcome to the World Of Amiga evaluation of the Linux/QNX situation
+which happened in early July.
+
+For those who don't know what's going on, on the 9th July 1999,
+it became public knowledge that Amiga had ditched QNX in favour
+of the Linux kernel for their next generation OS. They were going
+to keep the information with-held untl the technology brief was
+released, but QNX made various statements which caused Jim Collas
+of Amiga to make this @{"statement." link jc1}
+
+This set the ball rolling, the Amiga public were predicting doom
+and gloom, and the death of the Amiga, etc. Magazine editors trying
+to calm people down (well, paper mags anyway). @{"Here" link woag} is the
+definitive WOA guide to the Linux decision, and what it means for
+you.
+
+And it seemed that QNX had posted various pieces of information about
+their progress in the OS for the NG Amiga on to their site. You
+can read that @{"here" link qnx1}. Screenshots included.
+
+After a day of speculation, which, it seemed, Jim Collas had been
+monitoring very closely, we finally got some feedback from him, which
+you can read @{"here" link jc2}.
+
+Afterwards, various people offered their own opinions on the subject,
+including @{"this" link op1} from Jim himself on the comp.sys.amiga.misc
+newgroup, where he was replying to someone supporting the Linux
+movement. We also have the opinion of @{"Fleecy Moss" link op2} who used to work
+for Amiga.
+
+Collas posted numerous messages to comp.sys.amiga.misc during this saga
+including @{"these" link csam} postings...
+
+A few days after all the drama had died down, we were treated to a
+view from Holger Kruse. Click @{"here" link ho} to see it.
+
+@endnode
+@node ho "Holger's View"
+
+@{b}Holger's View@{ub}
+
+That is one reason, but not the only one. Actually, as far as networking
+goes: the networking part of the kernel is run both on the schedule of
+user processes and from interrupts, with locking whenever shared structures
+are accessed. This means some code runs outside of what could even be
+considered a process or a thread, so the term "multithreading" does not
+really apply. The networking code in the kernel IS reentrant, but requires
+mutual exclusion in many places to protect the very entangled data structures
+needed for networking. The networking code is certainly not singlethreaded
+in the same sense this term is used in filesystems (meaning that a chain of
+operations is executed successively, in a non-overlapping fashion). The
+networking code does support an arbitrary number of data transmissions in
+parallel, with mutual exclusion whenever shared data structures need to be
+modified.
+
+A big problem is that the TCP/IP code in Linux is not BSD-derived, but
+adapted from some other experimental third-party implementation. Rumor has
+it Linus misinterpreted the BSD licensing conditions and decided not to
+use their code because of that.
+
+As a result the TCP/IP code in Linux is by far the worst in the industry,
+worse even than the severely broken code in Win-NT/98. Its performance does
+not scale well, in particular under congestion, and bugs in the kernel are
+holding back the deployment of new Internet protocols because of
+interoperability problems, and are curbing performance on the Internet.
+See recent RFCs on "Known TCP implementation problems". They don't mention
+Linux there explicitly, but many of the problems listed ARE caused by Linux.
+Miami contains special code in four places only to work around known bugs
+in Linux and maintain interoperability. Add to that the various bugs in the
+Linux TCP/IP code typically caused by race conditions or unhandled errors
+(things like TCP connections remaining in CLOSE_WAIT indefinitely).
+
+Plus with all of the new developments (6Bone, MBone, QBone, Internet-2,
+NGI etc.) Linux is more or less left out in the dark, because most of the
+code developed these days is for BSD and cannot be used with Linux. To some
+extent the Linux community tries to make up for that by reimplementing some
+stuff from scratch, from the specs, but the results are often too buggy,
+incomplete, and based on obsolete specs, because Linux people are not
+involved much in the IETF standards track process, and Linux is not embraced
+by the academic community in the same way as many of the BSD-derived stacks
+(e.g. Solaris), so their code is usually not engineered and tested as well.
+See the problems with the IPv6 code in Linux for instance.
+
+Compare that to the stacks based on BSD (these days usually 4.4BSD-Lite2,
+FreeBSD 2.x/3.x or NetBSD). Those stacks are supported by most major players
+in the industry, and new developments are backed financially, e.g. in the
+KAME project (IPv6 and IPsec, backed by Toshiba, among others). The Linux
+people on the other hand cannot even get their current IPv4 TCP code to
+fully comply with specs. Still lots of open bugs. I very much doubt that
+they will have the resources to catch up with the quick development in BSD
+and Win-NT/98. Microsoft just rolled out a new IPv6 beta kernel which is
+supposed to be both Internet-2-ready and 6Bone-ready. KAME is releasing
+IPv6 kernel snapshots on a weekly basis.
+
+The only non-BSD TCP/IP implementation (besides integrated ones like Cisco),
+that is backed well financially and has a clear future is the one by
+Microsoft, of course. I would prefer that over Linux, in spite of its bugs,
+because at least Microsoft is showing some commitment in this area (trying
+to become an even more major player in networking over the next decade).
+
+At the moment these differences and problems are not very noticable in
+everyday operation, because people can still get along with older IPv4
+implementations on the current "old Internet". However that will change
+soon. With the transition to ADSL/cable modems and digital video across
+IP, and with the transition to IPv6 and IPv4-based QoS there will be a
+break in compatibility. Old stacks will still be able to use current
+services (www etc.), but new services will require new stacks. The first
+ISPs are now already offering IPv6 access, most router manufacturers are
+offering it as upgrades, and my guess is that the release of Windows-2000
+will start an avalanche of changes in Internet protocols (including QoS,
+high-bandwidth video-streaming and IPv6), that may very well cut non-BSD
+and non-Microsoft stacks (and unmaintained stacks) off from new Internet
+features, in much the same way this happened when a few years ago
+"intelligent PPP login" with PAP/CHAP and DHCP (for ADSL/cable modems)
+became required features. All of this will probably happen within the
+next 2-3 years, i.e. in a time frame that will be very crucial for the
+success of the AmigaNG.
+
+It is unclear how/if Linux fits into these changes. They are way behind
+at the moment, and the Linux people seem to concentrate more on the
+"here and now" (writing drivers for new boards etc.) and on marketing than
+on research, protocol design and interoperability testing of future
+standards and features. For BSD it is quite clear though: INRIA and KAME
+have been testing these features for quite a while, both projects will
+converge soon, and all BSD-based stacks will most likely be ready quite
+quickly. That includes the stack used in QNX (4.4BSD-Lite2), btw.
+
+My major objection to Linux (in addition to all of the valid objections
+Dave already mentioned, of course) is: For the kind of multimedia
+convergence box that attempts to integrate high-performance networking
+and audio/video, the TCP/IP kernel is one of the most crucial parts of
+the kernel, and at the same time one of the most complicated and fragile
+parts. It cannot be replaced later, so the choice of a kernel is also
+very much the choice of an TCP/IP implementation (except with extremely
+modular kernels like QNX or even AmigaOS, where you can just "plug in"
+a new stack at any later time).
+
+Given that, why did Amiga Inc. choose the ONLY kernel in the market that
+has a rather bad TCP/IP implementation AND lacks professional support
+for it ? If they really want to use a big macrokernel (which I still
+think is a huge mistake), then they should have at least gone with one of
+the free BSD kernels. At least they would get decent TCP/IP code with
+it which is properly documented, tested and extensible, plus at the kernel
+level they would basically get all the features and functionality Linux
+offers.
+
+--
+Holger Kruse kruse@nordicglobal.com
+http://www.nordicglobal.com
+NO COMMERCIAL SOLICITATION !
+
+
+
+@endnode
+@node csa1 "comp.sys.amiga.misc"
+
+@{b}Subject: Stop Attacking Jim Collas Personally
+@{b}From: Aram Iskenderian
+@{ub}
+Gentlemen,
+
+This is really annoying, we have the man who makes decisions at Amiga
+talking here with us, listening to our ideas, he's didn't do anything
+to deserve this pathetic and childish insulting, can we keep it simple
+and civil?
+
+I for one am annoyed, angry, but I cannot see anything that justifies
+insulting Jim to this level which shows that we are only a bunch of
+uncivilized retards and fanatics.
+
+Please, everyone is entitled to his opinion, but when you write try to
+express yourself and your opinion with some clean language.
+
+All these f**K Jim, and f**k Collas threads are going nowhere, and if
+you need to reply to someone please consider renaming the thread.
+
+Thanks to all the people who already did that.
+
+The decision has been made, and blasting Amiga or insulting Jim will
+do nothing but make us all look bad.
+
+And those who are posting the usual(I'm off to another platform), I'm
+sorry that you are making such a decision, but please do not hang your
+decision on the latest announcement, we've been in this situation for
+years.
+
+I am waiting for the technology breif, and I suggest that everyone
+also does.
+
+Thank you all.
+
+
+--
+Aram Iskenderian.
+Please note the new email address.
+**********@************.earthlink.net
+Enjoying the speed of ADSL....
+
+@{"Read Reply" link csa2}
+
+@endnode
+@node csa2 "comp.sys.amiga.misc"
+
+@{b}Subject: Stop Attacking Jim Collas Personally
+@{b}From: Fleecy Moss
+@{ub}
+Well said. From the times I have chatted to him, and met with him,
+Jim has always been a courteous person. We owe him at least
+the same respect.
+
+We can, and will have our opinions about his, Amiga Inc's or
+Gateway's decision, and I have always had my doubts about
+whether they really understand the community or where it
+wants to go, as opposed to where its parent company wants to
+go, but that is another matter.
+
+Defend, attack or ponder on the decisions and the strategy,
+not the messenger.
+
+@endnode
+@node csa3 "comp.sys.amiga.misc"
+
+@{b}Subject: Some clarification from Amiga
+@{b}From: Jim Collas
+@{ub}
+As you can imagine, I have been following the newsgroups closely as you
+discuss the Linux decision. The personal attacks on me are discouraging but
+I can't blame some people for being very angry. It's understandable given
+what the Amiga community has been through in the last few years and the
+way this situation unfolded. I wish I could have managed this situation
+better but I have been traveling a lot and QNX blindsided us with their
+announcement. As I mentioned in an earlier post, we were planning to
+communicate the Linux decision along with our technical brief. I don't want
+to argue the Linux decision here because you need to understand the full
+picture first and the technical brief should help this. I would like to
+address a few misunderstandings that I am seeing in the postings. Whether
+you agree with the Linux decision or not, misinformation and inaccurate
+speculation will only confuse the situation. I would like you to understand
+the following:
+
+There have been multiple comments about how Amiga led QNX on and then
+dumped them. Some of these comments imply a lack of ethics on our part.
+These comments aren't accurately portaying the situation. I am very ethical
+and won't tolerate unethical behavior at Amiga. We delt with QNX ethically
+and above the table. People shouldn't assume that the Amiga/QNX deal died
+solely because of Amiga. There were differences of opinion on strategy,
+implementation, and licensing terms that we spent months and months trying
+to negotiate. I stepped into the middle of this and was personally involved
+in the negotiations for over four months. Linux started as our back-up
+plan, just in case we couldn't reach an agreement, and it ended up as the
+preferred choice. I can't go into details but remember that things aren't
+as simple as they seem from the outside.
+
+The comments that bother me the most are the ones questioning my ethics and
+motivations. With Amiga, I inherited a situation that has been mismanaged
+for years and a community that has justifiably lost its patience. It is
+frustrating that people associate me with all of the mistakes and delays of
+the past. This gives me very little room for errors and corrections. I have
+been president of Amiga for five months and this Linux decision is the only
+major shift I have made. In hindsight, I could have better managed the
+communication on this situation but there is an incredible amount going on
+and I am only human. I will screw some things up. The surprise from QNX
+didn't help. I have been open and straight with the community in every
+situation. Amiga has made more progress in the last five months than had
+been made in the last five years. Remember that we aren't just developing
+a product. We are building a substantial company to compete in this
+aggressive industry. This in itself is no small task. In summary, give me
+a break. Please.
+
+There are many inaccurate perceptions about the size, stability, and
+performance of the Linux OS. I initially ruled out Linux because I had the
+same perceptions. There are so many options and configurations with Linux
+that it is difficult for people to get a handle on it. This is why we spent
+months evaluating it before making any conclusions. The core Linux OS is
+better than people think it is. QNX is better at a few things and Linux is
+better at others. Try not to make assumptions about the current state of
+Linux without details. I have asked Allan Havemose to summarize our Linux
+evaluation for you.
+
+I hope this will help clear up some of the inaccurate statements. I expect
+that some people will continue to slam me and our decision. I understand
+that this level of frustration doesn't go away over night. All I ask is for
+people to take the time to read and understand our technology brief when
+it comes out.
+
+Sincerely,
+Jim
+
+@endnode
+@node csa4 "comp.sys.amiga.misc"
+
+@{b}Subject: QNX announcement is unclear
+@{b}From: Jim Collas
+@{ub}
+I am not very happy with the QNX announcement. This announcement was
+neither reviewed nor approved by Amiga. Several weeks ago we made a
+decision to use the Linux OS kernel instead of QNX. We were planning to
+communicate this decision to the Amiga community in the technology brief
+to be released in the next few days. I know this is a shock to many people
+given the previous announcements and activities relative to QNX. I
+apologize for the way this is being communicated but I have been put in an
+awkward position. The formal announcement will be on the Amiga web site
+within 12 hours. Please read this for more information.
+
+After months of research and in-depth discussions with our technology
+partners we decided to use Linux as our OS kernel for the new Amiga
+Operating Environment (OE). This was a very complicated and difficult
+decision to make and I assure you that I didn't make the decision without
+a significant amount of research and deliberation. We have been researching
+Linux as an alternative for several months now but a final decision wasn't
+made until a few weeks ago. Once you understand the reason for the decision,
+I think that you will agree that it is a good decision.
+
+Linux has picked up a significant amount of momentum in the last year as an
+viable alternative OS. In talking to the key component suppliers it was
+clear that they were all putting resources on supporting Linux. It was
+difficult to convince them to support yet another OS kernel. Using the
+Linux kernel allows us to leverage a significant amount of software from
+the Linux community.
+
+Given the momentum, we decided to do an in-depth technical analysis of
+Linux. As we ported parts of our higher level OE and AmigaObject
+architecture to Linux for testing, we discovered some significant
+performance advantages in the Linux kernel in areas such as distributed
+object messaging across a network (up to 10X the performance of Windows NT).
+This is a strategic performance advantage for our new environment. Although
+Linux configurations can be very large, the core Linux kernel and services
+are actually quite small and efficient. We have also identified hardware
+components that are being optimized for Linux. I am convinced that we can
+build an incredibly impressive next generation Amiga based on the Linux OS
+kernel.
+
+We are integrating a significnant amount of technology to make the Amiga
+unique yet we will still be able to leverage drivers and also some
+applications. In many ways, it's the best of both worlds.
+
+Our soon to be released technology brief will further explain our
+architecture and plans for integrating all of the selected technology. Once
+you read it I am confident that you will understand the revolutionary
+nature of the next Amiga and the reason why we have a great opportunity to
+drive the next computer revolution.
+
+As for QNX, I can assume that they aren't happy that they didn't get the
+Amiga opportunity and they decided to confuse the issue. Regardless of what
+QNX announces, the Linux OS is much more mature and supported. It's
+unfortunate and I apologize again for how this got communicated.
+
+I look forward to getting feedback on our technology brief. I also look
+forward to sharing more of our plans at WoA and AmiWest and seeing some
+of you there in person.
+
+Jim
+
+@endnode
+@node csam "comp.sys.amiga.misc"
+
+@{b}comp.sys.amiga.misc@{ub}
+
+Aram Iskenderian  +- @{"Stop Attacking Jim Collas Personally" link csa1}
+Fleecy Moss       |  +- @{"Re: Stop Attacking Jim Collas Personally" link csa2}
+Jim Collas        |- @{"Some clarifications from Amiga" link csa3}
+Jim Collas        |- @{"QNX announcement is misleading" link csa4}
+
+@endnode
+@node op2 "Fleecy's View"
+
+@{b}Fleecy's View@{ub}
+
+To go from the heights of ecstasy to the pits of dispair far deeper than
+even Schindler's valley, and all in 24 hrs. The slings and arrows of
+outrageous misfortune really seem to like the Amiga community, but when
+they are fired from our own supposed masters, then it just freaks me out.
+
+If you don't know, follow these simple instructions
+
+1 - http://www.qnx.com/amiga/
+2 - read Collas's latest on the Amiga website
+3 - get a big bottle of Vodka and go out shooting rocks
+
+The first good news in years from QNX, that they have had 40 ppl working on
+adding enhancements to their cutting edge RTOS to make it more consumer
+friendly, that they will launch a full featured developer support program,
+that they want the community to come over and develop for it. Most
+importantly, that they will have product to ship.
+
+And then Amiga Inc pulls the rug out from under them. QNX will no longer be
+the partner. Linux is a better alternative. Give me a break. The community
+has spent the last 9 months tearing the QNX site apart, gobbling up its
+data, demos, and manuals, learning all about the company, characters,
+partners and projects. We like QNX. It is very amiga like, very advanced.
+The company is friendly and fun, and most of all they care about their
+community and their technology.
+
+And now Amiga Inc has shafted them.
+
+Technically, they are just plain wrong. Morally, I find it repugnant that
+they would do this, not just to another company, but to the community.
+Leading us along for 2 years, telling us wonderful things as no products
+were forthcoming, and then telling us we are going to Linux.
+
+What a farce.
+
+Amiga Inc may have the name of our platform, but they do not have our
+hearts or even our best interests at heart. We have always suspected they
+wanted to dumbsize the Amiga, so that Ma and Pa kettle could buy beans over
+their TV, but this is the final straw for me. I am signing up for the QNX
+developer program, and I hope many others will as well.
+
+We are a community, and as such we have some pride, and some value. Amiga
+Inc had their chance with us and this announcement is the final straw. I
+see in QNX maybe a new way forwards - a full featured, advanced OS that,
+whilst rough, can grow to meet the community as the community grows to meet
+it.
+
+In six months time, we could have community products, shareware, PD running
+on our new boxes, stuff from World Foundry, Delsyd, Digital, Paul Nolan,
+Tornado, Cloanto, Nova, A.C.T, and maybe even running on PPC boxes, if we
+could persuade QNX to go that direction. Hell, we could be like a real
+platform again.
+
+Sorry Jim, but that was your last shot. Hello Dan, tell us what you've got.
+
+Fleecy Moss
+
+@{"Neils Opinion" link op2c}
+
+@endnode
+@node op2c "Neil's Comment"
+
+@{b}NEILS COMMENT@{ub}
+
+What Fleecy (ex employee of Amiga) says is true, in part. The Linux
+announcement was delivered in the most abysmal way, ditching QNX so close
+to the finalisation of the product. But Jim does care about the Amiga
+community. Why else would be waste precious time writing these
+announcements and things. Bear in mind that this was written before the
+Technology Brief, so when we have the technology brief, that'll also be
+commented on.
+
+@endnode
+@node op1 "Jim's Comeback"
+
+@{b}Jim's Response on comp.sys.amiga.misc@{ub}
+
+Taken from comp.sys.amiga.misc. Written by Jim Collas, replying to
+someone's support for the Linux decisio
+
+I don't blame people for being upset about this
+decision. The frustration is understandable given all that the Amiga
+community has been through. It's unfortunate that I inherited a
+situation that has been mismanaged for so long and a community that has
+justifiably lost it's patience. It gives me very little room for error
+and corrections. It is frustrating that people associate me with all of
+the mistakes and delays of the past. This is the first major change I
+have made in my 5 months as president. It is also frustrating that
+people think that we led QNX along and then dumped them. People
+shouldn't assume that the Amiga/QNX deal died solely because of Amiga.
+There were differences of opinion on strategy and implementation and we
+spent months trying to negotiate an agreement. Linux started as our
+back-up plan just in case and ended up as the preferred choice. The
+Linux decision is a good decision for many reasons that I can't fully
+go into. I think people will see this in time. Meanwhile, I will just
+keep focused on getting to the next generation.
+
+Sincerely,
+Jim
+
+@endnode
+@node jc2 "Jim's Comeback"
+
+@{b}Jim's Comeback@{ub}
+
+As you can imagine, I have been following the newsgroups closely as you
+discuss the Linux decision. The personal attacks on me are discouraging
+but I can't blame some people for being very angry. It's understandable
+given what the Amiga community has been through in the last few years
+and the way this situation unfolded. I wish I could have managed this
+situation better but I have been traveling a lot and QNX blindsided us
+with their announcement. As I mentioned in an earlier post, we were
+planning to communicate the Linux decision along with our technical
+brief. I don't want to argue the Linux decision here because you need
+to understand the full picture first and the technical brief should
+help this. I would like to address a few misunderstandings that I am
+seeing in the postings. Whether you agree with the Linux decision or
+not, misinformation and inaccurate speculation will only confuse the
+situation. I would like you to understand the following:
+
+1) There have been multiple comments about how Amiga led QNX on and
+then dumped them. Some of these comments imply a lack of ethics on our
+part. These comments aren't accurately portaying the situation. I am
+very ethical and won't tolerate unethical behavior at Amiga. We delt
+with QNX ethically and above the table. People shouldn't assume that
+the Amiga/QNX deal died solely because of Amiga. There were differences
+of opinion on strategy, implementation, and licensing terms that we
+spent months and months trying to negotiate. I stepped into the middle
+of this and was personally involved in the negotiations for over four
+months. Linux started as our back-up plan, just in case we couldn't
+reach an agreement, and it ended up as the preferred choice. I can't go
+into details but remember that things aren't as simple as they seem
+from the outside.
+
+2) The comments that bother me the most are the ones questioning my
+ethics and motivations. With Amiga, I inherited a situation that has
+been mismanaged for years and a community that has justifiably lost its
+patience. It is frustrating that people associate me with all of the
+mistakes and delays of the past. This gives me very little room for
+errors and corrections. I have been president of Amiga for five months
+and this Linux decision is the only major shift I have made. In
+hindsight, I could have better managed the communication on this
+situation but there is an incredible amount going on and I am only
+human. I will screw some things up. The surprise from QNX didn't help.
+I have been open and straight with the community in every situation.
+Amiga has made more progress in the last five months than had been made
+in the last five years. Remember that we aren't just developing a
+product. We are building a substantial company to compete in this
+aggressive industry. This in itself is no small task. In summary, give
+me a break. Please.
+
+3) There are many inaccurate perceptions about the size, stability, and
+performance of the Linux OS. I initially ruled out Linux because I had
+the same perceptions. There are so many options and configurations with
+Linux that it is difficult for people to get a handle on it. This is
+why we spent months evaluating it before making any conclusions. The
+core Linux OS is better than people think it is. QNX is better at a few
+things and Linux is better at others. Try not to make assumptions about
+the current state of Linux without details. I have asked Allan Havemose
+to summarize our Linux evaluation for you.
+
+I hope this will help clear up some of the inaccurate statements. I
+expect that some people will continue to slam me and our decision. I
+understand that this level of frustration doesn't go away over night.
+All I ask is for people to take the time to read and understand our
+technology brief when it comes out.
+
+Sincerely,
+Jim
+
+@{"Click here to read Neil's Comment" link jc2c}
+
+@endnode
+@node jc2c "Neil's Comment"
+
+@{b}NEILS COMMENT@{ub}
+
+I have to agree, the personal attacks on Collas are not only discouraging,
+but disgusting. The Amiga public are used to let downs, but this isn't
+an excuse for the comments made about Jim. Nor is the decision a 'let
+down'.
+
+@endnode
+@node qnx1 "Dan Dodge's Announcement"
+
+@{b}Dan Dodge
+CTO, QNX Software Systems
+@{ub}
+Last November at Computer 98 in Cologne I promised to deliver an advanced
+operating system that would once again put Amigans at the forefront of
+technology. Over the past 7 months we have had a team of over 40 engineers
+working towards making that promise and vision a reality. We are now in
+the final stages of development and are poised to put these new
+technologies into the hands of thousands of serious, enthusiastic
+developers like yourself.
+
+QNX is often compared to UNIX, LINUX and BSD. We do share the same POSIX
+APIs, and most code written for these systems ports easily to QNX, but the
+resemblance ends there. Based on 20 years of OS experience, QNX has a
+radically more advanced architecture. It's a massively scalable, multi-
+threaded, fault-tolerant, realtime OS designed for devices and computers
+of any type or size. QNX provides a unique network architecture where
+large full-service protocol stacks aren't required on each computer and
+devices plugged into the network are simply "discovered" automatically by
+other devices - all services and peripherals of the new device can then
+be used by any other device in the network. QNX is also the only
+self-hosted RTOS where the development environment and the runtime target
+environment are the same. And though we're not open source, we adopt an
+"open source" policy for hardware-specific drivers. This allows us to
+continually support the latest hardware advances, while still maintaining
+control of core technology. More importantly, it ensures QNX has a focused
+vision for the future.
+
+If you haven't visited our web site before, I invite you to look at the
+QNX Realtime OS and Photon microGUI®. If you'd like to dig a little deeper,
+we've included some screen shots of the exciting new look-and-feel for
+Photon below (click on the image to expand). We've also put the new QNX
+Neutrino System Architecture manual online.
+
+In a nutshell, QNX is the core and Photon the graphical environment for our
+new OS foundation:
+
+QNX - Supports POSIX thread services, MMU protected memory for all
+applications and drivers, variety of file systems (QNX, flash, DOS,
+CD/DVD-ROM, etc.), TCP/IP stack, transparent distributed networking, and
+development libraries.
+
+Photon microGUI - Complete windowing system with full Unicode support for
+integrated internationalization. Also includes visual application builder
+(PhABTM), powerful development environment (layered libraries, over 50
+widgets, built-in image support, online documentation, etc.), web browser,
+multimedia player, 3D graphics, and gaming support.
+
+Although Photon represents a unique new graphical environment, it works
+seamlessly with existing windowing systems. You can, for example, connect
+to a Photon desktop from a Windows desktop or connect to a Windows desktop
+from a Photon desktop. And because a large number of existing source bases
+use the X Window System, we allow developers to compile an application for
+X and then run the application under Photon.
+
+QNX Developers Network for Amigans
+To deliver this technology to Amiga developers, we're creating the QNX
+Developers Network for Amigans. Qualified Amiga developers will receive,
+at no charge, a complete beta development package that includes the QNX
+Realtime OS, a suite of state-of-the-art multimedia technologies, the
+unique network-distributed Photon microGUI, and a self-hosted development
+environment. We will also create a dedicated online newsgroup, as well as
+a web site to provide technology updates and previews.
+
+Initially, we're looking for beta sites interested in porting existing
+applications or writing new applications. Companies and individual
+developers are both invited to join - the only thing we ask is commitment.
+We want active beta testers, not tire kickers, who will promise to provide
+valuable feedback.
+
+Of course, commitment goes both ways. So in addition to starting this
+program, we will, as of now, become active and vocal in all the appropriate
+newsgroups and magazines. We're looking forward to being a fully active
+member of the Amiga community, and to working closely with Amigans to
+create the next revolution in multimedia computing.
+
+@{b}Initial Release@{ub}
+Our initial beta release will be for x86 PCs. While this hardware platform
+may, at first, seem undesirable to some of you, remember that most QNX
+applications and device drivers are source-identical across CPUs and
+boards. As a result, any work done on x86 will migrate easily to any other
+supported platform. We chose x86 because it's the hardware solution most
+widely available at low cost in the time frame that we wish to release the
+first beta - this Fall.
+
+@endnode
+@node woag "World Of Amiga Linux Evaluation"
+
+@{b}What this all means
+@{ub}
+You probably know by now that Amiga have sensationally ditched QNX for
+what seems to be a very bad reason. The Amiga public discussed nothing more
+for days after the event. Many thought it was a bad move, and since Amiga
+Inc. seem to have no strong reasoning behind the move, I'm inclined to
+agree with them. Mr Collas has already been called 'killer of the Amiga' by
+various members of the Amiga community because of this decision.
+
+So, their apparent lack of reason behind the change to Linux technology
+could spell the end for the Amiga? Or could it. Consider this. Linux is
+well established in the computing world, indeed threatening Microsoft's
+Windows line of Operating Systems. It is well supported, free and includes
+lots of good features. And no doubt it will include extra bells and
+whistles from Amiga themselves. So where's the difference between this and
+QNX?
+
+There really isn't one when you look into it. You can already get Linux for
+the Amiga, which makes it seem a bit pointless. Although, as mentioned,
+the official Amiga version should have extra Amiga specific bits added to
+it.
+
+"We really do need the OS to be significantly different from other
+platforms to make it interesting... and QNX filled that spot nicely.  QNX
+allowed simple porting of Linux software as it was.... So how the hell are
+the going to be able to get the OS out for the new hardware in time?" -
+Ashley Scott. Satanic Dreams Software
+
+I agree with that point. It's something I put to Mr Collas in an email I
+sent to him. Whether he will reply or not is a totally different matter. No
+doubt that he'll have thousands of Emails to reply to about the subject
+once it became public knowledge on the 9th July 1999.
+
+"Amiga were saying at Cologne that the QNX system would be revolutionary,
+a real time OS that would really be real-time, perfect for multimedia. With
+all the bells and whistles that will be added to Linux it is still not
+something as new and special as the QNX based OS could be." - John Hart -
+Amiga User
+
+Agreed. Linux IS being used, and offers the same things as QNX would have,
+but Linux doesn't have the same appeal or as many things that could really
+have been extra-special. However, I've just received the news from QNX that
+they still intend to go ahead with their realtime operating environment for
+the Amiga. "QNX developer pleas for Amiga community support" was on the QNX
+website just a few short hours after the announcement.
+
+However, those who can afford the massive one and a half thousand pound
+price tag for the development software will no doubt be plased, but that
+kind of excludes the rest of us. It's an extra 200 quid if you want
+manuals!!! The QNX beta will, apparently, ship in the autumn, initially on
+the x86 platform, "the hardware solution most widely available at low cost
+in the time frame that we wish to release the beta." So at least the PC
+users get a decent OS out of all this.
+
+"We did what we said we'd do, Dodge appears to be saying, but Amiga has
+still turned away from us -- everyone in the Amiga community should make
+sure it doesn't get away with it." - Daniel Thornton. This is very true.
+Everyone seemed to be getting excited about the forthcoming release of the
+new software and hardware, only to be told by Jim Collas that they're
+ditching the QNX technology, which must have been nearing completion, in
+favour of Linux! A move that will surely delay the new computers by at
+least 6 months.
+
+"This is bad... very bad... because it is going to undermine the whole NG
+project andthe credibility of Amiga & Gateway and completely destroy the
+little confidence in Amiga that is left..." - Alan Day - Amiga User. The
+Amiga users which have voiced their opinions in various forums seem to be
+speaking of this event as a bad thing, when infact, when you look at it,
+isn't.
+
+For a start, we're going to land up with two new seperate OS's. QNX are
+still making theirs for the Amiga, and we'll get this Linux variant.
+Secondly, remember than this Linux variant ISN'T Linux. It's the kernel,
+but not the operating system. Finally, perhaps all the hype and hysteria
+generated by this will make Amiga realise they need to keep their
+communication channels open with the public.
+
+One very strange, and some may suggest, very consipirative, happened the
+day the news was broken. The Amiga.com and Amiga.de websites went down.
+They're back up now, but for one moment there, some of the more dramatic
+people in the Amiga world thought the end of the Amiga had come. Not true,
+I must add.
+
+"One advantage of Linux over QNX: A lot of people already use Linux in the
+real world - aren't the general public going to accept a machine with an
+existing, well established OS rather than a relatiely unknown? People go
+with what they know - that's why the PC has been so successful; it could
+do the same for the Amiga." - Rob Marris - IBM UK. This is possibly the
+most sensible approach so far. Indeed, lots of people use Linus as opposed
+to Windows, which ideally could be the saviour of the Amiga. If the Amiga
+comes back with a Linux based OS, rather than something no-one has used
+before, maybe there'll be more sales, and more new users.
+
+Anyway, after a day, most people are now comfortable with the idea.
+There's not a lot they can do about it anyway. It's a case of like it or
+lump it. And most people have seen the light and see that Linux could do
+just as well as QNX. It's really just Amiga's timing which cocks the whole
+thing up.
+
+-- QUOTES FROM WOA
+
+I'm in disbelief.  I don't think Linux is a bad choice, but I wonder if the 40
+full-time QNX engineers were working on the kernel specifically for the new
+Amiga, or if they were just doing their own development anyway, and Amiga was
+along for the ride.  I think the QNX graphical model (QNX Photon) is very
+interesting, and they make a great RTOS.  I just got contacted for being a
+beta tester, so I wonder what to do now.
+
+Joe Solinsky
+
+
+
+
+@endnode
+@node jc1 "Jim Collas' Initial Linux Statement"
+
+@{b}Linux Annoucement@{ub}
+
+Dear Amigans,
+
+After months of research and in-depth discussions with all of our
+technology partners we have decided to use Linux as the primary OS kernel
+for the new Amiga Operating Environment (OE). I know this decision is a
+shock to many of you given the previous announcements and activities
+relative to QNX. This was a very complicated and difficult decision to make
+and I assure you that I didn't make this decision without a significant
+amount of research and deliberation. We have been researching Linux since
+February but didn't finalized our decision until several weeks ago. We
+were planning to communicate it to the Amiga community in the technology
+brief that will be released in the next few days.
+
+I am pressed to communicate the Linux decision before the technology brief
+because of information released by QNX in the last few days. This
+information had not been reviewed or approved for release by Amiga. In
+light of our Linux decision, this information is confusing and misleading
+so I would like to take the time to clarify the situation. I can't
+disclose any details of the Amiga/QNX discussions because of legally
+binding confidentiality agreements but I can talk to you about our decision
+to use the Linux kernel. I think that you will agree that this is the
+right decision once you understand the reasons for this decision.
+
+Before I continue, I should mention that our technology decision does not
+reflect negatively on QNX. I believe that QNX is a good company with great
+technology. I just believe that Linux gives us a better chance of executing
+our plans successfully.
+
+The decision to use QNX as our OS partner on our next generation multimedia
+convergence computer (MCC) was made late last year. When I took over as
+president of Amiga in February of this year, I initiated an in-depth review
+of existing Amiga plans and decisions. As president of Amiga I had to make
+sure that we were defining a strategy and an execution plan that would
+allow Amiga and the Amiga community to be successful. We reviewed our
+strategy, architecture decisions, technology partners, and execution plans.
+During this review period we also added a number of very talented and
+experienced people to help us finalize our technology and product decisions.
+I am confident that we now have a solid and exciting plan that people can
+have confidence in.
+
+Linux has been picking up substantial momentum over the past year as a
+viable, open OS alternative in the marketplace. This momentum, the growing
+commitment to Linux applications from a wide variety of software vendors,
+and the growing availability of Linux device drivers from hardware vendors,
+makes it a compelling candidate. Additionally, with all of the significant
+component suppliers putting resources on writing drivers for Linux it was
+difficult to get them to port to yet another operating system. Using the
+Linux OS as a foundation for our Amiga OE allows us to leverage a
+significant amount of available software drivers and utilities. This allows
+us to quickly support multiple graphics cards and other peripherals.
+
+Given the above-mentioned advantages, we decided to do an in-depth
+technical analysis of Linux to determine if it was a suitable OS kernel
+for our new Amiga operating environment (OE). As we ported parts of our
+higher level operating environment and AmigaObjectTM architecture to Linux,
+we discovered some significant performance advantages in the Linux kernel
+in areas such as distributed object messaging across a network (up to 10X
+the performance of Windows NT). Although Linux configurations can be very
+large in size, the core pieces of the Linux kernel are actually very small
+and efficient. In considering hardware requirements we also found companies
+working on hardware components that were optimized for the Linux kernel.
+Additionally, Linux is probably the most stable operating system available
+in the market. After months of in-depth research we were confident that
+we could build an extremely exciting next generation Amiga based on the
+Linux OS kernel.
+
+Does this mean that the next generation Amiga will not be unique?
+Absolutely not! Remember that the OS kernel is only one component of the
+new Amiga OE and the hardware is unique. The revolutionary nature of the
+Amiga OE is in the way it extends the traditional operating system to
+provide a host environment for a new class of portable applications
+applications that exist in a pervasive networked computing environment. We
+will be integrating multiple technologies including an efficient windowing
+environment and a unique user interface.
+
+In summary, we decided to use Linux because of the incredible momentum and
+the fact that it is solid technology and a good foundation for our new
+Amiga OE. Additionally, the Linux community is an impressive force that we
+should be aligned with. We share many common values and objectives with
+the Linux community. Using Linux as our OS kernel allows us to build a
+unique and revolutionary operating environment while leveraging the
+enormous momentum of Linux.
+
+The soon to be released technology brief will further explain our
+architecture and plans for integrating all of the selected technology. Once
+you read it, I am confident that you will understand the revolutionary
+nature of the next generation Amiga. I assure you that Amiga and the Amiga
+community will be a driving force behind the next computer revolution.
+
+Sincerely,
+Jim Collas
+President, Amiga
+
+@endnode
+
+
+

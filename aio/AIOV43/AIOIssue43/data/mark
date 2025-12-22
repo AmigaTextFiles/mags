@@ -1,0 +1,94 @@
+{bold}The Question{nobold}
+{p} {p}
+{p} {p}
+Hello,
+{p} {p}
+Okay, I got a tech question here, and it's from ME.  So, here goes
+{p} {p}
+First my set up:
+{p} {p}
+A4000 with Cyberstorm MkII and cyberscsi, 100+ megs of ram, 4X CD ROm,
+Cybervision64, 1 Gig HD
+{p} {p}
+Currently: upgrading to a 18.2 Gig drive.  Current status: partitioning and
+reformating.
+{p} {p}
+Problem: I get it partitioned and formatted and then begin copying data from
+my old drive, so far so good.  I copy from my largest partition (700Megs)
+and next reboot I have a checksum error.  Fixing that causes the successive
+partitions to dump on me, needing formating once again.  this only seems to
+happen when copying from that one partition.
+{p} {p}
+Said partition happens to have my internet software on it,
+amongst which is Voyager and it's Cache directory.
+{p} {p}
+In the past, I've had a bad V crash (nbefore I just had it cache to RAM:)
+and when recovering the old 1gig drive found the bad file was in
+Voyager:Cache; said file had a checksum and was supposedly fixed.
+{p} {p}
+Question: if such a file was still damaged, could the act of copying it over
+to the new drive cause such things as errors on the new partition, leading
+to invalid partitions and others getting errors as well?
+{p} {p}
+{p} {p}
+{bold}The Answer{nobold}
+{p} {p}
+{p} {p}
+I assume your using the '64' bit FFS that comes with OS3.5 and the 3.1
+roms. That clears any possibilty for there being an OS update problem.
+{p} {p}
+If I were you I'd fiddle with MaxTransfer, perhaps the mask and the
+buffer sizes a bit. Then again, I'd probably be using SFS :) Remember
+that SFS tutorial I did? If your not already using it, perhaps you
+could try SFS on one or two partitions, and work off them for a while.
+Or, if you don't like that idea, then try copying from your FFS
+partition to the SFS one and back again (or vice versa, if your using
+SFS...) I'm sure that would probably fix your problem. BTW I have had
+1 major crash with SFS the whole time I've been using it, and when
+that happend, I was still able to copy 1.2GB stuff off my broken
+partition, save about 100kb. I *highly* recommend it. It's faster,
+better... I'm sure you can figure that from the tutorial tho ;)
+{p} {p}
+As for the possibility of copying a corrupt file from one partition to
+a good one causing it to go bad, I wouldn't be surprised, but I'm not
+an expert on FFS (or even file systems in general). All I can say is
+that I would have thought FFS would copy the data only, and rewrite
+the necessary object nodes and containers into the new partition
+from scratch. Even if the file was corrupted on your 1GB hd, the data
+associated with the file would be read and then rewritten afresh on
+the new partition. So the only exception to this case would be some
+attribute of the file that is causing problems, and is not trapped by
+FFS. Here is a little scenario:
+{p} {p}
+FFS uses a system unlike a File Allocation Table on wintel PCs,
+where there is a central 'database' (hence table) describing where
+files are and what their date stamp, file name is etc. FFS, on the
+other hand, is a bit like a giant linked list, but with a bitmap to
+give quick reference as to what parts of the drives are in use. When
+your HDD becomes 'invalid', that is what is being rebuilt when you
+reboot. It is going through all the linked nodes and writing out
+a 'valid' bitmap again. I'm sorry if you already know this, I'm just
+going over everything ;)
+{p} {p}
+The file could be fragmented over a few different segments; if one
+segment didn't point to another correctly, then you end up with a file
+that contains bits of white space or other files (cross linked) that
+were never ment to be part of the original file. If, under some freak
+circumstance, this didn't trigger FFS to make the partition 'invalid',
+then you may have a bitmap that does not accurately represent how the
+data is actually stored on the hard drive. For example, a file could
+be reported as being 5000 bytes, but if you followed the data segments
+that pointed to each other in the linked list, the file could actually
+be larger, say 6000 bytes. So when you do a copy, FFS
+allocates only 5000 bytes on the new partition, but 6000
+bytes of data is written - probably over an existing file, or
+in free space that gets taken up by the next file you copy.
+{p} {p}
+THIS could cause a checksum error, I guess, but I bet that there is a
+99% chance this didn't happen ;) The reason being I don't know if FFS
+really does work the way I have described it. It's only a theory
+Have you tried deleting the V cache? It's not like you need it anyway :){p}
+{bold}Editor's reply:{nobold}  Actually, I've been caching out of RAM for quite some
+time, I've just been afraid to go near that old cache directory...
+it's {italic}dark{noitalic} in there.
+{p} {p}

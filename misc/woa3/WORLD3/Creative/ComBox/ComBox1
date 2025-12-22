@@ -1,0 +1,124 @@
+Command Toolbox
+
+This is the start of a new series looking at certain Workbench commands
+and how powerful they are. We start with the widely underused 'List'
+command which is a favourite for all these types of articles. Since
+list is the most powerful command in the Workbench, we might as well
+get it out of the way.
+
+List is, as mentioned, the most powerful command you are likely to
+find. Perhaps on any computer. Not only does it have it's own built in
+redirection, instead of relying on AmigaDOS for it, it also has the
+ablility to generate entire scripts!!! To really get the most out
+of this tutorial, go see our 'Patterns' feature elsewhere in the mag
+which will eplain all the various pattern matching techniques which
+you can use under AmigaDOS.
+
+Most of you will know List is responsible for listing the contents of
+a directory, much like the Dir command used in the Patterns article.
+However, it gives a lot more information about each file. Here's what
+you'd get if you typed 'Dir Libs:locale.library'.
+
+Locale.library
+
+Which doesn't tell you much. If you type in 'List Libs:Locale.library'
+then you'd get something along the lines of this:
+
+Directory "libs:" on Sunday 21-Feb-99
+locale.library             18072 ----rwed 13-Dec-98 17:43:56
+1 file - 37 blocks used
+
+This tells you when you're looking at the directory, what directory you
+are looking in, what file you're looking at, the size of it, it's
+protection bits, the date and time it was last modified and how many
+blocks it takes on the disk. Slightly more than Dir gives you.
+
+Ok, but that's easy. Everyone knows how to do that. Perhaps something
+you don't know about the List command is, it has it's own built in
+redirection. Perhaps you didn't even know about redirection in the
+first place, so let me explain.
+
+Redirection is a clever little process whereby you can redirect a commands
+output to somewhere other than the screen. All commands can do this
+because it's not actually handled by the command, it's handled by
+AmigaDOS. Say you wanted to redirect the Echo command to a file. You'd
+type:
+
+Echo "This will be redirected" >ram:file
+
+If you want to append several lines of text using the echo command,
+type something like:
+
+Echo "First line" >>ram:file
+Echo "Second Line" >>ram:file
+
+You can do this with List, but it does have it's own redirection. Say
+you wanted to list the contents of the Libs: directory to a file
+in ram:. You'd type something like this:
+
+List Libs: TO Ram:File
+
+This, theoretically means that you can output to two seperate places
+at once, but what use this would be remains to be seen. Of course,
+listing the directory contents to a file isn't much use either,
+perhaps you'd want to make a list of which files were made after
+a certain date. Well, List is capable of such a thing. Use the
+SINCE parameter.
+
+List Libs: SINCE 02-02-99 TO Ram:FILE
+
+You'd then get a list of files created or modified since 02-02-99 in
+Ram:File. This might be some use to someone, but won't mean much
+to many people. While on the subject, there is another parameter which
+goes hand in hand with the SINCE parameter, and that is UPTO, which
+lists files created up to the date you specify:
+
+List Libs: UPTO 13-09-98
+
+If you want to list just files or directories, use the FILES and DIRS
+switches (see 'Templates' article). If you want a nice quick listing,
+use the Dir command, or use the QUICK switch on the List command.
+
+List Libs: QUICK
+
+Now on to the best bit which I've been saving for last. It might
+confuse you. Some of you may know that the Amiga (and some other
+computers?) use a complex system of % system variables. Don't concern
+yourself with the name if it seems a bit technical because it
+doesn't matter. Basically, some programs accept these special %
+variables and the system replaces them with something relevant. List
+is one such program which accepts these, but not without specifying
+the LFORMAT parameter.
+
+LFORMAT lets you format the output of the list command to suit your
+needs, so you can create a whole script with it if you really want to.
+If you don't believe me, check out your startup sequence, it contains
+one such script generation using the list command.
+
+List Libs: LFORMAT %s
+
+is one such example. Notice '%s'. This is one of those % variables.
+List uses it's own set of these, and here are most of the ones you
+can use. It's an idea to enclose them in speech marks...
+
+%s - Filename
+%s%s - Directory Filename
+%d - Date of creation
+%a - Protection bits
+%t - Time of creation
+
+If you wanted to present some information to someone using List, in
+a proper English sentence, you might like to try something like this:
+
+List Libs: LFORMAT "File '%s' was created on %d at %t"
+
+And that's the way you'd create a script. Say you wanted to delete
+all files in libs created after 02-02-99, you'd type this:
+
+List Libs: TO Ram:File SINCE 02-02-99 LFORMAT "Delete %s"
+Execute Ram:File
+
+
+Drop us an email if you want a command covered. We won't choose our own
+commands in future, so if no-one suggests one for next issue, we won't
+have a command toolbox. Email address: woa_combox@trogsoft.freeserve.co.uk

@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/98 - Installer-StyleGuide</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif"><CENTER>
+<H1>Installer-StyleGuide</H1>Original von Loren Wilton<BR>
+&Uuml;bersetzung und Kommentare<BR>von<BR><A HREF="mailto:A.Wyrwa@BBrandes.in-brb.de">Andr&#233; Wyrwa</A></CENTER>
+<P>[Die &Uuml;bersetzung und die Verwendung des Originaltextes durch den
+AmZeiger wurde durch Amiga Int., Inc. autorisiert; d. Chefred.]</P>
+<P><B>Eigene Anmerkungen</B> sind durch geschweifte Klammern { } gekennzeichnet.
+</P><P>Ein Installer-Script f&uuml;r eine bestimmte Anwendung zu erstellen, ist mit
+Hilfe des Installers V43.2 {V43.3} recht einfach. Aber um eine wirklich
+gro&szlig;artige Installation durchzuf&uuml;hren, halten Sie sich bitte an die
+folgenden Regeln...</P>
+<UL>
+<LI><P>Der Installer h&auml;lt mit der V43 ein paar neue Funktionen bereit,
+wie bessere R&uuml;ckgabewerte f&uuml;r gewisse Statements und proportionale
+GUI-Darstellung f&uuml;r Auswahl-Screens. Die mindest-Versionsnummern
+{f&uuml;r die einzelnen Funktionen} sind in den entsprechenden
+Beschreibungen vermerkt. Bitte &uuml;berpr&uuml;fen Sie die Variable
+`@installer-version', bevor Sie diese neuen Funktionen verwenden.  </P><p>
+Diese Variable wird bei alten Versionen des Installers  {in denen sie
+noch nicht angeboten wurde}, wie z.B. der V1.24, den Wert 0 annehmen,
+es ist also sicher und leicht, sie zu &uuml;berpr&uuml;fen. Bitte pr&uuml;fen Sie
+nicht exakt auf Gleichheit, sondern wie bei Libraries auf eine
+minimale Revisions-Nummer.</P><BR><BR></LI>
+<LI><P>Beginnend mit dem Installer V42 wurden einige Richtlinien f&uuml;r die
+Namensgebungen festgelegt. Bitte halten Sie sich daran, da es sonst
+zu Problemen mit zuk&uuml;nftigen Installer-Versionen kommen kann.
+</P>
+Benutzen Sie nicht das `@'-Zeichen in Ihren eigenen Variablennamen.
+Dieses Zeichen kennzeichnet  {vom Installer angebotene} vordefinierte
+<A HREF="9803var.htm">Variablen</A>}. Benutzen Sie aber bitte ein Prefix f&uuml;r Ihre Variablen,
+wie `#' {wird von den meisten auch so gehandhabt}, und benennen Sie
+ihre Prozeduren sinnvoll und unter Verwendung des Prefixes `P_'.
+</P>
+Namen ohne ein Prefix {oder mit einem `@'} k&ouml;nnten sich mit
+zuk&uuml;nftigen Erweiterungen des Installers &uuml;berlappen.<BR><BR></LI>
+<LI>Bauen Sie immer immer immer { ;-) } auch sinnvolle Hilfstexte in ihre
+Installerscripts ein. {Eine der St&auml;rken des Installers ist das Angebot
+einer stets griffbereiten Online-Hilfe. Es w&auml;re nicht fein, dem User
+dort leere Seiten zu pr&auml;sentieren. Damit man nicht jedesmal die
+grundlegende Bedienung des Installers erl&auml;utern mu&szlig;, bietet dieser
+auch in <A HREF="9803var.htm">vordefinierten Variablen</A> bereits Hilfstexte dazu an.}<BR><BR></LI>
+<LI>Installieren Sie Teile Ihrer Anwendungen nur dann in Standard-OS-
+Verzeichnisse wie `DEVS:', `SYS:', oder `FONTS:', wenn es unbedingt
+n&ouml;tig ist. Viele Leute versuchen ihre Applikationen separat vom
+Betriebssystem zu halten, um Updates  {oder Deinstallationen} zu
+vereinfachen. Vergessen Sie nie, da&szlig; `PROGDIR:' das ist, was Sie
+vielleicht wirklich wollen.<BR><BR></LI>
+<LI>Wenn Sie die ben&ouml;tigten Dateien nicht beisammenhalten k&ouml;nnen,
+versuchen Sie zumindest, etwas anderes als z.B. `LIBS:' als Ziel zu
+w&auml;hlen.  {Der Idealfall w&auml;re wahrscheinlich, den User vor der
+Installation w&auml;hlen zu lassen, ob die Dateien in ein Verzeichnis
+oder in die System-Verzeichnisse installiert werden sollen. Hierzu
+ist es nat&uuml;rlich auch n&ouml;tig, da&szlig; die zu installierende Anwendung
+systemkonform gestaltet wurde.}<BR><BR></LI>
+<LI>Bieten Sie immer immer eine Deinstallation in Ihren Scripts an. Dies
+ist ein weiterer Grund, weshalb die Dateien nicht so sehr &uuml;ber das
+System verteilt werden sollten.  {Dies ist freilich korrekt.
+Letztendlich hat aber alles Vor- und Nachteile. Wird immer alles
+in Extra-Verzeichnisse installiert, hat der User am Ende diverse
+Libraries vielleicht hundertmal auf der Platte. Ganz abgesehen von
+dieser Kapazit&auml;tsverschwendung w&auml;re ein Update der Library selbst
+ein sehr umst&auml;ndliches Unterfangen. Ich denke, hier sollte jeder
+selbst entscheiden, was er f&uuml;r die Installation seiner Applikation
+f&uuml;r das sinnvollste h&auml;lt.}<BR><BR></LI>
+<LI>Wenn Sie Libraries installieren oder entfernen, achten Sie darauf,
+da&szlig; Sie nicht einfach existierende Libraries &uuml;berschreiben oder
+l&ouml;schen, die von anderen Programmen ben&ouml;tigt werden k&ouml;nnten. Wenn
+Sie sich nicht sicher sind, fragen Sie den User, sofern dieser nicht
+den NOVICE-Modus gew&auml;hlt hat.  {Was das &Uuml;berschreiben von bereits
+installierten System-Dateien betrifft, so bietet der Installer mit
+der (COPYLIB )-Funktion eine sehr sch&ouml;ne L&ouml;sung, die dem Script-
+Schreiber viel Aufwand abnimmt. Das L&ouml;schen von Libraries aus
+`LIBS:' w&uuml;rde ich pers&ouml;nlich ganz vermeiden, da auch ein Experte
+nicht den kompletten &Uuml;berblick haben kann, welches Programm welche
+Library benutzt. Auf jeden Fall sollte ein NOVICE-User tats&auml;chlich
+nicht mit einer solchen Frage belastet werden. Hier hilft nur noch,
+die Library einfach zu lassen, wo sie ist.}<BR><BR></LI>
+<LI>Lassen Sie den User nicht unn&ouml;tig warten. Wenn Ihre Applikation auf
+eine Diskette pa&szlig;t, stellen Sie ihm alle n&ouml;tigen Fragen zu Beginn der
+Installation und beginnen Sie erst danach mit der eigentlichen
+Installation.  {Da heutzutage ja kaum noch von Diskette installiert
+wird, ist anzuraten, dies immer so zu handhaben. Einige Funktionen
+erfordern allerdings eine R&uuml;ckfrage an den User, so da&szlig; oben genannte
+Verfahrensweise nicht m&ouml;glich ist. Hier empfiehlt sich, sofern machbar,
+diese Funktionen ganz am Ende des Scripts aufzurufen und den User &uuml;ber
+die vermutlich ben&ouml;tigte Installationszeit zu informieren, damit er
+nicht die ganze Zeit gebannt das Installer-Fenster ansehen mu&szlig;.}<BR><BR></LI>
+<LI>Wenn Sie den User nach einem Verzeichnis f&uuml;r die Applikation fragen,
+stellen Sie klar, ob Sie dann noch selbst ein Verzeichnis anlegen oder
+ob der User es selbst erstellen mu&szlig;. Dies war in der Vergangenheit die
+Quelle einiger Verwirrungen in vielen Scripts.  {Sofern m&ouml;glich,
+empfiehlt es sich, immer ein Unterverzeichnis f&uuml;r seine Anwendung zu
+kreieren, da dann einfach mehr Ordnung herrscht. Perfektionisten fragen
+einfach den User, wie er's gern h&auml;tte - aber nicht den NOVICE-User!}<BR><BR></LI>
+<LI>Stellen Sie keine Fragen, wenn der User den NOVICE-Modus gew&auml;hlt hat.
+Sollte es sich nicht vermeiden lassen, unterst&uuml;tzen Sie den NOVICE-Modus
+nicht. Jedwede Installation im NOVICE-Modus sollte f&auml;hig sein, komplett
+ohne Interaktion mit dem User erfolgreich abgeschlossen zu werden.<BR><BR></LI>
+<LI>Unterscheiden Sie zwischen AVERAGE- und EXPERT-Modus.  {Der Installer
+behandelt diese beiden gleich.} Im EXPERT-Modus sollte der User zu
+einfach allem seinen Senf dazugeben k&ouml;nnen. Im AVERAGE-Modus sollten
+nur die wesentlichsten Fragen gestellt werden. Lassen Sie EXPERT-
+und AVERAGE-Modus nicht gleich werden. Geben Sie einem User, der
+sich als Experte einsch&auml;tzt etwas, womit er sich besch&auml;ftigen kann,
+und verwirren Sie einen durchschnittlichen User nicht zu sehr.
+{Auch wenn man dazu neigt, die User-Modus-Verwaltung f&uuml;r seine eigenen
+Bed&uuml;rfnisse zu definieren, so sollte man sich an diese Richtlinien
+halten, denn ein User, der viele Scripts benutzt hat, in denen es
+keinen Unterschied zwischen AVERAGE und EXPERT gab, gelangt auf Dauer
+zu der &Uuml;berzeugung, da&szlig; dies keinen Unterschied macht. Seien Sie auch
+vorsichtig mit dem, was Sie im NOVICE-Modus anrichten. "Vergewaltigen"
+Sie den User hier nicht, sonst wird er nie wieder einen NOVICE-Modus
+w&auml;hlen.}     <BR><BR></LI>
+</UL>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0398/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,692 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Workshops / Hintergrundberichte / Buchvorstellungen
+---------------------------------------------------
+
+1. Workshop: Programmierung in C++ - Teil 3 (von Thomas Richter)
+
+Im heutigen Kapitel des "C++"-Kurses wollen wir nun endlich nicht
+nur von Punkt- und Linienobjekten reden, sondern solche auch auf
+dem Bildschirm erscheinen lassen. Zum Gl&uuml;ck hilft uns dabei das
+Betriebssystem weiter, indem es fertige Funktionen zur Verf&uuml;gung
+stellt, die eben das leisten. Funktionen - und nicht Objekte! Das
+AmigaOS ist zu einem gro&szlig;en Teil in "C" und nicht in "C++" geschrieben,
+und diese &auml;lteren Betriebssystemteile kennen das Objektkonzept
+nicht. Aus diesem Grunde m&uuml;ssen wir uns auch noch mit zwei anderen,
+bislang nicht behandelten, Konzepten von "C" und "C++" auseinander
+setzen. Bis jetzt konnte ich Beiden aus dem Wege gehen, da sie
+"traditionell" schlecht verstanden werden: Referenzen und Pointer.
+Dennoch sind es wichtige Konzepte, die wir beim Umgang mit dem
+Betriebssystem brauchen werden.
+
+
+Referenzen: Die Hardlinks von C++
+
+Eine Referenz ist soviel wie ein "Link" im Dateisystem: Man bezeichnet
+das selbe Objekt mit zwei verschiedenen Namen. Um dies an einem
+Beispiel zu illustrieren, erzeuge man zun&auml;chst wie im ersten Teil
+beschrieben ein neues Projekt des Namens "Reference" und f&uuml;ge ein
+Quellfile des Namens "Reference.cpp" in das Projekt ein. Ferner werden
+wir auch wieder die "storm.lib" ben&ouml;tigen, die deshalb wie schon in
+den letzten Folgen in das Projekt mit aufgenommen werden muss.
+
+Folgenden Quelltext bitte als "Reference.cpp" eintippen und kompilieren:
+
+#include &lt;iostream.h&gt;
+
+int main(int argc,char **argv)
+{
+int a;
+int &b = a;
+
+        a = 5;
+        cout &lt;&lt; "a ist "&lt;&lt;a&lt;&lt;" und b ist "&lt;&lt;b&lt;&lt;".\n";
+        b = 4;
+        cout &lt;&lt; "a ist "&lt;&lt;a&lt;&lt;" und b ist "&lt;&lt;b&lt;&lt;".\n";
+
+        return 0;
+}
+
+Die Bedeutung der Zeile "int a" kennen wir bereits: Hier wird eine
+Variable namens "a" angelegt, die Ganzzahlen aufnehmen kann. Die
+Zeile darunter beschreibt ein neues Objekt: Das "&"-Zeichen vor dem
+"b" deklariert eine Referenz auf ein Ganzzahlobjekt, und diese
+Referenz wird auf "a" initialisiert. Damit ist "b" keine eigenst&auml;ndige
+Variable, sondern lediglich eine andere Bezeichnung f&uuml;r das "a"-Objekt.
+
+Dies belegt die Wirkung der Zeilen darunter: Kompiliert man das
+Programm und f&uuml;hrt es aus, so erh&auml;lt man folgende Ausgabe:
+
+a ist 5 und b ist 5.
+a ist 4 und b ist 4
+
+Obwohl man zun&auml;chst "b" gar nicht ber&uuml;hrt hat, ist der Wert von
+"b" bei der ersten Ausgabe gleich dem Wert von "a". "b" ist lediglich
+eine Referenz auf "a" und &auml;ndert sich, sobald man "a" &auml;ndert.
+
+Das Spiel funktioniert auch umgekehrt: &Auml;ndert man "b", so &auml;ndert
+man "a" gleich mit. Das belegt die zweite Ausgabe.
+
+Aber wozu nun das Ganze? Der ganze Aufwand, nur um Variablen mit neuen
+Namen zu versorgen? Dazu &auml;ndern wir das Programm etwas ab:
+
+#include &lt;iostream.h&gt;
+
+void Inkrement(int &b)
+{
+        cout &lt;&lt; "b ist "&lt;&lt;b&lt;&lt;".\n";
+        b++;
+        cout &lt;&lt; "b ist nun "&lt;&lt;b&lt;&lt;".\n";
+}
+
+int main(int argc,char **argv)
+{
+int a;
+
+        a = 5;
+        cout &lt;&lt; "a ist "&lt;&lt;a&lt;&lt;".\n";
+        Inkrement(a);
+        cout &lt;&lt; "a ist nun "&lt;&lt;a&lt;&lt;".\n";
+
+        return 0;
+}
+
+In den Zeilen 3 bis 8 haben wir eine Funktion definiert, die als
+Argument eine Referenz auf eine Ganzzahl &uuml;bergeben bekommt. Diese
+Referenz wird zun&auml;chst ausgedruckt und dann um eins erh&ouml;ht: Der
+Ausdruck "b++" ist dabei die "C" und "C++" Kurzform f&uuml;r "b = b + 1".
+Danach wird diese Referenz noch einmal ausgegeben - sie sollte dann
+um eins gr&ouml;&szlig;er sein.
+
+Im Hauptprogramm darunter erzeugen wir eine Ganzzahlvariable "a",
+setzen sie auf f&uuml;nf und geben sie aus. Danach wird "Inkrement" mit
+dem Argument "a" aufgerufen und danach nochmals ausgegeben.
+
+Kompiliert und startet man nun dieses Programm, so erscheint auf
+der Konsole folgende Ausgabe:
+
+a ist 5.
+b ist 5.
+b ist nun 6.
+a ist nun 6.
+
+Wie erwartet ist der Wert von "a" zun&auml;chst f&uuml;nf. Beim Aufruf von
+"Inkrement" erzeugt man eine Referenz auf "a", die "b" hei&szlig;t -
+anderer Name, aber gleiche Variable. Nun gut, wenn wir also "b"
+hier ausdrucken, so ist das nur ein anderer Name f&uuml;r "a", und somit
+gleicht der Wert von "b" auch dem von "a". Das Erh&ouml;hen von "b" in der
+n&auml;chsten Zeile erh&ouml;ht also nicht nur "b", was man sowieso erwartet
+h&auml;tte, sondern auch "a".
+
+Nun zu einer kleinen &Auml;nderung im Programm: Die Zeile
+
+  void Inkrement(int &b)
+
+&auml;ndern wir mal in
+
+  void Inkrement(int b)
+
+ohne das "&" Zeichen. Kompilieren und starten wir jetzt das Programm,
+so gibt das anders als zuvor die Ausgabe:
+
+a ist 5.
+b ist 5.
+b ist nun 6.
+a ist nun 5.
+
+W&auml;hrend wir immer noch "b" erh&ouml;hen, bleibt diesmal "a" unver&auml;ndert. Dies
+liegt daran, dass wir statt "a" selbst nur eine Kopie von "a" an die
+Inkrement-Funktion &uuml;bergeben haben, und nur diese Kopie ver&auml;ndern. Im
+ersten Beispiel gibt es eine Variable mit zwei Namen, jetzt zwei
+Variablen, wovon der Inhalt der ersteren - "a" n&auml;mlich - in "b" hin&uuml;ber
+kopiert wird.
+
+Wer bereits die Programmiersprache "Pascal" kennt, dem wird der eben
+demonstrierte Unterschied unter den Bezeichnungen "call by reference"
+und "call by value" bekannt sein: Im ersten Fall "referenzieren" wir "a",
+wobei "b" stark an "a" gebunden wird, im zweiten Falle &uuml;bergeben wir
+nur den Inhalt von "a" und kopieren ihn in "b".
+
+Wozu nun dieser Aufwand? H&auml;tte man nicht "a" direkt in Inkrement() ver-
+&auml;ndern k&ouml;nnen? Oder die &Auml;nderung von "a" direkt im Hauptprogramm vor-
+nehmen k&ouml;nnen?
+
+Nun gut, gegen letzteren Einwand kann man eigentlich keine vern&uuml;nftigen
+Argumente anbringen - dererlei einfache Aufgaben wie das Hochz&auml;hlen einer
+Variablen k&ouml;nnte man durchaus im Hauptprogramm direkt vornehmen... Nun
+ja, es ging auch mehr darum, Referenzen zu erkl&auml;ren, als ein effektives
+Programm zu schreiben.
+
+Das Erh&ouml;hen im "Inkrement()" kann man ja mal versuchsweise ausprobieren:
+
+void Inkrement(int b)
+{
+        cout &lt;&lt; "b ist "&lt;&lt;b&lt;&lt;".\n";
+        a++;
+        cout &lt;&lt; "b ist nun "&lt;&lt;b&lt;&lt;".\n";
+}
+
+Der Compiler merkt dann dazu an:
+
+Error: Identifier "a" not defined,
+...rence.cpp, Line 6: a++
+
+Aha! Die Variable "a" gibt's in der "Inkrement"-Funktion gar nicht, sie
+ist, wie man sagt, nicht "im Scope" dieser Funktion. Variable - au&szlig;er
+globalen Variablen, die wir noch nicht betrachtet haben - sind nur
+innerhalb des geschweiften Klammerpaares erreichbar, in dem sie deklariert
+wurden. Das "geschweifte Klammerpaar", innerhalb dessen "a" g&uuml;ltig ist,
+ist hier nun das Klammerpaar des Funktionsrumpfes von "main". "a" ist also
+eine lokale Variable von "main", und ist darum nicht in "Inkrement"
+verf&uuml;gbar.
+
+
+Wir haben also gesehen, dass das &Uuml;bergeben eines Objektes an eine Funktion
+per Referenz erlaubt, dieses Objekt innerhalb der Funktion zu ver&auml;ndern
+und somit mit diesem Objekt zu arbeiten. Es gibt aber noch einen zweiten
+Grund daf&uuml;r, Objekte per Referenz zu &uuml;bergeben: Oben sagte ich, bei einem
+Funktionsaufruf ohne Referenz wird das zu &uuml;bergebene Objekt kopiert: Es
+wird somit eine Kopie des Objektes erzeugt, und dazu wird ein besonderer
+Konstruktor - siehe die letzte Folge - aufgerufen: Dieser sah f&uuml;r das
+Punktobjekt wie folgt aus:
+
+                Punkt(const Punkt &original)
+                {
+                        ...
+                }
+
+Das Originalobjekt wird hier "per Referenz" - dazu das "&" vor "original" -
+&uuml;bergeben, und man erzeugt die Kopie zum Beispiel, indem man die einzelnen
+Komponenten von Hand zuweist.
+
+Das Anfertigen einer Kopie erfordert also den obigen Construktor-Aufruf,
+den man darum auch den "Copy-Constructor" des Objektes nennt. Vereinbart
+man keinen Copy-Constructor, so verwendet der Compiler eine fest
+eingebaute, sehr einfache Routine, die alle Komponenten zuweist. Das ist
+meist, aber nicht immer, das, was man will. So k&ouml;nnte man innerhalb eines
+Copy-Constructors etwa die Anzahl der Kopien mitz&auml;hlen, die man von einem
+Objekt angefertigt hat.
+
+Auch das Punktobjekt hat einen relativ einfachen Copy-Constructor, aber
+wenn die Objekte sehr lang werden, wird das Anfertigen einer Kopie auch
+recht umst&auml;ndlich. All' das erspart man sich, indem man die
+Parameter&uuml;bergabe bei komplizierten Objekten per Referenz erfolgen l&auml;sst.
+
+In dem Copy-Constructor der letzten Folge steht noch ein "const" vor dem
+Objektnamen: Dies bedeutet, wie man sich auch leicht denken kann, dass
+das Objekt innerhalb der Funktion nicht ver&auml;ndert werden darf. &Auml;ndern
+wir hierzu noch einmal unser Referenz-Testprogramm etwas ab:
+
+void Inkrement(const int &b)
+{
+        cout &lt;&lt; "b ist "&lt;&lt;b&lt;&lt;".\n";
+        b++;
+        cout &lt;&lt; "b ist nun "&lt;&lt;b&lt;&lt;".\n";
+}
+
+int main(int argc,char **argv)
+{
+int a;
+
+        a = 5;
+        cout &lt;&lt; "a ist "&lt;&lt;a&lt;&lt;".\n";
+        Inkrement(a);
+        cout &lt;&lt; "a ist nun "&lt;&lt;a&lt;&lt;".\n";
+
+        return 0;
+}
+
+und versuchen dies nun zu kompilieren: Der Compiler beschwert sich nun
+mit einer Fehlermeldung:
+
+Error: Attempt to assign to const object.
+...rence.cpp, Line 6:  b++;
+
+"b" war eine Konstante, also nicht &auml;nderbar. Auch bei einer &Uuml;bergabe
+"als Wert" ist das Original nicht &auml;nderbar, man &auml;ndert h&ouml;chstens eine Kopie,
+aber diese Kopie will auch angelegt sein. Und das ist eben bei komplexen
+Objekten gegebenenfalls recht umst&auml;ndlich.
+
+
+Pointer: Die Wegweiser von C++
+
+Referenzen sind ein recht neues Konzept und sind in der Muttersprache "C"
+nicht verf&uuml;gbar. Stattdessen gibt es in "C" ein &auml;lteres Konzept, das es
+genauso in "C++" gibt: Dies sind sogenannte "Pointer". Alles, was man mit
+Referenzen machen kann, kann man auch mit Pointern machen. Aber Pointer
+k&ouml;nnen noch viel mehr! Da AmigaOS aber nun in "C" und nicht in "C++"
+geschrieben wurde, gibt's keine Referenzen, sondern nur Pointer - also
+m&uuml;ssen wir uns damit (auch noch) besch&auml;ftigen.
+
+Traditionell wird leider das Pointerkonzept schlecht dargestellt, und
+insbesondere beim Einstieg in eine Programmiersprache hat man es oft
+schwer damit. Ich werde zumindest versuchen, diese Tradition zu brechen;
+dazu wandeln wir das Programm nochmals ab:
+
+#include &lt;iostream.h&gt;
+
+void Inkrement(int *b)
+{
+        cout &lt;&lt; "*b ist "&lt;&lt;*b&lt;&lt;".\n";
+        (*b)++;
+        cout &lt;&lt; "*b ist nun "&lt;&lt;*b&lt;&lt;".\n";
+}
+
+int main(int argc,char **argv)
+{
+int a;
+
+        a = 5;
+        cout &lt;&lt; "a ist "&lt;&lt;a&lt;&lt;".\n";
+        Inkrement(&a);
+        cout &lt;&lt; "a ist nun "&lt;&lt;a&lt;&lt;".\n";
+
+        return 0;
+}
+
+Auch das tut wieder genau dasselbe wie das Programm oben, nur mit
+Pointern statt mit Referenzen.
+
+Das Funktionsargument von "Inkrement" ist diesmal aber keine ganze
+Zahl, auch keine Referenz auf eine solche, sondern ein Pointer auf
+eine ganze Zahl - dies ist die Bedeutung des Sternchens vor "b".
+
+Ein Pointer ist so etwas wie eine Hausnummer einer Variablen: Wenn
+man die Hausnummer hat, kennt man zwar nicht die Variable selbst,
+wei&szlig; aber, wo sie wohnt und wie man sie erreichen kann. Das ist
+fast genauso gut. Ist etwa, wie hier, "b" diese Hausnummer, so
+ist "*b" der Wert der Variablen, deren Hausnummer "b" ist. Oder wie
+man auch sagt, der Wert der Variablen, auf die "b" zeigt. Traditioneller
+Weise stellt man solche Pointer auch als Pfeilchen dar, die &auml;hnlich
+einem Wegweiser auf das bezeichnete Objekt zeigen.
+
+        b ---&gt; a
+
+In der ersten Anweisung der "Inkrement"-Funktion geben wir den Wert
+von "*b", also den Wert der Variablen, auf die "b" zeigt, aus. Mit
+der Anweisung "(*b)++" wird die Variablen, auf die "b" zeigt, um eins
+erh&ouml;ht. Die Klammern sind hier notwendig, da das Sternchen schw&auml;cher
+als das "++" bindet und "*b++" eine andere Bedeutung h&auml;tte, doch das
+w&uuml;rde jetzt etwas zu weit f&uuml;hren. In der Zeile darunter geben wir
+nochmals den Inhalt der Variablen mit Hausnummer "b" aus.
+
+Dem aufmerksamen Leser f&auml;llt nun weiterhin auf, dass auch der
+Aufruf von Inkrement im Hauptprogramm leicht anders aussieht: Dort
+steht nun
+
+Inkrement(&a)
+
+Das "&" vor der Variablen "a" hat hier allerdings eine andere Bedeutung
+als die einer Referenz - diese Bedeutung hat "&" nur beim Anlegen einer
+neuen Variablen wie im Kopf einer Argumentenliste. Stattdessen ermittelt
+hier "&" die Hausnummer von "a", bzw. technisch korrekt, "&a" ist ein
+Pointer, der auf "a" zeigt. Genau einen solchen Pointer ben&ouml;tigen wir
+als Argument von Inkrement().
+
+Kompiliert und startet man nun dieses Programm, so ergibt sich folgende
+Ausgabe:
+
+a ist 5.
+*b ist 5.
+*b ist nun 6.
+a ist nun 6.
+
+das entspricht ziemlich genau der Ausgabe des urspr&uuml;nglichen Programmes,
+nur das wir hier "a" auf eine etwas andere Weise manipuliert haben,
+n&auml;mlich indirekt &uuml;ber den Umweg eines Pointers auf "a".
+
+Kann man auch "b" selbst ausgeben, also die Hausnummer? Aber ja doch!
+
+void Inkrement(int *b)
+{
+        cout &lt;&lt; "*b ist "&lt;&lt;*b&lt;&lt;".\n";
+        (*b)++;
+        cout &lt;&lt; "*b ist nun "&lt;&lt;*b&lt;&lt;".\n";
+        cout &lt;&lt; "b ist nun "&lt;&lt;b&lt;&lt;".\n";
+}
+
+Auf meinem System erzeugt das folgende Ausgabe:
+
+a ist 5.
+*b ist 5.
+*b ist nun 6.
+b ist nun 8985298.
+a ist nun 6.
+
+Die Hausnummer von "b" ist hier also "8985298". Falls ihr eine andere
+Zahl als Hausnummer erhaltet... Keine Panik! Der Rechner vergibt diese
+Zahlen je nach verf&uuml;gbarem Speicherplatz immer etwas anders, sogar
+zwei Abl&auml;ufe ein und desselben Programmes k&ouml;nnen hier andere Pointer
+ergeben. Letztendlich ist das auch relativ irrelevant, brauchen wir
+doch nur zu wissen, dass in jedem Falle "a" unter dieser Adresse
+erreichbar ist. Nur wohnt "a" eben jedesmal woanders.
+
+
+Fensterln mit Intuition: Einstieg in das AmigaOS
+
+F&uuml;r unsere Aufgabe, einfach ein paar Striche und Punkte auf den
+Bildschirm zu malen, brauchen wir die Hilfe des Betriebssystems,
+genauer, zweier Betriebssystemkomponenten: Die "intuition.library"
+enth&auml;lt Funktionen zur Manipulation von Fenstern, wie man sie bei
+der t&auml;glichen Arbeit am Amiga kennt, ferner alle m&ouml;glichen hilfreichen
+Funktionen zur Programmierung von Benutzerschnittstellen. Mit Hilfe
+von "intuition" werden wir uns ein Fenster erstellen lassen, in dem
+die Linien erscheinen - dieses Objekt hei&szlig;t "Window". Ferner wollen
+wir in dem Fenster, oder "Window", Linien und Punkte zeichnen. Diese
+Aufgabe &uuml;bernimmt eine andere Betriebssystemkomponente, die sinniger
+Weise "graphics.library" hei&szlig;t.
+
+Wir ben&ouml;tigen einmal aus der "intuition.library" die Funktionen
+"OpenWindowTags", die ein Fenster mit einstellbaren Eigenschaften
+&ouml;ffnet, sowie "CloseWindow", welches ein solches Fenster wieder
+verschwinden l&auml;sst. Beide Funktionen arbeiten aber nicht mit "Window"-
+Objekten selbst, sondern mit "Pointern". "OpenWindowTags()" liefert also
+nur die "Hausnummer" eines Fensters, "CloseWindow()" erwartet auch nur
+eine solche Hausnummer. Das ist nicht von Nachteil, wir kommen ja
+mittels eines voran gestellten Sternchens "*" wie oben gesehen an das
+eigentliche "Window" heran.
+
+Ferner brauchen wir "SetAPen", "WritePixel", "Move" und "Draw" aus
+der "graphics.library". Mit diesen Funktionen w&auml;hlt man die Zeichenfarbe,
+setzt ein einzigen Punkt, bewegt die Schreibposition und zeichnet eine
+Linie von der letzten Schreibposition zu einer weiteren Koordinate.
+Diese Funktionen wollen nun allerdings selbst keine "Fenster"-Objekte,
+sondern ben&ouml;tigen als Parameter einen Pointer auf eine Zeichenfl&auml;che,
+einen sogenannten "RastPort". Die Zeichenfl&auml;che eines Fensters befindet
+sich zum Gl&uuml;ck leicht zu finden in der Komponente "RPort" des Fensters,
+genauer: Ein Pointer auf die Zeichenfl&auml;che.
+
+Das klingt erst einmal etwas umst&auml;ndlich... Man hat es deshalb so
+seltsam eingerichtet, weil es noch andere Objekte au&szlig;er Windows gibt,
+die eine Zeichenfl&auml;che, einen "RastPort", besitzen und in die man also
+auch Zeichnen kann.
+
+Zu guter letzt m&uuml;ssen wir dem Compiler das alles noch beibringen:
+
+Das "Window"-Objekt wird in der Datei "&lt;intuition/intuition.h&gt;" er-
+kl&auml;rt, der Rastport in "&lt;graphics/rastport.h&gt;". Die dazu notwendigen
+Funktionen zur Manipulation von Fenstern und Zeichenfl&auml;chen finden
+sich in "&lt;proto/intuition.h&gt;" und "&lt;proto/graphics.h&gt;". Wo welche
+Objekte und Funktionen zu finden sind, muss man entweder wissen, oder
+in der Betriebssystemdokumentation nachlesen; diese findet sich etwa
+auf der "Developer CD"
+
+Ferner m&ouml;chte man dem C++-Compiler noch mitteilen, dass es sich hierbei
+alles um C-Konstrukte handelt; dazu dient das extern "C" in dem
+folgenden Programmsegment:
+
+extern "C" {
+#include &lt;intuition/intuition.h&gt;
+#include &lt;proto/intuition.h&gt;
+#include &lt;proto/exec.h&gt;
+#include &lt;proto/graphics.h&gt;
+}
+
+class Fenster {
+        Window *window;         // Das Intuition-Fenster davon
+        int breite,hoehe;       // Dimensionen
+public:
+        Fenster(int b,int h)
+        : window(NULL), breite(b), hoehe(h)
+                {
+                window = OpenWindowTags(NULL,   // dieses Argument brauchen wir nicht.
+                        WA_GimmeZeroZero,TRUE,  // Ursprung ist im Zeichenbereich
+                        WA_SmartRefresh,TRUE,   // Automatisch wiederherstellen wenn verdeckt
+                        WA_InnerWidth,b,        // Breite der Zeichenfl&auml;che
+                        WA_InnerHeight,h,       // H&ouml;he der Zeichenfl&auml;che
+                        WA_CloseGadget,TRUE,    // Fenster hat Schlie&szlig;knopf
+                        WA_DragBar,TRUE,        // Fenster kann verschoben werden
+                        WA_DepthGadget,TRUE,    // Fenster kann nach vorne/hinten gebracht werden
+                        WA_IDCMP,IDCMP_CLOSEWINDOW, // reagiert auf was? Fensterschlie&szlig;en!
+                        TAG_DONE);
+                }
+        //
+        // Der Destructor l&ouml;scht auch wieder das Fenster davon, falls offen.
+        ~Fenster(void)
+        {
+                if (window) {
+                        CloseWindow(window);
+                }
+        }
+        //
+        // Liefere die Zeichenfl&auml;che des Fensters. Dies nennt sich RastPort
+        RastPort *RastPort_Hiervon(void) const
+        {
+                return window-&gt;RPort;
+        }
+        //
+        // Warte, bis der Benutzer das Close-Gadget dr&uuml;ckt.
+        void WarteAufSchliessen(void) const
+        {
+                struct Message *msg;
+
+                msg = WaitPort(window-&gt;UserPort);
+                msg = GetMsg(window-&gt;UserPort);
+                ReplyMsg(msg);
+        }
+};
+
+Die hier definierte Klasse "Fenster" hat als wichtige Komponenten einerseits
+einen Pointer auf das Betriebssystemobjekt "window", ferner eine Breite und
+H&ouml;he. Eigentlich k&ouml;nnte man diese auch aus dem "window" selbst auslesen. Der
+Konstruktor eines "Fensters" bekommt ergo eine Breite und H&ouml;he &uuml;bergeben, und
+ruft die "OpenWindowTags()"-Funktion von "intuition" auf, um ein Fenster
+zu erzeugen. Resultat ist ein Zeiger auf ein "window", welches wir in unserem
+dar&uuml;ber aufgesetzten "Fenster"-Objekt aufheben. Der Destruktor des "Fenster"-
+Objektes muss nun auch noch das "window" l&ouml;schen, was mit "CloseWindow()"
+funktioniert. Da das OS wie gesagt in "C" statt in "C++" geschrieben ist,
+kennt Intuition keine "Destruktoren" und wir m&uuml;ssen "windows" deshalb wie
+hier von Hand l&ouml;schen. Genau genommen ist es die Aufgabe des "Fenster"-
+Objektes, diese Arbeit nach au&szlig;en hin zu verbergen. "RastPort_Hiervon"
+liefert einen Pointer auf die Zeichenfl&auml;che des Fensters, in der die
+"RPort"-Komponente des Windows zu finden ist. Hierbei tritt das erste
+Mal der Pfeilchen-Operator "-&gt;" auf:
+
+        window-&gt;RPort   ist das gleiche wie (*window).RPort
+
+Entziffert man einmal die rechte Seite, so handelt es sich hierbei um:
+(*window), also das Objekt selbst, auf das der Pointer zeigt. Der "Punkt"
+bedeutete "Komponente von", ergo: Die Komponente "RPort" des Objektes,
+auf das "window" zeigt. Da der Punkt st&auml;rker bindet als der Stern, muss man
+noch klammern. Da schreibt sich "window-&gt;RPort" einfach fl&uuml;ssiger, und
+bringt auch graphisch das zum Ausdruck, was passiert: Von "window" aus
+immer den Pfeilen nach!
+
+
+Die Methode "WarteAufSchliessen" bedarf noch einiger Erl&auml;uterungen:
+Wir haben bei "OpenWindowTags()" mittels der Argumente "WA_CloseGadget,TRUE"
+f&uuml;r das zu erstellende Fenster einen Schlie&szlig;knopf angefordert. Nun verh&auml;lt
+es sich aber so, dass "intuition" bei Bet&auml;tigen dieses Knopfes nicht das
+Fenster l&ouml;scht. Das w&auml;re sogar fatal, wenn das Programm gleichzeitig
+versuchen w&uuml;rde, in das dann nicht mehr existente Fenster hinein zu malen.
+Die Pixel w&uuml;rden ins Nirvana st&uuml;rzen, und der Rechner gleich hinterher!
+Statt dessen m&uuml;ssen wir "intuition" auch noch sagen, dass wir gerne einen
+"Brief" bekommen wollen, wenn der Benutzer das Fenster geschlossen haben
+will: Dies macht das Argument "WA_IDCMP,IDCMP_CLOSEWINDOW" von
+"OpenWindowTags()". Die Aufgabe von "WarteAufSchliessen" ist nun,
+solange zu warten, bis im Briefkasten des Fensters ein Brief eingeht.
+Der Briefkasten hei&szlig;t hier "UserPort", ist ein Objekt vom Typ "MsgPort",
+kurz f&uuml;r "Message Port", und wird bedient mit den Funktionen "WaitPort()",
+"GetMsg()" und "ReplyMsg()". Alle drei finden sich in der "exec.library",
+deren Funktionen in der noch nicht erkl&auml;rten Include-Datei "proto/exec.h"
+deklariert werden. Genauer m&ouml;chte ich an dieser Stelle auf die Innereien
+des Intuition-Nachrichtensytems und der Exec-Bibliothek nicht eingehen;
+betrachten wir diese Funktion erst mal als schwarzen Kasten - schlie&szlig;lich
+ist das ein "C++"-Kurs und kein Exec/Intuition-Kurs.
+
+
+Kommen wir zum Rest des Programmes, der die in der letzten Folge
+eingef&uuml;hrten Objekte "Punkt" und "Linie" ein wenig ausbaut; diesen Teil
+bitte an das obige Codesegment anh&auml;ngen:
+
+class Punkt {
+        RastPort *rp;                   // wo zu zeichnen?
+        int x;               // X-Koordinate
+        int y;               // Y-Koordinate
+        int farbe;           // Die Zeichenfarbe
+public:
+        Punkt(Fenster &fenster,int horizontal,int vertikal,int f = 1)
+        {
+                x     = horizontal;
+                y     = vertikal;
+                farbe = f;
+                rp    = fenster.RastPort_Hiervon();
+        }
+        //
+        // der Copy-Constructor des Punktes
+        Punkt(const Punkt &original)
+        {
+                x     = original.x;
+                y     = original.y;
+                farbe = original.farbe;
+                rp    = original.rp;
+        }
+        //
+        // L&ouml;schen des Punktes: Nichts zu tun
+        ~Punkt(void)
+        {
+        }
+        //
+        // Einen Punkt zeichen
+        void Zeichne(void) const
+        {
+                SetAPen(rp,farbe);  // definiere die Farbe
+                WritePixel(rp,x,y); // das malt den Punkt
+        }
+        //
+        int X_Hiervon(void) const // verrate die X-Komponente
+        {
+                return x;
+        }
+        //
+        int Y_Hiervon(void) const       // verrate die Y-Komponente
+        {
+                return y;
+        }
+        //
+        int Farbe_Hiervon(void) const // verrate die Farbe
+        {
+                return farbe;
+        }
+        //
+        RastPort *RastPort_Hiervon(void) const
+        {
+                return rp;
+        }
+        //
+};
+
+
+class Linie {
+        RastPort *rp;
+        Punkt   anfang;
+        Punkt   ende;
+public:
+        Linie(Punkt &von, Punkt &bis)
+         :      rp(von.RastPort_Hiervon()),
+                anfang(von),
+                ende(bis)
+        {
+        }
+        //
+        ~Linie(void)
+        {
+        }
+        //
+        void Zeichne(void)
+        {
+                SetAPen(rp,anfang.Farbe_Hiervon()); // setze den Farbstift
+                Move(rp,anfang.X_Hiervon(),anfang.Y_Hiervon());
+                Draw(rp,ende.X_Hiervon(),ende.Y_Hiervon());
+        }
+};
+
+
+Ein Punkt hat jetzt noch zus&auml;tzlich eine Farbe und einen Zeiger auf die
+Zeichenfl&auml;che erhalten, auf der er erscheinen soll, und die Ausgaben auf
+"cout" der letzen Folge sind verschwunden. Statt dessen gibt es eine neue
+Methode "Zeichne", die den Punkt auch wirklich erscheinen l&auml;sst. Dazu wird
+in der Zeichenfl&auml;che "RastPort" erst einmal der Farbstift "farbe" ausgew&auml;hlt;
+dies ist Aufgabe der Betriebssystemfunktion "SetAPen()". Danach wird
+mittels "WritePixel()" der Punkt an der entsprechende Koordinate gemalt.
+"RastPort_Hiervon()" ist auch neu und extrahiert die Zeichenfl&auml;che des
+Punktes; das "const" dahinter besagt, dass das Objekt selbst dadurch
+nicht ver&auml;ndert wird - logo. Woher wei&szlig; der Punkt die Zeichenfl&auml;che, auf
+der er erscheinen soll? Nun, dazu gibt's den Konstruktor des Punktes,
+der sich diese Information vom Fenster holt. Bemerkenswert beim
+Konstruktor des Punktes ist noch die Syntax "int f = 1":
+
+Punkt(Fenster &fenster,int horizontal,int vertikal,int f = 1)
+
+Dies bedeutet, dass das "f" (Farb-) Argument optional ist und nicht
+angegeben zu werden braucht. Falls es nicht angegeben ist, soll der
+Compiler den Wert "1" f&uuml;r die Farbe annehmen.
+
+
+Das zweite Objekt, die Linie, folgt sofort: Auch dieses Objekt hat
+eine Zeichenfl&auml;che, sowie einen Anfangs- und Endpunkt. Der Konstruktor
+der Linie ben&ouml;tigt nur zwei Punkte, die Zeichenfl&auml;che l&auml;sst sich
+die Linie vom Anfangspunkt mitteilen.
+
+Die Syntax des Linien-Konstruktors ist ein klein wenig anders; nicht,
+weil es n&ouml;tig w&auml;re, sondern einfach um diese Variation zu demonstrieren:
+Hinter dem Doppelpunkt folgen die einzelnen Komponenten "rp", "anfang",
+"ende", und jeweils in Klammern dahinter wie diese Unterobjekte zu
+konstruieren sind: Der Zeiger auf die Zeichenfl&auml;che mit der Zeichenfl&auml;che
+des Anfangspunktes, der Anfangspunkt mit dem Objekt "von", der Endpunkt
+mit dem Objekt "bis". Der Rumpf des Konstruktors bleibt einfach leer,
+die ganze Arbeit wird bereits von der Liste hinter dem Doppelpunkt
+erledigt.
+
+"Zeichne()" zeichnet nun die Linie: Die Farbe kommt vom Anfangspunkt
+und wird mittels "SetAPen()" innerhalb der Zeichenfl&auml;che gew&auml;hlt.
+"Move()" definiert die Startkoordinaten der Linie, mittels "Draw()"
+wird die Linie letztendlich gezogen.
+
+
+Bleibt noch das Hauptprogramm:
+
+int main(int argc, char **argv)
+{
+Fenster f(200,200);     // baue ein Fenster der Gr&ouml;&szlig;e 200x200
+Punkt p(f,10,20);       // mach' nen Punkt bei (10,20)!
+Linie l(Punkt(f,30,40,2),Punkt(f,50,60));
+
+        p.Zeichne();
+        l.Zeichne();
+
+        f.WarteAufSchliessen();
+        return 0;
+}
+
+Es erzeugt einen Punkt, eine Linie inklusive beider Anfangs- und
+Endpunkte, zeichnet Punkt und Linie, und wartet auf das Schlie&szlig;en
+des Fensters. Die Destruktoren von Punkt, Linie und Fenster r&auml;umen
+dann alles weitere ab.
+
+
+Und demn&auml;chst:
+
+Uff, das war eine ganze Menge diesmal! Au&szlig;erdem gibt es noch einiges zu
+bem&auml;ngeln: Erstens ist &uuml;berhaupt nicht klar, ob "OpenWindowTags()"
+&uuml;berhaupt ein Fenster &ouml;ffnen konnte; wenn dem Rechner der Speicher ausgeht,
+oder wenn der Bildschirm zu klein oder das Fenster zu gro&szlig; ist, gibt es
+"keinen Pointer" zur&uuml;ck. Dies ist ein Problem der richtigen Fehlerbehandlung,
+um die wir uns gedr&uuml;ckt haben. Korrekte Fehlerbehandlung ist immer eine
+knifflige Angelegenheit, die wohl durchdacht sein will. "C++" hilft hier
+ein wenig mit einem zus&auml;tzlichen Konstrukt namens "Exceptions", zu
+deutsch "Ausnahmen". Ferner ist die Objektstruktur von "Punkt" und "Linie"
+noch nicht ganz so sauber, wie ich sie mir w&uuml;nschen w&uuml;rde.
+
+Thomas Richter &lt;thor@math.TU-Berlin.DE&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

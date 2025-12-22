@@ -1,0 +1,232 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Workshops / Hintergrundberichte / Buchvorstellungen
+---------------------------------------------------
+
+1. Workshop: Verteilte Dateisysteme - Teil 2 (von Uwe Pannecke)
+
+Der Amiga als NFS-Client und -Server
+
+Teil 2 - NFS-Server Amiga
+
+Das urspr&uuml;nglich von SUN Microsystems entwickelte Network File System (rfc
+1094), kurz auch als NFS bezeichnet, erlaubt mehreren Rechnern, Ressourcen
+zusammen- zufassen und gemeinsam &uuml;ber ein TCP/IP-Netzwerk zu nutzen. Mit
+installiertem NFS wird es so m&ouml;glich, von beliebiger Stelle des Netzes auf
+installierte Programme zuzugreifen oder f&uuml;r alle beteiligten Rechner
+erreichbar an zentraler Stelle Datenbest&auml;nde wie Dokumentationen,
+Bildersammlungen, Lexika u.&auml;. abzulegen. In der Unix/Linux-Welt ist das NFS
+ein g&auml;ngiges Verfahren, um Verzeichnisse entfernter Rechner in den lokalen
+Verzeichnisbaum einzubinden und selbige so benutzen zu k&ouml;nnen, als w&auml;ren
+sie auf dem eigenen Rechner vorhanden.
+
+Nachdem im ersten Teil des Workshops der Amiga als Client in ein Network
+File System integriert wurde, soll diesmal der Amiga seine Festplatten-
+Ressourcen zur Verf&uuml;gung stellen.
+
+
+1. NFS Daemon
+
+Um dem Amiga die M&ouml;glichkeit zu geben, Verzeichnisse anderen Netzwerk-
+Teilnehmern bereitzustellen, muss ein NFS-Server her. Vor diesem Problem
+stand auch Joseph Walton, der seinen Amiga mit einem PC gekoppelt hatte
+und mit seinem Amiga-NFS-Clienten leider nur in einer Richtung problemlos
+Daten transferieren konnte. Da keine Abhilfe in Sicht war, griff er zu
+DiceC und dem MiamiSDK und programmierte kurz entschlossen einen Amiga-NFS-
+Server. Er nannte ihn schlicht "nfsd" und stellte ihn freundlicherweise
+unter die GPL und damit allen interessierten Usern auf seiner Homepage [1]
+kostenlos als Binary und Source zur Verf&uuml;gung. Klasse.
+
+
+1.1 Installation
+
+Zum Testzeitraum war die Version vom 14. Oktober 2000 verf&uuml;gbar und mit
+einem Umfang von knapp 20 KByte als LZX-Archiv in wenigen Augenblicken
+herunter geladen. Neben dem eigentlichen Daemon "nfsd" enth&auml;lt das Paket im
+"nfsd"-Verzeichnis eine Readme-Datei sowie eine Beispielkonfiguration und
+"nfsd.inode". Das komplette Verzeichnis k&ouml;nnt Ihr an einen beliebigen Platz
+kopieren. Einzige Bedingung ist eine Schreibberechtigung f&uuml;r dieses
+Verzeichnis.
+
+Screenshot:
+<IMG SRC="../extra/nfs_nfsd_dir.png" ALT="Screenshot">
+
+Da in unserem Fall "nfsd" gemeinsam mit Miami verwendet werden soll, habe
+ich die Schublade kurzerhand ins Miami-Verzeichnis verfrachtet.
+
+
+1.2 Konfiguration
+
+Entscheidend f&uuml;r eine erfolgreiche Freigabe von Laufwerken und/oder
+Verzeichnissen ist die Datei "nfsd.config". Selbige k&ouml;nnt Ihr in einem
+beliebigen Editor Euren Erfordernissen anpassen. Die Eintr&auml;ge folgen einem
+einheitlichen Schema: Das lokale Laufwerk bzw. Verzeichnis mit komplettem
+Pfad folgt der Name, unter dem dieses Laufwerk/Verzeichnis exportiert
+werden soll. Dem schlie&szlig;t sich eine Definition der zugriffsberechtigten
+IP-IDs sowie Attributen zu User-ID und Gruppen-ID mit den gew&uuml;nschten
+Zugriffs-Rechten. Konstruieren wir zur Veranschaulichung einige Beispiele:
+
+A)
+Das lokale Verzeichnis "Work2:maildaten/" wird als Verzeichnis "/amiga"
+exportiert werden. Auf dieses Verzeichnis darf lediglich der Rechner mit
+der IP-ID 192.168.1.101 Zugriff erhalten. Eigner soll der User mit der ID
+500 sein, dieser User geh&ouml;rt zur Gruppe mit der ID 100. Es werden Rechte
+zum Lesen, Schreiben und Ausf&uuml;hren der Daten im Verzeichnis f&uuml;r Eigner,
+Gruppe und Sonstige vergeben. Der passende Eintrag lautet
+
+Work2:Maildaten  /amiga  192.168.1.101  RW  UID=500  GID=100  PERM=777
+FORCEALL
+
+B)
+Das Verzeichnis "Ram:" soll als "/amigaram" f&uuml;r alle Rechner des lokalen
+Netzwerkes (hier alle Rechner mit einer IP-ID 192.168.1.x) exportiert
+werden. Die Dateien sollen "root" geh&ouml;ren und nur mit Leserechten versehen
+sein. Der passende Eintrag lautet diesmal
+
+Ram:   /amigaram   192.168.1.0/255.255.255.0 UID=0 GID=0 PERM=444 FORCEALL
+
+C)
+Die Festplatte "Work:" soll mit Lese- und Ausf&uuml;hrungsrechten als
+Verzeichnis "/daten" freigegeben und allen Rechnern unabh&auml;ngig von ihrer
+IP-ID zug&auml;nglich sein. Die Daten geh&ouml;ren dem User mit der ID 600. Die
+zugeh&ouml;rige Gruppen-ID ist 200.
+
+Work:  /daten  -  UID=600  GID=200  PERM=555  FORCEALL
+
+F&uuml;r einen detaillierten Einstieg zur Vergabe der Dateirechte auf
+Unix/Linux- Systemen sei an dieser Stelle auf das im O'Reilly Verlag
+bereits in dritter Auflage ver&ouml;ffentlichte und auch online verf&uuml;gbare [2]
+Buch "Linux - Wegweiser zur Installation & Konfiguration" von M. Welsh, M.
+Dalheimer und L. Kaufmann verwiesen.
+
+Speichert abschlie&szlig;end die Euren W&uuml;nschen entsprechend ge&auml;nderte
+Konfiguration unter einem aussagekr&auml;ftigen Namen ab.
+
+
+2. TCP/IP-Stack
+
+Hier habt Ihr die Qual der Wahl. Neben AmiTCP und Genesis ist gleicherma&szlig;en
+auch Miami geeignet. Da bei Miami etwas mehr Aufwand zu treiben ist, soll
+an dieser Stelle f&uuml;r die Konfiguration eben jener TCP/IP-Stack [3] als
+Beispiel dienen. Sinngem&auml;&szlig; lassen sich die Aussagen auch auf die beiden
+anderen Vertreter &uuml;bertragen.
+
+
+2.1 Miami
+
+Ist Miami gestartet, solltet Ihr &uuml;berpr&uuml;fen, ob unter "Datenbank/Dienste"
+die Eintr&auml;ge
+
+Name     ID    Protokoll
+sunrpc   111     tcp
+sunrpc   111     udp
+
+vorhanden sind und gegebenenfalls erg&auml;nzen.
+
+Screenshot:
+<IMG SRC="../extra/nfs_miami_rpc.png" ALT="Screenshot">
+
+
+3. Der Deamon
+
+Da "nfsd" ein RPC-Dienst ist, ben&ouml;tigt der Server zwingend einen laufenden
+Portmapper. In der Miami-Distribution werdet Ihr einen solchen Portmapper
+jedoch vergeblich suchen. Doch keine Panik- auch hier k&ouml;nnen die
+Kontrahenten AmiTCP bzw. Genesis aushelfen. Bereits in den Demoversionen
+[4] und [5] ist im Verzeichnis "BIN:" mit "portmap" das passende Programm
+enthalten. Kopiert dieses z.B. in das C-Verzeichnis. In einer Shell k&ouml;nnt
+Ihr dann den Portmapper, nachdem Miami auf "Online" gesetzt ist, durch
+Eingabe von "portmap" starten. Ob der Portmapper auch wirklich aktiv ist,
+verr&auml;t das Tool "rpcinfo", welches ebenso wie "portmap" im "BIN:"-
+Verzeichnis von AmiTCP bzw. Genesis zu finden ist. Tauchen in der
+"rpcinfo"-Ausgabe der Port 111 und die Protokolle tcp und udp auf, war der
+Start erfolgreich.
+
+Screenshot:
+<IMG SRC="../extra/nfs_portmap.png" ALT="Screenshot">
+
+Jetzt kann der NFS-Server endlich zum Zug kommen. Bei seinem Aufruf
+&uuml;bergeben wir ihm die zu verwendende Konfigurationsdatei.
+
+Ist alles nach Plan gelaufen, teilt uns "nfsd" seinen aktiven Zustand mit
+der Shell-Ausgabe "Serving." mit. Zus&auml;tzlich k&ouml;nnen wir seine
+Arbeitsbereitschaft mit erneutem Aufruf von "rpcinfo" &uuml;berpr&uuml;fen.
+
+Screenshot:
+<IMG SRC="../extra/nfs_nfsd.png" ALT="Screenshot">
+
+
+4. Die Linux-Seite
+
+Ich gehe davon aus, dass wie im ersten Teil beschrieben, die NFS-
+Unterst&uuml;tzung der jeweiligen Linux-Distribution bereits installiert ist.
+Somit bleiben f&uuml;r die Einbindung der freigegebenen Amiga-
+Laufwerke/Verzeichnisse nur noch wenige Handgriffe. Unter Linux setzt man
+zu mountende Ger&auml;te und damit auch Laufwerke sowie Verzeichnisse auf ein
+im Linux-Dateisystem vorhandenes Verzeichnis, dem Mountpoint, auf.
+Entweder Ihr erstellt ein gew&uuml;nschtes Verzeichnis zu diesem Zweck oder aber
+Ihr benutzt das auf den meisten Systemen zu findende "/mnt"- Verzeichnis.
+Der eigentliche Mount-Befehl besitzt folgendes Format:
+
+mount -t typ ger&auml;t mount-point
+
+Konstruieren wir wieder zwei konkrete Beispiele:
+
+A)
+F&uuml;r das freigegebene Amiga-Verzeichnis soll im Wurzelverzeichnis eine
+eigene Schublade mit dem Namen "amiga" erstellt werden. Dies gelingt in
+einer Shell im Handumdrehen und als Superuser mit der Kommandofolge "mkdir
+/amigadaten". Nun kann das auf dem Amiga als "/amiga" freigegebene
+Verzeichnis "Work2:Maildaten" (wiederum als Superuser) mit Hilfe der
+Eingabe
+
+mount -t nfs 192.168.1.102:/amiga /amigadaten
+
+in das lokale Dateisystem eingeh&auml;ngt werden. Ab sofort k&ouml;nnt Ihr nun von
+Linux aus auf das Amiga-Verzeichnis mit den fest- gelegten Rechten
+zugreifen.
+
+B)
+Soll die weiter oben als "/amigaram" freigegebene RAM-Disk unter "/mnt"
+ein- gebunden werden, sorgt der Befehl
+
+mount -t nfs 192.168.1.102:/amigaram /mnt
+
+f&uuml;r das gew&uuml;nschte Ergebnis.
+
+Screenshot:
+<IMG SRC="../extra/nfs_aonlinux.png" ALT="Screenshot">
+
+Wollt Ihr nicht nur als "root" oder "su", sondern auch als normaler
+Benutzer den Befehl "mount" ausf&uuml;hren, solltet Ihr den betreffenden
+Ger&auml;tenamen f&uuml;r das Amiga-Verzeichnis mit einem entsprechenden Eintrag
+in der Datei "/etc/fstab" auflisten.
+
+
+5. Fazit
+
+Wenn man sich erst einmal mit dem f&uuml;r Amiga-Verh&auml;ltnisse ungew&ouml;hnlichen
+Aspekten von Eigent&uuml;merschaft und Gruppenzugeh&ouml;rigkeit der Dateien auf dem
+einzubindenden Dateisystem vertraut gemacht hat, bietet das Network File
+System auch dem Amiga eine transparente und zugleich elegante M&ouml;glichkeit,
+Dateien netzwerkweit verf&uuml;gbar zu machen.
+
+
+[1] http://www.pr0n.freeserve.co.uk/nfsd.html
+[2] http://www.oreilly.de/german/freebooks/rlinux3ger/linux_wegIVZ.html
+[3] ftp://de.aminet.net/pub/aminet/comm/tcp/Miamixxx.lha
+[4] ftp://de.aminet.net/pub/aminet/comm/tcp/AmiTCP-demo-40.lha
+[5] ftp://de.aminet.net/pub/aminet/comm/tcp/gendemo104.lha
+
+Uwe Pannecke &lt;Uwe.Pannecke@t-online.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

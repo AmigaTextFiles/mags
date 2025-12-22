@@ -1,0 +1,1092 @@
+5
+1
+9 N‰yttˆtilat.IFF 56 0*
+
+{3          J‰rjestelm‰ohjelmoinnin alkeiskurssi - Osa 3: Intuition
+{3          -------------------------------------------------------
+
+                               Sami Klemola
+
+
+Kurssin t‰ss‰ osassa jatkuu  teema  ohjelmoinnin  perusasioiden  ymp‰rilt‰.
+Katsomme, miten  C-kieliseen  ohjelmaan  voidaan  sis‰llytt‰‰  konekielisi‰
+aliohjelmia, miten parametrit v‰litet‰‰n niille ja miten muuttujia  osoite-
+taan ohjelman osien v‰lill‰. K‰yttˆj‰rjestelm‰n tutkiminen jatkuu Intuitio-
+niin. Sen teht‰v‰n‰ on yll‰pit‰‰ graafinen k‰yttˆliittym‰ ja paljon  muuta.
+Tutustumme nyt siihen alustavasti.
+
+T‰ss‰ osassa k‰sittelyss‰ ovat Intuitionin ruudut ja  ikkunat.  Seuraavassa
+osassa jatkamme k‰sittelem‰ll‰ Intuitionin muita toimintoja, kuten  reques-
+tereita ja alertteja. Myˆs ikkunoihin liittyv‰t toiminnot, kuten valikot ja
+nappulat k‰sitell‰‰n jatkossa. T‰ss‰ osassa oleva koodi  tarvitsee  yleens‰
+toimiakseen Release 2:n. Osa koodista kuitenkin toimii myˆs 1.x:ll‰.
+
+Kurssin viimekertaisessa osassa oli heti johdannossa osa er‰‰st‰ virkkeest‰
+kadonnut jonnekin. Virkkeen ensimm‰inen lause  kuului:  "sitten  k‰‰nnet‰‰n
+viel‰ makroassemblerilla". Ilmiselv‰sti jotakin puuttuu alusta.  Ilmeisesti
+tarkoitin C-k‰‰nt‰j‰n tuottamaa assemblykoodia, mutta olin jotenkin  onnis-
+tunut hukkaamaan virkkeen alun. Se puuttui jo itsell‰ni olevasta  raakakap-
+paleesta, joten t‰ll‰ kertaa syy ei ollut p‰‰toimittajan (kun  oppisit  eka
+toimittamaan juttusi aikataulun puitteissa, voisit valitella virheist‰ni  -
+kiiress‰ kun niit‰ sattuu helposti, toim. huom.).
+
+
+{3Konekielikoodi C-ohjelmassa
+{3---------------------------
+
+Monesti C-kieliseen ohjelmaan kirjoittaa mielell‰‰n joitakin toimintoja ko-
+nekielell‰. Jotkut asiat on vain helpompi tehd‰ sill‰. Erikoisimmat  silmu-
+kat voivat olla selv‰sti nopeampiakin suoraan konekielell‰  kirjoitettuina,
+koska C-k‰‰nt‰j‰ ei koskaan osaa optimoida koodia optimaalisesti!  Konekie-
+lisen koodin voi kirjoittaa funktioksi, jota kutsutaan samalla tavalla kuin
+C-kielisi‰kin funktioita. Sille voidaan antaa parametrej‰, ja silt‰ saadaan
+mahdollisesti palautusarvo.
+
+Oman koodin kirjoittaminen C-k‰‰nt‰j‰n luomaan ymp‰ristˆˆn  voi  olla  jok-
+seenkin kiper‰‰. P‰‰ohjelman rekisterimuuttujia ei saa sotkea, ja kaiken on
+oltava kohdallaan palattaessa sinne.  Perinteisesti  parametrit  v‰litet‰‰n
+pinossa, josta ne on noukittava. Erityisen vaikeaksi homma menee, jos kone-
+kielikoodista kutsutaan C-kielist‰ funktiota.  T‰llˆin  meid‰n  pit‰‰  itse
+tyˆnt‰‰ sen parametrit pinoon ja muistaa  huolehtia  pinon  palauttamisesta
+alkuper‰iseen tilaansa.
+
+Lis‰ksi tulee kutsun ajaksi palauttaa alkuper‰iset  rekisterit,  jos  niit‰
+vaikka tarvittaisiin. Ainakin A4:n  sis‰ltˆ  on  palautettava,  koska  sit‰
+k‰ytet‰‰n data-alueen osoittamiseen. A4:ss‰ on osoitin datahunkkiin, ja sen
+kautta tehd‰‰n kaikki osoitukset sinne. T‰ss‰ on ongelma. Konekielikoodista
+voisi osoittaa C-kielisess‰ osassa m‰‰riteltyj‰ muuttujia suhteessa A4:‰‰n,
+mutta ilmeisesti vain PhxAss osaa merkit‰ objektikoodiin t‰llaisen osoituk-
+sen oikein. Aikaisemmin kehumani SNMA ei sit‰ osaa, kuten ei mik‰‰n muukaan
+kokeilemani assembleri. PhxAss vain taas on muuten l‰hinn‰ tarkoitettu  de-
+mojen tekemiseen. Se ei edes ymm‰rr‰ exec/types.i-tiedoston m‰‰rittelyj‰!
+
+T‰ss‰ vaiheessa on jo syyt‰ k‰yd‰ toimeen. Ajatelkaamme, ett‰ meill‰ on  C-
+ohjelma, josta kutsutaan konekielist‰ calc()-funktiota. Sen teht‰v‰ on las-
+kea kaksi lukua yhteen ja v‰hent‰‰ kolmas. Funktio  on  syyt‰  prototyyp‰t‰
+oikein, eli ohjelman alussa m‰‰ritell‰‰n tarkalleen sen olemus. T‰ss‰  ovat
+olennaiset osat C-kielisest‰ osuudesta: 
+
+extern long calc(long,long,long);
+
+<...>
+
+    printf("2 + 3 - 4 = %ld\n",calc(2,3,4));
+
+Koodi tulostaa calc()-funktion palauttaman luvun, joka siis on  ensimm‰inen
+parametri plus toinen parametri miinus kolmas parametri. T‰ss‰ on  funktion
+konekielinen l‰hdekoodi kokonaisuudessaan: 
+
+         section calc,code
+
+         xdef     _calc    ; sis‰llytt‰‰ rutiinin osoitteen objektikoodiin
+
+_calc    move.l   4(sp),d0          ; ensimm‰inen parametri
+         add.l    8(sp),d0          ; lis‰t‰‰n siihen toinen parametri
+         sub.l    12(sp),d0         ; ja v‰hennet‰‰n summasta kolmas
+         rts                        ; tulos on valmiiksi D0:ssa
+
+Eli ei t‰m‰ niin vaikeaa ole. Funktion parametrit tyˆnnet‰‰n pinoon viimei-
+sest‰ alkaen, joten kun ensimm‰isen‰ 0(sp):ss‰ oleva  paluuosoite  j‰tet‰‰n
+v‰liin, ovat parametrit pinossa ensimm‰isest‰ alkaen, ja sielt‰ ne  haetaan
+sp:n kautta indeksin avulla. Palautuskoodi sijoitetaan  D0:aan  aivan  kuin
+ohjelmankin. Normaalisti parametreill‰ ei operoida suoraan pinosta, vaan ne
+ladataan ensin rekistereihin. On myˆs mahdollista k‰ytt‰‰ nk.  regargs-toi-
+mintoa, jolloin C-k‰‰nt‰j‰ sijoittaa parametrit suoraan rekistereihin.
+
+Vaikeammaksi koodin kirjoittaminen menee sitten, kun  funktiossa  tarvitaan
+enemm‰n rekisterej‰. T‰llˆin alkuper‰iset rekisterit on  tallennettava  pi-
+noon, jolloin pino-osoittimen arvo luonnollisesti muuttuu. T‰m‰ on otettava
+huomioon parametrej‰ noukittaessa. Jokainen  pinoon  tallennettu  rekisteri
+kasvattaa indeksin arvoa nelj‰ll‰. T‰ss‰ on  toinen  edelliseen  kuulumaton
+esimerkki, jossa tallennetaan kaksi rekisteri‰ pinoon: 
+
+         movem.l  a2/a3,-(sp)
+         movea.l  12(sp),a2
+         <...>
+         movem.l  (sp)+,a2/a3
+         rts
+ 
+Nyt ensimm‰inen parametri onkin +12:ssa, koska pinossa ovat ensin  rekiste-
+rien A2 ja A3 sis‰llˆt ja  paluuosoite.  Konekielikoodista  voidaan  kutsua
+kirjastofunktioita C-stubien kautta. Stubit ovat koodinp‰tki‰, jotka poimi-
+vat pinosta funktion parametrit ja lataavat ne rekistereihin, joissa  funk-
+tiot ne haluavat. Esimerkiksi Delay(10) hoituu konekieliosuudesta n‰in: 
+
+         move.l   #10,-(sp)
+         jsr      _Delay(pc)
+         addq.l   #4,sp
+
+Lopuksi pinorekisterin arvo korjataan tilannetta edelt‰neeseen kuntoon. Ar-
+volla ei ole meille mit‰‰n merkityst‰, joten sit‰ ei tarvitse ladata pinos-
+ta takaisin, vaan riitt‰‰, ett‰ pino-osoitin on kunnossa. Yll‰ oleva  koodi
+ei kyll‰ ole mitenk‰‰n erityisen tehokas. On huomattavasti  parempi  kutsua
+systeemifunktioita suoraan, mutta silloin meid‰n tarvitsee  saada  selville
+kirjaston kantaosoite. Se onnistuu PhxAssilla k‰‰nt‰en n‰in: 
+
+         section waitsec,code
+         near a4
+
+         xref _DOSBase
+         xref _LVODelay
+         xdef _waitasec
+
+_waitasec
+         move.l   a6,-(sp)
+         movea.l  _DOSBase(a4),a6
+         moveq    #50,d1
+         jsr      _LVODelay(a6)
+         movea.l  (sp)+,a6
+         rts
+
+Funktio waitasec() odottaa sekunnin. DOS-funktio Delay() viivytt‰‰ ohjelman
+suoritusta halutun ajan, t‰ss‰ tapauksessa 50 ruudunpiirtoa eli  yhden  se-
+kunnin verran. Koko toiminnan kulmakivi on  toisen  rivin  near-direktiivi,
+joka m‰‰ritt‰‰ rekisterin  a4  toimimaan  indeksirekisterin‰  osoitettaessa
+toisessa moduulissa olevaa dataa short-data modelissa. Normaalisti osoituk-
+set ovat long-data modelin mukaisia  eli  suoraan  32-bittisi‰  osoittimia,
+jotka t‰ytyy asettaa kohdalleen ohjelmaa ladattaessa.
+
+DICE k‰ytt‰‰ oletuksena short-data modelia,  jossa  dataa  osoitetaan  A4:n
+kautta. Kuten yll‰ n‰kyy, n‰in voidaan tehd‰ myˆs omassa konekielikoodissa,
+mutta kuten mainittua, t‰m‰ onnistuu vain PhxAssilla,  koska  se  on  ainut
+near-direktiivin osaava makroassembleri. Ilman near-direktiivi‰ viittaukset
+teht‰isiin normaaleina 32-bittisin‰ osoittimina, joilla small-data model ei
+toimi, koska siin‰ ulkoinen muuttuja saa indeksin arvon eik‰ suoraan  osoi-
+tetta.
+
+Short-data modelista on myˆs se hyˆty, ett‰ koodihunkin sis‰ll‰  tapahtuvat
+osoitukset ja hypyt voidaan niin ik‰‰n tehd‰  suhteellisina,  suhteellisina
+ohjelmalaskuriin. Kuten edellisess‰ esimerkiss‰ n‰kyi, aliohjelmia  voidaan
+kutsua PC-relatiivisesti. N‰in ollen myˆsk‰‰n esimerkiksi  k‰ytetty  _Delay
+ei ole osoitin funktioon, vaan indeksi siihen  suhteessa  ohjelmalaskuriin.
+T‰st‰ kaikesta on rutkasti hyˆty‰. Ohjelma nopeutuu ja tulee lyhyemm‰ksi ja
+residentattavaksikin. Hunkkien koko ei kuitenkaan saa ylitt‰‰ 32 kilotavua,
+koska indeksit ovat 16-bittisi‰ lukuja.
+
+N‰m‰ asiat eiv‰t kuitenkaan varsinaisesti kuulu t‰m‰n kurssin piiriin, vaan
+pikemminkin C-kurssiin, joten n‰ist‰ ei t‰ss‰ sen enemp‰‰. Nyt on aika kat-
+soa aivan oikean funktion l‰hdekoodia.  Olen  julkaissut  ohjelman  nimelt‰
+TechUserMask, jonka avulla voi  manipuloida  k‰ytt‰jien  oikeuksia.  K‰ytin
+siin‰ _main()-entrypointia,  enk‰  halunnut  tuoda  sis‰‰n  hirve‰‰  m‰‰r‰‰
+ylim‰‰r‰ist‰ koodia vain k‰ytt‰‰kseni printf():‰‰,  joten  kirjoitin  kaksi
+omaa tulostusfunktiotani. Toinen niist‰ toimii kuin printf(), ja t‰ss‰ ole-
+va ennemminkin kuin puts(). Se ei siis k‰sittele mahdollisia  argumentteja.
+Alussa m‰‰ritell‰‰n makro Lib, jota k‰ytet‰‰n systeemifunktion kutsumiseen.
+
+Lib MACRO * function[,basereg]
+         xref _LVO\1
+         ifnc '\2',''
+         movea.l \2,a6
+         endc
+         jsr _LVO\1(a6)
+         ENDM
+
+         section TechUserMask,code
+         near a4
+
+         xref _DOSBase     ; External reference to the base of dos.library
+         xdef _rawprint    ; prints an unformatted string
+
+_rawprint         ; LONG rawprint(string);
+
+         movea.l  4(sp),a1
+_raw1    movem.l  d2/d3/a6,-(sp)    ; registered entry point (A1=string)
+         move.l   a1,d2
+         moveq    #-1,d3
+_raw2    addq.l   #1,d3
+         tst.b    (a1)+
+         bne      _raw2
+         Lib      Output,_DOSBase(a4)
+         move.l   d0,d1
+         Lib      Write
+_raw3    movem.l  (sp)+,d2/d3/a6
+         rts
+
+Palautuskoodi  on  tulostettujen  merkkien  lukum‰‰r‰,  joka  saadaan  Wri-
+te():lt‰. Funktio laskee _raw2-silmukassa merkkijonon pituuden ja  tulostaa
+sen oletustulostuskanavalle, johon saadaan handle funktiolla Output().  DO-
+Sin kantaosoite  saadaan  C-k‰‰nt‰j‰n  toimittamasta  muuttujasta  DOSBase.
+T‰m‰nkin koodin k‰‰nt‰miseen tarvitaan PhxAss. 
+
+PhxAss MC680x0/68851/6888x Macro Assembler V4.00
+Written by F.Wille (Herford, GERMANY) in 1991-94
+Pass 1
+Pass 2
+00 No error.
+
+92 lines in 0.08 sec = 69000 lines/min.
+Global symbols: 19
+Local symbols:  0
+Bytes gained by optimization: 10
+Code:   1 section(s)      114 bytes
+Data: none
+BSS:  none
+
+Kokonaisuudessaan koodi jopa lyheni 10 tavua, koska PhxAss osaa myˆs  opti-
+moida koodia eritt‰in hyvin, ja kuten n‰kyy, se on myˆs hyvin nopea.
+
+
+{3Ruudut
+{3------
+
+Amigan graafisen k‰yttˆliittym‰n ydin on Intuition. Sen  teht‰v‰n‰  on  mm.
+huolehtia n‰ytˆst‰. N‰ytˆll‰ voi olla useita ruutuja, joilla  kaikilla  voi
+olla oma olemuksensa. Jokaisella ruudulla voi olla useita ikkunoita,  jotka
+jakavat ruudun pienempiin osiin. Samalla ruudulla olevat  ikkunat  toimivat
+samanlaisessa ymp‰ristˆss‰, mutta  toisella  ruudulla  voi  olla  erilaiset
+v‰rit ja erilainen resoluutio. Jokaisella ikkunalla voi olla  valikkonauha,
+ja siin‰ voi olla nappuloita ja valitsimia. Intuition tekee kaiken  yll‰pi-
+don, eik‰ ohjelman tarvitse olla huolissaan esimerkiksi  ikkunoiden  olemi-
+sesta p‰‰llekk‰in.
+
+Ohjelman ei tarvitse avata omaa ruutua, vaan se voi avata  ikkunansa  Work-
+bench-ruudulle tai oletusruudulle, joka usein on Workbench. K‰ytt‰j‰n  kan-
+nattaa antaa valita ruudun ominaisuudet, ellei niit‰ sido  jokin  erityinen
+seikka. Yksi hyv‰ tapa on kloonata Workbench eli avata oma ruutu  samanlai-
+seksi kuin Workbench-ruutu on. T‰llainen esimerkki on luvassa.  Ruutuja  on
+kolmea tyyppi‰: Workbench, public ja custom. Ainoastaan Workbench-ruutu  on
+tyyppi‰ Workbench. Vanhat omat ruudut ovat tyyppi‰  custom,  mutta  nyky‰‰n
+ruudut avataan useimmiten julkisiksi eli tyyppi on public. Julkiselle  ruu-
+dulle saa jokin toinen ohjelma avata oman ikkunansa. Mik‰li  sallii  t‰m‰n,
+on otettava huomioon monia asioita, joilla ei tarvitse normaalisti  p‰‰t‰‰n
+vaivata. Ruudun ominaisuudet on myˆs tiedett‰v‰ ennen sen  avaamista.  Omi-
+naisuudet sis‰lt‰v‰t mm. ruudun koon, resoluution ja bittikarttojen m‰‰r‰n,
+joka m‰‰r‰‰ k‰ytett‰viss‰ olevien v‰rien m‰‰r‰n.
+
+Mik‰li et todella tarvitse tarkkaa grafiikkaa, ‰l‰ edellyt‰  uudempia  pii-
+rej‰ ja multisync-monitoria. Useimmat ohjelmat  p‰rj‰‰v‰t  normaalilla  hi-
+res-grafiikalla. Ruudun ominaisuudet  kootaan  NewScreen-struktuuriin  sek‰
+Tag-struktuureihin.  K‰yttˆj‰rjestelm‰  2.0  toi  mukanaan   tagit.   Niit‰
+k‰ytet‰‰n joka puolella k‰yttˆj‰rjestelm‰‰ parametrien v‰litt‰miseen.  Tag-
+struktuuri koostuu kahdesta longwordista, joista ensimm‰inen  kertoo  para-
+metrin tyypin ja j‰lkimm‰inen sis‰lt‰‰ itse tiedon. Tag-struktuureissa teh-
+dyt m‰‰rittelyt ohittavat  NewScreen-struktuurin  asetukset.  NewScreeniss‰
+kannattaa m‰‰ritell‰ niin paljon asioita kuin mahdollista, koska tagit  ku-
+luttavat mielettˆm‰sti muistia. Yhden bitin tilan m‰‰ritt‰minen vie kahdek-
+san tavua!
+
+Vastaavasti ikkunan voi avata NewWindow-struktuurin ja mahdollisen  laajen-
+nuksen avulla tai pelkki‰ tageja k‰ytt‰m‰ll‰.  Struktuureista  on  olemassa
+laajennus 2.0-k‰yttˆj‰rjestelm‰st‰ alkaen. Ne ovat  nimelt‰‰n  ExtNewScreen
+ja ExtNewWindow. Niiss‰ on lis‰n‰ uudet kent‰t, joiden avulla  niihin  voi-
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                      Kuva 1. Mahdolliset grafiikkatilat.
+
+daan liitt‰‰ tagijono lis‰ominaisuuksien m‰‰ritt‰miseen. V36 toi tullessaan
+ikkunoille mm. 3d-newlookin  eli  kolmiulotteisemman  n‰kˆisen  k‰yttˆliit-
+tym‰n. Se t‰ytyy ottaa huomioon jo ruutua avattaessa ja kertoa Intuitionil-
+le, ett‰ ohjelma ymm‰rt‰‰ newlook-liittym‰n. Muuten ruutu avataan samanlai-
+seksi kuin vanhoille ohjelmille.
+
+Jokaista ruutua varten on olemassa Screen-struktuuri sek‰  Graphics-kirjas-
+ton yll‰pit‰m‰ ViewPort-struktuuri. N‰m‰ sis‰lt‰v‰t ruudun tiedot.  Kakkos-
+julkaisusta alkaen Intuition tekee jokaiselle ruudulle myˆs DrawInfo-struk-
+tuurin, joka on tavallaan Intuitionin vastine Graphicsin  RastPortille.  Ne
+sis‰lt‰v‰t piirt‰miseen liittyv‰‰ tietoa. Ruudun avaamiseen on per‰ti kolme
+funktiota, jotka ottavat parametrikseen  osoittimen  NewScreen-struktuuriin
+sek‰ mahdollisesti tageja: 
+
+struct Screen *OpenScreen( struct NewScreen * );
+struct Screen *OpenScreenTagList ( struct NewScreen * , struct TagItem * );
+struct Screen *OpenScreenTags ( struct NewScreen * , ULONG , ULONG , ... );
+BOOL CloseScreen( struct Screen *screen );
+ 
+Osoitin TagItemiin on itse  asiassa  osoitin  taulukkoon  TagItemej‰,  joka
+p‰‰tet‰‰n TAG_DONE:iin. Kutsuista viimeinen on kaikkein hirvein  resurssien
+kulutuksen kannalta, koska se tyˆnt‰‰ tagit pinoon. Itse asiassa se ei  ole
+edes oikea funktio, vaan pelkk‰  stubi  OpenScreenTagList():lle.  Tehokkain
+tapa on k‰ytt‰‰ laajennusta, jossa  ExtNewScreen-struktuurissa  on  osoitin
+tagilistaan. NewScreen-struktuurin voi j‰tt‰‰ poiskin, jos  oletukset  kel-
+paavat, mutta normaalisti n‰in ei  kannata  tehd‰.  Eritt‰in  pelkistetysti
+ruudun voi avata n‰in: 
+
+struct Screen *ourscreen;
+
+UWORD pens[] = { ~0 };
+
+ULONG tags[] = { SA_Pens,(ULONG)pens,SA_Depth,2,TAG_DONE };
+
+<...>
+
+if(ourscreen = OpenScreenTagList(NULL,(struct TagItem *)tags)) {
+
+    <...>
+
+    CloseScreen(ourscreen);
+}
+
+K‰ytetyt kaksi tagia, SA_Pens ja SA_Depth, tarvitaan 3d-newlookin saamisek-
+si. Kyni‰ ei m‰‰ritell‰, vaan taulukossa on heti terminaattori,  mutta  In-
+tuition katsoo juuri SA_Pens-tagista, voiko ohjelmalle  tehd‰  newlook-ruu-
+dun. Niit‰ on  itse  asiassa  olemassa  kolmea  tyyppi‰.  T‰yden  newlookin
+lis‰ksi on mustavalkoversio, jota k‰ytet‰‰n, jos ruudulla on vain yksi bit-
+tikartta eli kaksi v‰ri‰. V34-yhteensopivaa  taas  k‰ytet‰‰n,  kun  ohjelma
+avaa custom-ruudun ilman SA_Pens-tagia, jolloin Intuition olettaa, ett‰ ky-
+seess‰ on uusista jutuista tiet‰m‰tˆn vanha ohjelma.
+
+Ruutu suljetaan funktiolla CloseScreen(). Vanha 1.x ei palauta mit‰‰n arvo-
+ja, mutta 2.0:sta alkaen CloseScreen() palauttaa toden, jos  ruutu  suljet-
+tiin, tai ep‰toden, jos ruutua ei saatu suljettua esimerkiksi  siksi,  ett‰
+sill‰ on jonkin toisen ohjelman ikkuna. N‰in ei pit‰isi olla, mutta  jotkin
+vanhat ohjelmat sis‰lt‰v‰t mahdollisuuden siirty‰ toiselle ruudulle, vaikka
+silloin se ei ollut sallittua. Nyt siihen on olemassa luvalliset keinot, ja
+niist‰ lis‰‰ myˆhemmin.
+
+Nyt otan esimerkin suoraan el‰v‰st‰ el‰m‰st‰. Dynaaminen  tekstinn‰yttimeni
+shml avaa oman ruudun newlook-yhteensopivasti k‰ytt‰en  ExtNewScreen-struk-
+tuuria ja lis‰ksi tarpeen vaatiessa muutamaa tagia. Ensiksi kuitenkin  vil-
+kaisu ExtNewScreen-struktuurin rakenteeseen: 
+
+struct ExtNewScreen {
+    WORD    LeftEdge, TopEdge, Width, Height, Depth;
+    UBYTE   DetailPen, BlockPen;
+    UWORD   ViewModes;
+    UWORD   Type;
+    struct  TextAttr        *Font;
+    UBYTE   *DefaultTitle;
+    struct  Gadget          *Gadgets;
+    struct  BitMap          *CustomBitMap;
+    struct  TagItem         *Extension;
+};
+
+Vanha NewScreen on  muuten  samanlainen,  mutta  Extension-kentt‰  puuttuu.
+T‰ss‰ se toimii laajennuksena osoittaen tagijonoon.  Lis‰ksi  Type-kent‰ss‰
+asetetaan NS_EXTENDED-lippu kertomaan uudelle Intuitionille, ett‰ laajennus
+seuraa. Vanha 1.x j‰tt‰‰ ne huomiotta. Toinen mahdollisuus on k‰ytt‰‰  van-
+haa NewScreen-struktuuria ja  antaa  tagijono  suoraan  k‰ytt‰en  funktiota
+OpenScreenTagList(). Nyt se esimerkki: 
+
+UWORD ScreenPens = 0xffff;
+
+ULONG ScreenTags[] = {
+    SA_Pens,(ULONG)&ScreenPens,
+    SA_PubName,(ULONG)"shml",TAG_DONE
+};
+
+struct ExtNewScreen ns = {
+    0,0,640,256,2,0,1,HIRES,CUSTOMSCREEN|NS_EXTENDED,
+    0,"SHML SCREEN",0,0,ScreenTags
+};
+
+Omaa fonttia, omia gadgetteja ja omaa bittikarttaa ei ole, joten  vastaavat
+kent‰t j‰tet‰‰n nolliksi. Lopussa on osoitin tagijonoon, jossa m‰‰ritell‰‰n
+myˆs julkiseksi nostettavan ruudun nimi. Ruudun avaaminen  voi  ep‰onnistua
+monista syist‰. OpenScreen()-funkiot osaavat antaa virhekoodin, jos  niille
+annetaan SA_ErrorCode-tagissa osoitin LONG:iin, johon sen  voi  kirjoittaa.
+Mahdolliset virhekoodit ovat: 
+
+OSERR_NOMONITOR      1     pyydetty tila edellytt‰‰ monitoria, jota ei ole
+OSERR_NOCHIPS        2     pyydetty tila edellytt‰‰ uudempia piirej‰
+OSERR_NOMEM          3     liian v‰h‰n muistia
+OSERR_NOCHIPMEM      4     ei tarpeeksi CHIP-muistia
+OSERR_PUBNOTUNIQUE   5     julkisen ruudun nimi on jo k‰ytˆss‰
+OSERR_UNKNOWNMODE    6     tuntematon grafiikkatila
+OSERR_TOODEEP        7     liian monta tasoa
+OSERR_ATTACHFAIL     8     ruutujen liitt‰minen ep‰onnistui
+OSERR_NOTAVAILABLE   9     grafiikkatila ei ole saatavilla
+
+Jokaisella julkisella eli public-ruudulla on  oltava  ainutlaatuinen  nimi.
+Jos  nimi  on  jo  k‰ytˆss‰,  saadaan  virhekoodi  5.   Koodi   8   liittyy
+3.0-k‰yttˆj‰rjestelm‰n uuteen toimintoon. Sen alla voidaan  useita  ruutuja
+liitt‰‰ yhteen SA_Parent-tagin avulla, jolloin ne liikkuvat toisiinsa liit-
+tynein‰, ts. niiden v‰liin  ei  voi  siirt‰‰  toista  ruutua,  ja  ne  ovat
+n‰ytˆll‰ aina samassa paikassa toisiinsa n‰hden. K‰ymme nyt  l‰pi  muutamia
+t‰rkeimpi‰ ruutuihin liittyvi‰ tageja ja niiden k‰yttˆ‰.
+
+{3Ruutujen tagit ja liput
+{3-----------------------
+
+Ruutuihin liittyy  todella  suuri  m‰‰r‰  tageja.  Kerron  nyt  t‰rkeimpien
+k‰ytˆst‰. Suluissa olevat nimet ovat  lippuja  NewScreen-struktuurin  Type-
+kent‰ss‰. Kannattaa aina k‰ytt‰‰ lippuja, koska ne viev‰t vain yhden  bitin
+tagien kahdeksaan tavuun verrattuna! BOOL tarkoittaa tagia, jonka  data  on
+TRUE (yksi) tai FALSE (nolla) eli toiminto on joko p‰‰ll‰ tai ei.
+
+SA_Left, SA_Top
+
+M‰‰ritt‰v‰t ruudun sijainnin. Koordinaatit ovat suhteellisia Overscan-Pref-
+siss‰ asetetun n‰ytˆn vasempaan yl‰kulmaan.
+
+SA_Width, SA_Height
+
+M‰‰ritt‰v‰t ruudun koon. Antamalla t‰ss‰ STDSCREENWIDTH ja  STDSCREENHEIGHT
+saa ruudusta display clip rectanglen eli fyysisesti n‰kyviss‰ olevan n‰ytˆn
+kokoisen.
+
+SA_Depth
+
+Bittikarttojen lukum‰‰r‰. Rajoittaa v‰rien m‰‰r‰n. Ruudulla voi olla bitti-
+karttojen m‰‰r‰ potenssiin kaksi v‰ri‰.
+
+SA_DisplayID
+
+M‰‰ritt‰‰ ruudun grafiikkatilan. T‰m‰ ohittaa NewScreen-struktuurin ViewMo-
+des-kent‰n. DisplayID on uusi tapa valita moodi, ja sen avulla voidaan  va-
+lita myˆs uudet tilat.
+
+SA_Pens
+
+Osoitin kyn‰taulukkoon, joka p‰‰ttyy -1:een. T‰m‰ tagi t‰ytyy olla  mukana,
+jotta ruutu saa 3d-newlookin.
+
+SA_Title
+
+Asettaa ruudun otsikon. Data on osoitin merkkijonoon.
+
+SA_ErrorCode
+
+Osoitin LONG:iin, johon kirjoitetaan virhekoodi, jos ruutua ei saada  avat-
+tua. Virhekoodi on p‰tev‰, kun OpenScreen() on palauttanut nollan.
+
+SA_Colors
+
+Osoitin ColorSpec-struktuuriin, jolla m‰‰ritell‰‰n ruudulle  v‰rit.  Muuten
+k‰ytet‰‰n oletusv‰rej‰.
+
+SA_FullPalette, BOOL
+
+Ruudulle halutaan koko paletti eik‰ vain osaa niin kuin V34:ll‰.
+
+SA_Font, SA_SysFont, BOOL
+
+Vain toinen n‰ist‰ saa olla olemassa, mutta kummallakin voi m‰‰ritt‰‰  ruu-
+dulle halutun fontin.  SA_Fontin  data  on  osoitin  TextAttr-struktuuriin.
+SA_SysFont taas on boolean-tyyppinen tagi, jolla m‰‰ritell‰‰n,  voiko  ruu-
+dulle ottaa k‰ytt‰j‰n toivefontin (TRUE), vai pit‰‰kˆ senolla kiinte‰ (kui-
+tenkin k‰ytt‰j‰n valitsema) fontti (FALSE). Fonteista lis‰‰ jatkossa.
+
+SA_Type
+
+M‰‰ritt‰‰ ruudun tyypin, CUSTOMSCREEN tai PUBLICSCREEN.
+
+SA_Behind, BOOL (SCREENBEHIND)
+
+Avaa ruudun kaikkien muiden ruutujen taakse.
+
+SA_Quiet, BOOL (SCREENQUIET)
+
+Pyyt‰‰ Intuitionia olemaan tekem‰tt‰ otsikkorivi‰ ruudulle.
+
+SA_ShowTitle, BOOL (SHOWTITLE)
+
+M‰‰ritt‰‰, n‰ytet‰‰nkˆ ruudun otsikko Backdrop-ikkunoiden p‰‰ll‰. T‰m‰n voi
+myˆhemmin muuttaa ShowTitle()-funktiota kutsumalla.
+
+SA_AutoScroll, BOOL (AUTOSCROLL)
+
+N‰kyv‰‰ n‰yttˆ‰  suuremmat  ruudut  vieriv‰t  automaattisesti,  kun  hiiren
+osoittimen vie ruudun laidalle t‰m‰n ollessa p‰‰ll‰.
+
+SA_Parent, V39
+
+Data on osoitin olemassa olevan ruudun Screen-struktuuriin, johon uusi ruu-
+tu liitet‰‰n. Toisiinsa liitetyt ruudut liikkuvat ja siirtyv‰t muiden eteen
+ja taakse yhdess‰.
+
+SA_Draggable, BOOL, V39
+
+Asettamalla t‰m‰ pois p‰‰lt‰ voidaan ruudun raahaaminen est‰‰,  eli  se  on
+kiinte‰sti samassa paikassa. T‰t‰ ei ole syyt‰  tehd‰  ilman  hyv‰‰  syyt‰.
+Oletus TRUE.
+
+SA_LikeWorkbench, BOOL, V39
+
+Eritt‰in helppo tapa kloonata ruutu, jos edellyt‰t OS3:n. Saat  automaatti-
+sesti saman moodin, koon, tasom‰‰r‰n, v‰rit  jne.  kuin  Workbench-ruudulla
+on.
+
+SA_MinimizeISG, BOOL, V40
+
+Kun ruutuja on n‰ytˆll‰ useita, Intuition j‰tt‰‰  niiden  v‰liin  v‰hint‰‰n
+kolme normaalia rasteririvi‰. T‰ll‰ OS3.1:n tagilla voit  kuitenkin  pyyt‰‰
+niin pienen v‰lin kuin mahdollista, mik‰li siit‰ ei koidu haittaa. ISG  eli
+inter-screen gap mahdollistaa erityisi‰  toimintoja  ruutujen  v‰liss‰,  ja
+siksi se pidet‰‰n vakiona.
+
+SA_PubName
+
+Osoitin julkisen ruudun nimeen. T‰m‰ ei tarkoita ruudun otsikkoa.  Julkiset
+ruudut yksilˆid‰‰n t‰m‰n nimen avulla.
+
+SA_PubSig, SA_PubTask
+
+N‰m‰ ovat varaamasi signaalibitti ja teht‰v‰si osoitin. N‰m‰  on  annettava
+edellisen j‰lkeen. Saat signaalin Intuitionilta, kun  viimeinen  vieraileva
+ikkuna ruudullasi l‰htee pois.
+
+
+{3Julkiset ruudut
+{3---------------
+
+Vanhan k‰yttˆj‰rjestelm‰n alla oli vain yksi julkinen ruutu, Workbench-ruu-
+tu. 2.0:sta alkaen ohjelmien avaamat ruudut voidaan myˆs tehd‰  julkisiksi,
+jolloin muut ohjelmat voivat avata ikkunansa niille. T‰m‰ antaa k‰ytt‰j‰lle
+enemm‰n vapauksia, kun haluamiensa ohjelmien ikkunat voi koota haluamalleen
+ruudulle. Ohjelman t‰ytyy erityisesti tehd‰ avaamastaan  ruudusta  julkinen
+sek‰ j‰lleen yksityinen ennen  sen  sulkemista.  T‰m‰  tapahtuu  funktiolla
+PubScreenStatus(). Julkisiin ruutuihin liittyy  monta  muutakin  funktiota,
+joiden merkitys selvi‰‰ seuraavasta.
+
+struct Screen *LockPubScreen( UBYTE *name );
+
+T‰ll‰ funktiolla voit lukita julkisen  ruudun,  ettei  se  p‰‰se  katoamaan
+sill‰ aikaa, kun teet sille jotakin, esimerkiksi  kloonaat  sen  tai  avaat
+sille ikkunan. Jos tied‰t ruudun nimen, anna se, tai NULL, niin saat osoit-
+timen oletusruudulle, joka on yleens‰ Workbench,  mutta  voi  nyky‰‰n  olla
+muukin.
+
+void UnlockPubScreen( UBYTE *name, struct Screen *screen );
+
+Onnistuneen LockPubScreen()-kutsun j‰lkeen tulee ruutu vapauttaa kutsumalla
+t‰t‰ funktiota saadulla osoittimella.
+
+struct List *LockPubScreenList( void );
+
+Lukitsee public-ruutujen listan, tarkoitettu yll‰pitoteht‰viin.
+
+void UnlockPubScreenList( void );
+
+Vapauttaa public-ruutujen listan.
+
+UBYTE *NextPubScreen( struct Screen *screen, UBYTE *namebuf );
+
+Ottaa parametrikseen osoittimen nykyiseen public-ruutuun ja v‰hint‰‰n  MAX-
+PUBSCREENNAME tavua pitk‰‰n puskuriin, johon kopioi seuraavan julkisen ruu-
+dun nimen. T‰m‰ on erikoisfunktio, jota ei normaalisti  tarvitse.  Funktion
+toimintaan liittyy monia huomioon otettavia seikkoja.
+
+void SetDefaultPubScreen( UBYTE *name );
+
+T‰ll‰ funktiolla voi vaihtaa oletusruutua. Parametrin‰ annetaan public-ruu-
+dun nimi, joka asetetaan oletukseksi.  T‰m‰n  j‰lkeen  kaikki  oletusruutua
+k‰ytt‰v‰t ikkunat avautuvat t‰lle ruudulle.
+
+UWORD SetPubScreenModes( unsigned long modes );
+
+Asettaa globaaleja eli kaikkia julkisia  ruutuja  koskevia  moodeja.  T‰ll‰
+hetkell‰ m‰‰riteltyj‰ ovat SHANGHAI  ja  POPPUBSCREEN.  N‰ist‰  ensimm‰inen
+m‰‰r‰‰ Workbench-ikkunat avautuviksi oletusruudulle ja j‰lkimm‰inen ikkunan
+avautuessa jollekin julkiselle ruudulle tuomaan sen etumaiseksi.
+
+UWORD PubScreenStatus( struct Screen *screen, unsigned long statusFlags );
+
+T‰ll‰ funktiolla voi asettaa itse avatun ruudun julkiseksi ja takaisin  yk-
+sityiseksi ennen sulkemista. Vain yksi lippubitti on m‰‰ritelty,  PSNF_PRI-
+VATE. Ruudun saa julkiseksi antamalla lippuina nollan.  Ruutu  on  avatessa
+yksityinen, ja se pit‰‰ asettaa julkiseksi kutsumalla t‰t‰  funktiota.  Pa-
+lauttaminen yksityiseksi pit‰‰ tehd‰ ennen ruudun sulkemista. Se ei  onnis-
+tu, mik‰li ruudulla on muiden ohjelmien ikkunoita.  Ne  on  suljettava  tai
+siirrett‰v‰ pois, ennen kuin ruudun voi palauttaa yksityiseksi  ja  sulkea.
+Funktio palauttaa nollan alimmassa bitiss‰, jos ruutu ei ollut julkinen tai
+sit‰ ei voinut palauttaa yksityiseksi, koska sill‰ on vierailevia  ikkunoi-
+ta.
+
+void GetDefaultPubScreen( UBYTE *nameBuffer );
+
+Hakee puskuriin oletusruudun nimen. T‰t‰ funktiota ei yleens‰  tarvita.  Se
+onkin tarkoitettu l‰hinn‰ yll‰pitotarkoituksiin.
+
+Ruudun  tekeminen  julkiseksi  OpenScreen()-kutsun  j‰lkeen  tapahtuu  siis
+osoittimen Screen-struktuuriin ollessa muuttujassa sc:
+
+PubScreenStatus(sc,0);
+
+Palauttaminen yksityiseksi voi olla hieman ongelmallista, koska on otettava
+huomioon, ettei se v‰ltt‰m‰tt‰ onnistukaan: 
+
+if(sc) {
+    while(!(PubScreenStatus(sc,PSNF_PRIVATE)&1))
+        if(!(EasyRequestArgs(wd,&es[4],0,0))) return();
+    if(CloseScreen(sc)) sc=0;
+}
+
+EasyRequestArgs() n‰ytt‰‰ k‰ytt‰j‰lle requesterin, jossa ilmoitetaan, ettei
+ruutua voida sulkea, koska sill‰ on muiden ohjelmien ikkunoita. T‰ss‰  koo-
+dissa voi vastata myˆs kielt‰v‰sti, jolloin ruudun sulkemisen annetaan  ol-
+la. Sen voi tehd‰, jos ikkunaa ollaan vain sulkemassa, mutta ei poistumassa
+ohjelmasta. N‰in voi olla, jos ohjelma on esimerkiksi commodity. T‰m‰ koodi
+on tietysti OS2:n vaativaa. Edell‰ ollut ruudun avaus toimii kaikilla  sys-
+teemeill‰, vaikkakin hieman eri tavalla. Requesterit k‰sitell‰‰n  tulevissa
+osissa.
+
+Lopuksi otan viel‰ StarTech-ohjelmastani pienen p‰tk‰n  varsin  edistynytt‰
+koodia, joka etsii ikkunalle paikan. T‰m‰ on yksi tapa tehd‰ varsin  kehit-
+tynyt tekniikka. Ensimm‰iseksi yritet‰‰n lukita k‰ytt‰j‰n haluama  julkinen
+ruutu. Sen nimi on puskurissa, jonka numeroa vastaa m‰‰ritelm‰  BUFF_SCREEN
+(#define). Mik‰li t‰t‰ ruutua ei saada lukittua, katsotaan  er‰‰st‰  valik-
+koasetuksesta, onko se p‰‰ll‰ (CHECKED) eli haluaako k‰ytt‰j‰, ett‰ avataan
+oma ruutu, jos nimetty‰ ruutua ei lˆydy. Mik‰li n‰in on, avataan oma  ruutu
+(k‰ytt‰en edell‰ olleiden kaltaisia struktuureja), ja tehd‰‰n siit‰  julki-
+nen ruutu. Mik‰li k‰ytt‰j‰ ei halua omaa ruutua avattavan, lukitaan oletus-
+ruutu eli mit‰ todenn‰kˆisimmin Workbench-ruutu. Sitten haetaan osoitin sen
+DrawInfo-struktuuriin, josta mm. sen v‰riominaisuudet kloonataan. T‰ydelli-
+sest‰ kloonauksesta tulee esimerkki jatkossa. 
+
+if(!(TechScreen = LockPubScreen(Buffs[BUFF_SCREEN])))
+
+    if(menuitem2[SETT_SCREEN].Flags & CHECKED) {
+        if(!sc) if(sc = OpenScreen(&ns)) PubScreenStatus(sc,0);
+        TechScreen = LockPubScreen("Star Screen");
+    }
+
+if(!TechScreen) TechScreen = LockPubScreen(NULL);
+
+if(!TechScreen) return(Err_Screen); else {
+    din = GetScreenDrawInfo(TechScreen);
+
+    <...>
+}
+
+  
+{3Ruudun kloonaaminen
+{3-------------------
+
+Ehk‰p‰ paras tapa oman  ruudun  avaamiseen  on  oletusruudun  kloonaaminen.
+T‰llˆin ohjelman liittym‰ll‰ on valmiiksi k‰ytt‰j‰n haluama ymp‰ristˆ. T‰m‰
+onnistuu,  mik‰li  ohjelma  vain  haluaa  avata  oman  ruudun   esimerkiksi
+k‰ytett‰vyyden takia eik‰ mist‰‰n pakottavasta syyst‰. Ideana on  yksinker-
+taisesti lukita oletusruutu, hakea sen DrawInfo ja ottaa niist‰ tarvittavat
+tiedot, jotka annetaan edelleen OpenScreen():lle. T‰ss‰ on  kokonainen  oh-
+jelma esimerkiksi kloonauksesta: 
+
+/* clone.c */
+
+#include "exec/types.h"
+#include "intuition/screens.h"
+#include "proto/graphics_protos.h"
+#include "proto/intuition_protos.h"
+
+int main(void);
+void OpenClonedScreen(void);
+
+ULONG ScreenTags[] = {
+    SA_Width,0,SA_Height,0,SA_Depth,0,SA_Pens,0,
+    SA_DisplayID,0,SA_Overscan,OSCAN_TEXT,SA_AutoScroll,TRUE,
+    SA_Title,"MyScreen",SA_PubName,(ULONG)"mysc",TAG_DONE
+};
+
+struct Screen *sc;
+
+int main(void) {
+    OpenClonedScreen();
+    if(sc) {
+
+        <...>
+
+        while(!(PubScreenStatus(sc,PSNF_PRIVATE)&1)) Delay(10);
+        while(sc) if(CloseScreen(sc)) sc = 0; else Delay(10);
+    }
+    return(0);
+};
+
+void OpenClonedScreen(void) {
+struct Screen *pubsc;
+struct DrawInfo *din;
+    din = 0;
+    if(pubsc = LockPubScreen(NULL)) {
+        if(din = GetScreenDrawInfo(pubsc)) {
+            ScreenTags[1] = pubsc->Width;
+            ScreenTags[3] = pubsc->Height;
+            ScreenTags[5] = din->dri_Depth;
+            ScreenTags[7] = (ULONG)din->dri_Pens;
+            ScreenTags[9] = GetVPModeID(&pubsc->ViewPort);
+            if(sc = OpenScreenTagList(NULL,(struct TagItem *)ScreenTags)) {
+                PubScreenStatus(sc,0);
+            }
+        }
+        if(din) FreeScreenDrawInfo(pubsc,din);
+        UnlockPubScreen(NULL,pubsc);
+    }
+};
+
+T‰m‰ OpenClonedScreen()-funktiohan t‰ss‰ ohjelmassa vain  on  j‰rkev‰.  Sen
+voi t‰st‰ esialustettuine tagijonoineen "kloonata" mihin tahansa  ohjelmaan
+ja k‰ytt‰‰ siin‰ ruudun avaamiseen. Ennen  ruudun  sulkemista  tarvittaessa
+odotetaan, ett‰ se onnistuisi. J‰lkimm‰inen  rivi  kutsuu  CloseScreen():i‰
+niin kauan, ett‰ ruutu todella menee kiinni, koska ruudulle on voinut  tun-
+kea  itsens‰  esimerkiksi  DarkPlay,  josta  ei  saa  tietoa  PubScreenSta-
+tus()-funktion avulla, koska se ei ole 2.0-ohjelma eik‰  tee  asioita  niin
+kuin ne nyky‰‰n pit‰isi tehd‰. GetVPModeID() palauttaa  annetun  ViewPortin
+grafiikkatilan. T‰ss‰ on viel‰ muutamien k‰ytettyjen ja muuten asiaan liit-
+tyvien funktioiden toimintaa:
+
+struct DrawInfo *GetScreenDrawInfo( struct Screen *screen );
+
+Palauttaa osoittimen annetun ruudun DrawInfo-struktuuriin.
+
+void FreeScreenDrawInfo( struct Screen *screen, struct  DrawInfo  *drawInfo
+);
+
+Vapauttaa DrawInfon.
+
+ULONG OpenWorkBench( void );
+
+Avaa Workbenchin.
+
+LONG CloseWorkBench( void );
+
+Sulkee Workbenchin. Onnistuu vain, jos Workbench-ruudulla ei ole muita kuin
+Workbenchin omia ikkunoita, eik‰ Workbenchin ajamia ohjelmia ole k‰ynniss‰.
+K‰ytet‰‰n yh‰ harvemmin - eniten k‰yttˆ‰ oli aikoinaan,  kun  koneissa  oli
+v‰h‰n muistia, jolloin sit‰ saatiin lis‰‰ k‰yttˆˆn sulkemalla Workbench.
+
+BOOL WBenchToBack( void );
+
+Siirt‰‰ Workbench-ruudun takimmaiseksi.
+
+BOOL WBenchToFront( void );
+
+Siirt‰‰ Workbench-ruudun etumaiseksi.
+
+void ScreenToBack( struct Screen *screen );
+
+Siirt‰‰ annetun ruudun takimmaiseksi.
+
+void ScreenToFront( struct Screen *screen );
+
+Siirt‰‰ annetun ruudun etumaiseksi.
+
+void MoveScreen( struct Screen *screen, long dx, long dy );
+
+Siirt‰‰ annetun ruudun haluttuun paikkaan n‰ytˆll‰. Annetut arvot ovat del-
+takoordinaatteja, eli ne eiv‰t kerro paikkaa, johon ruutu siirret‰‰n,  vaan
+ne ovat suhteellisia arvoja ruudun nykyisiin koordinaatteihin.
+
+void ShowTitle( struct Screen *screen, long showIt );
+
+Asettaa ruudun otsikon joko n‰kym‰‰n Backdrop-ikkunoiden p‰‰ll‰ tai ei. Jos
+showIt on tosi, otsikko n‰kyy.
+
+
+{3Ikkunat
+{3-------
+
+Ruudut sellaisenaan ovat vain pohja varsinaiselle k‰yttˆliittym‰lle. Ohjel-
+mat toimivat ikkunoissa. Ikkunat ovat suorakulmaisia alueita, jotka jakavat
+ruudun osiin ja jotka voivat olla osittain tai  kokonaan  toistensa  p‰‰ll‰
+tai rinnakkain n‰ytˆll‰. Ikkunan  rajaavat  yleens‰  reunat  eli  borderit,
+joissa on ikkunan ohjaamiseen k‰ytett‰vi‰ nappuloita eli gadgetteja. 
+
+         Nappulan nimi     K‰yttˆtarkoitus
+
+         Close             Sulkee ikkunan (tiedottaa ohjelmalle)
+         Zoom              Katso ZipWindow()
+         Depth             Siirt‰‰ ikkunan etumaiseksi tai takimmaiseksi
+         Sizing            Muuttaa ikkunan kokoa
+
+Taulukko 1. Ikkunan system-gadgetit.
+
+Yll‰ olevassa taulukossa n‰kyv‰t ikkunoissa yleens‰  olevat  nappulat.  Si-
+zing-gadget sijaitsee yleens‰ oikeassa laidassa, muut yl‰laidassa. Borderi,
+jossa on gadgetteja, on selv‰sti leve‰mpi kuin sellainen,  jossa  niit‰  ei
+ole, esim. vasen laita. Lis‰ksi ikkunassa on Drag Bar, jonka muodostaa  ot-
+sikkorivi. Siit‰ tarttumalla voi ikkunaa siirt‰‰ ruudulla.  N‰m‰  systeemi-
+gadgetit tulevat ikkunaan automaattisesti, mik‰li  niiden  haluaa  tulevan,
+eik‰ sit‰ pid‰k‰‰n est‰‰ ilman todella  hyv‰‰  syyt‰,  koska  se  rajoittaa
+k‰ytt‰j‰n kontrollia.
+
+Ikkuna avataan funktiolla  OpenWindow().  Sille  annetaan  osoitin  NewWin-
+dow-struktuuriin, jossa voi olla laajennus. Ikkunaa avattaessa pit‰‰ tiet‰‰
+samoja asioita kuin ruutuakin avattaessa, esim. ikkunan paikka, koko, koko-
+rajat sek‰ ruutu,  jolle  se  avataan.  T‰ss‰  on  ExtNewWindow-struktuurin
+m‰‰rittely, joka on muuten samanlainen  kuin  NewWindow,  mutta  lis‰n‰  on
+osoitin tagijonoon: 
+
+struct ExtNewWindow {
+    WORD    LeftEdge, TopEdge;
+    WORD    Width, Height;
+    UBYTE   DetailPen, BlockPen;
+    ULONG   IDCMPFlags;
+    ULONG   Flags;
+    struct  Gadget          *FirstGadget;
+    struct  Image           *CheckMark;
+    UBYTE   *Title;
+    struct  Screen          *Screen;
+    struct  BitMap          *BitMap;
+    WORD    MinWidth, MinHeight;
+    UWORD   MaxWidth, MaxHeight;
+    UWORD   Type;
+    struct  TagItem         *Extension;
+};
+
+Laajennuksen m‰‰ritt‰‰ Flags-kent‰ss‰ p‰‰ll‰ oleva lippu  WFLG_NW_EXTENDED.
+IDCMP on Intuitionin tapa v‰litt‰‰ tietoa ohjelmalle ulkomaailmasta. Siihen
+palataan kurssin tulevissa osissa. Myˆs  muita  nyt  sivuutettavia  kentti‰
+hyˆdynnet‰‰n jatkossa. T‰h‰n v‰liin k‰y esimerkki ikkunan avaamisesta: 
+
+struct NewWindow nw = {
+    0,0,640,256,0,1,
+    IDCMP_CLOSEWINDOW|IDCMP_NEWSIZE,WFLG_ACTIVATE|
+    WFLG_CLOSEGADGET|WFLG_DEPTHGADGET|WFLG_SIZEGADGET|
+    WFLG_DRAGBAR|WFLG_SIZEBBOTTOM|WFLG_SMART_REFRESH,
+    0,0,"My Window",0,0,
+    320,32,3200,1280,WBENCHSCREEN
+};
+
+<...>
+
+if(!(wd = OpenWindow(&nw))) error("cannot open window");
+
+T‰ss‰ esimerkiss‰ k‰ytet‰‰n IDCMP:t‰, koska Intuition tiedottaa sen  avulla
+ohjelmalle, kun Close-nappulaa painetaan. T‰m‰ ohjelma haluaa  myˆs  tiedon
+ikkunan koon  muuttumisesta.  Liput  ovat  t‰ss‰  nyt  merkityksellisempi‰.
+Niill‰ laitetaan yksitellen kukin systeemigadgetti p‰‰lle, pyydet‰‰n  avaa-
+maan ikkuna aktiiviseksi ja sijoittamaan Sizing-nappula bottomborderiin eli
+alalaitaan, jolloin molemmat pystylaidat ovat  kapeita  ja  riville  mahtuu
+enemm‰n teksti‰. Esimerkin error() on oma funktio, joka n‰ytt‰‰  virhemerk-
+kijonon ja poistuu ohjelmasta. Ikkuna avataan Workbench-ruudulle, mutta sen
+voi avata omalle ruudulle laittamalla tyypiksi esimerkiksi CUSTOMSCREEN  ja
+asettamalla Screen-kentt‰‰n osoittimen sen Screen-struktuuriin.
+
+Pelk‰ll‰ ikkunalla ei viel‰ juhlita. Siihen tarvitaan myˆs sis‰ltˆ eli var-
+sinainen ohjelman k‰yttˆliittym‰, jonka voi tehd‰  ohjelman  tarkoituksesta
+riippuen konsolin avulla tai sitten gadgeteilla ja menuilla.  N‰ihin  kaik-
+kiin palaamme myˆhemmin t‰ss‰ kurssissa. Nyt on aikaa vain ikkunoiden  muu-
+tamien erityisominaisuuksien ja ikkunaan liittyvien laajennusten  pintapuo-
+liseen tutkimiseen. Yll‰ olleessa esimerkiss‰ ei k‰ytetty ollenkaan tagijo-
+noa, koska sit‰ ei tarvita. Kaikki tarpeellinen voitiin m‰‰ritell‰  NewWin-
+dow-struktuurissa. Myˆs OpenWindow():sta on  olemassa  Tag-versiot,  joille
+annetaan tagit samoin kuin vastaaville OpenScreen()-funktioille: 
+
+struct Window *OpenWindow( struct NewWindow *newWindow );
+struct Screen *OpenScreenTagList( struct NewScreen * , struct TagItem * );
+struct Window *OpenWindowTags( struct NewWindow * , ULONG , ULONG , ... );
+void CloseWindow( struct Window *window );
+
+Toisin kuin CloseScreen(),  CloseWindow()  ei  palauta  mit‰‰n.  Ikkunoihin
+liittyy viel‰ yksi merkitt‰v‰ asia: niiden sis‰llˆn  p‰ivitys  eli  refres-
+hing. Yleens‰ ikkunoiden tulisi olla Smart Refresh -tyyppi‰, jolloin Intui-
+tion pit‰‰ yll‰ ikkunan sis‰ltˆ‰, vaikka se ei olisikaan ruudulla n‰kyvill‰
+eli muut ikkunat peitt‰v‰t sen osittain tai kokonaan. Simple Refresh -tyyp-
+pisen ikkunan joutuu ohjelma itse p‰ivitt‰m‰‰n, kun se tulee  esiin  toisen
+ikkunan takaa, mutta esimerkiksi konsoli tekee sen, joten sen kanssa  tulee
+k‰ytt‰‰ t‰t‰ tyyppi‰. N‰ihin palaamme viel‰ jatkossa.
+
+
+{3Ikkunoiden tagit ja liput
+{3-------------------------
+
+Ikkunoihin liittyy todella  suuri  m‰‰r‰  tageja.  Kerron  nyt  t‰rkeimpien
+k‰ytˆst‰. Suluissa olevat nimet ovat lippuja  NewWindow-struktuurin  Flags-
+kent‰ss‰. Kannattaa aina k‰ytt‰‰ lippuja, koska ne viev‰t vain yhden  bitin
+tagien kahdeksaan tavuun verrattuna! BOOL tarkoittaa tagia, jonka  data  on
+TRUE (yksi) tai FALSE (nolla) eli toiminto on joko p‰‰ll‰ tai ei.
+
+WA_Left, WA_Top
+
+Ikkunan vasemman yl‰reunan sijainti suhteessa ruudun vasempaan  yl‰reunaan.
+Ruudun vasempaan yl‰reunaan aukeavan ikkunan arvot ovat 0,0.
+
+WA_Width, WA_Height
+
+Ikkunan leveys ja korkeus.
+
+WA_Title, WA_ScreenTitle
+
+Data on osoitin ikkunan otsikkoon tai j‰lkimm‰isess‰ tapauksessa ruudun ot-
+sikkoon, joka n‰ytet‰‰n aina, kun kyseinen ikkuna on aktiivinen. N‰it‰  voi
+muuttaa myˆhemmin SetWindowTitles()-funktiota kutsumalla.
+
+WA_CustomScreen, WA_PublicScreen
+
+Osoitin sen ruudun Screen-struktuuriin, jolle  ikkuna  avataan.  Ikkuna  on
+t‰llˆin CUSTOMSCREEN- tai PUBLICSCREEN-tyyppi‰ k‰ytetyst‰ tagista riippuen.
+
+WA_PubScreenName, WA_PubScreenFallBack, BOOL
+
+Ensimm‰inen m‰‰ritt‰‰ sen julkisen ruudun nimen, jolle ikkuna avataan.  Kun
+j‰lkimm‰inen on p‰‰ll‰, ikkuna avautuu oletusruudulle automaattisesti,  jos
+se ei jostain syyst‰ voinut avautua halutulle ruudulle.
+
+WA_MinWidth, WA_MinHeight, WA_MaxWidth, WA_MaxHeight
+
+Ikkunan minimi-  ja  maksimikoko.  N‰m‰  voi  muuttaa  myˆhemmin  WindowLi-
+mits()-funktiota kutsumalla.
+
+WA_Zoom
+
+Data on osoitin nelj‰‰n WORD:iin, jotka ovat ikkunan vaihtoehtoinen  paikka
+ja koko (LeftEdge, TopEdge, Width, Height). Zoom-nappula  tehd‰‰n  ikkunaan
+aina, kun siin‰ on Depth- ja Sizing-nappulat, mutta t‰ll‰ tagilla Zoom-nap-
+pulan saa ilman niit‰kin.
+
+WA_CloseGadget, BOOL (WFLG_CLOSEGADGET)
+
+Halutaan Close-nappula ikkunaan.
+
+WA_DepthGadget, BOOL (WFLG_DEPTHGADGET)
+
+Halutaan Depth-nappula ikkunaan.
+
+WA_DragBar, BOOL (WFLG_DRAGBAR)
+
+Halutaan voida siirt‰‰ ikkunaa sen otsikkopalkista.
+
+WA_SizeGadget, BOOL (WFLG_SIZEGADGET)
+
+Halutaan ikkunaan Sizing-nappula.
+
+WA_SizeBRight, BOOL, WA_SizeBBottom, BOOL (WFLG_SIZEBRIGHT,  WFLG_SIZEBBOT-
+TOM)
+
+M‰‰ritt‰‰ Sizing-nappulan joko oikeaan tai alaborderiin, voi olla kummassa-
+kin.
+
+WA_Borderless, BOOL (WFLG_BORDERLESS)
+
+Avaa ikkunan ilman laitoja eli Borderless-tyyppisen‰.
+
+WA_Backdrop, BOOL (WFLG_BACKDROP)
+
+Avaa ikkunan Backdropina.
+
+WA_GimmeZeroZero, BOOL (WFLG_GIMMEZEROZERO)
+
+Avaa ikkunan GZZ:na eli tekee sille erillisen borderilayerin. Layerit  ovat
+myˆs grafiikan matalan tason asioita, ja niist‰  huolehtii  layers.library.
+Niihin emme varmaankaan tutustu ainakaan t‰ss‰ alkeiskurssissa.
+
+WA_Activate, BOOL (WFLG_ACTIVATE)
+
+Avaa ikkunan aktiivisena. T‰t‰ ei tule k‰ytt‰‰, jos avaa  ikkunan  jonnekin
+taakse, koska silloin k‰ytt‰j‰n syˆte h‰vi‰‰ sinne.
+
+WA_SimpleRefresh, WA_SmartRefresh (WFLG_SIMPLEREFRESH, WFLG_SMARTREFRESH)
+
+M‰‰ritt‰v‰t ikkunan p‰ivitystavan. Itse asiassa WFLG_SMARTREFRESH on nolla,
+joten se on oletus ja sen voi j‰tt‰‰ pois.
+
+WA_NewLookMenus, BOOL, V39
+
+Aseta, mik‰li haluat uudet OS3-newlook-menut.
+
+WA_Flags
+
+Pelastus hirve‰lt‰ muistinkulukselta! Mahdollisuus m‰‰ritt‰‰ liput  samalla
+tavalla kuin NewWindow-struktuurin Flags-kent‰ss‰ ilman  itse  struktuuria.
+Kannattaa ehdottomasti k‰ytt‰‰ n‰it‰ lippuja eik‰ tageja.
+
+
+{3Ikkunoiden tyypit
+{3-----------------
+
+Tavallisen ikkunan lis‰ksi on olemassa  kolme  erityistyyppi‰:  Borderless,
+Backdrop ja GimmeZeroZero. Borderless-ikkuna  on  muuten  samanlainen  kuin
+mik‰ tahansa muukin ikkuna, mutta siin‰ ei ole bordereita eik‰  n‰in  ollen
+myˆsk‰‰n systeemigadgetteja. Niiden laittaminen Borderless-ikkunaan saa ai-
+nakin yhden bordereista n‰kyviin. T‰m‰ voi tosin helpottaa ikkunan  hahmot-
+tamista. Borderless-ikkunalla voi tehokkaasti sekoittaa  k‰ytt‰j‰n  erityi-
+sesti, jos se ei ole koko ruudun kokoinen, koska sill‰ ei  ole  bordereita,
+jotka erottaisivat sen muista ikkunoista.
+
+Backdrop-ikkunat avautuvat muiden ikkunoiden taakse. Niit‰ voi olla useita,
+ja niiden keskin‰isen j‰rjestyksen voi muuttaa haluamakseen,  mutta  Backd-
+rop-ikkunat ovat aina tavallisten ikkunoiden takana. Backdrop-ikkuna ei ta-
+vallaan ole ikkuna ollenkaan, vaan sen avulla saa tunnun kuin siin‰  olevat
+kohteet olisivat suoraan ruudun pohjalla. Backdrop-ikkunan idea tulee  hel-
+posti selville napsauttamalla Workbench  Workbench-valikosta  Backdropiksi.
+Vanhalla 1.x:ll‰ se onkin  jo  valmiiksi  Backdrop-tyyppinen.  Yhdist‰m‰ll‰
+n‰m‰ kaksi erityistoimintoa saa ikkunattoman ruudun  tunnun,  jota  hyˆdyn-
+net‰‰n esimerkiksi terminaaliemulaattoreissa. Ideana on  avata  Borderless-
+Backdrop-ikkuna, jossa ei ole yht‰‰n systeemigadgettia sulkunappulaa lukuu-
+nottamatta.
+
+GimmeZeroZero-ikkunat ovat tavallaan kaksikerroksisia. Normaalisti  ikkunan
+borderit ovat kiinte‰sti liittynein‰ ikkunan varsinaiseen alueeseen,  mutta
+GZZ-ikkunassa borderit ovat erillinen kokonaisuus. K‰ytt‰j‰n kannalta  eroa
+ei ole, mutta ohjelma voi huolettomammin tulostaa grafiikkaa ikkunaan  tar-
+vitsematta huolehtia  erikseen  siit‰,  ettei  grafiikka  mene  bordereiden
+p‰‰lle. GZZ-ikkunoista ei sen enemp‰‰, mutta edell‰  mainittua  Borderless-
+Backdrop-ikkunaa voimme kokeilla myˆhemmin kurssin aikana.
+
+
+{3Ikkunoiden ohjelmallinen kontrolli
+{3----------------------------------
+
+Ohjelma voi muuttaa ikkunaan  liittyvi‰  asioita  k‰ytt‰j‰n  k‰skem‰n‰  tai
+h‰nest‰  piittaamatta.  T‰ss‰  on  joitakin   ikkunoiden   kontrolloimiseen
+k‰ytett‰vi‰ funktioita: 
+
+void SetWindowTitles( struct Window *window, UBYTE *windowTitle,
+    UBYTE *screenTitle );
+
+Asettaa ikkunalle ja ruudulle uuden otsikon. Ruudun otsikko  muuttuu  t‰ss‰
+annetuksi, kun kyseinen ikkuna aktivoidaan. Kumpi tahansa voi olla -1, joka
+ei muuta nykyist‰ otsikkoa ja jolloin voi muuttaa vain jomman kumman  otsi-
+kon, tai nolla, joka palauttaa otsikon alkuper‰iseksi eli siksi,  joka  an-
+nettiin OpenScreen()- tai OpenWindow()-kutsun yhteydess‰. 
+
+void SizeWindow( struct Window *window, long dx, long dy );
+ 
+Muuttaa ikkunan kokoa haluttuun suuntaan. Arvot ovat taas  deltakoordinaat-
+teja. SizeWindow(wd,-30,20) muuttaa ikkunan 30 pikseli‰ kapeammaksi  ja  20
+pikseli‰ korkeammaksi. 
+
+struct View *ViewAddress( void );
+
+Palauttaa osoittimen Intuitionin View-struktuuriin. Kaikki Intuitionin ruu-
+dut n‰ytet‰‰n  sen  Viewiss‰,  joka  on  grafiikkakirjaston  matalan  tason
+n‰ytˆnorganisointia. T‰h‰n palaamme joskus jatkossa. 
+
+struct ViewPort *ViewPortAddress( struct Window *window );
+
+Palauttaa osoittimen ruudun, jolla ikkuna on,  ViewPortiin,  joka  on  myˆs
+Graphicsin asioita. 
+
+void WindowToBack( struct Window *window );
+
+Siirt‰‰ annetun ikkunan takimmaiseksi. 
+
+void WindowToFront( struct Window *window );
+
+Siirt‰‰ annetun ikkunan etumaiseksi. 
+
+BOOL WindowLimits( struct Window *window, long widthMin, long heightMin,
+    unsigned long widthMax, unsigned long heightMax );
+
+Asettaa ikkunalle uudet rajat. Alun perin rajat on annettu NewWindow-struk-
+tuurin Max- ja Min-kentiss‰. Ikkunalle kannattaa  asettaa  riitt‰v‰n  suuri
+minimikoko, ettei k‰ytt‰j‰ saa sit‰ sotkettua tekem‰ll‰ siit‰ liian pient‰,
+mutta maksimikokoa ei kannata rajoittaa  ilman  syyt‰,  vaan  siihen  voisi
+laittaa vaikkapa -1:t. 
+
+void MoveWindow( struct Window *window, long dx, long dy );
+
+Siirt‰‰ ikkunaa haluttuun suuntaan. Arvot ovat taas deltana. 
+
+void ZipWindow( struct Window *window );
+
+Muuttaa ikkunan paikkaa ja kokoa. Ikkunalla on nykyinen paikka ja koko sek‰
+toinen paikka ja koko. N‰iden kahden paikan ja  koon  v‰lill‰  voi  ikkunaa
+vaihtaa t‰ll‰ funktiolla. Vastaavan toiminnon saa aikaan Zoom-nappulan pai-
+naminen. Funktiota voi hyˆdynt‰‰ esimerkiksi antamalla k‰ytt‰j‰lle  mahdol-
+lisuuden zoomaukseen n‰pp‰imistˆlt‰. 

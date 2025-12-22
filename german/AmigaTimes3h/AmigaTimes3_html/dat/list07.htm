@@ -1,0 +1,123 @@
+<HTML>
+<HEAD>
+<BASE TARGET"_self">
+<TITLE>AMIGA TIMES 03/97 - Programmieren in Assembler - Listing 7</TITLE>
+</HEAD>
+
+<BODY  BACKGROUND="../images/bg.gif" BGCOLOR="#C4C4C4" TEXT="#000000" LINK="#FF0000" ALINK="#F00000" VLINK="#AA0000">
+
+<CENTER>
+<IMG SRC="../images/wshop2.gif" ALT="Workshop" BORDER=0 WIDTH=307 HIGHT=61>
+</CENTER>
+
+<PRE>
+;Datei       : listing7.asm
+;Beschreibung: Ein Bild wird angezeigt.
+;Autor       : Enrico Bauermeister
+;Datum       : 17.12.1997
+;Assembler   : TFA AsmOne v1.30
+;======================================
+
+;Interrupts sperren - Betriebssystem ausschalten
+;-----------------------------------------------
+ move.w   #$4000,$dff09a
+
+;Sprites ausschalten (sonst st&ouml;ren die nur)
+;------------------------------------------
+ move.w   #$0020,$dff096
+
+;Bitplanepointer auf unser Bild zeigen lassen
+;--------------------------------------------
+ move.l   #picture,d0        ;Adresse des Bildes nach D0
+ lea      bitplanepointer,a1 ;Adresse der Bitplanepointer nach A1
+ moveq    #4,d1              ;Anzahl der Bitplanes -1 (hier sind es 5)
+pointbitplanes:
+ move.w   d0,6(a1)           ;Low-Word kopieren
+ swap     d0                 ;Words in d0 vertauschen
+ move.w   d0,2(a1)           ;High-Word kopieren
+ swap     d0                 ;Words in d0 wieder vertauschen
+ add.l    #40*256,d0         ;10240 zu D0 dazu z&auml;hlen (auf n&auml;chste
+                             ;Bitplane zeigen)
+ addq.w   #8,a1              ;auf Adresse des n&auml;chsten Bitplanepointers
+                             ;zeigen
+ dbra     d1,pointbitplanes  ;Schleife zum eintragen der Adressen in
+                             ;die Bitplanepointer
+
+;Copperliste aktivieren
+;----------------------
+ move.l   #Copperliste,$dff084
+
+;Warten auf Rasterstrahl (eine 1/50 Sekunde)
+;-------------------------------------------
+wait:
+ move.l   $dff004,d0
+ and.l    #$fff00,d0
+ cmp.l    #$00003000,d0
+ bne.s    wait
+
+;Linke Maustaste gedr&uuml;ckt ?
+;--------------------------
+ btst     #6,$bfe001
+ bne.s    wait
+
+;Sprites wieder einschalten
+;--------------------------
+ move.w   #$8020,$dff096
+
+;Interrupts wieder erlauben
+;--------------------------
+ move.w   #$c000,$dff09a
+
+;Programmende
+;------------
+ moveq    #0,d0
+ rts
+
+;Copperliste
+;-----------
+ SECTION Cl,CODE_C
+Copperliste:
+ dc.w     $008e,$2c81  ;DIWSTRT
+ dc.w     $0090,$2cc1  ;DIWSTOP
+ dc.w     $0092,$0038  ;DDFSTRT
+ dc.w     $0094,$00d0  ;DDFSTOP
+ dc.w     $0100,$5200  ;BPLCON0
+ dc.w     $0108,$0000  ;BPL1MOD
+ dc.w     $010a,$0000  ;BPL2MOD
+bitplanepointer:
+ dc.w     $00e0,$0000  ;BPL1PTH
+ dc.w     $00e2,$0000  ;BPL1PTL
+ dc.w     $00e4,$0000  ;BPL2PTH
+ dc.w     $00e6,$0000  ;BPL2PTL
+ dc.w     $00e8,$0000  ;BPL3PTH
+ dc.w     $00ea,$0000  ;BPL3PTL
+ dc.w     $00ec,$0000  ;BPL4PTH
+ dc.w     $00ee,$0000  ;BPL4PTL
+ dc.w     $00f0,$0000  ;BPL5PTH
+ dc.w     $00f2,$0000  ;BPL5PTL
+;hier setzt ihr eure Farbpalette aus ArtPRO ein
+;        | |
+;        | |
+;         /
+
+;        / 
+;        | | 
+;        | |
+ dc.w     $ffff,$fffe  ;Copperlistenende
+
+;unser Bild
+;----------
+picture:
+ incbin   "bild.raw" ;statt "bild.raw" setzt ihr den Dateinamen
+                     ;eurer RAW-Datei ein
+ END
+</PRE>
+
+<P ALIGN=CENTER>
+<A HREF="wshop.htm#res3">Zur&uuml;ck zum Programmierkurs</A>
+
+<HR>
+
+</BODY>
+</HTML>
+

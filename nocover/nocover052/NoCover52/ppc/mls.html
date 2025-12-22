@@ -1,0 +1,82 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="history.html">PREV</a> | <a href="arith.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Multiple Load/Store Operations </b>
+
+Note: According to Sam Jordan you should avoid these functions &quot;as they
+can cause problems&quot;. Use the POP/PUSH Macros to save registers...
+
+lmw Rt,d16(Ra)
+
+This Command loads 32-Rt Words into SEVERAL registers. It only loads
+into the Low-Word of these registers, the high-word is set to 0.
+To use this command, the EA (Ra+16 Bit Offset) has to be divisible by 4.
+If Ra is set to r0, EA is set to 0+16 Bit Offset. The command starts
+the loading with EA and Rt. Ra is not allowed to be one of the loaded
+registers, and Rt and Ra are not allowed to be both 0.
+
+Example:
+
+lzw r5,27
+lmw r5,10(r17)
+
+This loads 5 Words into the registers r5-r9, started from 10(r17).
+
+stmw Rs,d16(Ra)
+
+This command stores 32-Rt Words from SEVERAL registers to the memory.
+It only stores the Low-Words from these registers. To use this command,
+the EA (Ra+16 Bit Offset) has to be divisible by 4. If Ra is set to r0,
+EA is set to 0+16 Bit Offset. The command starts
+the storing with EA and Rt.
+
+Example:
+
+lzw r5,27
+stmw r5,10(r17)
+
+This stores 5 Words from the registers r5-r9 into 10(r17).
+
+lswi Rt,Ra,NB
+
+Rt to Rt+nr-1 with nr=CEIL(n:4) and n = NB (32, if NB = 0) will be loaded
+with Bytes into the Low-Order, the High-Order will be set to 0.
+Loading will be done from Left to Right.
+This will be done with Register Wrap-Around (if Rt+nr-1&#062;32). If there is
+not enough data to fill the last register, the Bytes of the last register
+which are not filled, will be filled with 0. The EA has NOT to be divisible
+by 4. Ra can be set to r0 to use 0 instead of r0. This function is best
+optimized, if Rt=Ra=5 and Rt+nr-1&#060;=12.
+
+lswx Rt,Ra,Rb
+
+This does the same like lswi, but n=XER. If n = 0 =&#062; Rt undefined. Ra is
+not allowed to be the same like Rb, and Rt and Ra are not allowed to be
+both r0 (which means 0, like always).
+
+stswi Rt,Ra,NB
+
+EA (which does not have to be divisibly by 4) is set to Ra or 0 (if Ra=r0).
+The low-words of Registers Rt to Rt+nr-1 (with possible register-wraparound)
+are filled with data from the EA, where nr=CEIL(n:4) and n = NB (32, if NB = 0).
+If there is not enough data to fill the last register, the Bytes of the
+last register which are not filled, will be filled with 0. This function is best
+optimized, if Rt=Ra=5 and Rt+nr-1&#060;=12.
+
+stswx Rt,Ra,Rb
+
+This works the same like stswi, but n=XER. If n = 0 =&#062; Rt undefined. Ra is
+not allowed to be the same like Rb, and Rt and Ra are not allowed to be
+both r0 (which means 0, like always).
+
+</pre>
+</body>
+</html>

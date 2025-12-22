@@ -1,0 +1,285 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 3.0//EN"> 
+<!-- This document follows the HTML 3.0 standard -->
+
+<html>
+  <head>
+    <title>Genetic Algorithms</title>
+  </head>
+  <body>
+
+    <H1 align="left">Genetic Algorithms</H1>
+    <h3 align="right">Marcel Offermans &lt;M.F.Offermans@WbMT.TUDelft.NL&gt;</h3>
+
+    <HR>
+
+    <IMG SRC="GA_Logo.gif">
+
+    <HR>
+
+    <H2>Introduction</H2>
+
+    <P> Genetic algorithms have recently received much attention
+      because of their ability to solve difficult problems, just like
+      for example neural networks. Although they are completely
+      different, both have their origin in Biology. There are even
+      cases where both algorithms are used to complement each
+      other. </P>
+
+    <P> This article is an introduction to genetic algorithms and
+      their implementation on a computer. </P>
+
+
+    <H2>What is a genetic algorithm?</H2>
+
+    <P> Genetic algorithms are based on processes that can be found in
+      natural evolution. Their origin, as mentioned before, lies in
+      Biology rather than Computer Science. </P>
+
+    <P> The exact mechanisms behind natural evolution aren't known
+      very well, but some of its aspects are. Evolution works with
+      chromosomes: organic information carriers which contain the
+      exact characteristics of a living being. The living being can be
+      'built' by decoding its chromosomes. How this is done isn't
+      known exactly, but the following properties are commonly
+      accepted: </P>
+
+    <UL>
+
+      <LI> Evolution is a process that works on chromosomes instead of
+	the living beings they represent. </LI>
+
+      <LI> Natural selection is the relation between chromosomes and
+	the performance of their decoded structures. The process of
+	natural selection ensures that chromosomes that represent a
+	good structure will more often reproduce than others.</LI>
+
+      <LI> Evolution occurs while reproducing. Mutations can be the
+	reason that chromosomes of children sometimes differ from the
+	ones of their parents in certain places. The chromosomes of
+	the parents are combined in a certain way to create new and
+	different chromosomes for the children.</LI>
+
+      <LI> Biologic evolution has no memory. All that it knows about
+	individuals that perform well in their environment is stored
+	in the set of chromosomes of the present individuals and in
+	the way that chromosomes are encoded.</LI>
+
+    </UL>
+
+    <P> These properties were the reason that John Holland [4] started
+      to research computer algorithms based on this principle. He
+      wrote algorithms that could reproduce chromosomes, represented
+      as binary bitstrings, strings containing '1's and '0's. Just
+      like in nature, these strings were manipulated blindly in order
+      to get good chromosomes. The reproduction mechanism knew nothing
+      about the problem it was solving. </P>
+
+    <H2>What can you use it for?</H2>
+
+    <P> One of the regions in which genetic algorithms perform quite
+      well is in optimization. A genetic algorithm is very robust,
+      which means that it works for a broad range of problems. When
+      you compare it to more traditional optimization algorithms, the
+      most important differences are:
+    </P>
+
+    <UL>
+
+      <LI> genetic algorithms work with a coded version of the
+	parameters;</LI>
+
+      <LI> they don't search from one single point, but from a
+	population of points;</LI>
+
+      <LI> they use 'pay-off' information instead of derivatives or
+	other auxiliary knowledge;</LI>
+
+      <LI> they use stochastic reproduction instead of deterministic
+	rules.</LI>
+
+    </UL>
+
+    <P>A lot of problems can be seen as optimization problems. </P>
+
+    <P> Optimization problems are (in this instance) formulated as
+      mathematical models with many independent parameters that result
+      in one so called fitness function. This fitness function
+      describes the 'quality' of the model (or individual) for that
+      set of parameters. In the fitness function, you can model all
+      kinds of conflicting demands. All you need to do now is to
+      optimize one, usually quite complicated, function: </P>
+
+    <SAMP> f(x1, x2, x3, ..., xN) </SAMP>
+
+    <P> Where <CODE>x1, x2, x3, ..., xN</CODE> are the independent
+      parameters that need to be determined. If you want to use a
+      genetic algorithm, you need to make sure that this function is
+      always bigger than zero, but that can easily be done. </P>
+
+    <P> The following chapter will explain how you go about when you
+      want to optimize such a function with a genetic algorithm. </P>
+
+    <H2>How to create the chromosomes?</H2>
+
+    <P> The first thing you have to do is encode the independent
+      parameters into a chromosome. This chromosome then carries all
+      the essential information about that particular
+      individual. There are two different ways of encoding the
+      parameters: </P>
+
+    <UL>
+
+      <LI> in binary format;</LI>
+
+      <LI> in floating-point format [5].</LI>
+
+    </UL>
+
+    <P> When you use binary encoding, you use <CODE>N</CODE> bits for
+      each parameter, where <CODE>N</CODE> can be different for every
+      paremeter. If a parameter can vary between a minimum value
+      <CODE>MIN</CODE> and a maximum value <CODE>MAX</CODE>, the
+      following formula can be used to determine the resolution: </P>
+
+    <samp>r = (MAX - MIN) * (2^N - 1)</samp>
+
+    <P> The meaning of this resolution is obvious. The chromosome is
+      created by putting all encoded parameters after one another. By
+      decoding the chromosome again, the original values of the
+      parameters can be found. </P>
+
+    <P> When you use a floating-point encoding, the chromosome is
+      created by putting all the floating point numbers after one
+      another. This means the encoding and decoding steps don't have
+      to take place. </P>
+
+    <P> Comparing both methods shows us that a binary encoding is more
+      work, since you have to encode and decode your parameters every
+      time. This is a clear disadvantage. However, a binary encoded
+      chromosome has a lot more elements (every bit is considered to
+      be an element) than a floating-point encoded one. Having more
+      elements is considered to be an advantage. </P>
+
+    <H2>What does the genetic algorithm do?</H2>
+
+    <P> In general, a genetic algorithm works as follows. In the first
+      population all chromosomes are generated randomly. Their fitness
+      is then determined. At this point the genetic algorithm can
+      start generating new populations. Usually, the population size
+      is kept constant for convenience. </P>
+
+    <P> Reproduction consists of three distinct steps:</P>
+
+    <UL>
+
+      <LI> selection;</LI>
+
+      <LI> crossover;</LI>
+
+      <LI> mutation.</LI>
+
+    </UL>
+
+    <P> These steps will now be discussed in detail. </P>
+
+    <P> Selection represents a very important aspect of the genetic
+      algorithm: survival of the fittest. This is usually implemented
+      as a weighed selection, which means that individuals with a
+      higher fitness have a better chance of being chosen. It is
+      possible for an individual to be selected more than once, or not
+      at all. </P>
+
+    <P> Crossover is the most important mechanism of the algorithm. It
+      makes two new individuals by somehow combining two old
+      ones. There are several variations of crossover. The most simple
+      version is one-point crossover. It works by selecting a point at
+      which the chomosomes are cut off randomly. The parts that are
+      cut off are then switched to make two new chromosomes. </P>
+
+    <P> <IMG SRC="GA_Crossover.gif" ALT="A picture that illustrates
+	how crossover can be done."> </P>
+
+    <P> Mutation introduces random changes to chromosomes. It is a
+      mechanism that has only a small chance of occurring. It simply
+      flips a bit in a chromosome, or if the chromosome is made out of
+      floating point numbers, it changes a number. </P>
+
+    <P> <IMG SRC="GA_Mutation.gif" ALT="A picture that illustrates how
+	mutation can be done."> </P>
+
+    <P> This simple process is repeated until the entire population is
+      reproduced. The new population is decoded and the fitness of the
+      newly created individuals is calculated. At this point, the
+      process starts all over again. </P>
+
+    <P> At first, it is difficult to see why this leads to better
+      individuals. The most important thing is that it does. More or
+      less solid mathematical proofs can be found in literature [2],
+      [3], [4] and [5]. The best way to learn more about genetic
+      algorithms is to try them out yourself. Creating a simple
+      implementation isn't very difficult, and optimizing simple
+      functions will give you an insight in the speed of these
+      algorithms and their ability to find global optima, regardless
+      of the complexity of the function. </P>
+
+    <H2>Learning more about genetic algorithms</H2>
+
+    <P> The newsgroup "comp.ai.genetic" and its FAQ are a good
+      starting point if you want to learn more about genetic
+      algorithms. There are all kinds of free and commercial software
+      packages available, written for different platforms in different
+      languages (C, C++, LISP, Matlab Toolbox, ...). </P>
+
+    <P> Feel free to contact me if you have any questions about
+      genetic algorithms. I hope you found this article
+      interesting. If there's enough response, I'll write more
+      articles, in which I will discuss various implementations in
+      greater detail. </P>
+
+    <H2>About the author</H2>
+
+    <P> I study Mechanical Engineering at the Delft University of
+      Technology and have designed and implemented a genetic algorithm
+      to optimize designs. This program is called GOOD [1]. The engine
+      itself is written in ANSI C and there's a nice GUI for the Amiga
+      and a text-based portable UI for other platforms. In my spare
+      time, my biggest hobby is the Amiga. I sincerely hope that Amiga
+      Technologies will be able to once again make it a popular
+      platform. The best of luck to them. I'll do my best to
+      contribute to the Amiga community as much as I can. </P>
+
+    <ADDRESS>
+      Marcel Offermans <BR> e-mail: <A
+	HREF="mailto:M.F.Offermans@WbMT.TUDelft.NL">M.F.Offermans@WbMT.TUDelft.NL</A><BR>
+    </ADDRESS>
+
+    <H2>References</H2>
+
+    <P> [1] Offermans, M. F., <I>GOOD - Generator Of Optimal
+      Designs</I>, Delft University of Technology, Dept. of Mechanical
+      Engineering and Marine Technology, 1994. </P>
+
+    <P> [2] Davis, L., <I>Handbook of Genetic Algorithms</I>, New
+      York: Van Nostrand Reinhold, 1991. </P>
+
+    <P> [3] Goldberg, D. E., <I>Genetic Algorithms in search,
+	optimization, and machine learning</I>, Reading:
+	Addison-Wesley Publishing Corporation, Inc., 1989 </P>
+
+    <P> [4] Holland, J., <I>Adaptation in Natural and Artificial
+	Systems</I>, Ann Harbor: University of Michican Press,
+	1975. </P>
+
+    <P> [5] Michalewicz, Z., <I>Genetic Algorithms + Data Structures =
+	Evolution Programs</I>, Berlin: Springer-Verlag, 1992. </P>
+
+    <HR>
+
+    <H5>Copyright &copyright; 1995 Marcel Offermans, All Rights
+      Reserved. No part of this article may be copied or distributed
+      in electronic or printed publications without prior permission
+      of the author. Permission is hereby granted to the Amiga Report
+      Tech Journal.</H5>
+
+  </body>
+</html>

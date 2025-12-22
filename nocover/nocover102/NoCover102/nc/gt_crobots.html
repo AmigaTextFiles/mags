@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title>CROBOTS</title>
+<meta name="author" content="Rainer Wrieden">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body background="../bg2.jpg" text="#000000" link="#0000ff" vlink="#ff0000" alink="#ff9900">
+
+<div align="center">
+<table cellspacing="10" cellpadding="10">
+<tr>	
+	<td><h1><font face="" color="Purple">CRobots</font></h1></td>
+	</tr>
+</table>
+<table cellspacing="0" cellpadding="10" align="CENTER">
+<tr>
+    <td colspan="2"><p title="" align="JUSTIFY">Heute m&ouml;chte ich Euch ein einfaches aber doch f&uuml;r Programmierer oder die die es werden wollen interessantes Spiel vorstellen. Das Spiel heisst CRobots. Der Name wurde deshalb gew&auml;hlt, weil man die Aktionen der Roboter in einer abgespeckten Version der Programmiersprache C programmieren muss. Daraus k&ouml;nnt Ihr schon sehen, dass es sich nicht um ein Standardspiel handelt, sondern es mehr oder weniger um geschicktes Programmieren geht. Wer also seinen Roboter mit den besten Schiess- Lauf- und Bewegungsroutinen ausstattet hat in einem Kampf mit anderen Robotern die besten Chanchen. Dieser findet in einer Arena statt, die 1000*1000 Felder gross ist.</p><div align="center"><img src="gt_crobots.png" width=640 height=200 border=0 alt=""></div><p title="" align="JUSTIFY">Am Anfang haben nat&uuml;rlich alle Roboter noch keinen Schaden erhalten. Es gibt 4 unterschiedliche Situationen in dem der Roboter Schaden erhalten kann. 2% Schaden bekommt er, wenn er in die Begrenzung knallt oder mit einem anderen Roboter zusammenst&ouml;sst, der dann auch 2% Schaden erleidet. 3% Schaden gibt es bei einem treffer von einem Gegnerischen Roboter innerhalb von 40m Radius. Innerhalb 20m Radius sind es dann schon 5% Schaden und den maximalen Schaden von 10% f&auml;ngt er sich bei einem Treffer innerhalb von 5m ein. Es k&ouml;nnen maximal 4 Roboter auf einmal k&auml;mpfen. Das Programm besitzt einen eingebauten Compiler mit dem man dann den Quelltext compilieren kann. Der Quelltext kann mit einem beliebigen Texteditor eingegeben werden. Hier mal ein Beispiel eines Quelltextes:</p>
+<p title="" style="color: Green;">/* sniper */<br>
+/* strategy: since a scan of the entire battlefield can be done in 90 */<br>
+/* degrees from a corner, sniper can scan the field quickly. */<br>
+<br>
+/* external variables, that can be used by any function */<br>
+int corner;           /* current corner 0, 1, 2, or 2 */<br>
+int c1x, c1y;         /* corner 1 x and y */<br>
+int c2x, c2y;         /*   &quot;    2 &quot;  &quot;  &quot; */<br>
+int c3x, c3y;         /*   &quot;    3 &quot;  &quot;  &quot; */<br>
+int c4x, c4y;         /*   &quot;    4 &quot;  &quot;  &quot; */<br>
+int s1, s2, s3, s4;   /* starting scan position for corner 1 - 4 */<br>
+int sc;               /* current scan start */<br>
+int d;                /* last damage check */<br>
+<br>
+<br>
+<br>
+/* main */<br>
+main()<br>
+{<br>
+  int closest;        /* check for targets in range */<br>
+  int range;          /* range to target */<br>
+  int dir;            /* scan direction */<br>
+<br>
+  /* initialize the corner info */<br>
+  /* x and y location of a corner, and starting scan degree */<br>
+  c1x = 10;  c1y = 10;  s1 = 0;<br>
+  c2x = 10;  c2y = 990; s2 = 270;<br>
+  c3x = 990; c3y = 990; s3 = 180;<br>
+  c4x = 990; c4y = 10;  s4 = 90;<br>
+  closest = 9999;<br>
+  new_corner();       /* start at a random corner */ <br>
+  d = damage();       /* get current damage */<br>
+  dir = sc;           /* starting scan direction */ <br>
+<br>
+  while (1) {         /* loop is executed forever */<br>
+<br>
+    while (dir &lt; sc + 90) {  /* scan through 90 degree range */<br>
+      range = scan(dir,1);   /* look at a direction */<br>
+      if (range &lt;= 700 && range &gt; 0) { <br>
+        while (range &gt; 0) {    /* keep firing while in range */<br>
+          closest = range;     /* set closest flag */<br>
+          cannon(dir,range);   /* fire! */<br>
+          range = scan(dir,1); /* check target again */<br>
+          if (d + 15 &gt; damage())  /* sustained several hits, */ <br>
+            range = 0;            /* goto new corner */<br>
+        }<br>
+        dir -= 10;             /* back up scan, in case */<br>
+      }<br>
+<br>
+      dir += 2;                /* increment scan */<br>
+      if (d != damage()) {     /* check for damage incurred */<br>
+        new_corner();          /* we're hit, move now */<br>
+        d = damage();<br>
+        dir = sc;<br>
+      }<br>
+    }<br>
+<br>
+    if (closest == 9999) {       /* check for any targets in range */<br>
+      new_corner();             /* nothing, move to new corner */<br>
+      d = damage();<br>
+      dir = sc;<br>
+    } else                      /* targets in range, resume */<br>
+      dir = sc;<br>
+    closest = 9999;<br>
+  } <br>
+<br>
+}  /* end of main */<br>
+<br>
+<br>
+<br>
+/* new corner function to move to a different corner */<br>
+new_corner() {<br>
+  int x, y;<br>
+  int angle;<br>
+  int new;<br>
+<br>
+  new = rand(4);           /* pick a random corner */<br>
+  if (new == corner)       /* but make it different than the */<br>
+    corner = (new + 1) % 4;/* current corner */<br>
+  else<br>
+    corner = new;<br>
+  if (corner == 0) {       /* set new x,y and scan start */<br>
+    x = c1x; <br>
+    y = c1y; <br>
+    sc = s1;<br>
+  } <br>
+  if (corner == 1) {<br>
+    x = c2x; <br>
+    y = c2y; <br>
+    sc = s2;<br>
+  }<br>
+  if (corner == 2) {<br>
+    x = c3x; <br>
+    y = c3y; <br>
+    sc = s3;<br>
+  }<br>
+  if (corner == 3) { <br>
+    x = c4x; <br>
+    y = c4y; <br>
+    sc = s4;<br>
+  }<br>
+<br>
+  /* find the heading we need to get to the desired corner */<br>
+  angle = plot_course(x,y);<br>
+<br>
+  /* start drive train, full speed */<br>
+  drive(angle,100);<br>
+<br>
+  /* keep traveling until we are within 100 meters */<br>
+  /* speed is checked in case we run into wall, other robot */<br>
+  /* not terribly great, since were are doing nothing while moving */<br>
+<br>
+  while (distance(loc_x(),loc_y(),x,y) &gt; 100 && speed() &gt; 0)<br>
+    ;<br>
+<br>
+  /* cut speed, and creep the rest of the way */<br>
+<br>
+  drive(angle,20);<br>
+  while (distance(loc_x(),loc_y(),x,y) &gt; 10 && speed() &gt; 0)<br>
+    ;<br>
+<br>
+  /* stop drive, should coast in the rest of the way */<br>
+  drive(angle,0); <br>
+}  /* end of new_corner */<br>
+<br>
+/* classical pythagorean distance formula */<br>
+distance(x1,y1,x2,y2)<br>
+int x1;<br>
+int y1;<br>
+int x2;<br>
+int y2;<br>
+{<br>
+  int x, y;<br>
+<br>
+  x = x1 - x2;<br>
+  y = y1 - y2;<br>
+  d = sqrt((x*x) + (y*y));<br>
+  return(d);<br>
+}<br>
+<br>
+/* plot course function, return degree heading to */<br>
+/* reach destination x, y; uses atan() trig function */<br>
+plot_course(xx,yy)<br>
+int xx, yy;<br>
+{<br>
+  int d;<br>
+  int x,y;<br>
+  int scale;<br>
+  int curx, cury;<br>
+<br>
+  scale = 100000;  /* scale for trig functions */<br>
+  curx = loc_x();  /* get current location */<br>
+  cury = loc_y();<br>
+  x = curx - xx;<br>
+  y = cury - yy;<br>
+<br>
+  /* atan only returns -90 to +90, so figure out how to use */<br>
+  /* the atan() value */<br>
+<br>
+  if (x == 0) {      /* x is zero, we either move due north or south */<br>
+    if (yy &gt; cury)<br>
+      d = 90;        /* north */<br>
+    else<br>
+      d = 270;       /* south */<br>
+  } else {<br>
+    if (yy &lt; cury) {<br>
+      if (xx &gt; curx)<br>
+        d = 360 + atan((scale * y) / x);  /* south-east, quadrant 4 */<br>
+      else<br>
+        d = 180 + atan((scale * y) / x);  /* south-west, quadrant 3 */ <br>
+    } else {<br>
+      if (xx &gt; curx)<br>
+        d = atan((scale * y) / x);        /* north-east, quadrant 1 */<br>
+      else<br>
+        d = 180 + atan((scale * y) / x);  /* north-west, quadrant 2 */<br>
+    }<br>
+  }<br>
+  return (d);<br>
+}<br></p>
+<br>
+<p title="" align="JUSTIFY">Die so compilierten Roboter haben auch einen eingebauten Z&auml;hler f&uuml;r gewonnene und verlorene Spiele. Das Spiel l&auml;uft schon ab Kickstart 1.3 und erfordert nur die arp.library. Sehr interessant ist auch die Tatsache, dass es das Spiel u. a. auch f&uuml;r IBM-kompatible Rechner gibt. Somit ergibt sich die M&ouml;glichkeit die F&auml;higkeiten seiner programmierten Roboter auch dort unter Beweis zu stellen. Das Spiel von 1985 ist f&uuml;r den IBM-kompatiblen von Tom Poindexter und im Jahre 1989 von David Wright f&uuml;r den Amiga &uuml;bersetzt worden. Es kann von der Workbench sowie auch vom CLI gestartet werden.<br>In dieser Richtung gibt es aber auch noch ein kommerzielles Programm unter den Namen <em>OMEGA</em>, in welchem man nicht die Steuerung eines Roboters, sondern die eines Panzers programmieren muss. Dieses Spiel kommt mit einem wahrlich dicken Handbuch daher.<br><br>Hier noch einige interessante Links zum Thema CRobots und Omega:<br><br>
+<a href="ftp://de.aminet.net/pub/aminet/game/misc/CRobots.lha">Amiga-Version von CRobots</a><br>
+<a href="ftp://de.aminet.net/pub/aminet/game/misc/robots.lha">Einige Roboter</a><br>
+<a href="http://www.the-oasis.net/thereef/files/c/crobots.zip">PC-Version von CRobots</a><br>
+<a href="http://www.nyx.net/~tpoindex/crob.html">Tom Poindexter&#180;s Minipage</a><br>
+<a href="http://www.feverish.demon.co.uk/omega/">Alles &uuml;ber Omega inklusive der Amiga und PC-Version</a><br></p></td>
+</tr>
+</table>
+</div>
+
+<br><br>
+Euer Rainer<br><br></td>
+</tr>
+</table>
+<table border="5" cellspacing="1" cellpadding="5" align="CENTER">
+<tr>
+	<td>Rainer Wrieden</td>
+	<td>E-Mail: <a href="mailto:spezis@terra.es">spezis@terra.es</a></td>
+</tr>
+</table>
+
+</body>
+</html>
+

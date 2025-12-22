@@ -1,0 +1,128 @@
+# SMakefile for SAS/C
+# Copyright © 1995 Osma Ahvenlampi. Freely distributable.
+
+# $Id$
+# $Log$
+
+# Project files
+
+PROG=		xxx
+SRCS=		$(PROG).c
+OBJS=		$(PROG)_Cat.o $(PROG).o
+INCS=		$(PROG).h
+MISC=		SMakefile
+LIBS=
+DEBUGLIBS=	LIB:debug.lib
+
+# Files to delete on "make clean"
+
+JUNK=		\#?.(o|map|lnk|gst) SCOPTIONS
+
+# Build options
+
+CFLAGS=		DEBUG=LINE OPTIMIZE NOSTACKCHECK
+DCFLAGS=	DEBUG=SYMBOLFLUSH NOOPTIMIZE DEF=DEBUG
+LDFLAGS=	STRIPDEBUG
+IDIRS=
+DEFS=
+
+# Compiler defaults
+
+SCOPTIONS=	STRINGMERGE PARAMETERS=REGISTERS ERRORREXX \
+		SMALLCODE SMALLDATA NOVERSION UTILITYLIBRARY \
+		NOICONS ONERROR=CONTINUE NOGENPROTOTYPEDEFS \
+		STRINGSCONST UNSIGNEDCHARS \
+		$(IDIRS) $(DEFS) GST=$(PROG).gst
+
+# Programs used
+
+RM=		delete quiet
+CP=		copy
+CAT=		type
+TAGS=		ctags
+VER=		ver
+CI=		ci
+MAKE=		smake
+CATCOMP=	flexcat
+
+# current build version from the 'VERSION' file
+VERSION=	`$(CAT) VERSION`
+	    
+# Standard targets
+
+# make the binary with debug options
+test:
+	$(MAKE) "CFLAGS=$(DCFLAGS)" "LIBS=$(DEBUGLIBS)" "LDFLAGS=" $(PROG)
+
+# make the program using "distribution" options.
+all:		clobber $(PROG)
+
+# Build rules
+
+# first rebuild the GST file if necessary
+$(PROG):	SCOPTIONS $(PROG).gst version.o $(OBJS)
+	$(CC) version.o $(OBJS) LINK TO $@ BATCH $(LIBS) $(LDFLAGS) $(CFLAGS)
+	$(VER) # bump revision for next link
+
+# copy SCOPTIONS variable to file
+SCOPTIONS:	SMakefile
+	$(CP) TO $@ <FROM <
+$(SCOPTIONS)
+<
+
+# create project GST file. gst.c #includes all used headers.
+$(PROG).gst:	SCOPTIONS gst.c $(INCS)
+	GST `cd`/$@ UNLOAD
+	-@$(RM) $@ >NIL:
+	SC NOOBJNAME NOGST MAKEGST=$@ gst.c
+
+# localisation. Create default strings and locale lookup source using
+# FlexCat and the catalog description file.
+# Compile said source using hook options (since custom BOOPSI gadgets
+# might also be localised).
+$(PROG)_Cat.c:	$(PROG).cd
+	$(CATCOMP) $(PROG).cd $(PROG)_Cat.c=C_c_V21.sd $(PROG)_Cat.h=C_h.sd
+
+$(PROG)_Cat.o:	$(PROG)_Cat.c
+	$(CC) $(CFLAGS) $(HOOKFLAGS) $<
+
+# create version.c if it doesn't exist. Defines three global variables:
+# VersionID is the AmigaDOS $VER: string.
+# Version is the version number.
+# CompileDate is the build date.
+# use these instead of hardcoded variables or preprocessor #defines
+# within your source code!
+version.c:
+	$(CP) TO $@ <FROM <
+const char VersionID[] = "$$VER: $(PROG) " VERSION " " __AMIGADATE__;
+const char Version[] = VERSION;
+const char CompileDate[] = __AMIGADATE__;
+<
+
+# recompile version.c if any of the other source files have changed.
+# first make sure VERSION exists, but don't bump it.
+version.o:	version.c $(SRCS) $(INCS)
+	$(VER) -n # make sure VERSION exists
+	$(CC) NODEBUG DEF=VERSION="$(VERSION)" version.c
+
+# store current source version in the RCS database.
+rcs:
+	$(CI) -l$(VERSION) $(SRCS) $(INCS) $(MISC)
+
+# make a 'tags' file from the sources for function reference.
+tags:		$(SRCS) $(INCS)
+	$(TAGS) $(SRCS) $(INCS)
+
+# generate prototypes for all functions to 'protos.h'.
+proto:		$(PROG).gst
+	$(CC) $(SRCS) GENPROTO
+	$(CAT) \#?_protos.h >protos.h
+	$(RM) \#?_protos.h
+
+# clean the directory of recreatable files.
+clean:
+	-$(RM) $(JUNK)
+
+clobber:	
+	-$(RM) $(JUNK) $(PROG)
+

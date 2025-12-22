@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 06/99 - Goldene Bugreport-Regeln</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Goldene Bugreport-Regeln</H1>von<BR>
+<A HREF="mailto:A.Schlick@gmx.de">Andreas Schlick</A></DIV>
+
+<p align=center>oder:<br>
+<b>The Hitch-Hiker's Guide to Bug-Reports</b></p>
+
+<P>Es ist inzwischen in Mode gekommen, Software keiner gro&szlig;en Testphase
+mehr auszusetzen. Stattdessen werden 'Previews', 'Betaversionen' und
+'Vollversionen' an die Endkunden verteilt, die damit unfreiwillig zu
+zahlenden (und nicht bezahlten) Betatestern werden. Allerdings d&uuml;rfte
+das eher eine Entscheidung des Managements sein, als von den
+Programmierern selber - zumindest bei gr&ouml;&szlig;eren Softwarefirmen.</P>
+
+<P>Im Amiga-Bereich werden jedoch viele Programme von einer einzigen Person
+designt, entwickelt und gewartet und &quot;nebenbei&quot; gibt es f&uuml;r diese dann
+auch noch den Beruf und das Privatleben.  </P>
+
+<P>Es gibt eine Vielzahl von B&uuml;chern, die einem Ratschl&auml;ge geben, wie man
+am besten seine Software entwickelt, testet und Fehler ausmerzt. Die
+schlechteren zeigen einem DEN Weg, die besseren sagen, da&szlig; es keinen
+goldenen Weg gibt.</P>
+
+<P>Jedoch hat kaum jemand den Anwendern erkl&auml;rt, wie sie dem Programmierer
+am besten helfen k&ouml;nnen vorhandene Fehler zu beseitigen. Daher gebe ich
+hier einige - meiner Meinung nach - wichtige Ratschl&auml;ge f&uuml;r das Schreiben
+von Bugreports. Die Liste ist weder vollst&auml;ndig, noch erhebt sie Anspruch
+auf Makellosigkeit. </P>
+
+<P>Ich gehe hierbei von dem &quot;durchschnittlichen Amiga-Hobby-Programmierer&quot;
+als Empf&auml;nger des Bug-Reports aus, der per eMail meist sehr einfach
+direkt zu erreichen ist. Bei Softwarefirmen sind die Punkte evtl. leicht
+anzupassen.</P>
+
+
+<h3 align=center>Regel 1: Sei freundlich</h3>
+
+<P>Kein Programmierer f&uuml;gt dem Programm absichtlich Fehler hinzu (okay,
+insbesondere bei mindestens einem gro&szlig;en Softwarehaus bin ich mir da
+nicht so sicher ;). Wenn Du also einem Programmier einen Fehler
+beschreibst, sei freundlich!  </P>
+
+<P>Es bringt nichts gleich eine eMail der Form: &quot;Hey, dein Schei*-Programm
+ist gecrashed und ich habe damit X Std. Arbeit verloren. This sucks!&quot; zu
+schreiben. </P>
+
+<P>Einerseits: wer zig Stunden arbeitet ohne zu Speichern, ist selber
+Schuld und andererseits wird der Programmierer nur demotiviert und
+verst&auml;ndlicherweise ver&auml;rgert sein. Am Ende lag der Absturz vielleicht
+nicht einmal an dessen Programm, sondern an irgendeinem sekund&auml;ren
+Programm/Problem (z.B. k&ouml;nnen sich durch die Erw&auml;rmung des Rechners
+bereits lockere Karten oder Chips soweit l&ouml;sen, da&szlig; der Kontakt verloren
+geht).  </P>
+
+<P><B>Merke:</B><br>
+Schreibe nicht im Zorn und mache Dir klar, da&szlig; der Programmierer nichts
+absichtlich getan hat, um Dich zu &auml;rgern. </P>
+
+<hr width=50%>
+
+<h3 align=center>Regel 2: Notiere Dir den Inhalt von Requestern und Gurus</h3>
+
+<P>Viele Programme haben eingebaute Sanity-Checks, die noch bestimmte
+Informationen ausgeben, bevor das Programm abbricht. Diese Requester
+wurden vom Programmierer eingebaut, um die Fehlersuche zu erleichtern.
+Allerdings wird dazu der Text und insbesondere die Fehlernummer (falls
+vorhanden) ben&ouml;tigt. Wichtig ist es auch, zu wissen, ob es sich um
+Requester des Programmes selber oder um Betriebssystem-Meldungen handelt.</P>
+
+<P>Es hilft dem Programmierer nur wenig, wenn er die Information bekommt:
+&quot;Da kam dann ein Requester mit dem Text 'blabla Fehler Nr. 42xx', den
+habe ich aber gleich wieder weggeklickt.&quot; und der Anwender dabei nicht
+mehr wei&szlig;, welche Ziffern bei 'xx' standen.</P>
+
+<P><B>Merke:</B><br>
+Notiere Dir genau, welchen Inhalt Fehlermeldungen haben und von welchem
+Programm sie stammen.</P>
+
+<hr width=50%>
+
+<h3 align=center>Regel 3: Reproduktion und Eingrenzung des Fehlers</h3>
+
+<P>Versuche den Fehler soweit einzugrenzen, da&szlig; Du ihn auf Wunsch
+nachvollziehen kannst. Zum Beispiel kann man versuchen, die Daten zu
+finden, die das Programm zum Absturz bringen. Dadurch, da&szlig; Du den Fehler
+eingeschr&auml;nkt hast und ihn reproduzieren kannst, ist ein gro&szlig;er Schritt
+getan. Der Programmierer kann nun gezielter auf die Ursachensuche gehen
+und es wird viel schneller gehen, herauszufinden, ob der Bugfix wirklich
+geholfen hat.</P>
+
+<P><B>Merke:</B><br>
+Versuche genau festzustellen, wodurch der Fehler auftritt und teile das
+dem Entwickler mit (und zwar nur den wichtigen Teil, siehe <A HREF="#regel6">Regel 6</A>).</P>
+
+<hr width=50%>
+
+<h3 align=center>Regel 4: Schlie&szlig;e sekund&auml;re Probleme aus</h3>
+
+<P>Wenn Du den Fehler reproduzieren kannst oder er zumindest relativ h&auml;ufig
+auftritt, versuche herauszufinden, ob es vielleicht an einem Programm
+liegen kann, das im Hintergrund l&auml;uft. Spitzenkandidaten sind Patches bzw.
+Hacks wie MCP, MagicMenu und &auml;hnliche. Einige Programmierer beachten ein
+Bugreport schon nicht mehr so ernsthaft, wenn man es nicht auch ohne MCP
+probiert hat. Versuch auch von den Libraries aktuelle Versionen zu
+bekommen bzw. entferne irgendwelche Replacements oder Hacks (z.B.
+MagicASL).</P>
+
+<P><B>Merke:</B> <br>
+Schlie&szlig;e aus, da&szlig; der Fehler durch ein anderes oder nicht richtig
+installiertes Programm entsteht. Wenn Du das nicht kannst, teile es dem
+Programmierer mit, damit er feststellen kann, welches Programm fehlerhaft
+ist. </P>
+
+<hr width=50%>
+
+<h3 align=center>Regel 5: Systembeschreibung</h3>
+
+<P>Jedes System ist anders. Kaum zwei Anwender haben das selbe System - weder
+von der Hardware (die es meist auch in verschiedenen Versionen/Revisionen
+gibt!) geschweige denn von der Software.</P>
+
+<P>Gebe dem Programmierer daher die n&ouml;tige Beschreibung Deines Systems, aber
+&uuml;bertreibe es auch nicht. Du brauchst nicht jedes Programm, Tool und Bild
+auf deiner Partition aufz&auml;hlen. Meist lassen sich die wichtigsten
+Informationen in weniger als einer Zeile zusammenfassen. Meist reicht die
+Angabe des Rechners (CPU, OS-Version, Filesystem) und der Programme, die
+im Hintergrund mitlaufen (insbesondere Patches/Hacks wie MCP).</P>
+
+<P>W&auml;ge auch ab, welche Informationen in Bezug auf den Fehler wichtig sein
+k&ouml;nnen. Falls z.B. ein Fehler bei Dateioperationen auftritt, ist es
+wichtig anzugeben, ob man vielleicht ein ungew&ouml;hnliches Dateisystem
+benutzt, wie z.B. SFS oder PFS. Wenn allerdings beim &Ouml;ffnen eines
+Fensters nur Grafikm&uuml;ll dargestellt wird, ist es wichtiger zu wissen,
+welche Grafikkarte und Grafiktreiber (Picasso96, CyberGraphX, ...) man
+benutzt, statt welches Dateisystems. </P>
+
+<P>Falls eine l&auml;ngere 'Unterhaltung' mit dem Programmierer stattfindet,
+k&ouml;nnen andere Angaben immer noch nachgereicht werden (um dem Programmierer
+vielleicht auf eine neue Idee zu bringen), bzw. wird der Programmierer
+nachfragen.</P>
+
+<P><B>Merke:</B> <br>
+Gib eine aussagef&auml;hige Kurzbeschreibung Deines Systems und wichtige
+Informationen in Bezug auf den konkreten Fehler an und vergi&szlig; die
+Versionsnummer des Programmes nicht!</P>
+
+<hr width=50%>
+
+<h3 align=center><A NAME="regel6">Regel 6: Knappe, aber vollst&auml;ndige Beschreibungen</h3>
+
+<P>Schreibe vollst&auml;ndige, aber dennoch knappe Beschreibungen. Es mag zwar
+interessant sein, an welchem Projekt Du gerade gearbeitet hast, als Du
+den Fehler entdeckt hast, aber vergi&szlig; nicht, da&szlig; es Dein Ziel ist, dem
+Programmierer einen Bugreport zu schreiben und nicht deinen Lebenslauf. </P>
+
+<P><B>Merke:</B> <br>
+Schreibe so wenig wie m&ouml;glich, aber nicht weniger!</P>
+
+<hr width=50%>
+
+<h3 align=center>Regel 7: Debug-Tools (Enforcer, SegTracker, Sushi, Mungwall, ...)</h3>
+
+<P>Wenn Du Programmierern h&auml;ufiger hilfst, dann mache Dich m&ouml;glichst mit
+den g&auml;ngigen Debug-Tools in so weit vertraut, da&szlig; Du sie anwenden kannst
+und dem Programmierer die richtigen Informationen schicken kannst.
+Vielleicht m&ouml;gen Dir die kryptischen Ausgaben des Enforcers nichts
+sagen, dem Programmierer k&ouml;nnen sie jedoch sehr helfen.</P>
+
+<P><B>Merke:</B><br>
+Verwende, soweit es geht, Debug-Tools, um zus&auml;tzliche Informationen zu
+dem Fehler zu erhalten und dem Programmierer seine Arbeit zu erleichtern.</P>
+
+<hr width=50%>
+
+<h3 align=center>Regel 8: Geduld</h3>
+
+<P>Habe Geduld! Bugfixen ist meist eine langwierige Arbeit, die auch nach
+Stunden nicht zwangsweise mit Erfolg gekr&ouml;nt ist. Einige Fehler k&ouml;nnen
+auch in fr&uuml;heren Designentscheidungen liegen, die sich nicht so einfach
+wieder r&uuml;ckg&auml;ngig machen lassen. Ansonsten hat der Programmierer
+vielleicht auch einfach nicht die Zeit momentan daran zu arbeiten.</P>
+
+<P><B>Merke:</B>   <br>
+Habe Geduld und beschwere Dich nicht, wenn n&auml;chste Woche noch kein Bugfix
+vorliegt (d.h. aber auch nicht, da&szlig; Du alles hinnehmen sollst. Versuche
+einen guten Mittelweg zu finden).</P>
+
+<hr width=50%>
+
+<h3 align=center>Regel 9: Schreibe in jedem Fall!</h3>
+
+<P>Auch wenn Du keinen Fehler gefunden hast, schreibe dem Programmierer! Dadurch
+wei&szlig; dieser einerseits, da&szlig; sein Programm &uuml;berhaupt benutzt wird und
+andererseits motiviert es auch einfach, wenn jemand schreibt, da&szlig; die Software
+tadellos l&auml;uft. Es mu&szlig; ja kein Roman sein, den Ihr schreibt, zwei formlose
+Zeilen reichen schon aus und dauern auch keine Ewigkeit zu Schreiben (und trotzdem 
+k&ouml;nnen sie einen Programmierer gl&uuml;cklich machen ;).</P>
+
+<P><B>Merke:</B><br>
+Schreibe dem Programmierer auch dann, wenn Du keinen Fehler gefunden hast.</P>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9906pb.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0699/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9906guru.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; `99 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>
+
+

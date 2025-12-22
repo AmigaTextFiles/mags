@@ -1,0 +1,139 @@
+<HTML>
+<HEAD>
+<BASE TARGET"_self">
+<TITLE>AMIGA TIMES 03/97 - Programmieren in Assembler - Listing 6</TITLE>
+</HEAD>
+
+<BODY  BACKGROUND="../images/bg.gif" BGCOLOR="#C4C4C4" TEXT="#000000" LINK="#FF0000" ALINK="#F00000" VLINK="#AA0000">
+
+<CENTER>
+<IMG SRC="../images/wshop2.gif" ALT="Workshop" BORDER=0 WIDTH=307 HIGHT=61>
+</CENTER>
+
+<PRE>
+;Datei       : listing6.asm
+;Beschreibung: Eine Bitplane mit Muster.
+;Autor       : Enrico Bauermeister
+;Datum       : 16.12.1997
+;Assembler   : TFA AsmOne v1.30
+;=======================================
+
+;Interrupts sperren - Betriebssystem ausschalten
+;-----------------------------------------------
+ move.w   #$4000,$dff09a
+
+;Sprites ausschalten (sonst st&ouml;ren die nur)
+;------------------------------------------
+ move.w   #$0020,$dff096
+
+;Adresse der Bitplane in die Bitplanepointer eintragen
+;-----------------------------------------------------
+;Zuerst wird das Low-Word in $dff0e2 und anschlie&szlig;end das High-Word in
+;$dff0e0 eingetragen.
+;-----------------------------------------------------
+ move.l   #Plane,d0    ;Plane-Aresse nach d0
+ move.w   d0,plane1+6  ;Low-Word eintragen
+ swap     d0           ;Words in d0 vertauschen
+ move.w   d0,plane1+2  ;High-Word eintragen
+
+;Copperliste aktivieren
+;----------------------
+ move.l   #Copperliste,$dff084
+
+;Muser erzeugen
+;--------------
+ bsr.w    muster
+
+;Warten auf Rasterstrahl (eine 1/50 Sekunde)
+;-------------------------------------------
+wait:
+ move.l   $dff004,d0
+ and.l    #$fff00,d0
+ cmp.l    #$00003000,d0
+ bne.s    wait
+
+;Linke Maustaste gedr&uuml;ckt ?
+;--------------------------
+ btst     #6,$bfe001
+ bne.s    wait
+
+;Sprites wieder einschalten
+;--------------------------
+ move.w   #$8020,$dff096
+
+;Interrupts wieder erlauben
+;--------------------------
+ move.w   #$c000,$dff09a
+
+;Programmende
+;------------
+ moveq    #0,d0
+ rts
+
+;Routine um ein Muster auf der Bitplane zu erzeugen
+;--------------------------------------------------
+muster:
+ lea      Plane,a0       ;Adresse der Bitplane
+ moveq    #8-1,d0        ;8 Paare von 16 Punkten hohen Quadraten
+                         ;(jedes Paar (ein schwarzes und ein wei&szlig;es
+                         ; Quadrat) ist 32 Punkte hoch -&gt; 8 Paare
+                         ; davon untereinander und die Bitplane ist
+                         ; voll (256 Punkte hoch))
+mpaar:
+ move.l   #(10*16)-1,d1  ;10 Paare um eine Zeile zu f&uuml;llen (320 Punkte)
+                         ;16 Zeilen sind zu f&uuml;llen
+meins:
+ move.l   #%11111111111111110000000000000000,(a0)+  ;Bits in der Bitplane
+ dbra     d1,meins ;Mit "dbra" kann man Z&auml;hl-       ;setzen
+                   ;schleifen in Assembler
+                   ;realisieren. Bei dieser
+                   ;Anweisung wird D1 bis auf
+                   ;-1 runtergez&auml;hlt. Ist D1
+                   ;noch nicht -1, so wird zum
+                   ;Label "meins" gesprungen.
+                   ;Eine DBRA-Schleife z&auml;hlt
+                   ;also immer bis -1 und nicht
+                   ;bis 0.
+ move.l   #(10*16)-1,d1  ;10 Paare um eine Zeile zu f&uuml;llen (320 Punkte)
+                         ;16 Zeilen sind zu f&uuml;llen
+mzwei:
+ move.l   #%00000000000000001111111111111111,(a0)+  ;Bits in der Bitplane
+ dbra     d1,mzwei                                  ;setzen
+ dbra     d0,mpaar
+ rts
+
+;Copperliste
+;-----------
+ SECTION Cl,CODE_C
+Copperliste:
+ dc.w     $008e,$2c81  ;DIWSTRT
+ dc.w     $0090,$2cc1  ;DIWSTOP
+ dc.w     $0092,$0038  ;DDFSTRT
+ dc.w     $0094,$00d0  ;DDFSTOP
+ dc.w     $0100,$1200  ;BPLCON0
+ dc.w     $0108,$0000  ;BPL1MOD
+ dc.w     $010a,$0000  ;BPL2MOD
+plane1:
+ dc.w     $00e0,$0000  ;BPL1PTH
+ dc.w     $00e2,$0000  ;BPL1PTL
+ dc.w     $0180,$0000  ;COLOR00
+ dc.w     $0182,$0fff  ;COLOR01
+ dc.w     $ffff,$fffe  ;Copperlistenende
+
+;Bitplane
+;--------
+ SECTION Bp,BSS_C
+Plane:
+ ds.b     10240
+
+ END
+</PRE>
+
+<P ALIGN=CENTER>
+<A HREF="wshop.htm#res2">Zur&uuml;ck zum Programmierkurs</A>
+
+<HR>
+
+</BODY>
+</HTML>
+

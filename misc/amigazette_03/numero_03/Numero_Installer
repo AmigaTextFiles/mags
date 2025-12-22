@@ -1,0 +1,95 @@
+; Script di controllo per l'installazione del Numero_03 di AMIGAzette
+; $VER: installer 1.7.2 (26.12.99)
+; Scritto da Francesco De Napoli
+
+
+; Definizione delle frasi di uso comune!!!
+(set nomedisco ""
+)
+
+(set frase1
+       (cat   "In quale directory preferisci INSTALLARE la rivista "
+              "Amigazette")
+)
+
+(set frase2
+       (cat "Attendere!\nSto creando la directory \""
+             nome-dir
+             "Amigazette\""
+       )
+)
+
+(set frase3
+       (cat "\n\nAttendere!\n\nSto copiando tutti i files "
+            "necessari nella directory \""
+             "Amigazette\""
+       )
+)
+
+(set @default-dest "Amigazette:")
+
+; Script vero e proprio
+
+(set nome-dir
+       (askdir
+              (prompt frase1)
+              (help @askdir-help)
+              (default @default-dest)
+       )
+)
+
+
+
+
+;-------------------
+(complete 0)
+(working "Istallando gli articoli...")
+(run ("c:lhex >CON:0/0//60/lhex/AUTO -a -f \"-w=%s\" x %snumero_03.lha" nome-dir nomedisco))
+(complete 80)
+
+; Aggiorna il glossario
+(copyfiles
+	(prompt "Aggiorno Glossario")
+	(help "")
+	(source "aggiornamenti/glossario.html")
+	(dest "Amigazette:")
+	(confirm)
+)
+(complete 81)
+
+; Aggiorna il index generale
+(copylib
+	(prompt "Aggiorno Index Generale")
+	(help "")
+	(source "aggiornamenti/index.html")
+	(dest "Amigazette:")
+	(confirm)
+)
+(complete 82)
+
+; Aggiorna l'inserto del Nº1
+(copyfiles
+	(prompt "Aggiorno Inserto del Numero_01")
+	(help "")
+	(source "aggiornamenti/comp_e_gfx/cg-cap1.html")
+	(dest "Amigazette:comp_e_gfx/")
+	(confirm)
+)
+(complete 83)
+
+; Aggiorna l'inserto del Nº2
+(copyfiles
+	(prompt "Aggiorno Inserto del Numero_02")
+	(help "")
+	(source "aggiornamenti/comp_e_gfx/cg-cap2.html")
+	(dest "Amigazette:comp_e_gfx/")
+	(confirm)
+)
+(complete 84)
+
+(working "Istallando inserto...")
+(run ("c:lhex >CON:0/0//60/lhex/AUTO -a -f \"-w=%s\" x %sinserto.lha" nome-dir nomedisco))
+(complete 90)
+
+
+(exit "Godetevi Amigazette!")

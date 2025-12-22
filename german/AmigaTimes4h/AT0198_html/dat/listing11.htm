@@ -1,0 +1,180 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>AMIGA TIMES 01/98 - Workshops</title>
+<base target="main">
+</head>
+
+<body background="../images/bg.gif" bgcolor="#C0C0C0"
+text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000"
+bgproperties="fixed">
+
+<h1>Assemblerkurs - Teil 3</h1>
+
+<p>(c) 1998 by Enrico Bauermeister</p>
+
+<pre>;Datei       : listing11.asm
+;Beschreibung: Der Schmelzeffekt.
+;Autor       : Enrico Bauermeister
+;Datum       : 11.02.1998
+;Assembler   : TFA AsmOne v1.30
+;=================================
+
+;Interrupts sperren - Betriebssystem ausschalten
+;-----------------------------------------------
+ move.w   #$4000,$dff09a
+
+;Sprites ausschalten (sonst stören die nur)
+;------------------------------------------
+ move.w   #$0020,$dff096
+
+;Bitplanepointer auf unser Bild zeigen lassen
+;--------------------------------------------
+ move.l   #picture,d0        ;Adresse des Bildes nach D0
+ lea      bitplanepointer,a1 ;Adresse der Bitplanepointer nach A1
+ moveq    #4,d1              ;Anzahl der Bitplanes -1 (hier sind es 5)
+pointbitplanes:
+ move.w   d0,6(a1)           ;Low-Word kopieren
+ swap     d0                 ;Words in d0 vertauschen
+ move.w   d0,2(a1)           ;High-Word kopieren
+ swap     d0                 ;Words in d0 wieder vertauschen
+ add.l    #40*256,d0         ;10240 zu D0 dazu zählen (auf nächste
+                             ;Bitplane zeigen)
+ addq.w   #8,a1              ;auf Adresse des nächsten Bitplanepointers
+                             ;zeigen
+ dbra     d1,pointbitplanes  ;Schleife zum eintragen der Adressen in
+                             ;die Bitplanepointer
+
+;Copperliste aktivieren
+;----------------------
+ move.l   #Copperliste,$dff084
+
+;Warten auf Rasterstrahl (eine 1/50 Sekunde)
+;-------------------------------------------
+wait:
+ move.l   $dff004,d0
+ and.l    #$fff00,d0
+ cmp.l    #$00003000,d0
+ bne.s    wait
+
+;Schmelzeffekt starten
+;---------------------
+ bsr.w    flood
+
+;Linke Maustaste gedrückt ?
+;--------------------------
+ btst     #6,$bfe001
+ bne.s    wait
+
+;Sprites wieder einschalten
+;--------------------------
+ move.w   #$8020,$dff096
+
+;Interrupts wieder erlauben
+;--------------------------
+ move.w   #$c000,$dff09a
+
+;Programmende
+;------------
+ moveq    #0,d0
+ rts
+
+;Schmelzeffekt
+;-------------
+flood:
+ tst.b    RaufRunter  ;Müssen wir rauf oder runter?
+ beq.w    GehRunter
+ cmp.b    #$30,FWAIT  ;Sind wir weit genug oben?
+ beq.s    SetzRunter  ;Wenn ja, sind wir oben und müssen runter.
+ subq.b   #1,FWAIT    ;Runter bewegen.
+ rts
+SetzRunter:
+ clr.b    RaufRunter
+ rts
+GehRunter:
+ cmp.b    #$ff,FWAIT  ;Sind wir weit genug unten?
+ beq.s    SetzRauf    ;Wenn ja, müssen wir rauf gehen.
+ addq.b   #1,FWAIT    ;Rauf bewegen.
+ rts
+SetzRauf:
+ move.b   #$ff,RaufRunter
+ rts
+
+;Datenbereich
+;------------
+RaufRunter:
+ dc.b     0,0
+
+;Copperliste
+;-----------
+ SECTION Cl,CODE_C
+Copperliste:
+ dc.w     $008e,$2c81  ;DIWSTRT
+ dc.w     $0090,$2cc1  ;DIWSTOP
+ dc.w     $0092,$0038  ;DDFSTRT
+ dc.w     $0094,$00d0  ;DDFSTOP
+ dc.w     $0100,$5200  ;BPLCON0
+ dc.w     $0108        ;BPL1MOD
+mod1:
+ dc.w     $0000
+ dc.w     $010a        ;BPL2MOD
+mod2:
+ dc.w     $0000
+bitplanepointer:
+ dc.w     $00e0,$0000  ;BPL1PTH
+ dc.w     $00e2,$0000  ;BPL1PTL
+ dc.w     $00e4,$0000  ;BPL2PTH
+ dc.w     $00e6,$0000  ;BPL2PTL
+ dc.w     $00e8,$0000  ;BPL3PTH
+ dc.w     $00ea,$0000  ;BPL3PTL
+ dc.w     $00ec,$0000  ;BPL4PTH
+ dc.w     $00ee,$0000  ;BPL4PTL
+ dc.w     $00f0,$0000  ;BPL5PTH
+ dc.w     $00f2,$0000  ;BPL5PTL
+;hier setzt ihr eure Farbpalette aus ArtPRO ein
+;        | |
+;        | |
+;         /
+
+;        / 
+;        | | 
+;        | |
+FWAIT:
+ dc.w     $3007,$FFFE  ;WAIT das dem negativen Modulo vorangeht.
+ dc.w     $108,-40
+ dc.w     $10a,-40
+ dc.w     $ffff,$fffe  ;Copperlistenende
+
+;unser Bild
+;----------
+picture:
+ incbin   &quot;bild.raw&quot; ;statt &quot;bild.raw&quot; setzt ihr den Dateinamen
+                     ;eurer RAW-Datei ein
+ END
+
+Wir nutzen hier &quot;RaufRunter&quot; als Flag, um zu merken ob der Effekt hoch oder
+runter &quot;geht&quot;. Damit der ganze Effekt überhaupt funktioniert, müssen wir
+nur ein WAIT vor die negativen Modulo setzen und diese WAIT bewegen. Um
+diesen Effekt &quot;reizvoller&quot; zu gestalten solltet ihr ein Bild nehmen, was
+nicht so eintönig ist (am besten siehts bei Fotos aus).                                      </pre>
+
+<p align="right"><em>-eb-</em></p>
+
+<table border="0" width="100%">
+    <tr>
+        <td align="center"><a href="wshop01.htm#marke2"
+        target="main"><img src="../images/back2.gif"
+        alt="Zurück" align="left" border="0" hspace="0"
+        width="32" height="32"></a></td>
+        <td align="right"><a><img src="../images/next1.gif"
+        alt="Weiter" align="right" hspace="0" width="32"
+        height="32"></a></td>
+    </tr>
+</table>
+
+<hr>
+</body>
+</html>

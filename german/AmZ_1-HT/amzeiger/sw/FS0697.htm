@@ -1,0 +1,194 @@
+<HTML>
+<HEAD><TITLE>AmZeiger 06/97 - Filesysteme</TITLE></HEAD>
+<BODY BACKGROUND="../images/BG.gif">
+<CENTER>
+<H1><U>Filesysteme &agrave; la Carte</U></H1><BR>von<BR><A HREF="mailto:G.Franz@BBrandes.berlinet.de">Gregor Franz</A><P></CENTER>
+
+<B>Eines</B> der Merkmale, die f&uuml;r die Modernit&auml;t des Amiga-Betriebssystems bis in die
+heutige Zeit stehen, ist das Konzept des gleichzeitigen Miteinanders
+unterschiedlichster Filesysteme.<P>
+
+In diesem Artikel dreht es sich allerdings nur um den zus&auml;tzlichen Einsatz des
+ProfessionalFileSystem (PFS), dem Vorl&auml;ufer des bekannten AFS und des
+MultiFileSystem (MFS) in Verbindung mit dem klassischen FastFileSystem des
+AmigaDOS und/oder CrossDOS.<P>
+
+Die anderen Filesysteme m&ouml;chte ich jetzt gleich am Anfang aber zumindest einmal
+erw&auml;hnt haben. Da sind zum einen einige CD-Filesysteme, die sich um den
+Datenaustausch mit CD-ROM-Laufwerken k&uuml;mmern, z.B. AsimCDFS; das
+MultiUserFileSystem (MuFS), welches die MultiUser-F&auml;higkeit von UNIX auf dem
+Amiga nachzuahmen versucht und das AFS (AmigaFileSave).<P>
+
+AFS warb damit, Festplattenzugriffe zu beschleunigen und ersetzt f&uuml;r diese
+Aufgabe das Amiga-FFS. Benutzer, die AFS im Dauereinsatz hatten, berichteten
+mir anfangs euphorisch von den Vorteilen. Mittlerweile, nach einigen seltsamen
+Problemen, wie Datenverlusten und nicht zuletzt auch aufgrund unzureichender
+Recover-M&ouml;glichkeiten, sind sie aber wieder zum altbew&auml;hrten FFS zur&uuml;ckgekehrt.
+Nach meinen letzten Informationen gibt es im Moment keinen Support mehr f&uuml;r
+AFS.<P>
+
+<CENTER><H2>PFS -  Geschwindigkeitswunder oder Daten-GAU?</H2></CENTER>
+
+Nun aber zum eigentlichen Thema: Wenn das PFS, wie erw&auml;hnt, der Vorl&auml;ufer vom
+AFS ist, kann es dann nicht Probleme bereiten? Eigentlich nicht, denn es ist
+nur f&uuml;r Diskettenoperationen zust&auml;ndig und l&auml;uft parallel zum FFS.<P>
+
+Warum soll man aber PFS &uuml;berhaupt einsetzen? PFS hat gegen&uuml;ber den original
+FFS-Floppy-Zugriffen einige Vorteile, der wichtigste ist sicherlich die
+Geschwindigkeit.<P>
+
+Wie zu vermuten liegt sie teilweise sehr deutlich &uuml;ber dem doch oft sehr
+gem&auml;chlichen FFS, selbst wenn dieses mit DirectoryCaching `getunt` wurde. Mit
+PFS dagegen wirken sich Operationen wirklich wie auf ein Directory aus.
+Umbenennungen oder L&ouml;schungen von Dateien passieren sofort, ohne langes
+rumschrappeln auf der Disk. Aber auch bei reinen Schreib-/ Lesevorg&auml;ngen, wo es
+ja nicht von diesem Vorteil zehren kann, hat das PFS die Nase vorn, was ich
+sp&auml;ter mit Messungen belegen werde.<P>
+
+Das Einrichten des PFS ist sehr leicht: einfach das Filesystem nach L: kopieren
+(eine 020er optimierte Version wird mitgeliefert) und die beiden DOS-Driver
+nach Devs/DosDrivers, je nach den verwendeten Laufwerken. Wenn man nicht erst
+booten will, sollte man sie jetzt nochmal doppelklicken und das war es dann
+auch schon.<P>
+
+Die Laufwerke werden jetzt als PF0: etc. angesprochen. So gut wie alle
+CLI-Kommandos funktionieren f&uuml;r das PFS genauso wie gewohnt, nur hoffentlich
+schneller. Auch die AmigaDOS Filebenennungs-Restriktionen sind genauso
+geblieben. F&uuml;r den, der sie vielleicht nicht genau im Kopf hat, hier zur
+Kenntnis:<P>
+
+Maximale Disknamen-L&auml;nge 32 Zeichen, maximale Filenamen-L&auml;nge 108 Zeichen und
+maximale Kommentarl&auml;nge 80 Zeichen.<P>
+
+Mehrere Laufwerke unterst&uuml;tzt PFS genauso, wie auch HD-Laufwerke, wo sich
+Geschwindigkeitsdefizite ja besonders schmerzhaft bemerkbar machen. Achso:
+einen wichtigen Unterschied gibt es doch noch. PFS-Disketten k&ouml;nnen nicht
+`bootbar` gemacht werden. Aber das ist wohl zu verschmerzen, denn wer bootet
+heute schon noch von Diskette? ;) <P>
+
+Ein Vorteil wiederum ist, da&szlig; bereits formatierte FFS-Disks zu PFS-Disketten
+schnellformatiert (umformatiert) werden k&ouml;nnen, genauso wie andersherum, was
+nat&uuml;rlich viel Zeit spart.<P>
+
+Neben einer Unterbringung von bis zu 10% mehr Daten auf einer PFS-Disk, wirbt
+der Programmautor Michiel Pelt aus Holland auch mit einer niemals auftretenden
+Validierung bei PFS-Disketten. Damit hat er auch recht, allerdings gibt es
+Situationen, wo mir das eventuell noch lieber w&auml;re.<P>
+
+Wenn man nicht aufpa&szlig;t, kann es n&auml;mlich dazu kommen, da&szlig; PFS-Disketten
+pl&ouml;tzlich nicht mehr lesbar sind. Ich brauche nicht zu erw&auml;hnen, da&szlig; es nichts
+&auml;rgerlicheres gibt. Wichtig, um zu wissen, wie man das vermeiden kann, ist die
+Ursache zu kennen.<P>
+
+PFS behandelt die Directory-Daten eigenst&auml;ndig. Wenn z.B. nach einem
+Kopiervorgang das Floppyl&auml;mpchen aufh&ouml;rt, zu leuchten, so darf man nicht den
+Fehler machen, die Diskette voreilig zu entnehmen, denn nach einer Pause von
+vielleicht einer Sekunde schreibt PFS die neuen Directory- Eintr&auml;ge und das
+L&auml;mpchen leuchtet also noch einmal kurz auf. Im Extremfall kann in solchen
+F&auml;llen die Diskette sp&auml;ter nicht mehr gelesen werden. Also immer noch kurz
+warten und erst dann entnehmen.<P>
+
+Womit wir auch bei dem Haken an der Sache sind. F&uuml;r PFS existieren keine
+Salvage-oder Recoverprogramme, die Disketten bzw. verlorengegangene oder
+versehentlich gel&ouml;schte Daten wiederherstellen k&ouml;nnen. Bei einem Mindestma&szlig; an
+Sorgfalt treten aber auch bei dauerhaftem Betrieb keinerlei Probleme auf.<P>
+
+Doch nun zu den versprochenen Geschwindigkeitsvergleichen, die mir einiges an
+Zeit und M&uuml;he abverlangt haben. 75 Files mit insgesamt 841 KByte wurden vom RAM
+zur Disk und zur&uuml;ck kopiert und dabei die Zeit in Sekunden genommen. Danach
+wurde das Directory eingelesen und die Disk gel&ouml;scht. All das mit PFS, FFS und
+FFS mit DirectoryCaching, jeweils mit DD- und HD- Diskette.<P>
+
+<CENTER><TABLE BORDER=1>
+<TR><TH>HD-Disk</TH><TH>PFS</TH><TH>FFS</TH><TH>FFS(+DC)</TD></TR>
+<TR><TD><B>Write</B></TD><TD>51</TD><TD>335</TD><TD>421</TD></TR>
+<TR><TD><B>Read</B></TD><TD>42</TD><TD>76</TD><TD>75</TD></TR>
+<TR><TD><B>ShowDir</B></TD><TD> &lt;1</TD><TD>16</TD><TD>5</TD></TR>
+<TR><TD><B>Delete</B></TD><TD>1</TD><TD>18</TD><TD>27</TD></TR>
+<TR><TD COLSPAN=4></TR>
+<TR><TH>DD-Disk</TH><TH>PFS</TH><TH>FFS</TH><TH>FFS(+DC)</TH></TR>
+<TR><TD><B>Write</B></TD><TD>50</TD><TD>213</TD><TD>275</TD></TR>
+<TR><TD><B>Read</B></TD><TD>45</TD><TD>72</TD><TD>67</TD></TR>
+<TR><TD><B>ShowDir</B></TD><TD>&lt;1</TD><TD>12</TD><TD>1</TD></TR>
+<TR><TD><B>Delete</B></TD><TD>1</TD><TD>22</TD><TD>29</TD></TR>
+</TABLE></CENTER><BR>
+
+Die Unterschiede sind eklatant. HD-Disketten werden ca. 7 bis 8mal schneller
+geschrieben, DD-Disketten immerhin noch 4 bis 5mal. Das FFS mit
+DirectoryCaching kommt auch ohne den Vergleich zum PFS erstaunlicherweise
+erschreckend schlecht weg. Da mu&szlig; man sich wirklich fragen, ob das so eine
+gro&szlig;e Verbesserung zum normalen OS3.0-FFS darstellt.<P>
+
+<CENTER><H2>MFS - Alles unter einen Hut gebracht</H2></CENTER>
+
+Das MultiFileSystem ist gar kein Filesystem im klassischen Sinn. Es ist
+eigentlich nur ein Aufsatz auf die anderen Filesysteme.<P>
+
+Wenn Sie neben normalen FFS-, auch PC- und PFS-Disketten einsetzen, so
+erscheint auf ihrer Workbench je Laufwerk und also Diskette f&uuml;r jedes
+Filesystem ein Diskettensymbol. Eines der Filesysteme wird (hoffentlich) die
+Diskette erkennen und ihren Namen und gegebenenfalls auch Inhalt anzeigen, aber
+die restlichen lassen mit `NoDOS-Disk` ihre Unkenntnis des Formates erkennen.<P>
+
+Unpraktisch auch die Angabe der jeweiligen Bezeichnung der Diskette in
+Programmen oder der Shell als z.B. DF0:, PC0: oder PF0:, auch wenn es sich
+immer um das interne Laufwerk handelt, davon abgesehen, da&szlig; einige meist &auml;ltere
+Programme oft sehr unflexibel DF0: voraussetzen.<P>
+
+Dank MFS ist damit Schlu&szlig;! Egal von welchem Format die Diskette ist, wird sie
+jetzt immer mit DF0: angesprochen und nur ein Symbol erscheint auf der
+Workbench bzw. eine Laufwerksbezeichnung in Requestern.<P>
+
+Die automatische Installation geht flott und problemlos von statten. Dabei
+werden im wesentlichen ein Handler nach L: verschoben, ein eigenes Commodity
+kopiert und der FORMAT- und DISKCOPY-Befehl des AmigaDOS gepatcht, so der
+Benutzer dies best&auml;tigt. Bei Devs/DosDrivers werden neue Verzeichnisse mit den
+Bezeichnungen der im System verwendeten Floppy- Laufwerke angelegt, z.B. DF0:
+usw., in die die jeweiligen DOSDriver kopiert werden m&uuml;ssen. Nach dem n&auml;chsten
+booten l&auml;uft das MFS.<P>
+
+Aber wie wird erkannt, ob man beispielsweise beim Formatieren das PC- und nicht
+das Amiga-Format verwenden m&ouml;chte? F&uuml;r die Workbench greift der Patch, der nun
+im Requester zus&auml;tzliche Auswahlkn&ouml;pfe mit den anderen Filesystemen zur
+Verf&uuml;gung stellt. Programme, die nicht den original Format-Befehl der WB
+nutzen, ignorieren dies aber.<P>
+
+F&uuml;r sie und um immer eine konkrete Kontrolle &uuml;ber die Filesysteme aus&uuml;ben zu
+k&ouml;nnen existiert das MFS-Commodity.  Mit seiner Hilfe kann man blitzschnell ein
+quasi physikalisches Laufwerk (DF0: etc.) anw&auml;hlen und per CycleGadget zwischen
+Automatik-Modus oder den diversen Filesystemen umschalten.<P>
+
+Wenn hier z.B. der CrossDOS-Modus angew&auml;hlt ist, so versucht nur das PC-
+Filesystem auf die Floppy zuzugreifen. Wenn eine Diskette kopiert wird, kann
+man sich dann sicher sein, da&szlig; dem Datenaustauch mit einem PC nichts im Wege
+steht, man also nicht sp&auml;ter pl&ouml;tzlich etwa mit einer Amiga-Disk am PC
+hantiert. Wenn die eingelegte Diskette nicht im eingestellten Modus formatiert
+ist, so wird sie, wie erw&auml;hnt, als `NoDOS-Disk` angezeigt.<P>
+
+Der Automatik-Modus erkennt automatisch das jeweilige Format der eingelegten
+Diskette und f&uuml;hrt alle Operationen dementsprechend aus. Wenn Daten auf die
+Disk kopiert werden, dann also auch in derem Format. Andere Programme k&ouml;nnen
+mit Hilfe des CycleGadgets auch gezwungen werden, Disketten mit speziellen
+Filesystemen zu formatieren.<P>
+
+Au&szlig;erdem kann man mit dem Commodity bei einer frisch eingelegten Diskette
+schnell erkennen, um was f&uuml;r ein Format es sich eigentlich handelt.<P>
+
+So weit also zum Vorteil des Einsatzes dieser beiden Filesysteme. Auf weitere
+M&ouml;glichkeiten die Arbeit mit Disketten und Festplatten zu erleichtern, gehe ich
+in meinem WBTuning-Kurs ein, der in dieser Ausgabe (allerdings mit einem
+anderen Thema) begonnen wird.<P>
+
+   
+<TABLE>
+<TR><TD><B>Quelle:</B></TD><TD><A HREF="http://www.uni-paderborn.de/aminet/">Aminet</A></TD></TR>
+<TR><TD><B>Programmautoren:</B></TD><TD>PFS- Michiel Pelt, Holland<BR>MFS- Nicola Salmoria, Italien</TD></TR>
+</TABLE>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR><TD ALIGN=LEFT><A HREF="../SW/AWB0697.htm"><FONT SIZE=2>Prev</FONT></A></TD>
+<TD ALIGN=CENTER><FONT SIZE=2><A HREF="../AmZ0697/main.htm">Inhaltsverzeichnis</A></FONT></TD><TD ALIGN=RIGHT><A HREF="../SW/XTR0697.htm"><FONT SIZE=2>Next</FONT></A></TD></TR>
+<TR><TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`97<A HREF="mailto:AmZeiger@BBrandes.berlinet.de">AmZeiger</A></FONT></TD></TR></TABLE>
+</BODY></HTML>
+

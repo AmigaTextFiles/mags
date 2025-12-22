@@ -1,0 +1,279 @@
+{backimage bg.iff}
+{def}
+{left}
+We know that all simple variables are just a location in memory, and therefore have an address. For instance, consider the following line:
+{pp}
+{fixed}int i;{def}
+{pp}
+This declares a variable i. To the computer, the actual letter 'i' means nothing. 'i' on the computer screen is represented by the number 106 in the ASCII table. It has nothing 
+to do with the *actual* meaning of i, an address in memory. The address associated with i would be the same if the variable was called j, or aardvark. Ever wondered what 
+the actual address of a variable is? Try this example:
+{pp}{fixed}
+[begin 2.2.1_var-address.c]
+#include <stdio.h>
+int main(void)
+{{
+  int i = 0;
+  char j = 0;
+  long int aardvark[100];
+
+  printf("Memory addresses in hex.\n");
+  printf("Var name, Address, sizeof():\n");
+  printf("       i: %p   %i\n", &i, sizeof(int));
+  printf("       j: %p   %i\n", &j, sizeof(int));
+  printf("aardvark: %p   %i\n", aardvark, sizeof(long int));
+
+  return 0;
+}}
+[end 2.2.1_var-sizes.c]
+{def}{pp}
+Read the example carefully. Notice the ampersand in front of the i and j in the printf statements. In Part 1, the ampersand was actually used in this way once before - with 
+scanf(). What does it mean? You've probably guessed the ampersand in this context obviously changes the way the variable is interpreted. i and j are initialised to zero, yet 
+the printf statements are giving non-zero values (displayed as memory "pointers", %p) just by placing an ampersand in front of them. The ampersand actually makes the 
+variable evaluate to it's address.
+{pp}
+{bold}NB: Note the lack of an ampersand on aardvark in the last printf() statement. This will be explained further on in 2.6.{nobold}
+{pp}
+So the address of a variable can be printed to screen. How is this even remotely useful? Printing an address as above is certainly not useful, but using a variable's address is. 
+This will be demonstrated in a future tutorial when passing data between functions (hint hint).
+{pp}
+But a chunk of memory is not a simple variable. It does, however, have enough space to hold multiple simple variables inside it. Let's say we write a program to ask the OS 
+to give 32KB of RAM to play with. The OS finds 32KB of contiguous free memory and marks it as used. It then tells the program the address at which this free memory 
+starts. The programmer just *assumes* 32KB has been allocated, since that is how much was asked for. If memory allocation failed (for instance, not enough free memory), 
+the address returned is NULL (usually zero). Programs should *always* do this error check and be able to exit gracefully, rather than carry on trying to use memory it never 
+got.
+{pp}
+There is not going to be any friendly warnings if we try to write 33KB past this address - at least, not in AmigaOS 3.x - maybe nothing will happen. Maybe your system will 
+start to behave strangely, and become unstable. Maybe your mouse freezes, you glance at the blinking power LED and you get that Sinking Feeling of Doom (tm), and you 
+get a guru. Same goes for reading past the 32KB we were given - your program might get rather confused or give spurious results, if one minute it's reading an array of 
+long ints (lotto numbers) which suddenly turns in to part of a CLI history for a shell process you've got running (or had running).
+{pp}
+And when the program terminates, what happens to the memory that was allocated? Theoretically, if it is never de-allocated, it stays marked as used until the machine is 
+rebooted. No other programs can use it, not even the same program that originally asked for it when run again. And so the more a user runs and quits the program, the 
+more memory is wasted. We've got a "leak". So the trick is to de-allocate *ALL* allocated memory before the program quits. In practice, some compilers on the Wintel 
+platform at least, will try do this on program termination automatically even if there is no de-allocate code. And in theory, resource tracking OSes should be immune to or at 
+least be able to recover from memory leaks. No such luck with AmigaOS. Yet.
+{pp}
+{bold}2.2.2 - The life of a hand-made array{nobold}
+{pp}
+In creating an array, these things usually happen:
+{pp}
+{bold}(1){nobold} The program (at run time or compile time) is able to calculate exactly how much memory is required (element size * no. elements) in bytes{p}
+{bold}(2){nobold} The program (at run time) makes a request for this amount of memory{p}
+{bold}(3){nobold} The OS (at run time) returns either a valid memory address representing the beginning of the memory allocation (success) or NULL (failure){p}
+{bold}(4){nobold} The program does its business{p}
+{bold}(5){nobold} The program "destroys" the array by notifying the OS that the memory is no longer required
+{pp}
+And so goes the life of an array..
+{pp}
+(5) can occur at the end of the program, or many times during run time, however the array must always be "created" before it can be "destroyed" again. Be careful not to 
+use memory addresses that have been de-allocated (gone "stale").
+{pp}
+{bold}2.2.3 - Using a hand-made array{nobold}
+{pp}
+In 2.1.1_lotto_simple.c, a demonstration of a "real" array was presented. You can see how the elements in a normal array is used; the identifier is followed immediately by 
+square brackets ("[" and "]") which enclose a value representing which element is being referred to, like this:
+{pp}
+{fixed}x = array[5]; /* x becomes the value in element 5 of array */{def}
+{pp}
+One way of achieving a similar feat with our handmade array, would be to use memory addresses to refer to each element. Element 0 would be at the beginning of the 
+array - at the address the OS gave the program when allocating memory. The second element, would be a few bytes after the first; the exact number of bytes depends on 
+what our elements consist of. If dealing with integers, then it would probably be 4 bytes.
+{pp}
+Let's say we want an array of 10 integers. That's 40 bytes. We ask the OS for 40 bytes, and it returns with a (hypothetical) address of C000. (A real 32-bit address would be 
+8 digits...)
+{pp}
+So our hand-made array goes like this:
+{pp}{fixed}
+Address: Element #:
+C000     0
+C004     1
+C008     2
+C00C     3
+C010     4
+C014     5
+C018     6
+C01C     7
+C020     8
+C024     9         /* This is 40 bytes after C000. All the memory that was allocated is now used - don't go past it */
+{def}{pp}
+So, to access element 5 in the array, the address that's required is 20 bytes ([5] x 4) after C000. 20 is 14 in hex. So the address required is C000 + 14; C014. This is verified 
+in the table above.
+{pp}
+Writing a program that must continuously calculate addresses using ( <element no.> x <element size> + <array address> ) just to access individual elements does seem 
+quite laborious. If the data type was changed, the program would have to be modified to assume a new element size. Perhaps the code below reflects this arrangement:
+{pp}{fixed}
+[begin]
+{{
+/*****************************************/
+/* This is mock up code and it wont' work */
+/*                                       */
+/* 1. Calc element size                  */
+/* 2. Calc array size                    */
+/* 3. Alloc memory of size array_size    */
+/* 4. Check if alloc was successful      */
+/* 5. Fill array with 8s                 */
+/* 6. Free memory                        */
+/*                                       */
+/*****************************************/
+
+  int i = 0;            /* This variable is used for keeping track of which element in the array is being used */
+  int element_size = 0; /* Used to hold how many bytes each element is */
+  int array_size = 0;   /* Used to hold how many bytes the array is    */
+  <memory address> pArray = NULL; /* Not real syntax. Creates a variable pArray that is meant to hold a memory address */
+
+  element_size = sizeof(int);     /* Calc element size, in bytes, for ints  */
+  array_size = 10 * element_size; /* Calc array size, in bytes, for 10 ints */
+  pArray = <some memory address allocated by the OS of size array_size>; /* Not real syntax. Alloc memory of size array_size */
+  if (pArray != NULL)             /* Check if alloc was successful. If non-zero, then success; do normal program code */
+  {{
+    i = 0;
+    do                            /* Fill array with 8s */
+    {{
+      <contents at address (pArray + i)>    = 8; /* Not real syntax. Makes contents @ address pArray + i become 8. GOTCHA! Adding i to pArray will not be interpreted 
+as i bytes past pArray. See in the next example for explanation. */
+      i = i + element_size;                      /* increment value of i by element_size */
+    }} while (i < array_size);                    /* loop drops out when we've done 10 elements (supposedly 40 bytes) */
+    <free memory at pAlloc>;                     /* Not real syntax. Always free memory before termination */
+  }}
+  else printf("Unable to allocate memory. \n");  /* Display error message if pAlloc == NULL */
+}}
+[end]
+{def}{pp}
+This code above may or may not help you, but hopefully you can see what is lacking in making a hand-made array.
+{pp}
+. We dont have a way of allocating memory;{p}
+. We dont have a way of storing the address of this memory, even if we could allocate it;{p}
+. We dont have a way of using the data held at an address, even if we did have a variable that could hold an address;{p}
+. We dont have a way of freeing memory.
+{pp}
+A 4+ byte variable type, like an unsigned long int, actually could store a 32 bit memory address. But surely this is leading somewhere; there must be an easier way..
+{pp}
+{bold}2.3 - Pointers{nobold}
+{pp}
+That easier way is known as memory pointers. These are special variables that are a bit like an ordinary integer type, like the unsigned long int, but they are designed 
+specifically for holding memory addresses. As such, they have special uses and therefore are used in contexts that are very different to a normal integer type. The term 
+"pointer" makes it clear that these variables are exactly that - pointers to memory locations. They are nothing to do with the actual data at these memory locations, they 
+merely point to it. They hold the address of the data. They aren't anything to do with the actual data.
+{pp}
+They can still be added to and subtracted from - but there is a very important difference to normal integer types. The intention is that a programmer should never, ever, 
+assume or even care about the actual value of a pointer. You never "directly" add 4 to a pointer so it moves 4 bytes. Adding "one" to a pointer does not make the address 
+increment by one byte; it's up to the compiler as to exactly how many bytes "one" is worth.
+{pp}
+That sounds crazy. If you can't control the value of the pointer yourself, how can you possibly be sure you're pointing to the intended element in an array? When dealing 
+with simple variables like an int, it normally isn't critical to know exactly how many bytes it takes up. Most programs don't check things like that, unless code was intended 
+to be portable, in which case perhaps it would be desirable to check that a variable has enough precision to hold large values.
+{pp}
+So, in a "hand-made" array of 10 ints, where it doesn't matter how big the int is, the only thing that is certain is that there are 10 elements. The size of the array, in bytes, 
+clearly has to be decided at runtime with functions like sizeof() to calculate it. So even if it was possible to control a pointer byte for byte, it still isn't possible to move 
+between the 10 elements, unless using laborious offset calculations that could be prone to error.
+{pp}
+The trick is telling the compiler that the pointer is a pointer to a known type of data. If the compiler knows the type, it knows the size of each element. If the compiler 
+knows the size of each element, why bother with calculating byte offsets? Adding one to a pointer, moves the pointer along the correct number of bytes as determined by 
+the type. Hopefully adding one will move it to the next (valid) element, and not outside the boundary allocated.
+{pp}
+There's still the issue of declaring a pointer. It's actually quite similar to declaring any other variable of a specific type; in fact, there's just one or two differences:
+{pp}
+{fixed}<type> * pointer_name <= init value>;{def}
+{pp}
+eg.
+{pp}{fixed}
+int i = 0;           /* A normal int, as previously demonstrated in Part 1.  */
+int * pAnInt = NULL; /* Initialise pointer to NULL. Known as a NULL pointer. */
+int * pAnInt = &i;   /* Initialise pointer to a known address. pAnInt now holds the address of i. Only an int pointer can hold the address of an already existing int. 
+Otherwise type-casting must occur. */
+int * pAnInt;        /* Not initialised. Some compilers would make pAnInt NULL automatically, some not. Never use a pointer that doesn't have an address that is known 
+inside the program. */
+{def}{pp}
+The thing about pointers is that they can be deceiving. It's always dangerous to have a "stray" pointer; ie. a pointer that has a non-zero memory address, which isn't valid. In 
+invalid address points to data we don't know, or care about. Therefore it is always good practice to ensure that AT ALL TIMES, a pointer either contains a known address of 
+current data, or is NULL. NULL pointers are generally harmless even if you accidently try to use them (usually) because your program should stop working - consistently 
+crashing out, or perhaps catching the NULL as an error.
+{pp}
+But say, for instance, some memory has been allocated and at the end of the algorithm there are 5 pointers pointing to various places inside that data. The program then 
+frees that block of memory back to the OS. The data is no longer valid and may or may not become used by other tasks or even the OS itself. What about the pointers? 
+They dont' change. They still faithfully hold the old addresses. These are known as "stray" pointers, and are very dangerous - especially because sometimes the data pointed 
+to by the stray pointers still remains intact even after being freed up. The OS usually makes no attempt at zeroing free data. After freeing memory, always NULL any pointers 
+that were pointing to the said memory.
+{pp}
+Actually using the data pointed to by a pointer is also necessary. There must be some way of "de-pointing", so that the data can be used. It's known as de-referencing. The 
+programmer simply puts an asterix in front of the pointer identifier. Take a look at this code:
+{pp}{fixed}
+[begin 2.3.0_pointers]
+#include <stdio.h>
+
+int main(void)
+{{
+  int i = 0;      /* A normal int. */
+  int *pInt = &i; /* An int pointer, initialised to the address of i. pInt is now an "alias" for i. */
+  int **ppInt = &pInt; /* This might get confusing. You can ignore it for now if you want; it's a pointer to another pointer. This other pointer is an int pointer, which points 
+to the data i holds :-) */
+
+  i = 2; /* Make i equal two. Nothing new here. */
+  printf("\n&i == %p. pInt == %p. &pInt == %p. i == %i. *pInt == %i.", &i, pInt, &pInt, i, *pInt);
+  *pInt = 5; /* Dereferenced; we'e not changing the pointer itself, but the data the pointer points to */
+  printf("\n&i == %p. pInt == %p. &pInt == %p. i == %i. *pInt == %i.", &i, pInt, &pInt, i, *pInt);
+  **ppInt = 97696; /* Double dereferenced; we're changing the data at the address of the address held in ppInt */
+  printf("\n&i == %p. pInt == %p. &pInt == %p. i == %i. *pInt == %i.", &i, pInt, &pInt, i, *pInt);
+
+  return 0;
+}}
+[end 2.3.0_pointers]
+{def}{pp}
+As you can see, de-referencing a pointer makes it evaluate to the contents of the address in the pointer, rather than the address the pointer holds. A de-referenced pointer as 
+in the above example can be used *exactly* like a normal int, and in this case, it's become an alias for an int. The above example shows that you can have two different 
+variables manipulate the same data. You could, in fact, have as many different pointers as you like for the same data. Also in the example above is an example of double 
+de-referencing; even pointers can be pointed at by other pointers!
+{pp}
+Don't try and relate the use of an asterix in declaring a pointer, and dereferencing a pointer. Sure, both situations are to do with pointers, but they clearly do two different 
+things (are used in two different contexts). In one context, the asterix is used for indicating that a pointer variable is being declared. In another, it's being used to 
+dereference a pointer. These are two very different contexts. As well as that, the asterix has another context when used in function declarations; and it's also used for 
+multiplication!
+{pp}
+{bold}2.4 - Getting memory, and getting rid of it{nobold}
+{pp}
+Pointers are actually really quite useful. Perhaps you can't quite see it yet, but they are very powerful.
+{pp}
+But so far all we've done is used pointers for a simple variable. We still dont' have that "hand-made" array we're trying to get, but we're almost there. We've covered 
+storing memory addresses, and using those memory addresses, in the form of pointers. All that's left is getting our very own chunk of memory, and then getting rid of it 
+again.
+{pp}
+This chunk of memory will be created on {bold}the heap.{nobold} Memory on the heap exists outside of the local scope and can continue to exist when the function that 
+declares it "falls through" to another function. Therefore memory on "the heap" can be used by more than one function. Memory on the heap is only limited by how much 
+memory the system has free; the stack, on the other hand, which is used by local variables, is usually quite limited.
+{pp}
+The two functions malloc() and free() are what is needed. There's also a third function which is an alternative to malloc(): calloc().
+{pp}
+For now, here's the syntax for malloc():
+{pp}
+{fixed}pointer_var = malloc(<amount of mem in bytes>); /* store the address malloc() returns into pointer_var */{def}
+{pp}
+malloc() returns a pointer of type void. So that means only void pointers will be able point to point to an address of type void, right? Essentially, yes. But we could do a 
+type cast - you remember the syntax for casting from Part 1 - to "force" the memory malloc() returns into a pointer_var of our desired type, like this:
+{pp}
+{fixed}pointer_var = (<type> *) malloc(<amount of mem in bytes>); /* store the address malloc() returns into pointer_var, casting to whatever type pointer_var happens 
+to be */{def}
+{pp}
+And here's the syntax for calloc():
+{pp}
+{fixed}pointer_var = calloc(<number of elements>, <size of elements>); /* store the address calloc() returns into pointer_var */{def}
+{pp}
+calloc() also returns void. For any useful operation, the address calloc() returns must be cast to the same type as the pointer being used.
+{pp}
+{fixed}pointer_var = (<type> *) calloc(<number of elements>, <size of elements>); /* cast address calloc() returns to <type> and store it into pointer_var */{def}
+{pp}
+The thing to remember about calloc() is that, given the number elements needed and the size of each element, it calculates the number of bytes required itself. In practice, 
+it's safer to use calloc() than malloc(). If you ever have troubles with malloc(), try using calloc() instead. Depending on your compiler, calloc() may also zero all new memory. 
+malloc() generally doesn't.
+{pp}
+Syntax for free():
+{pp}
+{fixed}free(<pointer_var>);{def}
+{pp}
+That's it. If, when free() is used, and the program is not finished, also set pointer_var to NULL, like this:
+{pp}
+{fixed}pointer_var = NULL;{def}
+{pp}
+{pp}
+{link fe8}Onto page 3{end}
+{pp}

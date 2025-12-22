@@ -1,0 +1,584 @@
+2
+1
+13 Kuva1.iff 0 0
+15 Kuva2.iff 0 0
+17 Kuva3.iff 0 0
+19 Kuva4.iff 0 0*
+{A                        Matemaattisen tarkkaa kaaosta
+{A                        -----------------------------
+
+{8                               Petri Keckman
+
+
+Luulisi, ettei mik‰‰n ole niin tarkkaa kuin matemaattinen tarkkuus,  mutta  jon-
+kinlainen kaaos voi tulla vastaan lukujenkin maailmassa.  Osaltaan  t‰m‰  johtuu
+siit‰, ett‰ tietokoneella voidaan laskea vain ‰‰rellisell‰ tarkkuudella  varsin-
+kin systeemeiss‰, jotka ovat hyvin herkki‰ alkuarvojen suhteen.  T‰llaisia  ovat
+monet luonnontieteen matemaattiset mallit, joissa lasketaan planeettojen  ratoja
+tai s‰‰t‰. Kyll‰, planeettojenkin liikkeiss‰ on samanlaisia pienest‰  sattumasta
+kiinni olevia heilahteluja kuin s‰‰ilmiˆiss‰. Viimeksi mainituista  yksi  tunne-
+tuimmista on perhosefekti: jos jotakin perhosen  siiven  iskua  ei  olisi  viime
+vuonna tapahtunut, niin jokin hirmumyrsky olisi v‰ltetty t‰n‰  vuonna  tai  toi-
+sinp‰in. Vuosituhansien saatossa saattavat pienet ja kaukaiset tekij‰t vaikuttaa
+planeettojen kiertoratoihinkin. Kun t‰h‰n lis‰t‰‰n viel‰ kvanttimekaniikan tuoma
+sattumallisuus mikromaailman ilmiˆihin, niin ainakaan niit‰ ei voida ennustaa.
+
+Tietokoneella on helppo tutkia numeerisesti sellaisia k‰sitteit‰ kuin  jaksolli-
+suus, kaaos ja tasapainotila.  Esimerkiksi  hyvin  yksinkertainen  rekursiivinen
+kaava x:=1-q*x*x, miss‰ x:lle lasketaan arvo x:n  edellisen  arvon  perusteella.
+Valitaan q v‰lilt‰ nollasta kahteen. Jos q on nolla, niin sarja saa  heti  arvon
+yksi ja pysyy siin‰, sill‰ 1=1-0*x*x, vaikka x olisi mik‰ tahansa  luku.  Tutki-
+taan E-kielisell‰ ohjelmalla, miten k‰y kun q=0.1. On selv‰‰, ett‰ jos sarja saa
+miss‰ tahansa vaiheessa saman arvon kuin joskus aikaisemmin, niin se  ei  kehity
+vaan toistaa itse‰‰n. Seuraavassa ohjelman  p‰tk‰ss‰  lasketaan  kymmenen  lukua
+kerralla taulukkoon ja tutkitaan, onko niiden joukossa samoja.  E-kieless‰  ovat
+desimaaliluvut aivan  tavallisia  LONG-tyyppisi‰  32-bittisi‰  (kokonais)lukuja,
+joille vain on omat laskutoimitukset. Muuttujan ja laskutoimituksen  tulkitsemi-
+nen reaalityyppiseksi merkit‰‰n huutomerkill‰,  samoin  muunnokset  lukutyyppien
+v‰lill‰. Lukuarvo tulkitaan desimaaliluvuksi (tai float, real - mik‰ se onkaan),
+jos siin‰ on desimaalipiste. 
+
+{BPROC main()
+{B  DEF x[10]: ARRAY OF LONG,
+{B      s[20]:STRING,  /* apumuuttuja reaalilukujen tulostukseen */
+{B      x0=0.0,  /* alkuarvo  Huom! desimaalipiste on oltava nollassakin*/
+{B      ind=0,   /* sarjan alkion indeksi (t‰m‰ on 16-bit kokonaisluku) */
+{B      i, j,    /* taulukkojen k‰sittelyyn */
+{B      q=0.1,   /* samoin t‰ss‰ on oltava "." (vaikka arvo olisi 1.0) */
+{B      samoja,  /* totuusarvo samojen lˆytymiselle 10 joukosta */
+{B      pot=10   /* apumuuttuja tulostuksen hallintaan */
+
+{B  WriteF('Rekursiokaava x:=1-qxx, miss‰ x[0]=\s ',RealF(s,!x0,8))
+{B  WriteF('ja q=\s\n',RealF(s,!q,8))
+
+{B  REPEAT
+{B    FOR i:=0 TO 9         /* lasketaan kymmenen kerralla */
+{B      x[i]:=!1.0-(!q*x0*x0)
+{B      x0:=x[i]
+{B      INC ind
+{B    ENDFOR
+{B    i:=0                  /* tarkastetaan lˆytyikˆ niiden joukosta */
+{B    REPEAT                /* samoja */
+{B      j:=i+1
+{B      REPEAT
+{B         samoja:=(!x[i]=x[j])
+{B         INC j
+{B      UNTIL (j=9) OR samoja
+{B      INC i
+{B    UNTIL (i=8) OR samoja
+{B                          /* tulostetaan jos samoja lˆytyi tai */
+{B                          /* ind-10 on jaollinen 10^pot:lla */
+{B    IF samoja OR (Mod(ind-10,pot)=0)
+{B      FOR i:=0 TO 9
+{B        WriteF('x[\d] =  \s\n',ind+i-9,RealF(s,x[i],8))
+{B      ENDFOR
+{B      pot:=10*pot
+{B    ENDIF
+{B    x0:=x[9]   /* asetetaan uusi x0 ja jos ei paineta hiirt‰, niin */
+{B  UNTIL (ind>650000) OR samoja OR (Mouse()=1) /* toistetaan kunnes...*/
+{B  WriteF('Ohjelma p‰‰ttyi.')
+{BENDPROC
+
+{DTuloste:
+
+{3Rekursiokaava x:=1-qxx, miss‰ x[0]=0.00000000 ja q=0.10000001
+{3x[1] =  1.0
+{3x[2] =  0.90000000
+{3x[3] =  0.91900000
+{3x[4] =  0.91554392
+{3x[5] =  0.91617792
+{3x[6] =  0.91606184
+{3x[7] =  0.91608312
+{3x[8] =  0.91607920
+{3x[9] =  0.91607984
+{3x[10] =  0.91607976
+{3x[11] =  0.91607976
+{3x[12] =  0.91607976
+{3x[13] =  0.91607976
+{3x[14] =  0.91607976
+{3x[15] =  0.91607976
+{3x[16] =  0.91607976
+{3x[17] =  0.91607976
+{3x[18] =  0.91607976
+{3x[19] =  0.91607976
+{3x[20] =  0.91607976
+{3Ohjelma p‰‰ttyi.
+
+Eli sarja l‰hestyy hyvin nopeasti arvoa 0.91607976.
+
+Voidaan todeta, ettei raja-arvo (t‰ss‰ tapauksessa kun q=0.1) riipu sarjan
+ensimm‰isest‰ j‰senest‰ x[0], vaan esim. jos l‰hdemme arvosta x[0]=-5.0,
+niin saamme saman raja-arvon:
+
+{3Rekursiokaava x:=1-qxx, miss‰ x[0]=-5.0 ja q=0.10000001
+{3x[1] = -1.50000000
+{3x[2] = 0.77500000
+{3x[3] = 0.93993744
+{3x[4] = 0.91165176
+{3x[5] = 0.91688912
+{3x[6] = 0.91593144
+{3x[7] = 0.91610696
+{3x[8] = 0.91607480
+{3x[9] = 0.91608072
+{3x[10] = 0.91607960
+{3x[11] = 0.91607984
+{3x[12] = 0.91607976
+{3x[13] = 0.91607976
+{3x[14] = 0.91607976
+{3x[15] = 0.91607976
+{3x[16] = 0.91607976
+{3x[17] = 0.91607976
+{3x[18] = 0.91607976
+{3x[19] = 0.91607976
+{3x[20] = 0.91607976
+{3Ohjelma p‰‰ttyi.
+
+N‰in k‰y ainakin niin kauan kuin x[0] ei ole pienempi kuin noin -10.916.
+Alkuarvosta -10.917 raja-arvoksi yht‰kki‰ tulee 0 (en tied‰ miksi). Mutta
+annetaan nyt x[0]:n olla aluksi nolla ja tutkitaan raja-arvon m‰‰r‰ytymist‰
+pelk‰st‰‰n q:sta. Olkoon esim. q=0.7:
+
+{3Rekursiokaava x:=1-qxx, miss‰ x[0]=0.00000000 ja q=0.70000000
+{3x[1] = 1.0
+{3x[2] = 0.30000002
+{3x[3] = 0.93700000
+{3x[4] = 0.38542168
+{3x[5] = 0.89601512
+{3x[6] = 0.43800984
+{3x[7] = 0.86570320
+{3x[8] = 0.47539060
+{3x[9] = 0.84180264
+{3x[10] = 0.50395780
+{3x[101] = 0.67937728
+{3x[102] = 0.67691248
+{3x[103] = 0.67925264
+{3x[104] = 0.67703112
+{3x[105] = 0.67914024
+{3x[106] = 0.67713800
+{3x[107] = 0.67903888
+{3x[108] = 0.67723432
+{3x[109] = 0.67894760
+{3x[110] = 0.67732112
+{3x[261] = 0.67811376
+{3x[262] = 0.67811320
+{3x[263] = 0.67811368
+{3x[264] = 0.67811328
+{3x[265] = 0.67811360
+{3x[266] = 0.67811336
+{3x[267] = 0.67811360
+{3x[268] = 0.67811336
+{3x[269] = 0.67811360
+{3x[270] = 0.67811336
+{3Ohjelma p‰‰ttyi.
+
+Huomataan, ett‰ sarja n‰ytt‰‰ kyll‰ l‰hestyv‰n jotain raja-arvoa, mutta ei
+tarkasti saavuta sit‰, vaan parilliset ja parittomat j‰senet saavuttavat
+omansa (vaikkakin hyvin l‰heiset). Kasvatetaan viel‰ hieman q:ta: q=0.74:
+
+{3Rekursiokaava x:=1-qxx, miss‰ x[0]=0.00000000 ja q=0.74000000
+{3x[1] = 1.0
+{3x[2] = 0.26000000
+{3x[3] = 0.94997600
+{3x[4] = 0.33218372
+{3x[5] = 0.91834400
+{3x[6] = 0.37591684
+{3x[7] = 0.89542800
+{3x[8] = 0.40667444
+{3x[9] = 0.87761576
+{3x[10] = 0.43004508
+{3x[1121] = 0.66890328
+{3x[1122] = 0.66890060
+{3x[1123] = 0.66890324
+{3x[1124] = 0.66890060
+{3x[1125] = 0.66890324
+{3x[1126] = 0.66890060
+{3x[1127] = 0.66890324
+{3x[1128] = 0.66890060
+{3x[1129] = 0.66890324
+{3x[1130] = 0.66890060
+
+Edelleen parittomat ja parilliset j‰senet saavuttavat raja-arvonsa erikseen,
+mutta nyt hieman myˆhemmin. Itse asiassa sarjan pit‰isi saavuttaa
+yksik‰sitteinen raja-arvo, jota ei tietokoneella saavuteta. Raja-arvo on
+helppo laskea: onhan se kiintopiste eli piste, jossa x=1-q*x*x, jolla on
+toisen†asteen yht‰lˆn (q*x*x+x-1=0) ratkaisu, kun x=(-1+-Sqrt(1+4q))/(2*q)
+eli edellisell‰ sarjalla olisi pit‰nyt olla raja-arvo:
+(-1+Sqrt(1+4*0.74))/(2*0.74)=0.668901942...
+
+Tutkitaan viel‰ arvoa q=0.75:
+
+{3Rekursiokaava x:=1-qxx, miss‰ x[0]=0.00000000 ja q=0.75000000
+{3x[1] =  1.0
+{3x[2] =  0.25000000
+{3x[3] =  0.95312504
+{3x[4] =  0.31866456
+{3x[5] =  0.92383968
+{3x[6] =  0.35989016
+{3x[7] =  0.90285928
+{3x[8] =  0.38863384
+{3x[9] =  0.88672280
+{3x[10] =  0.41029204
+{3x[101] =  0.75357712
+{3x[102] =  0.57409112
+{3x[103] =  0.75281456
+{3x[104] =  0.57495272
+{3x[105] =  0.75207200
+{3x[106] =  0.57579076
+{3x[107] =  0.75134872
+{3x[108] =  0.57660628
+{3x[109] =  0.75064392
+{3x[110] =  0.57740028
+{3x[1001] =  0.69596128
+{3x[1002] =  0.63672840
+{3x[1003] =  0.69593272
+{3x[1004] =  0.63675828
+{3x[1005] =  0.69590416
+{3x[1006] =  0.63678800   Tietokoneella on helppo tehd‰ monisivuisia
+{3x[1007] =  0.69587576   numeroita k‰sittelevi‰ artikkeleita.
+{3x[1008] =  0.63681764
+{3x[1009] =  0.69584744
+{3x[1010] =  0.63684724
+{3x[10001] =  0.67605248
+{3x[10002] =  0.65721476
+{3x[10003] =  0.67605152
+{3x[10004] =  0.65721572
+{3x[10005] =  0.67605064
+{3x[10006] =  0.65721668
+{3x[10007] =  0.67604968
+{3x[10008] =  0.65721764
+{3x[10009] =  0.67604872
+{3x[10010] =  0.65721852
+{3x[52601] =  0.67077388
+{3x[52602] =  0.66254676
+{3x[52603] =  0.67077388
+{3x[52604] =  0.66254676
+{3x[52605] =  0.67077388
+{3x[52606] =  0.66254676
+{3x[52607] =  0.67077388
+{3x[52608] =  0.66254676
+{3x[52609] =  0.67077388
+{3x[52610] =  0.66254676
+{3Ohjelma p‰‰ttyi.
+
+Kest‰‰ yh‰ kauemmin, ennen kuin sarja saavuttaa raja-arvonsa. Itse asiassa
+0.75 on "katastrofipiste", jonka j‰lkeen sarjan ei matemaattisestikaan
+pit‰isi saavuttaa yksik‰sitteist‰ raja-arvoa vaan kaksi erillist‰. Esim.
+q=0.76:
+
+{3Rekursiokaava x:=1-qxx, miss‰ x[0]=0.00000000 ja q=0.76000000
+{3x[1] =  1.0
+{3x[2] =  0.24000000
+{3x[3] =  0.95622400
+{3x[4] =  0.30508310
+{3x[5] =  0.92926248
+{3x[6] =  0.34371816
+{3x[7] =  0.91021192
+jne..., kunnes sarja saavuttaa melko nopeasti kaksi raja-arvoansa:
+{3x[511] =  0.78947528
+{3x[512] =  0.52631384
+{3x[513] =  0.78947528
+{3x[514] =  0.52631384
+{3x[515] =  0.78947528
+{3x[516] =  0.52631384
+{3x[517] =  0.78947528
+{3x[518] =  0.52631384
+{3x[519] =  0.78947528
+{3x[520] =  0.52631384
+{3Ohjelma p‰‰ttyi.
+
+q:n arvolla 1 sarja saavuttaa heti kaksi raja-arvoaan: 0 ja 1:
+
+1-1*0*0=1 ja 1-1*1*1=0.
+
+Mutta saavuttaako se ne kaikilla x[0]:n l‰htˆarvoilla?
+
+{3Rekursiokaava x:=1-qxx, miss‰ x[0] = 0.12300001 ja q=1.0
+{3x[1] = 0.98487096
+{3x[2] = 0.03002918
+{3x[3] = 0.99909824
+{3x[4] = 0.00180268
+{3x[5] = 0.99999672
+{3x[6] = 0.00000656
+{3x[7] = 1.0
+{3x[8] = 0.00000000
+{3x[9] = 1.0
+{3x[10] = 0.00000000
+{3Ohjelma p‰‰ttyi.
+
+Saavuttaa, ja melko nopeasti. Paitsi: on olemassa arvo x[0]=0.618033988,
+joka on kiintopiste:
+
+{3Rekursiokaava x:=1-qxx, miss‰ x[0]=0.61803400 ja q=1.0
+{3x[1] = 0.61803396
+{3x[2] = 0.61803400
+{3x[3] = 0.61803396
+{3x[10001] = 0.61803396
+{3x[10002] = 0.61803400
+{3x[10003] = 0.61803396
+{3x[10004] = 0.61803400
+{3x[10005] = 0.61803396
+{3x[10006] = 0.61803400
+{3x[10007] = 0.61803396
+{3x[10008] = 0.61803400
+{3x[10009] = 0.61803396
+{3x[10010] = 0.61803400
+
+Sarja on ja pysyy siin‰, mutta jos siihen tehd‰‰n pieni poikkeama - eli
+perhosen siivenisku tai hyttysen aivastus h‰iritsem‰ss‰ Jupiterin
+kiertorataa - niin:
+
+{3Rekursiokaava x:=1-qxx, miss‰ x[0]=0.61803300 ja q=1.0
+{3x[1] = 0.61803520
+{3x[2] = 0.61803244
+{3x[3] = 0.61803584
+{3x[4] = 0.61803168
+{3x[5] = 0.61803680
+{3x[6] = 0.61803048
+{3x[7] = 0.61803828
+{3x[8] = 0.61802864
+{3x[9] = 0.61804056
+{3x[10] = 0.61802584
+{3x[101] = 1.0
+{3x[102] = 0.00000000
+{3x[103] = 1.0
+{3x[104] = 0.00000000
+
+Sarja saavuttaa kaksi raja-arvonsa 1 ja 0 taas melko nopeasti.
+
+Jatketaan q:n kasvattamista (ja annetaan x[0]:n olla taas aina 0). Seuraava
+katastrofipiste on q=1.25, jossa sarja ei saavuta kahta, vaan nelj‰
+raja-arvoansa:
+
+{3Rekursiokaava x:=1-qxx, miss‰ x[0]=0.10000001 ja q=1.25000000
+{3x[1] =  0.98750000
+{3x[2] =  -0.21894538
+{3x[3] =  0.94007864
+{3x[4] =  -0.10468484
+{3x[5] =  0.98630136
+{3x[6] =  -0.21598792
+jne..., jolloin sarja saavuttaa (tietokoneella kahdeksan desimaalin
+tarkkuudella) nelj‰ raja-arvonsa, mutta ei kovin nopeasti:
+{3x[17121] =  0.96672512
+{3x[17122] =  -0.16819692
+{3x[17123] =  0.96463720
+{3x[17124] =  -0.16315615
+{3x[17125] =  0.96672512
+{3x[17126] =  -0.16819692
+{3x[17127] =  0.96463720
+{3x[17128] =  -0.16315615
+{3x[17129] =  0.96672512
+{3x[17130] =  -0.16819692
+{3Ohjelma p‰‰ttyi.
+
+Kun q:ta kasvatetaan ja annetaan sen l‰hesty‰  1.401:t‰,  niin  huomataan,  ett‰
+t‰ll‰ v‰lill‰ raja-arvojen m‰‰r‰ kaksinkertaistuu yh‰  uudestaan  ja  uudestaan,
+niin ett‰ mit‰ l‰hemp‰n‰ 1.401:t‰ q on, sit‰ useampia raja-arvoja se saavuttaa.
+
+Kaikesta   edell‰  mainitusta  voidaan  ohjelmalla  (bifurkaatio,  lˆytyy  Sakun
+levykkeelt‰ hakemistosta Ohjelmat) aikaansaada  kuva (seuraava sivu).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Siin‰  siis  q  kasvaa  vasemmalta  oikealle 0<q<2  ja  x  kasvaa  ylh‰‰lt‰ alas
+-1<x<1.1.  Sarjan  ensimm‰iset  arvot  (0 ja 1 jne.)   plotataan  mustilla  pis-
+teill‰ ja sit‰ valkoisemmilla, mit‰ suurempi  j‰rjestysnumero  niill‰  on.  Sel-
+ke‰sti n‰hd‰‰n ne pisteet, joissa raja-arvot kahdentuvat. Kuvasta n‰hd‰‰n, kuin-
+ka pisteess‰ q=0.75 sarja saavuttaa raja-arvon.  Mutta  jos  zoomataan  aluetta,
+niin havaitaan, ett‰ se on harhaa: (kuva 2 seuraavalla sivulla). Kuvasta n‰hd‰‰n
+selv‰sti ("perseen muodossa"), kuinka sarja  ei  todellisuudessa koskaan saavuta
+raja-arvoa  pisteess‰   q=0.75  (vaikka  ‰‰rellisen   laskutarkkuuden  omaavalla
+tietokoneella sen  myˆs  numeerisesti edell‰ saavuttikin).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kuvasta 1 n‰hd‰‰n myˆs, kuinka pisteen q=1.401 j‰lkeen sarja ei saavuta  yleens‰
+mit‰‰n raja-arvoja, vaan heilahtelee  summittaisesti(?)  -  mutta  matemaattisen
+tarkasti - tiettyjen arvojen v‰lill‰. Kuitenkin t‰m‰nkin pisteen j‰lkeen on  ha-
+vaittavissa alue (q>1.75), jossa sarja saavuttaa kolme tarkkaa  raja-arvoa.
+(Kuva 3 seuraavalla sivulla).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Aluetta 1.401:st‰ eteenp‰in ei tunneta kovin tarkkaan. Mit‰‰n selke‰t‰ matemaat-
+tista mallia ei ole  sen  k‰ytt‰ytymiselle,  vaikka  selke‰‰  s‰‰nnˆnmukaisuutta
+siell‰kin on havaittavissa. Determinismi ja matemaattinen tarkkuus antavat sijaa
+sattumalle ja kaaokselle.
+
+T‰ss‰ tuli l‰hinn‰ tutkittua vain q:ta, koska  k‰sitt‰‰kseni  yleens‰  alkuarvon
+x[0] valitseminen - ainakin kun pysyt‰‰n alueella -1<x[0]<1, ei vaikuta raja-ar-
+voon - poikkeuksena kiintopisteet. Lopuksi kuitenkin kuva siit‰, miten  k‰y  kun
+alkuarvona onkin x[0]=-2 (alueella, jossa q l‰hestyy 0.75:sta).
+
+{8Artikkeliin liittyy ohjelmia hakemistossa Ohjelmat!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{6                                            Kuva seuraavalla sivulla  ------>
+
+
+
+
+
+
+
+

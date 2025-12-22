@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 09/98 - Installer-Kurs 3/6</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Installer-Kurs 3/6</H1>von<BR><A HREF="mailto:A.Wyrwa@BBrandes.in-brb.de">Andr&#233; Wyrwa</A></DIV>
+ <br>
+
+Hier eine &Uuml;bersicht &uuml;ber die Inhalte der einzelnen Kursteile:
+<B>
+<OL>
+<LI>Einf&uuml;hrung, &Uuml;berblick, Grundlagen</LI>
+<LI>Kommunikation mit dem User, grundlegende Kommandos</LI>
+<LI>Dateioperationen</LI>
+<LI>weiterf&uuml;hrende Funktionen und Statements</LI>
+<LI>Scriptoptimierung, Lokalisierung</LI>
+<LI>Tricks f&uuml;r Fortgeschrittene, Tools</LI>
+</OL></B>
+
+<B>Teil 3:</B>
+
+<P>Nachdem wir uns das letzte Mal mit einigen grundlegenden Funktionen des
+Installers und dem Umgang mit dem User besch&auml;ftigt haben, wollen wir uns
+nun einem sehr umfangreichen und freilich auch sehr wichtigen Gebiet
+widmen, den Dateioperationen.</P><P>
+
+In diesem Kursteil geht es also um die Befehle, die den eigentlichen
+Installationsvorgang betreffen, die direkt Dateien auf der Festplatte
+manipulieren. Au&szlig;erdem geh&ouml;ren dazu aber auch einige andere Befehle,
+die der Installer bereitstellt, um das Handling der Dateinamen und
+Pfade einfacher zu gestalten.</P><p>
+
+Zu den Dateioperationen ist zun&auml;chst zu sagen, da&szlig; sie fast alle
+abh&auml;ngig vom User-Level funktionieren. Ein NOVICE-User bekommt von
+diesen Funktionen so gut wie nichts mit, w&auml;hrend ein EXPERT-User auf
+viele von ihnen Einflu&szlig; nehmen kann. Ich widme mich diesem Thema in
+einem der folgenden Kursteile ausf&uuml;hrlicher.</P><P>
+
+Die Funktionsweise der Dateioperationen selbst ist nicht weiter
+kompliziert, Sie k&ouml;nnen sie daher der <A HREF="9809in2.htm">Befehls&uuml;bersicht</A> entnehmen.
+Hier seien sie nur alle einmal &Uuml;berblicksm&auml;&szlig;ig genannt:</P><P>
+
+<UL>
+<LI><A HREF="9809in2.htm#MAKEDIR">(MAKEDIR )</A> ...... Erstellen eines Verzeichnisses</LI>
+<LI><A HREF="9809in2.htm#COPYFILES">(COPYFILES )</A> .... einfaches Kopieren von Dateien mit vielen Extras</LI>
+<LI><A HREF="9809in2.htm#COPYLIB">(COPYLIB )</A> ...... Kopieren mit Versions&uuml;berpr&uuml;fung z.B. f&uuml;r Libraries</LI>
+<LI><A HREF="9809in2.htm#RENAME">(RENAME )</A>....... Umbenennen von Dateien</LI>
+<LI><A HREF="9809in2.htm#DELETE">(DELETE )</A>....... L&ouml;schen von Dateien</LI>
+<LI><A HREF="9809in2.htm#PROTECT">(PROTECT )</A> ...... &Auml;ndern der Schutzbits</LI>
+<LI><A HREF="9809in2.htm#TOOLTYPE">(TOOLTYPE )</A> ..... &Auml;ndern der Tooltypes und anderer Werte eines Icons</LI>
+<LI><A HREF="9809in2.htm#TEXTFILE">(TEXTFILE )</A> ..... Erstellen von Textdateien</LI>
+<LI><A HREF="9809in2.htm#STARTUP">(STARTUP )</A> ...... Hinzuf&uuml;gen von Eintr&auml;gen zur User-Startup</LI>
+<LI><A HREF="9809in2.htm#MAKEASSIGN">(MAKEASSIGN )</A> ... Erstellen eines (tempor&auml;ren) Assigns</LI>
+</UL>
+
+<P>Mit Hilfe dieser Palette von Befehlen mu&szlig; der Installer-Script-Schreiber
+klarkommen, um s&auml;mtliche notwendigen Dateimanipulationen durchzuf&uuml;hren.
+Nat&uuml;rlich gibt es auch Gegenst&uuml;cke dazu, mit Hilfe derer man sich &uuml;ber
+die Gegebenheiten auf den betroffenen Datentr&auml;gern und des Systems
+informieren kann, aber zu diesen kommen wir erst im n&auml;chsten Kursteil.
+</P><P>
+Wenn Sie bereits einen Seitenblick in die <A HREF="9809in2.htm">Befehls&uuml;bersicht</A> dieser Ausgabe
+geworfen haben, wird Ihnen aufgefallen sein, da&szlig; die oben genannten
+Befehle die Angabe einer Menge von Parametern erlauben bzw. sogar
+verlangen, in welchen vor allem auch immer die Angabe von Quelle und/oder
+Ziel gefordert wird. In richtigen Programmiersprachen kann gerade das
+Handling von Dateipfaden eine recht umst&auml;ndliche Angelegenheit werden,
+bei der sich auch leicht Fehler einschleichen k&ouml;nnen. Der Installer
+kommt dem Script-Autor hier einige Schritte entgegen, indem er ein paar
+Funktionen zum leichteren Umgang mit Pfaden und Dateinamen anbietet.
+</P><P>
+Wichtig ist dabei nat&uuml;rlich zun&auml;chst einmal die Verkn&uuml;pfung von Strings.
+Zum Beispiel kann es ja vorkommen, da&szlig; man ein vom User ausgew&auml;hltes
+Verzeichnis (&quot;SYS:Classes/Datatypes&quot;) mit einem festen Dateinamen
+(&quot;sound.datatype&quot;) verkn&uuml;pfen m&ouml;chte, so da&szlig; sich daraus ein kompletter
+Pfad (&quot;SYS:Classes/Datatypes/sound.datatype&quot;) ergibt.
+</P><P>
+Das hier angegebene Beispiel l&auml;&szlig;t sich mit einer einfachen String-
+Verkn&uuml;pfung realisieren, bei der der zweite String an den ersten
+angeh&auml;ngt wird, wobei wir allerdings ein &quot;/&quot; einf&uuml;gen m&uuml;ssen, um den
+Verzeichnisnahmen vom Dateinamen zu trennen. Dies &uuml;bernimmt beim
+Installer die Funktion <A HREF="9809in2.htm#CAT">(CAT )</A>, in unserem Fall
+(CAT &quot;SYS:Classes/Datatypes&quot; &quot;/&quot; &quot;sound.datatype&quot;).
+</P><P>
+Nun k&ouml;nnte es ja aber sein, wir lassen den Verzeichnisnamen in eine
+Variable schreiben, was auch viel wahrscheinlicher ist, und wissen nicht
+wie er aussieht. Dann h&auml;tten wir zum Beispiel die Variable #Verzeichnis
+mit unserem Dateinamen zu verkn&uuml;pfen, also (CAT #Verzeichnis &quot;/&quot;
+&quot;sound.datatype&quot;). Wir wissen aber nicht, was in #Verzeichnis steht,
+der User k&ouml;nnte ebensogut &quot;SYS:&quot; gew&auml;hlt haben. Dann h&auml;tten wir als
+Ergebnis &quot;SYS:/sound.datatype&quot;), was nat&uuml;rlich eine unzul&auml;ssige Pfadangabe
+ist. Bei einer richtigen Sprache m&uuml;&szlig;ten wir jetzt jeden String untersuchen,
+mit welchem Zeichen er endet, um eine sinnvolle Verkn&uuml;pfung zu
+gew&auml;hrleisten. Der Installer aber bietet hier die Funktion <A HREF="9809in2.htm#TACKON">(TACKON )</A>, die
+diese ganzen Untersuchungen f&uuml;r uns &uuml;bernimmt. Dabei schneidet <A HREF="9809in2.htm#TACKON">(TACKON )</A>
+auch eventuelle Slashes am Ende des Pfades ab, wenn es sich um eine
+Verzeichnisangabe handelt. Unser Beispiel sieht dann einfach so aus:
+(TACKON #Verzeichnis &quot;sound.datatype&quot;).
+</P><P>
+&Auml;hnlich komfortabel lassen sich umgekehrt auch Dateinamen oder
+Verzeichnisangaben von vollst&auml;ndigen Pfaden abtrennen. Dazu dienen
+die Funktionen <A HREF="9809in2.htm#FILEONLY">(FILEONLY )</A> und <A HREF="9809in2.htm#PATHONLY">(PATHONLY )</A>.
+</P><P>
+N&uuml;tzlich kann auch die Funktion @{&quot;(EXPANDPATH )&quot; link Kurse-InstCom} werden, die es erm&ouml;glicht,
+die vollst&auml;ndige Pfadangabe zu einem Assign zu ermitteln.
+</P><P>
+Sehr interessant sind auch die folgenden dateibezogenen Strukturbefehle
+des Installers:
+</P>
+<P>
+<UL>
+<LI><A HREF="9809in2.htm#FOREACH">(FOREACH )</A>.... Schleife, die als &quot;Z&auml;hler&quot; Dateien eines Verzeichnisses verwendet</LI>
+<LI><A HREF="9809in2.htm#EXISTS">(EXISTS )</A> ..... pr&uuml;ft das Vorhandensein einer Datei</LI>
+<LI><A HREF="9809in2.htm#EARLIER">(EARLIER )</A> .... vergleicht das Erstellungsdatum zweier Dateien</LI>
+<LI><A HREF="9809in2.htm#PATMATCH">(PATMATCH )</A> ... DOS-Patternmatching</LI>
+</UL>
+</P><P>
+Die <A HREF="9809in2.htm#FOREACH">(FOREACH )</A>-Schleife ist eine der n&uuml;tzlichsten Einrichtungen des
+Installers, da mit ihr u.a. Verzeichnisinhalte untersucht werden k&ouml;nnen
+und somit Dateien bearbeitet, deren Dateinamen der Scriptschreiber nicht
+kennt, wohl aber ihren Aufenthaltsort, z.B. Dateien im DEVS:-Verzeichnis
+oder &auml;hnliches.
+</P><P>
+<A HREF="9809in2.htm#EXISTS">(EXISTS )</A> ist vor allem f&uuml;r IF- oder SELECT-Anweisungen von Bedeutung,
+allerdings nicht nur, um zu pr&uuml;fen, ob eine Datei vorhanden ist oder
+nicht, sondern es l&auml;&szlig;t sich damit auch ermitteln, ob es sich um eine
+Datei oder ein Verzeichnis handelt.
+</P><P>
+Ebenso f&uuml;r solche Verzweigungen n&uuml;tzlich ist <A HREF="9809in2.htm#EARLIER">(EARLIER )</A>, das die
+Datestamps zweier Dateien vergleicht. Damit lassen sich &auml;ltere Dateien
+durch neuere ersetzen oder einfach alte Dateien l&ouml;schen. Sogar das
+Aussortieren von Dateien, die vor einem bestimmten Datum erstellt
+wurden, ist damit denkbar.
+</P><P>
+Die Funktionalit&auml;t von <A HREF="9809in2.htm#PATMATCH">(PATMATCH )</A> d&uuml;rfte einleuchtend sein, wenn man
+sich mit der Shell ein wenig auskennt. Da der Installer nicht selbst
+direkt DOS-Patterns unterst&uuml;tzt, bietet er diese Funktion separat an,
+die an entscheidenden Stellen auch als Parameter zu Befehlen angegeben
+werden kann, z.B. bei <A HREF="9809in2.htm#COPYFILES">(COPYFILES )</A>.
+</P><P>
+Das wars auch schon f&uuml;r diese Ausgabe. Das hei&szlig;t, das war es noch nicht
+ganz, denn es liegt noch ein Beispielscript (s. <A HREF="../amz0998/bin.lha">Bin-Archiv</A>) bei:
+ein kleines &quot;Tool&quot; zum dauerhaften Fixieren der Position des &quot;Ram Disk&quot;-
+Icons. Es benutzt einige der Befehle, die Sie bisher kennengelernt haben.
+F&uuml;hlen Sie sich ruhig aufgefordert, ein wenig damit herumzuexperimentieren,
+es lassen sich mit Sicherheit einige Verbesserungen vornehmen. Seien Sie
+allerdings vorsichtig, das Anschalten der Protokollfunktion und des
+PRETEND-Modus kann beim Herumprobieren einige Verwirrung verhindern
+und unliebsame &Uuml;berraschungen vermeiden.
+</P><P>
+Das n&auml;chste Mal widmen wir uns dann der Erforschung des Systems, auf dem
+das Installerscript l&auml;uft, schlie&szlig;lich wollen wir ja nicht alles den User
+fragen, wenn uns der Computer selbst ein wenig &uuml;ber sich verraten kann.
+</P>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="wb_tun6.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0998/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9809in2.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; `98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,548 @@
+{bold}1.3.1 - Declaring a simple variable{nobold}
+{pp}
+Unlike some languages such as many BASICs, C requires variables to be created before you can 
+use them. This is not a deliberate "restriction" but would have helped speed program compilation 
+on old mainframes when C was first devised. However, unlike Pascal, which also requires variables 
+to be declared before use, C allows you to create them at any place in the program.
+{pp}
+It's usually good practice, however, to only declare variables in one big chunk at the beginning of 
+a code block before anything else. This way, you can keep track of what variables you are using, 
+which makes your code much more readable.
+{pp}
+To declare a variable:
+{pp}
+{fixed}<type> identifier (= init value);{def}
+{pp}
+= init value is optional; you are able to declare a variable and give an initial value all in the 
+same line. For example, you can get into the habit of initialising all your variables to zero. I 
+consider this to be good practice; the less you leave up to the compiler to decide by itself, the 
+less prone to error your programs are, in general. Some older compilers didn't even try to 
+initialise variables, and if you didn't initialise to a known value, they would contain random data. 
+However, some modern compilers may warn you that a "value was assigned that was never 
+used". Depending on your compiler, it should be possible to turn this warning off for variable 
+declaration lines that contain an initialisation assignment, whilst leaving the warning available for 
+the rest of the program.
+{pp}
+Examples:
+{fixed}
+float pi = 3.14;                    /* Make a float called pi, init to 3.14 */
+unsigned char uchar_variable = 0;   /* Make a unsigned char uchar_variable, init to zero */
+long int i3;                        /* Make a integer called i3 */
+{def}{pp}
+There are some identifier name restrictions:{p}
+- Names can only contain the characters a to z, A to Z, _, and digits 0 to 9.{p}
+- Names cannot begin with a digit{p}
+- Names are case sensitive{p}
+{pp}
+Although variables can begin with an underscore, the underscore prefix is usually reserved for 
+proprietary compiler functions and variables.
+{pp}
+{bold}1.3.2 - Type casting{nobold}
+{pp}
+What if at some point, you wanted to put the value of one variable into another variable, but 
+they were different types?
+{pp}
+Most compilers should be able to do this for you automatically; but you should be aware of how 
+to manually cast a variable from one type to another. For example, say you had this situation:
+{pp}{fixed}
+[begin 1.3.2_notcasting.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int i = 3;
+  char c = 0;
+
+  c = i;
+  printf("Value of c: %i\n", c);
+
+  return;
+}}
+[end 1.3.2_notcasting.c]
+{def}{pp}
+i is an int, which is of a higher resolution/capacity than char. It is possible that i could hold a 
+value greater than 255, and c, of type char, would not be able to store this value. This is 
+unavoidable. But, even for values that will work, there is a fair bit going on just converting from 
+int to char - the computer can't just take the lowest (least significant) of the four bytes from the 
+int and store it in the char's single byte - if the int was negative, then the binary, two's 
+compliment form of the number will be wrong.
+{pp}
+However, most compilers are smart enough to do this casting for you without you telling it. You 
+may have compiler warnings telling you that "conversion may lose significant bits". You can force 
+a type cast by placing, in brackets, the type you want to cast to, directly after the equals sign on 
+the RHS.
+{pp}{fixed}
+[begin 1.3.2_casting.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int i = 3;
+  char c = 0;
+
+  c = (char) i;  /* cast the int to a char */
+  printf("Value of c: %i.\n", c);
+  return;
+}}
+[end 1.3.2_casting.c]
+{def}{pp}
+Whilst not incredibly useful or necessary at the moment, this will come in handy when working 
+with memory pointers in the future.
+{pp}
+{bold}1.3.3 - Scope{nobold}
+{pp}
+In C, normal variables inside one function cannot normally be seen by another function. Because 
+there is no such thing as "nested" functions like in Pascal, the only way to share variable data 
+between functions is to pass the values (or memory address of the values) between each other. 
+This isn't as bad as it sounds; there are ways of simplifying the passing of many variables 
+between functions, but this involves concepts that will have to wait for a future tutorial.
+{pp}
+Although C cannot have nested functions, it can have nested code blocks - that is, code that looks 
+like this:
+{pp}{fixed}
+[begin 1.3.3_badscope.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int parent_i = 1;
+  
+  printf("\nFrom main block: parent_i is %i.", parent_i);
+  {{
+    int child1_i = 2;
+
+    printf("\nFrom 1st nested block: Value of child1_i: %i", child1_i);
+    {{
+      printf("\nFrom 2nd nested block: Value of child1_i: %i", child1_i);
+    }}
+    printf("\nFrom 1st nested block: Value of parent_i: %i", child1_i);
+    parent_i = 4;
+    printf("\nFrom 1st nested block: Modified parent_i. Value of parent_i: %i", child1_i);
+
+  }}
+  printf("\nFrom main block: child1_i is %i.", child1_i);
+  printf("\nFrom main block: parent_i is %i.", parent_i);
+  return;
+}}
+[end 1.3.3_badscope.c]
+{def}{pp}
+Depending on your compiler, each block has access to variables declared in it's parent block, but 
+not the other way. For example, it's possible for a for loop to declare a new index variable for it's 
+own use, which the parent block won't be able to access or modify. If this for loop uses an 
+identifier name that has already been used by the "parent" block, code inside that for loop, when 
+dealing with this identifier, will see and modify the newly created variable, not the 'parent' one 
+that already existed (if it existed).
+{pp}
+Try compiling the example above (1.3.3_badscope.c). You should get errors - the second last 
+printf should report an error to the effect of "variable out of scope" or "unknown identifier 
+child1_i". Remove this line and then try compiling. It should work as you would expect from the 
+explanations above.
+{pp}
+{bold}1.4 - C Syntax{nobold}
+{pp}
+{bold}1.4.0 - A word about white space{nobold}
+{pp}
+As you have probably observed, each actual line of code is ended with a semicolon (;).  Most 
+valid C statements are ended this way. 
+{pp}
+C doesn't care about the way you indent your code, or how much "white space" there is in each 
+statement. For example, this version could have been used for the original hello world program:
+{pp}{fixed}
+[begin 1.4.0_messyhello.c]
+#include <stdio.h>
+
+void main(void)
+{{
+printf                                    ("Hello world!"     )
+
+;
+  return;
+}}
+[end 1.4.0_messyhello.c]
+{def}{pp}
+which is a lot messier, but it would compile all the same. Also, statements don't necessarily have 
+to actually do anything. The following lines are perfectly legal C statements:
+{pp}{fixed}
+5; /* quite a statement, don't you think? */
+;  /* a semi-colon by itself */
+{def}{pp}
+{bold}1.4.1 - C likes to evaluate{nobold}
+{pp}
+Now, about C statements. C *always* evaluates *everything*. That means ALL statements, even 
+ones like the printf() line in the hello world example, evaluate to a value. If the printf() function 
+was designed to just display text and nothing else, printf() may be implemented to return 
+nothing, or "void". Let's say we want to test what this hypothetical printf() evaluates to:
+{pp}{fixed}
+  test = printf("Hello world!");
+{def}{pp}
+where test is just an ordinary integer variable, so we can store away the numeric value of 
+whatever printf() evaluates to. What would the value of test be? It should be NULL, or zero. In 
+practice, ANSI printf(), to the best of my knowledge, returns a variable of type int. This value is 
+generally equal to the number bytes output, or the ASCII EOF value if there was an error. I 
+honestly don't know how you are supposed to tell the difference between printf() outputting EOF 
+bytes or a genuine error, but it looks like I'm either missing something or the ANSI guys had a 
+sense of humor.
+{pp}
+Let's test this theory:
+{pp}{fixed}
+[begin 1.4.1_evaluateprintf.c]
+#include <stdio.h>
+
+/* Should print message, then "value of test: 13." - because there's 12 printed characters + new 
+line character. */
+
+void main(void)
+{{
+  int test = 0;
+
+  test = printf("Hello world!\n");
+  printf("value of test: %i.\n", test);
+  return;
+}}
+[end 1.4.1_evaluateprintf.c]
+{def}{pp}
+The easiest thing to do, would have been just to look up printf() specs in your compiler's 
+documentation (or look at the stdio.h header file).
+{pp}
+{bold}1.4.2 - To assign or to evaluate{nobold}
+{pp}
+C has separate operators for assignment and evaluation. For example, setting a variable i equal to 
+5, we would use the '=' assignment operator. It may help to read this symbol not as "equals" 
+but as "becomes". For example:
+{pp}{fixed}
+  i = 5;
+{def}{pp}
+Should be read as:
+{pp}{fixed}
+  i becomes 5;
+{def}{pp}
+If we wanted to evaluate if something is actually equal to something else, we would use the 
+'==' operator. For example, to check *if* i is equal to 5, do something like this:
+{pp}
+{fixed}if (i == 5) printf("i is equal to 5");{def}
+{pp}
+Try this example:
+{pp}{fixed}
+[begin 1.4.2_evaluatei.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int i;
+  i = 5;
+  if (i == 5) printf("i is equal to 5.\n");
+  i = 3;
+  if (i == 5) printf("i is equal to 5.\n");
+  return;
+}}
+[end 1.4.2_evaluatei.c]
+{def}{pp}
+You should have "i is equal to 5" printed only once, when this is run.
+{pp}
+DO NOT do this:
+{pp}{fixed}
+if (i = 5) printf("i is equal to 5");
+{def}{pp}
+Try this example:
+{pp}{fixed}
+[begin 1.4.2_badevaluatei.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int i;
+  i = 5;
+  if (i = 5) printf("i is equal to 5.\n");
+  i = 3;
+  if (i = 5) printf("i is equal to 5.\n");
+  return;
+}}
+[end 1.4.2_badevaluatei.c]
+{def}{pp}
+You will end up with "i is equal to 5" printed twice. Why? We set i = 3 after the first if 
+statement didn't we?
+{pp}{fixed}
+if (i = 5) printf("i is equal to 5");
+{def}{pp}
+Although valid, this is not usually desired, and is a common mistake. There is no compiler error, 
+but you may get a warning message. What's going on? Read this statement to yourself: "if (i 
+becomes 5) then ...". What happens is, C executes the statement in the brackets, THEN evaluates 
+the result. The statement in the brackets is carried out, and because '=' is the assignment operator, i is set to 5.
+And so the brackets evaluate to 5 as well, like this:
+{pp}{fixed}
+"if (5) ..."
+{def}{pp}
+It evaluates to 5, regardless of the original value of i. Is 5 a valid boolean result for the if 
+statement to work with? See section 1.4.3, A word about boolean expressions.
+{pp}
+{bold}1.4.3 - A word about boolean expressions{nobold}
+{pp}
+When dealing with an expression that is being evaluated as boolean (true/false), an expression is 
+regarded as "true" if it evaluates to a non-zero value, and "false" if it is equal to zero.
+{pp}
+So this if statement:
+{pp}{fixed}
+if (i = 5) printf("i is equal to 5");
+{def}{pp}
+Always evaluates as true: i is always set to 5, so the brackets always evaluate to 5, which is a non-
+zero value, which is regarded as true. Only a value of zero will be counted as false.
+{pp}
+{bold}1.4.4 - Evaluation operators{nobold}
+{pp}
+Equality -{p}{fixed}
+==  (check if LHS equals RHS, evaluates to true/false) e.g.. if (i == 5)
+!=  (check if LHS does not equal RHS, evaluates to true/false) e.g.. if (i != 5)
+{def}{pp}
+Logical -{p}{fixed}
+&&  (check if LHS AND RHS are true, evaluates to true/false) e.g.. if ( (i == 5) && (j == 5) )
+||  (check if LHS OR RHS are true, evaluates to true/false) e.g.. if ( (i == 5) || (j == 5) )
+!   (makes condition following the '!' character evaluate to NOT original evaluation) e.g.. if !(i == j)
+{def}{pp}
+Relational -{p}{fixed}
+>   (check if LHS is greater than RHS, evaluates to true/false)
+<   (check if LHS is smaller than RHS, evaluates to true/false)
+>=  (check if LHS is greater or equal to RHS, evaluates to true/false)
+<=  (check if LHS is less or equal to RHS, evaluates to true/false)
+{def}{pp}
+For example:
+{pp}{fixed}
+[begin 1.4.4_relationaldemo.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int i = 0;
+  int j = 10;
+  int test = 4;
+
+  if ( (test >= i) && (test <== j) ) printf("%i is between %i and %i.\n", test, i, j);
+  if !( (test >= i) && (test <== j) ) printf("%i is NOT between %i and %i.\n", test, i, j);
+
+  test = 34;
+
+  if ( (test >= i) && (test <== j) ) printf("%i is between %i and %i.\n", test, i, j);
+  if !( (test >= i) && (test <== j) ) printf("%i is NOT between %i and %i.\n", test, i, j);
+  return;
+}}
+[end 1.4.4_relationaldemo.c]
+{def}{pp}
+{bold}NOTE:{nobold} The example above should use an 'else' statement rather than if !(condition). if is covered in
+more detail in section 1.5.0, if.
+{pp}
+Bitwise -{p}{fixed}
+&   (evaluates to LHS bitwise ANDed with RHS)
+|   (evaluates to LHS bitwise ORed with RHS)
+^   (evaluates to LHS bitwise XORed with RHS)
+~   (evaluates to RHS bitwise inverted)
+>>  (evaluates to LHS bitwise rotated RHS places to the right)
+<<  (evaluates to LHS bitwise rotated RHS places to the left)
+{def}{pp}
+Arithmetic -{p}{fixed}
++   (evaluates to LHS added with RHS) e.g.. i = 4 + 2;
+-   (evaluates to LHS subtract RHS) e.g.. i = 4 - 2;
+*   (evaluates to LHS multiplied by RHS) e.g.. i = 4 * 2;
+/   (evaluates to LHS divided by RHS) e.g.. i = 4 / 2;
+%   (evaluates to modulus/remainder of LHS divided by RHS) e.g.. i = 4 % 2;
+{def}{pp}
+{bold}1.4.5 - Assignment operators{nobold}
+{pp}{fixed}
+=   (assign variable on LHS to value on RHS) e.g.. i = 5;
+{def}{pp}
+Most other C assignment operators are just their evaluation equivalents with an equals sign, "=", 
+tacked on after itself. A brief list:
+{pp}{fixed}
++=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=.
+{def}{pp}
+You dont' actually have to use any of these new assignment operators listed above, except the 
+standard "=". These operators are a unique shorthand of C. For example, instead of using:
+{pp}{fixed}
+i += 5;
+{def}{pp}
+you can use the equivalent code:
+{pp}{fixed}
+i = i + 5;
+{def}{pp}
+{bold}1.4.6 - Working with parenthesis: taking control of evaluation{nobold}
+{pp}
+Parenthesis, "(" and ")", are used to group conditions and make expressions clear to the reader 
+and/or the compiler how an expression should be evaluated.
+{pp}
+Before we had this example:
+{pp}{fixed}
+test = printf("Hello world!");
+{def}{pp}
+where test is just an ordinary integer variable.  We could have also done this:
+{pp}{fixed}
+test = ( printf("Hello world!") );
+{def}{pp}
+Rather pointless, but would compile OK all the same. The parenthesis would evaluate to whatever 
+printf() returns, and that value would be assigned to test, just as before.
+{pp}
+If you haven't already, try the example 1.4.4_relationaldemo.c from section 1.4.4.
+{pp}
+One problem with evaluating a complex expression, is the order in which to evaluate. For 
+example:
+{pp}{fixed}
+[begin 1.4.6_evalorder1.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int j, i;
+  j = (i = 3) + (i = i * 4); /* Does j == 3 or does j == 15? i == 3 or i == 12? */
+  printf("Variable j is: %i.\nVariable i is: %i.\n", j, i);
+  return;
+}}
+[end 1.4.6_evalorder1.c]
+{def}{pp}
+Depending on your compiler, and what optimisation it uses, the left brackets OR the right 
+brackets may be evaluated first. The actual order of evaluation can be ambiguous. One of the 
+problems with using C like shorthand, is it can land you into some trouble! One solution would 
+be to break the statement up into separate lines, like this:
+{pp}{fixed}
+[begin 1.4.6_evalorder2.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int i, j, k;
+  k = 3;
+  i = k * 4;
+  j = i + k; /* Now it's clear j == 15, i == 12, new variable k is == 3 */
+  printf("Variable j is: %i.\nVariable i is: %i.\nVariable k is: %i.", j, i, k);
+  return;
+}}
+[end 1.4.6_evalorder2.c]
+{def}{pp}
+Another solution would be to use what's known as an expression list. This is like a to-do list; each 
+expression in the list is evaluated from the first, left-most expression, finishing on the last, right-
+most one. An expression list evaluates to whatever the last operation in the list ends up being. Try 
+this example, play around with it:
+{pp}{fixed}
+[begin 1.4.6_evalorder3.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int i, j, k;
+  j = (k = 3, i = k * 4, i + k); /* k is set to 3, i = k * 4 evaluates to 12, 3 + 12 evaluates to 15 and is assigned to j. i ends up equal to 12. */
+  printf("Variable j is: %i.\nVariable i is: %i.\nVariable k is: %i.", j, i, k);
+  return;
+}}
+[end 1.4.6_evalorder3.c]
+{def}{pp}
+{bold}1.4.7 - Working with curly braces: taking control of your code{nobold}
+{pp}
+Curly braces are what enclose blocks of code - a group of statements  (or other blocks of code). 
+The opening brace signifies a block has just started, and a closing brace signifies the end. This is 
+similar to Pascal's "begin" and "end" keywords. However, a word of warning: Like Pascal, some C 
+compilers will allow you to have unbalanced braces - that is, the number of opening braces may 
+not equal the number of closing braces. The compiler will guess what your code is doing, and 
+your program may work for a while, but then at some point start behaving erratically. You should 
+get compile warnings if there is an imbalance, and most of the time the compiler will get 
+confused enough to abort a compile anyway, forcing you to fix the problem, but not always.
+{pp}
+To introduce curly braces, here is another version of the hello world program:
+{pp}{fixed}
+[begin 1.4.7_helloworld.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  {{
+    printf("Hello world!");
+  }}
+
+  return;
+}}
+[end 1.4.7_helloworld.c]
+{def}{pp}
+There is no real point in this situation to do this, but it would still compile OK. Curly braces allow 
+you to group a collection of statements, which is necessary when using loops and branching in 
+your program: when specifying exactly WHAT to loop or exactly WHAT to do on a branch, you 
+can specify a block of code enclosed in curly braces, rather than a single statement.
+{pp}
+For example, you could use the if statement like this:
+{pp}{fixed}
+[begin 1.4.7_bracesdemo1.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int i;  /* create a variable called i; see section "declaring variables" */
+
+  i = 5;
+  if (i == 5) printf("i equals 5.\n");
+  else printf("i does not equal 5.\n");
+
+  return;
+}}
+[end 1.4.7_bracesdemo1.c]
+{def}{pp}
+But what if we wanted to do more than print a single message? Check out the following code:
+{pp}{fixed}
+[begin 1.4.7_badbracesdemo2.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int i;  /* create a variable called i; see section "declaring variables" */
+
+  i = 3;
+  if (i == 5) printf ("i equals 5.\n");
+  printf("i still equals 5.\n");
+  else printf("i does not equal 5.\n");
+
+  return;
+}}
+[begin 1.4.7_badbracesdemo2.c]
+{def}{pp}
+What would happen? Firstly, you would get a compiler error. The else statement on the last line 
+is alone without a relevant if statement. As far as C is concerned, the semi-colon on the end of 
+the first printf signifies that we're finished with the if statement, and we're ready to move on with 
+our lives. What if you removed the last line to let it compile? (i == 5) would evaluate to false, 
+so the first printf() message would never execute. However, the second printf() will always 
+execute, no matter what i equals. We can fix this by enclosing the if code in curly braces. Here's 
+a slightly different version of the program above:
+{pp}{fixed}
+[begin 1.4.7_bracesdemo3.c]
+#include <stdio.h>
+
+void main(void)
+{{
+  int i;  /* create a variable called i; see section "declaring variables" */
+
+  i = 5;
+  if (i == 5)
+  {{
+    printf("i equals 5.\n");
+    printf("i still equals 5.\n");
+  }}
+  else
+  {{
+    printf("i does not equal 5.\n");
+    i = 5;
+    printf("now i equals 5.\n");
+  }}
+
+  i = 3;
+  printf("Modified i to become 3.\n");
+  if (i == 5)
+  {{
+    printf("i equals 5.\n");
+    printf("i still equals 5.\n");
+  }}
+  else
+  {{
+    printf("i does not equal 5.\n");
+    i = 5;
+    printf("now i equals 5.\n");
+  }}
+  printf("Value of i: %i.\n", i);
+  return;
+}}
+[end 1.4.7_bracesdemo3.c]
+{def}{pp}
+{pp}
+{link fe6}Link To Part 3{end}
+{pp}

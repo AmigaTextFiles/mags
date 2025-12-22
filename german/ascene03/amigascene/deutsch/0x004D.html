@@ -1,0 +1,392 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+	<TITLE>AmigaScene 0x03 - Effizientes Programmieren</TITLE>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="TEXT/HTML;CHARSET=iso8859-1">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#101010" LINK="#BF0000" VLINK="#101010" ALINK="#E04040">
+	<TABLE WIDTH="100%" CELLPADDING=3 CELLSPACING=0 BORDER=0>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP WIDTH="80%" HEIGHT=75>
+				<A NAME="00" HREF="welcome.html"><IMG SRC="../images/_amiga.gif" WIDTH=125 HEIGHT=48 ALT="[Amiga]" ALIGN=RIGHT BORDER=0></A><A HREF="#99"><IMG SRC="../images/_krumm_lo.gif" WIDTH=37 HEIGHT=29 ALT="[Down]" ALIGN=LEFT BORDER=0></A>
+				<BR CLEAR=ALL><BR>
+				<TABLE ALIGN=CENTER WIDTH=170 BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD ALIGN=CENTER>
+					<A HREF="../deutsch/0x004D.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" BORDER=1></A>
+				</TD></TR></TABLE>
+ 			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=RIGHT WIDTH=175>
+				<A HREF="welcome.html"><IMG SRC="../images/_scene.gif" WIDTH=110 HEIGHT=47 ALT="[Scene]" ALIGN=LEFT BORDER=0></A>
+				<A HREF="0x004C.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x004E.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=CENTER>
+				<CENTER>&nbsp;<BR>
+
+					<IMG WIDTH=155 HEIGHT=25 SRC="../images/_workshop_.gif" ALT="[Workshop]">&nbsp;<BR><BR>
+
+					<TABLE WIDTH="90%" BORDER=0>
+						<TR><TD ALIGN=CENTER><FONT SIZE="-1">
+
+| <A HREF="0x004B.html">A-Files: R.T.F.M.</A> | <A HREF="0x004C.html">WGet</A> | <A HREF="0x004D.html">Effizientes Programmieren (Teil2)</A> |
+
+						</FONT></TD></TR>
+					</TABLE>&nbsp;<BR>
+				</CENTER>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER WIDTH=175 ROWSPAN=2>
+				<CENTER>&nbsp;<BR>
+					<IMG SRC="../images/__.gif" HEIGHT=1 WIDTH=175 ALT=" "><BR>
+					<A HREF="0x003E.html"><IMG WIDTH=77  HEIGHT=25 SRC="../images/_cover.gif"     ALT="[Cover]"     BORDER=0></A><BR>
+					<A HREF="0x003F.html"><IMG WIDTH=117 HEIGHT=25 SRC="../images/_editorial.gif" ALT="[Editorial]" BORDER=0></A><BR>
+					<A HREF="0x0040.html"><IMG WIDTH=85  HEIGHT=25 SRC="../images/_inhalt.gif"    ALT="[Inhalt]"    BORDER=0></A><BR>
+					<A HREF="0x0041.html"><IMG WIDTH=70  HEIGHT=25 SRC="../images/_news.gif"      ALT="[News]"      BORDER=0></A><BR>
+					<A HREF="0x0042.html"><IMG WIDTH=131 HEIGHT=25 SRC="../images/_hardware.gif"  ALT="[Hardware]"  BORDER=0></A><BR>
+					<A HREF="0x0044.html"><IMG WIDTH=121 HEIGHT=25 SRC="../images/_software.gif"  ALT="[Software]"  BORDER=0></A><BR>
+					<A HREF="0x004B.html"><IMG WIDTH=135 HEIGHT=25 SRC="../images/_workshop.gif"  ALT="[Workshop]"  BORDER=0></A><BR>
+					<A HREF="0x004E.html"><IMG WIDTH=73  HEIGHT=25 SRC="../images/_spiele.gif"    ALT="[Spiele]"    BORDER=0></A><BR>
+					<A HREF="0x0050.html"><IMG WIDTH=91  HEIGHT=25 SRC="../images/_special.gif"   ALT="[Special]"   BORDER=0></A><BR>
+					<A HREF="0x0051.html"><IMG WIDTH=112 HEIGHT=25 SRC="../images/_feedback.gif"  ALT="[Feedback]"  BORDER=0></A><BR>
+					<A HREF="0x0053.html"><IMG WIDTH=46  HEIGHT=25 SRC="../images/_etc.gif"       ALT="[Etc]"       BORDER=0></A><BR>
+				<BR></CENTER>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+
+<BR><H1 ALIGN=LEFT><FONT FACE="Arial"><B>Effizientes Programmieren - Kurs 2</B></FONT></H1>&nbsp;
+
+<BR><FONT SIZE="+1">Diesmal wagen wir uns an eine interessante Anwendung
+heran, dem Berechnen von mathematischen Ausdr&uuml;cken. Dieses auf den
+ersten Blick sehr schwierige Problem l&auml;&szlig;t sich mit einer sehr
+wichtigen Datenstruktur - dem Stapel - auf relativ einfache Weise
+l&ouml;sen.</FONT><BR>
+
+<BR><CENTER><A NAME="01" HREF="#00"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>In der letzten Ausgabe haben wir uns mit den linearen Listen
+besch&auml;ftigt. Dabei wurden die Operationen Einf&uuml;gen, Entfernen und
+Suchen genauer behandelt. Heute wollen wir uns mit einer Abart von Listen
+befassen, den Stapel (Stack), die eigentlich nur Listen mit
+beschr&auml;nkten Zugriffsrechten sind. Anders ausgedr&uuml;ckt handelt es
+sich dabei um eine den Listen verwandte Datenstruktur, auf der andere
+Operationen definiert wurden. Um zu demonstrieren, was mit diesem sehr
+gebr&auml;uchlichen Datentyp alles m&ouml;glich ist, werden wir uns heute
+mit einer sicherlich interessanten Anwendung besch&auml;ftigen,
+n&auml;mlich der Berechnung von in Strings gespeicherten Termen. Wir wollen
+eine Routine entwickeln, der wir beispielsweise den String
+&quot;2+3*4&quot; &uuml;bergeben k&ouml;nnen und die dann als Ergebnis 14
+zur&uuml;ckgibt. F&uuml;r diese Anwendung sind die Stapel sehr
+geeignet.<BR>
+
+<BR><CENTER><A NAME="02" HREF="#01"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Zuerst werden wir einmal definieren, was wir unter einem Stapel
+verstehen. Ein Stapel ist eine sehr wichtige und m&auml;chtige
+Datenstruktur in der Informatik und wird auch dementsprechend oft
+eingesetzt. Am wichtigsten ist er als Prozessor-Stapel, mit dem wohl schon
+jeder Assembler-Programmierer Bekanntschaft gemacht haben wird. Aber auch
+f&uuml;r die Rekursion werden Stapel ben&uuml;tzt.<BR>
+
+<BR><CENTER><A NAME="03" HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Man unterscheidet grunds&auml;tzlich zwischen zwei verschiedenen
+Stapeltypen: dem LIFO-Stack und dem FIFO-Stack. Der Unterschied zwischen
+den beiden wird nach dem folgenden Beispiel sofort klar sein. Man
+veranschaulicht sich Stapel am besten anhand von Notizbl&auml;ttern, die
+aufeinandergelegt werden. Es k&ouml;nnen dabei immer nur Notizbl&auml;tter
+oben auf den Stapel gelegt und niemals irgendwo dazwischen eingef&uuml;gt
+werden. &Auml;hnlich k&ouml;nnen sie auch nur an den Enden des Stapels
+wieder entnommen werden. Hier unterscheiden sich die bereits genannten LIFO
+und FIFO-Stapel.<BR>
+
+<BR><CENTER><A NAME="04" HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>LIFO steht f&uuml;r Last-In-First-Out, was bedeutet, da&szlig; das als
+letztes auf den Stapel gelegte Element als erstes wieder vom Stapel
+entfernt wird. Er ist der weitaus gebr&auml;uchlichere Stapeltyp, weshalb
+wir ihn im folgenden einfach nur den Stapel nennen werden. Der zweite
+Stapeltyp, FIFO, steht f&uuml;r First- In-First-Out. Hier wird das zuerst
+auf den Stapel gelegte Element (oder Notizblatt in unserem Beispiel) auch
+wieder als erstes vom Stapel entfernt. Er wird oft auch als Schlange oder
+Queue bezeichnet, denn wenn am einen Ende der Schlange Elemente
+angef&uuml;gt und am anderen Ende ungef&auml;hr ebensoviele entfernt
+werden, dann sieht es so aus als &quot;krieche&quot; die Schlange im
+anfangs belegten Speicherbereich immer weiter nach hinten. Beide
+Stapeltypen lassen sich auf dieselbe Weise implementieren wie lineare
+Listen. Da die Elemente beim Stapel aber nur an einem Ende angeh&auml;ngt
+werden k&ouml;nnen, ist die Speicherung in einem Array die weitaus
+gebr&auml;uchlichere Form. Betrachten wir also einmal genauer, welche
+Operationen wir f&uuml;r die beiden Stapeltypen definieren wollen.<BR>
+
+<BR><CENTER><A NAME="05" HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wir ben&ouml;tigen neben dem Konstruktor und dem Destruktor, die den
+Speicherplatz f&uuml;r den Stapel zur Verf&uuml;gung stellen bzw. wieder
+frei geben, die Operationen push, pop, top, clear und isempty. push legt
+ein Element auf den Stapel, pop holt das oberste wieder herunter (je nach
+Stapeltyp). Mit top kann das oberste Element des Stapels gelesen werden,
+ohne es vom Stapel zu entfernen. Mit clear kann ein bestehender Stapel auf
+einmal ganz geleert werden. isempty stellt hingegen eine M&ouml;glichkeit
+zur Verf&uuml;gung, um festzustellen, ob der Stapel leer ist.<BR>
+
+<BR><CENTER><A NAME="06" HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Die einfachste und schnellste Form, einen Stapel zu implementieren, ist
+ein Array aufzustellen, das die voraussichtlich maximale Elementanzahl, die
+auf dem Stapel Platz finden soll, aufnehmen kann. Da es aber oft schwer
+vorauszusagen ist, wie gro&szlig; ein Stapel nun tats&auml;chlich mindestens
+sein mu&szlig;, kann es sein, da&szlig; entweder aus Vorsicht viel zuviel
+Speicher reserviert wurde oder der Stapel pl&ouml;tzlich unerwartet voll
+wird. F&uuml;r die allgemeine Verwendung eines Stapel bietet sich deshalb
+ein sichererer, dynamischer Aufbau an.<BR>
+
+<BR><CENTER><A NAME="07" HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Die Idee dabei ist, da&szlig; wir den Stapelspeicher immer blockweise
+allokieren und diese einzelnen Speicherbl&ouml;cke in einer verketteten
+Liste speichern. Wenn nun der Stapel &uuml;berl&auml;uft, belegen wir
+einfach einen neuen Speicherblock und h&auml;ngen ihn an diese Liste an.
+<A HREF="../images_03/list_2-1.c">Listing 1</A> stellt eine solche Implementation eines LIFO-Stapels dar. Diese
+Routinen k&ouml;nnen wir dann gleich bei unserer schon oben angesprochenen
+Beispielanwendung von Stapel verwenden, auf die ich nun genauer eingehen
+will.<BR>
+
+<BR><CENTER><A NAME="08" HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Die Berechnung von beliebigen Formeln ist ein h&auml;ufig auftretendes
+Problem. Eine typische Anwendung w&auml;re ein Funktionsplotter oder eine
+Tabellenkalkulation, aber auch bei anderen Programmen erh&ouml;ht sich der
+Komfort erheblich, wenn statt einfacher Zahleneingaben gleich ganze Terme
+akzeptiert werden. Da dieses Problem mithilfe von Stapel recht einfach
+gel&ouml;st werden kann, wollen wir uns hier einmal damit
+besch&auml;ftigen. Die L&ouml;sung erscheint auf den ersten Blick gar nicht
+so einfach, besonders wenn alle Rechengesetze eingehalten werden sollen. So
+sollen die Priorit&auml;ten der Operatoren und Klammern ber&uuml;cksichtigt
+werden. Um nun das Problem zu vereinfachen, wollen wir an dieser Stelle
+einige Begriffe erl&auml;utern.<BR>
+
+<BR><CENTER><A NAME="09" HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#10"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Die Notation eines mathematischen Ausdrucks, wie wir ihn aus der Schule
+kennen, wie z.B. 2*(7+5), bezeichnet man als Infix-Notation. Das
+Gegenst&uuml;ck dazu hei&szlig;t Postfix-Notation oder UPN (umgekehrte
+polnische Notation). In dieser, von einigen Programmiersprachen wie Forth
+oder Postscript verwendeten Schreibweise, werden zuerst die Operanden
+angef&uuml;hrt und anschlie&szlig;end der Operator, auf den sich die
+Operanden beziehen. F&uuml;r das obige Beispiel w&uuml;rde eine
+entsprechende Postfix-Notation so lauten: 2 7 5 + *.<BR>
+
+<BR><CENTER><A NAME="10" HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#11"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Stellen Sie sich nun vor, man w&uuml;rde die Zahlen auf einen
+LIFO-Stapel legen, sie beim Auftreten eines Operators verkn&uuml;pfen und
+das Ergebnis wieder auf den Stapel legen. Bei unserem Beispiel w&uuml;rde
+das wie folgt lauten: lege 2 auf Stapel - lege 7 auf Stapel - lege 5 auf
+Stapel - hole 5 und 7 vom Stapel, addiere sie und lege das Ergebnis 7+5=12
+auf den Stapel - hole 12 und 2 vom Stapel und multipliziere sie, dann lege
+Ergebnis wieder zur&uuml;ck - fertig.<BR>
+
+<BR><CENTER><A NAME="11" HREF="#10"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#12"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wie Sie sehen, ist die Berechnung von Postfix-Ausdr&uuml;cken viel
+leichter zu programmieren, als dies f&uuml;r Infix-Terme der Fall ist.
+Au&szlig;erdem ben&ouml;tigt die Postfix-Notation keine Klammern oder
+Priorit&auml;ten der Operatoren, da die Reihenfolge der Abarbeitung schon
+implizit durch den Ausdruck bestimmt wird. Ein weiterer Vorteil ist die
+schnellere Abarbeitung, verglichen mit der Infix-Darstellung. Leider ist
+diese Notation jedoch recht un&uuml;blich und man kann wohl keinem Anwender
+zumuten, da&szlig; er alle Eingaben in Postfix macht. Trotzdem reduziert
+sich unser Problem auf die Umwandlung von der Infix- in die
+Postfix-Notation.<BR>
+
+<BR><CENTER><A NAME="12" HREF="#11"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#13"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Damit scheint auf den ersten Blick gar nicht viel gewonnen, wir werden
+aber sehen, da&szlig; mithilfe von LIFO-Stapel diese Konvertierung gar
+nicht so aufwendig ist, wie sie im ersten Moment zu sein scheint. Die
+L&ouml;sung ist n&auml;mlich verbl&uuml;ffend einfach.<BR>
+
+<BR>Nehmen wir also einmal an, wir h&auml;tten zwei Stapel zur
+Verf&uuml;gung, einen zum Speichern von Operatoren (Operator-Stapel) und
+einen zweiten f&uuml;r die auftretenden Zahlen (Werte-Stapel). Nun gehen
+wir unseren Infix-Term von links nach rechts durch und unterscheiden
+f&uuml;nf F&auml;lle:<BR>
+
+(1) Wir sto&szlig;en auf eine linke Klammer &quot;(&quot;.
+In diesem Fall schieben wir diese einfach auf den
+Operator-Stapel.
+
+(2) Wir sto&szlig;en auf eine Zahl: Sie wird auf den
+Werte-Stapel gelegt.
+
+(3) Wir sto&szlig;en auf einen Operator. Nun holen wir alle
+Operatoren vom Operator-Stapel, die eine h&ouml;here oder gleich
+gro&szlig;e Priorit&auml;t haben wie der eben gefundene, und
+wenden diese auf die obersten Zahlen auf dem Werte-Stapel an
+(mit der Funktion rechne im Programm). Das Ergebnis dieser
+Operation wird wieder auf den Werte-Stapel zur&uuml;ckgelegt.
+Dies wird solange wiederholt, bis wir auf eine linke Klammer
+&quot;(&quot; oder einen Operator niederer Priorit&auml;t
+treffen oder der Stapel leer ist. Anschlie&szlig;end wird der
+gefundene Operator auf den Operator-Stapel geschoben.
+
+(4) Wir sto&szlig;en auf eine rechte Klammer &quot;)&quot;. Nun
+werden alle Operatoren vom Operator-Stapel geholt und auf die
+obersten Zahlen im Werte-Stapel angewandt (s. Punkt 3), bis wir
+auf eine linke Klammer sto&szlig;en. Diese wird dann vom Stapel
+entfernt.
+
+(5) Der Eingabestring ist zu Ende. In diesem Fall f&uuml;hre
+dasselbe wie in Punkt (4) aus, nur da&szlig; nicht auf eine
+linke Klammer gewartet wird, sondern auf das Stapelende.
+
+<BR><CENTER><A NAME="13" HREF="#12"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#14"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Dieser wohl nicht allzu schwer zu programmierende Algorithmus
+&uuml;bernimmt die vollst&auml;ndige Umwandlung von Infix-Code in
+Postfix-Code und f&uuml;hrt quasi gleichzeitig dessen Berechnung durch.
+Besprechen wir nun die einzelnen Punkte nocheinmal kurz durch.<BR>
+
+<BR><CENTER><A NAME="14" HREF="#13"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#15"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Punkt 1 ist leicht verst&auml;ndlich, da wir uns ja den Beginn einer
+neuen Klammerebene merken m&uuml;ssen. Alle Operatoren auf dem Stapel, die
+hinter &quot;(&quot; stehen bis zur n&auml;chsten Klammer, geh&ouml;ren in
+dieselbe Klammerebene. Punkt 2 ist insofern einsichtlich, da&szlig; wir
+unsere Zahlen ja irgendwo ablegen m&uuml;ssen, um sp&auml;ter die einzelnen
+Operatoren darauf anwenden zu k&ouml;nnen. Die Reihenfolge ihrer
+Abarbeitung wird durch das Auftreten der Operatoren geregelt.<BR>
+
+<BR>In Punkt 3 kommen jetzt die verschiedenen Priorit&auml;ten der
+Operatoren zum Tragen. Es erscheint vollkommen einleuchtend, da&szlig; alle
+Operatoren mit h&ouml;herer Priorit&auml;t zuerst abgearbeitet und deshalb
+auch vorher der Funktion berechne zugef&uuml;hrt werden m&uuml;ssen. Auch
+die Operatoren gleicher Priorit&auml;t m&uuml;ssen vorher abgearbeitet
+werden, denn die Ausdr&uuml;cke sollen ja von links nach rechts ausgewertet
+werden (Linksassoziativit&auml;t). Logischerweise mu&szlig; deshalb in
+5*7/3 das 5*7 vor der Division ausgef&uuml;hrt werden. Soll ein Operator
+von rechts nach links ausgewertet werden, d&uuml;rfen bei diesem nur die
+Operatoren h&ouml;herer Priorit&auml;t vom Stapel geholt werden.<BR>
+
+<BR>Punkt 4 regelt dann nur mehr das Schlie&szlig;en einer Klammerebene,
+damit auch alle Operatoren angewandt werden, die bis jetzt aufgrund ihrer
+Priorit&auml;t zur&uuml;ckstanden. Punkt 5 erledigt dasselbe f&uuml;r die
+&auml;u&szlig;erste (nicht geklammerte) Ebene.<BR>
+
+<BR><CENTER><A NAME="15" HREF="#14"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#16"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>In der Praxis sieht dieser Algorithmus wie in
+<A HREF="../images_03/list_2-2.c">Listing 2</A> aus, welches die Konvertierung
+von Infix nach Postfix mit gleichzeitiger Berechnung f&uuml;r solche Terme
+&uuml;bernimmt, welche sich aus +, -, *, /, ^ und (, ) zusammensetzen
+d&uuml;rfen. Der Operator - verdient noch unsere besondere Aufmerksamkeit,
+denn er kann zwei verschiedene Bedeutungen einnehmen. Einerseits kann es
+sich hierbei um eine Subtraktion zweier Zahlen handeln, andererseits
+k&ouml;nnte er aber auch f&uuml;r ein negatives Vorzeichen stehen
+(Negationsoperator). W&auml;hrend es sich bei der Subtraktion um einen
+bin&auml;ren Operator handelt, d.h. da&szlig; er sich auf zwei Zahlen
+bezieht, stellt der Negationsoperator einen un&auml;ren Operator dar.
+Dementsprechend m&uuml;ssen bei der Subtraktion zwei Zahlen vom
+Werte-Stapel geholt, die Differenz gebildet und das Ergebnis wieder
+zur&uuml;ckgeschoben werden, w&auml;hrend die Negation nur eine Zahl vom
+Stapel holt, deren Vorzeichen umdreht und diese anschlie&szlig;end wieder
+zur&uuml;ckschiebt. Damit das Programm merkt, ob es sich bei einem auf dem
+Operator-Stapel befindlichen Operator um eine Subtraktion oder eine
+Negation handelt, werden in Listing 2 alle &quot;-&quot;, die einen
+Negationsoperator darstellen sollen, durch ein Underline &quot;_&quot;
+ersetzt. Wie stellt das Programm aber fest, welches Minus im Infix-String
+nun durch ein &quot;_&quot; ersetzt werden mu&szlig;? Dazu wird das Umfeld
+des Zeichens genauer &uuml;berpr&uuml;ft. Steht das Minus ganz am Anfang
+des Strings oder befindet sich ein &quot;(&quot; genau vor dem Minus,
+handelt es sich um eine Negation, sonst ist es eine Subtraktion.<BR>
+
+<BR><CENTER><A NAME="16" HREF="#15"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#17"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Mithilfe von Listing 2 k&ouml;nnen Sie den Komfort Ihrer Programme
+erheblich verbessern. Sie brauchen nur den String mit dem zu berechnenden
+Term der Funktion berechne &uuml;bergeben und erhalten das Ergebnis als
+double zur&uuml;ck. Ein eventueller Fehler im Term kann dadurch
+festgestellt werden, da&szlig; die globale Variable calcerr einen Wert
+ungleich null enth&auml;lt. In diesem Fall ist der R&uuml;ckgabewert
+sinnlos. Das bestehende Programm notfalls um Winkelfunktionen oder logische
+Operatoren zu erweitern sollte nicht schwerfallen. In manchen F&auml;llen,
+wenn die Geschwindigkeit der Berechnung eine entscheidende Bedeutung spielt
+(z.B. bei Kalkulationssoftware), w&auml;re es angebracht, die Umwandlung
+von Infix nach Postfix von der eigentlichen Berechnung des Postfix-Codes zu
+trennen. So k&ouml;nnten die Terme schon bei der Eingabe in
+Postfix-Notation umgewandelt werden und bei jeder Neuberechnung
+m&uuml;&szlig;te nur mehr diese ausgewertet werden. Um dies zu
+bewerkstelligen, brauchen Sie eine heterogene Liste. Diese m&uuml;&szlig;te
+in der Lage sein, sowohl Zahlen als auch Operatoren zu speichern. Nun
+brauchen Sie nur noch alle Aufrufe der rechne-Routine durch eine Prozedur
+zu ersetzen, die die Operanden vom Werte-Stapel holt und in die Liste
+eintr&auml;gt, gefolgt vom Operator. Um diesen in der Liste gespeicherten
+Postfix-Ausdruck zu berechnen, gehen Sie sie am besten Knoten f&uuml;r
+Knoten durch. Treffen Sie auf eine Zahl, kommt sie auf den Werte-Stapel,
+bei einem Operator wird rechne mit dem jeweiligen Operator als Argument
+aufgerufen.<BR>
+
+<BR><CENTER><A NAME="17" HREF="#16"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#99"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Damit wollen wir das Kapitel Stapel und Schlangen aber vorl&auml;ufig
+abschlie&szlig;en. Wir wollen uns hingegen wieder dem Problem der
+Speicherung von Schl&uuml;sseln und deren schnellen Wiederfindung widmen.
+Dazu werden wir in der n&auml;chsten Folge eine neue Datenstruktur
+kennenlernen, die als Ersatz f&uuml;r eine verkettete Speicherung linearer
+Listen dienen kann. Im Gegensatz dazu erlaubt sie aber einen viel
+schnelleren Suchvorgang. Lassen Sie sich also &uuml;berraschen!<BR>
+
+<BR><PRE>Kurs&uuml;bersicht:
+
+Teil 1 -- Einf&uuml;hrung und lineare Listen.
+<B>Teil 2 -- Der Stapel und seine Anwendung.</B>
+Teil 3 -- Der Baum.
+Teil 4 -- Anwendung von B&auml;umen.
+Teil 5 -- Hashverfahren
+Teil 6 -- Sortieren
+</PRE>&nbsp;
+
+			<BR>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+				<P ALIGN=RIGHT>
+
+					<A HREF="as-redax.html#markus">Markus &Ouml;llinger</A>
+					&nbsp;&nbsp;&nbsp;
+					<A HREF="../deutsch/0x004D.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" VSPACE=0 HSPACE=0 BORDER=1></A>
+					&nbsp;&nbsp;&nbsp;
+					<BR>
+
+				</P>
+				<BR><TABLE BORDER=0 CELLPADDING=8 CELLSPACING=0 ALIGN=CENTER WIDTH="90%">
+				<TR VALIGN=TOP ALIGN=LEFT><TD>
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_03/list_2-1.c">Listing 2-1.c</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_03/list_2-1.h">Listing 2-1.h</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_03/list_2-2.c">Listing 2-2.c</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_03/eff_prog.lha">Alle Listings mit richtigen Dateinamen</A> (shift-click!)<BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x0033.html">Workshop Teil 1</A><BR>
+
+				</TD></TR>
+				</TABLE>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER> &nbsp;
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=LEFT>
+				<A HREF="#00"><IMG SRC="../images/_krumm_hi.gif" WIDTH=37 HEIGHT=29 BORDER=0 ALT="[Up]"></A>
+				<A NAME="99"><FONT COLOR="#FFFFFF">&nbsp;</FONT></A>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=BOTTOM ALIGN=RIGHT>
+				<A HREF="0x004C.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x004E.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+	</TABLE>
+</BODY>
+</HTML>

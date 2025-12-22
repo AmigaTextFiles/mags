@@ -1,0 +1,387 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+3. Workshop: Notizbuch in PHP mit mySQL (von Michael Christoph)
+
+Hat jetzt blo&szlig; keiner meinen Workshop zu PHP in der letzten AMIGA aktuell
+gelesen oder hat sich jeder darauf verlassen, dass schon irgendjemand auf
+den Aufruf antwortet? Fakt ist, dass keine einzige Reaktion erfolgte! Somit 
+ist es nat&uuml;rlich f&uuml;r mich, wie auch die anderen Artikelschreiber, schwierig 
+zu erfahren, wor&uuml;ber man schreiben soll, damit es euch interessiert.
+
+* ALSO WEITER MIT mySQL
+
+Da jedoch mySQL recht popul&auml;r ist und auch als Portierung f&uuml;r den Amiga
+vorliegt, wird es wohl den einen oder anderen doch interessieren.
+
+mySQL-Logo:
+<IMG SRC="../extra/mysql_logo.png" ALT="mySQL-Logo">
+
+Also gibt es diesmal als Fortsetzung zum Kalender eine Notizfunktion.
+Die komplette Datenverwaltung &uuml;berlassen wir dabei der mySQL-Datenbank.
+
+* DIE UMGEBUNG KOMMT ZUERST
+
+Diesmal vorweg ein paar einf&uuml;hrende Worte &uuml;ber den Aufbau und die 
+Funktionsweise. Als "notizbuch.html" ist eine Einstiegsseite definiert, die 
+Frames benutzt. Dadurch muss nicht immer die komplette Seite neu aufgebaut 
+werden, sondern es kann ein Teil ausgetauscht werden (bei uns die Notizen 
+rechts). Der linke Frame enth&auml;lt ein leicht erweitertes PHP-Skript des 
+Kalenders, genannt "notizkalender.php". Jede einzelne Monatszahl ist jetzt 
+ein Link in der Form:
+
+  &lt;a href="notizeintrag.php?tag=$tag&monat=$monat&jahr=$jahr" target=''&gt; [hier steht die Monatszahl] &lt;/A&gt;
+
+Beim Anklicken der Zahl wird also der Link geladen beziehungsweise unser 
+neues Skript "notizeintrag.php" aufgerufen. &Uuml;bergeben werden in URL-
+Notation die einzelnen Parameter: Tag, Monat und Jahr. Mittels ‚target‘ 
+wird der Frame definiert, in dem das Ergebnis angezeigt werden soll (also 
+die rechte Fensterh&auml;lfte).
+
+Zus&auml;tzlich wurde der Kalender noch so abge&auml;ndert, dass der Vorg&auml;ngermonat 
+&uuml;ber dem Kalender und der Nachfolgemonat unter dem Kalender platziert wird, 
+und nicht mehr links/rechts davon. Eine Erweiterungsm&ouml;glichkeit w&auml;re zum 
+Beispiel, mehrere Monate im Voraus auszugeben (einfach mittels for-
+Schleife).
+
+* DAS IST NEU
+
+Wenden wir uns jetzt der neuen Datei "notizeintrag.php" zu. Es handelt sich 
+wieder um PHP-Code, wie die Endung bereits verr&auml;t. Neu ist vor allem die 
+Benutzung der mySQL-Funktionen.
+
+* MEHR ZU mySQL GIBT'S DORT
+
+Auch hierf&uuml;r m&ouml;chte ich Interessierte wieder auf das Amiga Magazin 08/2001 
+beziehungsweise online http://www.meicky-soft.de/amiga-magazin/mysql.html 
+verweisen. Dort habe ich ausf&uuml;hrlich die Installation von mySQL am Amiga 
+beschrieben. Auch Datenbankdesign und SQL sind dort Themen des zweiten 
+Kursteiles.
+
+* EINE DATENBANK MUSS HER
+
+Bevor die Notizdatenbank benutzt werden kann, muss sie erst einmal 
+definiert werden. Da in der Amiga-Portierung das "CREATE DATABASE" Kommando 
+nicht korrekt funktioniert, ist mittels "makedir &lt;datenbankname&gt;" ein 
+Verzeichnis f&uuml;r die neue Datenbank anzulegen. Standardm&auml;&szlig;ig hat dies im 
+Verzeichnis "mysql:data/" zu erfolgen (wenn nicht anders in my.cnf 
+definiert).
+Als n&auml;chstes muss noch die eigentliche Tabelle (die umgangssprachlich auch 
+gern als Datenbank bezeichnet wird) angelegt werden. Zum Beispiel
+
+  CREATE TABLE notizbuch (id INT NOT NULL AUTO_INCREMENT,
+                          datum DATE,
+                          uhrzeit TIME,
+                          text CHAR(100),
+                          PRIMARY KEY(id)
+                         );
+
+M&ouml;gliche Datentypen sind (unter anderem) INT f&uuml;r Zahlen, REAL f&uuml;r 
+Flie&szlig;kommazahlen, DATE f&uuml;r Datumswerte, TIME f&uuml;r Zeitwerte, CHAR f&uuml;r eine 
+definierte Anzahl an Zeichen. VARCHAR kann dynamisch bis zu 4096 Zeichen
+aufnehmen.
+
+Jeder Satz erh&auml;lt bei uns eine eindeutige Nummer (id). Damit wird er f&uuml;r 
+&Auml;nderungen oder zum L&ouml;schen gefunden. Die Nummer wird automatisch von mySQL 
+vergeben (der letzte Tabelleneintrag wird um eins erh&ouml;ht). F&uuml;r schnelleren 
+Zugriff erkl&auml;ren wir dieses Feld auch als Indexfeld. PRIMARY legt au&szlig;erdem 
+fest, dass jede 'id' nur einmal benutzt werden kann, also nicht zwei S&auml;tze 
+mit identischer 'id' vorhanden sein k&ouml;nnen.
+
+* EINE VERBINDUNG ZUR DATENBANK MUSS HERGESTELLT WERDEN
+
+Mittels mysql_connect() wird eine Verbindung zum Datenbankserver 
+hergestellt. Alternativ gibt es das mysql_pconnect()-Kommando, das eine 
+persistente Verbindung herstellt. Das hei&szlig;t, wenn mehrmals auf die 
+Datenbank zugegriffen werden soll, bleibt die Verbindung bestehen und wird 
+nicht immer neu aufgebaut.
+Beide Funktionen erwarten den Namen des Hosts, einen Benutzernamen und 
+dessen Passwort. Da alle diese Werte im Klartext &uuml;bergeben werden m&uuml;ssen, 
+sollten sie nicht direkt im PHP-Skript abgelegt werden, sondern per 
+include-Anweiung eingebunden werden. Die separate Datei mit diesen Werten 
+muss au&szlig;erdem au&szlig;erhalb des normalen Webspaces liegen (in der Regel htdocs-
+Verzeichnis). Nur so ist sichergestellt, dass niemand von au&szlig;en per HTTP 
+oder FTP auf die Datei zugreifen und deren Inhalt lesen kann.
+Wenn die Verbindung hergestellt werden konnte, liefert die Funktion einen 
+positiven Wert. Dann muss nur noch die Datenbank ausgew&auml;hlt werden, mit der 
+gearbeitet werden soll. Im Fehlerfall wird lediglich ein entsprechender 
+Hinweis ausgegeben und das PHP-Skript abgebrochen.
+
+  $connID = @mysql_pconnect($mysqlhost, $mysqluser, $mysqlpasswd);
+ 
+  if($connID)
+  {
+    mysql_select_db($mysqldatabase);  /* Datenbank connectieren */
+    return( $connID );
+  }
+  else
+  {
+    echo "&lt;BR&gt;&lt;font color='red'&gt;Keine Verbindung zur Datenbank m&ouml;glich !&lt;/font&gt;&lt;BR&gt;\n";
+    echo "Fehlerursache: " . mysql_error() . "&lt;BR&gt;\n";
+    exit();                        /* Skript abbrechen */
+  }
+
+* UND SCHON KANN DER TABELLENINHALT ANGEZEIGT WERDEN
+
+Mittels SELECT wird in mySQL nach Datens&auml;tzen gesucht. Dabei k&ouml;nnen auch 
+sehr komplexe Suchbedingungen und Gruppierungsanweisungen verwendet werden. 
+Zus&auml;tzlich k&ouml;nnen auch noch Verkn&uuml;pfungen mit anderen Tabellen ins Spiel 
+kommen (JOIN). Wir beschr&auml;nken uns jedoch auf eine ganz einfache Syntax: 
+Alle Eintr&auml;ge zu einem Datum sollen angezeigt werden. Die zugeh&ouml;rigen Daten 
+liefert der Aufruf von
+
+  SELECT * FROM notizbuch WHERE datum = '$suchdatum' ORDER BY uhrzeit;
+
+wobei die gefundenen Treffer nach der Uhrzeit sortiert ausgegeben werden 
+sollen. Im PHP-Code muss das ganze noch in eine mysql_query() gepackt 
+werden.
+Weitere ben&ouml;tigte Funktionen sind
+- mysql_num_rows     : liefert die Anzahl an Treffern (Zeilen)
+- mysql_fetch_object : liefert einen kompletten Datensatz
+
+Jetzt muss nur noch eine Tabelle im HTML-Code ausgespuckt werden, damit 
+eine saubere Formatierung im Browser möglich ist. Dabei werden die 
+gefundenen Daten als Formular aufbereitet, so dass jederzeit einfach 
+&Auml;nderungen an den Eintr&auml;gen m&ouml;glich sind.
+
+Zuerst kommt jetzt der PHP-Code f&uuml;r die ganze Datenbankabfrage:
+
+  /* ab hier Anzeige des Tabelleninhalts (der Notizen) */
+  if(isset($jahr))
+  {
+    $suchdatum = date("Y-m-d",mktime(0,0,0,$monat,$tag,$jahr));
+                           /* formatieren als jahr-monat-tag */
+ 
+    echo "Eintragungen f&uuml;r\n&lt;H1&gt;$tag. $monatstr[$monat] $jahr&lt;/H1&gt;&lt;BR&gt;&lt;BR&gt;\n";
+ 
+    echo "&lt;table border=0&gt;\n";
+    echo "  &lt;tr&gt;&lt;th&gt;Uhrzeit&lt;/th&gt;&lt;th&gt;Eintragung&lt;/th&gt;&lt;th&gt;Aktionen&lt;/th&gt;&lt;/tr&gt;\n";
+ 
+    /* Datenbankabfrage starten */
+    $result = mysql_query("SELECT * FROM notizbuch WHERE datum = '$suchdatum' ORDER BY uhrzeit");
+    if($result)
+    {
+      /* Anzahl Zeilen ermitteln */
+      $rows = mysql_num_rows($result);
+      if($rows &gt; 0)
+      {
+        /* Tabellen-Inhalt ausgeben */
+        while($dbentry = mysql_fetch_object($result))
+        {
+          eintrag_zeigen($dbentry-&gt;id,
+                         $dbentry-&gt;datum,
+                         substr($dbentry-&gt;uhrzeit,0,5),  /* Sekunden weg */
+                         $dbentry-&gt;text);
+        }
+      }
+      else
+      {
+        echo "&lt;tr&gt;&lt;td colspan=3&gt;&lt;i&gt;keine Eintragungen vorhanden&lt;/i&gt;&lt;/td&gt;&lt;/tr&gt;\n";      }
+    }
+    //else: Datenbank existiert nicht oder SQL-Fehler
+ 
+    /* entfernt die Ergebnisdaten aus dem Speicher */
+    mysql_free_result($result);
+
+Fehlt uns noch die Funktion eintrag_zeigen(), die einen einzelnen 
+gefundenen Datensatz als Formular aufbereitet erzeugt:
+
+  function eintrag_zeigen($dbid,$dbdatum,$dbuhrzeit,$dbtext)
+  {
+    echo "&lt;tr&gt;\n";
+    echo "&lt;form name='notizbuch_$dbid' action='notizeintrag.php' method='post'&gt;\n";
+    echo "  &lt;td&gt;&lt;input type=text   name='uhrzeit'       value='$dbuhrzeit' maxlength=5&gt;&lt;/td&gt;\n";
+    echo "  &lt;td&gt;&lt;input type=text   name='text'          value='$dbtext'    maxlength=100&gt;&lt;/td&gt;\n";
+    echo "  &lt;td&gt;&lt;input type=hidden name='datum'         value='$dbdatum'&gt;\n";
+    echo "      &lt;input type=hidden name='id'            value='$dbid'&gt;\n";
+    echo "      &lt;input type=submit name='form_loeschen' value='l&ouml;schen'&gt;\n";
+    echo "      &lt;input type=submit name='form_aendern'  value='&auml;ndern'&gt;\n";
+    echo "  &lt;/td&gt;\n";
+    echo "&lt;/form&gt;\n";
+    echo "&lt;/tr&gt;\n";
+  }
+
+Die beiden 'hidden'-Felder werden nicht im Browser angezeigt, sondern 
+dienen uns lediglich als Merkfeld. Zum einen f&uuml;r die Datensatznummer und 
+zum anderen f&uuml;r das Tagesdatum. Ein Eintrag kann also nur innerhalb des 
+aktuellen Tages durch &Auml;nderung der Uhrzeit verschoben werden, nicht aber 
+auf einen anderen Tag. Die beiden 'submit'-Eintr&auml;ge erzeugen einen Button 
+im Browser, mit dem die &Auml;nderungen in die Tabelle zur&uuml;ckgeschrieben werden 
+k&ouml;nnen oder ganz aus der Tabelle gel&ouml;scht werden.
+
+Fehlt uns also nur noch die M&ouml;glichkeit, auch Daten in die Tabelle hinein 
+zu bekommen. Dazu wird ganz einfach am Ende ein leeres Formular erzeugt und 
+mit einem passenden Button versehen:
+
+  echo "&lt;tr&gt;\n";
+  echo "&lt;form name='notizbuch_0' action='notizeintrag.php' method='post'&gt;\n";
+  echo "  &lt;td&gt;&lt;input type=text name='uhrzeit' value='' maxlength=5&gt;&lt;/td&gt;\n";
+  echo "  &lt;td&gt;&lt;input type=text name='text'    value='' maxlength=100&gt;&lt;/td&gt;\n";
+  echo "  &lt;td&gt;&lt;input type=hidden name='datum' value='$suchdatum'&gt;\n";
+  echo "      &lt;input type=hidden name='id'    value='0'&gt;\n";
+  echo "      &lt;input type=submit name='form_neu' value='neu erfassen'&gt;\n";
+  echo "  &lt;/td&gt;\n";
+  echo "&lt;/form&gt;\n";
+  echo "&lt;/tr&gt;\n";
+
+* DIE BUTTONS BRAUCHEN EINEN VERTEILER
+
+Wenn einer der Buttons angeklickt wird, wird das Formular an uns selbst 
+geschickt (bewirkt der Teil action='notizeintrag.php'). Man k&ouml;nnte hier 
+zwar auch eine andere Datei verwenden, da aber auch bei 
+&Auml;nderungen/L&ouml;schungen die Notizeintr&auml;ge wieder am Bildschirm angezeigt 
+werden sollen, bietet es sich geradezu an, alles in einer Datei 
+zusammenzufassen.
+
+Allerdings wird ein Unterscheidungsmerkmal ben&ouml;tigt, mit dem wir 
+feststellen k&ouml;nnen, ob wir durch Anklicken eines Datums oder Buttons 
+aufgerufen wurden. Eine ganz einfache M&ouml;glichkeit stellt hierbei das 'id'-
+Feld dar. Bei den Aktionen Neu, Bearbeiten und L&ouml;schen ist dieses immer 
+vorhanden, w&auml;hrend es bei der Auswahl des Tagesdatums nicht da ist.
+In einer zweiten Abfrage kann dann unterschieden werden, welche Aktion 
+genau zu erfolgen hat.
+
+  /* wurde ein Formular &uuml;bergeben? */
+  if(isset($id))
+  {
+    if(isset($form_neu))      eintrag_neu($datum,$uhrzeit,$text);
+    if(isset($form_aendern))  eintrag_aendern($id,$datum,$uhrzeit,$text);
+    if(isset($form_loeschen)) eintrag_loeschen($id);
+ 
+    /* zur anzeige unten wird das Datum wieder zerlegt erwartet */
+    /* mit substr() wird der String zerlegt und */
+    /* mit sprintf() evtl. f&uuml;hrende Nullen entfernt */
+    $jahr  = sprintf("%d",substr($datum,0,4));
+    $monat = sprintf("%d",substr($datum,5,2));
+    $tag   = sprintf("%d",substr($datum,8,2));
+  }
+
+Nach jeder dieser Aktionen soll auch wieder der aktuelle Tabelleninhalt 
+angezeigt werden. Problematisch dabei ist jedoch, dass die Felder tag, 
+monat und jahr nicht mehr existieren - sie werden nur vom Kalender 
+mitgeliefert.
+Eine M&ouml;glichkeit w&auml;re nun, diese drei Felder in weiteren hidden-Eintr&auml;gen 
+der Formulare unterzubringen. Da wir aber sowieso das aktuelle Datum haben,
+k&ouml;nnen wir auch einfach dieses zerlegen. Zu beachten ist lediglich, dass es
+in amerikanischer Notation vorliegt. Also zuerst das Jahr, dann Monat und 
+ganz rechts der Tag. Da das Datum mit f&uuml;hrenden Nullen erzeugt wird, m&uuml;ssen 
+wir noch zu einem Trick greifen, um diese wieder zu entfernen. Denn 
+ansonsten, wird ein "09" als Oktalzahl 9 = nicht m&ouml;glich/ung&uuml;ltig 
+betrachtet.
+Also wird der Teilstring mittels sprintf() in eine Zahl umgewandelt
+(%d = Dezimal). Dabei verschwinden dann die Nullen. Alternativ k&ouml;nnte auch 
+abgefragt werden, ob das erste Zeichen eine Null ist und dann der String 
+direkt manipuliert werden.
+
+Nach diesem Ausflug fehlen uns nur noch die oben aufgef&uuml;hrten drei 
+Funktionen, um neue Eintr&auml;ge in die Tabelle zu schreiben, vorhandene 
+Tabelleneintr&auml;ge zu ver&auml;ndern oder Tabelleneintr&auml;ge zu l&ouml;schen.
+
+* EINEN NEUEN EINTRAG ERZEUGEN
+
+Um einen neuen Tabelleneintrag zu erzeugen, werden das Datum, die Uhrzeit 
+und der Text erwartet. Die 'id' wird von mySQL selbst&auml;ndig hochgez&auml;hlt. Es 
+hat keine Bedeutung, was als erstes Value &uuml;bergeben wird. Optional k&ouml;nnte 
+auch jedes einzelne Feld mittels 'SET &lt;feldname&gt; = &lt;wert&gt;' belegt werden. 
+Dabei spielt die Reihenfolge keine Rolle, und es m&uuml;ssen auch nicht alle 
+Felder angegeben werden.
+
+  function eintrag_neu($dbdatum,$dbuhrzeit,$dbtext)
+  {
+    $result = mysql_query("INSERT INTO notizbuch VALUES(0,'$dbdatum','$dbuhrzeit','$dbtext');");
+    if($result)
+    {
+      /* liefert die Satz-Id, interessiert uns aber nicht weiter */
+      $newid = mysql_insert_id($result);
+    }
+    else
+    {
+      echo "&lt;BR&gt;&lt;font color='red'&gt;EINF&Uuml;GEN WAR NICHT M&Ouml;GLICH!&lt;/font&gt;&lt;BR&gt;\n";
+      echo "Fehlerursache: " . mysql_error() . "&lt;BR&gt;\n";
+    }
+  }
+
+* EINTRAG BEARBEITEN
+
+Wenn ein Eintrag bereits in der Liste war, muss dieser mit REPLACE oder 
+UPDATE bearbeitet werden. Anhand der 'id' erkennt mySQL automatisch den 
+Satz, der ge&auml;ndert werden muss. &Uuml;bergeben werden in diesem Fall alle 
+Inhalte, wobei sich aber das Datum niemals &auml;ndern kann, da der Benutzer nur 
+die Uhrzeit und den Text im Browser bearbeiten kann.
+
+  function eintrag_aendern($dbid,$dbdatum,$dbuhrzeit,$dbtext)
+  {
+    $result = mysql_query("REPLACE INTO notizbuch VALUES($dbid,'$dbdatum','$dbuhrzeit','$dbtext');");
+    if($result)
+    {
+    }
+    else
+    {
+      echo "&lt;BR&gt;&lt;font color='red'&gt;&Auml;NDERN WAR NICHT M&Ouml;GLICH!&lt;/font&gt;&lt;BR&gt;\n";
+      echo "Fehlerursache: " . mysql_error() . "&lt;BR&gt;\n";
+    }
+  }
+
+* EINTRAG L&Ouml;SCHEN
+
+Das L&ouml;schen eines Satzes gestaltet sich recht einfach. Es wird nur ein 
+eindeutiger Schl&uuml;ssel ben&ouml;tigt. In unserem Fall ist dies wieder die 'id'.
+
+  function eintrag_loeschen($dbid)
+  {
+    $result = mysql_query("DELETE FROM notizbuch WHERE id = $dbid;");
+    if($result)
+    {
+    }
+    else
+    {
+      echo "&lt;BR&gt;&lt;font color='red'&gt;L&Ouml;SCHEN WAR NICHT M&Ouml;GLICH!&lt;/font&gt;&lt;BR&gt;\n";
+      echo "Fehlerursache: " . mysql_error() . "&lt;BR&gt;\n";
+    }
+  }
+
+In allen drei Funktionen wird im Fehlerfall ein kurzer Hinweis im Browser 
+ausgegeben und die Fehlerursache mittels mysql_error() von mySQL abgefragt.
+
+Damit w&auml;re die komplette Funktionalit&auml;t beschrieben.
+
+<A href="../extra/notizbuch.html">Diese Datei ist im Browser anzugeben</A>
+<A href="../extra/notizkalender.php">Hiermit wird der linke Kalender erzeugt</A>
+<A href="../extra/notizeintrag.php">Hiermit werden die rechten Eintragungen verarbeitet</A>
+<A href="../extra/notizconnect.php">Die ausgelagerte Connect-Funktion</A>
+
+* NOCH EIN PAAR GRAFIKEN
+
+Abschlie&szlig;end noch Grafiken der drei verschiedenen Amiga-Browser (Voyager 
+3.3 konnte ich nicht zum Offline-Betrieb &uuml;berreden).
+
+AWebII 3.3:
+<IMG SRC="../extra/aweb3_3.png" ALT="AWebII 3.3">
+IBrowse-Demo 1.12:
+<IMG SRC="../extra/ibrowse1_12.png" ALT="IBrowse-Demo 1.12">
+Voyager-Demo 2.95:
+<IMG SRC="../extra/voyager2_95.png" ALT="Voyager-Demo 2.95">
+
+Beim Testen ist noch zu beachten, dass der Browser nicht auf seinen Cache
+zur&uuml;ckgreift, sondern die Dateien immer frisch vom Server anfordert. Bei 
+AWeb ist unter Einstellungen/Netzwerkeinstellungen auf der Seite "Puffer" 
+der Eintrag "&uuml;berpr&uuml;fe Pufferkopie" auf "immer" zu setzen. Zwar ist in 
+jedem Header &lt;META HTTP-EQUIV="Pragma" CONTENT="no-cache"&gt; gesetzt, doch 
+beachtet kein einziger Amiga-Browser diesen Meta-Tag.
+
+* UND WAS KOMMT DANN?
+
+Das h&auml;ngt auch von euch, den Lesern ab. &Uuml;ber Zuschriften aller Art freue
+ich mich genauso wie Carsten.
+
+Michael Christoph &lt;michael@meicky-soft.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

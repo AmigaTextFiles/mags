@@ -1,0 +1,301 @@
+<HTML>
+<HEAD><TITLE>AmigaE</TITLE></HEAD>
+<BODY BACKGROUND="../../pics/bg.gif" BGCOLOR="#FFFFFF" LINK="#FF0000" VLINK="#0000FF">
+<HR>
+<P>
+<A HREF="../index.html"><IMG SRC="../../pics/deco/develop.gif" BORDER=0 ALT="Develop"></A>
+<P>
+<P>
+<CENTER><IMG SRC="../../pics/lines/lrain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<CENTER>
+<H1>AmigaE Language</H1><BR>
+<I>Mauro 'M&amp;F' Fontana(mfontana@ing.unico.it)</I>
+</CENTER>
+<P>
+<CENTER><IMG SRC="../../pics/lines/srain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<P> What I'm writing here are my own impression of a language I have been
+using for almost 2 years now. Before his I have been using AMOS for 4 years
+and I have tried C a very little bit. The argument is quite complex, so I
+apology in advance if something is not clear. All the features of the
+languages will be described in a more detailed way in future articles. This
+is just an overview on the language for those who may be interested
+"upgrading" from other languages like AMOS or BlitzBasic.
+<BR> I won't write here how to use the language, I'm just going to describe
+the features of the language, its advantages and disavantages with respect
+to the "standard" C programming langauge so that someone may know a bit more
+about it if he want to try it. However the documentation supplied within the
+archive is quite good, suitable for beginner, who have a complete guide
+written by Jason R. Hulance that explains everything in a simple way, giving
+lots of examples. The "original" AmigaE documentation, written by the same
+author of the language, Wouter, is intended for advanced users as it does
+not explain things in detail but just the minimum essential concepts. It's
+more a reference manual than a descriptive explanation of how to use things.
+<P> The language is the result of the work of Wouter van Oortmerssen, a
+programmer that has produced many compilers for almost unknown languages in
+his life. His experience with other languages allowed him to produce this
+language which is a sort of mix between the best features of other
+languages.
+<P> The language needs to be compiled to produce a program independant of
+any interpreter or other external add-ons. The advantage of the compilation
+is surely known, as it increases speed execution a lot. On the other hand
+compiling rerquires time, and this, during the development of a program
+(expecially if it is quite big), can be a pain for the programmer who has to
+compile every modified part and linking them for every change he want to
+test. Fortunately, E language has a very fast compiler able to compile more
+than 20,000 lines in a minute on a plain A500, so that the waiting for the
+compiling task is reduced to the minimum (few seconds in most cases).
+<BR> Version 3 of the compiler has also a preprocessor included for macro
+declarations and can use the same C macros with no or little modifications,
+while previous versions of the program needed external 3rd parties programs
+to use macros.
+<BR> As with other languages, the programmer has the chance to divide his
+code into different parts and maintaining them independently, allowing for
+recycling of code when similar functions are needed in different programs.
+These parts, called includes in C, are defined as modules under AmigaE. The
+advantages over C includes, consist in in the fact that the modules are
+precompiled and are just linked very fastly in the final executable when
+compiling the main source code part of the program. These precompiled
+modules, as said before, can be reused in other programs (they don't need to
+be recompiled again) and work muck like "static" libraries that are linked
+during final compilation. Other advantages are that they are very small
+piece of cod and may keep private parts (constants, objects, macros or
+functions or whatever is defined), very useful for OOP (see later).
+<P> The usage of the compiler is very simple, as are its settings. No
+cryptic, complex, almost never used features that make things more complex
+that needed. All of its main settings can be defined in the source code,
+while fews which relate to the compiler itself, have to be specified on the
+command line.
+<P> The source code can be edited with the user's preferred text editor. The
+syntax is very simple, similar to that of PASCAL or MODULA-2, refusing all
+those awful encryption used in C (like the immense use of *, &amp; , [], {}
+symbols that make reading the code a pain).
+<BR> The ortographic syntax of the E language is very simple. Just few rules
+needed to make thing ordered and standard: constants, and only constants,
+start with 2 capital letters, the first letter of library name function have
+to be a capital letter while all other function names must have a low case
+letter as their first letter. Language commands have to be all capital
+letters. That's it.
+<BR> Comments can be inserted as usual with /* and */ but also with '-&gt;'
+for a single line comment (like // in C++).
+<P> One of the major interesting thing of AmigaE that makes its syntax very
+simple and programming much easier, is the fact that it's a typeless
+language. This means that the contents of variables have NOT to be declared
+somewhere like in C, where you have to continually define the type of the
+conents of a variable for every assignments (casting). In E, instead, all
+variables are 32-bit pointers (there are not single byte or word variables
+but those defined in OBJECTS as we'll see in future). This make things much
+more simple, even though the programmer has to pay more attention to the
+contents it variables as the compiler won't check them (unlike C compilers,
+which however may take ten times more to compile). In E there are no
+variable dereferencing problems (the infamous confsing &amp; symbol in C), as
+all variables pass their value instead of their address. However, if needed,
+it is possible to dereference a pointer (that's a variable which contains an
+address) by the ^ operator. This gives direct access to the data pointed by
+the address stored in the variable. It's also possible to get the address of
+a variable with the use of {} operators.
+<BR> The type of data pointed by a variable must be specified only if the
+programmer needs to access some fields of a structure or object. Thi sca be
+done when declaring the variable type at the beginning of the function or
+dynamically with the '::' operator.
+<BR> This may seem complicated (and infact it is), but it is seldom used,
+and the default referecing to variables by their value make things much more
+simple and readable (no &amp; or * symbols), making programming a real enjoyable
+task, not a painful waste of time tring to trace some subtle error ("do I
+need this &amp; here and that * there, or no &amp; and * at all? What does this
+function require? The value or the address of my variable? and so on).
+<BR> Maybe skilled C programmer may laugh at me here, but I have to say that
+the huge amount of those confusing (and useless) symbols in C code was what
+made me give up learning C. E (or brtter its author) demonstrates that there
+are other, much simpler ways to make the same things. So I can't understand
+why one has to spent lots of his spare time trying to learn something so
+artificially complex when there are better solutions.
+<P> Another feature is the lacking of precedence for mathematical operators
+so that the programmer is obliged to put round brackets to define the
+precedences (making the reading of the source code much easier to
+understand). There are no, then, all those problems with C operators (like *
+and [] where you never remeber which has precedence over which so that you
+don't know if you are declaring a pointer to an array or an array of
+pointers).
+<P> But E is not a simple "restyling" of C with the same features. On the
+contrary, it is a completely different language with respect to all the
+other ones, from some of which, however, "borrows" the best features which
+are added to its own advanced ones. So from ADA language E takes the use of
+quoted expressions and exception handling, while from Lisp it takes the use
+of cells and the relative garbage collector, and from other languages
+operators like unification (usefule for heavy processing on lists) and
+'BUT' operator.
+<P> AmigaE has support for OOP integrated as standard (not
+preprocessor/macro tricks), a thing that puts it a step above other kind of
+language (Included C). The OOP supports inheriting, polymorphism and
+data-hiding, and with the typeless feature of AmigaE, they are very simple
+to use, while maintaing a great flexibility with dynamic "redefinition" of
+the type of data pointed by a variable.
+<BR> Data-hiding, to be effective, needs the use of separate modules so that
+they can keep private piece of code useable only within the same module. As
+modules are binary precompiled piece of code, they need a special converter
+to see their contents, and this is what keep the "secrets" of our code. We
+can then distribute the precompiled module without the source code and the
+OOP concepts of "black box" will be respected (the user will never know that
+private parts ever exist if he cannot see the source code).
+<BR> The other two concepts (inheriting and polymorfism) are quite complex
+and are well described in the documentation. Furthermore, there is support
+for methods and SUPER methods. However, the OOP implementation is not
+complete and lacks some features that may be result quite important. The
+first is the hiding of methods. Infact all declared methods are public and
+freerly accessible from external modules. There's a simple workaround for
+this (using normal private functions which accept a pointer to the object to
+which they belong), but breaks pure OOP coding, even though it works
+perfectly. The other missing feature is the overloading of any operators.
+There's not, in fact, the possibility to re-define the behaviour of
+mathematical operators (like +-*/, but also = an :=) for an OOP object (or
+class), which may be useful (just think about defining a string class where
+the '+' is used to join two strings together, or the &lt; &gt; may be used to
+check if two strings are alphabetically ordered and so on).
+<BR> But version 3 of the language is the first version where OOP has been
+integrated, so we can expect Wouter to expand the supported features.
+<P> Being targeted to the real creative "never satisfied" Amiga user, E has
+a complete support for inline Assembly which can be freerly mixed to normal
+E code. No syntax separators needed. If really wanted, E compiler can be
+transformed in a pure Assemby compiler (where E code is excluded) although
+this is is more a downgraded use of the compiler that an advanced use of it
+(as said Assembly can be freerly used with E code, so there's not real need
+to disable the E code which may be used to help the assembly programmer in
+all those complex things to be done in pure assembly like OOP).
+<P> Another advanced feature is its extremely efficient memory handling. E
+provides its own memory allocation routines which are much faster than those
+of the OS and have lots of advantages: for instance, all dynamically
+allocated memory is released automatically at the end of the program and
+some functions automatically use a sort of memory pool to make memory
+allocations/deallocations faster and much less memory fragmenting (useful
+for small and/or frequent (de)allocations). OOP objects, and other objects
+in general (which are the same as C structures), are allocated/deallocated
+very easily with powerful operators (instead of function callings).
+<P> AmigaE supports the return of multiple return values from function
+calls. This means that functions are not limited to a single return value,
+but can return till three values. The assignnments to variables are done
+easily, while for statements that contains functions calls only the first
+returned value is taken into account while the other ones are discarted,
+behaving the same way as normal functions do.
+<P> The code produced by the compilere is very very small and fast. However
+there are not many optimization options, as the only available one is to
+manually or automatically make the compiler allocate registers for
+optimizing the functions. No code for a determined CPU can be done, nor code
+optimized for FPU. Moreover the quite complex way it handles floating point
+numbers doesn't make it particular suited for mathematichal intensive
+programs (not for the speed but the quite complex resulting source code).
+<BR> On the other hand the compiler executes a check on the code and
+evaluates a stack size which can be overwritten by the user if he wants. The
+stack is allocated dynamicallly when the program is started (no need to set
+it in icons or shell). This is a good thing, expecially when the program
+makes heavy use of recursive calls to functions. Run time stack checking
+functions are also provided in the language.
+<P> Another lacking feature is the fact that the compiler is not able to
+link the code to objects (.o files) produced by other kind of compilers, but
+only if they are very simple.
+<P> Last version of the compiler is, however, able to produce system
+libraries (those who can be put in the LIBS: directory, to be clear)
+automatically, without having to read and understand complex (maybe too
+complex) examples of init codes and such like things (always written in
+cryptographic C using specific compiler dependent options or directly in
+Assembly). The same process of creating a shared library produces also
+modules that can then be linked statically without having to use the shared
+library (like using the .lib libraries in C).
+<P> The compiler is not the only useful binary included in the archive:
+there are infact programs that can be used to see the binary modules, a
+debugger, a converter of .o files into proper E modules (that works only if
+they are very simple), a text editor, other variuos converters for .i,
+pragma and fd files, a YACC compiler and other small programs useful to look
+into the final binary code.
+<BR> There are also all the OS includes translated to E modules (so that all
+the OS libraries can be used with no problems) while other libraries can be
+supported thanks to the converters included (for instance pragma2module),
+even though the .h files have to be ported manually.
+<BR> The libraries supported, apart those of the OS, are all the most famous
+ones (MUI, BGUI, Triton, XPK) and now almost all new libraries come with E
+modules, a thing that makes E the most supported program after C and
+Assembly in the PD world.
+<P> The supplied debugger loads the source code of the modules which have
+been compiled with the DEBUG option and allows the execution of the program
+step by step. It provides commands to set breakpoints, to raise exceptions
+and to look at memory, variables, registers and stack. It also tries to trap
+gurus and software failure errors, but it's not able to release the memory
+allocated after that (no resource tracking). It's very small, simple to use,
+has not exotic functions but on the whole does its work fairly well.
+<P> The final interesting characteristic of this language is its resources
+requirement. The compiler requires about 500Kb of free memory to compile
+medium sized projects (less than 100 Kbytes), but this space includes the
+compiler executable, the modules and the allocated buffer (largerly
+over-sized) where the final code is assembled, so that larger projects
+requires only small increment of memory allocation. I would say that with
+1MB of free memory one can compile big programs with no problems. If memory
+is a problem there are some options that can be used to reduce the size of
+the buffer where the final code is assembled. This may be useful to some
+user, but I have been using AmigaE on a plain A1200 (2MB of chip) with no
+space problems at all.
+<BR> The needed time, as I said earlier, is very small. On my unexpanded
+A1200 it took about 5 seconds to do the first compiling (while the sucessive
+ones take much less as some info are kept in a memory area used as cache).
+With the 040/40MHz and fast RAM it takes less than a second.
+<BR> It's surely much faster than C compilers, that may take some minutes
+and much more memory to compile project of similar (or even less) complexity.
+<P> In conclusion AmigaE language is a very good language for the hobbist
+programmer suitable for small, medium and large sized projects (also thanks
+to OOP) that have not to be ported to other platforms. However, most
+programs are thought to be used only on the Amiga and to exploit all its
+fantastic OS resources as much as they can (should), so a porting of such
+programs on other platforms is a serious problem as well, even though they
+have been written in C.
+<BR> Some of its features, such as intergrated OOP, direct inline Assembly
+support and its ease of use, make it a perfect tool for the Amiga
+programmer. On the other hand the impossibility to make optimized code for a
+specific CPU or with direct FPU support doesn't make it suitable for
+programs based on heavy mathematic computations, even though FPU support
+it's not impossible if OS libraries are used.
+<P> All this is offered for a shareware price of about USD $40, even though
+a demo version, only limited in the max size of the executable produced is
+available for free. There was a 3.1i completely functional but not
+upgradable on an old issue of CU-Amiga Magazine some years ago, where I got
+my copy.
+<BR> Version 2 of the language is free, but lacks most of the advanced
+features of version 3.
+<P> I have still to decide to pay the shareware to get latest version of the
+language (with some new features), and that depends on the future of the
+language. The program is still continually upgraded, but there are no infos
+about an eventual porting of it on the PowerPC (or support for it). I really
+don't want to pay for something that will be soon outdated (and unusable) in
+less than 3 months (see phase5 Blizzard 603e board which is coming very
+soon).
+<P> In next articles I will describe more in details what is the geneal
+support of this language and the available PD examples and modules. I will
+then explain in details all the advanced features of the program, it's
+built-in functions giving some examples of E code (so everyone can see how
+simple it's its syntax).
+<P>
+<CENTER><IMG SRC="../../pics/lines/srain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<P>
+<P><UL>
+<B>Name</B>: AmigaE <BR>
+<B>Version</B>: 3.2 <BR>
+<B>Author</B>: Wouter van Oortmerssen <BR>
+<B>Kind</B>: Programming language <BR>
+<B>Distribution</B>: Shareware - About USD $40 <BR>
+<B>IQ</B>: Very High <BR>
+<B>Location</B>: aminet/dev/e <BR>
+<B>Quality</B>: Very Good <BR>
+</UL><P>
+<B>Pro</B>: Easy to learn, easy syntax, speed, lots of advanced features,
+OOP integrated, inline Assembly support, fast and advanced memory handling.
+On the whole very powerful. <BR>
+<B>Cons</B>: No code optimization (but register allocation), no specific
+CPU code optimization, no direct FPU support, no portable to other
+platforms.
+<P>
+<CENTER><IMG SRC="../../pics/lines/lrain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<P>
+<A HREF="../index.html"><IMG SRC="../../pics/small/summary.gif" ALIGN="right" ALT="Summary" BORDER=0></A>
+</BODY>
+</HTML>

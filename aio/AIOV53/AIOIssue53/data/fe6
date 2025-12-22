@@ -1,0 +1,406 @@
+{bold}1.5 - Program flow{nobold}
+{pp}
+Now for some fun. Below is a quick overview + some examples of the basic syntax of program 
+flow keywords used in C.
+{pp}
+{bold}1.5.0 - if{nobold}{p}
+Syntax for if:
+{pp}{fixed}
+if (condition) statement;
+{def}{pp}
+* or *
+{pp}{fixed}
+if (condition) statement;
+else statement;
+{def}{pp}
+<statement;> can be replaced with a block of code enclosed in curly braces, like this:
+{pp}{fixed}
+if (condition)
+{{
+  statement1;
+  statement2;
+  ...
+}}
+else statement;
+{def}{pp}
+Example:
+{pp}{fixed}
+[begin 1.5.0_if.c]
+/* should print "i equals 3." */
+#include <stdio.h>
+
+void main(void)
+{{
+  int i = 3;
+
+  if (i == 3) printf("i equals 3.\n");
+  else
+  {{
+    printf("i doesn't equal 3.\n");
+    i = 3;
+    printf("Now it does.\n");
+  }}
+  return;
+}}
+[end 1.5.0_if.c]
+{def}{pp}
+{bold}1.5.1 - while{nobold}
+{pp}
+It is possible for the code in a while loop to never execute, if it's test condition is false when the 
+while is first encountered, because condition is always tested at the start of a loop.
+{pp}
+Syntax for while:
+{pp}{fixed}
+while (condition) statement;
+{def}{pp}
+<statement;> can be replaced with a block of code enclosed in curly braces, like this:
+{pp}{fixed}
+while (condition)
+{{
+  statement1;
+  statement2;
+  ...
+}}
+{def}{pp}
+Example:
+{pp}{fixed}
+[begin 1.5.1_while.c]
+/* prints "I am a fish" 10 times, using while loop */
+#include <stdio.h>
+
+void main(void)
+{{
+  int i = 0;
+  int stopval = 10;
+
+  while (i < stopval)
+  {{
+    printf("I am a fish.\n");
+    i = i + 1;
+  }}
+  return;
+}}
+[end 1.5.1_while.c]
+{def}{pp}
+{bold}1.5.2 - do... while{nobold}
+{pp}
+This loop always executes at least once, because condition is only tested at the end of a loop.
+{pp}
+Syntax for do...while:
+{pp}{fixed}
+do statement while (condition);
+{def}{pp}
+Note the lack of a semicolon on statement. <statement> can be replaced with a block of code 
+enclosed in curly braces, like this:
+{pp}{fixed}
+do
+{{
+  statement1;
+  statement2;
+  ...
+}} while (condition);
+{def}{pp}
+Example:
+{pp}{fixed}
+[begin 1.5.2_dowhile.c]
+/* prints "I am a fish" 10 times, using while loop */
+#include <stdio.h>
+
+void main(void)
+{{
+  int i = 0;
+  int stopval = 10;
+
+  do
+  {{
+    printf("I am a fish.\n");
+    i = i + 1;
+  }}
+  while (i < 10);
+  return;
+}}
+[end 1.5.2_dowhile.c]
+{def}{pp}
+{bold}1.5.3 - for{nobold}
+{pp}
+Most programming languages have some kind of implementation of the for loop. C is a bit 
+different; it has no "real" for keyword, in the typical sense. What C has is a shorthand way of 
+setting up a while loop for a "for" kind of use.
+{pp}
+For loops have similar behavior to while loops. It is possible for the code in a for loop to never 
+execute, if it's test condition is false when the for keyword is first encountered, because condition 
+is always tested at the start of each loop.
+{pp}
+Syntax for "for":
+{pp}{fixed}
+for ( <initialization> ; <condition> ; <expression> ) statement;
+{def}{pp}
+<statement;> can be replaced with a block of code enclosed in curly braces, like this:
+{pp}{fixed}
+for ( <initialization> ; <condition> ; <expression> )
+{{
+  statement1;
+  statement2;
+  ...
+}}
+{def}{pp}
+Each of these "parameters" are optional, but the semicolons must be present. Note the lack of a 
+semicolon on the <expression> "parameter". A for loop is really a shorthand while loop, like the 
+following:
+{pp}{fixed}
+<initialisation>;
+while (<condition>)
+{{
+  statement1;
+  statement2;
+  ...
+  <expression>;
+}}
+{def}{pp}
+Example:
+{pp}{fixed}
+[begin 1.5.3_for.c]
+/* prints "I am a fish" 10 times, using for loop */
+#include <stdio.h>
+
+void main(void)
+{{
+  int i = 0;
+  int stopval = 10;
+
+  for (i = 0; i < stopval; i = i + 1) printf("I am a fish.\n");
+
+  return;
+}}
+[end 1.5.3_for.c]
+{def}{pp}
+Note the <condition> expression is of a type that is normally true; the for loop stops when this 
+expression becomes false.
+{pp}
+{bold}1.5.4 - switch{nobold}
+{pp}
+Switch is the Pascal equivalent of case, and slightly similar to BASIC's on <expression> gosub 
+<function list>.
+{pp}
+Syntax for switch:
+{pp}{fixed}
+switch (expression)
+{{
+
+  case expression1 :  
+    statement1;
+    statement2;
+    ...
+    break;
+  case expression2 :  
+    statement1;
+    statement2;
+    ...
+    break;
+  ...
+
+default : 
+    statement1;
+    statement2;
+    ...
+}}
+{def}{pp}
+On evaluating expression, execution jumps to either a matched <case expressionN> label inside 
+the code block associated with switch, or if there is no match, to the default: label, if it exists. 
+Please note the break keyword at the end of the statements for each case label. These are very 
+important to make sure execution drops out of the switch code block when all statements 
+associated with a case label have been executed. Otherwise, all the statements in the code block 
+from the matched case label downwards will be executed, including code for other labels.
+{pp}{fixed}
+[begin 1.5.4_switch.c]
+#include <stdio.h>
+/* should print out "Number 2!", "Still the number 2.", "Now it's 1." */
+
+void main(void)
+{{
+  int number = 2;
+
+  switch(number)
+  {{
+    case 1: 
+      printf("Number 1!\n");
+      printf("Number one!\n");
+      break;
+    case 2:
+      {{
+        printf("Number 2!\n");
+        printf("Still the number 2.\n");
+        number = 1;
+        printf("Now it's 1.\n");
+      }}
+      break;
+    default:
+      printf("A number!\n");
+      break;
+  }}
+}}
+[end 1.5.4_switch.c]
+{def}{pp}
+{bold}1.6 - printf(){nobold}
+{pp}
+Requires stdio.h.
+{pp}
+Syntax for printf(), according to Borland C/C++ 5 online help:
+{pp}{fixed}
+int printf(const char *format[, argument, ...]);
+{def}{pp}
+The above syntax looks confusing; well, to be honest, it is. printf() is actually a very flexible, 
+powerful ANSI function and will be used a lot. In the tutorial so far, we haven't really covered 
+printf() in much detail. However, printf() can do so much, including some things that require 
+concepts not yet covered.
+{pp}
+Basically, printf() takes at least one parameter - a string to be printed. But there is something special 
+about this string. There are certain escape codes that mean specific things; for example, since the 
+string we're passing uses double quotes, we can't print double quotes - can we? There are two 
+main escape characters. The first one is the '\' character. printf() will decide what to print on the 
+screen depending on what immediately follows the '\' character. To print a single double quote 
+character, a \" is required. For example:
+{pp}{fixed}
+printf("\"Hello!\", said the quick brown fox.");
+{def}{pp}
+Would print:{p}{fixed}
+"Hello!", said the quick brown fox.
+{def}{pp}
+List of '\' escape codes:
+{pp}{fixed}
+Sequence  Value Char  What it does
+\a        0x07  BEL   Audible bell
+\b        0x08  BS    Backspace
+\f        0x0C  FF    Formfeed
+\n        0x0A  LF    Newline (linefeed)
+\r        0x0D  CR    Carriage return
+\t        0x09  HT    Tab (horizontal)
+\v        0x0B  VT    Vertical tab
+\\        0x5c  \     Backslash
+\'        0x27  '     Single quote (apostrophe)
+\"        0x22  "     Double quote
+\?        0x3F  ?     Question mark
+\O              any   O=a string of up to three octal digits
+\xH             any   H=a string of hex digits
+\XH             any   H=a string of hex digits
+{def}{pp}
+As you have probably noticed throughout this tutorial, some of the examples haven't been 
+printing "perfectly". The reason of course is there is no new line character being printed at the 
+end of each string, so when printf() goes to print the next time, the cursor will be immediately 
+after the last character that was printed. To print a new line character at the end (or beginning, 
+or whereever) of a string with printf, use the '\n' escape sequence. For example:
+{pp}{fixed}
+printf("\nBreakfast menu:\n1. Steak\n2. Bacon\n3. Eggs\n4. Toast\nPlease choose: ");
+{def}{pp}
+Printing nicely formatted (hard coded) text strings with printf() is all very well and good, but what 
+about printing variables to screen? The answer is, we have to use another "escape code", which is 
+the '%' character. To print a value in the middle of a string of text, you must use the '%' 
+character, which must be immediately followed by a character that tells printf() what to print that 
+variable as - for instance, should a variable of type char be displayed as a decimal number, hex, 
+or an ASCII character? After the string to be printed is properly formatted, printf() must be told 
+what variables are being printed.
+{pp}
+Now, here's the trick: for every valid %'x' sequence in the output string, printf() expects to be 
+passed a corresponding variable to display - which is what we want. It does this by "increasing" 
+it's parameter list; the total number of arguments we pass will be 1 (output string) + however 
+many variables are to be printed, according to the output string. The first parameter will always 
+be the output string, as normal, but if variables are to be printed, printf() will expect a list 
+variables to follow. The first variable in this list will correspond to the first %'x' sequence, the 
+second variable correspond to the second % sequence, and so on.
+{pp}
+A word of warning: printf(), whilst flexible, doesn't look after itself completely. For instance, if 
+you tell it to do something stupid like print a float as an int without converting first, strange 
+things will happen. printf() does not cause a compile error if not enough arguments (variables) 
+are passed - that's when really weird things happen. If too many arguments are passed, printf() 
+ignores them safely.
+{pp}
+List of '%' escape codes:
+{pp}{fixed}
+Type Char       Expected Input  Format of output
+Numerics
+d               Integer         signed decimal integer
+i               Integer         signed decimal integer
+o               Integer         unsigned octal integer
+u               Integer         unsigned decimal integer
+x               Integer         unsigned hexadecimal int (with a, b, c, d, e, f)
+X               Integer         unsigned hexadecimal int (with A, B, C, D, E, F)
+f               Floating point  signed value of the form [-]dddd.dddd.
+
+e               Floating point  signed value of the form [-]d.dddd or e[+/-]ddd
+g               Floating point  signed value in either e or f form, based on given value and precision. Trailing zeros and the decimal point are printed if necessary.
+E               Floating point  Same as e; with E for exponent.
+G               Floating point  Same as g; with E for exponent if e format used
+
+Characters
+c               Character       Single character
+s               String pointer  Prints characters until a null-terminator is pressed or precision is reached
+%               None            Prints the % character
+
+Pointers
+n               Pointer to int  Stores (in the location pointed to by the input argument) a count of the chars written so far.
+p               Pointer         Prints the input argument as a pointer; format depends on which memory model was used. It will be either XXXX:YYYY or YYYY (offset only).
+{def}{pp}
+Example:
+{pp}{fixed}
+[begin 1.6_printf.c]
+#include <stdio.h>
+/* This prints an int as an int, then as a char, then prints a float with %g, then another float with 
+%g, to demonstrate %g's automatic formatting nature. */
+/* WARNING: This example requires floating point support. In vbcc, you will need to
+  use an appropriate switch to do so. Eg: vc 1.7_scanf.c -o scanfexample -lmieee
+*/
+
+void main(void)
+{{
+  int i = 66;
+  float h = 6.626E-34;
+  float pi = 3.14;
+  printf("Variable i is: %i. This is the letter %c in the ASCII table. Planck's constant is roughly %g. 
+The value of pi is roughly %g.\n", i, i, h, pi);
+
+  return;
+}}
+[end 1.6_printf.c]
+{def}{pp}
+{bold}1.7 - scanf(){nobold}
+{pp}
+Syntax for scanf(), according to Borland C/C++ 5 online help:
+{pp}{fixed}
+int scanf(const char *format[, address, ...]);
+{def}{pp}
+So far we haven't had any runtime variable input. scanf() is not the best form of input, but for 
+quick experiments it is acceptable.
+{pp}
+scanf() works *almost* just like printf() - which is kind of weird, because you have to give scanf() 
+an input format string, just like printf()'s output format string! The same concepts apply; but for 
+serious use, the fact scanf() considers the space bar and the enter key etc. as delimiting/white 
+space is a nuisance, when, for instance, you WANT to catch those characters and store them in a 
+string. However, for now, scanf() should be fine for experimenting.
+{pp}
+{bold}VERY IMPORTANT NOTE:{nobold} Note in the syntax described above, each argument after the format 
+string is *an address* of a variable; not actual variables, like with printf(). The concepts of 
+memory and addresses and pointers etc. have not yet been covered; for now, in practice, it 
+should be fairly straight-forward to just use scanf() like printf(), but put an ampersand ('&') in 
+front of all the variables in the argument list.
+{pp}
+Example:
+{pp}{fixed}
+[begin 1.7_scanf.c]
+#include <stdio.h>
+/* This asks for an int then a float value from user, then prints it back out again */
+/* WARNING: This example requires floating point support. In vbcc, you will need to
+  use an appropriate switch to do so. Eg: vc 1.7_scanf.c -o scanfexample -lmieee
+*/
+void main(void)
+{{
+  int i_int = 0;
+  float j_float = 0;
+
+  printf("Please enter an integer value followed by a real value: ");
+  scanf("%i %g", &i_int, &j_float);
+  printf("\nVariable i_int is: %i. Variable j_float is: %g.\n", i_int, j_float);
+
+  return;
+}}
+[end 1.7_scanf.c]
+{def}

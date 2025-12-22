@@ -1,0 +1,750 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+<html>
+<head>
+   <title>Amiga STORM; Hrvatski Amiga casopis</title>
+   <meta name="author" content="Davor Rivic (d_rivic@iname.com)">
+   <meta name="description" content="Hrvatski AMIGA casopis">
+   <meta name="keywords" content="Hrvatska, Amiga, casopis, STORM, news, review, preview, zznic, tutorials, as, special, help, interview, demo, scope, aminet, .com, mailing, list, amigas, download, links, impressum, nagrada, nagradna, igra, online, regular, registration, top, ten, opisi, najave, novosti">
+   <meta name="generator" content="CygnusEd Professional V4.2, Copyright © 1987-1997 by CygnusSoft Software">
+</head>
+<body background="../gfx/back.gif" link="blue" vlink="blue" bgcolor="white">
+
+<p align="center">
+
+  <table width="100%" border="0" cellpadding="3" cellspacing="0">
+  <tr><td colspan="4" bgcolor="#000000"></td></tr>
+  <tr><th colspan="4" align="center" bgcolor="red" background="../gfx/back3.gif"><font size="5" color="#ffffff">Tutorials: Mala ¹kola C-a VI</font></th></tr>
+  <tr><td colspan="4" bgcolor="#000000"></td></tr>
+  <tr><td width="5%"></td><th width="45%" align="left"><font size="2">by Milan GOLUBOVIÆ</font></th>
+  <th width="45%" align="right"><font size="2"><a href="mailto:milang@iname.com">milang@iname.com</a></th><td width="5%"></td></tr>
+  <tr><td colspan="4" bgcolor="#000000"></td></tr>
+  </table><br>
+
+</p>
+
+
+
+<p align="center"><br><br>
+<font size="7">Funkcije Amiga OS-a</font>
+</p>
+
+
+Najveæi broj ljudi koji, recimo, sa BASIC-a prelaze na C (a koji su "kao"
+ukapirali pointere) ovdje odustaju. Zato æe ovaj nastavak na neki naèin 
+predstavljati prekretnicu u va¹em uèenju C-a.  Dajte sve od sebe da vam i 
+najmanji djeliæ teksta bude jasan, a ja æu se s moje strane potruditi da sve 
+¹to bolje objasnim uz dobro komentarirane primjere.
+</p>
+<p>
+Sve funkcije iz Amiga OS-a su organizirane po bibliotekama prema 
+srodnosti.  Neke biblioteke se nalaze u ROM-u va¹e prijateljice, a neke se 
+po potrebi uèitavaju s diska.  Vrlo praktièan naèin, jer æe va¹ program 
+koristiti samo one biblioteke koje su mu potrebne, pa æe samim tim biti 
+manje zahtjevan.  U uglavnom svim BASIC-ima se na va¹ program "nakaèe" sve 
+postojeæe funkcije, pa i program s jednom jedinom naredbom kada se
+kompajlira zauzme 50-ak i vis¹ KB (èast izuzecima).
+</p>
+<p>
+Da bi koristili funkciju neke biblioteke tu biblioteku moramo prvo otvoriti.
+To va¾i za svaku biblioteku osim za "exec".  A i logièno je, jer da i nju
+treba otvoriti u startu ne bi imali ni jednu dostupnu funkciju, pa ne bi
+imali èime otvarati biblioteke.  :))
+</p>
+<p>
+Dakle pogaðate - funkcija, koja otvara biblioteku, se nalazi u exec 
+biblioteci. Exec je ustvari kernel AmigaOS-a i, pored otvaranja biblioteka, 
+upravlja taskovima, memorijom, radom s listama i jo¹ nekim stvarima.  Exec je 
+jedina biblioteka èija se adresa mo¾e saznati bez pozivanja funkcija i 
+nalazi se u memorijskoj  lokaciji 4.  To je jedina memorijska lokacija za koju 
+mo¾ete biti sigurni ¹ta sadr¾i.  Namjena svih ostalih se mo¾e mijenjati i ako 
+im se direktno obraæate, bez prethodne alokacije VI PROGRAMIRATE PRLJAVO!
+To je najèe¹æi razlog nekompatibilnosti i pucanja starijih programa.<br>
+Recimo lijev gumb mi¹a mo¾e se oèitati u 6.  bitu mem.  lokacije 0xbfe001.
+To je do sada "palilo", ali apsolutno vam ni¹ta ne garantira da æe to va¾iti 
+i za ubuduæe!!!  Zato se dr¾ite OS funkcija.  Ok, upozoreni ste; krenimo
+sada sa praksom.
+</p>
+<p>
+Veæina novih kompajlera sama otvara biblioteke (<b>SAS</b>, <b>Storm</b>, <b>VBCC</b>, <b>GNU</b>), 
+pa nema potrebe da vi to radite, veæ je dovoljno inkludirati ¾eljeni header, 
+ali za svaki sluèaj da vidimo kako se i to radi.
+</p>
+<p>
+Sada na scenu stupa njegovo velièanstvo <b>"Commodore Developers Kit"</b>, tzv. 
+programerska biblija.  Mo¾da ide uz neke kompajlere, ali ako ga nemate 
+OBAVEZNO ga nabavite.  U njemu se nalaze opisi SVIH standardnih funkcija
+Amiga OS biblioteka.  Èak i da imam dobru volju da opi¹em svaku funkciju to
+bi i teoretski bilo nemoguæe i jednostavno æe te MORATI da nauèite da se
+snalazite u njemu sami.  A najbolje bi bilo da ga konvertirate iz AutoDoc-a
+(tekst) u Amiga guide (ili jo¹ bolje, presnimite od nekog ko je to veæ 
+uradio), pa æe kori¹tenje biti lak¹e.  Isto to mo¾ete naæi i u printanom
+obliku pod imenom <b>"Amiga Rom Kernel Reference Manual"</b>.
+</p>
+<p>
+Bacimo sada pogled na funkcije exec-a:
+</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AbortIO()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AddDevice()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AddHead()<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br>
+</p>
+<p>
+Potra¾imo neku koja asocira na otvaranje biblioteka. Hmmm, mo¾da "OpenLibrary" ? :) Eto, 
+nije bilo te¹ko.
+</p>
+<p>
+Naðite sada gdje je funkcija "OpenLibrary" opisana da vidimo kako æemo je
+koristiti. Taj opis izgleda ovako:
+</p>
+<p>
+<pre>
+ 
+	NAME
+				OpenLibrary -- gain access to a library 
+
+	SYNOPSIS 
+					library = OpenLibrary(libName, version)
+				  D0                    A1       D0	
+				
+				  struct Library *OpenLibrary(STRPTR, ULONG);
+	
+	FUNCTION
+				This function returns a pointer to a library that was previously
+				installed into the system.  If the requested library is exists, and 
+				if the library version is greater than or equal to the requested 
+				version, then the open will succeed. 
+
+                        .          .          .
+
+
+
+	NOTES
+		All calls to OpenLibrary should have matching calls to CloseLibrary!
+		
+		Libraries on disk cannot be opened until after DOS has been 
+		started.
+
+                        .          .          .
+
+
+	INPUTS
+				libName - the name of the library to open
+				
+				version - the version of the library required.
+
+
+	RESULTS
+				library - a library pointer for a successful open, else zero	
+				
+	BUGS
+				AmigaDOS file names are not case sensitive, but Exec lists are. If
+				the library name is specified in a different case than it exists on
+				disk, unexpected results may occur.
+
+													.          .          .
+
+	SEE ALSO
+				CloseLibrary
+
+</pre><font size="3">
+</p>
+<p>
+Dokumentacija za svaku funkciju se nalazi u ovakvom obliku i sastoji se iz
+nekoliko blokova:  
+</p>
+<p>
+NAME - iza èega slijedi ime funkcije i kratak opis èemu slu¾i.
+</p>
+<p>
+SYNOPSIS - pokazuje naèin pozivanja iz C-a, a u drugom redu je obja¹njenje u 
+kom registru CPU-a treba staviti koji parametar ako funkciju pozivamo iz
+asemblera (nebitno za C).
+</p>
+<p>
+Treæi red je standardna deklaracija C funkcije (iz koje mo¾emo vidjeti koje 
+tipove podataka funkcija oèekuje i ¹ta vraæa). 
+</p>
+<p>
+FUNCTION - Ne¹to detaljniji opis funkcije i naèin kori¹tenja.
+</p>
+<p>
+NOTES - Va¾ne napomene i upozorenja.
+</p>
+<p>
+INPUTS - Opisuje ulazne parametre.
+</p>
+<p>
+RESULTS - Opisuje parametar koji funkcija vraæa.
+</p>
+<p>
+EXAMPLE - Za neku funkciju je dat i primjer kori¹tenja. 
+</p>
+<p>
+BUGS - Gre¹ke koje funkcija eventualno ima/pravi.
+</p>
+<p>
+SEE ALSO - Zadnja stavka koja nas upuæuje na funkcije koje su u nekoj
+relaciji s ovom.
+</p>
+<p>
+(Mo¾e se desiti da poneki od blokova i izostane.)
+</p>
+<p>
+Da vidimo kako stoje stvari s na¹om funkcijom (OpenLibrary):
+<br>
+Ime znamo, a iz gore navedenog vidimo da zahtjeva dva parametra: ime i 
+verziju biblioteke. Iz BUGS napomene vidimo da moramo voditi raèuna o malim 
+i velikim slovima (uglavnom mala). Version je najmanja verzija biblioteke 
+s kojom na¹ program mo¾e da radi, jer mo¾da starija verzije biblioteke nema 
+funkciju koja nam je potrebna ili je ima, ali je bagovana.
+</p>
+<p>
+Za nesretnike s kompajlerima koji sami ne otvaraju biblioteke slijedi primjer.
+Ostali ga mogu i preskoèiti da se ne bi zbunjivali bez potrebe. Primjer otvara 
+DOS biblioteku i iz nje koristi funkciju Delay (pogledajte autodoc iz 
+Developera za DOS biblioteku) koja pravi pauzu (u pedesetinkama) i ni¹ta vi¹e:
+</p>
+<p>
+#include &lt;proto/exec.h&gt;<br>
+#include &lt;proto/dos.h&gt;<br>
+struct DosLibrary *DOSBase;<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DOSBase=(struct DosLibrary *)OpenLibrary("dos.library",0);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(DOSBase)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Delay (100);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CloseLibrary ((struct Library *)DOSBase);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+</p>
+<p>
+Definiramo pointer tipa "DosLibrary" pod imenom "DOSBase" u koji æe se 
+smjestiti adresa DOS biblioteke po¹to je otvorimo sa OpenLibrary. Zatim 
+pozivamo funkciju Delay s parametrima "dos.library" i 0 (verzija nam nije 
+va¾na, jer sve verzije imaju ovu funkciju). Da smo recimo za verziju stavili 
+39 na¹ program ne bi radio na Kickstart-ima ispod 3.0 , dok bi racimo sa 49
+ne bi uopæe radio jer ta verzija biblioteke jos uvijek ne postoji.
+</p>
+<p>
+Kod nekih funkcija u AutoDoc-ovima je takoðer navedeno od koje verzije
+biblioteke ta funkcija postoji.
+</p>
+<p>
+Zatim provjeravamo da li je poziv uspje¹an - biblioteka otvorena. Ako jeste 
+pozivamo funkciju Delay iz nje, ona èeka dvije sekunde i obavezno zatvaramo 
+biblioteku funkcijom "CloseLibrary". Ako je sve bilo uspje¹no program æe 
+pauzirati i zavr¹iti se, a ako nije zavr¹it æe se odmah.
+</p>
+<p>
+Primjeæuje se jedna nelogiènost: u Developer-u je navedeno da OpenLibrary 
+vraca pointer na strukturu tipa Library, a mi sadr¾aj smje¹tamo u pointer na 
+strukturu tipa DosLibrary ?!? Pogled na 
+</p>
+<p>
+include:dos/dosextens.h
+</p>
+<p>
+otkriva da je structura "Library" dio strukture "DosLibrary" i za sve ovo 
+postoji racionalno obja¹njenje, mada neki ipak vjeruju da je to dio zavjere 
+iskusnih programera protiv programera poèetnika. :)	
+</p>
+<p>
+Kada se inkluduju neki "proto/ne¹to.h" headeri oni nadalje inkluduju skoro sve 
+potrebne header fajlove za rad sa tom  bibliotekom, ali nisu svi "proto" 
+header fajlovi isti za sve kompajlere (neki ih èak i nemaju!), pa je ponekad 
+potrebno navesti jo¹ po neki header fajl.  Npr. iako imate:
+</p>
+<p>
+#include &lt;proto/exec.h&gt;
+</p>
+<p>
+morate dodati:
+</p>
+<p>
+#include &lt;exec/memory.h&gt;
+</p>
+<p>
+da bi mogli koristiti neke stvari u vezi rada s memorijom.
+</p>
+<p>
+Sreæom, ako imate (a najvjerojatnije imate) "pametan" kompajler koji æe 
+ovaj zbunjujuæi posao odraditi umjesto vas, cijeli ovaj program bi izgledao ovako:
+</p>
+<p>
+#include &lt;proto/dos.h&gt;<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Delay (100);<br>
+}<br>
+</p>
+<p>
+Ovako veæ mo¾e! Inkludujemo dos header i odmah nam je na raspolaganju 
+Delay funkcija.
+</p>
+<p>
+Bacite pogled i na ostale funkcije DOS biblioteke. Tu æete naæi funkcije za 
+rad s fajlovima, alternativne onim obja¹njenim u pro¹lom nastavku (vidi
+primjer). 
+</p>
+<p>
+Napi¹imo sada programèiæ koji æe otvoriti prozor i na¹krabati ne¹to u 
+njemu:
+</p>
+<p>
+Da vidimo prvo koje nam sve biblioteke trebaju.
+<br>
+Prvo, treba nam intuicija, jer se u njoj nalazi funkcija za otvaranje 
+prozora. Intuicija dakle otvara prozore, ekrane, postavlja gadget-e i 
+uopæe vodi raèuna o interfejsu (GUI-u) programa.
+<br>
+Zatim, da bi nesto u tom prozorèiæu iscrtali trebaju nam usluge grafièke
+biblioteke.
+<br>
+I na kraju, da sve to ne bi samo trepnulo pred na¹im oèima inkludujemo i dos 
+biblioteku zbog, sada nam veæ poznate, funkcije Delay.
+</p>
+<p>
+#include &lt;proto/intuition.h&gt;<br>
+#include &lt;proto/dos.h&gt;<br>
+#include &lt;proto/graphics.h&gt;<br>
+</p>
+<p>
+Ok. Da vidimo sada kako æemo otvoriti prozor. U developeru meðu funkcijama 
+intuition biblioteke tra¾imo funkciju koja to radi i nalazimo "OpenWindow".
+</p>
+<p>
+<pre>
+NAME
+  OpenWindow -- Open an intuition window. 
+
+
+SYNOPSIS
+    Window = OpenWindow( NewWindow )
+    D0                   A0
+
+    struct Window *OpenWindow( struct NewWindow * ); 
+
+      .   .   .
+</pre><font size="3">
+</p>
+<p>
+Odavde zakljuèujemo da funkcija OpenWindow kao parametar oèekuje pointer na 
+strukturu NewWindow tipa, a da vraæa pointer na strukturu Window tipa.
+Dakle struktura NewWindow tipa sadr¾i podatke koje mi postavljamo i koji 
+pokazuju kakav prozor ¾elimo da nam intuicija otvori (dimenzije, polo¾aj
+...).
+<br>
+Pitanje se nameæe kako da saznamo koji èlanove te strukture?
+</p>
+<p>
+Ako imate Developer u AmigaGuide formatu rijeè NewWindow æe biti gadget s 
+linkom na header fajl u kome je deklarirana ta struktura (intuition/intuition.h,  
+koji bude inkludiran iz proto/intuition.h headera).
+<br>
+A ako ne, potra¾ite u dijelu koji opisuje inuition biblioteku ¾eljenu
+strukturu.
+</p>
+<p>
+Tu æemo naæi ne¹to nalik na:
+<pre>
+
+
+/* ======================================================== */
+/* === NewWindow ========================================== */
+/* ======================================================== */
+/*
+ * Note that the new extension fields have been removed.  Use ExtNewWindow
+ * structure below to make use of these fields
+ */
+struct NewWindow
+{
+    WORD LeftEdge, TopEdge;		/* screen dimensions of window */
+    WORD Width, Height;			/* screen dimensions of window */
+
+    UBYTE DetailPen, BlockPen;		/* for bar/border/gadget rendering */
+
+    ULONG IDCMPFlags;			/* User-selected IDCMP flags */
+
+    ULONG Flags;			/* see Window struct for defines */
+
+    /* You supply a linked-list of Gadgets for your Window.
+     *	This list DOES NOT include system Gadgets.  You get the standard
+     *	system Window Gadgets by setting flag-bits in the variable Flags (see
+     *	the bit definitions under the Window structure definition)
+     */
+    struct Gadget *FirstGadget;
+
+    /* the CheckMark is a pointer to the imagery that will be used when
+     * rendering MenuItems of this Window that want to be checkmarked
+     * if this is equal to NULL, you'll get the default imagery
+     */
+    struct Image *CheckMark;
+
+    UBYTE *Title;			  /* the title text for this window */
+
+    /* the Screen pointer is used only if you've defined a CUSTOMSCREEN and
+     * want this Window to open in it.	If so, you pass the address of the
+     * Custom Screen structure in this variable.  Otherwise, this variable
+     * is ignored and doesn't have to be initialized.
+     */
+    struct Screen *Screen;
+
+    /* WFLG_SUPER_BITMAP Window?  If so, put the address of your BitMap
+     * structure in this variable.  If not, this variable is ignored and
+     * doesn't have to be initialized
+     */
+    struct BitMap *BitMap;
+
+    /* the values describe the minimum and maximum sizes of your Windows.
+     * these matter only if you've chosen the WFLG_SIZEGADGET option,
+     * which means that you want to let the User to change the size of
+     * this Window.  You describe the minimum and maximum sizes that the
+     * Window can grow by setting these variables.  You can initialize
+     * any one these to zero, which will mean that you want to duplicate
+     * the setting for that dimension (if MinWidth == 0, MinWidth will be
+     * set to the opening Width of the Window).
+     * You can change these settings later using SetWindowLimits().
+     * If you haven't asked for a SIZING Gadget, you don't have to
+     * initialize any of these variables.
+     */
+    WORD MinWidth, MinHeight;	    /* minimums */
+    UWORD MaxWidth, MaxHeight;	     /* maximums */
+
+    /* the type variable describes the Screen in which you want this Window to
+     * open.  The type value can either be CUSTOMSCREEN or one of the
+     * system standard Screen Types such as WBENCHSCREEN.  See the
+     * type definitions under the Screen structure.
+     */
+    UWORD Type;
+
+};
+
+</pre><font size="3">
+</p>
+Sada je potrebno da definiramo na¹u strukturu koja æe biti tipa NewWindow, i
+da redom popunimo sve èlanove iste. Svi èlanovi te strukture opisani su gdje 
+je opisana i OpenWindow funkcija (korisnici AmigaGuide verzije treba samo da
+kliknu na "Retrace" gadget).
+</p>
+<p>
+Dakle, nazovimo tu na¹u strukturu, recimo, defwin (kao ¹to rekosmo tipa 
+NewWindow, èija je definicija veæ inkludirana):
+</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;struct NewWindow defwin={<br>
+</p>
+<p>
+Zatim gledamo èlanove:
+</p>
+<p>
+<pre>
+    WORD LeftEdge, TopEdge;		/* screen dimensions of window */
+    WORD Width, Height;			/* screen dimensions of window */
+</pre><font size="3">
+</p>
+<p>
+i popunjavamo :
+</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;struct NewWindow defwin={0, 0, 320, 256, .....<br>
+</p>
+<p>
+i tako redom.
+</p>
+<p>
+IDCMPFlags i Flags su ULONG-ovi èiji bitovi govore da li je neka opcija 
+ukljuèena (1) ili ne (0).  Oni su takoðer opisani, a postoje i definirane 
+konstante, pa treba samo ¾eljenu konstantu OR-ati (i tako setirati ¾eljeni
+bit) da bi se odabrala ¾eljena opcija:
+</p>
+<p>
+WFLG_DRAGBAR | WFLG_DEPTHGADGET,  		
+</p>
+<p>
+Kod imena prozora, gdje je potrebno proslijediti pointer na string (niz 
+karaktera) stavljamo samo tekst pod znacima navoda, a ostalo æe odraditi
+kompajler.
+</p>
+<p>
+IDCMP flegovi i njihova upotreba æe detaljnije biti opisani u slijedeæem
+nastavku.
+</p>
+<p>
+Funkcija OpenWindow, kao ¹to rekosmo vraæa pointer na strukturu tipa Window,
+pa je potrebno prije toga i stvoriti takav pointer (neka se zove "win"):
+</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;struct Window *win;
+</p>
+<p>
+On æe nam kasnije koristiti pri obraæanju na¹em novom prozoru.
+<br>
+Pogledajte takoðer koje sve èlanove sadræi ta struktura.  Neki nam mogu biti 
+vrlo korisni (npr. polo¾aj pointera u prozoru, dimenzije prozora...). Te 
+parametre mo¾ete samo èitati (read only), a ne smijete ih upisivati 
+direktno, veæ funkcijama predviðenim za to.
+</p>
+<p>
+Na kraju je potrebno pozvati funkciju:
+</p>
+<p>
+win = OpenWindow ( &defwin );
+</p>
+<p>
+Sve je jasno: proslijeðuje se adresa nas¹ strukture, a funkcija vraæa pointer 
+na win strukturu u kojoj se nalaze podaci o novonastalom prozoru. Ako poziv 
+nije uspio funkcija æe vratiti nulu (NULL), pa je u tom sluèaju potrebno 
+samo izaæi iz programa. Zato se poziv f-je stavlja unutar if-a:
+</p>
+<p>
+<pre>
+	if (win = OpenWindow ( &defwin ))
+
+  {
+
+    sve je Ok. Uradi sta treba.
+
+    zatvori prozor
+
+  }
+  
+  kraj
+</pre><font size="3">
+</p>
+<p>
+
+Sada, kada je prozor otvoren da vidimo kako æemo ne¹to iscrtati u njemu.
+<br>
+Gledamo funkcije grafièke biblioteke, na primjer "RectFill".
+</p>
+<p>
+<pre>
+
+  NAME 
+      RectFill-- Fill a rectangular region in a RastPort.
+
+  SYNOPSIS
+
+
+      RectFill(rp, xmin, ymin, xmax, ymax)
+              a1  d0:16 d1:16 d2:16 d3:16
+
+      void RectFill( struc RastPort *, SHORT, SHORT, SHORT, SHORT );
+
+   .    .    .
+</pre><font size="3">
+</p>
+<p>
+Jasno nam je èemu slu¾i (iscrtava pupunjeni pravoukutnik) i jasno nam je 
+kako se zadaju koordinate (X i Y gornjeg lijevog ugla, pa X i Y donjeg desnog
+ugla). Jedino nam nije jasno ono "RastPort".
+<br>
+Èemu li to slu¾i?
+<br>
+Pa nekako moramo objasniti grafièkoj biblioteci gdje ¾elimo crtati.  U 
+strukturi RastPort se nalaze svi podaci o prozoru (ili neèem drugom - ne 
+mora se samo crtati u prozoru) u koji ¾elimo da se iscrta pravokutnik i 
+funkcija RectFill ih odatle koristi.
+<br>
+Ali odakle nama pointer na RastPort strukturu?
+<br>
+To je lako. Jedan od èlanova strukture koju stvara funkcija OpenWindow i 
+èiji pointer ona vraæa (win) je i pointer na RastPort strukturu na¹eg prozora.
+</p>
+<p>
+Dakle, mo¾emo crtati po svemu èiji RastPort imamo. Potrebno je samo 
+proslijediti adresu te RastPort strukture.
+</p>
+<p>
+Za razliku od Window tipa strukture koji sadr¾i pointer na strukturu tipa 
+RastPort i taj pointer se zove RPort, pri otvaranju ekrana (vrlo slièan 
+postupak) dobijamo pointer na strukturu tipa Screen koja ne sadr¾i pointer 
+na RastPort strukturu, veæ samu RastPort strukturu. Proèitajte jo¹ nekoliko 
+puta prethodnu reèenicu i biæe vam jasnije. :))
+</p>
+<p>
+Sada æemo pozvati funkciju RectFill:
+</p>
+<p>
+RectFill(win-&gt;RPort,100,100,150,150);
+</p>
+<p>
+Dakle, RectFill oèekuje pointer na RastPort, a mi imamo pointer na strukturu 
+koja sadr¾i taj pointer koji se zove RPort, pa zato pi¹emo "win-&gt;RPort.
+<br>
+"-&gt;" oznaèava da win nije struktura, veæ pointer na nju.
+</p>
+<p>
+U sluèaju da smo otvarali ekran, a ne prozor (funkcijom "OpenScreen") od 
+funkcije bi dobili pointer na strukturu tipa Screen (ima istu funkciju kao i 
+kod otvaranja prozora), a ta struktura bi sadr¾ala samu strukturu RastPort.
+<br>
+Sada, ako bi htjeli da crtamo po ekranu, stavili bi ne¹to ovako:
+</p>
+<p>
+RectFill ( &(scr-&gt;RastPort)),100,100,150,150);
+</p>
+<p>
+Dakle, proslijedili bi adresu (pointer na) RastPort strukturu. 
+</p>
+<p>
+Uh!
+</p>
+<p>
+Svim funkcijama grafièke biblioteke se takoðer proslijeðuje pointer na 
+RastPort i obja¹njenje je isto. Ostali parametri tih funkcija su oèigledni i 
+mislim da ih ne treba obja¹njavati. 
+</p>
+<p>
+Na kraju obavezno treba zatvoriti otvoren prozor funkcijom CloseWindow, 
+kojoj se proslijeðuje pointer "win" koga smo pri otvaranju dobili.
+</p>
+<p>
+Evo najzad cijelog programa:
+</p>
+<p>
+<pre>
+#include &lt;proto/intuition.h&gt;
+#include &lt;proto/dos.h&gt;
+#include &lt;proto/graphics.h&gt;
+main()
+{
+	struct NewWindow defwin={
+0, 0,                            // Gornji lijevi kut
+320, 256,                        // Dimenzije prozora
+1,0,                             // Boje kojima ce se po default-u crtati po prozoru
+0,                               // IDCMP flag-ovi, o njima kasnije
+WFLG_DRAGBAR | WFLG_DEPTHGADGET, // promena velicine i skrivanje prozora
+NULL,                            // Bez gadget-a
+NULL,                            // Bez slicice
+"Prozorcic",                     // Ime prozora
+NULL,                            // Na kome ekranu da se otvori prozor
+NULL,                            // Ne alociramo sami mem. za prozor 
+0,0,                             // minimalne dimenzije prozora
+320,256,                         // maksimalne dimenzije prozora
+WBENCHSCREEN,                    // Na workBench-u
+};
+
+
+	struct Window *win; //pointer na strukturu tipa "Window"
+
+
+	if (win = OpenWindow ( &defwin )) // da li je otvaranje prozora uspelo?
+	{
+
+		RectFill(win-&gt;RPort,100,100,150,150); // crtaj pravougaonik
+		Move(win-&gt;RPort,300,200);            // pomeri graficki kursor na(300,200)
+		SetAPen(win-&gt;RPort,2);               //nadalje koristi boju 2
+		Draw(win-&gt;RPort,150,50);           //  crtaj liniju (300,200)-(150,50)
+		Move(win-&gt;RPort,100,100);         // pomeri G.K. na (100,100)
+		SetAPen(win-&gt;RPort,1);             // boja 1
+		Text (win-&gt;RPort,"Text",4);     // ispisi tekst "Text" duzine 4 slova
+		Delay(150);	
+
+		CloseWindow (win);   // Obavezno moramo zatvoriti sve sto smo otvorili
+
+	}
+
+}
+</pre><font size="3">
+</p>
+<p>
+Na kraju vam dajem pomenutu funkciju za PRLJAVO èitanje gumba mi¹a. U principu, 
+tako ne bi trebalo raditi, ali kako ovaj naèin ne pravi probleme ni na 
+jednom dosada¹njem tipu Amige... a za buduæe æemo tek vidjeti ¹ta æemo i kako 
+æemo. 
+</p>
+<p>
+<pre>
+#include &lt;exec/types.h&gt; //Zbog UBYTE tipa-dodajte kad god koristite ovu f-ju!
+#include &lt;stdio.h&gt;
+int MouseKey(void);
+
+main()
+{
+	while (MouseKey()!=3)  // Dok se ne pritisnu oba gumba
+ 	 printf("%d\n",MouseKey());
+}
+
+int MouseKey(void)
+{
+	register UBYTE *LMB=(UBYTE *)0xbfe001;
+	register UBYTE *RMB=(UBYTE *)0xdff016;
+	register int a=0;
+	if ((*LMB & 64)== 0) a=1;
+	if ((*RMB & 4) == 0) a=a+2;
+	return a;
+}
+</pre><font size="3">
+</p>
+<p>
+Ne zaboravite samo da inkludirate exec/types.h .
+</p>
+<p>
+Kad smo veæ gore spomenuli ostale funkcije DOS biblioteke neæe ¹koditi jo¹ 
+jedan primjer. To je, ustvari, isti onaj primjer iz pro¹log nastavka, ali sada 
+s kori¹tenjem funkcija DOS biblioteke: 
+</p>
+<p>
+<pre>
+#include &lt;stdio.h&gt;
+#include &lt;proto/dos.h&gt;        // Dakle DOS
+main (int argc, char *argv[]) // Ovo vi¹e ne treba obja¹njavati.
+{
+	BPTR in;  // 2 BPTR-a. Ne pointera!
+	BPTR out; // jer treba otvoriti 2 fajla
+	char c;   // pomoæna varijabla za privremeni smje¹taj podataka
+	if (argc!=3) // da li je pogre¹no pozvan program?
+	{
+		Printf("Usage: convert pcfile amigafile\n");
+		return(0); // ako jeste izaði iz programa.
+	}
+	in=Open(argv[1],MODE_OLDFILE); // otvaramo fajl za èitanje 
+	if (in==0)  // Jel' fajl pronaðen ?
+	{
+		Printf("Can't open file %s.\n",argv[1]);
+		return(1); // Ako nije opet je gre¹ka po sredi
+	}
+	out=Open(argv[2],MODE_NEWFILE); // otvori fajl za snimanje 
+	if(out==0)  // jel' to uspje¹no obavljeno?
+	{
+		Close(in); // Ako nije potrebno je zatvoriti prethodno otvoreni 
+		Printf("Can't save file.\n");  // ispisati prigodnu poruku
+		return(2);    // i izaæi iz programa
+	}
+	Printf("Converting %s to %s.\n",argv[1],argv[2]); // najzad je sve Ok.
+
+	while ((c=FGetC(in))!=EOF) // Char-ovi se uzimaju dok se ne naiðe na EOF 
+	{
+		if (c!=13)  // ako c nije 13 (CR)
+			FPutC(out,c); // treba ga snimiti
+	}
+	Close(in);  // sve ¹to je otvoreno
+	Close(out); // mora se uvijek i zatvoriti.
+	Printf("Finished!\n");  // gotovo (napokon)
+}
+</pre><font size="3">
+</p>
+<p>
+Umjesto fopen koristimo ekvivalentnu Open funkciju iz DOS-a i sl. Takoðer, kod 
+FPutC funkcije primjetite da je zamijenjen redoslijed parametara. Jo¹ jedna 
+interesantna stvar koju ste, nadam se, primetili: "printf" funkcija iz stdlib-a 
+je zamijenjena "Printf" funkcijom iz DOS biblioteke (veliko prvo slovo).
+<br>
+Uporedite du¾ine kompajliranih programa.
+</p>
+<p>
+Za ovaj broj toliko, a vi eksperimentirajte ¹to vi¹e, probajte da ubacite i 
+neku funkciju iz grafièke biblioteke koju gornji program ne sadr¾i. Ili npr. 
+napravite da program umjesto 3 sekunde èeka lijevi gumb mi¹a i sl.
+</p>
+<p>
+Happy coding!
+</p>
+<br>
+<!-- -->
+<p align="right"><form action="asm2_h.html" method="post"><input type="submit" value="NEXT"></form><br></p>
+<!-- -->
+</body>
+</html>

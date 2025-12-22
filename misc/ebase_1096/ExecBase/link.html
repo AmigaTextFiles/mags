@@ -1,0 +1,104 @@
+<html><head><title>Local Storage</title></head><body>
+<h1 align=center>Local Storage</h1>
+<h3 align=center>by John Corigliano</h3>
+<center><p><a href="mailto:jcorig@udel.edu">&lt;jcorig@udel.edu&gt;</a></p></center>
+<p>
+Many HLL's (Higher Level Languages) support the concept of <i>local
+storage</i>: a function may create variables that only exist during
+the call to that function. They are created at the start of the function,
+destroyed at the end of the function, and are only accessible from
+within the function block. You can add local storage to your assembly
+functions with the <i>link</i> opcode.
+</p><p>
+Here's how local storage works: every program has a <b>stack</b> - a contiguous
+block of memory used for return addresses, argument passing, local storage, etc.
+The stack is a Last-In-First-Out (LIFO) structure: it's similar to a stack of
+dishes - the last dish that was <i>pushed</i> on to the stack will be the first
+one <i>popped</i> off the stack of dishes. Functions can allocate a chunk of
+memory on the stack to use to store local variables.
+</p><p>
+The stack grows downward in memory - when you push a value onto the stack, the
+current value in the <i>stack pointer</i> (sp) is first <b>decremented</b> and the
+the value is moved into the new location that the sp is pointing to. The stack
+pointer is always kept in register a7 (and can be referenced by 'sp' in
+your code). For example, to push a four (4) byte value in register d0 onto the stack:
+<pre>
+    move.l    d0,-(sp)
+
+</pre>
+Note that the stack pointer is decremented <b>before</b> the value is moved onto
+the stack.  A diagram explains how it works:<br>
+<img src="diag1.gif" alt="Diagram 1"><br>
+Before the instruction, the stack pointer is pointing to memory address 1000. The
+area marked "used" is the portion of the stack that has been used previously
+in the program and the area marked "free" denotes the part of the stack that
+is available for use. Then, the sp is decremented by four (4) - which is the
+size of a <i>long</i> and the value in d0 is pushed into that memory location.
+</p><p>
+Popping values off the stack is the opposite of pushing values onto the stack. The
+value at the address pointed to by the sp is read and then the sp is incremented.
+<pre>
+    move.l    (sp)+,d0
+
+</pre>
+In the example in the diagram, after this instruction, d0 would contain the value
+0x123 and the stack would look like it does in the left side of the picture.
+</p><p>
+I'm sure that most of this is review to you asm coders, but is presented here for
+the newcomers. Now, back to our show....
+</p><p>
+The link opcode takes two (2) operands: a register to use and an offset.  The
+register is used to determine which of the address registers will be used to
+store an address, and the offset is the negative amount of memory to allocate
+for the local storage area.  For example, if we want to store two longs as local
+variables, and use register a5 (the standard) to hold the address, we would use:
+<pre>
+    link      a5,#-8
+
+</pre>
+This would create a local storage area of eight bytes.  Here's how it works: first,
+the value stored in register a5 is pushed onto the stack so that it can be restored.
+Then, the sp is moved into register a5, and finally the sp is decremented by eight.
+A diagram should explain this better:<br>
+<img src="diag2.gif" alt="Diagram 2"><br>
+As you can see, the value that was in register a5 was pushed onto the stack and
+the sp was decremented to 996. That value (996) was moved into a5.  Lastly, the
+sp was decremented by eight.
+</p><p>
+To use this local storage area, you use the <i>address register indirect with
+displacement</i> addressing mode. That is, just add some negative offset to
+the value in a5 to get to the local storage.  To set the first four bytes to
+12 and the second four bytes to 37:
+<pre>
+    move.l    #12,-4(a5)
+    move.l    #37,-8(a5)
+
+</pre>
+Translated into English, the first line would be, "Take the memory address in
+register a5 (996 in the diagram) and subtract 4, which equals 992. Then move
+the 4-byte value 12 into that address (992)".  After these two instructions,
+our stack would look like this:<br>
+<img src="diag3.gif" alt="Diagram 3"><br>
+It becomes easier to work with link if you create a few EQUates:
+<pre>
+var1    EQU    -4
+var2    EQU    -8
+local   EQUR    a5
+
+    ....
+    link      local,#-8
+    move.l    #12,var1(local)
+    move.l    #37,var2(local)
+
+</pre>
+Or, you could even make a macro.
+</p><p>
+Once the function is finished, you need to reset everything with the 'unlk' opcode.
+This reverses what link does. Unlk does two (2) things: moves the value in register
+a5 into the sp and pops the value pointed to this new sp into register a5. This
+puts the stack back into the same state it was before calling link. The block of
+memory that was our local storage then becomes part of the free stack. This has
+the effect of destroying our local variables.
+</p><hr>
+<a href="default.html">Table of Contents</a>
+</body></html>

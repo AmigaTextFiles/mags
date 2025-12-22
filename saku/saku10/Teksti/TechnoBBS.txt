@@ -1,0 +1,653 @@
+5
+1*
+
+{3               TechnoBBS - Osa 2: Purkin kustomointi ja virittely
+{3               --------------------------------------------------
+
+                                  Sami Klemola
+
+
+Artikkelin ensimmäinen osa julkaistiin numerossa yhdeksän. Siinä  esittelin  ly-
+hyesti TechnoBBS:n  osat  ja  ominaisuudet  sekä  kuvasin  nopeasti  ohjelmiston
+käyttöönoton. Tässä osassa kerron oman purkkini toteutuksesta ja opastan lukijaa
+kirjoittamaan omia ohjelmia TechnoBBS:lle. Ohjelmistoa  ohjataan  lähinnä  Rexx-
+kielellä, jonka tunteminen ei ole aivan välttämätöntä, mutta ilman muuta eduksi.
+Normaalisti käytetään myös TechMenua, joka ajaa TechnoBBS:n omalla  menukielellä
+kirjoitettua koodia. Rexx-kielestä ja TechnoBBS:n ohjaamisesta sillä oppii  pal-
+jon tutkimalla TBBS:n mukana tulleita ARexx-ohjelmia. Menukieli taas on  kuvattu
+TechnoBBS:n ohjeissa. Tässä osassa esittelen  TechnoBBS:n  ohjaamista  Rexx-kie-
+lellä, ja mukana on myös muutamia valmiita virityksiä.
+
+Seuraavassa numerossa käsittelen menukieltä ja omien  komentojen  kirjoittamista
+sekä esittelen edistyneempiä TechnoBBS:n funktioita.
+
+
+{3Rexx-kieli
+{3----------
+
+ARexx on Amigan versio IBM:n Rexx-kielestä. ARexxia käytetään yleensä  ohjelmien
+ohjaamiseen ja työympäristön kustomointiin. Sillä voi tehdä myös  yksinkertaisia
+itsenäisiä ohjelmia. ARexx on osa  käyttöjärjestelmää  julkaisusta  2.0  alkaen.
+ARexx on tarkoitettu tiedon siirtämiseen ohjelmien  välillä  moniajoympäristössä
+hyödyntäen prosessienvälistä kommunikaatiota. Näistä  on  enemmän  tietoa  tämän
+lehden ohjelmointiosuuksissa. Yhdellä ARexx-ohjelmalla voidaan  ohjata  helposti
+useaa ohjelmaa. ARexx on yleensä käytettävissä heti koneen käynnistyttyä,  mutta
+voit joutua ajamaan RexxMasterin käsin, mikäli sitä ei ole  ajettu  startupissa,
+jonne sen voit tietysti lisätä. ARexx käyttää loogista laitenimeä  REXX:  ohjel-
+mien säilyttämiseen. ARexx on hyvin Basicin tyylinen kieli. Siinä  on  sisäänra-
+kennettuja käskyjä (instruction) sekä komentoja (command) ja  funktioita  (func-
+tion). Komennot lähetetään  aina  ulkoiselle  komentopalvelijalle,  kuten  Tech-
+noBBS:lle. Funktioita etsitään globaaleista funktiopalvelijoista,  jollainen  on
+esimerkiksi TechCon:lla. Sen kautta välitetään kaikki TechnoBBS:n funktiokutsut.
+Tässä on yksinkertainen ARexx-ohjelma. ARexx-ohjelma alkaa aina kommentilla, jo-
+ka on c-tyylisesti erotettu merkkiyhdistelmillä "/*" ja "*/". 
+
+/* Testiohjelma */
+
+say "Testi"
+do i = 0 to 9
+    call tulosta
+    end
+exit
+
+tulosta:
+    say i
+    return
+
+Ohjelma tulostaa numerot nollasta yhdeksään. Say ja  do  ovat  ARexxin  sisäisiä
+käskyjä. Tulosta on oma funktio eli aliohjelma. Niitä  kutsutaan  call-käskyllä.
+Funktiokutsu voi olla myös osa ekspressiota. Ohjelma ajetaan komennolla RX.  Sen
+voi ajaa myös suoraan, mutta silloin tiedoston script-lipun tulee  olla  päällä.
+Sen voi asettaa komennolla Protect.
+
+ARexx tuntee viisi tyyppiä lauseita. Ne ovat null (tyhjä rivi  tai  pelkkä  kom-
+mentti), label (ohjelmakohdan nimi), assignment (muuttujan asetus),  instruction
+(käsky) ja command (komento). Lauseita voi olla samalla rivillä useita,  jolloin
+ne erotetaan toisistaan puolipisteellä. Lause voi myös jatkua seuraavalle rivil-
+le, jolloin jatkuvan rivin loppuun laitetaan pilkku. Sitä ei kuitenkaan  katsota
+osaksi lausetta, vaan se tulkitaan ainoastaan jatkomerkiksi.  Tämä  mahdollisuus
+tulee tutuksi tämän artikkelin myötä, sillä olen joutunut jakamaan useita ohjel-
+makoodien rivejä useammille riveille.
+
+Kohdeportti eli ohjelma, jolle komennot lähetetään, asetetaan käskyllä  Address.
+Sen voi asettaa joko pysyvästi tai eri portille voi lähettää vain  yhdenkin  ko-
+mennon, jolloin seuraava komento menee taas aiemmalle  portille.  Tämä  tapahtuu
+antamalla komento address-käskyn perään. Pelkkä Address-komento vaihtaa  edelli-
+sen ja nykyisen portin keskenään. Ohjelman, komennon tai funktion parametrit saa
+selville arg()-funktiolla.
+
+Seuraavaksi pieni esimerkkiohjelma, joka esittelee ARexx-kielen rakenteita. 
+
+    if a = 3 then do
+        say "A oli 3."
+        end
+    else do
+        say "A oli... "
+        select
+            when a < 3 then say " pienempi "
+            otherwise say " suurempi "
+            end
+        say "kuin 3."
+        end
+
+Jo aiemmin käyttämälläni do-käskyllä  saadaan  useiden  peräkkäisten  komentojen
+suoritus ehdolliseksi. If-then-else-rakenne toimii aivan kuin Basicissa.  Select
+on erikoistapaus, joka vastaa C-kielen switch():iä. When-lauseita voi olla usei-
+ta ja otherwise on pakollinen.  Sitä  seuraava  lause  suoritetaan,  jos  mikään
+when-ehdoista ei ole tosi. Tässä vielä yksi esimerkki: 
+
+    a = 0
+    do while a = 0
+        say "Kyllä vai ei? "
+        pull b
+        if b ~= "JEP" then if b = "EIH" then do
+            vastaus = 0
+            iterate
+            end
+        else nop else if b = "JEP" then do
+            vastaus = 1
+            break
+            end
+        end
+
+Tässä ohjelmassa ei ole paljon järkeä, mutta siitä näkee lisää  tärkeitä  raken-
+teita. Do hyväksyy monenlaisia määreitä, joista yksi on while.  Do-looppia  aje-
+taan niin kauan kuin a on 0. Saman voisi sanoa myös "do until a ~= 0" eli kunnes
+a on jotain muuta kuin 0. Pull on sama kuin "Parse  UPPER  PULL".  Se  palauttaa
+näppäimistöltä  syötetyn  merkkijonon  uppercasessa.  Peräkkäisten   if-käskyjen
+jälkeen voi olla vaikeaa määrittää, mikä else kuuluu mihinkin  if-käskyyn.  Nop-
+käsky helpottaa tätä, koska sillä saa if-else -kerroksia poistettua,  kun  elseä
+ei tarvita. Ohjelmassa oleva "else nop" ei tee mitään. Se vain mahdollistaa  el-
+sen käyttämisen ensimmäisen if-käskyn kanssa. Kaksi muuta tärkeää käskyä  löytyy
+vielä. Iterate käynnistää do-loopin suorituksen  uudestaan  alusta.  Break  taas
+keskeyttää sen, vaikkei a olisikaan vielä nolla. Lisää tietoa ARexx-kielestä saa
+käyttöjärjestelmämanuaalista kappaleesta 10.
+
+Artikkelin tarkoitus on käsitellä TechnoBBS:n ohjaamista ARexx:lla, joten  Rexx-
+kielen alkeet loppuvat tähän. Varsinaista ARexx-kurssia voidaan harkita,  mikäli
+kiinnostusta kieleen ilmenee.
+
+
+{3TechnoBBS:n ARexx-liittymä
+{3--------------------------
+
+TechConilla samoin  kuin  jokaisen  aktiivisen  noden  TechnoBBS-prosessilla  on
+ARexx-portti. TechConin portti on kuvaavasti nimeltään TechCon.  TechCon  tuntee
+kuusi komentoa, jotka liittyvät lähinnä cron-ominaisuuteen.  Komennolla  ExitCon
+voidaan koko järjestelmä ajaa alas. TechConin komentoja kuitenkin käytetään har-
+voin. Tarpeellisempia ovat sen tarjoamat funktiot, joita on viisi kappaletta. 
+
+         Con_LineActive    Palauttaa noden portin nimen, jos se on päällä
+         Con_LineStatus    Palauttaa noden tilan eli mitä käyttäjä tekee
+         Con_LineUser      Palauttaa noden käyttäjän nimen
+         Con_LogOn         Aktivoi noden ja palauttaa sen portin nimen
+         Con_MaxNode       Palauttaa suurinumeroisimman noden numeron
+
+         Taulukko 1. TechConin funktiot.
+
+TechCon erottaa omat funktionsa alkuliitteestä "Con_". Kaikki muut funktiot ovat
+TechnoBBS-prosessin funktiota, ja niiden ensimmäinen  parametri  sisältää  noden
+numeron, jotta  TechCon  osaa  antaa  ne  oikealle  TechnoBBS-prosessille  käsi-
+teltäväksi. TechMenu-ohjelmissa sitä ei tarvita, koska se lisää sen  automaatti-
+sesti. Jokaisen TechnoBBS:n ARexx-ohjelman on TechConin funktioiden avulla otet-
+tava selville portti, jolle niiden tulee  lähettää  komentonsa.  Sen  voi  tehdä
+vaikkapa seuraavasti. 
+
+    ln = arg(1)
+    LineName = Con_LineActive(ln)
+    if LineName = "" then LineName = Con_LogOn(ln)
+    address VALUE LineName
+
+Myös Rexx-ohjelmille annetaan noden numero ensimmäisenä (yleensä ainoana)  para-
+metrinä. Koodin toinen rivi kyselee, josko node olisi jo päällä. Jos ei, se  ak-
+tivoidaan kolmannella rivillä, ja neljännellä  rivillä  asetetaan  komennot  me-
+nemään asianomaisen noden TechnoBBS-prosessille.  Tämän  jälkeen  ohjelmalla  on
+käytettävissään TechnoBBS:n komennot ja funktiot, joita kumpaisiakin  on  kymme-
+niä. Niistä tässä esittelen lyhyesti useimmin käytetyt. 
+
+         SendModem <string>         Lähettää käyttäjälle merkkijonon
+         SendASCII <filename>       Lähettää käyttäjälle tiedoston
+         LogEntry <string>          Kirjoittaa lokauksen
+         SetStatus <string>         Asettaa noden tilan
+
+         AskInput(<node>, <prompt>, <default>, <maxlen>)
+         GetHotkey(<node>, <prompt>)
+         GetYesNo(<node>, <prompt>, <default>)
+
+         Taulukko 2. TechnoBBS:n komentoja ja funktioita.
+
+Yllä esitetyt komennot lienevät aivan selviä,  mutta  funktioiden  toimintaa  on
+syytä selvittää. AskInput() palauttaa käyttäjän syöttämän merkkijonon. Ensin  se
+tulostaa promptin. Default annetaan valmiiksi syötteeksi, jonka funktio  palaut-
+taa, mikäli käyttäjä vain painaa enteriä. Maxlenillä voidaan rajoittaa  palaute-
+tun merkkijonon pituutta. Näiden perään voidaan laittaa  vielä  lisämääre,  joko
+NUMERIC tai SECURE.  Ensimmäisen  kanssa  funktio  hyväksyy  vain  numeroita  ja
+jälkimmäinen kaiuttaa kaikki merkit viivoina. Sitä käytetään esimerkiksi salasa-
+naa otettaessa. On olemassa vielä kolmaskin, "CAPITAL", jota käytetään käyttäjän
+nimeä kysyttäessä. Se asettaa jokaisen syötetyn sanan ensimmäisen kirjaimen suu-
+reksi. Tätä ei  kuitenkaan  mainita  ohjeissa  ollenkaan.  GetHotkey()  tulostaa
+promptin ja odottaa, että käyttäjä painaa jotakin näppäintä, ja  palauttaa  sitä
+vastaavan merkin. GetYesNo() pyytää kyllä tai ei -vastausta. Default on  joko  1
+(kyllä) tai 0 (ei) ja se palautetaan, jos käyttäjä painaa enteriä. Itse  asiassa
+GetHotKey() tunnistaa myös neljännen parametrin. Jos se on nolla (yksi on oletu-
+sarvo), suoraa valintaa ei voi  tehdä  painamalla  "Y"  tai  "N"  vaan  mainitut
+näppäilyt vain vaihtavat oletusvastauksen tilan, joka palautetaan  sitten  ente-
+rillä, jolla valinta ainoastaan onnistuu. Tässä tulee lyhyt  ohjelmanpätkä  esi-
+merkiksi. 
+
+    SetStatus "Logging in"
+    SendModem YELLOW||"Login!"||CRLF||CRLF
+    UserName = AskInput(ln, "Your name: ", "", 36, "CAPITAL")
+    Password = AskInput(ln, "Password: ", "", 16, "SECURE")
+    if CheckPassword(ln, Password) ~= 1 then do
+        SendModem CRLF||RED||"Invalid password"||CRLF||CRLF
+        LogEntry "Password failure for "||GetUserName(ln)
+        Disconnect
+        end
+    SendASCII "Text/Welcome.txt"
+
+SetStatus:lla asetetaan noden tila, eli mitä käyttäjä tekee. Se  näkyy  TechCon-
+ikkunassa ja Con_LineStatus() palauttaa juuri tämän merkkijonon. Käyttäjän nimeä
+kysyttäessä annetaan maksimipituudeksi 36. CheckPassword() katsoo, onko salasana
+oikein. Mikäli ei, ajetaan käyttäjä pois. Muuten tulostetaan  tervetulotoivotus,
+joka sijaitsee BBS:Text/ -hakemistossa. 
+
+    hot = GetHotkey(ln,CRLF||CRLF||CYAN||"Press any key to continue...",
+        ||CRLF||CRLF||WHITE)
+    if hot = OFFLINER then call "BBS:Rexx/OS.rexx" ln
+
+Tässä tulostetaan käyttäjälle prompti, joka mahdollistaa esimerkiksi jonkin  tu-
+losteen tutkimisen ennen kuin jatketaan. Jälkimmäinen rivi  onkin  itse  asiassa
+ensimmäinen pieni viritys, jonka tässä tuon esille. Ohjelman alussa  tulee  olla
+komento "OFFLINER = D2C(15)". Mikäli käyttäjä sitten painaa promptissa ollessaan
+<CTRL>-O, hän pääsee offliner-valikkoon, joka ei sekään TechnoBBS:n  vakiovarus-
+teisiin kuulu. Minä siirsin QWK- ja WWF-asetukset samaan valikkoon, mutta  tähän
+palaamme seuraavassa numerossa. Siinä esittelen myös  TechnoBBS:n  komentoja  ja
+funktioita hieman enemmän.
+
+
+{3ARexx-ohjelmien kirjoittaminen TechnoBBS:lle
+{3--------------------------------------------
+
+Ovien ja alajärjestelmien luominen TechnoBBS:lle sujuu helposti  ARexxilla.  Oh-
+jelman alussa kannattaa määritellä ainakin CR-, LF- ja värikoodit, joita  tarvi-
+taan toistuvasti ohjelman aikana. Kaikki ohjelmat tulee aloittaa suurin piirtein
+näin: 
+
+    ln = arg(1)
+    LineName = Con_LineActive(ln)
+    if LineName = "" then exit 0
+    address value LineName
+
+Tällä koodilla varmistetaan, että node on varmasti aktiivinen, kun ohjelma käyn-
+nistetään. Tämän jälkeen on myös noden numero muuttujassa ln, josta  se  voidaan
+helposti antaa funktioille, sekä kohteena oikean noden portti. Jos  haluat  pak-
+kokäynnistää noden omalla ohjelmalla, kolmas rivi tulee näin: 
+
+    if LineName = "" then LineName = Con_LogOn(ln)
+
+Tällöin node aktivoidaan ohjelmaa käynnistettäessä,  jos  se  ei  ollut  päällä.
+Tällä tavalla voit esimerkiksi testata ohjelmaasi ajamalla  sen  suoraan  ilman,
+että joudut ensin loggautumaan purkkiin. Jos ohjelmalle tarvitsee välittää para-
+metreja, käynnistyksen voi tehdä vaikkapa näin: 
+
+Parse ARG ln Tiedosto .
+LineName = Con_LineActive(ln)
+if LineName = "" then exit 0
+address VALUE LineName
+SendASCII "Text/"||Tiedosto
+exit 0
+
+Tämä onkin itse asiassa lyhyt ohjelma, joka lähettää modeemille tiedoston, jonka
+nimen se saa parametrinä. Parse on erittäin tehokas käsky merkkijonojen  pilkko-
+miseen. Käskyn ensimmäinen argumentti ARG ohjaa sen lukemaan  syötteen  ohjelman
+argumenttijonosta. Sitten seuraa nk. template, joka tässä tapauksessa on luette-
+lo muuttujista, joihin  Parse  laittaa  parametrit  komentoriviltä.  Normaalisti
+DOS:sta käynnistetty ARexx-ohjelma saa vain yhden argumenttijonon, mutta tokeni-
+soimalla se Parse-käskyn avulla se voidaan jakaa useampaan osaan. Piste  templa-
+tessa on nk. dummy placeholder, joka imee  argumenttijonosta  mahdollisesti  yli
+jäävän tokenisoimattoman osan itseensä. Tämä symboli ei kuitenkaan itse  koskaan
+saa arvoa. Parametrit ohjelmalle annetaan aivan normaalisti  välilyönnillä  ero-
+tettuina. Ohjelman käynnistäminen tapahtuu DOS:sta tai menukoodista  seuraavalla
+tavalla. Menukoodissa noden numero otetaan selville normaalisti  node()-funktion
+avulla, mutta siitä lisää seuraavassa numerossa. Näin lähetetään modeemille  oh-
+jelmaa käyttäen apua: 
+
+    RX BBS:Rexx/Tulosta.rexx 1 Apua
+
+Mikäli ohjelman ajaa niin, että syöte- ja  tulostuskanavat  on  uudelleenohjattu
+TECHIO:n kautta modeemille, voidaan käyttää Rexx-kielen omia  käskyjä  ja  funk-
+tioita kommunikointiin käyttäjän kanssa. Suosittelen  kuitenkin  vahvasti,  että
+käytät TechnoBBS:n komentoja ja funktioita, koska ne toimivat  tässä  tarkoituk-
+sessa paljon tehokkaammin. Tila on syytä asettaa sopivaksi SetStatus-komennolla,
+ja myös lokimerkintöjä kannattaa tehdä. Linjan  katkeamisesta  ei  kannata  olla
+huolissaan. TechnoBBS kyllä katkaisee ohjelman  suorituksen  siinä  tapauksessa.
+Ohjelman suorituksen katkeaminen ei kuitenkaan saa aiheuttaa mitään tuhoja.  Jos
+esimerkiksi ohjelmassasi käsitellään paljon tietoa, kannattaa se pitää levyllä.
+Tässä on lopuksi erittäin yksinkertainen pieni tietokilpailuohjelma, josta  sel-
+viää myös tiedostojen käyttäminen Rexx-kielellä: 
+
+/*
+    Kysely v1.00. Rexx-kielinen kyselyohjelma TechnoBBS:lle.
+    (C)1994 Sami Klemola. All rights reserved.
+*/
+
+CR = D2C(13)
+LF = D2C(10)
+CRLF = CR||LF
+ESC = D2C(27)
+CLS = D2C(12)
+WHITE = ESC||"[0m"
+RED = ESC||"[31m"
+GREEN = ESC||"[32m"
+YELLOW = ESC||"[33m"
+BLUE = ESC||"[34m"
+PURPLE = ESC||"[35m"
+CYAN = ESC||"[36m"
+
+/* Noden numero on ensimmäinen parametri ja toisena parametrinä on
+   käyttäjän nimi. Mikäli node ei ole aktiivinen, poistutaan suosiolla.
+   Muuten asetetaan statuksen, tehdään lokauksen ja tulostetaan alkuteksti.
+   Sitten vielä varmistetaan, että käyttäjä haluaa vastata kysymyksiin. */
+
+Parse ARG ln Nimi .
+LineName = Con_LineActive(ln)
+if LineName = "" then exit 0
+address value LineName
+SetStatus "Kysely"
+LogEntry "Tietokilpailu"
+SendASCII "Text/Kysely/Alku"
+if ~GetYesNo(ln,CYAN||"Haluatko vastata kyselyyn? ",1,1) then exit 0
+SendModem CRLF
+
+/* "Kysely" on sisäinen nimi, jolla tiedostoon viitataan ohjelmassa.
+   Tiedoston tulee olla olemassa tai käyttäjä saa systeemivirhettä.
+   Sitten haetaan tiedoston loppu (Seek(file,offset,mode)) ja kirjoitetaan
+   käyttäjän nimi sinne, että tiedetään, keneltä vastaukset ovat. */
+
+if ~Open("Kysely","BBS:Text/Kysely/Vastaukset","R") then do
+    SendModem CRLF||RED||"System error"||CRLF||CRLF
+    LogEntry "System Error"
+    exit 0
+    end
+call Seek("Kysely",0,"E")
+call writeln("Kysely",Nimi||":")
+
+/* Sitten on vuorossa looppi, jossa tulostetaan kysymys ja otetaan
+   vastaus, joka kirjoitetaan tiedostoon. Jokainen kysymys on omassa
+   tiedostossaan. Writeln() on funktio, joten se tarvitsee Call-käskyn
+   eteensä. */
+
+kysymys = 1
+do while kysymys < 11
+    call writeln("Kysely",kysymys||". kysymys."||LF)
+    SendModem CRLF||GREEN||kysymys||". kysymys."||CRLF||CRLF||CYAN
+    SendASCII "Text/Kysely/Kysymys"||kysymys
+    do forever
+        Vastaus = AskInput(ln,WHITE||": ", "", 80)
+        if Vastaus = "" then Leave
+        call writeln("Kysely",Vastaus)
+        end
+    call writeln("Kysely","")
+    SendModem CRLF
+    kysymys = kysymys + 1
+    end
+call close("Kysely")
+SendASCII "Text/Kysely/Loppu"
+exit 0
+
+Tällaisen ohjelman voi laittaa käynnistymään esimerkiksi Doors-valikosta  ovena.
+Siihen tarvitaan vain pieni muutos menukoodiin, mutta tähän palaamme seuraavassa
+numerossa.
+
+
+{3Valmiita ARexx-virityksiä
+{3-------------------------
+
+Omassa purkissani (Star Fleet) ajetaan nodet ohjelmalla Run.rexx. Se kutsuu  en-
+sin Login.rexxiä ja sitten LoginExtra.rexxiä. Sitten ajetaan TechMenu ja lopuksi
+suoritetaan logout,  jotka  vastaa  toiminnaltaan  BBSGoodbye.rexxiä.  Tässä  on
+Run.rexxin listaus hieman lyhennettynä. 
+
+/* SFL main script */
+
+CR = D2C(13)
+LF = D2C(10)
+CRLF = CR||LF
+ESC = D2C(27)
+ln = arg(1)
+LineName = Con_LineActive(ln)
+if LineName = "" then LineName = Con_LogOn(ln)
+address VALUE LineName
+LogEntry "Line 1: Connection"
+call "BBS:Rexx/Login.rexx" ln
+call "BBS:Rexx/LoginExtra.rexx" ln
+address command "TechMenu "||ln||" BBS:Menu/Main.menu"
+SetStatus "Logging off"
+SendASCII "Text/Goodbye.txt"
+LogEntry GetUserName(ln)||" logged off"
+Disconnect
+exit 0
+
+RunNode ei sitten tee muuta kuin ajaa tämän ohjelman. Seuraavat lisäykset  tule-
+vat kaikki Login.rexxiin.
+
+Joku saattaa haluta käydä purkissasi, mutta ei välttämättä viitsi vastailla kai-
+kenlaisiin kysymyksiin, joita uusille käyttäjille aina esitetään.  Helppo  tapaa
+laskea joku käymään on tehdä erityinen vierailijatunnus. Homma  kannattaa  alkaa
+niin, että loggaudut purkkiisi sisään uutena käyttäjänä nimellä Visitor. Asetuk-
+sia laitettaessa kannattaa huomioida, että tunnusta tulevat käyttämään muut,  et
+sinä. Jos purkissasi käy enimmäkseen PC-käyttäjiä, hyvä idea voisi olla  laittaa
+Visitorille IBM-merkistö ja 24-rivinen näyttö ym. Tietysti myös  Visitor-tunnuk-
+sella voi käydä pääteasetuksia muuttamassa. User-valikko tosin on  hyvä  kieltää
+Visitorilta, koska eihän siinä mitään järkeä olisikaan, että laskettaisiin muut-
+tamaan olemattomia henkilötietoja. Hyvä idea on myös  luoda  oma  käyttäjäluokka
+Visitorin käyttöön. Itselläni Visitor-tunnuksen oikeustaso  on  yhdeksän.  Visi-
+tor-tunnukselle annettua käyttöaikaa voi myös laskea normaalista.
+
+Kannattaa myös harkita tarkkaan kaikkia muita oikeuksia, joita antaa, koska nii-
+den käyttäjille ei juuri ole kontrollia. Minulla  saa  Visitor-tunnuksella  imeä
+mitä tahansa tiedostoja 300 kilotavun verran, mutta viestialueilla ei  voi  kuin
+lukea viestejä ja kirjoittaa postia, mutta ei julkisia viestejä. Muuten komento-
+ja ei ole rajoitettu mitenkään. Varmista, että myöskään  Mask-bitit  eivät  anna
+liikoja oikeuksia. Kun Visitorin oikeudet ovat kunnossa, alkaa vasta varsinainen
+työ. Login-skriptiin tarvitaan rutkasti uutta koodia. Minulla hypätään salasanan
+ohi, jos käyttäjä tulee sisään vierailijatunnuksella. Sen sijaan kysytään nimeä,
+jota ei ole kuitenkaan pakko antaa. Tässä tulee tarpeellista koodia Login-ohjel-
+maan. Alussa ja lopussa on muutama rivi  alkuperäistäkin  koodia  sijoituskohdan
+paikallistamiseksi. 
+
+    if UserName ~= "" then do
+        SendModem CRLF
+        if Upper(UserName) = "VISITOR" then do
+            call getvisitor
+            do forever
+                VisitorName = AskInput(,
+                     ln, "Enter your full name (not necessary): ",,
+                     "", 36, "CAPITAL")
+                invalid = 0
+                do pos = 1 to Length(VisitorName)
+                    char = substr(VisitorName, pos, 1)
+                    if (datatype(char) = "NUM") then invalid = 1
+                    end
+                    if invalid ~= 0 then SendModem CRLF,
+                        ||"Name contains invalid characters"||CRLF||CRLF
+                        else Leave
+                end
+            if VisitorName ~= "" then LogEntry "User: "||VisitorName
+            SendASCII "Text/Visitor.txt"
+            SetHighRead "1 "||GetHighMsg(ln,1)
+            hot = GetHotkey(ln,CYAN||"Press any key to continue...",
+                ||CRLF||CRLF)
+            if hot = SETTINGS then call "BBS:Rexx/TS.rexx" ln
+            call loggedin
+            exit 0
+            end
+        LoadUser UserName
+
+Mikäli käyttäjä haluaa tulla sisään Visitor-tunnnuksella, kysytään häneltä tässä
+nimeä. Nimen tarkistus on sama kuin uuden käyttäjän  nimeä  kysyttäessä.  Mikäli
+käyttäjä antaa nimensä, se kirjataan lokiin. Tämän  jälkeen  tulostetaan  hieman
+tietoa Visitor-tunnuksen oikeuksista ym.  SetHighRead  asettaa  viimeksi  luetun
+viestin. Se asetetaan Posti-alueella suurimmaksi  olemassa  olevaksi  viestiksi.
+Tämä on erittäin hyödyllistä myös uusilla käyttäjillä.  Posti-alueella  viestejä
+ei näytetä, koska ne ovat yksityisiä, eikä uudelle käyttäjälle  tai  Visitorille
+ole viestejä. Viestien hakeminen voi olla todella hidasta, esimerkiksi  jos  ko-
+neessa käytetään XFH:ta, joten kone voi jäädä hakemaan viestejä jopa minuuteiksi
+ilman että käyttäjä näkee mitään tapahtuvan! Tällä asia korjaantuu.  Seuraavaksi
+tässä tulee vielä toinen asetuspikavalinta. Ohjelman alussa tulee olla "SETTINGS
+= D2C(19)". Kun käyttäjä painaa promptissa <CTRL>-S, pääsee  hän  pääteasetusva-
+likkoon, josta hän voi heti vaihtaa merkistön, ruudun pituuden ja kaikki muutkin
+asetukset  kohdalleen.  Huomaa,  että  alkuperäisen   asetusohjelman   nimi   on
+TSet.rexx. Lopuksi suoritetaan normaali sisäänloggautuminen aliohjelmassa logge-
+din. Siihen tutustumme myöhemmin. Vilkaisemme vielä alussa kutsuttavaa aliohjel-
+maa getvisitor. 
+
+getvisitor:
+    address command "Copy BBS:Visitor.dat BBS:User/51/User.dat"
+    LoadUser "Visitor"
+    return
+
+Kysymyksessä on yksinkertainen ohjelma, mutta sitä kutsutaan minun  login-ohjel-
+massani monesta paikasta. Asetusten  vapaa  vaihtaminen  Visitor-tunnuksella  on
+saatu aikaan siten, että alkuperäinen Visitor- tunnuksen  User.dat-tiedosto  ko-
+pioidaan päähakemistoon (nimellä Visitor.dat). Tämä tulee tehdä heti  kun  Visi-
+tor-tunnus on valmis ja ennen kuin sitä on käytetty. Alkuperäinen  User.dat  pa-
+lautetaan päähakemistosta joka kerta kun joku  käyttää  Visitor-tunnusta.  Katso
+kuitenkin, että laitat sen kopioitumaan oikeaan hakemistoon, ettei se mene  jon-
+kun pahaa aavistamattoman oikean käyttäjän päälle!
+
+Aliohjelmaa loggedin kutsutaan aina ennen käyttäjän laskemista sisään. Tämä kos-
+kee myös uusia käyttäjiä sekä Visitor-tunnuksella sisään tulevia. Tässä on  hie-
+man karsittu versio. Siihen tulee lisää koodia seuraavassa numerossa. 
+
+loggedin:
+    DoneLogOn
+    if Upper(UserName) ~= "VISITOR" then do
+        SendModem CRLF||"Checking for marked files..."||CRLF
+        LoadFileMark
+        Download "MARKEDONLY"
+        end
+    SendASCII "Text/Login.txt"
+    SendModem CRLF||CRLF||CRLF||BLUE||,
+        "Presenting the ten last callers at Star Fleet:"||CRLF||CRLF
+    SendASCII "Text/LastCallers.txt"
+    if Upper(UserName) ~= "VISITOR" then if UserName ~= "Sami Klemola",
+        then address command "BBS:Util/LC BBS:Text/LastCallers.txt ",
+        ||QUOTE||GetUserName(ln)||QUOTE||" "||QUOTE||GetUserMisc(ln,,
+        "CITY")||QUOTE||" 10 "||Rate
+    LogEntry GetUserName(ln)||" logged in"
+    SetStatus "Logged in"
+    hot = GetHotkey(ln,CRLF||CRLF||CYAN||"Press any key to continue...",
+        ||CRLF||CRLF||WHITE)
+    if hot = SETTINGS then call "BBS:Rexx/TS.rexx" ln
+    if hot = OFFLINER then call "BBS:Rexx/OS.rexx" ln
+    if hot = FILESCAN then do
+        Days = AskInput(ln,GREEN||,
+            "Reset last file scan occurance how many days back: "||,
+            WHITE,"",4,"NUMERIC")
+        call SetUserMisc(ln,"LASTFSCAN",GetDateVal(ln) - Days)
+        if(~GetUserMisc(ln,"FILECHECK")) then call SetUserMisc(ln,,
+            "FILECHECK",GetYesNo(ln,GREEN||"Turn file check on? ",1,1))
+        SendModem CRLF||CRLF
+        end
+    return
+
+Ensimmäiset rivit ovat mielenkiintoisia. Mikäli käyttäjä ei ole  Visitor,  lada-
+taan tiedot merkityistä tiedostoista. Jos niitä oli, tarjotaan käyttäjälle  mah-
+dollisuus imeä ne nyt heti. Näin voidaan jatkaa edellisellä  kerralla  keskeyty-
+nyttä tiedostonsiirtoa. Text/LastCallers.txt on tiedosto, joka sisältää kymmenen
+viimeisen käyttäjän nimet. Ne päivitetään Janne Sirenin  LastCallers-ohjelmalla,
+joka ajetaan vain, jos kyseessä on oikea käyttäjä.  Visitor-tunnuksella  tulevia
+käyttäjiä ei koskaan kirjata listaan,  kuten  ei  myöskään  sysopia.  Komennossa
+esiintyvä Rate-muuttuja sisältää modeemiyhteyden nopeuden, jonka saa  useimmilta
+vastausohjelmilta. Esimerkiksi StarTech  tekee  T:-hakemistoon  tiedoston  Star-
+Tech_n, jossa n on noden numero. Tästä tiedostosta on helposti luettavissa kaik-
+ki modeemiyhteyden tiedot, myös käytettävät virheenkorjaus- ja  pakkausprotokol-
+lat. Ohjelma löytynee useimmista purkeista. Sen käynnistyskomento on hieman han-
+kala, koska sen parametrejä haetaan funktiokutsuilla. Ohjelman alussa tulee olla
+"QUOTE = D2C(27)", jotta käyttäjän nimi ja  kotipaikka  menevät  asianmukaisesti
+DOS:n edellyttämällä tavalla  lainausmerkkeihin.  Lopussa  tulostetaan  prompti,
+josta myöskin pääsee sekä pääte- että offliner-asetusvalikoihin. Tässä kohtaa on
+myös etenkin Visitoria  varten  rakennettu  erityistoiminto,  jonka  avulla  voi
+päästä katselemaan loginissa tiedostolistauksia. Toiminto aktivoidaan painamalla
+<CTRL>-F promptissa. Tämä taas edellyttää, että ohjelman alussa on  "FILESCAN  =
+D2C(6)". Käyttäjältä kysytään sitten, kuinka monen päivän ajalta hän haluaa tie-
+dostoja listattavan. Tämän jälkeen tarkistetaan, onko käyttäjällä uusien tiedos-
+tojen tarkastus loginissa päällä. Jos ei, kysytään,  haluaako  käyttäjä  laittaa
+sen päälle, koska muuten hän ei näe tiedostolistauksia. Tämän voi tietysti lait-
+taa automaattiseksikin. Loginiin on hyvä laittaa käyttäjälle  ainakin  mahdolli-
+suus huutaa sysopia chattiin, jos hän on vaikkapa unohtanut salasanansa. Se  on-
+nistuu helposti. 
+
+    if Upper(UserName) = "CHAT" then do
+        LogEntry "Paging for SysOp"
+        PageSysOp
+        iterate
+        end
+
+Tämä tulee heti käyttäjän nimen kysymisen jälkeen. Nyt kun  käyttäjä  kirjoittaa
+"chat", käynnistyy sysopin huutaminen. Visitor-tunnuksella on  myös  helppo  to-
+teuttaa viestinkirjoittamismahdollisuus. 
+
+    if Upper(UserName) = "NOTE" then do
+        LogEntry "Entering message to SysOp"
+        call getvisitor
+        SendASCII "Text/LoginNote.txt"
+        call selectcset
+        SelectSIG 1
+        SelectSIGArea 1
+        WriteMsg "-tSysOp -sLogin Message"
+        iterate
+        end
+
+Tässä ladataan Visitor-tunnus, jotta viestille tulee järkevä kirjoittaja. Alioh-
+jelma selectcset pyytää valitsemaan oikean merkistön, mikä  on  tässä  erityisen
+tärkeää. Se toimii aivan samoin kuin  uudelta  käyttäjältä  kysytään  merkistöä.
+Vielä kun saisi käyttäjät ymmärtämään, mikä merkistö heidän tulee valita! Lopuk-
+si asetetaan Posti-alue ja mennään  viestieditoriin,  jolle  annetaan  valmiiksi
+saaja ja viestin otsikko. Siitä ei  enää  sitten  välitetä,  lähettikö  käyttäjä
+viestin vai peruiko hän sen. Näistä tällaisista toiminnoista pitää tietysti ker-
+toa loginissa. Kun toimintoja on enemmän, on syytä kirjoittaa jonkinlainen help-
+pi käyttäjälle. 
+
+    if Upper(UserName) = "HELP" then do
+        SetStatus "Login Help"
+        LogEntry "Login Help"
+        SendASCII "Text/LoginHelp.txt"
+        hot = GetHotkey(ln,CYAN||"Press any key to continue...",
+            ||CRLF||CRLF)
+        if hot = SETTINGS then call "BBS:Rexx/TS.rexx" ln
+        SendModem CRLF
+        iterate
+        end
+
+Tämä vain tulostaa LoginHelp.txt:n, ja taas on mahdollisuus mennä pääteasetusva-
+likkoon. Nykyaikana itseään arvossa pitävä Amiga-purkki ei  tule  toimeen  ilman
+SAKU-ovea! Jokaisesta purkista pitää saada helposti imettyä uusin SAKU. Tässä on
+eräs yksinkertainen toteutus. 
+
+    if Upper(UserName) = "SAKU" then do
+        SetStatus "Saku-imu"
+        LogEntry "Saku-tuki"
+        SendModem CRLF||CRLF||BLUE||"Tervetuloa SFL:n Saku-tukeen."
+        SendModem CRLF||CRLF||CYAN,
+            ||"Voit imaista haluamasi Saku-tiedostot."
+        call getvisitor
+        SetTimeLeft 30
+        FileRoot
+        SelectFileArea "2"
+        SelectFileArea "8"
+        do forever
+            SendModem CRLF||CRLF||YELLOW||,
+                "Imaise haluamasi tiedostot d-komennolla."||CRLF||CRLF
+            ListFiles "-B -M -SA -FSAKU"
+            if ~GetYesNo(ln, "Uudestaan? ", 0, 1) then Leave
+            end
+        SendModem CRLF
+        if GetYesNo(ln, "Logout? ", 1, 1) then do
+            SendModem CRLF||CRLF||GREEN||"Tervetuloa uudestaan.",
+                ||CRLF||CRLF
+            LogEntry "Käyttäjä poistui"
+            Disconnect
+            exit 0
+            end
+        else do
+            SendModem CRLF||CRLF
+            SetTimeLeft 5
+            iterate
+            end
+        end
+
+Visitor-tunnus ladataan taas, jotta käyttäjällä on tarvittavat  oikeudet.  Aikaa
+annetaan puoli tuntia, ja etsiydytään asianmukaiseen  hakemistoon.  Sitten  vain
+listataan kaikki SAKU-tiedostot, jolloin käyttäjä voi imeä  niitä  d-komennolla.
+Listauksen saa uudestaankin imemisen jälkeen tai mikäli jotain meni ohi. Lopuksi
+kysytään, josko käyttäjä lähtee pois vai haluaako hän uudestaan  loginiin.  Itse
+asiassa  tässä  olisi  hyvä  olla  ainakin  protokollavalinta,  mutta   useimmat
+käyttävät oletuksena (ladattavalla Visitor-tunnuksella) olevaa  ZModemia,  joten
+en katsonut sitä tarpeelliseksi.
+
+TechnoBBS:n lopettamiseksi ei ole valmista keinoa, joten tässä on pieni ohjelma,
+joka tekee sen. Minulla on TBBS:n kanssa päällä CyberCron, joten myös se lopete-
+taan samalla. 
+
+/* Exit TechnoBBS */
+
+address command "Kill CyberCron"
+address command "Kill TechIO"
+address "TechCon" ExitCon
+
+Ensin CyberCron sekä TechIO  lopetetaan  Kill-skriptillä  ja  sitten  lähetetään
+TechCon:lle käsky lopettaa toiminta. Kill on yksinkertainen  Lauri  Aallon  kir-
+joittama DOS-skripti, joka etsii nimetyn prosessin ja breikkaa sen: 
+
+.key process/a/f
+.bra <
+.ket >
+break `status com="<process>"`
+
+Mielenkiintoinen osuus tässä skriptissä on komento, joka on  sisällytetty  "hip-
+suihin". Niiden sisällä oleva komento suoritetaan  ensin,  ja  sen  palautusarvo
+(prosessin numero) annetaan edelleen breakille. Tähän ohjelmiston  lopettamiseen
+on hyvä lopettaa artikkelikin. Ensi kerralla jatkamme tästä. 

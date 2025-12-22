@@ -1,0 +1,543 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+<TITLE>AmZeiger 12/99 - Pointer-Workshop</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+
+<DIV ALIGN=CENTER><H1>Pointer-Workshop</H1>von<BR><A HREF="mailto:empire_mm@t-online.de">Marco Miljak</A>
+</DIV>
+
+<P>
+<B>Pointer</B>. Bei diesem Wort l&auml;uft es C-Anf&auml;ngern kalt den R&uuml;cken runter.
+Diese seltsamen Variablen mit dem Sternchen vor dem Namen, sie l&ouml;sen Angst
+und Schrecken aus. Dabei sind sie genau genommen sehr einfach zu verstehen.
+Hinzu kommt noch, da&szlig; Pointer der Sprache C in vielen Bereichen erst ihre
+sprichw&ouml;rtliche Leistungsf&auml;higkeit geben und sie damit von anderen
+Sprachen wie beispielsweise BASIC abheben.
+</P><P>
+Um ein bi&szlig;chen <B>Licht in das Dunkel</B> rund um Pointer zu bringen, habe ich
+diesen Workshop (&uuml;brigens mein erster f&uuml;r den AmZeiger :-) verfasst. Also,
+lehnen Sie sich zur&uuml;ck, nehmen Sie sich ein k&uuml;hles Getr&auml;nk und genie&szlig;en
+sie den Exkurs.
+</P><P>
+Bevor wir darauf eingehen, was es mit Pointern auf sich hat, sollten wir
+erst einen Blick darauf werfen, wie &quot;herk&ouml;mmliche&quot; Variablen vom System
+bzw. einem Programm bearbeitet werden. Das erscheint zun&auml;chst sehr komplex,
+ich werde dennoch versuchen, es so verst&auml;ndlich wie m&ouml;glich zu erkl&auml;ren.
+</P><P>
+Auf dem Amiga stehen Ihnen, ebenso wie auch auf dem PC, sieben
+Datenregister (die man mit den K&uuml;rzeln d0-d7 abk&uuml;rzt) und sechs
+Adressregister (a0-a6) zur Verf&uuml;gung. Das siebte Adressregister a7 ist
+der sogenannte &quot;Stack-Pointer&quot;, doch dazu sp&auml;ter noch mehr. Diese Register
+k&ouml;nnen Sie sich wie Schubladen eines Schranks vorstellen, in denen das
+System bzw. ein Programm ganz beliebig Daten ablegen kann, um sie sp&auml;ter
+weiterverarbeiten zu k&ouml;nnen.
+</P><P>
+<B> Ein kurzes Beispiel:</b>
+</P><PRE>
+   #include &lt;exec/types.h&gt;
+</P><P>
+   void main()
+   {
+     int a = 42;
+   }
+</PRE><P>
+An dieser Stelle passiert folgendes: Der Wert 42 wird in einem der sieben
+Datenregister abgelegt, meistens in d0 oder d1, das kann aber auch
+situationsabh&auml;ngig variieren. Ohne zu weit abschweifen zu wollen, m&ouml;chte
+ich an dieser Stelle noch erw&auml;hnen, da&szlig; Sie wahlweise auch selbst
+festlegen k&ouml;nnen, welches Datenregister verwendet wird, und zwar mit der
+Angabe &quot;register&quot;:
+</P><PRE>
+   #include &lt;exec/types.h&gt;
+</P><P>
+   void main()
+   {
+     register __d3 int a = 42;
+   }</PRE>
+<P>
+Nun w&uuml;rde der Wert der Variable &quot;a&quot; grunds&auml;tzlich im Datenregister d3
+abgelegt werden. Oder einfacher ausgedr&uuml;ckt: Sie befehlen dem Programm,
+auf jeden Fall die Schublade &quot;d3&quot; des Register-&quot;Schranks&quot; zu benutzen.
+Das hat allerdings nur in sehr wenigen F&auml;llen einen echten Sinn.
+&Uuml;berlassen Sie daher die Registerzuweisung dem Programm.
+</P><P>
+So, weiter im Text. Neben den sieben Datenregistern gibt es, wie schon
+erw&auml;hnt, auch noch sechs Adressregister. Diese Register unterscheiden
+sich von den bisher beschriebenen in einem Punkt: Man legt in ihnen keine
+Datenwerte wie unser &quot;42&quot; ab sondern Speicheradressen! Ferner k&ouml;nnen Sie
+nun &uuml;ber die Adressregister auf den Inhalt just dieser Speicheradresse
+zugreifen. Oder mit anderen Worten: In einem Datenregister k&ouml;nnen Sie
+einen beliebigen Zahlenwert ablegen und wieder auslesen, sonst nichts.
+Mit Adressregistern k&ouml;nnen Sie auf jede beliebige Adresse des Amiga-
+Speichers zugreifen, die dort befindlichen Daten manipulieren, ab&auml;ndern
+oder auslesen.
+</P><P>
+So, und an dieser Stelle hat sich die Frage nach dem Unterschied zwischen
+Variablen und Pointern bereits gekl&auml;rt: Variablen sind das C-&Auml;quivalent zu
+den Datenregistern, Pointer das &Auml;quivalent zu Adressregistern. Oder
+ausf&uuml;hrlicher: In einer Variable k&ouml;nnen Sie lediglich einen Zahlenwert
+ablegen, Pointern teilen Sie die Adresse einer Speicherstelle zu und
+k&ouml;nnen ab diesem Zeitpunkt auf den Inhalt dieser Speicherstelle zugreifen.
+</P><P>
+Der Name &quot;Pointer&quot; leitet sich &uuml;brigens aus dessen Funktion ab: Der &quot;zeigt&quot;
+(engl. &quot;to point&quot;) auf eine Speicheradresse.
+</P><P>
+Bevor wir zu ein paar Pointer-Beispielen kommen, m&ouml;chte ich, wie oben
+versprochen, noch den Stack-Pointer a7 erw&auml;hnen. Jedes Programm besitzt
+einen sogenannten &quot;Stack&quot;, was zu Deutsch &quot;Stapel&quot; oder &quot;Haufen&quot; bedeutet.
+Dieser Stack ist eine beliebig gro&szlig;e Menge Speicher (die Sie &uuml;brigens f&uuml;r
+jedes Programm selbst per AmigaDOS-&quot;Stack&quot;-Befehl oder im Icon-Informations
+-Requester einstellen k&ouml;nnen!), auf den das Programm den Inhalt von Daten-
+oder Adressregistern auslagert, sofern z.Zt. alle belegt sind und Platz
+f&uuml;r neue Daten geschaffen werden mu&szlig;.
+</P><P>
+Vergleichbar ist das also mit einer Rumpelkammer, in die man momentan
+Unbenutztes reinwirft, um ein bi&szlig;chen Platz zu schaffen. Ist dieser
+Speicher ersch&ouml;pft (d.h. komplett belegt), so bekommen Sie einen
+&quot;Stack&uuml;berlauf&quot;-Fehler. D&uuml;rfte jedem von Ihnen schon mal passiert sein,
+denke ich :-).
+</P><P>
+So, jetzt aber zu ein paar Pointerbeispielen. Wie ich oben schon
+erw&auml;hnt habe, kann man &uuml;ber einen Pointer auf jede beliebige Stelle im
+Speicher des Amiga zugreifen, die dort befindlichen Daten ab&auml;ndern,
+auslesen oder sonstwas damit machen. Ein sehr sch&ouml;nes Beispiel hierf&uuml;r
+ist folgendes kleine Programm:
+</P><PRE>
+   #include &lt;exec/types.h&gt;
+   #include &lt;stdio.h&gt;
+</P><P>
+   void main()
+   {
+     int test;
+     int *ptr;
+</P><P>
+     test = 42;
+     ptr  = &amp;test;
+</P><P>
+     printf( &quot; Speicheradresse von test: 0x%08x\n&quot;, &amp;test );
+     printf( &quot; Speicheradresse von ptr : 0x%08x\n&quot;, ptr );
+   } 
+</PRE><P>
+&quot;test&quot; ist eine ganz normale Variable vom Typ &quot;Integer&quot; (kurz: int). &quot;ptr&quot;
+hingegen ist ein Pointer, erkennbar an dem Asterisk  '*' vor dem Namen.
+Zun&auml;chst wird der Variable der Wert &quot;42&quot; zugewiesen, dann wird dem Pointer
+die Speicheradresse der Variable zugewiesen (das '&amp;'-Zeichen steht immer
+f&uuml;r &quot;Adresse von&quot;!). Die nachfolgenden printf()'s demonstrieren das
+anschaulich: Der Pointer zeigt auf den Speicherbereich der Variable
+&quot;test&quot;.
+</P><P>
+Interessant ist auch die zweite printf()-Anweisung. Hier wird nicht etwa
+der Inhalt der Speicheradresse ausgelesen, auf die der Pointer zeigt (wie
+das geht, besprechen wir weiter unten), sondern die Adresse des
+Speicherbereichs. Das ist aus einem einfachen Grund so: Der Pointer hat
+mit dem Inhalt einer Speicherstelle eigentlich nichts zu schaffen. W&auml;hrend
+Variablen Zahlenwerte als &quot;Inhalt&quot; haben, so besteht der &quot;Inhalt&quot; eines
+Pointers aus einer Adresse. Eigentlich logisch, oder?
+</P><P>
+Im &uuml;brigen gibt es keine Regeln oder Grenzen, was die Adresse angeht, auf
+die ein Pointer zeigt. Sie k&ouml;nnten z.B. auch folgendes machen:
+</P><PRE>
+   #include &lt;exec/types.h&gt;
+   #include &lt;stdio.h&gt;
+</P><P>
+   void main()
+   {
+     char *test;
+</P><P>
+     test = (char *) 0x000016bc;
+     printf( &quot; Speicheradresse: 0x%08x\n&quot;, test );
+</P><P>
+     test = (char *) 0x0000aa19;
+     printf( &quot; Speicheradresse: 0x%08x\n&quot;, test );
+   }
+</PRE><P>
+Es hat allerdings nicht den geringsten Sinn (und kann dar&uuml;berhinaus
+auch gef&auml;hrlich sein!), einem Pointer eine so wahllos ausgesuchte
+Speicheradresse wie beispielsweise 0x000016bc zuzuweisen. Wenden Sie
+dieses Prinzip wirklich nur dann an, wenn Sie ganz genau wissen, da&szlig;
+die Adresse korrekt ist und welche Art von Daten sich bei ihr befinden!
+Ansonsten k&ouml;nnen Sie leicht einen Systemabsturz hervorrufen, da Pointer
+NICHT darauf achten, ob die Speicheradresse, auf die sie weisen, belegt
+oder sonstwie &quot;in use&quot; ist. Damit haben sie nichts zu tun, sie zeigen
+einfach nur drauf. Was das f&uuml;r Folgen haben kann, damit besch&auml;ftigen wir
+uns etwas sp&auml;ter.
+</P><P>
+So, aber weiter im Text. Unser Pointer zeigt also auf den Speicherbereich
+der Variable &quot;test&quot;. Damit k&ouml;nnen wir auch &uuml;ber den Pointer auf den Inhalt
+der Speicheradresse (und damit der Variable &quot;test&quot;) zugreifen. Sie
+erinnern sich, ich habe es oben erw&auml;hnt. Ein Beispiel dazu:
+</P><PRE>
+   #include &lt;exec/types.h&gt;
+   #include &lt;stdio.h&gt;
+</P><P>
+   void main()
+   {
+     int test;
+     int *ptr;
+</P><P>
+     test = 42;
+     ptr  = &amp;test;
+</P><P>
+     (*ptr) = (*ptr) + 1;
+</P><P>
+     printf( &quot; Wert von test: %ld\n&quot;, test );
+   }
+</PRE><P>
+Obwohl &quot;test&quot; der Wert 42 zugewiesen wurde, gibt printf() den Wert 43 aus.
+Das hat einen einfachen Grund: Wir haben den Wert &uuml;ber den Pointer um 1
+erh&ouml;ht. Sehen wir uns die betreffende Zeile nochmal genauer an:
+</P><PRE>
+   (*ptr) = (*ptr) + 1;
+</PRE><P>
+Additionen dieser Art werden Sie schon kennen, allerdings nur mit normalen
+Variablen. Beispiel:
+</P><PRE>
+   int a;
+   a = a + 1;
+</PRE><P>
+In diesem Beispiel kann man auch sch&ouml;n erkennen, wie man denn &uuml;berhaupt
+auf den Inhalt der Speicherstelle eines Pointers zugreift: Indem man dem
+Pointernamen das Asterisk '*' voranstellt! Das Asterisk steht in diesem
+Fall also f&uuml;r &quot;Inhalt der Speicheradresse von&quot;.
+</P><PRE>
+   (*ptr)               =           (*ptr)              + 1;
+</P><P>
+   Inhalt des Pointers  ist gleich  Inhalt des Pointers  plus eins;
+</PRE><P>
+Der Vollst&auml;ndigkeit halber sei erw&auml;hnt, da&szlig; man diese Zeile in obigem
+Beispiel auch etwas vereinfachen k&ouml;nnte:
+</P><PRE>
+   (*ptr)++;
+</PRE><P>
+Diese Zeile hat denselben Effekt. Die runden Klammern um das &quot;*ptr&quot; sind
+in diesem Fall &uuml;brigens unbedingt notwendig (im ersten Beispiel mit der
+normalen Addition habe ich sie lediglich der leichteren Verst&auml;ndlichkeit
+halber eingef&uuml;gt), denn sonst w&uuml;rde das Programm folgendes machen:
+</P><PRE>
+   *ptr;
+   ptr++;
+</PRE><P>
+W&ouml;rtlich hei&szlig;t das: Das Programm w&uuml;rde erst den Inhalt der Speicheradresse
+auslesen, auf die der Pointer zeigt, und ihn in's Nirvana schicken, und
+dann w&uuml;rde es die Adresse des Pointers um 1 erh&ouml;hen. Der Grund ist eben
+der, da&szlig; das Asterisk in diesem Fall eine h&ouml;here Priorit&auml;t hat, als das
+Post-Inkrement '++'. Aber lassen wir das, ich will hier nicht zu weit
+ausholen :-).
+</P><P>
+Kommen wir stattdessen zu einem weiteren Beispiel, das die manuelle
+Erh&ouml;hung der Speicheradresse eines Pointers demonstriert:
+</P><PRE>
+   #include &lt;exec/types.h&gt;
+   #include &lt;stdio.h&gt;
+</P><P>
+   void main()
+   {
+     char test;
+     char *ptr;
+</P><P>
+     test = 42;
+     ptr  = &amp;test;
+</P><P>
+     printf( &quot; Speicheradresse von ptr: 0x%08x\n&quot;, ptr );
+</P><P>
+     ptr++;
+</P><P>
+     printf( &quot; Speicheradresse von ptr: 0x%08x\n&quot;, ptr );
+   }
+</PRE><P>
+Wenn Sie das obige Programm kompilieren und ausf&uuml;hren, werden Sie sehen,
+da&szlig; die Speicheradresse des zweiten printf() ganz genau um eins gr&ouml;&szlig;er
+ist, als die des ersten printf().
+</P><P>
+Und genau diese Tatsache bringt ein Problem mit sich. Erh&ouml;ht man aus
+Versehen (oder mit Absicht??) die Adresse eines Pointers und ver&auml;ndert
+DANN erst den Inhalt des Speicherblocks, so kann es sein, da&szlig; man fremde
+Daten im Speicher &uuml;berschreibt. Denn, wie oben schon erw&auml;hnt: Ein Pointer
+f&uuml;hrt keinen Test aus, ob die Speicherstelle, auf die er zeigt, irgendwie
+besetzt ist. Das w&auml;re auch dumm, denn in einem solchen Fall k&ouml;nnten wir in
+dem Beispiel weiter oben nicht &uuml;ber den Pointer auf den Wert der Variable
+zugreifen.
+</P><P>
+Wenn Sie die Adresse eines Pointers &auml;ndern, dann m&uuml;ssen Sie sich
+hundertprozentig sicher sein, da&szlig; Sie auf die neue Speicheradresse
+zugreifen k&ouml;nnen, ohne dabei fremde und/oder wichtige Daten zu ver&auml;ndern.
+In der Regel ist das einfach zu bewerkstelligen, dennoch gibt es ein paar
+Stolpersteine, die ich hier ausf&uuml;hrlich erw&auml;hnen m&ouml;chte:
+</P><P>
+<B>1) Uninitialisierte Pointer</B>
+</P><P>
+Stellen Sie sich vor, wir h&auml;tten in dem Additions-Programm von oben
+folgende Zeile weggelassen:
+</P><PRE>
+   ptr = &amp;test;
+</PRE><P>
+Was w&auml;re in so einem Fall passiert? Nun, wenn Sie einen Pointer erstellen,
+dann zeigt er erst mal irgendwo hin in die Speicherpampa. An irgendeine
+Adresse. Erst mit der Zuweisung der Variablenadresse konnten wir den
+gew&uuml;nschten Effekt erzielen. W&uuml;rden wir die Zeile weglassen, so w&uuml;rden wir
+mit der Addition willk&uuml;rlich den Wert der unbekannten Speicheradresse
+&auml;ndern, was fatal enden kann. Schlimmstenfalls mit einem Systemabsturz.
+Es ist daher wichtig, da&szlig; JEDER Pointer mit einer Adresse initialisiert
+(belegt) wird, bevor er zum Einsatz kommt.
+</P><P>
+Das Problem mit dem uninitialisierten Pointer hat auch einen Ableger, den
+man gerne &quot;Zugriff auf einen NULL-Pointer&quot; nennt. Viele Programmierer
+initialisieren einen Pointer gerne mit der Adresse 0x00000000 (NULL),
+solange sie ihn noch nicht brauchen:
+</P><PRE>
+   char *ptr = NULL;
+</PRE><P>
+W&uuml;rde man hier vergessen, dem Pointer vor Gebrauch eine &quot;echte&quot; Adresse
+zuzweisen, k&auml;me es zum System-Crash. Dieselbe Ursache, dieselbe Wirkung.
+</P><P>
+<B>2) Pointer falscher Gr&ouml;&szlig;e</B>
+</P><P>
+In den oben genannten Beispielen habe ich korrekterweise immer einen
+Pointer vom Typ &quot;char&quot; erstellt, wenn ich damit die char-Variable &quot;test&quot;
+manipulieren wollte. Auch wenn das unwichtig wirkt, es ist essenziell!
+</P><P>
+Denn jede Variable hat eine eigene Gr&ouml;&szlig;e, und eine LONG-Variable ist
+beispielsweise gr&ouml;&szlig;er, als eine char-Variable (n&auml;mlich um ganze 24 Bit
+oder 3 Bytes!). W&uuml;rde ich also einen Pointer vom Typ LONG verwenden, um
+damit den Wert einer Variable vom Typ char zu ver&auml;ndern, dann w&uuml;rde ich
+3 Bytes zuviel &uuml;berschreiben. Auch das kann locker zum Systemabsturz
+f&uuml;hren, wenn die 3 Bytes wichtige Daten enthalten.
+</P><P>
+Nach diesem kurzen Exkurs in die Welt der m&ouml;glichen Pointer-Fehler kann
+man sich (berechtigterweise) folgende Frage stellen: Hat es &uuml;berhaupt
+einen Sinn oder Nutzen, die Speicheradresse eines Pointers durch Addition
+oder andere Verfahren zu ver&auml;ndern? Ja, hat es! Zum Beispiel ab dem Moment,
+wo Arrays in's Spiel kommen. Ein kurzes Beispiel:
+</P><PRE>
+   #include &lt;exec/types.h&gt;
+   #include &lt;stdio.h&gt;
+</P><P>
+   void main()
+   {
+     char test[4] = { 5, 13, 7, 21 };
+     char *ptr;
+</P><P>
+     ptr = test;
+</P><P>
+     printf( &quot; Wert von ptr: %ld\n&quot;, *ptr );
+</P><P>
+     ptr++;
+</P><P>
+     printf( &quot; Wert von ptr: %ld\n&quot;, *ptr );
+   }
+</PRE><P>
+Das erste printf() wird den Wert 5 ausgeben, das zweite den Wert 13.
+Warum ist das so? Nun, in obigem Beispiel wird dem Pointer die Adresse
+des Arrays &quot;test&quot; zugewiesen. Dem Namen des Arrays mu&szlig; &uuml;brigens KEIN
+&quot;&amp;&quot;-Zeichen voranstehen! Das hat einen einfachen Grund: &quot;test&quot; ist
+keine einzelne Variable mehr, sondern steht f&uuml;r einen ganzen Speicherblock (
+ein Array eben). Damit hat es denselben Aufbau wie ein Pointer, auch was
+die zugewiesene Speicheradresse angeht.
+</P><P>
+Weiter im Text. Die zugewiesene Adresse weist auf den Anfang (!) des
+ersten Elements des Arrays, in diesem Fall den Wert 5. Dieser wird in
+dem printf() via &quot;*ptr&quot; ausgelesen. Anschlie&szlig;end wird die Speicheradresse
+des Pointers um den Faktor 1 erh&ouml;ht. Nun zeigt der Pointer an den Anfang
+des zweiten (!) Elements des Arrays, also 13. Damit d&uuml;rfte das Geheimnis
+gel&uuml;ftet sein.
+</P><P>
+Das funktioniert &uuml;brigens auch mit allen anderen Pointertypen, ob long,
+short oder bool. Wenn Sie beispielsweise einen Pointer vom Typ long
+erstellen (eine long-Variable hat auf dem Amiga eine Gr&ouml;&szlig;e von 4 Bytes
+- das kann von Computersystem zu Computersystem aber auch variieren),
+dann werden genau 4 Bytes &uuml;bersprungen, wenn Sie zur Speicheradresse des
+Pointers den Faktor eins dazuaddieren. Gleicherma&szlig;en bei char (1 Byte
+gro&szlig;): Wenn Sie die Adresse um 1 erh&ouml;hen, &uuml;berspringen Sie 1 Byte.
+Probieren Sie es ruhig mal aus, in dem Sie das weiter oben gebrachte
+Beispiel etwas umschreiben:
+</P><PRE>
+   #include &lt;exec/types.h&gt;
+   #include &lt;stdio.h&gt;
+</P><P>
+   void main()
+   {
+     long test;  /* &lt;- Hier hat sich was ge&auml;ndert! */
+     long *ptr;  /* &lt;- Hier hat sich was ge&auml;ndert! */
+</P><P>
+     test = 42;
+     ptr  = &amp;test;
+</P><P>
+     printf( &quot; Speicheradresse von ptr: 0x%08x\n&quot;, ptr );
+</P><P>
+     ptr++;
+</P><P>
+     printf( &quot; Speicheradresse von ptr: 0x%08x\n&quot;, ptr );
+   }
+</PRE><P>
+W&auml;hrend die Differenz bei einem char-Pointer bei 1 lag, so liegt sie nun
+bei 4. Wie schon erw&auml;hnt: Eine long-Variable ist 4 Bytes gro&szlig;, eine char-
+Variable nur 1 Byte. Zumindest auf dem Amiga!
+</P><P>
+Nach all den Beispielen, die ich zum Thema Pointer gebracht habe, stellt
+sich jetzt aber folgende berechtigte Frage: Wozu braucht man &uuml;berhaupt
+Pointer? Zugegeben, es hat keinen gro&szlig;en Sinn, auf den Wert einer Variable
+&uuml;ber einen Pointer zuzugreifen, wenn man ebenso gut &uuml;ber die Variable
+selbst darauf zugreifen kann. Den eigentlichen Nutzen von Pointern kann
+man wie folgt definieren: Mit Pointern kann man direkt auf Speicherbl&ouml;cke
+und Daten des Computers zugreifen, auf die man sonst keinen Zugriff h&auml;tte.
+</P><P>
+Um ein praktisches Beispiel zu bringen, stellen Sie sich die folgende
+Situation einmal vor: Sie m&ouml;chten ein Programm schreiben, welches eine
+Datei, sagen wir eine Bilddatei, &ouml;ffnet, die Daten komplett ausliest
+und dann auf dem Monitor ausgibt. Das &Ouml;ffen, Lesen und Ausgeben ist
+keine gro&szlig;e Aufgabe, dazu stellt uns C die Funktionen fopen(), fread()
+und fwrite() zur Verf&uuml;gung (siehe Include-Datei &quot;stdio.h&quot;). Doch eine
+Frage bleibt: Wohin sollen wir die gelesenen Daten &uuml;berhaupt hintun?
+Um sie bis zur Ausgabe auf dem Monitor zu speichern, ben&ouml;tigen wir einen
+Puffer, und zwar einen, der exakt so gro&szlig; ist, da&szlig; er die gesamten Daten
+der Datei speichern kann.
+</P><P>
+Nun stehen wir aber vor einem Problem: Jede Datei ist unterschiedlich
+gro&szlig;! Die eine ist beispielsweise 5 KB gro&szlig;, die andere 320 KB. Manche
+sind auch nur winzige 50 Bytes gro&szlig;. Der Datenpuffer m&uuml;&szlig;te sich in seiner
+Gr&ouml;&szlig;e also jedesmal der Dateigr&ouml;&szlig;e anpassen.
+</P><P>
+Manch ein Programmierer macht es sich in diesem Punkt sehr einfach. Er
+legt ein Array von, sagen wir mal, 300.000 Elementen an und benutzt dieses
+fortan als Datenpuffer. Das ist nicht nur billig, sondern verst&ouml;&szlig;t auch in
+nahezu jedem Punkt gegen die Richtlinien eines sauberen Programmierstils.
+Erst einmal ist es nicht sicher, da&szlig; ein Array  mit 300.000 Elementen auch
+wirklich und immer ausreicht. Dateien k&ouml;nnen, besonders in der heutigen
+Zeit, um ein Vielfaches gr&ouml;&szlig;er sein. Zweitens belegt das Array sehr viel
+Speicher, der wohl nur in den seltensten F&auml;llen ganz ausgenutzt wird. Wenn
+wir annehmen, da&szlig; es sich bei dem obengenannten Array um ein char-Array
+handelt, dann belegt es 300 KB RAM. Immer! Egal ob die Datei nun 200 KB
+oder nur 10 Bytes gro&szlig; ist. Das ist nat&uuml;rlich totaler Bl&ouml;dsinn.
+</P><P>
+Die einzig korrekte L&ouml;sung des Problems ist &quot;Speicherallokierung&quot; (manch
+einer sagt auch &quot;Alloziierung&quot; dazu, das klingt in meinen Ohren aber
+irgendwie bl&ouml;d ;-). Bevor wir die Daten einlesen, m&uuml;ssen wir einen
+Speicherblock vom System anfordern, der exakt so gro&szlig; ist, wie die Datei.
+Sie k&ouml;nnen hierzu auf die C-eigene Funktion malloc() zugreifen (was sich
+in der Regel auch empfiehlt) oder aber die exec.library Funktionen
+AllocMem() oder AllocVec(). Beachten Sie bitte immer, da&szlig; Sie den
+angeforderten Speicher auch wieder freigeben m&uuml;ssen, wenn Sie ihn nicht
+mehr brauchen. Bei malloc() w&auml;re das dazugeh&ouml;rige Gegenst&uuml;ck die Funktion
+free(), bei AllocMem() und AllocVec() w&auml;re es FreeMem() und FreeVec().
+Details dazu finden Sie im Handbuch Ihres Compilers oder in diversen
+Amiga-Programmierb&uuml;chern.
+</P><P>
+Es stellt sich aber folgende Frage: Wie erfahren wir denn, welchen
+Speicherblock die Funktionen angefordert haben und wo er liegt? Wie
+k&ouml;nnen wir auf ihn zugreifen und Daten in ihm speichern? Die Antwort
+d&uuml;rfte Sie nicht &uuml;berraschen: Mittels Pointern! Beide Funktionen, sowohl
+AllocMem() als auch AllocVec() fordern einen Speicherblock der
+gew&uuml;nschten Gr&ouml;&szlig;e an und geben dessen Adresse (!) zur&uuml;ck. Diese Adresse
+k&ouml;nnen wir nun einem Pointer zuweisen. Voila! Der Kreis schlie&szlig;t sich.
+</P><P>
+Zur Verdeutlichung ein kurzes Beispiel:
+</P><PRE>
+   #include &lt;exec/types.h&gt;
+   #include &lt;exec/memory.h&gt;
+   #include &lt;clib/exec_protos.h&gt;
+</P><P>
+   void main()
+   {
+     char *ptr = NULL;
+</P><P>
+     if( ( ptr = (char *) AllocMem( 300, MEMF_PUBLIC ) ) != NULL )
+     {
+       FreeMem( ptr, 300 );
+     }
+   }
+</PRE><P>
+Das Programm macht nichts weiter, als einen 300 Byte gro&szlig;en Speicherblock
+vom System anzufordern. Sofern ein Block dieser Gr&ouml;&szlig;e gefunden und
+reserviert werden konnte, gibt AllocMem() dessen Adresse zur&uuml;ck, die
+sofort dem Pointer &quot;ptr&quot; zugewiesen wird. Schlug das Anfordern hingegen
+fehl, gibt die Funktion NULL zur&uuml;ck.
+</P><P>
+Beachten Sie bitte Folgendes: &Uuml;berpr&uuml;fen Sie bei Speicherallokierung
+IMMER (!!!), ob das Anfordern des Speicherblocks erfolgreich war oder
+nicht. Ich habe es schon weiter oben erw&auml;hnt: Wenn Sie auf einen NULL-
+Pointer zugreifen, dann machen Sie Bekanntschaft mit der System-Failure-
+Meldung!
+</P><P>
+Auf dieselbe Weise k&ouml;nnen wir nun den Speicher f&uuml;r unseren Datenpuffer
+anfordern. Wir &uuml;berpr&uuml;fen einfach die Gr&ouml;&szlig;e der Datei und allokieren
+dann einen Speicherblock derselben Gr&ouml;&szlig;e mittels AllocMem(). Der Pointer
+bekommt die Adresse des Blocks zugewiesen und wir k&ouml;nnen ohne Probleme
+auf ihn zugreifen.
+</P><P>
+Das Amiga-System hantiert sehr viel mit Pointern herum. Wenn Sie
+beispielsweise mit der intuition.library Funktion OpenWindow() ein
+Fenster &ouml;ffnen, dann erhalten Sie als R&uuml;ckgabewert, na was wohl, die
+Adresse des Windows im Speicher. Diese Adresse k&ouml;nnen Sie in einem
+Pointer speichern, in diesem Fall einem Pointer vom Typ &quot;struct Window&quot;,
+und anschlie&szlig;end ohne Probleme auf die Elemente des Fensters zugreifen.
+</P><P>
+Auf diesen Punkt m&ouml;chte ich &uuml;brigens noch etwas genauer zu sprechen
+kommen. Denn bisher haben wir nur &quot;einfache&quot; Pointer, d.h. Pointer vom
+Typ char, erstellt. Sie k&ouml;nnen aber auch Pointer erstellen, die auf
+Structs weisen. Ein Beispiel:
+</P><PRE>
+   #include &lt;exec/types.h&gt;
+   #include &lt;stdio.h&gt;
+</P><P>
+   struct MeinStrukt
+   {
+     int nummer1;
+     int nummer2;
+   };
+</P><P>
+   void main()
+   {
+     struct MeinStrukt  ms = { 14, 41 };
+     struct MeinStrukt *ptr;
+</P><P>
+     ptr = &amp;ms;
+</P><P>
+     printf( &quot; nummer2 von ms : %ld\n&quot;, ms.nummer2 );
+     printf( &quot; nummer2 von ptr: %ld\n&quot;, (*ptr).nummer2 );
+   }
+</PRE><P>
+Beide printf()'s geben 41 aus. Warum ist das so? Nun, was weiter oben mit
+normalen Variablen funktioniert hat, das klappt auch mit Struct's, denn
+Struct's sind AUCH Variablen! Nur eben Variablen, die aus vielen
+Einzelvariablen bestehen, &auml;hnlich einem Array. Wenn wir einen Pointer von
+demselben Typ auf die Adresse des Structs im Speicher weisen lassen, dann
+k&ouml;nnen wir auch problemlos auf die Elemente des Structs zugreifen.
+</P><P>
+Sehen Sie sich das zweite printf() ruhig einmal noch etwas genauer an. Es
+sollte Ihnen nicht schwerfallen, es zu verstehen. &quot;*ptr&quot; steht f&uuml;r &quot;Inhalt
+der Speicheradresse von ptr&quot;. Der Inhalt sind in diesem Fall die Elemente
+des Structs. Auf ein einzelnes Element eines Structs kann man zugreifen,
+wenn man dem Namen des Structs einen Punkt '.' und dann den Namen des
+Elements folgen l&auml;&szlig;t. Just dieses tun wir hier.
+</P><P>
+Da Pointer sehr oft auf Struct's weisen und die Schreibweise mit dem &quot;*ptr&quot;
+auf Dauer etwas l&auml;stig sein kann, haben sich die Erfinder von C etwas
+Besonderes einfallen lassen: Man kann sich die Geschichte mit dem Sternchen
+vor dem Namen des Pointers sparen, wenn man statt des Punktes '.' den
+Strich mit dem Pfeil '-&gt;' verwendet:
+</P><PRE>
+   ptr-&gt;nummer2
+                    ist also gleichbedeutend mit
+   (*ptr).nummer2
+</PRE><P>
+So, und damit w&auml;ren wir auch am Ende dieses Workshops angekommen. Ich
+hoffe, da&szlig; ich Ihnen das Thema Pointer etwas &quot;schmackhaft&quot; und nat&uuml;rlich
+auch verst&auml;ndlich machen konnte. F&uuml;r Fragen jeder Art stehe ich
+selbstverst&auml;ndlich gerne zur Verf&uuml;gung: <a href="mailto:empire_mm@t-online.de">empire_mm@t-online.de</a>.
+</P><P>
+</P><P><HR>
+<TABLE WIDTH=100%>
+<TR>
+	<TD ALIGN=LEFT><A HREF="../cc/9912pb.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+	<TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz1299/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+	<TD ALIGN=RIGHT><A HREF="../kw/9912ami.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+<TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; '99 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

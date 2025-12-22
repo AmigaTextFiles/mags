@@ -1,0 +1,61 @@
+
+{center}
+{subhead} GPatch v2.4{def}{p}
+Review by Renne Nissinen
+{left}
+{p} {p}
+
+GPatch is a patch system for making program (or any kind of) updates smaller.
+E.g. if you have made a program and copied it to people, and then you make a
+tiny bugfix, the program files usually aren't very different. Same thing with
+versions of the same program for different CPUs. Now, if you just copy the
+bugfix to people or pack both versions (such as 68000 and 68020) into the same
+archive, it can mean that the users have to download hundreds of kilobytes of
+data they already have or data that's in the archive twice.
+{p} {p}
+This is what patcher programs are designed for. They search for similarities
+between two files and create a small patch file that only contains the
+differences. Apart from the uses mentioned above, it is also useful if the
+author of a bugfix isn't allowed to distribute the original file.
+{p} {p}
+GPatch is a freeware patch system that can create and apply patch files. It
+contains two programs: GCompare, which creates the patch file and GPatch,
+which creates the new file from the old file and the patch file (GPatch is
+22 kB so it can easily be included with the patch file). GCompare uses 4
+different methods to compare the files, and you can either select just one or
+let it use them all (s l o w :) and automatically select the smallest result.
+(There's also a "quick" option that naturally produces a bigger patch file.)
+You can also include patches for several files in one patch file, and a CRC32
+checksum is calculated for all files to prevent using the patch with wrong
+files (creating a mangled output file).
+{p} {p}
+Creating a patch file to update MagicMenu v2.21 (61kB) to v2.25 (63kB) with
+GCompare took 10 minutes and 14 seconds with my 50MHz 030, and the resulting
+patch file was 29kB (19kB when packed with LHA). Applying the patch file
+with GPatch took 22 seconds.
+{p} {p}
+I also tested it with the RFC 2068 document (HTTP/1.1 protocol docs). The
+plain ASCII text version was 344kB and the HTML version (basically the same,
+just the URLs turned into hyperlinks and some other small changes) was 351kB.
+With the quick mode it took 1 min 32 sec and the patch file was 331kB (!!!),
+121kB when archived. Applying the patch took 31 seconds. But creating a "real"
+patch (I selected the generic mode to save time) took 46 minutes and 30 seconds
+before it was 50% done! That's when I got back from the Moon and decided to abort.
+{p} {p}
+The GPatch docs say that it produces the smallest patch files of the available
+freeware patchers. Well, I can believe that for some cases, but it really is
+painfully slow, and the author says it's already very optimized. But I
+compared it with SPatch, the commercial patch system included with SAS/C.
+Creating the MagicMenu patch took only 28 secs and the patch was 34kB (20kB
+archived), well that's 5kB bigger than the GPatch output but over 20 times
+faster to create. And you might be surprised that creating a patch for the
+same RFC document took 32 seconds and the resulting patch file was 16kB, and
+5.5kB archived (remember, GPatch's version was 121kB archived :-).
+{p} {p}
+Short: slower than an old lady at the cash desk, but it works and produces
+small patch files (sometimes :-). If you have SPatch, better use it
+instead :-)
+{p} {p}
+{bold}Available from{nobold}: Aminet:util/misc/gpatch.lha
+{p} {p}
+{bold}Overall{nobold}: 60%

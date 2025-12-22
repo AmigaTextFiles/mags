@@ -1,0 +1,257 @@
+<HTML>
+<HEAD>
+<H1>USE OF MAKEFILE IN PROJECT MANAGEMENT</H1>
+</head>
+<body>
+<p><H3>Preamble</H3></p>
+
+<p>
+A surprising number of programmers are not aware of the various tricks
+that can be used to simplify the compilation of their programs. A Makefile
+can play a big part in this process, but many times it is sadly neglected
+or sometimes not in fact used at all.</p>
+<p>
+Even a larger number of programmers have their source files in varying
+degrees of chaos, with only random copies, if any, of the older versions
+for reference or backup.</p>
+<p>
+Most programmers have at one point or another come across the situation
+where an archive of their source code would have saved a lot of trouble.
+You might have accidentally destroyed a source file or even the whole
+source tree of your latest program, or maybe introduced a bug that you
+just can not track down and fix, but which you know wasn't in the last
+week's version.</p>
+<p>
+Revision control is the answer to these situations. In this article I will
+try to explain how to use both Makefiles and revision control systems to
+help development of your projects.</p>
+<H3>The environment</H3>
+<p>
+I developed the techniques described in this article over a couple of
+programming projects. The development platform used is an Amiga 3000, and
+the software consists of the SAS/C 6.51 compiler, Heinz Wrobel's port of
+the RCS software (HWGRCS) and Many features of the SMakefile used as the
+project base are unique to SAS/C's SMake, and it very probably won't work
+without some changes in other environments. The ideas, however, are
+global, and this article should be able to give you some hints even if you
+use another compiler.</p>
+<H3>Makefile</H3>
+<p>
+Make is a tool that operates on files using a set of rules as the guide to
+what to do to each of them. These rules are listed in a file called the
+Makefile. In essence, a Make rule consists of a target file, a list of the
+source files on which it depends, and the instructions on how to create
+the target file from the source files. A simple example might look like
+this:</p>
+<p>
+<pre>
+foobar:	foo.o bar.o
+	slink foo.o bar.o to foobar
+</pre>
+</p>
+<p>
+This is one Make rule. It says "to create 'foobar' from 'foo.o' and
+'bar.o', run the command 'slink foo.o bar.o to foobar'". Make will then
+look for the source files and determine if 'foobar' needs to be updated or
+not. Make also has some built in intelligence. For example, it knows that
+if it does not find a file with the name ending in '.o', it should look
+for the corresponding file ending in '.c', and compile that file first.
+Thus, 'foobar' gets updated if either of the two source files 'foo.c' or
+'bar.c' has been changed since the last update, and only the parts that
+need to be compiled will be.</p>
+<H3>RCS</H3>
+<p>
+RCS, short for Revision Control System, is a software package used to
+manage multiple versions (revisions) of files. It facilitates the storing,
+retrieval and merging of of versions of the same file, letting the user
+log the changes. It is useful as the storage system of various types of
+files that are revised frequently. Program source code is only one,
+although an obvious example.</p>
+<p>
+RCS can also be used in an environment where many people use the same
+source tree, letting only one person have a modifiable copy of a file,
+thus limiting the possibilities of two persons making changes at the same
+time. This might sound complicated, but in effect RCS can be very simple
+to use.</p><p>
+
+The basic use of RCS is based around two commands, "ci" (check in) and
+"co" (check out). These commands let you store a file to the RCS database,
+and get a copy of that file out for viewing or modifications. You could,
+for example use "ci -r2.13 niftyprog.c" to store the source of version
+2.13 of your utility program. While RCS is usable manually, it does get
+somewhat tiresome as the project size grows. There is also a problem with
+keeping RCS revision numbers and your own program version number agreeing,
+unless you have some automated help to handle that.</p><p>
+
+Here's where a good Makefile comes in handy. A Makefile can automatically
+increment the revision number after each recompile, and when you are happy
+with the program, you can archive the current revision with the correct
+number with a single command.</p>
+
+<H3>The SMakefile</H3>
+<p>
+There is no single solution to the problem of creating a Makefile that can
+handle not only the building of a project, but also the archival of it. I
+will list here a stripped down version of the template SMakefile I build
+my projects on. The whole version, complete with comments, is included as
+a separate file. In the following, the lines are numbered for reference
+later in the article.</p>
+</p>
+<pre>
+1.	# SMakefile for SAS/C
+2.	
+3.	# Project files
+4.	
+5.	PROG=		xxx
+6.	SRCS=		$(PROG).c
+7.	OBJS=		$(PROG).o
+8.	INCS=		$(PROG).h
+9.	MISC=		SMakefile
+10.	LIBS=
+11.	DEBUGLIBS=	LIB:debug.lib
+12.	
+13.	# Files to delete on "smake clean"
+14.	
+15.	JUNK=		\#?.(o|map|lnk|gst) SCOPTIONS
+16.	
+17.	# Build options
+18.	
+19.	CFLAGS=		DEBUG=LINE OPTIMIZE NOSTACKCHECK
+20.	DCFLAGS=	DEBUG=SYMBOLFLUSH NOOPTIMIZE DEF=DEBUG
+21.	LDFLAGS=	STRIPDEBUG
+22.	HOOKFLAGS=	NOSTACKCHECK NOSTACKEXTEND
+23.	
+24.	# Compiler defaults
+25.	
+26.	SCOPTIONS=	
+27.	
+28.	# Programs used
+29.	
+30.	MAKE=		smake
+31.	VER=		ver
+32.	CP=		copy
+33.	CAT=		type
+34.	RM=		delete quiet
+35.	
+36.	VERSION=	`$(CAT) VERSION`
+37.	
+38.	# Standard targets
+39.	
+40.	test:
+41.		$(MAKE) "CFLAGS=$(DCFLAGS)" "LIBS=$(DEBUGLIBS)" "LDFLAGS=" $(PROG)
+42.	
+43.	all:		clobber $(PROG)
+44.
+45.	# Build rules
+46.	
+47.	$(PROG):	SCOPTIONS version.o $(OBJS)
+48.		$(CC) version.o $(OBJS) LINK TO $@ BATCH $(LIBS) $(LDFLAGS) $(CFLAGS)
+49.		$(VER) # bump revision for next link
+50.	
+51.	SCOPTIONS:	SMakefile
+52.		$(CP) TO $@ &ltFROM &lt
+53.	$(SCOPTIONS)
+54.	&lt
+55.	
+56.	version.c:
+57.		$(CP) TO $@ &ltFROM &lt
+58.	const char VersionID[] = "$$VER: $(PROG) " VERSION " " __AMIGADATE__;
+59.	const char Version[] = VERSION;
+60.	const char CompileDate[] = __AMIGADATE__;
+61.	&lt
+62.		
+63.	version.o:	version.c $(SRCS)
+64.		$(VER) -n # make sure VERSION exists
+65.		$(CC) NODEBUG DEF=VERSION="$(VERSION)" version.c
+66.	
+67.	rcs:
+68.		ci -l$(VERSION) $(SRCS) $(INCS) $(MISC) $(DOCS)
+69.
+70.	clean:
+71.		$(RM) $(JUNK) $(PROG)_Cat.c &gtNIL:
+72.	
+73.	clobber:	clean
+74.		$(RM) $(PROG) &gtNIL:
+</pre>
+</p>
+<H3>Description of the SMakefile</H3>
+<p>
+In the beginning of the SMakefile are listed the files making up the
+project. The name of the program is assigned to the PROG variable, and all
+the object, source, and headers files are listed in OBJS, SRCS and INCS,
+respectively. MISC is for the other files of the project that should be
+archived, including the SMakefile itself. Link libraries used will be
+listed in the LIBS variable.</p><p>
+
+The JUNK variable contains the pattern or list of the files that are
+created during the build process, and can be deleted to make room.</p><p>
+
+On lines 19-22 are listed the options used in the various build stages.
+CFLAGS will be used when compiling the "final" version, while DCFLAGS
+holds the options for a "debug" compile. LDFLAGS is the option variable
+for the final linking. HOOKFLAGS contains the options needed for callback
+hooks (you will not want stack checking on here, even if you'd like it
+elsewhere).</p><p>
+
+The options that will be set all the time, regardless of the build mode,
+can be saved in SCOPTIONS. The SMakefile will automatically create the
+SCOPTIONS file from this variable.</p><p>
+
+Lines 30-34 list the programs used in various stages of the compilation or
+project management. By assigning these into variables, there is no need to
+repeat the actual program name in the SMakefile, and programs are more
+easily changed.</p><p>
+
+The VERSION variable will be set to the current program version during
+compilation.</p><p>
+
+Next is the default rule, which simply calls SMake again to build
+the project using debug settings. This way you can simply run "smake"
+without any options to build a debug version of your binary. Line 42 has
+the "all" rule, which is what you would use to create the final binary.</p><p>
+
+The rest of the SMakefile lists the standard rules for the project. These
+rules should not change from project to project. The included, larger
+SMakefile also includes rules used to create localized source from the
+catalog description.</p><p>
+
+The first rule creates the actual binary target file. It will simply link
+all the object files together, and if that was successful, bump the
+revision number up one so that the next compilation will get a new
+version. This is done using a small special utility "ver", source to which
+is included.</p><p>
+
+The SCOPTIONS rule recreates the SCOPTIONS file if you change SMakefile.
+To rebuild all source files using the new options, add SCOPTIONS to the
+dependency list for each source file. This dependency list (as created by
+Mkmk, for example) can be appended to the end of the SMakefile, or
+inserted anywhere within.</p><p>
+
+The next three rules are for creating the VERSION file that holds the
+build number, the version.c source file for the version strings you could
+use elsewhere in your program (use the Version[] variable for version
+number instead of hardcoding it in other source files), and for compiling
+this file.</p><p>
+
+All that is left are the three special rules for archiving the current
+source versions and cleaning up the object files are other "junk"
+cluttering up the directory. The rcs rule, on line 67, will store all the
+source and related files using the build number stored in the VERSION
+file. Note that this is one revision higher than the binary created in the
+last compilation. This is intentional, since the RCS operation will bump
+the timestamps on all the files. You would normally test the program using
+the debug version compiled with "smake test" (or simply "smake"), and then
+when you are satisfied with the operation, update the documentation etc.
+and call "smake rcs". This will store the files and ask you for the log
+information for all of them, leaving a modifiable copy of the file
+(updated with the new log info) in the directory. You can now call "smake
+all" to compile this version, and it will have the same version and
+revision as the one archived in the RCS.</p>
+<HR>
+<p>
+This article is Copyright © 1995 Osma Ahvenlampi, <A HREF="mailto:Osma.Ahvenlampi@hut.fi">&ltOsma.Ahvenlampi@hut.fi&gt</A>.
+All rights reserved. No part of the article may be copied or distributed
+in electronic or printed publications without prior permission of the
+author. Permission hereby granted to the Amiga Report Tech Journal.
+</body>
+</html>

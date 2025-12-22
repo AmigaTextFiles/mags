@@ -1,0 +1,176 @@
+
+                     /\/\|GGYBYTE Imagine Tutorial
+
+                  ** Part 2/4 **
+ 
+                      
+                       Forms Editor, Cycle Editor
+              Animation, Stage Editor and Action Editor
+                    
+                  
+                         By Rasta Billy Skank
+
+
+
+                            Forms Editor
+
+
+ I was working in the forms editor on an object, and loaded it
+into  the  detail  editor  for modification.  However, I can't seem to be
+able to get it back into the forms editor!  Help!
+
+        Simply  put, you cannot load objects saved from the detail editor
+back  into  the  forms editor.  The reason is the forms editor requires a
+specified  object  structure  which the detail does not.  Thus, saving an
+object in the detail editor loses that information.
+
+        When  you work with the forms editor is recommended that you keep
+a spare copy of the FORMS OBJECT saved separately from any detail object.
+In  this  way  you  can  then go back and make modifications in the forms
+editor.
+
+
+                            Cycle Editor
+
+
+I made this really great animation sequence in the cycle editor, but when
+I set it up in the stage/action editors, the motion of the overall object
+isn't there!
+
+        When  using  the  cycle editor, Imagine only remembers changes in
+size,  position,  and so on in relation to the main parent.  Thus, if you
+make  a  change to the parent object, it gets forgotten.  What this means
+is  if  you  make  a  nifty robot jumping cycle, and make it in the cycle
+editor  so the robot actually move up etc...  all that will be remembered
+is  the  changes  to  the legs, arms and anything OFF of the PARENT.  The
+overall rotations and movements to the main object will be gone.
+
+        Two  solutions exist.  One is to simply make those changes in the
+stage  editor each time you need to.  The second is to group a plain axis
+before  you  start  to  your  object.   (ie:  Make the parent have a Null
+link).   Then,  you  can  rotate  everything  by  rotating the main child
+grouped  right  under  this  null  axis.   This way you aren't moving the
+"parent", and everything will be remembered.
+
+
+             Animation, Stage Editor and Action Editor
+
+
+Even    though    I    move    an    Object/Camera/Light    to    a   new
+POSITION/ALIGNMENT/SIZE  in  the  STAGE editor, Imagine seems to 'forget'
+what I did!
+
+    All  objects must have timeliness split wherever there is a change in
+position,  alignment  or  size.   If you do not set this up, Imagine will
+forget the changes no matter what.
+
+    Rather  than  going  back and forth to the ACTION editor and adding ,
+you  can  have  Imagine  automatically  create the properly so everything
+tweens  as  normal.   There  are  the "Position Bar", "Alignment Bar" and
+"Size Bar" commands under the OBJECT menu in the STAGE editor.
+
+    So,  if  you have just gone to a frame and are making a new POSITION,
+ALIGNMENT  or  SIZE for an object (or camera or light) to tween to, press
+RIGHT  AMIGA  and 7/8/9 respectively.  Or use the respective bar commands
+>from the OBJECT menu.  This will extend or put a 'split' in the timeline
+for you (you can check this in the ACTION editor).  Also, don't forget to
+"Save Changes"if you want to keep the motion!
+
+
+
+ How do I use the Grow Effect?
+
+        To  use  the  grow  effect, create an object in the DETAIL editor
+that  you  wish  to  have  'extrude'  over time.  Create a spline path as
+normal  in  the detail editor.  This will be the path the object extrudes
+along during the animation.
+
+    GROUP  (not  join) the object with the PATH AS THE PARENT.  If you do
+not  make  the path the parent, it will not work.  To do this, select the
+path,  then  hold  shift  and select the object, then select group.  Save
+your GROUP for loading in the animation.
+
+    Finally, add the effect in the ACTION editor for the grouped object.
+
+
+
+How do I use the Tumble Effect?
+
+    The  tumble  effect  is  used  to  tumble 1 or more objects during an
+animation.   To  tumble  an  object, create your object or objects in the
+DETAIL editor.  Still in the detail editor add an axis.
+
+        Group  (not  join) the AXIS to all the objects you want to tumble
+with  the  AXIS AS THE PARENT.  Then load the GROUP into the STAGE/ACTION
+editor and add the effect as normal.
+
+    NOTE:   The  reason  for  the  null  object  (axis) as parent is that
+Imagine does not TUMBLE the PARENT, just the children.
+
+
+
+How  do you get something to roll (at the right speed!) while following a
+path?
+
+        Getting  an  object to spin (like a plane doing a barrel roll) is
+easy-  you  align to path, then set Y rotation to be from 0 to 360 and it
+will  do  a  complete  spin.   This  is  not in the right direction for a
+rolling ball, though.  [Annoying feature- you can't say from 0 to 720 for
+two  spins,  or  0 to 3600 for ten.] To get it to roll I created a second
+path,  which  was basically a larger copy of the first, so the first path
+was  just inside of the second path.  I had an axis (a track) follow this
+new,  outside  path, then used "align to object" to make the sphere point
+to the axis.
+
+        Thus,  as  the ball moved along its path, one end (the positive Y
+axis  direction)  was  always pointed at right angles to the direction of
+motion.   Is  this  clear?   Now using the "initial Y angle" and "final Y
+angle" I set them to 0 and 360 and it rotated as it rolled.  As a special
+effect,  I  raised  the  "track  path" a little in the Z direction so the
+sphere  looks a little bit like a top rolling around, since the spin axis
+was not horizontal any more.
+
+        An  alternative  would  be to make a cycle object, rolling around
+the X axis.  This is equally valid, but I did it this way first.
+
+
+
+When  I move a tracked Camera in the STAGE editor, it doesn't realign and
+draw the Perspective view correctly!
+
+    If  you  have  Imagine 2.0 or higher, press RIGHT AMIGA and the K key
+together,  or  select "Camera (Re)track" from the OBJECT menu.  This will
+make  the  camera  repoint  to  the  track from the new position and will
+redraw the perspective view.
+
+        If  you have an older version of Imagine (or if you just want to)
+you  can  press RIGHT AMIGA and the C key or select "Goto" from the FRAME
+menu.   Go  to  the  current  frame  you  are already on which will cause
+imagine to redraw everything.
+
+
+
+I  have  found  that after creating a scene in the Stage editor, and then
+deciding  that I want an animation and adjusting the highest frame count,
+my scene gets mangled in the first frame.  Why?
+
+        Well,  it  seems  to  me that this will happen if you don't split
+your  channel  bar  from  the  first  frame  (where  you want stuff to be
+exactly)  to  the second frame.  I usually setup my scenes so that I have
+the  first  frame all set as it should be and then I do my transformation
+>from  frames  2-whatever.   In this way, the first frame is ALWAYS where
+it's  suppose  to  be  no  matter  what  changes  I make in the remaining
+animation.   If  you  look at your channel it should have a break between
+frames  1  and 2 and then be continuous (if that's the way your animation
+works out) from 2 on.
+
+
+=====================================================================
+This is the end of the second part of my Imagine tutorial, Until next
+Time We meet Keep On Skankin'
+=====================================================================
+
+ Smoke me a kipper I'll be back for breakfast - Ace Rimmer
+
+End
+===

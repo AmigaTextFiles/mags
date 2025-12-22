@@ -1,0 +1,274 @@
+<HTML>
+<HEAD>
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.0//EN">
+<META NAME="author" CONTENT="Mario Nitschke / HTML-Konvertierung Marcel Hanson">
+<META NAME="description" CONTENT="AMIGA TIMES 01/97 - Deutsches AMIGA Games und Info Magazin">
+<META NAME="keywords" CONTENT="Amiga,Information,Spiele,deutsch,Tips">
+<!-- PROGRAM="WebPlug v1.21 © 1996-97 Esteve Boix" -->
+<TITLE>AMIGA TIMES 02/97 - Programmierkurs Assembler - Listing 2</TITLE>
+</HEAD>
+
+<BODY  BACKGROUND="../images/bg.gif" BGCOLOR="#A4A4E1" TEXT="#000000" LINK="#FF0000" ALINK="#F00000" VLINK="#AA0000">
+
+<DIV ALIGN=CENTER>
+<TABLE BORDER=0>
+<TR>
+<TD>
+<A HREF="edit.html"><IMG SRC="../images/edit.gif" ALT="Editorial" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD>
+<TD>
+<A HREF="inhalt.html"><IMG SRC="../images/inh.gif" ALT="Inhalt" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD>
+<TD>
+<A HREF="impressum.html"><IMG SRC="../images/impr.gif" ALT="Impressum" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD></TR></TABLE></DIV><HR>
+
+<PRE>
+;Datei       : listing2.asm
+;Beschreibung: Unsere erste Copperliste.
+;Autor       : Enrico Bauermeister
+;Datum       : 07.10.1997
+;Assembler   : TFA AsmOne v1.29
+;=======================================
+ 
+ 
+; graphics.library &ouml;ffnen
+;------------------------
+ lea      gfxname(pc),a1       ;Name der Library
+ moveq    #0,d0                ;Version der Library
+ move.l   4.w,a6               ;Basisadresse der exec.library
+ jsr      -552(a6)             ;OpenLibrary()
+ tst.l    d0                   ;Lib ge&ouml;ffnet ?
+ beq      ende                 ;nein -> ende
+ lea      _GfxBase(pc),a0      ;Basisadresse der graphics.library
+ move.l   d0,(a0)              ;in _GfxBase sichern
+ 
+ 
+; Interrupts verbieten (Mulitasking abschalten)
+;-----------------------------------------------
+ jsr      -120(a6)             ;Disable() - Wir schalten hier das
+                               ;Multitasking ab. Unser Programm hat
+                               ;nun den ganzen Amiga f&uuml;r sich alleine.
+ 
+ 
+; alte Copperliste speichern
+;---------------------------
+ move.l   _GfxBase(pc),a6
+ move.l   $26(a6),OldCop       ;Auf Adresse $26 zur Basisadresse
+                               ;der graphics.library liegt die Adresse
+                               ;der aktuellen Copperliste.
+ 
+ 
+; unsere eigende Copperliste starten
+;------------------------------------
+ move.l   #Copperliste,$dff080 ;Im Register COP1LC steht nun die Adresse
+                               ;unserer Copperliste.
+ move.w   d0,$dff088           ;Wir starten unsere Copperliste indem wir
+                               ;irgendeinen Wert ins Register COPJMP1
+                               ;reinschreiben, z.B. D0.
+ 
+ 
+; testen ob linke Maustaste gedr&uuml;ckt wurde
+;------------------------------------------
+waitmouse
+ btst    #6,$bfe001            ;btst - test bit -
+                               ;Testen ob Bit 6 im Register PRA ($bfe001)
+                               ;gesetzt (also 1) ist.
+ bne.s   waitmouse             ;Nein -> waitmouse
+
+; alte Copperliste wieder starten
+;--------------------------------
+ move.l  OldCop(pc),$dff080    ;In Register COP1LC steht nun wieder die
+                               ;Adresse der alten Copperliste
+ move.w  d0,$dff088            ;In COPJMP1 irgendeinen Wert -> alte
+                               ;Copperliste starten
+ 
+ 
+; Interrupts wieder zulassen (Multitasking einschalten)
+;------------------------------------------------------
+ move.l  4.w,a6                ;Basisadresse der exec.library
+ 
+ jsr     -126(a6)              ;Enable() - So, nun k&ouml;nnen wieder mehrere
+                               ;Programme den Amigs nutzen.
+ 
+ 
+; graphics.library wieder schliessen
+;------------------------------------
+ move.l   _GfxBase(pc),a1      ;Basisadresse der graphics.library
+ 
+ jsr      -414(a6)             ;CloseLibrary()
+ 
+ 
+; Programm verlassen
+;--------------------
+ende
+ moveq    #0,d0                ;R&uuml;ckgabewert des Programmes
+ rts                           ;und tsch&uuml;&szlig; ...
+ 
+ 
+; Datenbereich
+;--------------
+gfxname:  dc.b  'graphics.library',0
+          cnop  0,2 _GfxBase: dc.l  0
+OldCop:   dc.l  0
+ 
+ 
+; Unsere eigene Copperliste definieren
+;--------------------------------------
+ SECTION Grafik,CODE_C         ;SECTION ist eine Assemblerdirektive,
+                               ;mit der man sein Programm in mehrere
+                               ;St&uuml;cke aufteilen kann (dann kann das
+                               ;Betriebssystem das Programm leichter
+                               ;in den Speicher laden, weil es dann
+                               ;jedes St&uuml;ck in einen anderen Speicher-
+                               ;bereich laden kann). "CODE_C" bedeutet,
+                               ;da&szlig; folgender Programmcode ins ChipRAM
+                               ;geladen werden soll (ihr wisst ja, die
+                               ;CustomChips k&ouml;nnen nur aufs ChipRAM
+                               ;zugreifen).
+Copperliste
+  dc.w    $100,$200            ;Im Register BPLCON0 ($dff100) kann man
+                               ;festlegen, welche eigenschaften unser
+                               ;Screen haben soll. Was der Wert $200
+                               ;bedeutet, werde ich an passender Stelle
+                               ;schon erkl&auml;ren. Nur soviel sage ich jetzt:
+                               ;ihr k&ouml;nnt nur die Farbe 0 (COLOR00 -
+                               ;$dff180) nutzen.
+ 
+ 
+  dc.w    $180,$000            ;COLOR00 auf Schwarz setzen
+ 
+ 
+  dc.w    $2c07,$fffe          ;Auf Zeile 44 (hex. $2c) warten. Dies ist
+                               ;nun unser erster WAIT-Befehl (dieses
+                               ;$fffe). Wenn wir wie hier auf vertikale
+                               ;Positionen warten wollen, gibt in der
+                               ;horizontalen immer $07 an (steht auch so
+                               ;im "Hardware Reference Manual"). Wir warten
+                               ;hier deshalb auf Zeile 44, weil an dieser
+                               ;stelle erst der sichtbare Bereich des
+                               ;Screens anf&auml;ngt, und nicht wie erwartet bei
+                               ;0.
+ 
+  dc.w    $180,$0af            ;COLOR00 - helles Blau
+ 
+  dc.w    $3107,$fffe          ;auf Zeile 49 warten
+ 
+  dc.w    $180,$09f            ;COLOR00 - Blau wird dunkler
+ 
+  dc.w    $3607,$fffe          ;auf Zeile 54 warten
+ 
+  dc.w    $180,$08f            ;COLOR00 - Blau wird dunkler
+ 
+  dc.w    $3b07,$fffe          ;auf Zeile 59 warten
+ 
+  dc.w    $180,$07f            ;COLOR00 - Blau wird dunkler
+ 
+  dc.w    $4007,$fffe          ;auf Zeile 64 warten
+ 
+  dc.w    $180,$06f            ;COLOR00 - Blau wird dunkler
+ 
+  dc.w    $4507,$fffe          ;auf Zeile 69 warten
+ 
+  dc.w    $180,$05f            ;COLOR00 - Blau wird dunkler
+ 
+  dc.w    $4a07,$fffe          ;auf Zeile 74 warten
+ 
+  dc.w    $180,$04f            ;COLOR00 - Blau wird dunkler
+    dc.w    $4f07,$fffe          ;auf Zeile 79 warten
+  dc.w    $180,$03f            ;COLOR00 - Blau wird dunkler
+ 
+  dc.w    $5407,$fffe          ;auf Zeile 84 warten
+ 
+  dc.w    $180,$02f            ;COLOR00 - Blau wird dunkler
+ 
+  dc.w    $5907,$fffe          ;auf Zeile 89 warten
+ 
+  dc.w    $180,$000            ;COLOR00 auf Schwarz setzen
+ 
+  dc.w    $ffdf,$fffe          ;auf Ende der Zeile 255 warten
+                               ;Da der sichtbare Bereich ja ab Zeile
+                               ;44 beginnt unser Bildschirm aber 256
+                               ;Zeilen hoch ist, m&uuml;ssten wir eigentlich
+                               ;bis Zeile 300 gehen k&ouml;nnen um das Bild-
+                               ;schirmende erreichen zu k&ouml;nnen. Aber die
+                               ;vertikale Position wird in nur einem Byte
+                               ;gespeichert, und den gr&ouml;ssten Wert den
+                               ;wir in einem Byte speichern k&ouml;nnen ist
+                               ;$ff (255). Um nun auch die letzen 44
+                               ;Zeilen erreichen zu k&ouml;nnen, mu&szlig; man
+                               ;"dc.w $ffdf,$fffe" schreiben. Das hei&szlig;t,
+                               ;wir warten auf Zeile 255 und die folgenden
+                               ;Zeilen (also unter 255) fangen wieder bei
+                               ;0 an. Zum Beispiel: nach "dc.w $ffdf,$fffe"
+                               ;hei&szlig;t Zeile 10 nicht oben am Bildschirm,
+                               ;sondern Zeile 10 unter Zeile 255 (also
+                               ;Zeile 265).
+ 
+ 
+  dc.w    $180,$02f            ;COLOR00 - dunkles Blau
+ 
+  dc.w    $0507,$fffe          ;auf Zeile 5 warten
+ 
+ 
+  dc.w    $180,$03f            ;COLOR00 - Blau wird heller
+ 
+ 
+  dc.w    $0a07,$fffe          ;auf Zeile 10 warten
+ 
+ 
+  dc.w    $180,$04f            ;COLOR00 - Blau wird heller
+ 
+ 
+  dc.w    $0f07,$fffe          ;auf Zeile 15 warten
+ 
+ 
+  dc.w    $180,$05f            ;COLOR00 - Blau wird heller
+ 
+ 
+  dc.w    $1407,$fffe          ;auf Zeile 20 warten
+ 
+ 
+  dc.w    $180,$06f            ;COLOR00 - Blau wird heller
+ 
+ 
+  dc.w    $1907,$fffe          ;auf Zeile 25 warten
+ 
+ 
+  dc.w    $180,$07f            ;COLOR00 - Blau wird heller
+ 
+ 
+  dc.w    $1e07,$fffe          ;auf Zeile 30 warten
+ 
+ 
+  dc.w    $180,$08f            ;COLOR00 - Blau wird heller
+ 
+ 
+  dc.w    $2307,$fffe          ;auf Zeile 35 warten
+ 
+ 
+  dc.w    $180,$09f            ;COLOR00 - Blau wird heller
+ 
+ 
+  dc.w    $2807,$fffe          ;auf Zeile 40 warten
+ 
+ 
+  dc.w    $180,$0Af            ;COLOR00 - Blau wird heller
+ 
+  dc.w    $2D07,$fffe          ;auf Zeile 45 warten
+ 
+ 
+  dc.w    $180,$000            ;COLOR00 auf Schwarz setzen
+ 
+ 
+  dc.w    $ffff,$fffe          ;Ende der Copperliste. Dies mu&szlig; man
+                               ;am Ende einer Liste immer schreiben
+ end
+</PRE>
+
+<P ALIGN=CENTER>
+<A HREF="wshop.html#re2">Zur&uuml;ck zum Programmierkurs</A>
+
+</BODY>
+</HTML>
+

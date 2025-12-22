@@ -1,0 +1,120 @@
+;Beschreibung: Installationsskript für die AmigaTimes.
+;Autor       : Enrico Bauermeister (c) 1997
+;Datum       : 12.11.1997 - 07.12.1997
+;=====================================================
+
+;geübter Benutzer
+(user 1)
+
+;Namen der Quelldateien setzen
+(set #amigatimesmain "AmigaTimes_3_97")
+(set #amigatimesinfo "AmigaTimes_3_97.info")
+(set #amigatimesausgabe "AmigaTimes3.guide")
+(set #titelbild "titelbild.iff")
+(set #titelmusik "mod")
+(set #wrack "wrack")
+(set #picshow "picshow")
+(set #bild "bild.iff")
+
+(complete 0)
+
+;Willkommenstext
+(welcome "Dieses Skript installiert die AmigaTimes auf deiner Festplatte.")
+
+;Installations-Ziel vom Nutzer erfragen
+(set #destination
+ (askdir
+  (prompt "Wo soll die AmigaTimes installiert werden? Ein Verzeichnis "
+          "\"AmigaTimes\" wird dort erstellt.")
+  (help @askdir-help)
+  (default "SYS:")
+ )
+)
+
+;Pfad und Name vom Ziel-Verzeichnis erstellen
+(set #fulldestination (tackon #destination "AmigaTimes"))
+
+;Pfad und Namen von Unterverzeichnisse im Zielverzeichnis erstellen
+(set #picdir (tackon #fulldestination "pic"))
+(set #moddir (tackon #fulldestination "mod"))
+(set #cdir   (tackon #fulldestination "c"))
+
+;Ziel-Verzeichnis erstellen
+(makedir #fulldestination
+ (infos)
+)
+
+;Unterverzeichnisse erstellen
+(makedir #picdir)
+(makedir #moddir)
+(makedir #cdir)
+
+;Dateien kopieren
+(copyfiles
+ (source #amigatimesmain)
+ (dest #fulldestination)
+)
+(complete 10)
+(copyfiles
+ (source #amigatimesinfo)
+ (dest #fulldestination)
+)
+(complete 20)
+(copyfiles
+ (source "AmigaGuide")
+ (dest "C:")
+)
+(complete 40)
+(copyfiles
+ (source #titelbild)
+ (dest #picdir)
+)
+(copyfiles
+ (source #wrack)
+ (dest #picdir)
+)
+(complete 50)
+(copyfiles
+ (source #titelmusik)
+ (dest #moddir)
+)
+(complete 60)
+(copyfiles
+ (source #amigatimesausgabe)
+ (dest #fulldestination)
+)
+(copyfiles
+ (source #picshow)
+ (dest #cdir)
+)
+(copyfiles
+ (source #bild)
+ (dest #picdir)
+)
+(complete 70)
+(copylib
+ (source "amigaguide.library")
+ (dest "LIBS:")
+)
+(complete 80)
+(copylib
+ (source "iff.library")
+ (dest "LIBS:")
+)
+(complete 90)
+(copylib
+ (source "ptreplay.library")
+ (dest "LIBS:")
+)
+
+;Assign setzen
+(startup "AmigaTimes"
+ (help "")
+ (prompt "Huhu")
+ (command (cat "assign AmigaTimes: " #fulldestination))
+ (confirm)
+)
+(run (cat "assign AmigaTimes: " #fulldestination))
+
+(complete 100)
+

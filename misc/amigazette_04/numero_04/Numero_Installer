@@ -1,0 +1,86 @@
+; Script di controllo per l'installazione del Numero_03 di AMIGAzette
+; $VER: installer 1.8.2 (23.2.2000)
+; Scritto da Francesco De Napoli
+
+
+; Definizione delle frasi di uso comune!!!
+(set nomedisco ""
+)
+
+(set frase1
+       (cat   "In quale directory preferisci INSTALLARE la rivista "
+              "Amigazette")
+)
+
+(set frase2
+       (cat "Attendere!\nSto creando la directory \""
+             nome-dir
+             "Amigazette\""
+       )
+)
+
+(set frase3
+       (cat "\n\nAttendere!\n\nSto copiando tutti i files "
+            "necessari nella directory \""
+             "Amigazette\""
+       )
+)
+
+(set @default-dest "Amigazette:")
+
+; Script vero e proprio
+
+(set nome-dir
+       (askdir
+              (prompt frase1)
+              (help @askdir-help)
+              (default @default-dest)
+       )
+)
+
+
+
+
+;-------------------
+(complete 0)
+(working "Istallando gli articoli...")
+(run ("c:lhex >CON:0/0//60/lhex/AUTO -a -f \"-w=%s\" x %snumero_04.lha" nome-dir nomedisco))
+(complete 80)
+
+; Aggiorna il glossario
+(copyfiles
+	(prompt "Aggiorno Glossario")
+	(help "")
+	(source "aggiornamenti/glossario.html")
+	(dest "Amigazette:")
+	(confirm)
+)
+(complete 81)
+
+; Aggiorna il index generale
+(copylib
+	(prompt "Aggiorno Index Generale")
+	(help "")
+	(source "aggiornamenti/index.html")
+	(dest "Amigazette:")
+	(confirm)
+)
+(complete 82)
+
+
+(working "Istallando inserto...")
+(run ("c:lhex >CON:0/0//60/lhex/AUTO -a -f \"-w=%s\" x %sinserto.lha" nome-dir nomedisco))
+(complete 90)
+
+
+; Apporta le correzioni al Nº3
+(copyfiles
+	(prompt "Sostituisce articolo nel Numero_03")
+	(help "")
+	(source "aggiornamenti/numero_03/makecd.html")
+	(dest "Amigazette:numero_03/")
+	(confirm)
+)
+(complete 95)
+
+(exit "Godetevi Amigazette!")

@@ -1,0 +1,658 @@
+5
+1*
+
+{A                J‰rjestelm‰ohjelmoinnin alkeiskurssi - Osa 4: GUI
+{A                -------------------------------------------------
+        
+{7                                  Sami Klemola
+
+
+Alun perin t‰ss‰ osassa, jonka olisi pit‰nyt tulla julkaistuksi jo hyv‰n
+aikaa sitten, oli tarkoituksena k‰sitell‰ Intuitionia edelleen, mutta teemme
+nyt hieman yll‰tt‰v‰n k‰‰nnˆksen matkallamme kohti Amigan k‰yttˆj‰rjestelm‰n
+hallintaa. K‰sittelemme kyll‰ edelliseen osaan jatkona menut ja gadgetit eli
+valikot ja nappulat. Emme kuitenkaan tee niit‰ suoraan Intuitionin kanssa
+kommunikoiden, vaan tutustumme GadToolsin p‰‰lle asettuvaan GUI-kirjastoon
+nimelt‰ Triton.
+
+GUI:n eli graafisen k‰yttˆliittym‰n tekeminen helpottui sanottavasti Release
+2:n myˆt‰ sen esitelty‰ uuden gadtools.libraryn. Asiat ovat kuitenkin
+edenneet viel‰ siit‰, ja nyt uusinta uutta ovat kolmansien osapuolien
+tuottamat oliopohjaiset kirjastot. Niist‰ ehk‰p‰ tunnetuin on MUI, mutta se
+on k‰yttˆkelvoton suunnattoman muistinkulutuksensa ja j‰rjettˆm‰n hitautensa
+takia.
+
+Omaan k‰yttˆˆni valitsin Tritonin, koska se on nopea ja pienikokoinen.
+Lis‰ksi sit‰ on helppo ohjelmoida, ja sen kanssa graafisen k‰yttˆliittym‰n
+tekeminen on todella helppoa. Triton hoitaa kaikki yhteydet Intuitioniin ja
+GadToolsiin sek‰ tarjoaa Intuitionin peruspalveluiden ja viel‰ GadToolsin
+toimintojen lis‰ksi joukon omiaan. Kaikki n‰m‰ ovat Tritonin kanssa olioita,
+joiden k‰sittely on eritt‰in yksinkertaista.
+
+Oliot toimivat itsen‰isesti Tritonin alaisuudessa, ja niiden kanssa voidaan
+olla tekemisiss‰ sen kautta. Niiden tilasta saadaan tietoja ja niiden tilaa
+voi muuttaa. Kun k‰ytt‰j‰ aktivoi olion, Triton kertoo siit‰ ohjelmalle
+l‰hett‰m‰ll‰ viestin. Triton-ohjelman toiminta on viestien vastaanottamista
+ja niiden pohjalta toimimista. Tritonin kanssa ohjelma voi keskitty‰
+olennaiseen, ja ohjelmoija voi tyystin unohtaa ongelmat erikokoisten
+kirjasinten ja ikkunan koon muuttumisen kanssa.
+
+Triton on osittain sharewarea. Itse kirjaston k‰ytt‰misest‰ ohjelmien
+ajamiseen ja omien ohjelmien tekemiseen ei tarvitse maksaa mit‰‰n, mutta
+Tritoniin kuuluu Prefs-editori, jolla voidaan asetella kunkin
+Triton-ohjelman ikkunat sopiviksi, ja sen k‰ytˆst‰ pit‰‰ maksaa 15 dollarin
+tai 20 Saksan markan suuruinen hinta. Rekisterˆity versio pit‰‰ siis
+muistissa ikkunoiden paikat, ja ohjelmien ikkunat aukeavat aina niin kuin
+olet ne viimeksi asettanut!
+
+T‰m‰ artikkeli ei ole kattava opastus graafisen k‰yttˆliittym‰n tekemiseen
+Tritonilla. Itse asiassa t‰ss‰ on vain pieni‰ tiedonpalasia sielt‰ t‰‰lt‰,
+mutta kunnollista kokonaisuutta ei saa muodostettua ennen kuin tutustuu
+l‰hemmin Tritonin omaan dokumentaatioon. Jossakin tulevassa osassa voimme
+viel‰ palata Tritoniin esimerkiksi olioiden l‰pik‰ymisen merkeiss‰, mutta
+toistaiseksi tietoa niist‰ on aika v‰h‰n. K‰yd‰‰n kuitenkin asiaan ja
+tutustumaan Tritoniin.
+
+
+{3Triton
+
+Triton on kirjoitettu kirjastoksi, jota k‰ytet‰‰n samalla tavalla kuin
+k‰yttˆj‰rjestelm‰n omiakin kirjastoja. Kirjasto avataan normaalisti, ja sen
+j‰lkeen avataan Triton-projekti. Projekti k‰sitt‰‰ ikkunan, jossa voi olla
+valikoita ja sis‰ltˆn‰ kaikenlaisia olioita. Ne kuvataan makrojen avulla
+tavalla, joka tuo mieleen jonkinlaisen ohjelmoinnin opetuksessa k‰ytetyn
+pseudokielen. Tritonille kerrotaan, mit‰ halutaan mihinkin kohtaan, ja se
+tekee oliot, laskee niille koon ja paikan jne. Tritonissa on "layout
+engine", joka toimii kaikenkokoisilla kirjasimilla ja osaa laskea olioille
+uuden koon ikkunan koon muuttuessa.
+
+Kirjaston avaamiseen voit tutustua kurssin aiemmissa osissa. Tritonin
+avaamisen j‰lkeen luodaan sovellus, mik‰ kuuluu alkutoimenpiteisiin. T‰ss‰
+on lyhyt koodi, joka tekee sen:
+
+struct TR_App *App;
+
+    if(App=TR_CreateAppTags(
+        TRCA_Name,    "MyApp",
+        TRCA_Release, "1.0",
+        TRCA_Version, "42.113",
+        TRCA_Date,    "3.11.94",
+        TAG_END)) {
+
+        /* Avattu */
+
+        TR_DeleteApp(App);
+    } else {
+
+       /* Virhe */
+
+    }
+
+Helpompi tapa kuitenkin on k‰ytt‰‰ triton.lib-apukirjastossa olevia
+TR_OpenTriton()- ja TR_CloseTriton()-funktioita, jotka tekev‰t molemmat, eli
+TR_OpenTriton() avaa ensin kirjaston ja luo sitten sovelluksen. Sovellus on
+struct Application, jossa Triton pit‰‰ kaikki ohjelmaasi koskevat tiedot.
+Sovellukseen voidaan myˆhemmin avata yksi tai useampia projekteja. Projekti
+on nyky‰‰n sama kuin yksi Triton-ikkuna. Projektin m‰‰rittelyss‰ kuvataan
+ensin ikkunan ominaisuudet, sitten valikot ja lopuksi ikkunan sis‰ltˆ.
+Esimerkki projektin avaamisesta:
+
+struct TagItem dummyTags = {
+    TRWI_Title, (ULONG) "A dummy window",
+    TRWI_ID, 42,
+    TAG_END
+};
+
+void dummyFunction(void) {
+struct TR_Project *dummyProject;
+
+    if(dummyProject=TR_OpenProject(Application,dummyTags)) {
+
+        /* Onnistui */
+
+        TR_CloseProject(dummyProject);
+    } else {
+
+        /* Virhe */
+
+    }
+}
+
+Projektilla tulee olla yksilˆllinen tunniste (TRWI_ID). Sen pit‰‰ olla muu
+kuin nolla, ja sen pit‰‰ pysy‰ samana. Triton tallentaa ikkunan koon ja muut
+parametrit, joten ne hukkuvat, jos ID muuttuu joskus. Yll‰ olevassa koodissa
+on staattinen taglista projektin kuvaamiseen. Triton ei tue
+TAG_MORE-toimintoa, joten listoja ei voi yhdistell‰. Joskus voi olla tarpeen
+k‰ytt‰‰ TR_OpenProjectTags()-kutsua sen sijaan, jolloin taglista rakennetaan
+dynaamisesti ja ajoaikaisesti pinoon. T‰m‰ tietysti kuluttaa paljon
+pinomuistia sek‰ pident‰‰ ja hidastaa ohjelmaa, joten kovin pitki‰
+taglistoja ei kannata n‰in rakennella.
+
+Yll‰ olevissa koodeissa k‰ytet‰‰n tagien nimi‰, mutta paljon selke‰mpi
+tapakin taglistojen tekemiseen on olemassa: makrot. Niill‰ voidaan kuvata
+melkein kaikki tarpeellinen. Esimerkiksi ikkuna kuvataan n‰in:
+
+           WindowTitle("A dummy window"),
+           WindowID(42),
+           EndProject
+
+Myˆs olioille ja valikkovalinnoille on olemassa makrot. Tarkemmin
+m‰‰rittelyjen tekeminen ja makrojen k‰ytt‰minen siin‰ selvi‰‰ artikkelin
+lopussa olevasta ohjelmaesimerkist‰.
+
+{2Oliot
+
+Tritonin toiminta perustuu olioihin ja ohjelman k‰ytt‰j‰n kanssa k‰ym‰
+kommunikaation niilt‰ saataviin viesteihin. T‰ss‰ on aluksi luettelo
+kaikista Triton-olioista:
+
+    Button          BOOPSI button gadget
+    CheckBox        GadTools CheckBox
+    Cycle           GadTools Cycle and MX gadget
+    DropBox         AppIcon dropping box
+    FrameBox        Framing or grouping box
+    Group           Triton's layout engine
+    Image           Image
+    Line            3D line
+    Listview        GadTools Listview
+    Palette         GadTools Palette gadget
+    Progress        Progress indicator
+    Scroller        GadTools Scroller
+    Slider          GadTools Slider
+    Space           Empty space
+    String          GadTools String gadget
+    Text            Text
+
+Taulukko 1. Triton-oliot.
+
+N‰ist‰ muutamat ovat yksinkertaisia: Text n‰ytt‰‰ teksti‰, Line tekee viivan
+ja niin edelleen. Sitten on todella monimutkaisia ja kehittyneit‰ olioita
+kuten palettigadget, Listview-gadget ja Progress indicator eli valmiiksi
+rakennettu edistysosoitin, jossa on tiettyyn suuntaan tyˆn etenemisen mukaan
+virtaava palkki, joten k‰ytt‰j‰ n‰kee, miss‰ vaiheessa tyˆ on. Group-olio
+liittyy Tritonin layout engineen. Sen avulla voidaan ohjata olioiden
+sijoittelua ikkunaan. Niit‰ voidaan ryhmitell‰ pysty- ja vaakasuunnassa,
+keskitt‰‰ ja jaotella eri tavoin. T‰ss‰ jutussa en k‰y olioita l‰pi
+yksityiskohtaisesti, mutta lopun l‰hdekoodissa on hieman asiaa niist‰.
+Asiaan voidaan palata jatkossa.
+
+Olioilla on attribuutteja, joiden arvo voidaan lukea funktiolla
+TR_GetAttribute(). Niit‰ voidaan myˆs asettaa funktiolla TR_SetAttribute().
+Joidenkin olioiden kaikkia attribuutteja ei voida muuttaa j‰lkik‰teen, vaan
+arvot ovat pysyvi‰, kun ne luomishetkell‰ on m‰‰ritelty. T‰llaisia
+muuttamattomia attribuutteja on esimerkiksi Listview-gadgetin entrylista.
+
+{2Viestit
+
+Tritonilta saadaan monenlaisia viestej‰. Se voi kertoa ikkunan sulkunappulan
+painamisesta tai sis‰isest‰ virheest‰. T‰rkeimm‰t viestit ovat NEWVALUE ja
+ACTION. Ne ovat olioiden l‰hett‰mi‰ viestej‰ ja kertovat, ett‰ k‰ytt‰j‰ on
+tehnyt niille jotakin. Nappulaa voi olla painettu tai vieritint‰ vieritetty.
+Viestiin sis‰ltyy tarkka tieto siit‰, mit‰ on tapahtunut. Triton-ohjelman
+toiminta perustuu viestien vastaanottamiseen ja niiden tulkintaan. Yksi
+l‰hdekoodi kertoo enemm‰n kuin kaksituhatta tavua, joten t‰m‰kin selvi‰‰
+parhaiten esimerkkikoodista.
+
+Myˆs oliot keskustelevat Tritonin kanssa viesteill‰. N‰iden viestien kanssa
+sovellus ei kuitenkaan ole yleens‰ tekemisiss‰. Sen sijaan esimerkiksi
+TR_SetAttribute()-funktion kutsuminen saa Tritonin l‰hett‰m‰‰n kohdeoliolle
+asianmukaisen viestin. Olioille voi kyll‰ l‰hett‰‰ suoraankin viestej‰,
+mutta se ei ole yleens‰ tarpeen. Kaikki kanssak‰yminen niiden kanssa voidaan
+toteuttaa helposti Tritonin kautta.
+
+{2Help
+
+Tritonissa on kaksi apua-toimintoa. QuickHelp-toiminto ollessaan p‰‰ll‰
+n‰ytt‰‰ ruudulla pieni‰ aputekstej‰, kun hiiren osoitin on sellaisen olion
+p‰‰ll‰, jolle on sellainen m‰‰ritelty. Monet oliot eiv‰t kuitenkaan tue t‰t‰
+toimintoa viel‰. Ohjelmaesimerkiss‰ QuickHelp on p‰‰ll‰ oletuksena ja sen
+tilaa voi muuttaa valikosta. Ylemm‰ss‰ nappulassa on m‰‰riteltyn‰ pieni
+aputeksti. Alempaan cycle-gadgetiin ei sellaista saa, koska kyseinen olio
+kuuluu niihin, jotka eiv‰t peri attribuutteja yl‰luokilta. QuickHelp kun on
+abstraktin DisplayObject-luokan attribuutti eik‰ GUI-olioiden itsens‰.
+
+Toinen tapa on manuaalinen helppi. Jos projektim‰‰rittelyss‰ on TWRF_HELP
+p‰‰ll‰, Triton l‰hett‰‰ TRMS_HELP-viestin joka kerta, kun k‰ytt‰j‰ painaa
+Help-n‰pp‰int‰. Sen j‰lkeen on sinun vastuullasi n‰ytt‰‰ k‰ytt‰j‰lle h‰nen
+haluamaansa apua. Tavallisinta on avata ohjelman AmigaGuide-dokumentti siit‰
+kohtaa, jossa k‰sitell‰‰n sit‰ asiaa. Viestin ID-kent‰ss‰ on sen olion
+tunniste, josta k‰ytt‰j‰ haluaa tietoa.
+
+{2Loppusanat
+
+Tarkempaa tietoa Triton-ohjelmoinnista saat
+Developer/TritonDev.guide-dokumentista ja Tritonin includetiedostosta sek‰
+autodoceista. Niiss‰ on selitetty kaikki kirjastoon liittyv‰t asiat. T‰m‰n
+artikkelin ei miss‰‰n nimess‰ ollutkaan tarkoitus olla tyhjent‰v‰ selvitys
+Triton-ohjelmoinnista. Siihen ei mill‰‰n olisi aikaa eik‰ tilaa. Monia
+kysymyksi‰ j‰‰ auki ja monet asiat ehk‰p‰ sekaviksi, mutta lukemalla
+Tritonin ohjeita ne selvi‰v‰t. Tarkoitukseni olikin l‰hinn‰ tarjota helppo
+johdanto t‰h‰n kiehtovaan GUI-maailmaan, jonka tarjoaa Triton!
+
+
+{3Ohjelmakoodia
+
+T‰ss‰ on k‰tev‰ ohjelmarunko, josta voi todella nopeasti tehd‰ pienen
+ohjelman. Siin‰ on kaikki tarvittava AmigaDOS-standardisen ohjelman
+tekemiseksi. Se k‰sittelee argumentit, sis‰lt‰‰ cleanup-koodin sek‰
+tarvittavan koodin virheilmoituksen n‰ytt‰miseen. Korvaa alussa kommentissa
+ja versiomerkkijonossa oleva "`"-merkki ohjelman nimell‰ (k‰tev‰sti esim.
+Ediss‰ "2e/`/Ohjelma"), laita ohjelman argumenttikuvaus
+template-merkkijonoon ja ala kirjoittaa koodia! Puitteet ovat valmiit.
+
+Koodi k‰ytt‰‰ _main()-entrypointtia, kuten yleens‰kin, koska sill‰ p‰‰st‰‰n
+eroon monesta kilosta turhaa koodia, esimerkiksi C-k‰‰nt‰j‰n argumenttien
+parseamisesta, joka on AmigaDOS-ymp‰ristˆss‰ tarpeetonta. Koodi k‰ytt‰‰ sen
+tekemiseen DOS-funktiota ReadArgs(), johon tutustumme l‰hemmin kurssin
+tulevissa osissa. ReadArgs() k‰sittelee argumentit standardilla tavalla, ja
+se myˆs varmistaa, ett‰ saat tarvitsemasi argumentit. Jos niit‰ ei ole
+annettu, koodi tulostaa virheilmoituksen ja palauttaa sinut shelliin.
+
+K‰ytett‰viss‰si on myˆs ohjelman nimi cmd-puskurissa. Sit‰ k‰ytet‰‰n
+virheilmoitusten n‰ytt‰miseen, ja koodi kysyy sen ensi tˆikseen DOSilta.
+Argumentit ovat args-taulukossa, ensimm‰isess‰ alkiossa ensimm‰inen jne.
+Mik‰li argumentti on merkkijono, alkiossa on osoitin siihen. Jos se on
+numeraalinen, alkio on nolla, jos sit‰ ei ole annettu (mik‰li sen voi j‰tt‰‰
+antamatta), tai OSOITIN longwordiin, jossa on argumentin arvo. Argumentit
+kuvataan nk. templatella, jonka AmigaDOS-ohjelmat kertovat antamalla
+ainoaksi argumentiksi kysymysmerkin.
+
+Template voi olla esimerkiksi "FILE/A,LENGTH/N". T‰llˆin FILE on ensimm‰inen
+argumentti ja merkkijono. LENGTH on toinen ja numeraalinen. Argumentin nimen
+per‰ss‰ tulevat kirjaimet kertovat sen tyypin. A tarkoittaa pakollista
+argumenttia. Jos se puuttuu, ohjelma ei l‰hde k‰yntiin. N tarkoittaa
+numeraalista argumenttia. LENGTH-argumentissa ei ole A-m‰‰rittely‰, joten se
+ei ole pakollinen. Jos sit‰ ei anneta, args[1] on nolla. M‰‰rittelyj‰ voi
+yhdist‰‰, ja esimerkiksi pakollinen numeraaliargumentti olisi "/N/A". Kaikki
+m‰‰rittelyt on selitetty Using The System Software -kirjassa sivulla 8-5
+(sek‰ enemm‰n ohjelmoijan n‰kˆkulmasta dos.libraryn autodoceissa
+ReadArgs()-funktion yhteydess‰). Kerron niist‰ viel‰ lis‰‰ kurssin DOSia
+k‰sittelev‰ss‰ osassa.
+
+/* `.c */
+
+#include "exec/io.h"
+#include "exec/memory.h"
+#include "exec/libraries.h"
+#include "exec/execbase.h"
+#include "dos/dos.h"
+#include "proto/exec_protos.h"
+#include "proto/dos_protos.h"
+
+#define TRUE 1
+#define FALSE 0
+
+typedef unsigned char u_char
+
+int _main(void);
+void error(u_char *),cleanup(void);
+
+struct RDArds *ra;
+
+ULONG args[2];
+
+u_char template[]="",ver[]="$VER: ` 1.00",cmd[32];
+
+int _main(void) {
+LONG i;
+    GetProgramName(cmd,32);
+    if(!(ra=ReadArgs((STRPTR)template,args,NULL))) {
+        PrintFault(i=IoErr(),cmd);
+        exit(i);
+    }
+
+    /* T‰h‰n koodi. */
+
+    cleanup();
+    return(RETURN_OK);
+};
+
+void error(u_char *str) {
+    printf("%s: %s\n",cmd,str);
+    cleanup();
+    exit(RETURN_FAIL);
+};
+
+void cleanup(void) {
+    if(ra) FreeArgs(ra);
+};
+
+{2Toimiva GUI-ohjelma
+
+Nyt tulee kurssin ensimm‰inen t‰ydellinen l‰hdekoodi, joka k‰‰ntyy t‰ydeksi
+ohjelmaksi. Mit‰‰n se ei kyll‰ tee, mutta se rakentaa yksinkertaisen
+graafisen k‰yttˆliittym‰n, ja koodista voi kommentoinnin myˆt‰vaikutuksella
+oppia paljon Tritonin k‰ytt‰misest‰. L‰hdekoodin osia tai koko koodiakin saa
+k‰ytt‰‰ omissa ohjelmissaan. Maininta sen alkuper‰st‰ on kyll‰ suotavaa.
+Voit joutua muuttamaan koodista pieni‰ osia kuten
+prototyyppim‰‰rittelytiedostojen nimi‰ tai muiden include-tiedostojen
+hakemistoja tai muuta sellaista saadaksesi sen k‰‰ntym‰‰n. Koodi kuitenkin
+k‰‰ntynee sellaisenaan. Itse k‰‰nsin sen DICE:ll‰ ja GCC:ll‰.
+
+Koodi on alun perin kirjoitettu edell‰ n‰hdyn yleispohjan p‰‰lle. Nyt t‰st‰
+koodista saa rungon GUI-ohjelmalle. Projektim‰‰rittelyj‰ ja p‰‰silmukan
+toimintoja muuttamalla voi helposti tehd‰ ohjelman, jossa on hieno graafinen
+k‰yttˆliittym‰. Jos haluat koodista dokumentoimattoman version, jota ei ole
+myˆsk‰‰n pilkottu useammille riveille, saat sen minulta pyyt‰m‰ll‰. Avustan
+myˆs boksissani henkilˆkohtaisesti ohjelmointiteknisiss‰ ongelmatilanteissa.
+
+
+/* TritonCode.c */
+
+/* T‰m‰ l‰hdekoodi on pohja mille tahansa ohjelmalle, jossa on graafinen
+   k‰yttˆliittym‰. Koodista voi helposti rakennella valmiin ohjelman. */
+
+#include "exec/io.h"
+#include "exec/memory.h"
+#include "exec/libraries.h"
+#include "exec/execbase.h"
+#include "dos/dos.h"
+#include "libraries/triton.h"
+#include "proto/exec_protos.h"
+#include "proto/dos_protos.h"
+#include "proto/triton_protos.h"
+
+#define TRUE 1
+#define FALSE 0
+
+typedef unsigned char u_char
+
+/* T‰m‰ on oma Triton-oliom‰‰rittelymakroni. Se on CenteredButton, johon
+   on ujutettu mukaan help-stringi. Alun perin se on ollut yhdell‰ rivill‰,
+   ja se kannattaa siihen muotoon palauttaa. Silloin voi ottaa pois rivien
+   lopuissa olevat kenoviivat, jotka saavat k‰‰nt‰j‰n j‰tt‰m‰‰n seuraavan
+   rivinvaihdon huomiotta, mik‰ on tarpeen, koska makrom‰‰rittelyn pit‰‰
+   olla samalla rivill‰. N‰inkin se toimii, mutta hyv‰lt‰ se ei n‰yt‰. */
+
+#define CenteredButtonHelp(t,i,str) HorizGroupSC,Space,TROB_Button,0L,\
+    TRAT_Text,(ULONG)(t),TRAT_ID,(i),TRDO_QuickHelpString,((ULONG)(str)),\
+    Space,EndGroup
+
+int _main(void);
+void DoStuff(void),error(u_char *),cleanup(void);
+
+struct RDArds *ra;
+struct TR_Project *project;     /* Osoitin Triton-projektiin */
+struct TR_Message *trmsg;       /* Vastaanotettu viesti */
+
+ULONG args[2];
+
+/* Yleisi‰ merkkijonoja, versio, virheilmoitukset jne. Ohjelman nimi
+   on s_prg:ss‰, jota k‰ytet‰‰n ohjelmassa aina, kun sit‰ tarvitaan. */
+
+u_char template[]="",ver[]="$VER: TritonCode 1.00",cmd[32],
+    err_gui[]="unable to create GUI",s_prg[]="TritonCode";
+
+/* Kiertonappulan vaihtoehdot. N‰m‰ merkkijonot kiert‰v‰t nappulassa
+   aina kun sit‰ painetaan. */
+
+u_char *CycleEntries[] = {
+    "Poutaa","Pilvist‰","Sadetta","Myrsky‰",0
+};
+
+/* N‰m‰ ovat ohjelmassa k‰ytett‰vien Triton-olioiden tunnistenumerot.
+   Ensimm‰iset kolme ovat valikkovalintoja ja loput ikkunassa olevia
+   nappuloita. Pid‰n ne eri kymmenluvuilla selvyyden vuoksi. */
+
+#define ID_About    1
+#define ID_Help     2
+#define ID_Quit     3
+#define ID_Ask      10
+#define ID_Cycle    11
+
+/* T‰m‰ on Triton-projektin m‰‰rittely. Se kuvaa projektin k‰ytt‰m‰n
+   ikkunan, valikot ja ikkunan sis‰llˆn eli nappulat ja muut jutut. */
+
+ProjectDefinition(prod) {
+    WindowID(1),
+    WindowPosition(TRWP_CENTERSCREEN),
+    WindowTitle("TritonCode 1.00"),
+
+    BeginMenu("Project"),               /* Valikko */
+    MenuItem("A_About",ID_About),       /* Ensimm‰inen valinta */
+    MenuItemCC("H_Autohelp",ID_Help),   /* CheckMark-valinta */
+    ItemBarlabel,                       /* V‰lirivi */
+    MenuItem("Q_Quit",ID_Quit),         /* Hotkey rcommand-Q */
+
+    /* Ikkunan sis‰ltˆ. Pit‰‰ alkaa ryhm‰oliolla. */
+
+        VertGroupA,
+            SpaceB, /* Iso v‰li */
+
+
+            /* Keskitetty nappula, johon kuuluu aputeksti */
+
+            CenteredButtonHelp("Kysymys",ID_Ask,
+                "Vastaa hassuun kysymykseen"),
+
+            SpaceB,HorizSeparator,SpaceB, /* V‰lit ja vaakaviiva */
+
+            /* Vaakasuuntainen ryhm‰, jossa on ensin teksti vasemmalla ja
+               sitten cycle-gadget oikealla. Cycle-gadget on tehty makron
+               sijaan suoraan tageja k‰ytt‰m‰ll‰. */
+
+            HorizGroupEAC,SpaceB,
+                TextN("S‰‰tila"),SpaceB,TROB_Cycle,(ULONG)CycleEntries,
+                TRAT_ID,ID_Cycle,TRAT_Value,0,
+            SpaceB,EndGroup,
+
+            SpaceB,
+        EndGroup,
+
+    EndProject
+};
+
+/* T‰m‰ m‰‰rittely kuvaa About-valitsimen. BeginRequester() m‰‰rittelee
+   valitsimen otsikon ja sijainnin, t‰ss‰ se tulee ruudun otsikkorivin
+   alle. Valitsin koostuu viidest‰ rivist‰ teksti‰ sek‰ yhdest‰ eroke-
+   viivasta eli "horisontaalisesta separaattorista". Lopuksi m‰‰ritell‰‰n
+   valitsimen nappulat, joita on t‰ss‰ vain yksi, jonka ainoa tarkoitus
+   on sulkea valitsin. Mit‰‰n tietoa t‰m‰ valitsin ei k‰ytt‰j‰lt‰
+   ohjelmalle v‰lit‰. Nappula on keskitetty, ja siihen voi vastata myˆs
+   Returnilla (R) ja Escapella (E). Myˆs "O" k‰y. Nappulan nimess‰ oleva
+   alaviiva tekee sit‰ seuraavasta kirjaimesta nappulan hotkeyn. */
+
+ProjectDefinition(abouttags) {
+    BeginRequester("About...",TRWP_BELOWTITLEBAR),
+
+    VertGroupA, Space,  CenteredText3("TritonCode 1.00"),
+                SpaceS, CenteredText("©1996 by Sami Klemola"),
+                Space,  HorizSeparator,
+                Space,  CenteredText("This program is using the"),
+                SpaceS, CenteredText("Triton GUI creation system"),
+                SpaceS, CenteredText("which is © by Stefan Zeiger"),
+                Space,  EndGroup,
+
+    BeginRequesterGads,
+    CenteredButtonRE("_Ok",1),
+    EndRequester
+};
+
+/* Toinen valitsin pomppaa ruudulle, t‰ll‰ kertaa keskelle sit‰, kun
+   painetaan Kysymys-nappulaa. T‰h‰n valitsimeen voi vastata kahdella
+   tavalla, joten meill‰ on kaksi nappulaa. Se vaatii hieman enemm‰n tyˆt‰
+   kuin yhden nappulan laittaminen. Niihinkin voi vastata hotkeyll‰. T‰m‰n
+   valitsimen n‰ytetty‰‰n funktio palauttaa sen nappulan tunnisteen, joka
+   valittiin. Valitsimen tunnisteet eiv‰t ole samaa sarjaa ikkunassa
+   olevien kanssa, joten t‰ss‰ ne ovat yksi ja nolla. */
+
+ProjectDefinition(asktags) {
+    BeginRequester("Kysymys",TRWP_CENTERSCREEN),
+
+    VertGroupA, Space,
+            CenteredText("Jotkut ihmiset ovat sit‰ mielt‰, ett‰"),
+                SpaceS,
+            CenteredText("heid‰n p‰‰ns‰ ymp‰rill‰ on jotakin."),
+                SpaceS,
+            CenteredText("Tuntuuko sinusta, ett‰ vanne puristaa p‰‰t‰si?"),
+                Space,  EndGroup,
+
+    BeginRequesterGads,
+    LineArray,BeginLine,
+        Space,
+            CenteredButtonR("_Kyll‰",1),
+        Space,
+            CenteredButtonE("_Ei kai",0),
+        Space,
+    EndLine,EndArray,
+    EndRequester
+};
+
+/* P‰‰ohjelma avaa Tritonin ja Triton-projektin sek‰ asettaa pika-avun
+   p‰‰lle heti. TR_OpenTriton()-funktiolle annetaan tiedot ohjelmasta.
+   Niit‰ voi katsella Tritonin Prefs-editorilla. */
+
+int _main(void) {
+LONG i;
+    GetProgramName(cmd,32);
+    if(!(ra=ReadArgs((STRPTR)template,args,NULL))) {
+        PrintFault(i=IoErr(),cmd);
+        exit(i);
+    }
+    if(!(TR_OpenTriton(TRITON11VERSION,
+        TRCA_Name,s_prg,TRCA_LongName,s_prg,    /* Ohjelman nimi */
+        TRCA_Info,(ULONG)"GUI Demo",            /* Ohjelman kuvaus */
+        TRCA_Version,(ULONG)"1.00",             /* Versionumero */
+        TRCA_Release,(ULONG)"1",                /* Julkaisu */
+        TRCA_Date,(ULONG)"1-Mar-96",TAG_END)))  /* P‰iv‰ys */
+        error("triton.library needed");
+    if(!(project=TR_OpenProject((struct TR_App *)Application,prod)))
+        error(err_gui);
+    TR_SetAttribute(project,0,TRWI_QuickHelp,TRUE);
+    DoStuff();
+    cleanup();
+    return(RETURN_OK);
+};
+
+/* DoStuff() on p‰‰silmukka, joka perustuu Tritonin l‰hett‰mien viestien
+   vastaanottamiseen ja tulkintaan sek‰ niiden pohjalta toimimiseen. */
+
+void DoStuff(void) {
+    while(TRUE) {
+        while(trmsg=(struct TR_Message *)TR_GetMsg(Application)) {
+
+
+/* Saapuneet viestit k‰sitell‰‰n luokkakohtaisesti. */
+
+            switch(trmsg->trm_Class) {
+
+/* Ikkunan sulkunappulaa on painettu. Vastataan kaikkiin viesteihin ja
+   poistutaan. Triton tosin vapauttaa itsekin viesteille varatun muistin,
+   mutta ei v‰ltt‰m‰tt‰ viesteihin liittyvi‰ resursseja, joten t‰llainen
+   ReplyMsg()-silmukka on hyv‰ olla. */
+
+                case TRMS_CLOSEWINDOW:
+                    TR_ReplyMsg(trmsg);
+                    while(trmsg=(struct TR_Message *)
+                        TR_GetMsg(Application)) TR_ReplyMsg(trmsg);
+                    return();
+
+/* Tritonissa on sattunut virhe. Lienee harvinaista. Periaatteessa ilmoitus
+   pit‰isi n‰ytt‰‰ valitsimessa, mutta tulostaminen stdoutiinkin
+   k‰ynee, koska t‰t‰ ei pit‰isi tapahtuakaan. */
+
+                case TRMS_ERROR:
+                    printf("%s: %s\n",cmd,
+                        TR_GetErrorString(trmsg->trm_Data));
+                    break;
+
+/* NEWVALUE-viestit kertovat olion tilan muuttumisesta. T‰llaisen viestin
+   l‰hett‰v‰t esimerkiksi TOGGLE-tyyppiset (CHECKMARK) valikkovalinnat,
+   kuten t‰ss‰ ohjelmassa Autohelp, sek‰ Listview- ja Cycle-gadgetit. Olion
+   uusi arvo on viestin datakent‰ss‰. */
+
+                case TRMS_NEWVALUE:
+                    switch(trmsg->trm_ID) {
+                        case ID_Help:
+                            TR_SetAttribute(project,0,TRWI_QuickHelp,
+                                trmsg->trm_Data);
+                            break;
+
+/*                      T‰ss‰ kohtaa pit‰isi tietysti olla "case ID_Cycle:",
+                        jossa k‰sitelt‰isiin s‰‰tilan vaihtuminen. Toinen
+                        mahdollisuus on toki se, ett‰ jos kyseess‰ on
+                        sellainen valinta, ett‰ sit‰ tarvitaan vasta
+                        tietyss‰ vaiheessa, ei t‰llaista tarvita, vaan
+                        tietoa tarvittaessa k‰ytet‰‰n TR_GetAttribute()-
+                        funktiota olion tilan selvitt‰miseen. T‰h‰n
+                        esimerkkiin en kumpaakaan ole laittanut tilaa
+                        viem‰‰n ja sekoittamaan ihmisi‰. */
+
+                    }
+                    break;
+
+/* ACTION-viestin synnytt‰‰ esimerkiksi tavallinen nappula, t‰ss‰ ohjelmassa
+   Kysymys-gadget, sek‰ tavallinen menuvalinta, jolla k‰ynnistet‰‰n jokin
+   toiminto. Alla k‰sitell‰‰n kaikki t‰m‰n ohjelman kolme ACTION-tyyppisi‰
+   viestej‰ heittelev‰‰ oliota. Olioiden kuvaavat tunnistenumerot ovat avuksi
+   toimintojen selvitt‰miseksi koodista. About-menuvalinnasta aukeaa
+   tavalliseen tapaan pieni valitsin, joka n‰ytt‰‰ ohjelmasta tietoja.
+   Valitsin on suoraan kopioitu Tritonin demokoodista, mutta tekstej‰ on
+   tietysti hieman vaihdettu. Quit-valinta aikaansaa saman kuin ikkunan
+   sulkunappulan painaminen, eli vastataan kaikkiin viesteihin ja poistutaan.
+   Oikeassa ohjelmassa t‰ss‰ pit‰isi olla viel‰ valitsin, joka kysyisi,
+   haluaako k‰ytt‰j‰ varmasti poistua ja antaisi h‰nelle viel‰ Cancel-option.
+   Ask-nappulan toteutus on samantapainen kuin About-valikkovalinnan. Se
+   n‰ytt‰‰ valitsimen, ja oikea koodi tietysti katsoisi funktion palauttaman
+   arvon, koska se sis‰lt‰‰ tiedon siit‰, mit‰ nappulaa k‰ytt‰j‰ painoi
+   valitsimen sulkemiseksi. */
+
+                case TRMS_ACTION:
+                    switch(trmsg->trm_ID) {
+                        case ID_About:
+                            TR_AutoRequest(Application,project,abouttags);
+                            break;
+                        case ID_Quit:
+                            TR_ReplyMsg(trmsg);
+                            while(trmsg=(struct TR_Message *)
+                                TR_GetMsg(Application)) TR_ReplyMsg(trmsg);
+                            return();
+                        case ID_Ask:
+                            TR_AutoRequest(Application,project,asktags);
+                            break;
+                    }
+                    break;
+            }
+
+/* Kun viesti on k‰sitelty, tai ohitettu, jos se ei ollut haluttua tyyppi‰,
+   vaan esimerkiksi TRMS_KEYPRESSED, joka kertoo n‰pp‰imen painamisesta ja
+   joita t‰ss‰ ohjelmassa ei k‰sitell‰, siihen vastataan, ja sen j‰lkeen
+   j‰‰d‰‰n odottamaan uutta viesti‰. */
+
+            TR_ReplyMsg(trmsg);
+        }
+        TR_Wait(Application,0);
+    }
+};
+
+/* T‰m‰ funktio tulostaa virheilmoituksen tavanomaiseen AmigaDOS-tapaan,
+   eli formaatti on "ohjelma: virhe". Funktio k‰ytt‰‰ _main()-funktion
+   alussa DOSilta kysym‰‰ns‰ nime‰. */
+
+void error(u_char *str) {
+    printf("%s: %s\n",cmd,str);
+    cleanup();
+    exit(RETURN_FAIL);
+};
+
+/* T‰t‰ funktiota kutsutaan aina ohjelmasta poistuttaessa. T‰ss‰ ohjelmassa
+   ei ole paljon siivottavaa, joten funktio sulkee vain Triton-projektin ja
+   sitten Tritonin itsens‰. Lopuksi vapautetaan argumentit, joita t‰ss‰
+   ohjelmassa ei tosin k‰ytet‰k‰‰n. */
+
+void cleanup(void) {
+    if(project) TR_CloseProject(project);
+    TR_CloseTriton();
+    if(ra) FreeArgs(ra);
+};
+
+
+{3Mit‰ seuraavaksi?
+
+Jatkoa seuraa ensi numerossa. En ole viel‰ p‰‰tt‰nyt, mik‰ seuraavan osan
+aihe on, mutta se selvi‰‰ todenn‰kˆisesti viimeist‰‰n silloin, kun se on
+valmis. Todenn‰kˆisesti on aika alkaa k‰sitell‰ DOS-kirjastoa, koska se
+tarjoaa paljon kaikkien ohjelmien tarvitsemia palveluita. Samalla tai ehk‰
+jatkossa pit‰‰ myˆs paneutua enemm‰n aikaisemmissa osissa liian nopeasti
+k‰siteltyihin asioihin. L‰hdekoodia on luvassa myˆs jatkossa. Palautettakin
+otetaan vastaan.

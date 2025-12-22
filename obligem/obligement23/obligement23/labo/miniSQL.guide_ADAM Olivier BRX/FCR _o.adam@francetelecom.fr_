@@ -1,0 +1,665 @@
+@database "Article SQL.guide"
+@author "©Adam00"
+@remark "$VER: Article SQL Guide 1.0 (26. Juillet 2000)"
+
+
+@node MAIN "Welcome"
+
+      @{b}Les bases de données, l'Amiga etc ...@{ub}
+
+Par ADAM Olivier, mailto:olivieradam@123india.com
+
+
+   Le but de cet article, en quelques mots, sera de vous présenter brièvement
+   un des système de gestion de base de données parmi les plus classiques :
+
+
+                                @{b}mSQL@{ub}
+
+
+       Nous en étudierons quelques uns des concepts les plus simples.
+   Ainsi, chacun pourra mesurer toute l'universalité de ce système.
+
+   Il se trouve que ce système fonctionne sur mon Amiga.
+   J'en déduis qu'il devrait fonctionner aussi sur le vôtre, pour peu que le
+   pré-requis soit respecté.
+
+       Par contre je suis obligé d'avouer qu'il faut savoir piloter un Amiga pour
+   envisager cette installation .
+
+   En effet, la mise en oeuvre de ce système requiert des connaissances assez
+   poussées de l'Amiga :
+   - Le Shell, 
+   - MultiUser,
+   - AmiTCP, 
+   - ixemul.
+
+   Soit le sommaire :
+
+   Le SQL, rapide historique : @{"       " link historique}  Historique
+
+          Mini-SQL sur Amiga : @{"       " link amiga-msql}  Présentation
+
+             Goldorak,  GO ! : @{"       " link installation}  Installation
+
+              Us et coutumes : @{"       " link usage}  Usage
+
+Tous les softs sont disponibles sur Aminet:, seul AmiTCP provient d'une autre source
+mais toujours sur Internet. Toutes les marques citées sont déposées, tous les copyrights
+sont inclus avec leurs archives, les propos tenus dans cet article n'engagent que
+leur auteur. Ce texte est placé dans le domaine public, afin que le meilleur usage
+en soit fait.
+
+
+
+@endnode
+@node HISTORIQUE "historique"
+      @{b}Les Systèmes de Gestion de Base de Données@{ub}
+
+
+      @{b}Architecture@{ub}
+
+          L'informatique sert à traiter des données, dit-on.
+      En effet, et la formule la plus couramment adoptée est la base de données.
+      Cette base pourrait parfaitement être un fichier de tableur, bien sûr,
+      bien que si cette base était accédée par plusieurs personnes, il serait
+      plus sage de l'écarter du contact direct des utilisateurs.
+
+          Dans cette optique, un Serveur de Base de Données est une
+      couche entre des bases et des clients, qui interrogent ces bases :
+
+               base <----> serveur <----> client
+
+               Diagramme :@{"       " link diagramme1/main}
+
+          Il s'agit donc d'une architecture client/serveur, qui utilise TCP/IP
+      pour transporter ses commandes.
+
+
+
+
+      @{b}SQL ou Structured Query Langage@{ub}
+
+          Né aux environs de 1977, ce langage fut conçu pour interroger les
+      bases de données et pour les piloter.
+      Devenu une norme, il a été décliné sous de nombreuses versions
+      on peut citer par exemple :
+
+                          mSQL, MySQL, PostGreSQL.
+
+      
+      Dans notre cas, nous nous intéresseront à @{"mSQL" link amiga-msql}.
+
+      
+      
+
+      @{b}Fonctionnement@{ub}
+
+          Le serveur, tournant en tâche de fond, est interrogé par les
+      clients qui s'y connectent.
+
+           @{b}Le serveur nourrit la base et la maintient. Seul.@{ub}
+
+      Celà signifie qu'il n'est pas nécessaire pour les clients de savoir où
+      ces fameuses bases se trouvent. De même, la structure physique des données
+      sur le disque n'a aucune sorte d'importance.
+
+          Il est administré par ceux qui peuvent exécuter les commandes msql,
+      soit l'utilisateur nommé msql, soit le super-utilisateur : root.
+      Ces commandes, externes au serveur, sont utilisées pour créer ou
+      détruire des bases, voire pour importer des données ...
+
+          Pour le reste du monde, seule la commande msql est accessible,
+      bien que par sécurité, il faille restreindre les accès, à l'aide par exemple,
+      d'une table d'IP créée dans le fichier netdb de votre config TCP/IP
+      à la rubrique ACCESS.
+      
+          Pour vraiment exploiter ce SGBD de façon académique, il faut interdire
+      toute connexion externe (hors localhost), et travailler avec un serveur web,
+      qui interroge la base à l'aide de scripts, par exemple, écrits en php.
+
+      Ce genre de config est possible avec un Amiga, bien entendu.
+
+
+   @{" -->  " link amiga-msql}
+
+@endnode
+
+@node AMIGA-MSQL "amiga-msql"
+
+      @{b}mSQL pour MINI-SQL@{ub}
+
+          Ce système de Hugues Technologies, emprunte tout au SQL, bien
+      qu'il soit moins étoffé. D'où son nom : Mini-SQL, il est multi-plateformes,
+      et il existe un kit msql pour Amiga, dont l'auteur est Christophe Sollet ;
+      il s'agit d'un portage très fidèle de la version Un*X, démontrant une fois
+      de plus le sex-appeal de notre dream-machine favorite.
+
+
+
+          Mini, mini, c'est vite dit !
+      Mouillé, le bébé peut peser très lourd : Le nombre d'enregistrements est énorme.
+      La documentation déclare que le logiciel accepte dans le @{b}MILLION@{ub}
+      d'enregistrements, paf.
+
+      Si vous voulez faire une base de votre collection de CDs c'est parfait.
+
+      Les commandes Shell du pack msql2 sont totalement identiques à celles
+      de Linux, par exemple.
+      Le portage Amiga est total, vous pouvez donc, grâce à ces commandes,
+      piloter une base située sur une machine Linux ; ou utiliser Linux
+      pour interroger un serveur Amiga.
+      Yark. Un serveur Amiga. Après tout, çà chauffe pas, un Amiga, en plus,
+      l'alim, elle fait à peine 25W, c'est écolo !
+
+
+
+      @{b}Au menu :@{ub}
+
+           Article  |       Version         |     Status
+      ________________________________________________________
+      - 1 Amiga     | VER$: 3.0             | Prisoner of war
+      - AmiTCP      | VER$: ß3              | Shareware 
+      - MultiUser   | VER$: 1.8             | Shareware
+      - E           | VER$: 3.3e            | Freeware (3.3e only)
+      - ixemul      | VER$: 48              | GNU
+      - msql.library| VER$: 5.3 (19.02.99)  | Freeware
+      - msql        | VER$: 2.0.10.1 (07.00)| Exploitation personelle gratuite
+
+          Avec du Hard d'occaz et le soft entièrement gratuit, il ne reste
+      qu'Internet à payer ...
+
+      Vous remarquerez par exemple une version très ancienne de AmiTCP, cette
+      version de béta-test gratuite est compatible avec les autres logiciels.
+      Je suppose que Miami fonctionne avec aussi, mais je n'ai pas testé ...
+
+          Le E est optionnel, la programmation aussi, mais un Amiga aussi est
+      optionnel, d'ailleurs, éteignez cet écran, levez vous, marchez vers la
+      fenêtre et volez !
+
+          Dans le même esprit, vous pouvez vous passer de la pile TCP/IP et de
+      multiuser. Le serveur pouvant sous certaines conditions tourner sans.
+
+      Malgré tout, je vous le conseille fermement.
+
+      Pour ma part voici mon équation Amiga :
+
+      HARD : A1200+KS3.1+060@50+48Mo+HD1Go+scsi(cd,hd,Syquest)
+      SOFT : WB3.1+MuPFS2+Executive2+AmiTCPß3
+      
+
+
+@{" -->  " link installation}
+@endnode
+@node INSTALLATION "Installation"
+
+      @{b}Installation !@{ub}
+
+
+          Considérons l'interface réseau par défaut, lo0, comme étant
+      fonctionnelle, soit :
+      @{FG shine}SYS:> ping localhost
+              PING localhost (127.0.0.1): 56 data bytes
+      64 bytes from 127.0.0.1: icmp_seq=0 ttl=255 time=1 ms
+      64 bytes from 127.0.0.1: icmp_seq=1 ttl=255 time=1 ms
+      64 bytes from 127.0.0.1: icmp_seq=2 ttl=255 time=1 ms
+      64 bytes from 127.0.0.1: icmp_seq=3 ttl=255 time=1 ms
+      64 bytes from 127.0.0.1: icmp_seq=4 ttl=255 time=1 ms
+
+      --- localhost ping statistics ---
+      5 packets transmitted, 5 packets received, 0% packet loss
+      round-trip min/avg/max = 1/1/1 ms@{FG text}
+
+          Considérons que MultiUser est actif :
+
+      @{FG shine}SYS:> who am i
+      System Administrator (root) @{FG TEXT}
+
+          Nous sommes root, et possédons tous les droits.
+
+      A supposer que les répertoires de multiuser et ou de amitcp pointent vers
+      les répertoires standards de l'Amiga soit S: pour les scripts et C: pour
+      les commandes. (La structure de votre File-System n'en sera que simplifiée
+      et les protections aussi.)
+      
+      @{b}ATTENTION C'EST TRES TRES CHAUD@{ub}
+
+      (conseil multiuser : utiliser MuMu1.0 est une bonne idée.)
+
+
+      On a donc :
+      @{FG shine}SYS:> assign amitcp: sys:
+      SYS:> makelink sys:db sys:s force soft
+      SYS:> makelink sys:bin sys:c force soft
+
+      SYS:> makekeyfiles sys:s sys:s sys: @{FG text}
+
+
+      Nous créons un nouvel utilisateur par adition d'une ligne au fichier
+      des mots de passe, exemple  :
+      @{FG shine}SYS:S> echo "msql||4098|2048|Database User|SYS:Homes/users/msql|" >> passwd@{FG text}
+
+      Avec,par exemple, le fichier de groupe (multiuser.group) :
+      @{FG shine}SYS:S> type group
+      root|65535|65535|The root group
+      users|2048|65535|Users Group @{FG text}
+
+      On a omit le dernier champ de @{FG shine}S:passwd@{FG TEXT} , "NewCLI" par exemple, pour ne pas
+      laisser de "trou de sécurité". Parcequ'SQL n'est pas un utilisateur
+      mais l'identité sous laquelle tourne cette base de donnée. Cette combine ne
+      nous prive pas du droit de faire @{FG shine}su msql@{FG text} et d'obtenir un shell sous cet utilisateur,
+      pour la maintenance, par exemple ...On lui choisira un mot de passe, pour
+      éviter les bavures, avec @{FG shine}passwd msql@{FG text} ...
+
+      Après avoir décompressé les archives msql2-0.10...
+      le lha (si c'est une archive lha) par
+      @{FG shine}SYS:> lha x chemin/source disque:chemin/@{FG text}
+      le tar par :
+      @{FG shine}tar -xvf /disque/chemin/source  /disque/chemin/@{FG TEXT}
+      Le tgz par :
+      @{FG shine}tar -xzvf /disque/chemin/source /disque/chemin/@{FG TEXT}
+
+      (tar est trouvé par exemple dans l'archive Geek-Gadgets par exemple.)
+      Que l'on utilise ou non des chemins Amiga (tronc:branche/feuille) ou Un*X
+      (/tronc/branche/feuille) importe peu, puisque ceci est paramétrable grâce à :
+      @{FG shine}ixprefs@{FG TEXT}, ce qui nous permet au passage de vérifier que la
+      couche réseau est bien du type @{b}AmiTCP@{ub} et que celle de sécurité est bien @{b}MultiUser@{ub}.
+      En fait, ASSIGN: équivaut à /ASSIGN/, c'est tout. Il n'y a pas de @{FG shine}@{"/." link interlude} @{FG TEXT}chez Amiga.
+
+
+
+      A supposer que l'installation de msql se trouve une fois décompressée dans :
+      @{FG shine}sys:msql@{FG TEXT}
+      (On a utilisé pour celà le script @{b}Installer@{ub} fourni avec)
+
+      On doit d'abord attribuer une assignation à mslq :
+
+      @{FG shine}
+      SYS:> assign msql: sys:msql
+      SYS:> path msql: msql:bin add
+      @{FG TEXT}
+
+      De même, certains fichiers se doivent d'apartenir au serveur :
+
+      @{FG shine}SYS:> msql:
+      SYS:msql> mlist
+      License                            2264 ----rwedr---r--- 01-Mai-99   root
+      Amiga-mSQL.guide                   2548 ----rw-dr---r--- 13-Juil-00  root
+      RELEASE_NOTES                      1919 ----rwedr---r--- 01-Mai-99   root
+      MSQL_BOOK                           528 ----rwedr---r--- 01-Mai-99   root
+      install msql                       1987 ----rwedr---r--- 01-Mai-99   root
+      bin                                 Dir ----rwedr---r--- 22-Juil-00  root
+      lib                                 Dir ----rwedr---r--- 22-Juil-00  root
+      src                                 Dir ----rwedr---r--- 22-Juil-00  root
+      msql2.sock                            0 ----rwedrwedrwed 11-Août-00  root
+      INSTALL                            3882 ----rwedr---r--- 03-Juin-99  root
+      msqldb                              Dir ----rwedr---r--- 01-Août-00  msql
+      www                                 Dir ----rwedr---r--- 12-Juil-00  root
+      README                             3116 ----rwedr---r--- 01-Mai-99   root
+      msql2d.pid                           10 ----rwed-------- 11-Août-00  msql
+      msql.conf                          1107 ----rw-dr---r--- 22-Juil-00  msql
+      misc                                Dir ----rwedr---r--- 12-Juil-00  root
+      makegen                             Dir ----rwedr---r--- 12-Juil-00  root
+      doc                                 Dir ----rwedr---r--- 12-Juil-00  root
+      msql.acl                            195 ----rwedr---r--- 04-Jan-98   root
+      doc.info                           2058 ----rw-dr---r--- 13-Juil-00  root
+      Amiga-mSQL.guide.info              1573 ----rw-dr---r--- 13-Juil-00  root
+      Install mSQL.info                  2257 ----rw-dr---r--- 22-Juil-00  root
+      14 files - 8 directories - 76 blocks used  @{FG TEXT}
+
+      Bien que j'ai un doute sur msql2.sock, enfin si quelqu'un a une bonne idée,
+      je lui suggère de me la confier. J'en ferais part aux autres !
+      :-)
+
+      De même voici le fichier de configuration msql.conf :
+
+      @{FG shine}SYS:msql> type msql.conf
+      #
+      # msql.conf  -  Configuration file for Mini SQL Version 2
+      #
+      #---------------------------------------------------------------------------
+      #
+      # This file is an example configuration and may require modification to
+      # suit your needs or your site.  The values given are the default values
+      # and will be used by the software if either this file is missing or a
+      # specific value is not specified.
+      #
+      #---------------------------------------------------------------------------
+      # NOTE : The install directory and all files/directories below it _must_
+      #        be owned by the user specifed in the mSQL_User parameter (the
+      #        user msql by default).  If you change the mSQL_User value then
+      #  you must 'chown -R' the install directory.
+      #
+
+      [general]
+
+      Inst_Dir = /mSQL
+      DB_Dir = %I/msqldb
+      mSQL_User = msql
+      Admin_User = root
+      Pid_File = %I/msql2d.pid
+      TCP_Port = 1114
+      UNIX_Port = %I/msql2.sock
+
+      [system]
+
+      Msync_Timer = 30
+      Host_Lookup = True
+      Read_Only = False
+      Remote_Access = True
+      Local_Access = True
+      #Query_Log = False
+      #Query_Log_File = %I/query.log
+
+      [w3-msql]
+
+      Auth_Host = NULL
+      Footer = True
+      Force_Private = False @{FG text}
+
+
+      Pour lancer le serveur :
+
+      @{FG shine}
+      SYS:> stack 200000
+      SYS:> startnet
+      SYS:> run msql2d@{FG TEXT}
+
+      Voilà, si quelque chose a raté, les messages d'erreur fournis par les différentes
+      applications sont suffisamment clairs pour pouvoir analyser la situation et
+      remédier au problème, malgré tout, utilisez snoopdos et lisez les fichiers .log, en
+      dernier lieu, laissez un message sur mon mail.
+
+      Pour vérifier que tout fonctionne :
+      @{FG shine}
+      SYS:> status
+      Process  1: Loaded as command: AmiTCP
+      Process  2: Loaded as command: executive
+      Process  3: Loaded as command: massign
+      Process  4: Loaded as command: massign
+      Process  5: Loaded as command: mubackdrop
+      Process  6: Loaded as command: Workbench
+      Process  7: Loaded as command: inetd
+      Process  8: Loaded as command: msql2d
+      Process  9: status
+      @{FG TEXT}
+      
+      Donc tout les cadrans au vert, on peut envisager la seconde partie de l'opération.
+
+      J'aime quand un plan se déroule sans accrocs.
+
+
+@{" -->  " link usage}
+@endnode
+@node USAGE "Usage"
+@next main
+      @{b}Les commandes msql@{ub}
+
+      La base lancée, le serveur tourne en tâche de fond, seul moyen d'y accéder,
+      les commandes livrées avec :
+
+      msqladmin 
+      msql
+      relshow
+      msqlimport
+      msqlexport
+
+
+      @{b}Création d'une base@{ub}
+
+      A cet effet nous utilisons
+      @{FG shine}SYS:> msqladmin
+
+      usage : msqladmin [-h host] [-f conf] [-q] <Command>
+
+      where command =  drop DatabaseName
+                       create DatabaseName
+                       copy FromDB ToDB
+                       move FromDB ToDB
+                       shutdown
+                       reload
+                       version
+                       stats
+
+       -q     Quiet mode.  No verification OF commands. @{FG TEXT}
+      Ce qui est lumineux, et appelle peu de commentaires.
+
+      D'où :
+      @{FG shine}SYS:> msqladmin create ma_base
+      Database "ma_base" created. @{FG TEXT}
+
+
+      @{b}Création d'une table@{ub}
+
+      A présent, nous devons nous connecter, à l'aide du client @{FG shine}msql@{FG TEXT}.
+
+      @{FG shine}SYS:> msql ma_base
+
+      Welcome TO the miniSQL monitor.  Type \h for help.
+
+
+      mSQL > @{FG TEXT}
+      Nous sommes à présent connecté à notre base vide.
+      Créons une table, table qui sera la brique fondamentale de notre base, elle
+      sera constituée par la liste de nos copains, avec leur e-mail.
+      Soit un tableau de 3 colonnes : nom, prénom, email.
+      Appelons ce tableau carnet et donnons une longueur quelconque aux chaînes :
+
+      @{FG shine}mSQL > create table carnet (nom CHAR(15), prenom CHAR(15), email CHAR(30))
+      mSQL > \\g
+
+
+      Query OK.  1 row(s) modified OR retrieved.
+
+
+      mSQL > @{FG TEXT}
+
+      Récapitulons :
+      \\g exécute la phrase sql, qui se lit dans le sens naturel du langage :
+
+      @{FG fill}"crée une table dont le nom est carnet dont les éléments sont successivement
+           nom qui est du type chaîne de 15 caractères maximum de longueur
+      puis prenom qui est du type .... " @{FG TEXT}
+
+           Jusqu'à présent seule l'ossature de la base est créée, OR, il nous faut
+      remplir ce récipient.
+      Dès lors quittons le client pour donner à manger à notre base.
+
+      @{FG shine}mSQL > \\q
+
+      Bye !
+
+      SYS:> @{FG TEXT}
+
+      @{b}Production des données@{ub}
+
+      Utilisons Ed pour cette tâche :
+      @{FG shine}SYS:> HOME:
+      HOME:> ed fichier_saisie window=*
+      adam,olivier,olivieradam@123india.com
+      seldon,harry,harry.seldon@fondation.org
+
+      .
+      .
+      .
+
+      [Esc]:x
+
+      HOME:> @{FG TEXT}
+
+      Notre saisie terminée, il suffit de l'importer dans la base :
+
+      @{FG shine}HOME:> msqlimport <fichier_saisie ma_base carnet
+      HOME:> @{FG text}
+
+      @{b}Les requêtes d'interrogation@{ub}
+
+      Notre base est nourrie, examinons la avec le client msql :
+
+      @{FG shine}HOME:> msql ma_base
+      Welcome to the miniSQL monitor.  Type \h for help.
+
+
+      mSQL >
+      @{FG text}
+
+      Soit la phrase : @{FG fill}"Sélectionne tout le contenu de la table carnet"@{FG text} :
+
+      @{FG shine}mSQL > select * from carnet
+          -> \\g
+      Query OK.  2 row(s) modified or retrieved.
+
+       +-----------------+-----------------+--------------------------------+
+       | nom             | prenom          | email                          |
+       +-----------------+-----------------+--------------------------------+
+       | adam            | olivier         | olivieradam@123indiacom       |
+       | seldon          | harry           | harry.seldon@fondation.org     |
+       +-----------------+-----------------+--------------------------------+
+
+
+      mSQL > @{FG text}
+
+      De la même façon :
+
+      @{FG shine}mSQL > select nom from carnet where prenom like 'o%'
+          -> \\g
+      Query OK.  1 row(s) modified or retrieved.
+
+       +-----------------+
+       | nom             |
+       +-----------------+
+       | adam            |
+       +-----------------+
+
+                          
+      mSQL >  @{FG text}
+
+      Cette requête est donc : @{FG fill}"Sélectionne dans la table carnet le(s) nom(s)
+      pour le(s)quel(s) la première lettre du prénom est 'o' " @{FG text}
+
+      J'espère que maintenant vous commencez à entrevoir les possibilités offertes
+      par cette philosophie !
+
+      Terminons cette introduction par un outil, relshow, qui permettra d'apprécier le
+      trajet parcouru :
+
+      @{FG shine}HOME:> relshow
+
+      +---------------------------+
+      |         Databases         |
+      +---------------------------+
+      | ma_base                   |
+      +---------------------------+
+
+      HOME:> relshow ma_base
+
+      Database = ma_base
+
+       +-------------------------------+
+       |            Table              |
+       +-------------------------------+
+       | carnet                        |
+       +-------------------------------+
+
+      HOME:> relshow ma_base carnet
+
+      Database = ma_base
+      Table    = carnet
+
+       +-----------------+----------+--------+----------+--------------+
+       |     Field       |   Type   | Length | Not Null | Unique Index |
+       +-----------------+----------+--------+----------+--------------+
+       | nom             | char     | 15     | N        | N/A          |
+       | prenom          | char     | 15     | N        | N/A          |
+       | email           | char     | 30     | N        | N/A          |
+       +-----------------+----------+--------+----------+--------------+
+       @{FG text}
+
+
+
+          Allons, toutes les bonnes choses ayant une fin, nous voici à la fin
+      de ce laborieux article.
+
+      J'espère que personne n'est traumatisé, j'adorerais avoir un feedback sur
+      la formule employée d'alternance de lignes de commentaires parmi des lignes
+      d'Amiga-DOS.
+
+          En attendant la suite, je vous conseille de bien réviser, parce que la
+      fois prochaine, on programmera un peu, en E, en A-Rexx, en SQL donc, ou encore
+      en AmigaGuide ou en Installer, parce que les langages de script ne manquent
+      pas sur notre machine. En effet, pourquoi ne pas fournir une interface en
+      AmigaGuide, qui lance des scripts A-Rexx générant des pages AmigaGuide dynamiques,
+      en fonction des requètes, voilà une solution système, pure ligne du Parti !
+
+      Jusqu'à cette occasion je vous dis :
+
+      @{FG shine}break `status command=msql2d` ALL@{FG text}
+
+      Pour faire propre :-)
+
+      Après tout, en Linux je vous dirais : @{FG shine}shutdown -fr now@{FG TEXT}, mais ce n'est pas Linux,
+      car pour éteindre un Amiga, point n'est besoin de devoir gratter plus sur les
+      disques durs, on se penche et on arrache la prise du mur.
+      
+      Il est temps d'aller manger un tube d'Aspirine !
+      Avec deux verres d'alcool à brûler.
+
+      A bientôt
+
+ADAM Olivier
+
+@endnode
+
+@node INTERLUDE "interlude"
+INTERLUDE    hoax
+
+      [ NOTE AUX AMATEURS DE PASSAGE : ]
+
+      @{FG shine}  /. @{FG TEXT} (prononcer slashdot) est un journal internet en ligne.
+
+      www.slashdot.org.
+
+         Branché.
+
+      Mais en fait, il y règne une ambiance excécrable, due au fait que les gens qui
+      sont éduqués à la sauce PC imaginent Linux comme une innovation.
+
+      Bandes d'arriérés mentaux.
+
+      Je pèse mes mots, car Linux lui-même, je ne parle que du système d'exploitation,
+      est une vaste FUMISTERIE !
+
+      Oui Messieurs !
+
+      Une pitié, un leurre, j'ai plus fun chez moi, plus smart !
+
+      Et être Smart, c'est quelque chose de tellement jouissif, que personne ne me
+      contredira.
+
+          Toujours est-il qu'à chaque article concernant l'Amiga, il pleut des centaines
+      de commentaires du genre :
+      rest in peace,
+      Laissez l'Amiga mourrir en paix
+      etc ...
+
+          Mais de quel droit ? J'étais là avant, pendant, et après !
+      Votre avis ? vous pensez bien que je m'en balance !
+
+      Si j'avais suivi les propriétaires successifs de l'Amiga, je me serais fait
+      sepuko. A commencer par Commodore.
+
+      De toute façon, ils sont bluffés à chaque fois, et nous considèrent (nous les
+      Amigars) comme les membres d'une secte étrange.
+      Je connais cette réaction : Ils ont peur de nous, ils savent quelque chose.
+      Ils nous voient tels des Jedï, allumés, les deux doigts dans la prise !
+
+      Ne les décevons pas : Soyons Jedï !
+
+      Avec des pouvoirs spioniques, pour commencer.
+
+      Cool.
+
+
+FIN DE L'INTERLUDE
+@endnode
+

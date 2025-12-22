@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+<html>
+<head>
+   <title>Amiga STORM 9 => Tutorials => Mala skola C-a</title>
+   <meta name="author" content="Davor Rivic (d_rivic@iname.com)">
+   <meta name="description" content="Hrvatski AMIGA casopis">
+   <meta name="keywords" content="Hrvatska, Amiga, casopis, storm">
+   <meta name="generator" content="CygnusED Professional v4.2, ©1987-1997 by CygnusSoft Software">
+</head>
+<body bgcolor="#ffffff" link="blue" vlink="brown">
+
+
+
+
+  <table width="100%" border="0" cellpadding="3" cellspacing="0">
+  <tr><td colspan="4" bgcolor="#000000"></td></tr>
+  <tr><th colspan="4" align="center" bgcolor="red"><font size="5" color="#ffffff">Mala ¹kola C-a</font></th></tr>
+  <tr><td colspan=4 bgcolor=000000></td></tr>
+  <tr><td width="5%"></td><th width="45%" align=left><font size="3">Milan GOLUBOVIÆ</font></th>
+  <th width="45%" align="right"><font size="3"><a href="mailto:milang@iname.com">milang@iname.com</a></th><td width="5%"></td></tr>
+  <tr><td colspan="4" bgcolor="#000000"></td></tr>
+  </table>
+
+
+
+<p align="center"><br><br>
+<h3>Argumenti komandne linije i pristup datoteci</h3>
+</p>
+<p>
+Lijepo je kada programi rade u GUI okru¾enju, ali je nekada korisnije kada se
+pozivaju i kada im se argumenti zadaju iz komandne linije DOS-a: CLI-ja.
+Da vidimo kako se to radi.
+</p>
+<p>
+Po¹to po startanju programa izvr¹avanje poèinje od funkcije main, a
+po¹to je ona funkcija kao i svaka druga potrebno je definirati koje æe
+parametre primiti od DOS-a. Dakle, vi u main-u kao parametre dobijate jedan
+podatak int tipa koji se mo¾e zvati kako hoæete, ali je ustaljen naziv za
+njega "argc" (<b>argument counter</b>). On pokazuje s koliko argumenata je pozvan
+va¹ program. Recimo da ¾elite napisati program koji jednostavno ispisuje
+argumente s kojima je pozvan. Tako ne¹to radi DOS komanda "echo", ali æemo,
+da bi bilo jasnije, ispisati i ime pod kojim je program pozvan. Na primjer, ako
+se program zove "argumenti" i ako smo ga pozvali iz DOS-a sa:
+</p>
+<p>
+argumenti prvi drugi treæi
+</p>
+<p>
+argc æe sada biti 4, ¹to znaci da se pored argumenata raèuna i samo ime
+programa. Pretpostavljam da znate da se argumenti od imena programa, kao i
+jedni od druge odvajaju samo razmakom, a ne recimo zarezom i sl.
+<b>argc</b> znaèi mo¾e biti najmanje 1. Specijalno, kod Amige, ako je program
+startan iz Workbencha (preko ikone) argc je 0.
+</p>
+<p>
+Drugi parametar koji main prima je sam niz stringova (pointera na nizove
+tipa char sa \0 na kraju) s imenom programa, a zatim sa argumentima.  On se,
+po konvenciji, zove <b>argv</b>.  Za isti primer niz argv[] bi sadr¾avao stringove:
+</p>
+<p>
+"argumenti" , "prvi", "drugi", "treæi" , ""
+</p>
+<p>
+argv[0] æe biti pointer na ime pod kojim je va¹ program startan
+("argumenti"), dok æe zadnji string imati indeks argc-1 (argv[4-1]).
+argv[argc] je uvijek 0 (NULL). Da vidimo na primjeru kako bi to izgledalo. 
+</p>
+<p>
+#include &lt;stdio.h&gt;<br>
+main (int argc, char *argv[])<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Ispisano je %d rijeèi i to su:\n",argc); // Koliko je argc?<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (i=0;i&lt;argc;i++) // Treba ispisati sve èlanove niza<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("%s",argv[i]); // Ispi¹i trenutni string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(i&lt;argc-1)       // Ako nije zadnji<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf(" ");     // Odvoji ga od slijedeæeg razmakom<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else               // A ako jeste<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("\n");    // Prijeði u novi red<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+</p>
+<p>
+Mislim da je program sasvim jasan. Ispi¹e se prvo argc, a zatim redom svi
+èlanovi niza argv[].
+</p>
+<br>
+<p>
+Da vidimo sada kako se pristupa datoteci. Naravno u AmigaDOS-u postoji
+vi¹e funkcija za pristupanje fajlovima, ali mi æemo obraditi C funkciju za
+otvaranje datoteke <b>fopen</b> uz pomoæ koje "otvaramo" fajl i <b>getc</b> i <b>putc</b>
+kojima æemo uèitavati i snimati bajt po bajt. Cijeli "mehanizam" (definicije)
+za ovakav naèin pristupanja fajlu nalazi se u stdio.h biblioteci, pa kako je
+obièno uvijek koristimo, izvr¹ni fajlovi na¹ih programa neæe biti znatno 
+du¾i. Tu se nalazi i definicija tipa <b>FILE</b>. Funkcija <b>fopen</b> je tipa <b>FILE</b>,
+ali da vas ovaj novi tip ne bi dodatno zbunjivao ovdje æe biti obja¹njen samo
+postupak njegovog kori¹tenja. To ¹to on ustvari predstavlja uopæe nije ni
+bitno. Funkciji <b>fopen</b> je potrebno proslijediti dva argumenta: pointer na ime
+fajla koji otvaramo i pointer na string koji odreðuje ¹to æemo raditi s
+fajlom.  Ako string ima vrijednost "r" iz fajla æemo èitati, ako je "w" u fajl
+æemo pisati, a ako je "a" fajlu cemo dodavati podatke.  
+</p>
+<p>
+ Funkcjia fopen vraæa vrijednost tipa FILE* koja se kasnije proslijeðuje <b>getc</b>
+i <b>putc</b> funkcijama pri èitanju i pisanju.
+</p>
+<p>
+Sve otvorene fajlove potrebno je prije izlaska iz programa zatvoriti funkcijom <b>fclose</b>.
+</p>
+<p>
+Evo i primjera koji, usput, radi i ne¹to korisno - konvertira tekstove s pc-ja u 
+Amigin format. Naime, kod pc-a se na kraju reda osim "linefeed" 
+znaka (ima kod 10) nalazi i "cr" (kod 13), kojeg kod Amige nema. Da bi 
+"izfiltrirali" tekst potrebno je jednostavno èitati bajt po bajt, provjeriti
+da li je 13 i ako nije snimiti ga.  Jednostavno!
+</p>
+<p>
+#include &lt;stdio.h&gt;<br>
+main (int argc, char *argv[]) // Ovo vi¹e ne treba obja¹njavati.<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FILE *in;  // 2 pointera na varijablu tipa FILE<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FILE *out; // Jer treba otvoriti 2 fajla<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char c;   // Pomoæna varijabla za privremeni smje¹taj podataka<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (argc!=3) // Da li je pogre¹no pozvan program?<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Usage: convert pcfile amigafile\n");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(0); // Ako jeste izaði iz programa.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in=fopen(argv[1],"r"); // Otvaramo fajl za èitanje - "r"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (in==NULL)  // Jel' fajl pronadjem ?<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Can't open file %s.\n",argv[1]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(1); // Ako nije, opet je gre¹ka posrijedi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out=fopen(argv[2],"w"); // otvori fajl za snimanje - "w"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(out==NULL)  // Jel' to uspje¹no obavljeno?<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fclose(in); // Ako nije potrebno je zatvoriti predhodno otvoreni,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Can't save file.\n");  // ispisati prigodnu poruku<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return(2);    // i izaæi iz programa<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Converting %s to %s.\n",argv[1],argv[2]); // Najzad je sve OK!!<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while ((c=getc(in))!=EOF) // Char-ovi se uzimaju dok se ne naiðe na EOF<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (c!=13)  // Ako c nije 13 (CR)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;putc(c,out); // treba ga snimiti<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fclose(in);  // Sve ¹to je otvoreno<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fclose(out); // mora se uvijek i zatvoriti.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Finished!\n");  // Gotovo (napokon)<br>
+}<br>
+</p>
+<p>
+Prvi argument koji se proslijeðuje <b>fopen</b> funkciji je, kao ¹to
+rekosmo, ime fajla, a to upravo sadr¾i argv[1], a u slijedeæem otvaranju argv[2].
+</p>
+<p>
+Ovaj program uz vrlo male prepravke mo¾e raditi bilo ¹ta. Probajte, recimo, 
+da ga "natjerate" da ¹ifrira fajl. Dovoljno je svaki bajt EOR-ovati sa slovima 
+neke ¹ifre i uraditi jo¹ po ne¹to s njim, pa ga snimiti. Pazite samo da ta 
+operecija bude obostrano jednoznaèna, da bi se de¹ifriranjem dobilo ono ¹to
+je ¹ifrirano.
+</p>
+<p>
+Mo¾ete konvertirati mala u velika slova i obratno, "loviti" i ispravljati
+neke rijeèi, napraviti obrnutu konverziju ( Amiga2PC ) i sve ¹to vam pada na
+pamet.
+</p>
+<p>
+Pored ovih funkcija postoje i funkcije <b>read</b>, <b>write</b> za neformatiran 
+ulaz/izlaz, zatim <b>fscanf</b> i <b>fprintf</b> za formatiran ulaz/izlaz vrlo slièan
+obiènim prinf i scanf, <b>fseek</b> i mnoge druge. Meðutim, za sada æe vam èitanje 
+s <b>FILE</b> tipom biti dovoljno, a ako vam pritrebaju neke druge - sve one su
+dobro obja¹njene u SAS C help-u.
+</p>
+<br>
+<p>
+Iz "tehnièkih razloga" ovaj nastavak <b>Male ¹kole C-a</b> je zaista mali.
+U planu je bilo obraditi pozive AmigaOS funkcija, ali to æemo ostaviti za
+slijedeæi put. No, ne oèajavajte - ako vam je sve do sada napisano jasno onda 
+posjedujete dovoljno znanja da pi¹ete sasvim upotrebljive programe i to ne
+samo na Amigi, veæ na bilo kojoj platformi! Zato, bacite se na posao i
+programirajte!!!!
+</p>
+
+
+<!-- -->
+<p align="right">
+<a href="bb2_1.html"><img src="../gfx/for.gif" border="0" width="37" height="19"></a>
+</p>
+<!-- -->
+
+
+
+
+</BODY>
+</HTML>
+

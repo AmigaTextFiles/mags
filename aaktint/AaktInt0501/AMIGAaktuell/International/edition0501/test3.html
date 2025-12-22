@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Test reports</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="test2.html" OnMouseOver="status='Addition to the BoingBag 3.9.1 review (by Christian Aichinger)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="test.html" OnMouseOver="status='Test reports' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="test4.html" OnMouseOver="status='Softwaretest: »FxScan« (by Andreas Volkmann)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Test reports
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H2>3. Softwaretest: PowerMac-Emulator &raquo;iFusion&laquo; (von Jochen Abitz)</H2>
+<P>
+iFusion - The Powermac Emulator for Power Amigas
+</P>
+<P>
+Ist took quite a long time , but it is finally here. It seems mainly because of the
+pressure from customers, because it is still far from being completed. Yet before I start
+listing what still needs to be done, lets look at what the current version does contain.
+You get an attractive CD case and a CD - nothing more - nothing less. The fact that only
+1MB of data is contained on the CD shouldn`t really be of any concern.
+</P>
+<P>
+The installation is done via the standard installer. Within a few seconds it is installed
+and awaiting configuration. For the configuration an installer script is also used, which
+asks questions leading you step by step through the configuration. You also have the
+option of configuring everything in a text editor. My configuration is as follows:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+;---------------------------------------------------
+;       iFUSION NewWorld Emulation Declarations
+;---------------------------------------------------
+
+;Paths to externally loaded drivers
+
+FirmWare:               drivers/OFDrvr
+
+Video:                  drivers/VideoDrvr
+
+Devices:                drivers/BlockDrvr
+
+;---------------------------------------------------
+;       Hardware Configuration
+;---------------------------------------------------
+
+CPUID:    8            ;Processor Version=G3
+
+RAM:      48
+
+NVRAM:    NVRAM
+
+ROM:    ROM/rom_91
+
+;---------------------------------------------------
+;       Amiga Device Configuration
+;---------------------------------------------------
+
+Device:    Macintosh:    -rw    -direct
+
+Device:    CD0:     -cd
+
+Device:    DH1:    -rw    -direct
+
+DisableSCSIDrvr:    yes
+
+SCSIDEV:    0    scsi.device/1    -hw
+
+;--------------------------------------------------
+;       Video Display Configuration
+;--------------------------------------------------
+
+DisplaySize:    1024/768/75
+
+Depth:    15
+
+VideoRefreshRate:    30
+
+VideoDirectModes:    yes
+
+VideoRefreshModes:    no
+
+VideoAmigaModes:    no
+
+CacheVidMem:    yes
+
+GammaCorrection:    1.0 1.0 1.0
+
+;--------------------------------------------------
+;       Input Configuration
+;--------------------------------------------------
+
+MouseRes:    400
+
+HardwareMouse:    no
+
+KeyboardType:    5
+
+;--------------------------------------------------
+;       Audio Configuration
+;--------------------------------------------------
+
+StartupSnd:    startup-snd
+
+PlayStartupSnd:   yes
+
+DisableSnd:    no
+
+
+
+_
+</PRE></TD></TR></TABLE>
+<P>
+It shouldn`t be very difficult to modify this configuration to fit your own needs.
+</P>
+<P>
+For the next step you require a MacOS CD (version 8.6 - 9.1are supported). On the MacOS
+CD the is a System folder that contains the actual MAC Rom named &quot;Mac OS Rom&quot; which
+simply needs to be copied to the ROM folder in the Fusion directory. In my case I renamed
+it to &quot;rom_91&quot;
+</P>
+<P>
+You then need to make the following ENV variable settings.
+</P>
+<UL>
+<LI> In the directory Envarc:Powerpc the variable memprot must be set to 1
+</LI>
+<BR><LI> In the directory Envarc:Powerpc the variable EnAlignExc must be set to 1
+  (Most of the time this doesn`t exist yet and needs to be created by hand.)
+</LI>
+</UL>
+<P>
+Then copy both of the WarpOS libraries from the iFusion CD to Libs:
+</P>
+<P>
+In the config file the first device listed is the boot device. Therefore put the cd-rom
+as the first device and then the hard disk partition (which needs to be amiga formatted).
+Double click on Run_Fusion and the emulation will start.
+</P>
+<P>
+The Mac will boot from the CD and after a few moments we can begin with the installation
+of MacOS. If there is no previously formatted Mac partition you will be asked if you wish
+to format the drive (the Amiga one defined above). After a few more clicks the
+installation of MacOS is underway.
+</P>
+<P>
+In my case - and also with others, the following happened. The sreen would go black, yet
+the installation would still continue. The cd-rom accesses were evidence of that, there
+was just nothing to see. Maybe the Mac goes into a stand-by mode. In any event one should
+not press any keys. Just let it do its thing, until there is no activity left to be
+heard. When this happens, press enter. The MAC can be forcably shut dow with the key
+combination L-Amiga + Shift + ESC. Once you have successfully installed MacOS you will
+need to change the config file one more time. The boot device is no longer the cd-rom,
+but the hard drive partition. So, move this to the first device and start the emulation
+again.
+</P>
+<P>
+Once the Mac has booted, you can begin to configure the system and change the screen
+resolution to a more accceptable one. The standard initial screenmode is 640x480x256.
+</P>
+<P>
+Under the Applemenu/Control Panels/Extentions on/off you can also select the unneeded
+system extensions and control panels. They just hog system resources. Currently you can
+forget about networking, Firewire, graphics card drivers and cd-rom software. Reboot and
+the Mac should be useing much less memory.
+</P>
+<P><B>Compatibility:</B></P>
+<P>
+The emulation is unbelievably compatible. Ich have not yet found a program the didn`t
+run. I have tested Photoshop 5.5, Bryce 3, ITunes, IMovie (we really need Firewire on
+Amigas), Norton Utilities 6, Tech Tools Pro 3, Corel Draw, Freehand 9, Actua Soccor,
+Myth. A very diverse collection of software and it all ran.
+</P>
+<P><B>Speed:</B></P>
+<P>
+The emulation has the following short-comings that pushes the speed downward:
+</P>
+<UL>
+<LI> No refreshed graphic drivers yet. Only a refresh driver will give an acceptable speed.
+</LI>
+<BR><LI> Disk access have to use the 68K/PPC bridge which mean many context switches are
+</LI>
+</UL>
+generated. Setting the partitions buffers to 2000 helps offset this a bit.
+<P>
+The pure computing power is surprisingly high, when one takes into account what kind of
+hardware the P5 powerup boards are. (no 2nd level cache). It nearly gets actual 604e
+speed (see screenshot in comparision with a 8100 601).
+</P>
+<P>
+<A HREF="img/speedometer.jpg"><IMG SRC="thumb/speedometer.jpg" WIDTH="120" HEIGHT="90" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P><B>The following features are not yet finished:</B></P>
+<UL>
+<LI> SCSI support. Currently only block devices are accessable. Anything that uses direct
+</LI>
+</UL>
+SCSI command can not yet be used (e.g. CD-rom burners and Toast)
+<UL>
+<LI> Mounting of Mac partitions on the Amiga side for data transfers. Those with a Zip drive
+</LI>
+</UL>
+can mount that as a block device and do data tranfers that way.
+<UL>
+<LI> Sound support. The start sound works, but otherwise no sound is played at all.
+</LI>
+</UL>
+<P>
+Since Blittersoft has purchased the Amiga licence for iFusion, it remains to be seen if
+these features and others will be implemented. Also an AmigaDE version (AmigaOS4.0?) is
+supposed to be in development. That is hopefully the case, since the hardware that
+currently is at the top of the line for the Amiga is hopelessly outdated for this OS. On
+a new G3/G4 based Amiga it would be an entirely different story.
+</P>
+<P><B>Jochen Abitz &lt;<A HREF="mailto:jockel-amiga@gmx.de">jockel-amiga@gmx.de</A>&gt;</B></P>
+<P><B>English Translation: Jerry Withers &lt;<A HREF="mailto:amiga@mediaone.net">amiga@mediaone.net</A>&gt;</B></P>
+<P><B>Postscript (Christian Aichinger):</B></P>
+<P>
+iFusion was tested by Jochen Abitz with the following Amiga configuration:
+</P>
+<P>
+Amiga 4000 with CyberStormPPC 604e/200, 68060/50, CyberVisionPPC, 100 MB
+Ram, 6 GB IDE-, 4,5 GB UW, 21&quot; Monitor, Serielle 4D Maus, IDE-CDRom 32-
+fach, 32fach SCSI CDRom Teac, CDRW Philips CDD 3600, OS 3.9, 100 MB Zip
+SCSI.
+</P>
+<P ALIGN="RIGHT">
+<A HREF="test2.html" OnMouseOver="status='Addition to the BoingBag 3.9.1 review (by Christian Aichinger)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="test4.html" OnMouseOver="status='Softwaretest: »FxScan« (by Andreas Volkmann)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,91 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+2. Workshop: Samba und der Amiga - Teil 2 (von Werner Brennecke)
+
+»Im letzten Teil haben wir daf&uuml;r gesorgt, dass Samba an sich l&auml;uft und 
+Teile des eigenen Systems nach Bedarf freigegeben sind.
+
+Um nun auf dem Amiga Freigaben aderer Rechner sehen (nutzen) zu k&ouml;nnen,
+brauchen wir den SMB-Handler. Dieser setzt uns eine Freigabe (Share) in ein 
+Laufwerk um.
+
+Der SMB-Handler (ich nutze die Version 0.12) ist als Beta gekennzeichnet,
+l&auml;uft aber hier ohne Probleme. 
+
+Installiert wird der SMB-Handler sehr einfach. Die Datei "smb-handler" nach  
+"l:" und die  "Katalog-Datei"  nach "locale:catalogs/&lt;language&gt;" kopieren.
+
+That´s all :-)
+
+
+F&uuml;r jedes Laufwerk das wir nutzen wollen, wird eine Datei in 
+DEVS:DOSDRIVERS angelegt.
+
+
+Ein Auszug aus eines meiner genutzen Laufwerke:
+
+---------  Snipp ---------
+Handler     = L:SMB-Handler
+Stacksize   = 40000
+Priority    = 5
+GlobVec     = -1
+Mount       = 1
+Startup     = "C=\pagDATEN MH=a4000 W=Meine U=wb P=passwort GFX DN=Pag"
+---------  Snipp ---------
+
+
+Die Zeile "Handler" verweist auf den passenden Handler. Wenn wir das 
+kopieren vergessen haben, werden wir es sp&auml;testens hier merken. ;-)
+Die Stacksize 40000 habe ich aus dem Beispiel &uuml;bernommen. Mount = 1
+bedeutet, das das Laufwerk sofort gemountet wird. Bei Mount = 0 wird
+der eigentliche Mountvorgang bei ersten Zugriff auf das Laufwerk 
+durchgef&uuml;hrt.
+Alle Daten die ich nutze laufen bei mir auf eine Linux Maschine zusammen 
+die im Dauerberieb l&auml;uft, deswegen kann ich hier Mount = 1 nutzen.
+
+Startup ist hier die wichtigste Zeile, es werden die Parameter &uuml;bergeben.
+
+  Die Parameter im einzelnen:
+
+    C   Der zu verbindende Host (der Name des Servers)
+    MH  Der verbundene Host (Ich selbst)
+    W   Arbeitsgruppenname. Hier bitte auf Gross/Kleinschreibung 
+        achten, sonst kann es zu Problemen kommen.
+    U   Benutzername
+    P   Passwort
+    DN  Laufwerksname, der dem Laufwerk zugewiesen wird.
+    GFX Veranlasst, dass den Dateien kein eol/eof angef&uuml;gt wird. 
+        (Dateien gehen unver&auml;ndert &uuml;ber die Leitung)
+
+
+Nachdem die Parameter bekannt sind, ist die Zeile leicht zu lesen.
+
+Der Servername ist hier "pag", die Freigabe "DATEN". Gross/Kleinschreibung
+bitte unbedingt bei den Freigabenamen beachten!. Der Client h&ouml;rt auf den
+Namen "A4000", die Arbeitsgruppe lautet "Meine", Nutzer ist "wb", Passwort 
+lautet "Passwort". (Ist nat&uuml;rlich nur ein Beispiel).
+Daten werden "as is" &uuml;bertragen, daf&uuml;r sorgt "GFX". Das Laufwerk erscheint
+als "PAG:"
+
+Einfach oder? 
+
+
+Zum Abschluss:
+Da sich jetzt sp&auml;testens mit OS 3.5 Miami als TCP-Stack durchgesetzt hat 
+(IMHO), m&ouml;chte ich im n&auml;chsten Teil auf eine Samba-Installation unter Miami 
+eingehen.
+
+bis die Tage   
+
+Werner Brennecke &lt;wb@pag.mayn.de&gt;«
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,179 @@
+<HTML>
+<HEAD><TITLE>
+Workshops / Hintergrundberichte
+</TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+
+<TABLE width=100% border=0 cellpadding=3 cellspacing=0>
+
+<tr>
+<td bgcolor="#000000">
+<A HREF="0601.html"><IMG SRC="../menu/links.gif" BORDER=0 WIDTH=15 HEIGHT=15></A>
+<A HREF="0603.html"><IMG SRC="../menu/rechts.gif" BORDER=0 WIDTH=15 HEIGHT=15></A>
+<font color="#FFFFFF">
+Workshops / Hintergrundberichte
+</font>
+</TD></tr>
+</TABLE>
+
+
+<P>
+
+<H2>2. KDE unter NetBSD auf dem Amiga - ein Erfahrungsbericht (v. Alexx Riedel)</H2>
+
+<P>
+»Diejenigen, die auf ihrem Amiga neben dem AmigaOS auch noch die
+Unix-Variante NetBSD laufen haben, werden in letzter Zeit wohl schon &ouml;fters
+neidisch in Richtung PC geblickt haben: Dort hat Linux jetzt mit KDE eine
+wirklich ansprechende und recht intuitive Oberfl&auml;che erhalten, die es jedem
+erm&ouml;glicht, ein leistungsf&auml;higes, aber komplexes Betriebssystem wie Unix
+einfach und komfortabel mit einer graphischen Oberfl&auml;che zu nutzen. Dank
+vieler Zusatzprogramme und u.a. nahtloser Internetintegration ist Linux/KDE
+auf dem PC wohl als das "bessere Windows" anzusehen. Da sowohl von KDE als
+auch vom Widget-Toolkit Qt, auf dessen Klassen KDE basiert, der Sourcecode
+frei erh&auml;ltlich ist, kann man diesen nat&uuml;rlich auch auf anderen
+Unix-Systemen, also auch NetBSD, kompilieren, wenn man etwas Phantasie und
+vor allem Geduld mitbringt.
+<P>
+<B>1. Die Installation des "GUI-Toolkits" Qt:</B>
+<P>
+Eine nahegelegene FTP-Site f&uuml;r den Download der Qt-Sourcen findet man auf
+dem Server der Herstellerfirma, TrollTech (<A HREF="http://www.troll.no">http://www.troll.no</A>). Die
+aktuelle Version ist 1.33, aktuellere Betas gibt's nat&uuml;rlich auch.
+Kompilieren und Installation gehen vorbildlich problemlos &uuml;ber die B&uuml;hne:
+Archiv "qt*.tar.gz" in "/usr/local" entpacken, das entstandene Directory
+nach "qt" umbenennen, und dieses in die Environment-Variable "QTDIR"
+(= /usr/local/qt/) eintragen. Ein anschlie&szlig;ender Aufruf von
+"make netbsd-gcc-shared" generiert dann die passenden Binaries f&uuml;r
+NetBSD/Amiga. Abschlie&szlig;end sollte man noch die Qt-Libraries f&uuml;r den
+dynamischen Linker zug&auml;nglich machen, am besten, indem man den Pfad
+(/usr/local/qt/lib) in die Datei "/etc/ld.so.conf" aufnimmt. Insbesondere
+f&uuml;r die KDE-Installation sollte auch das Programm "moc" (im Pfad
+"/usr/local/qt/bin/moc") im Standardbefehlssuchpfad aufzufinden sein.
+<P>
+<B>2. Die Installation von KDE:</B>
+<P>
+Der Server der KDE-Entwickler (<A HREF="http://www.kde.org">http://www.kde.org</A>) verweist auf geeignete
+FTP-Server. Der KDE-Sourcecode der aktuellen Beta4 wird in mehreren
+Paketen archiviert. F&uuml;r die Minimalinstallation braucht man zumindest
+"kdesupport", "kdelibs" und "kdebase". Da diese nicht im gewohnten
+"*.tar.gz", sondern im "*.tar.bz2"-Format gespeichert sind, sollte man sich
+einen passenden Dekomprimierer (Bsp: Source auf KDE-Mirrorsites, Binary auf
+ftp://ftp.de.netbsd.org, Amiga-Binaries im Aminet) gleich mitziehen.
+<P>
+Die drei oben aufgef&uuml;hrten Pakete entpackt man wie &uuml;blich nach
+"/usr/local". Als Basisverzeichnis f&uuml;r die KDE-Installation erstellt man
+noch das Verzeichnis "/usr/local/kde" und tr&auml;gt diesen Pfad in die
+Environmentvariable "KDEDIR" ein. Die Pakete m&uuml;ssen nacheinander in der
+Reihenfolge "kdesupport", "kdelibs" und abschlie&szlig;end "kdebase"
+installiert werden. Die Vorgehensweise ist, wie auch schon bei Qt, gut
+dokumentiert: In jedem der drei Paketverzeichnise (nacheinander) mit
+"./configure" ein Maschinenprofil erstellen, mit "make" kompilieren und mit
+"make install" dann nach $KDEDIR installieren.
+<P>
+Zumindest bei "kdesupport" und "kdebase" klappt das auch ohne Probleme, da
+Compilerwarnungen eh nur f&uuml;r Feiglinge sind, &uuml;bersehen wir diese gro&szlig;z&uuml;gig.
+Bei der Installation des Base-Archives treten allerdings Probleme auf:
+<P>
+Zum einen baut das Configure-Skript scheinbar Mist, es erstellt Makefiles,
+die eine Library namens "libdl" verlangen, welche, zumindest auf meinem
+BSD-System, nicht vorhanden ist. Um dem abzuhelfen, gibt es zwei
+M&ouml;glichkeiten: Entweder, man kopiert die korrekt erstellte Datei
+"config.cache" aus einem der beiden anderen Verzeichnisse nach
+"/usr/local/kdebase" und ruft dann "./configure" auf (verk&uuml;rzt nebenbei
+die Dauer des ganzen Vorganges), oder man entfernt in allen generierten
+Makefiles die Zeile mit dem "-ldl" (m&uuml;hsam, da ja jedes Unterverzeichnis
+sein eigenes Makefile hat).
+<P>
+Das zweite Problem ist, da&szlig; sich der Terminalemulator, "kvt", nicht
+kompilieren l&auml;&szlig;t. Das ist halb so schlimm, weil der gute alte "xterm" ja
+auch noch da ist. Der Einfachheit halber sollte man die Datei
+"/usr/local/kdebase/Makefile" dahingehend ab&auml;ndern, da&szlig; der Eintrag
+"SUBDIRS =" das Verzeichnis "kvt" nicht mehr enth&auml;lt, dann kann der
+Compiler die Nacht durchlaufen, ohne abzubrechen. Man kann ja "kvt" immer
+noch nachinstallieren, indem man das Makefile im entsprechenden
+Unterverzeichnis einzeln aufruft.
+<P>
+Das war die Installation des Minimal-KDE-Systems. Es h&ouml;rt sich alles recht
+einfach an, aber der Computer ist daf&uuml;r n&auml;chtelang am Kompilieren (auf
+meinem 040er). Den KDE-Befehlspfad "/usr/local/kde/bin" f&uuml;gt man
+sinnigerweise noch dem Suchpfad hinzu, die KDE-Libraries in
+"/usr/local/kde/lib" nimmt man noch nach "/etc/ld.so.conf" auf. Dann kann
+man schon mal seine "xinitrc" &auml;ndern und statt des Standard-Windowmanagers
+(meist wohl Fvwm2) "startkde" ("kwm" startet nur den Windowmanager,
+"startkde" gleich die ganze Benutzeroberfl&auml;che) eintragen.
+<P>
+<A HREF="img/kdeamiga.png">Screenshot</A>
+<P>
+Die weiteren Zusatzpakete lassen sich dann auf &auml;hnliche Weise installieren,
+nur folgende Anmerkungen dazu:
+<P>
+<UL><LI>
+   Die "libjpeg"-Installation aus dem kdesupport-Archiv vergi&szlig;t scheinbar,
+die Headerdatei "jconfig.h" richtig zu installieren. Dies f&uuml;hrt bei
+manchen Programmen zum Abbruch des Kompiliervorganges
+(v.a. "kdegraphics"-Archiv).
+<P>
+</LI><LI>
+   Das Paket "kdeadmin" meldete bei mir, da&szlig; meine Systemarchitektur nicht
+unterst&uuml;tzt wird, also braucht man es sich gar nicht erst downzuloaden.
+<P>
+</LI></UL>
+Noch ein paar Hinweise:
+<P>
+<UL><LI>
+   Da GCC/G++ scheinbar defaultm&auml;&szlig;ig auf 68030/882 optimieren, habe ich f&uuml;r
+meinen Prozessor die Option "-m68040" in den Dateien "config.cache"
+manuell eingetragen (danach nochmal "./configure" aufrufen):
+
+<PRE>ac_cv_prog_CXX=${ac_cv_prog_CXX='g++ -m68040'}
+ac_cv_prog_CXX=${ac_cv_prog_CXX='g++ -m68040'}</PRE>
+
+Das ist wohl nicht ganz die saubere Superl&ouml;sung, aber es funktioniert
+so, und vielleicht wird der Code dadurch in manchen F&auml;llen schneller.
+<P>
+</LI><LI>
+   Qt unterst&uuml;tzt OpenGL, einige Screenblanker von KDE ebenfalls OpenGL
+und die libXpm. Hat man diese Programme installiert (z.B. Mesa,
+Version > 2), dann mu&szlig; man den Installationsroutinen auch mit der Hand
+nachhelfen, damit sie die notwendigen Headerdateien und Libraries finden.
+<P>
+</LI><LI>
+   Die Komponente "kwmsound" st&uuml;rzt des &ouml;fteren ab (das erkennt man aber nur
+am Coredump). Da ich mit meinem NetBSD noch nie was mit Sound gemacht
+habe, kann ich nicht beurteilen, ob der Fehler am KDE oder an meiner
+Installation liegt.
+<P>
+</LI></UL>
+<B>3. Abschlie&szlig;end noch Anmerkungen bez&uuml;glich Leistung und Geschwindigkeit:</B>
+<P>
+Wunder braucht man keine zu erwarten, KDE sprintet nicht gerade ab,
+zumindest auf einem 040/25MHz. Vor allem Speichermangel bremst KDE ziemlich
+aus, das System ist (bei mir 16 MB Fast-RAM) dauernd am Auslagern.
+Andererseits: Die Terminalausgabe z.B. erscheint mir, rein subjektiv, eher
+schneller als die unter Fvwm2. Auch die Qt-Beispiele laufen flott durch.
+<P>
+Ein anderer Grund d&uuml;rfte der X-Server sein: In meinem Fall (CV64/3D)
+behandelt er die Grafikkarte scheinbar als "dumb chunky framebuffer",
+was im Klartext wohl hei&szlig;t, da&szlig; f&uuml;r alle Grafikoperationen der Prozessor
+(und nicht die GraKa) am R&ouml;deln ist. BTW: Kennt jemand einen schnelleren
+Server?
+<P>
+Ansonsten macht die Arbeit mit KDE richtig Spa&szlig;, man gew&ouml;hnt sich schnell
+an Scherzchen wie integrierten Webbrowser und lernt das zu sch&auml;tzen. Und,
+obwohl noch im Betastadium, l&auml;uft KDE ziemlich stabil und hat nur noch
+wenige Ecken und Kanten. F&uuml;r Besitzer von NetBSD (oder einer der neuen
+Linux-Distributionen f&uuml;r den Amiga) ist Qt & KDE auf alle F&auml;lle einen
+Versuch wert, wenn man die beigef&uuml;gten READMEs durchliest, stellt die
+Installation keine un&uuml;berwindlichen Probleme dar (wenn sogar ich es
+schaffe...). Nur ein gut ausgestatteter Rechner sollte schon vorhanden
+sein...«
+<P>
+
+
+<P ALIGN=RIGHT>
+<A HREF="0601.html"><IMG SRC="../menu/pfeil_links.gif" BORDER=0 WIDTH=20 HEIGHT=20></A>
+<A HREF="0603.html"><IMG SRC="../menu/pfeil_rechts.gif" BORDER=0 WIDTH=20 HEIGHT=20></A>
+</P>
+</BODY>
+</HTML>

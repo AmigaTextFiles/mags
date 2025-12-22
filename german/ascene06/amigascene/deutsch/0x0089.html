@@ -1,0 +1,419 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+<HEAD>
+	<TITLE>AmigaScene 0x06 - Effizientes Programmieren</TITLE>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="TEXT/HTML;CHARSET=iso8859-1">
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TEXT="#101010" LINK="#BF0000" VLINK="#101010" ALINK="#E04040">
+	<TABLE WIDTH="100%" CELLPADDING=3 CELLSPACING=0 BORDER=0>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP WIDTH="80%" HEIGHT=75>
+				<A NAME="00" HREF="welcome.html"><IMG SRC="../images/_amiga.gif" WIDTH=125 HEIGHT=48 ALT="[Amiga]" ALIGN=RIGHT BORDER=0></A><A HREF="#99"><IMG SRC="../images/_krumm_lo.gif" WIDTH=37 HEIGHT=29 ALT="[Down]" ALIGN=LEFT BORDER=0></A>
+				<BR CLEAR=ALL><BR>
+				<TABLE ALIGN=CENTER WIDTH=170 BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD ALIGN=CENTER>
+					<A HREF="../deutsch/0x0089.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" BORDER=1></A>
+				</TD></TR></TABLE>
+ 			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=RIGHT WIDTH=175>
+				<A HREF="welcome.html"><IMG SRC="../images/_scene.gif" WIDTH=110 HEIGHT=47 ALT="[Scene]" ALIGN=LEFT BORDER=0></A>
+				<A HREF="0x0088.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x008A.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=CENTER>
+				<CENTER>&nbsp;<BR>
+
+					<IMG WIDTH=155 HEIGHT=25 SRC="../images/_workshop_.gif" ALT="[Workshop]">&nbsp;<BR><BR>
+
+					<TABLE WIDTH="90%" BORDER=0>
+						<TR><TD ALIGN=CENTER><FONT SIZE="-1">
+
+| <A HREF="0x0089.html">Programmieren</A> |
+
+						</FONT></TD></TR>
+					</TABLE>&nbsp;<BR>
+				</CENTER>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER WIDTH=175 ROWSPAN=2>
+				<CENTER>&nbsp;<BR>
+					<IMG SRC="../images/__.gif" HEIGHT=1 WIDTH=175 ALT=" "><BR> 
+					<A HREF="0x0081.html"><IMG WIDTH=77  HEIGHT=25 SRC="../images/_cover.gif"     ALT="[Cover]"     BORDER=0></A><BR>
+					<A HREF="0x0082.html"><IMG WIDTH=117 HEIGHT=25 SRC="../images/_editorial.gif" ALT="[Editorial]" BORDER=0></A><BR>
+					<A HREF="0x0083.html"><IMG WIDTH=85  HEIGHT=25 SRC="../images/_inhalt.gif"    ALT="[Inhalt]"    BORDER=0></A><BR>
+					<A HREF="0x0084.html"><IMG WIDTH=70  HEIGHT=25 SRC="../images/_news.gif"      ALT="[News]"      BORDER=0></A><BR>
+					<A HREF="0x0085.html"><IMG WIDTH=131 HEIGHT=25 SRC="../images/_hardware.gif"  ALT="[Hardware]"  BORDER=0></A><BR>
+					<A HREF="0x0086.html"><IMG WIDTH=121 HEIGHT=25 SRC="../images/_software.gif"  ALT="[Software]"  BORDER=0></A><BR>
+					<A HREF="0x0089.html"><IMG WIDTH=135 HEIGHT=25 SRC="../images/_workshop.gif"  ALT="[Workshop]"  BORDER=0></A><BR>
+					<A HREF="0x008A.html"><IMG WIDTH=73  HEIGHT=25 SRC="../images/_spiele.gif"    ALT="[Spiele]"    BORDER=0></A><BR>
+					<A HREF="0x0090.html"><IMG WIDTH=91  HEIGHT=25 SRC="../images/_special.gif"   ALT="[Special]"   BORDER=0></A><BR>
+					<A HREF="0x0091.html"><IMG WIDTH=112 HEIGHT=25 SRC="../images/_feedback.gif"  ALT="[Feedback]"  BORDER=0></A><BR>
+					<A HREF="0x0092.html"><IMG WIDTH=46  HEIGHT=25 SRC="../images/_etc.gif"       ALT="[Etc]"       BORDER=0></A><BR>
+				<BR></CENTER>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+
+<BR><H1 ALIGN=LEFT><FONT FACE="Arial"><B>Effizientes Programmieren - Kurs 5</B></FONT></H1>&nbsp;
+
+<BR><FONT SIZE="+1">Im dritten Teil dieser Kursreihe haben wir mit den
+balancierten Bin&auml;rb&auml;umen eine sehr gute L&ouml;sung f&uuml;r das
+Suchproblem gefunden. In dieser Folge untersuchen wir eine sehr beliebte
+Methode, die, obwohl einfach zu implementieren, sehr leistungsf&auml;hig
+sein kann und beispielsweise auch im AMIGA-DOS Verwendung findet.
+</FONT><BR>
+
+<BR><CENTER><A NAME="01" HREF="#00"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Diesmal wollen wir uns mit einer v&ouml;llig neuen Methode zum
+Auffinden von Schl&uuml;sseln besch&auml;ftigen, den Hashverfahren. Dabei
+versucht man, im Gegensatz zu den bisher behandelten Verfahren, die
+Position des gesuchten Elements nicht durch Vergleiche herauszufinden,
+sondern sie zu berechnen. Daf&uuml;r gibt es eine Reihe unterschiedlicher
+Methoden. Wir wollen uns mit dem einfachsten und gebr&auml;uchlichsten
+Verfahren besch&auml;ftigen, der Divisions-Rest-Methode.<BR>
+
+<BR>Hier legt man eine Tabelle an, die eine bestimmte Gr&ouml;&szlig;e m
+hat. Wenn wir nun ein Schl&uuml;ssel k in diese Tabelle einf&uuml;gen
+wollen, dann dividieren wir k durch m und nehmen den Rest der Division als
+Index in die Tabelle. Wenn unsere Tabelle beispielsweise sieben
+Eintr&auml;ge besitzt, und wir den Schl&uuml;ssel 23 einf&uuml;gen wollen,
+dann dividieren wir 23/7=3 Rest 2. Die 23 wird also an der Position 2 in
+der Hashtabelle eingetragen. Beim Suchen und Entfernen verfahren wir
+&auml;hnlich. F&uuml;r die Division verwendet man am besten den
+Modulo-Operator %. Das Problem dabei ist aber, da&szlig; verschiedene
+Zahlen die gleiche Tabellenposition beanspruchen k&ouml;nnen. In unserem
+Beispiel von vorhin w&uuml;rde die 16 ebenfalls an der Position 2
+eingetragen werden, da 16%7=2. Man bezeichnet Zahlen, die an der gleichen
+Position in der Hashtabelle gespeichert werden, als Synonyme. Wenn zwei
+Synonyme den gleichen Platz in der Tabelle beanspruchen, kommt es also zu
+einer Adresskollision. Um solche F&auml;lle zu behandeln, gibt es eine
+Reihe von Kollisionsbehandlungen.<BR>
+
+<BR><CENTER><A NAME="02" HREF="#01"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Die wohl einfachste M&ouml;glichkeit ist die Methode der direkten
+Verkettung der &Uuml;berl&auml;ufer. Hier enth&auml;lt jeder
+Tabelleneintrag anstatt des Schl&uuml;ssels selbst einen Zeiger auf eine
+verkettete Liste mit den Schl&uuml;sseln. Somit ist es m&ouml;glich, mehr
+als einen Schl&uuml;ssel an einer bestimmten Position in der Hashtabelle
+unterzubringen.<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 CELLPADDING=0 CELLSPACING=2>
+<TR><TD ALIGN=CENTER><IMG WIDTH=309 HEIGHT=145 SRC="../images_06/abb_5-1.gif" ALT="[Abb.1]"></TD></TR>
+<TR><TD ALIGN=CENTER><TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 WIDTH=309>
+<TR><TD ALIGN=LEFT BGCOLOR="#FFFFFF"><FONT SIZE="-1" COLOR="#000000">
+Abbildung 1: Hashtabelle mit direkter Verkettung
+</FONT></TD></TR></TABLE></TD></TR></TABLE>&nbsp;
+
+<BR>Wenn wir hier ein Element eintragen wollen, berechnen wir wie vorher
+die Position in der Hashtabelle (mit der Divisions-Rest-Methode) und
+h&auml;ngen unseren neuen Schl&uuml;ssel in die dort verzeichnete lineare
+Liste rein. Dabei k&ouml;nnen wir all unser Wissen aus fr&uuml;heren
+Kursen anwenden, d.h. insbesondere die lineare Liste sortiert zu halten,
+um die (erfolglose) Suche zu beschleunigen, aber auch selbstanordnende
+Listen zu verwenden oder - f&uuml;r ganz gro&szlig;e Datenmengen - anstatt
+der linearen Liste einen Bin&auml;rbaum zu implementieren.<BR>
+
+<BR><CENTER><A NAME="03" HREF="#02"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Von entscheidender Bedeutung f&uuml;r die Effizienz des Hashverfahrens
+ist aber auch die Wahl der Gr&ouml;&szlig;e der Hashtabelle. Man will ja
+die Tabelle m&ouml;glichst gleichm&auml;&szlig;ig anf&uuml;llen. Hier rate
+ich Ihnen von der Verwendung von Zweierpotenzen ab. Meine Empfehlung
+lautet: w&auml;hlen Sie f&uuml;r die Gr&ouml;&szlig;e eine Primzahl, die
+m&ouml;glichst weit weg von der n&auml;chsten Zweierpotenz ist. Solche
+Zahlen haben sich in der Praxis am besten bew&auml;hrt.
+<A HREF="../images_06/list_5-1.c">Listing 1</A> ist ein Beispiel einer
+Implementation einer Hashtabelle f&uuml;r Integer-Schl&uuml;sseln. Die
+&Uuml;berl&auml;ufer werden dabei einfach in einer unsortierten linearen
+Liste gesammelt.<BR>
+
+<BR><CENTER><A NAME="04" HREF="#03"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>&Uuml;brigens kommen Hashtabellen mit Verkettung der
+&Uuml;berl&auml;ufer auch im DOS des Amigas zur Anwendung. Kenner der
+AMIGA-DOS-Diskettenstruktur wissen, da&szlig; eine solche Hashtable in
+jedem Root- und User-Directory-Block zu finden ist. Sie dient dort der
+schnellen Auffindung eines File-Headers. Jedesmal wenn Sie auf eine Datei
+durch ihren Namen zugreifen wollen, sucht AMIGA-DOS den dazugeh&ouml;rigen
+Block auf der Diskette. Dazu werden die einzelnen Zeichen des Filenamens
+addiert (bzw. deren ASCII-Werte). Die dadurch entstehende Zahl wird dann
+wie gewohnt durch die Gr&ouml;&szlig;e der Hashtable (hier 72) dividiert
+und der daraus entstehende Rest als Index in die Hashtable genommen. Dort
+findet AMIGA-DOS dann die Blocknummer des zu dem Filenamen geh&ouml;rigen
+File-Headers. Die Kollisionsbehandlung geschieht dabei auch durch
+Verkettung. In jedem File-Header ist n&auml;mlich das viertletzte Langwort
+ein Zeiger auf den n&auml;chsten File-Header mit demselben Hashvalue.
+Dieses Beispiel zeigt auch deutlich, da&szlig; die Verwendung von
+Hashtabellen nicht nur ganzzahligen Schl&uuml;sseln vorbehalten ist. In
+obigem Beispiel wird der Hashwert durch Addieren der einzelnen
+Zeichenwerte gebildet. Dies ist eine sehr h&auml;ufig benutzte
+Vorgangsweise. Bei sehr gro&szlig;en Hashtabellen kann es aber passieren,
+da&szlig; durch viele kurze Suchstrings der Hashwert gar nicht gro&szlig;
+genug werden kann, um die weiter hinten liegenden Pl&auml;tze zu
+erreichen. Um dies zu vermeiden wird bei der Berechnung des Hashwertes
+etwas anders vorgegangen. Die bisherige Version der Berechnung von
+Hashvalues f&uuml;r String-Schl&uuml;sseln, wie sie auch vom DOS
+eingesetzt wird, k&ouml;nnte etwa so aussehen:<BR>
+
+<BR><TABLE ALIGN=CENTER BORDER=0 BGCOLOR="#EEEEEE" WIDTH="90%"><TR VALIGN=TOP><TD ALIGN=LEFT><TT>
+<BR>#define m 9777;&nbsp;&nbsp;&nbsp;/*Gr&ouml;&szlig;e der Hashtable.*/
+<BR>int hash_value(char *cp)
+<BR>{
+<BR>long h=0;
+<BR>&nbsp;&nbsp;while(*cp) h+=*cp++;
+<BR>&nbsp;&nbsp;return h%m;
+<BR>}
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Um nun die hinteren Hashadressen erreichen zu k&ouml;nnen, wird der
+Hashvalue h bei jedem Schleifendurchlauf einmal nach links rotiert. So
+entstehen sehr schnell gro&szlig;e Zahlen. Die obige Schleife mu&szlig;
+dann so aussehen: <TT>while(*cp) h+=h+*cp++;</TT><BR>
+
+<BR><CENTER><A NAME="05" HREF="#04"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Bei den Hashtabellen in der bisherigen Form wurden immer Zeiger zur
+Verkettung der &Uuml;berl&auml;ufer verwendet. Durch diese Vorgangsweise
+geht viel an Speicherplatz verloren, da immer neue Knoten in der
+veketteten Liste der &Uuml;berl&auml;ufer erzeugt werden m&uuml;ssen,
+w&auml;hrend andere Pl&auml;tze in der Hashtabelle leer bleiben. Um dieser
+Verschwendung von Speicherresourcen entgegenzutreten, kann man anstatt der
+Verkettung der &Uuml;berl&auml;ufer offene Hashverfahren einsetzen. Dabei
+handelt es sich um &quot;statische Hashtabellen&quot;, was soviel
+hei&szlig;t, da&szlig; deren maximale Kapazit&auml;t von vornherein
+festgelegt werden mu&szlig;. Sie entsprechen in ihrem Verhalten also in
+etwa der Array- Implementation von verketteten Listen.<BR>
+
+<BR>Hier erfolgt die Kollisionsbehandlung innerhalb der Hashtable. Ist
+n&auml;mlich der gew&uuml;nschte Platz h(k) f&uuml;r den Schl&uuml;ssel k
+schon besetzt, dann wird ein anderer Platz in der Hashtable gesucht, an
+dem der Schl&uuml;ssel untergebracht werden kann. Die Reihenfolge in der
+dabei die einzelnen Pl&auml;tze der Hashtable untersucht werden bezeichnet
+man als Sondierungsfolge; sie ist entscheidend f&uuml;r die Effizienz des
+Hashverfahrens. Die einfachste Sondierungsfolge hei&szlig;t lineares
+Sondieren (linear probing). Dabei wird einfach immer die Zelle vor der
+gerade gew&uuml;nschten untersucht. Wenn h(k) der Hashwert von k ist,
+ergibt sich folgende Sondierungsfolge: h(k), h(k)-1, h(k)-2, ..., 0, m-1,
+..., h(k)+2, h(k)+1, wobei m die Gr&ouml;&szlig;e der Hashtabelle angibt.
+Betrachten wir anhand dieser einfachsten Sondierungsfolge einmal die drei
+Grundoperationen der Hashtabelle.<BR>
+
+<BR><CENTER><A NAME="06" HREF="#05"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Das Suchen in einer offenen Hashtabelle gestaltet sich &auml;hnlich
+wie vorhin. Dabei wird zum gesuchten Schl&uuml;ssel k der entsprechende
+Hashwert h(k) berechnet. Diese Hashzelle wird dann untersucht. Kann dort
+das gew&uuml;nschte Element nicht gefunden werden, werden gem&auml;&szlig;
+der Sondierungsfolge alle weiteren Eintr&auml;ge in der Hashtabelle
+untersucht bis entweder eine leere Zelle oder das gew&uuml;nschte Element
+gefunden wurde. &Auml;hnlich l&auml;uft auch das Einf&uuml;gen ab, nur
+wird hier beim Auftreten einer leeren Zelle das einzuf&uuml;gende Element
+dort abgelegt.<BR>
+
+<BR>Schwieriger wird die Sache allerdings bei der Entferne-Operation. Hier
+kann es sein, da&szlig; ein Schl&uuml;ssel aus der Hashtabelle entfernt
+werden soll, mit dem ein anderes Element vorhin schon kollidiert ist.
+W&uuml;rde nun dieser Schl&uuml;ssel einfach aus der Hashtabelle entfernt
+werden, dann k&ouml;nnten eventuell in der Tabelle enthaltene Synonyme
+nicht mehr gefunden werden. Ein Beispiel: nehmen wir an, in eine
+Hashtabelle t der Gr&ouml;&szlig;e m=7 w&uuml;rden nach der Reihe die
+Schl&uuml;sseln 1 und 8 - also zwei Synonyme - eingef&uuml;gt. Die Eins
+w&uuml;rde dabei die Position t[1] einnehmen, da 1%7=1. Auch die Acht will
+auf die Position 1, da 8%7 ebenfalls 1 ergibt. Da t[1] aber schon durch
+die Eins belegt ist, m&uuml;ssen wir ihr einen anderen Platz zuweisen,
+also beispielsweise t[0], gem&auml;&szlig; der linearen Sondierung. Wenn
+wir nun anschlie&szlig;end nach der Acht suchen wollen, beginnen wir
+wieder bei Position h(8)=8%7=1 zu suchen. Hier treffen wir aber auf die
+Eins, weshalb wir nach der Sondierungsfolge den Platz davor, also t[0]
+untersuchen. Hier finden wir die Acht wieder. Unser Problem tritt dann
+auf, wenn wir die Eins aus der Hashtabelle entfernen. Dann w&uuml;rde beim
+Suchen nach der Acht wieder t[1] betrachtet werden. Hier ist
+urspr&uuml;nglich einmal die Eins gewesen, nach dem Entfernen ist dieser
+Platz aber leer. Wenn der Suchalgorithmus aber auf eine leere Zelle
+trifft, bricht er ab. Deshalb kann die Acht nicht gefunden werden.<BR>
+
+<BR><CENTER><A NAME="07" HREF="#06"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Diese Schwierigkeit umgeht man, indem man f&uuml;r jede Zelle der
+Hashtable drei Zust&auml;nde unterscheidet. Entweder ist die Zelle belegt,
+frei oder entfernt. Ist eine Zelle als belegt markiert, dann enth&auml;lt
+sie gerade einen Schl&uuml;ssel. Ist sie frei, kann dort jederzeit ein
+neuer Schl&uuml;ssel eingef&uuml;gt werden. Beim Suchen wird beim
+Auftreten einer freien Zelle aber abgebrochen. Anders jedoch beim Zustand
+entfernt. Auch hier kann jederzeit ein Element eingef&uuml;gt werden, beim
+Suchen wird die Zelle jedoch als belegt angesehen und weiter in der
+Sondierungsfolge fortgefahren.<BR>
+
+<BR><CENTER><A NAME="08" HREF="#07"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wie implementiert man aber am besten diese drei Zust&auml;nde? Am
+einfachsten w&auml;re es nat&uuml;rlich neben dem Hashtable-Array ein
+zweites Feld derselben Gr&ouml;&szlig;e anzulegen, das den jeweiligen
+Zustand der einzelnen Zellen angibt. Ich halte diese Methode aber f&uuml;r
+verschwenderisch. Offene Hashverfahren sind sowieso meist langsamer als
+ihre Br&uuml;der mit Verkettung der &Uuml;berl&auml;ufer. Ihr einziger
+Vorteil liegt im geringeren Speicherplatzverbrauch bei bekannter maximaler
+Aufnahmekapazit&auml;t. Dieser Vorteil wird aber durch die Verwendung
+eines Zustand-Feldes wieder zunichte gemacht. Da die Elemente einer
+Hashtabelle aber meist Pointer auf die zu suchenden Schl&uuml;sseln sind,
+w&auml;re mein Vorschlag, die Zustand-Information implizit in den
+Hashpointern unterzubringen. So w&uuml;rde eine NULL als Hashpointer
+anzeigen, da&szlig; die jeweilige Zelle frei ist. Ist sie jedoch belegt,
+so zeigt der Pointer auf das darin enthaltene Element. Nun fehlt noch der
+Wert f&uuml;r &quot;entfernt&quot;. Hier ben&ouml;tigen wir einen Wert,
+der sich niemals mit einer<BR>
+
+<BR>Hashtabelleninformation &uuml;berschneiden darf. Wenn wir davon
+ausgehen, da&szlig; sich die Hashtabelle wohl kaum selber speichern wird,
+dann k&ouml;nnen wir daf&uuml;r die Basisadresse der Hashtabelle
+heranziehen. F&uuml;r die Hashtabelle t[0..m-1] steht somit NULL f&uuml;r
+frei, t f&uuml;r entfernt und jeder andere Wert f&uuml;r belegt. Wie Sie
+sich vorstellen k&ouml;nnen, kann die Entferne-Operation ganz sch&ouml;n
+aufwendig werden, wenn viele Elemente als entfernt markiert sind. Deshalb
+sollten offene Hashtabellen wirklich nur dann zum Einsatz kommen, wenn
+sehr viel mehr gesucht und eingef&uuml;gt als entfernt wird. Dieser
+Grundsatz gilt &uuml;bringens auch f&uuml;r Hashtabellen mit Verkettung
+der &Uuml;berl&auml;ufer, sofern diese nur mit einfachen linearen Listen
+verkettet werden. Betrachten wir aber nun noch einmal das lineare
+Sondieren bez&uuml;glich seiner Effizienz.<BR>
+
+<BR><CENTER><A NAME="09" HREF="#08"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#10"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wenn wir in eine offene Hashtable mit linearer Sondierungsfolge viele
+Elemente einf&uuml;gen, bemerken wir, da&szlig; sich die Elemente an
+bestimmten Stellen anh&auml;ufen. Anders ausgedr&uuml;ckt bedeutet das,
+da&szlig; in der N&auml;he der Zellen, wo schon viele Elemente
+eingef&uuml;gt wurden, sich viel eher neue Elemente ansiedeln als
+anderswo. Machen wir dazu ein Beispiel. Angenommen unsere Hashtable t ist
+7 Zellen gro&szlig; (m=7). Wir f&uuml;gen nun 4 und 12 ein, diese kommen
+auf die Positionen 4 bzw. 5. Die Hashtabelle sieht dann wie folgt aus:<BR>
+
+<BR><TABLE BORDER=4 BGCOLOR="#EEEEEE" CELLPADDING=3 CELLSPACING=0 ALIGN=CENTER>
+<TR VALIGN=TOP><TD><TT>
+<BR>h(k):&nbsp;&nbsp;0&nbsp;&nbsp;1&nbsp;&nbsp;2&nbsp;&nbsp;3&nbsp;&nbsp;4&nbsp;&nbsp;5&nbsp;&nbsp;6
+<BR>t&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;x&nbsp;&nbsp;x&nbsp;&nbsp;x&nbsp;&nbsp;x&nbsp;&nbsp;4&nbsp;12&nbsp;&nbsp;x
+<BR>
+<BR></TT></TD></TR></TABLE>&nbsp;
+
+<BR>Nun ist es sehr wahrscheinlich, da&szlig; der n&auml;chste
+Schl&uuml;ssel an die Position 3 kommt, denn alle Schl&uuml;sseln, die
+aufgrund ihres Hashwertes die Positionen 3, 4 und 5 einnehmen wollen,
+kommen unweigerlich an die Position 3. Im vorliegenden Fall ist die
+Wahrscheinlichkeit daf&uuml;r also 3/7, also fast 50%. Kommt der
+n&auml;chste Schl&uuml;ssel dann tats&auml;chlich an die Position 3, dann
+ist die Wahrscheinlichkeit, da&szlig; die Zelle 2 als n&auml;chstes
+gef&uuml;llt wird schon 4/7, also &uuml;ber 50%, obwohl noch vier von
+sieben Zellen frei sind!<BR>
+
+<BR><CENTER><A NAME="10" HREF="#09"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#11"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Erschwehrend wirkt sich aus, da&szlig; dadurch zwei relativ
+gro&szlig;e Bl&ouml;cke schnell zu einem noch gr&ouml;&szlig;eren
+zusammenwachsen und den Effekt noch verst&auml;rken. Diese als
+prim&auml;re H&auml;ufung (primary clustering) bezeichnete Ansammlung von
+Schl&uuml;sseln wollen wir aber in unserer n&auml;chsten Sondierungsart
+vermeiden. Beim quadratischen Sondieren w&auml;hlt man einen quadratisch
+anwachsenden Abstand zwischen den betrachteten Zellen. Die
+Sondierungsfolge f&uuml;r den Schl&uuml;ssel k ist hier: h(k), h(k)+1,
+h(k)-1, h(k)+4, h(k)-4, h(k)-9, h(k)+9, h(k)-16, h(k)+16, h(k)-25,
+h(k)+25, ... oder allgemein: h(k)+i*i und h(k)-i*i f&uuml;r i=0, 1, 2, ...
+Dabei mu&szlig; aber gew&auml;hrleistet werden, da&szlig; auch alle
+Elemente der Hashtabelle einmal betrachtet werden. Das ist dann
+gew&auml;hrleistet, wenn die Gr&ouml;&szlig;e der Hashtable m eine
+Primzahl der Form 4i+3 ist, f&uuml;r ein beliebiges i.<BR>
+
+<BR>Bei dieser Sondierungsart konnte zwar die prim&auml;re H&auml;ufung
+vermieden werden, es tritt aber die sogenannte sekund&auml;re H&auml;ufung
+auf. Darunter versteht man den Umstand, da&szlig; Synonyme, also
+Schl&uuml;sseln mit gleichem Hashwert auch die gleiche Sondierungsfolge
+durchlaufen und sich somit immer gegenseitig blockieren. Deshalb werden
+wir uns noch mit einer dritten Sondierungsart besch&auml;ftigen, die wir
+dann als einzige auch als Programm implementieren: das Double-Hashing.<BR>
+
+<BR><CENTER><A NAME="11" HREF="#10"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#12"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Dabei w&auml;hlt man als Sondierungsfunktion der Hashfunktion h(k)
+eine zweite Hashfunktion h'(k). Die Sondierungsfolge f&uuml;r einen
+beliebigen Schl&uuml;ssel k lautet dann: h(k), h(k)-h'(k), h(k)-2*h'(k),
+..., h(k)-(m-1)*h'(k). Dabei mu&szlig; gelten, da&szlig; h'(k) f&uuml;r
+kein k ein ganzzahliger Teiler der Hashtabellengr&ouml;&szlig;e m sein
+darf, damit durch diese Sondierungsfolge alle Zellen einmal in Betracht
+gezogen werden. Da wir aber vorhaben, m immer als Primzahl zu w&auml;hlen,
+ist diese Bedingung immer gegeben, denn eine Primzahl ist nur durch sich
+selbst und Eins teilbar. Um nun die sekund&auml;re H&auml;ufung zu
+vermeiden, mu&szlig; h'(k) unabh&auml;ngig von h(k) gew&auml;hlt werden.
+Wenn m eine Primzahl ist und wir nach der Divisions-Rest-Methode arbeiten,
+ist das f&uuml;r h'(k)=1+k%(m-2) gegeben.<BR>
+
+<BR>Da das Double-Hashing den anderen offenen Hashverfahren eindeutig
+&uuml;belegen ist, kann es als allgemeine L&ouml;sung f&uuml;r
+&quot;statische Hashtabellen&quot; herhalten. Deshalb gibt es zu dieser
+Sondierungsmethode auch eine kleines
+<A HREF="../images_06/list_5-1.c">Programm</A>. Der anschlie&szlig;ende
+Beispielteil zeigt, wie die einzelnen Routinen verwendet werden.<BR>
+
+<BR><CENTER><A NAME="12" HREF="#11"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_li.gif" ALT=" " BORDER=0></A><A HREF="#99"><IMG WIDTH=13 HEIGHT=26 SRC="../images/_schraeg_re.gif" ALT=" " BORDER=0></A></CENTER>&nbsp;
+
+<BR>Wenn man nun den Aufwand f&uuml;r die einzelnen Operationen
+(Einf&uuml;gen, Entfernen, Suchen) genauer unter die Lupe nimmt, dann
+stellt sich heraus, da&szlig; die St&auml;rken von Hashverfahren
+eigentlich auf dem Suchen liegen. Wie bei den AVL-B&auml;umen gl&auml;nzen
+dadurch weder die Einf&uuml;ge- noch die Entferne- Operation durch
+besondere Effizienz. Beim Suchen wirkt sich auch das Markieren von Zellen
+als &quot;entfernt&quot; ung&uuml;nstig auf die Geschwindigkeit aus.
+Trotzdem sollte man die Vorteile der offenen Hashtabelle nicht
+untersch&auml;tzen. Immerhin l&auml;&szlig;t sich damit schnell suchen
+ohne viel Speicher aufzuwenden oder zeitaufwendige Umsortierungen
+vorzunehmen.<BR>
+
+			<BR>
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=TOP ALIGN=LEFT>
+				<P ALIGN=RIGHT>
+
+					<A HREF="as-redax.html#markus">Markus &Ouml;llinger</A>
+					&nbsp;&nbsp;&nbsp;
+					<A HREF="../deutsch/0x0089.html"><IMG WIDTH=16 HEIGHT=10 SRC="../images/__german.gif" ALT="[ german ]" VSPACE=0 HSPACE=0 BORDER=1></A>
+					&nbsp;&nbsp;&nbsp;
+					<BR>
+
+				</P>
+				<BR><TABLE BORDER=0 CELLPADDING=8 CELLSPACING=0 ALIGN=CENTER WIDTH="90%">
+				<TR VALIGN=TOP ALIGN=LEFT><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x0033.html">Workshop Teil 1</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x0065.html">Workshop Teil 3</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_06/list_5-1.c">Listing 5-1</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_06/list_5-2.c">Listing 5-2</A><BR>
+
+				</TD><TD WIDTH="50%">
+
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x004D.html">Workshop Teil 2</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="0x0079.html">Workshop Teil 4</A><BR>
+<IMG WIDTH=10 HEIGHT=10 SRC="../images/_ball.gif" ALT="-"> <A HREF="../images_06/abb_5-1.gif">Abb. 1</A> (GIF;2K)<BR>
+
+				</TD></TR>
+				</TABLE>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=TOP ALIGN=CENTER> &nbsp; 
+			</TD>
+		</TR>
+		<TR>
+			<TD BGCOLOR="#FFFFFF" VALIGN=MIDDLE ALIGN=LEFT>
+				<A HREF="#00"><IMG SRC="../images/_krumm_hi.gif" WIDTH=37 HEIGHT=29 BORDER=0 ALT="[Up]"></A>
+				<A NAME="99"><FONT COLOR="#FFFFFF">&nbsp;</FONT></A>
+			</TD>
+			<TD BGCOLOR="#BF0000" VALIGN=BOTTOM ALIGN=RIGHT>
+				<A HREF="0x0088.html"><IMG SRC="../images/_gerade_li.gif" WIDTH=22 HEIGHT=41 ALT="{" BORDER=0></A><A HREF="0x008A.html"><IMG SRC="../images/_gerade_re.gif" WIDTH=23 HEIGHT=41 ALT="}" BORDER=0></A>
+			</TD>
+		</TR>
+	</TABLE>
+</BODY>
+</HTML>

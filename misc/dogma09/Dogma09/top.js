@@ -1,0 +1,11 @@
+document.write ('<center><table width="95%" border="0" cellspacing="2" cellpadding="2">',
+'<tr><td align="center"><a href="http://www.dogma.org.ua/"><img src="../gfx/banner.jpg" width="600" height="100" border="0" alt="Догма - электронное Амижное издание"></a><BR>',
+'<a href="../about/index.html"><IMG SRC="../gfx/01.jpg" alt="Колонка редакции" width="66" height="24" border="0"></a>',
+'<a href="../news/index.html"><IMG SRC="../gfx/02.jpg" alt="Амижные новости" width="66" height="24" border="0"></a>',
+'<a href="../interview/index.html"><IMG SRC="../gfx/03.jpg" alt="Наши гости" width="66" height="24" border="0"></a>',
+'<a href="../history/index.html"><IMG SRC="../gfx/04.jpg" alt="Хроника событий" width="66" height="24" border="0"></a>',
+'<a href="../focus/index.html"><IMG SRC="../gfx/05.jpg" alt="В фокусе" width="66" height="24" border="0"></a>',
+'<a href="../exclusive/index.html"><IMG SRC="../gfx/06.jpg" alt="Xклюзив" width="66" height="24" border="0"></a>',
+'<a href="../program/index.html"><IMG SRC="../gfx/07.jpg" alt="Программы и утилиты" width="66" height="24" border="0">',
+'<a href="../games/index.html"><IMG SRC="../gfx/08.jpg" alt="Игротека" width="66" height="24" border="0"></a>',
+'<a href="../download/index.html"><IMG SRC="../gfx/09.jpg" alt="Download" width="66" height="24" border="0"></a></td></tr></table></center>')

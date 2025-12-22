@@ -1,0 +1,568 @@
+<HTML>
+<HEAD>
+<TITLE>
+MUADDIBIN C/C++ KOSESI
+</TITLE>
+</HEAD>
+
+<BODY>
+<P>
+                 DON'T BELIEVE EVERYTHING YOU C!
+<P>
+  Günün sözü: "You don't know what it was, and you didn't know what it 
+looked like, but can you describe it?"
+<P>
+   - Amerikalý bir avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ)
+<P>
+
+                 Kýrk Katýr mý Kýrk Satýr mý?
+
+  Sanki harf marf saymak çok zevkli bir þeymiþ gibi þimdi de satýr 
+sayma olayýna el atmak vasýl oldu þükürler olsun.  Þöyle çok basit bir 
+Cee programý ile klavyeden girilen text'teki satýrlarý saymak mümkün:
+<P>
+#include <stdio.h><BR>
+#define ENDOFINPUT '!'<BR>
+<P>
+/* Adam kac kere <return>'e basmis acabaa? */<BR>
+main()                                       <BR>
+{                                            <BR>
+  int c, satsay;                             <BR>
+
+  satsay=0;                                  <BR>
+  while ((c=getchar())!=ENDOFINPUT)          <BR>
+    if (c=='\n')                             <BR>
+      ++satsay;                              <BR>
+  printf("%d\n", satsay);                    <BR>
+}
+<P>
+  "While" döngüsünün içinde sadece bir "if" dallanmasý olduðundan bunu 
+küme iþaretleri içine almaya gerek kalmýyor.
+  Efenim þimdi bu "if" ne iþe yarar?  Çok basit.  Tahmin edeceðiniz 
+gibi, eðer "if"'ten sonra gelen parantez içindeki önerme doðruysa 
+(ikili sayý sisteminde "1" deðerine sahipse) bu önermeden sonra gelen 
+komut (ya da küme iþaretleri içinde tutulan blok) çalýþtýrýlýr; yok 
+eðer yanlýþsa ("0" deðerine sahipse), mevzubahis komut (ya da blok) 
+atlanarak programa devam edilir.
+<P>   C'deki "==" iþlemi, "eþittir" anlamýna gelen bir karþýlaþtýrmadýr.
+Yani Pascal'daki "=" yerine geçer.  özellikle Basic'ten C'ye geçenler, 
+"==" ile karþýlaþtýrma yapacaklarý yerde alýþkanlýktan "=" 
+yazýverirler aman dikkat!  Derleyici böyle durumlarda hata vermekten 
+özellikle kaçýnýr ve bu yanlýþlýðý sonradan bulmanýz çok uzun 
+sürebilir.  Babam ööle diyoo...
+<P>   (Halbuki Basic'te karþýlaþtýrma da, atama da ayný þekilde
+gösteriliyor ve hiç sorun çýkmýyor; diðer dillerde neden böyle bir 
+güzellik yok merak konusudur yani...)
+<P>   (Bu arada StormC bu gidiþle AMOS'un pabucunu dama atacak; hepinize
+iyice C öðrenip StormC'de yaratýcýlýðýnýzý göstermenizi tavsiye 
+ederim; gerçekten çok profesyonel bir derleyici.  Visual C halt etmiþ 
+yani.)
+<P>
+Question: Mrs. Jones, do you believe you are emotionally stable?
+Answer: I used to be.
+Question: How many times have you commited suicide?
+<P>
+   - Avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ)
+<P>
+  Neyse ne diyorduk?  "==" iþlemi "eþittir", "!=" iþlemi "eþit 
+deðildir", "<" iþlemi "küçüktür", ">" iþlemi "büyüktür", ">=" iþlemi 
+"büyük veya eþittir", "<=" iþlemi ise "küçük veya eþittir" anlamýna 
+geliyor; bunlarý da böylece halletmiþ olduk...
+<P>   '\n' karakter sabitinin "newline" anlamýna geldiðini görmüþtük.  Tek
+týrnak arasýna yazýlmýþ '\t', 'A', '6' gibi karakter sabitlerinin 
+aslýnda birer integer olduðunu ve o karakterin ASCII koduna karþýlýk 
+geldiðini unutmayýn.  '\n' sabitinin ASCII deðeri 10 olduðundan 
+yukardaki "if" satýrýný
+<P>
+    if (c==10)                               <BR>
+<P>
+olarak da yazabilirdik tabi.  Fakat çift týrnak içindeki "%d\n" 
+string'i, içinde kaç karakter olursa olsun integer olarak 
+gösterilemez.
+<P>
+Question: She had three children, right?
+Answer: yes.
+Question: How many were boys?
+Answer: none.
+Question: Were there girls?
+<P>
+   - Avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ)
+<P>
+  "If" dallanmalarýný kullanarak birkaç ilginç programcýk yazabiliriz.  
+örneðin, klavyeden girilen text'teki boþluklarý, tab'leri ('\t'), 'A' 
+harflerini, noktalarý, vs. ayrý ayrý saydýrmak çocuk oyuncaðý.  Þu 
+programa kýsaca göz atalým:
+<P>
+#include <stdio.h>                           <BR>
+#define ENDOFINPUT '!'                       <BR>
+<P>
+main()                                       <BR>
+{                                            <BR>
+    int c;                                   <BR>
+                                             <BR>
+    while ((c=getchar())!=ENDOFINPUT)        <BR>
+      if (c=='\t')                           <BR>
+        putchar('T');                        <BR>
+      else if (c==' ')                       <BR>
+        putchar('S');                        <BR>
+      else if (c=='\\')                      <BR>
+        putchar('/');                        <BR>
+      else                                   <BR>
+        putchar(c);                          <BR>
+}                                             <BR>
+<P>
+  Bu minnacýk program klavyeden girdiðimiz satýrlarý iþliyor ve 
+tab'leri "T" harfine, boþluklarý "S" harfine, backslash'leri ('\\' 
+olarak gösteriliyor) düzgün slash'e ("/") çevirerek ekrana yeniden 
+basýyor.  Daktilo yazan bir maymundan daha lüzumsuz bir program yani.  
+Yeni görünen "if-else" yapýlarý ise "if"'in dallanma özelliðini açýkça 
+dýþa vuruyor.  Eðer birinci "if"'ten sonra gelen önerme yanlýþ ise 
+sýradaki "else" satýrýna geçiliyor, bu satýrdaki "if"'li önerme test 
+ediliyor, eðer doðruysa hemen takip eden komut (ya da blok) 
+çalýþtýrýlýyor, yok yanlýþsa bir sonraki "else"'e atlanýyor, vs.  Eðer 
+"if"'li önermelerden hiçbiri doðru deðilse en sondaki ("if"'siz) 
+"else"'in kontrol ettiði blok çalýþtýrýlýyor.  Unutulmamasý gereken 
+nokta, bir "if-else" yapýsýnda, ayrý bölümlerde bulunan komut ya da 
+bloklarýn yalnýzca ve yalnýzca birinin iþleme konulduðu...  Tabi "if-
+else" içindeki hiçbir komut da çalýþmayabilir; eðer siz en sondaki 
+"else" bölümünü ihmal ederseniz...
+<P>
+Question: Now, doctor, isn't it true that when a person dies in his 
+sleep, in most cases he just passes quietly away and doesn't know 
+anything about it until the next morning?
+<P>
+   - Avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ)
+<P>
+  Bu da böylece anlaþýldýðýna göre (keh keh tabi tabi) "if-else" 
+kullanan daha karýþýk bir program yazabiliriz.  örneðin programýmýz, 
+girilen text'teki karakter, satýr ve kelimeleri ayrý ayrý sayabilir:
+<P>
+#include <stdio.h>                                  <BR>
+#define ENDOFINPUT '!'                              <BR>
+#define SOZCUKDISI 0    /* kelimenin disindaysak */ <BR>
+#define SOZCUKICI 1     /* kelimenin icindeysek */  <BR>
+<P>
+/* Girdideki karakter, sozcuk ve satirlari sayar bi de cok iyi bulasik 
+yikar gomlek utuler masallah karin tokluguna calisir Allah kazadan 
+beladan saklasin */
+main()                                              <BR>
+{                                                   <BR>
+  int c, satsay, sozsay, karsay, nerdeyiz;          <BR>
+
+  satsay=sozsay=karsay=0;                           <BR>
+  nerdeyiz=SOZCUKDISI;                              <BR>
+  while ((c=getchar()!=ENDOFINPUT)                  <BR>
+  {                                                 <BR>
+    ++karsay;                                       <BR>
+    if (c=='\n')                                    <BR>
+      ++satsay;                                     <BR>
+    if (c==' ' || c=='\n')                          <BR>
+      nerdeyiz==SOZCUKDISI;                         <BR>
+    else if (nerdeyiz=SOZCUKDISI)                   <BR>
+    {                                               <BR>
+      nerdeyiz=SOZCUKICI;                           <BR>
+      ++sozsay;                                     <BR>
+    }                                               <BR>
+  }                                                 <BR>
+  printf("harf=%d sozcuk=%d satir=%d\n", karsay, sozsay, satsay); <BR>
+}
+<P>
+  "||" iþlemi "OR"'un C'deki karþýlýðýdýr.  "&&" ise "AND"'e tekabül 
+ediyor.  Garip ama gerçek.  Yani adam gibi "OR" ve "AND" kullansalar 
+bi taraflarýna batýyor herhalde ki ürkünç semboller kullanma 
+ihtiyacýnda hissediyor kendilerini bu C'ciler.  Neyse caným, maksat 
+zaten hava atmak: "Baksana olm, <he he> Si'de yazýyorum leyn, nasý 
+ama?  Yazdýðýmdan da biþey anlaþýlmýyo di mi? <keh keh> Böyle komplike 
+yazarük biz Si'ciler iþte!"
+<P>   "OR" ile "AND" gibi mantýksal iþlemlerin nasýl çalýþtýðýný herhalde
+biliyorsunuzdur, zaten adlarýndan da belli.  Yukardaki programda, "c" 
+deðiþkeni eðer boþluksa YA DA (||) newline karakteriyse o zaman "if"'i 
+takip eden komut seti çalýþtýrýlýyor.
+<P>   "||" ya da "&&" gibi mantýksal iþlemler ayný satýrda birkaç defa
+kullanýlabilirler ("if (c==' ' || c=='\n' || c=='\t')" gibi) ve her 
+zaman soldan saða doðru hesaplanýrlar.  önermenin doðruluðu ya da 
+yanlýþlýðý kesinlik kazandýðý anda hesaplama durur. (Bu kolaylýða 
+short-circuit evaluation deniyor ve ilerki konularda önem kazanacak)  
+Yani yukardaki "OR"'lu "if" satýrýnda soldan saða giderken 
+karþýlaþtýrmalarýn herhangi biri doðruysa önermenin doðruluðu 
+kesinleþir ve geriye kalan kýsmý atlanýr.
+<P>
+Question: What happened then?
+Answer: He told me, he says, "I have to kill you because you can 
+identify me."
+Question: Did he kill you?
+<P>
+   - Avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ - bence yani)
+<P>
+  "OR"'dan MOR'dan geyik açarken yukardaki programýn nasýl çalýþtýðýný 
+anlatmayý unuttuk.  Herhalde çözmüþsünüzdür ama, kafasý karýþanlar 
+için: Programýmýz "while"'dan hemen sonra gelen "++karsay" satýrý ile 
+girilen her harf için (<Return> olsun olmasýn) karakter sayýsýný bir 
+artýrmayý garantilemiþ oluyor.  Satýr sayýmý yapan bölümü de yazýnýn 
+baþýndaki programdan kesip yapýþtýrdýk.  Sözcük sayan bölümün 
+mantýðý ise þu: "nerdeyiz" deðiþkeni bir sözcüðün içinde mi, yoksa 
+dýþýnda mý olduðumuzu kaydediyor.  Programa girerken 
+"SOZCUKDISI"'ndayiz.  Bir sözcüðün ilk harfiyle karþýlaþtýðýmýz zaman 
+(eðer "c" boþluk ya da newline deðilse) program sözcük sayýsýný bir 
+artýrýyor ("++sozsay") ve "nerdeyiz"'i güncelliyor.  Sözcüðün bundan 
+sonra gelen harfleri "sozsay"'a etki etmiyor.  Ta ki yeniden sözcük 
+dýþýna çýkýp baþka bir sözcüðe girene kadar.
+  1 ve 0 sayýlarý yerine dolambaçlý bir þekilde "SOZCUKDISI" ve 
+"SOZCUKICI" sabitlerini kullanmamamýzýn nedeni, programý daha 
+okunabilir hale getirmekti.  ¦yi de oldu heh heh...  Ayrýca,
+<P>
+  satsay=(sozsay=(karsay=0));                                     <BR>
+
+gibi absürd ve sürrealist bir ucubelik yaratmak yerine C'nin 
+bahþettiði göz kamaþtýrýcý kolaylýklarý sonuna kadar deðerlendirerek
+
+  satsay=sozsay=karsay=0;                                         <BR>
+
+yazmýþ olduðumuza dikkat ediniz.
+
+  Falan filan...
+
+Question: You say that the stairs went down to the basement?
+Answer: Yes.
+Question: And these stairs, did they go up also?
+
+   - Avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ - ordan da ben aldým)
+
+  Kelime sayma programý üzerinde oynayarak, örneðin, klavyeden 
+girdiðimiz text'teki her kelimeyi ayrý bir satýra yazan bir program 
+üretebilirsiniz.  Ya da "Niye bu aptal ve acaip can 
+sýkýcý saçmalýklarla uðraþýyorum, text processing'den bana ne?" de 
+diyebilirsiniz.  Yani herþey sizin hayalgücünüze kalmýþ. <grin>
+  Gerçekten de C'deki text iþlemleri çok sýkýcý, kabul ediyorum, ama 
+temel yapýlarý kavramanýn en kolay yolu, "getchar" ve "putchar" gibi 
+çok basit komutlardan programcýklar oluþturmaktýr.  Burda öðrendiðiniz 
+temel kavramlarý kullanarak ve (örneðin) StormC'deki demo 
+programlarý inceleyerek þimdýden Worms oynamaktan daha çok iþe yarayan 
+programlar inþa edebilirsiniz.
+
+  "HA HA!  SONUNDA BAÞLIYOOOOR!!" - Shang Tsung
+
+
+                        ARRAY'LER
+
+  Array, Türkçe'ye "Matris" diye çevrilebilir, ama ben, bilgisayar 
+terimi olduðundan ¦ngilizce'sini kullanmayý tercih ederim; 
+katlanacaksýnýz artýk naapalým hehe...  Bütün bilgisayar dillerinin 
+temel taþlarýndan olan array'leri C'de yaratmak çok kolay:
+
+int benimcanimarrayim[30];                                        <BR>
+
+diyerek "benimcanimarrayim" adli 30 adet integer elemanlý bir array 
+hazýrlamýþ oluyoruz.  Array nedir bilmeyenler için: Bir deðiþken 
+düþünün ki, içinde n tane birbirinden baðýmsýz oda olsun ve her bir 
+oda daha önceden tanýmlanmýþ type'taki bir deðeri içinde tutabilsin.  
+Bu odalarýn isimleri deðil numaralarý olsun ve tuttuklarý deðerler, 
+içinde bulunduklarý array'in ismi kullanýlarak ulaþýlsýn. (örneðin: 
+"benimcanimarrayim[10]" = "benimcanimarrayim"'in 11'inci elemaný).  
+Array'lerin, birden fazla deðeri ayný isim altýnda tutma yeteneði 
+birçok durumda F15'teki paraþütlerden daha fazla hayat 
+kurtarýcý oluyor.  Fakat unutmayýn ki array, kendi ismiyle (eleman 
+numarasý vermeden) atama, karþýlaþtýrma gibi pozisyonlarda 
+kullanýlamaz çünkü kendine ait belli bir deðeri yoktur, sadece 
+numaralý odalarý vardýr.
+
+Question: Have you lived in this town all of your life?
+Answer: not yet.
+
+   - Avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ - þimdi bunun array'le 
+alakasý ne?)
+
+  Text iþleme takýntýmýza dönersek görürüz ki, array kullanarak her 
+rakamýn kaç defa kullanýldýðýný takip etmek artýk çok kolay.  Bunlarýn 
+yanýnda girdideki boþluk ve <Return>'leri de sayabiliriz:
+
+#include <stdio.h>                                                <BR>
+#define ENDOFINPUT '!'                                            <BR>
+
+/* Rakamlari, aralari ve diger zimbirtilari sayar */              <BR>
+main()                                                            <BR>
+{                                                                 <BR>
+  int c, i, arasay, digersay;                                     <BR>
+  int rakamsay[10];                                               <BR>
+                                                                  <BR>
+  arasay=digersay=0;                                              <BR>
+  for (i=0; i<=9; ++i)                                            <BR>
+    rakamsay[i]=0;    /* Array'in butun elemanlarini sifirliyoruz */<BR>
+  while ((c=getchar())!=ENDOFINPUT)                                 <BR>
+    if (c>='0' && c<='9')                                           <BR>
+      ++rakamsay[c-'0'];                                            <BR>
+    else if (c==' ' || c=='\n' || c=='\t')                          <BR>
+      ++arasay;                                                     <BR>
+    else                                                            <BR>
+      ++digersay;                                                   <BR>
+  printf("rakamlar =");                                             <BR>
+  for (i=0; i<=9; ++i)                                              <BR>
+    printf(" %d", rakamsay[i]);                                     <BR>
+  printf("\n");                                                     <BR>
+  printf("aralar = %d\ndiger zimbirtilar = %d\n", arasay, digersay);<BR>
+}                                                                   <BR>
+
+  Ýþte böyle...  Programýn baþýnda "rakamsay" deðiþkenini 10
+elemanlý bir array olarak yarattýk.  Pascal'dan farklý olarak C'de, 
+eleman numaralarý (index'leri) 0'dan baþlar.  Yani: rakamsay[0], 
+rakamsay[1], ..., rakamsay[9].  ¦þte yukardaki iki "for" döngüsünde de 
+index'lerin bu özelliðine dikkat ettik. ("i", 0'dan baþlayýp 9'da 
+bitiyor.)
+
+  if (c>='0' && c<='9')                                     <BR>
+
+satýrý ise "c"'nin bir rakam olup olmadýðýný sorguluyor.  ASCII 
+karakter setinde rakamlarýn sýralanýþý akla mantýða uygun olarak 
+küçükten büyüðe doðru '0', '1', '2', ..., '9' diye gittiði için 
+"(c>='0' && c<='9')" önermesiyle "c"'nin rakam olup olmadýðýný kýsa 
+yoldan öðrenmiþ oluyoruz.  Yani önermenin doðrulanmasý için "c"'nin 
+ASCII deðerinin hem '0'ýnkinden büyük, hem de (AND) '9'unkinden küçük 
+olmasý gerekiyor.  Yine ASCII'nin bu özelliðini kullanarak 
+"++rakamsay[c-'0']" diyerek, "rakamsay"'ýn doðru rakama tekabül eden 
+index'ini kýsa yoldan artýrmayý becerdik.  "c-'0'" iþlemi ile bir 
+int'ten bir char çýkarýyor gibi görünsek de aslýnda char'lar int'lerin 
+bir alt kümesi ve iþlemin sonucu 0 ile 9 arasýnda bir integer.  
+Açýkçasý:
+  '0'ýn integer deðeri 48.  Biz de klavyeden '6' girmiþ olalým.  
+"Getchar" fonksiyonu "c" deðiþkenine '6'nýn integer deðeri olan 54'ü 
+atadý.  "c-'0'" iþleminin sonucu böylece (54-48=)6 deðerinde bir 
+integer oldu.  Bu dahiyane yöntemle abuk subuk bir ASCII integer'ýna 
+tekabül eden bir char'ý, 0 ile 9 arasýnda adam gibi bir integer'a 
+çevirerek "rakamsay"'ýn index'i olarak kullanabildik.  Helal olsun 
+bize...
+
+Question: Was that the same nose you broke as a child?
+---
+Question: Was it you or your brother that was killed in the war?
+---
+Question: The youngest son, the 20 year old, how old is he?
+---
+Question: Were you alone or by yourself?
+---
+Question: How long have you been a French Canadian?
+---
+Question: Do you have any children or anything of that kind?
+---
+Question: Were you present in the court this morning when you were 
+sworn in?
+---
+Question: So you were gone until you returned?
+---
+   - Avukatlarýn tanýk kürsüsündeki vatandaþlara sorularý
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ - gerizekalý Amerikalýlar)
+
+  "if-else" dallanmasý bu programda hem iþimizi kolaylaþtýrýyor, hem 
+de açýk-seçikliði saðlýyor.  Çok yakýnda "switch" komutuyla 
+dallanmayý daha da basitleþtirebileceðiz.
+
+---> PROJE 1:
+     Girilen text'teki her kelimenin uzunluðunu sütun grafiði þeklinde 
+listeleyen bir program yazýnýz.
+     Çüþþþ.
+     Bakýn çok ciddi söylüyorum, zor bir þey deðil.  Her kelimenin 
+uzunluðunu ayrý bir array elemanýnda saklayacaksýnýz, sonunda da her 
+elemaný inceleyip tuttuðu sayý kadar ekrana '*' (örneðin) 
+yazacaksýnýz.  Yani sütunlar soldan saða uzanacak.
+     Hadi bakalým buraya kadar kolaydý, bundan sonra da yukarýdan 
+aþaðý uzanan bir sütun grafiði yapmayý deneyin bakalým.
+     ¦mkansýz deðil, vaktiniz kalýrsa uðraþýn bence.  Nasýlolsa 
+yapacak daha iyi bi iþiniz yok deðil mi ama? <heh heh>
+     Ayný þekilde her karakterin girdideki frekansýný gösteren bir 
+sütun grafiði de yapabilirsiniz.   <---
+
+Question: I show you Exhibit 3 and ask you if you recognize that 
+picture.
+Answer: That's me.
+Question: Were you present when that picture was taken?
+
+   - Avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ - yok ya?)
+
+
+                       FONKSÝYONLAR
+
+  Bu seferki yazýda baya ilerledik hadi hayýrlýsý...
+
+Fonksiyon (function) ne menem bir þeydir ne iþe yarar?
+  Karmaþýk bir hesaplamayý ya da sýk tekrar edilen bir iþlem bloðunu 
+tek bir kutuya toplayýp tekrar tekrar ve güvenle kullanýlabilmesini 
+saðlar.  Orkid gibi.  Programýnýz içinde bol bol fonksiyon 
+kullanýrsanýz her birinin nasýl çalýþtýðýný aklýnýzda tutmaktan 
+kurtulursunuz.  Tek yapacaðýnýz þey, her fonksiyonun ne iþe 
+yaradýðýný ve neye ihtiyacý olduðunu bilmek ve main programdan 
+fonksiyonlara çaðrýlar yapmaktýr.  Yani fonksiyon arka planda amelelik 
+yaparken siz sadece main'den emirler yaðdýrýrsýnýz.  Fonksiyonun, 
+görevini hangi karmaþýklýklar kullanarak yaptýðý sizi ilgilendirmez.  
+Programýnýzýn düzeninin ve okunabilirliðinin yükselmesi de cabasý.
+<BR>
+Hmm çok faydalý biþiymiþ galiba örnek verebilir müsünüz?
+  Aklýmýz estikçe kullandýðýmýz "printf", "getchar", ve "putchar" 
+hepsi birer fonksiyondur ve bunlarýn kaynak kodlarý "stdio.h" içinde 
+belirtilmiþtir.  Eðer "stdio.h"'i include etmeseydik bu 
+komutlarý kullanamazdýk.  Þimdi kendi fonksiyonumuzu yazmanýn 
+zamaný geldi.
+<BR>
+Ee ne yazacaz peki bu yaz sýcaanda aklýna biþey gelöör mu?
+  Bütün dünyada ve hatta galaksimizin alpha, beta, gamma ve delta 
+quadrantlarýnýn mesken köþelerinde programcýlar, hangi dili 
+kullanýrlarsa kullansýnlar, mutlaka bir "power" fonksiyonu yazarak 
+büyülü fonksiyon dünyasýna adýmlarýný atarlar.  Yani demek istediðim, 
+þu anda biz power fonksiyonu yazarken ayný anda dünya üzerindeki 
+yüzlerce programcý adayý daha heyecanla ilk power 
+fonksiyonlarýný kodluyorlardýr herhalde.  Hatta, yýllanmýþ 
+programcýlarýn, iþte caný sýkýldýklarýnda sýrf vakit geçsin diye 
+bilgisayar baþýna oturup 5-6 dilde power fonksiyonu çeþitlemeleri 
+yazdýklarý da söylentiler arasýndadýr ona göre.  Neyse caným, bu power 
+fonksiyonu dedikleri üs almaya yarar, o kadar basit.  Her kitapta 
+"power" diyor, ben ne yapayým?
+<BR>
+Yazdýk diyelim bu fonksiyon nasý çalýþýcak?
+  Main programdan "power(a, b)" diye bir komut verdiðimiz zaman 
+fonksiyonun geri gönderdiði deðer, a sayýsýnýn b'inci kuvveti olacak.  
+Yani,
+<BR>
+  printf("%d", power(2, 5));
+<BR>
+dediðimiz zaman ekrana "32" yazýlacak.  Ne yazýk ki power 
+fonksiyonumuz þimdilik negatif tamsayýlarý ya da ondalýk sayýlarý 
+desteklemiyor.  '98 sürümünde bunlar da olacak inþallaaah tabi
+tabi...
+  Biraz düþündükten sonra þöyle bir fonksiyon çýkarabiliriz:
+
+/* power: as'i us'uncu kuvvetine cikarir; us>=0 */ <BR>
+int power(int as, int us)                          <BR>
+{                                                   <BR>
+  int i, kuvvet;                                    <BR>
+                                                    <BR>
+  kuvvet=1;                                         <BR>
+  for (i=1; i<=us; ++i)                             <BR>
+    kuvvet=kuvvet*as;                               <BR>
+  return kuvvet;                                    <BR>
+}                                                   <BR>
+
+  Gördüðünüz gibi power, main() programýn küçük bir kopyasý gibi...  
+Fonksiyonun ilk satýrý parametrelerin type'larýný ve isimlerini 
+tanýmlýyor; ayrýca fonksiyonun return ettiði (main programa geri 
+gönderdiði) sonucun type'ýný da burdan öðrenebiliyoruz (int).  Bir 
+fonksiyonun kullandýðý parametre deðiþkenleri ve fonksiyonun vücudunda 
+tanýmlanan diðer deðiþkenler tamamen o fonksiyona yereldir ve 
+programýmýzýn diðer fonksiyonlarý tarafýndan "görülemezler."  örneðin:
+
+#include <stdio.h>                                        <BR>
+                                                          <BR>
+int power(int, int);                                      <BR>
+                                                          <BR>
+/* power fonksiyonu test ediyoz */                        <BR>
+main()                                                    <BR>
+{                                                         <BR>
+  int i;                                                  <BR>
+                                                          <BR>
+  for (i=0; i<10; ++i)                                    <BR>
+    printf("%d %d %d\n", i, power(3, i), power(-2, i));   <BR>
+  return 0;                                               <BR>
+}                                                         <BR>
+
+/* power: as'i us'uncu kuvvetine cikarir; us>=0 */        <BR>
+int power(int as, int us)                                 <BR>
+{                                                         <BR>
+  int i, kuvvet;                                          <BR>
+                                                          <BR>
+  kuvvet=1;                                               <BR>
+  for (i=1; i<=us; ++i)                                   <BR>
+    kuvvet=kuvvet*as;                                     <BR>
+  return kuvvet;                                          <BR>
+}                                                         <BR>
+
+  Böyle bir programda main fonksiyonundaki "i" deðiþkeniyle power 
+fonksiyonundaki "i" deðiþkeninin birbiriyle hiçbir iliþkisi yoktur. 
+(main'in de [hafiften özelleþmiþ de olsa] aslýnda bir fonksiyon 
+olduðunu hatýrlatalým.)
+
+Question: Now, Mrs. Johnson, how was your first marriage terminated?
+Answer: By death.
+Question: And by whose death was it terminated?
+
+   - Avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ)
+
+  Power fonksiyonunun return ettiði deðer bir int olduðundan,
+
+  printf("%d %d %d\n", i, power(3, i), power(-2, i));     <BR>
+
+  satýrýnda main program, "power(3, i)"'yi aynen "3" ya da "i" gibi 
+bir integer olarak görür.  Yani "%d" parametresini çeliþkiye yol 
+açmadan kullanabiliriz.  Ama tabi ki her fonksiyon integer bir deðer 
+return etmek zorunda deðildir. (Bu cümle de amma ¦ngilizce oldu hay 
+Allah kim bööle olsun isterdi..?) :^D
+  C'de "return" komutundan sonra her türlü iþlem gelebilir. ("return 
+3+i" gibi) Ayný zamanda fonksiyondan çýkýlýr ve kontrol, çaðýran 
+fonksiyona geri gönderilir.  Yani fonksiyonu bitiren "}" iþaretine 
+daha ulaþmadan fonksiyon terkedilebilir.  Buna raðmen hiçbir fonksiyon 
+bir deðer return etmek zorunda deðildir.  örneðin, main() 
+fonksiyonunun sonunda "return" kullanmamýza gerek yoktu; ama ne olur 
+ne olmaz; programdan bittikten sonra Workbench'imize herþeyin yolunda 
+gittiði sinyalini verebilmek için "return 0" satýrýný kelam ettik.  
+0'dan baþka bir deðer, çalýþtýrýlan programda bir abukluk meydana 
+geldiðini ve bu abukluk yüzden programdan çýkýldýðýný bildirir.
+
+Question: Do you know how far pregnant you are now?
+Answer: I'll be three months on Nov. 8.
+Question: Apparently, then the date of conception was August 8?
+Answer: Yes.
+Question: What were you doing at that time?
+
+   - Avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ - ne ya bu takýlmýþ plak 
+gibi?)
+
+  main()'den hemen önce gelen
+
+int power(int, int);                                      <BR>
+
+  satýrý ile power fonksiyonunu erkenden tanýmlamýþ olduk.  Power'ýn 
+iki integer argüman beklediðini ve integer bir deðer return ettiðini 
+önceden derleyiciye bildirerek, olasý minik hatalar yüzünden ilerde 
+saatlerce kafa patlatma olasýlýðýný bertaraf ettik hiaayt!
+  Tamam iþte bu kadar.  Fonksiyon yazarak C bloklarýný kutucuklara 
+koymak ve "getchar" gibi kendi fonksiyonlarýmýzý yaratmak oldukça 
+basit.  Geçen sayýda yaptýðýmýz fahrenheit-santigrad çevirim 
+programýný hatýrlýyor musunuz? (zaten hatýrlamazsanýz bi kafa...) 
+Alýþtýrma yapmýþ olmak için, o programý yeniden yazýp çevirim iþlemini 
+ayrý bir fonksiyona yaptýrabilirsiniz. (amele fonksiyonlar iþte...)
+
+Question: Do you recall approximately what time that you examined the 
+body of Mr. Edington at the Rose Chapel?
+Answer: It was in the evening. The autopsy started about 8:30 p.m.
+Question: And Mr. Edington was dead at the time, is that correct?
+
+   - Avukatýn tanýk kürsüsündeki vatandaþa sorusu
+     (ABD resmi mahkeme kayýtlarýndan alýnmýþ)
+
+  Pe. Se.: C'deki fonsiyonlar, baþka bir fonksiyondan parametre olarak 
+aldýklarý deðerleri deðiþtiremezler.  Yani kendi içlerinde o 
+parametreler üzerinde istedikleri oynamalarý yapabilirler; fakat 
+çaðýran fonksiyona kontrolü geri gönderdiklerinde, parametreler 
+çaðýrým öncesindeki deðerlerini alýr.  Bu güzelliði kullanarak power 
+fonksiyonunu, "i" deðiþkenini kesinlikle kullanmadan kodlayabiliriz.  
+Buyrun bakalým kah kah vatandaþa iþ çýktý biz de helvasýný yiyelim...
+
+  Geçmiþ ola.  Bir dolu dolu Si yazýsý daha burda bitiyo.  Fonksiyonlu 
+programlarýnýz kolay gelsin.  Bi dahaki sayýda Bill Gates'in neden ama 
+neden otistik olduðunu detaylarýyla inceleyeceðiz.  Aman ha 
+kaçýrmayýn...  Hadi kalýn saðlýcakla... :D                <P>
+
+                                                    Caghan "fMuadDib" Demirci<BR>
+                                                    demircca@boun.edu.tr
+
+
+
+
+</BODY>
+</HTML>

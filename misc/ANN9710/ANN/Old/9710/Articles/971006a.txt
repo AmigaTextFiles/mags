@@ -1,0 +1,156 @@
+From: magicsn@birdland.es.bawue.de (Steffen Haeuser)
+Newsgroups: comp.sys.amiga.misc
+Message-ID: <60000406232544481057@BIRDLAND.es.bawue.de>
+References: <3430BC12.20189679@gf.phase5.de>
+X-Mailer: fastnet2rfc V3.0 - MagicSN@Birdland.es.bawue.de
+Organization: Birdland BBS, Dettingen/Teck, South Germany, +49-7021-862428
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: ppc.library/WarpOS discussion
+Lines: 142
+Date: 01 Oct 1997 14:14:08
+Xcanpos: shelf.02/199710042101!0019466363
+Path: 195.95.96.10!news.unisource.be!planetinternet.be!newsgate.unisource.nl!News.Amsterdam.UnisourceCS!cosy.sbg.ac.at!newsfeed.Austria.EU.net!EU.net!nntprelay.mathworks.com!fu-berlin.de!news.belwue.de!news.bawue.de!luva.lb.bawue.de!birdland.es.bawue.de
+
+Hi!
+
+Now let's seriously discuss those Wolf Dietrich Statements... don't be exited 
+and call this a flame. It is not. I am interested in a serious discussion, 
+only. If you want this too, discuss technical details or let a programmer of 
+your firm do this. Don't simply call me "a H&P promoter". I am interested in 
+both software solutions. But i am not interested in "vapor features" and 
+"vapor speed". I am only interested in REAL FEATURES and REAL SPEED. I am open 
+to any critics to this article. Reply private or on the net, anyways.
+
+>future developments and object oriented. A simple program for example
+>could consist of a 68k task which handles the GUI and OS calls, and
+>calls PPC tasks for executing operations which shall be accelerated by
+>using the PPC. As we provide comprehensive functionality and a very fast
+>new message system in our PowerUp System Software, this solution is very
+>efficient, and it allows full parallel operation of multiple CPUs; in
+>the example above, the 68k task could continue with execution of
+>commands while one or more PPC tasks are busy with other stuff, and
+>wouldn't need to wait until the PPC task(s) returns (unless, of course,
+>the 68k task would need the result of the PPC task(s) to continue it's
+>work). 
+
+The problem is the "Cache Problem". Your 68k tasks would NEVER be completely 
+independent of the PPC Tasks. In fact, they all have to share information. Let 
+us think about an example (i was thinking of a game/demo). I have to note, i 
+did this thoughts/calculations open minded. But (if i do not have made a 
+logical mistake) sadly there is *no* possibility to prove the Phase 5 
+Statements. I would also like that 5 microseconds for a message would be true, 
+not 0.5 milliseconds (BTW, as to Phase 5s software i would be happy, if it at 
+least did send a message in those 0.5 milliseconds... but appearently, it 
+currently behaves worse). I am open-minded to ANY corrections in these 
+thoughts, even making them complete nonsense. If you (or anybody else) 
+have/has corrections, please post them to this newsgroup.
+
+68k task 1 : Gets Keyboard/Mouse Input and sends it to the PPC (using the
+             messaging system) (Task 3)
+
+68k task 2 : Gets the current state of the game from the PPC Task 13and
+             sends needed data through the serial interface for Multiplayer.
+
+68k task 3 : Handles the sound part, is activated by PPC task 3.
+PPC task 1 : Gets the Data and, based on it, renders the next frame
+PPC task 2 : Gets the rendered data and does the display (writing directly
+             to Video RAM, so that no 68k functions are needed)
+PPC task 3 : The main task
+
+I guess this is what you had in mind ?
+
+Well, now the problem. For example 68k task 1 is NOT independent of PPC task 
+3. When they exchange data using the messaging system, a Cache Flush of the 
+PPC is needed (else you will end in datalosses, i won't get into detail 
+here... the docs of WarpOS and ppc.library explain this both). While this 
+Cacheflush is done, all PPC Tasks come to a halt. Now use stated before your 
+new messaging system would take "at worst" 5 microseconds for a message 
+exchange. Let us calculate some numbers:
+
+the PPC has 32 KB Data Cache. 200000 times 5 microseconds would be a second. 
+So we need to flush 32768*200000 Bytes per second. That would be:
+6.553.600.000 Bytes. This would mean, to make the time you announced you would 
+need a memory interface that can do 6.5 GIGABYTE / second. I don't think 
+PowerUP can do this. In fact i don't think ANY computer on this planet can do 
+this.
+
+If there is a mistake in my calculations, please correct me. But i do not 
+think so.
+
+Now let us calculate the same with the statement of what Sam Jordan told about 
+the WarpOS V8+ (he said on the PPC604e it would need 0.4-0.5 ms for a message).
+
+0.5 ms (worst case) would be 32768*2000 Bytes per second. This would mean we 
+ended up with 65 MB/second, what sounds to me like a much more reasonable 
+value.
+
+So what have we learned this far:
+
+1. Every message to be sent will need MORE than 5 microseconds.
+2. The different task are not completely independent (everytime they exchange
+   data, they will "meet").
+
+It was argued, that forwarding 68k Interrupts to PPC Interrupts would help (i 
+believed this myself, at first), but: An interrupt only tells you that 
+"something happened" (for example: "A key was pressed"). It does not tell you 
+WHICH key. You have to get this yourselves. Okay, in cases like Keyboard 
+presses you now could get the information with PPC Native code from the 
+memory. BUT this method can only be used, if hardware interfaces (like 
+0xbfec01, where the last pressed key is found) are accessed. It CANNOT be used 
+to access data written there by 68k tasks (then again, the Cache problem 
+arises).
+
+So we come to the following end:
+
+- Interrupts could be used to enhance the speed of stuff like the
+  Keyboard/Mouse Input, but ONLY THEN, if Phase 5 release the hardware
+  data of how to access them OR if they implement a Patch for some
+  Keyboard/Mouse function by the OS, running PPC Native (Keyboard Handler....)
+  It should be also noted, that Keyboard/Mouse checks only make a VERY
+  small time in the overall performance. Not important, you might say.
+  The actual rendering takes much more time than 0.5 milliseconds.
+- Interrupts CANNOT be used to enhance 68k/PPC Messaging.
+
+>By using such a structured and object oriented programming approach, the
+>software is also much more easily updatable. If e.g. GUI and OS calls
+>would change in future revisions of an OS, the developer would only need
+>to replace the module that handles the GUI and the OS calls, and
+>continue to use the other modules.
+
+Well, the following stuff is not that objective, like above, it is my personal 
+opinion:
+
+Personally i have to say i prefer not being forced to deal with different 
+tasks (if i want this, i still can do it). Also, all 68k calls in PPC code 
+have to be done inside a RunOS() (or what it was called) function of 
+ppc.library, while the compiler deals with this automatically with the Storm 
+Solution. Also, ports are much more easy with WarpOS.
+
+This is NOT talking about "straight ports". It is only, that "what is 
+possible" already is dealt compiler-internal with WarpOS. Of course extra 
+things can also be called.
+
+The "object oriented" argument sounds like a half-argument to protect one's 
+solution to me.
+
+>H&P have been promoting their Storm C with a concept that you simply
+>recompile the existing C code which has been written for 68k Amiga and
+>tell the compiler to generate PPC code. This may be very comfortable for
+>the developer, but is completely unefficient. Not only that in the worst
+
+Currently it is more efficient than ppc.library, prove your statements in own 
+developpements before you state them !!! Also, it is, like outlined above, no 
+streight recompile. Internally WarpUP works with tasks that talk to each other 
+(so-called mirror tasks). But (as to what i outlined above) only one of them 
+can be active at a time, the 68k one, or the PPC one.
+
+>case you have a random mix of 68k and PPC code, but also the two CPUs
+<will not run in parallel as it is one continuous program flow which
+>jumps between PPC and 68k. If a linear code sequence is executed, the
+>68k and the PPC always work one after the other, in the worst case with
+>lots of switches and a useless overhead.
+
+Your statements about "parallel" still have to be proven. The calculations i 
+did above seem to indicate that it is not possible.
+
+Steffen Haeuser

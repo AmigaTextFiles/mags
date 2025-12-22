@@ -1,0 +1,104 @@
+--------- START OF FORWARDED MESSAGE ---------
+
+From System ....: Internet
+From Conference : comp.sys.amiga.misc
+MessageID ......: <13215930@sourcery.han.de>
+Originally from : Olaf Barthel <olsen@sourcery.han.de> <609609703>
+Subject ........: Re: The new Amiga. Is it really coming soon ?
+
+In Article <1487.7052T1070T2706@bgnett.nospam>, Kenny <kenny@bgnett.nospam> wrote:
+> Hans-Joerg Frieden wrote:
+> >> Hopefully ? It is, and why should you hope not ? You would only benefit
+> >> from an OS written in asm.
+> >It's a common myth nowadays that Asm has such a big general speed impact
+> >over C. This is not true. In reality, only the most time-critical parts
+> >have to be written in assembler, and the rest can safely be coded in C.
+> >Things like the dispatcher/scheduler are such a critical section, as is
+> >low-level driver stuff, interrupt drivers and the like.
+> 
+> Yes, I agree, but it doesn't change the way it is written :)
+> 
+> >And it isn't written in asm anyway. AFAIK only exec is written in
+> >assembler. It would be wasteful to write a whole OS in asm, since C
+> >shortens developement time by an order of magnitude, and is less prone
+> >to errors due to the compile-time sanity checking. DOS library used to be
+> >written in BCPL, and now is written in C like almost all libraries...
+> 
+> According to Olaf 'Barthel' Olsen which I understand have seen the sources
+> for the OS said a while back that most (not all) of the (Amiga) OS is
+> written in assembler. You may not benefit /much/ of a OS written in asm in
+> most points, but it is certinally not a disadvantage (in use.. not for
+> porting).
+
+   You have a great deal of assembly-language only modules in the ROM.
+That saves space and some of the modules are not that complex; they
+control the hardware or perform simple tasks. You also have more complex
+modules in the ROM that are written in `C', with assembly language
+subroutines which were written in that language in order to save space,
+to use a specific set of register values when calling user code or
+just because the hand tuned assembly code runs faster/is less bulky
+than `C' compiler generated code would. So much for the ROM. The
+disk resident parts of the operating system on the other hand are
+mostly written in `C' unless they have to interface to the hardware.
+   The specifications for code that goes into ROM are different for
+code that can be loaded from a storage medium when necessary. You
+don't have much space to waste with the ROM and you have to have
+the code in there that bootstraps the machine. All this is mostly
+low-level hardware driver work the remainder of the operating system
+is built on top of. Back when the Amiga was designed, this made
+assembly language the language of choice for this purpose.
+   Nowadays, you could replace a number of modules with high level
+language versions if the ROM space were available. If you would
+adapt the operating system as a whole to a new hardware platform
+you would have to throw away the low-level driver code anyway and
+reimplement it from scratch, keeping only the API.
+
+On the subject of writing operating systems in assembly language: it
+works to a certain extent, but then it becomes counter productive.
+One large part of the work every programmer does is managing
+complexity. You can only look at so many lines of code at a time;
+the remainder or at least a general impression of how this particular
+bit fits the whole picture has to be somewhere in your memory.
+High level languages like `C' can help here by offering language
+constructs that have to be expressed in many more lines if coded in
+assembly language. You also get the benefits of the structure of
+the language and the compiler that alerts you of subtle and less
+subtle semantic and syntactic problems you'd be chasing with a
+debugger for a while until you could find them in your assembly
+language code.
+   People seem to think of assembly-language only operating systems
+only in terms of speed. How much faster would the Amiga run if
+AmigaOS were written in hand tuned assembly language? I think that
+this is the wrong question to ask. Would it pay off if AmigaOS were
+written in hand tuned assembly language? This I doubt. Tuning
+implies that you have to go through your code again and again,
+analyzing, rewriting, etc. You may have to shift focus and change
+the problem solution at a higher level in order to optimize it.
+With assembly language, this means you will have to keep register
+settings, bit sets, stack context, etc. in mind. All this leads
+to increase the complexity of your work, not to decrease it. Occasionally,
+you will make mistakes of the kind your assembly language translator
+or debugger will not bring to your attention automatically. That means,
+you have to invest extra time to correct the errors. And sometimes
+you might hit upon a problem whose solution cannot be improved or
+for which it is very difficult, if not impossible to even assess
+whether a solution is better than the other; only that you have to
+waste a lot of time to find out that this is the type of problem
+you hit. And last but not least you have to verify that the whole
+construct still works correctly. All this work takes a lot of
+time and poses problems for the type of mind that memorizes both
+volumes of Bach's Well Tempered Clavier at ease. You have to finish
+your work someday, especially if somebody is paying for it. Thus,
+the optimum solution sometimes has to wait. And sometimes speed is
+not at all the most important goal; how about robustness? A fast
+operating system does not necessarily answer to robustness. Your
+code can be as fast as the physical limits allow, but if it fails
+badly at the slightest wrong input data you're probably not going
+to win the Turing Award this year.
+
+-- 
+Home: Olaf Barthel, Brabeckstrasse 35, D-30559 Hannover
+ Net: olsen@sourcery.han.de
+
+---------- END OF FORWARDED MESSAGE ----------
+

@@ -1,0 +1,62 @@
+<HTML>
+
+<HEAD>
+
+<TITLE> Jens Neubauer</TITLE>
+
+</HEAD>
+
+<BODY bgcolor=white text=#000000 link=#0000ff vlink=#ff0000 alink=#ff9900>
+<table>
+<tr>
+ <td><b>Name:                
+ <td>Jens Neubauer
+</tr>
+<tr>
+ <td><b> Pseudonym:           
+ <td>Haribo
+</tr>
+<tr>
+ <td><b> Geburtsdatum:        
+ <td>19.04.1978
+</tr>
+<tr>
+ <td valign=top><b> Wohnort:             
+ <td>Chemnitz (Sachsen)
+ </tr>
+<tr>
+ <td><b>EMail:
+ <td><a href="mailto:haribo@pcteam.de">haribo@pcteam.de</a>
+</tr>
+<tr>
+ <td valign=top><b>Hardware:            
+ <td>A 1200 Infinitiv Tower, OS 3.1, 34 MB Ram<br>
+                      68030/50 Mhz.<br>
+                      HD 3,5" Conner 2.7 GB<br>
+                      Drucker Canon BJC 4100<br>
+                      15"-Monitor<br>
+                      CD-Brenner Philips CDD-2600<br>
+                      Flachbettscanner Mustek Paragon 600 II SP<br>
+                      2 int. DD-Laufwerke<br>
+                      opt. 3-Tasten-Maus<br>
+                      <br>
+                      P 133, 15"-Monitor, HD Seagte 2,2 GB,<br>
+                      Drucker Epson Stylus, 12x-CD-ROM Mitsumi<br>
+</tr>
+<tr>
+ <td valign=top><b>Interessen:          
+ <td>- programmieren (CanDo, BlitzII)<br>
+                      - Basketball (BG Chemnitz, Chicago Bulls)<br>
+                      - Playstation zocken<br>
+                      - Kino (Scream, Bad Boys, MIB, Sieben)<br>
+
+
+
+</tr>
+</table>
+
+
+
+</BODY>
+
+</HTML>

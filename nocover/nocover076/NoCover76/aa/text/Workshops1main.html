@@ -1,0 +1,311 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Workshops / Hintergrundberichte / Buchvorstellungen
+---------------------------------------------------
+
+1. Workshop: TCP/IP zwischen Amiga und Windows9x-PC (von Uwe Pannecke)
+
+»Schon wieder 'n Netzwerk
+
+TCP/IP zwischen Amiga und Windows9x-PC
+
+
+1 Was soll das?
+
+In den Reaktionen auf meinen in der letzten AmigaAktuell ver&ouml;ffentlichten 
+Artikel zur seriellen Verbindung zweier Rechner [1] &auml;u&szlig;erten einige User 
+den Wunsch nach einem Folge-Artikel zur TCP/IP-Vernetzung eines Amigas mit 
+einem Windows9x-Rechner &uuml;ber eine Nullmodem-Verbindung.
+Nun denn, wer A sagt, mu&szlig; auch B sagen - hier ist also der gew&uuml;nschte 
+Bericht.
+
+Mit Hilfe des PPP (Point to Point Protocol) l&auml;&szlig;t sich zwischen mehreren 
+Rechnern eine Netzwerk-Verbindung aufbauen, die es erlaubt, vom eigenen 
+Rechner auf die Ressourcen der am Netzwerk beteiligten Computer 
+zuzugreifen, als w&uuml;rde man direkt auf diesem Rechner arbeiten. Dabei stellt 
+PPP eine Grundlage f&uuml;r TCP/IP, dem Transmission Control Protocl/Internet 
+Protocol, einer weltweit genutzten Methode f&uuml;r die Vernetzung von 
+Computern, dar. Prinzipiell lassen sich &uuml;ber dieses Protokoll Rechner 
+verschiedenster Betriebssystemen miteinander zu einem Netzwerk verbinden.
+Und so kann zum Beispiel der Amiga als Web- oder FTP-Server f&uuml;r den Win9x-, 
+Mac-oder Linux-Rechner dienen, k&ouml;nnen Netzwerk-Spiele gemeinsam ohne 
+zus&auml;tzliche Telefongeb&uuml;hren lokal gezockt oder der Netzwerk-Partner &uuml;ber 
+eine Telnet-Verbindung ferngesteuert werden.
+
+In diesem Workshop soll Schritt f&uuml;r Schritt der Aufbau einer TCP/IP-
+Verbindung zwischen einem Amiga und einem Windows9x-Computer beschrieben 
+werden.
+
+
+2 Hardware
+
+Ihr ben&ouml;tigt ein sogenanntes Nullmodem-Kabel f&uuml;r die serielle 
+Schnittstelle, wie bereits in [1] beschrieben. Jedes gr&ouml;&szlig;ere Kaufhaus 
+bietet ein passendes Kabel f&uuml;r ca. 10-20 DM zum Kauf an. Achtet beim Kauf 
+unbedingt darauf, da&szlig; es sich tats&auml;chlich um ein Nullmodem-Kabel f&uuml;r die 
+Daten&uuml;bertragung &uuml;ber die serielle Schnittstelle handelt. Dies muss 
+deutlich auf der Verpackung zu lesen sein. Da diese Kabel zumeist mit 9-
+poligen Steckverbindern angeboten werden, der Amiga aber nur &uuml;ber eine 
+eingebaute 25-polige Buchse verf&uuml;gt, ist zus&auml;tzlich noch ein Adapter von 9- 
+auf 25-polig vonn&ouml;ten. Sollte in Eurem Amiga eine I/O-Erweiterung wie etwa 
+die MultifaceCard f&uuml;r zus&auml;tzlichen Stromverbrauch sorgen, steht meist 
+bereits ein neunpoliger Anschlu&szlig; auf diesen Karten zur Verf&uuml;gung und ihr 
+k&ouml;nnt auf den Adapter verzichten. 
+
+
+3 Software 
+
+3.1 Die Amiga-Seite
+
+Auf Amiga-Seite soll das weit verbreitete TCP/IP-System Miami [2] von 
+Holger Kruse zum Einsatz kommen. Nat&uuml;rlich lassen sich auch andere TCP/IP-
+Stacks wie etwa AmiTCP verwenden.
+
+
+3.1.1 Schnittstelle
+
+Nachdem Miami ohne Konfig-File gestartet wurde, w&auml;hlt Ihr den 
+Konfigurationspunkt "Schnittstelle". Der "Schnittstellen-Typ" sollte 
+entweder auf "interner serieller Port (PPP/CSLIP)" oder bei zus&auml;tzlich 
+eingebauter Schnittstellenkarte auf  "seriell(PPP/CSLIP)"  eingestellt 
+sein, wobei dann bei letzterem der passende Treiber sowie die Unit-Nummer 
+festgelegt werden m&uuml;ssen. Im vorliegenden Fall wird der zweite serielle 
+Port einer MultiFaceCard III verwendet, deshalb als "Treiber" 
+"duart.device" und "Nummer" "1". Die "Geschwindigkeit" sollte passend zur 
+Geschwindigkeit der Gegenstelle eingestellt werden, je h&ouml;her, desto 
+erfreulicher wird auch die &Uuml;bertragungsrate sein. Jedoch kann die 
+eingebaute serielle Schnittstelle des Amiga auch bei leistungsf&auml;higerer CPU 
+selten mehr als 57600 bps verkraften. Abhilfe schaffen Schnittstellenkarten 
+wie die bereits genannte MultiFaceCard.
+"Verwende CD" sollte inaktiv sein (also nicht abgehakt), das "Protokoll" 
+auf "asyncPPP", "Handshaking" auf "RTS/CTS", "EOF-Modus" auf "auto", 
+"Betriebsart" auf "8N1" eingestellt sein.
+Der n&auml;chste Punkt dient der eindeutigen Identifizierung des jeweiligen 
+Rechners im Netzwerk. Zu diesem Zweck werden sogenannte IP-ID, die 
+Adresse(n) des Rechners im Netz, vergeben. &Uuml;blicherweise sind diese 
+Adressen in Form einer viergeteilten Zahlenkombination wie etwa 
+125.164.111.125 angegeben. 
+Da jeder (im Internet) ansprechbare Rechner &uuml;ber eine eindeutige Adresse 
+verf&uuml;gen mu&szlig;, k&ouml;nnt Ihr mit einer willk&uuml;rlichen IP-ID-Vergabe f&uuml;r Eure(n) 
+Rechner bei gleichzeitiger Internetanbindung f&uuml;r einige Verwirrung sorgen. 
+Deshalb hat die Norm RFC 1597 drei Adressbereiche definiert, die f&uuml;r den 
+"internen" Gebrauch verwendet werden sollen und bei einer zus&auml;tzlichen 
+Internetanbindung keine Probleme bereiten k&ouml;nnen. Folgende Adressbereiche 
+sind vorgesehen:
+
+das Class A-Netz     10.0.0.0      bis  10.255.255.255
+das Class B-Netz     172.16.0.     bis  172.31.255.255
+das Class C-Netz     192.168.0.0   bis  192.168.255.255
+
+F&uuml;r unsere Zwecke w&auml;hlen wir ein Class C-Netz und vergeben f&uuml;r den Amiga 
+die IP-ID 192.168.1.2, der Win9.x-PC erh&auml;lt die IP-ID 192.168.1.3 (die IP-
+ID 192.168.1.1 wurde einem Linux-Rechner zugewiesen). Nat&uuml;rlich k&ouml;nnt Ihr 
+f&uuml;r Euer eigenes Netz auch andere IP-IDs aus den angef&uuml;hrten Netzen 
+verwenden.
+Miami wird nun mit den festgelegten IP-Adressen gef&uuml;ttert: "IP-Typ" setzt 
+Ihr auf "statisch", "IP-Adresse" bekommt die IP-Adresse des Rechners, auf 
+dem das gerade konfigurierte Miami eingesetzt wird, also "192.168.1.2".
+Unter "Multicasts" w&auml;hlt Ihr die Option "inaktiv", die "MTU" wird 
+entsprechend der Empfehlung Holger Kruses bei einer Schnittstellen-
+Geschwindigkeit &uuml;ber 19200 bps auf "552" gesetzt.
+Miamis Verhalten bei Inaktivit&auml;t kann bei Bedarf mit dem "Aktions"-Eintrag 
+gesteuert werden. Mit "nichts" verh&auml;lt sich Miami bei Inaktivit&auml;t auch 
+ruhig. Mit "ICMP ping" nach "9" Minuten wird nach jeweils 9 Minuten die 
+Gegenstelle "angepingt" und so Aktivit&auml;t simuliert. Das kann Sinn machen, 
+um die automatische Beendigung der Verbindung durch die Gegenstelle zu 
+verhindern. Denn diese k&ouml;nnte bei l&auml;ngerer Inaktivit&auml;t davon ausgehen, da&szlig; 
+die Verbindung nicht mehr genutzt wird und selbige (oft nach 10 Minuten) 
+kappen.
+
+Screenshot:
+<IMG SRC="../extra/MiamiSchnittstelle.png" ALT="Screenshot">
+
+
+3.1.2 PPP
+
+Im Konfigurationsfenster PPP bleibt der Bereich "PAP/CHAP" ohne jeden 
+Eintrag, "R&uuml;ckruf" wird mit "kein R&uuml;ckruf" versehen, "VJC" bekommt ein 
+H&auml;kchen, "ACCM" den Eintrag "a0000", "DNS mit IPCP ermitteln" bleibt ohne 
+H&auml;kchen, das "Escape"-Feld enth&auml;lt keine Eintrag und "TermReq vor dem 
+Auflegen" wird abgehakt. "Schnelle Neuverbindung" wird auf "aus" gesetzt.
+
+
+3.1.3 Datenbank
+
+Im Datenbank-Modul w&auml;hlt Ihr den Unterpunkt "Rechner" an und f&uuml;gt &uuml;ber 
+"Neu" sowohl den Amiga als auch die Netzwerk-Rechner (ob nun Amiga, Linux- 
+oder Win9x-PC) mit einem Namen und der festgelegten IP-Adresse hinzu. Der 
+Amiga k&ouml;nnte sinnigerweise den Namen "amiga" tragen, seine IP-Adresse ist 
+192.168.1.2, der zweite Rechner ist bspw. ein  Linux-Rechner und bekommt in 
+unserem Beispiel den Namen "linux", seine IP-Adresse habe ich mit 
+192.168.1.1 festgelegt, der dritte im Bunde, ein Win9x-PC, verpassen wir 
+den sinnigen Namen "windows" und die IP-ID 192.168.1.3.
+
+Screenshot:
+<IMG SRC="../extra/MiamiDbRechner.png" ALT="Screenshot">
+
+
+3.1.4 TCP/IP
+
+In diesem Konfigurationsfenster entfernt Ihr unter "Hostname" das H&auml;kchen 
+auf "dynamisch" und w&auml;hlt im Schriftfeld den Namen f&uuml;r Euren Rechner, in 
+unserem Beispiel "amiga". "ICMP verwenden" wird mit einem H&auml;kchen versehen, 
+"DHCP", "DNS-Server &uuml;berpr&uuml;fen" und "Pseudo-IP" sind ohne H&auml;kchen, "T/TCP" 
+ist zwar nicht zwingend abzuhaken, sorgt aber bei unterst&uuml;tzung durch die 
+Gegenseite f&uuml;r eine sp&uuml;rbar h&ouml;her Geschwindigkeit. "Domain automat. 
+hinzuf.", "down wenn Offline", "Schutz vor Dauerping" und "Zeit ermitteln" 
+bleiben wieder ohne H&auml;kchen.
+
+
+3.1.5 Modem
+
+Mit diesem Unterpunkt sind wir in Null-Komma-Nichts fertig- hier ist 
+lediglich "Nullmodem" abzuhaken und damit Miami mitgeteilt, da&szlig; eine 
+Nullmodem-Verbindung erw&uuml;nscht und keine AT-Befehle zu senden sind- es ist 
+ja auch kein Modem anzusprechen. 
+Damit ist Miami f&uuml;r eine TCP/IP-Verbindung &uuml;ber ein Nullmodem-Kabel 
+konfiguriert.
+
+
+3.2 Die Win9.x-Seite
+
+3.2.1 Einrichten des Null-Modems
+
+&Ouml;ffnet uber "Start/Einstellungen" die Systemsteuerung. Doppelklickt das 
+Icon "Modems". W&auml;hlt den Punkt "Hinzuf&uuml;gen" und markiert die mit einem 
+H&auml;kchen "Modem w&auml;hlen (keine automatische Erkennung). Im sich &ouml;ffnenden 
+Fenster werden Euch eine gro&szlig;e Liste verf&uuml;gbarer Modem-Typen angezeigt. 
+Sollte unter den Eintr&auml;gen kein "Generic NULL Modem"-Eintrag zu finden 
+sein, k&ouml;nnt Ihr diese Liste ignorieren und &uuml;ber einen Klick auf 
+"Diskette..." das Laden eines externen Treibers veranlassen.
+Soweit, so gut. Aber woher soll dieser Treiber kommen?
+Nat&uuml;rlich aus dem Aminet. :)
+
+Unter [3] beschreibt Raphael Kiekow Hickenbrick detailliert in englischer 
+Sprache, wie eine TCP/IP-Verbindung zwischen Amiga und Windows9x &uuml;ber die 
+serielle Schnittstelle einzurichten ist. Einige Gedanken aus dieser 
+Beschreibung habe ich mit in diesen Workshop einflie&szlig;en lassen.
+Neben der Anleitung findet Ihr in diesem LHA-Paket au&szlig;erdem den gesuchten 
+Nullmodem-Treiber (die Datei mdmcisco.inf) f&uuml;r Windows9x.
+
+Kopiert diese INF-Datei in ein beliebiges Verzeichnis des Win9x-PC und 
+selektiert im sich &ouml;ffnenden File-Requester (nach dem oben beschriebenen 
+Klick auf Diskette) die zuvor gespeicherten Datei "mdmcisco.inf". Im sich 
+anschlie&szlig;enden Dialog werdet Ihr nach dem seriellen Port (COM-Anschlu&szlig;) f&uuml;r 
+das zu installierende Null-Modem gefragt. Hier w&auml;hlt Ihr den passenden 
+Eintrag, im vorliegenden Beispiel ist die zweite serielle Schnittstelle mit 
+dem Nullmodem-Kabel verbunden, also ist COM 2 die richtige Wahl. Windows9x 
+wird nun das Null-Modem installieren und sich daf&uuml;r eine kurze Auszeit 
+genehmigen. Klickt anschlie&szlig;end auf "Fertig stellen", um die Installation 
+abzuschlie&szlig;en.
+
+&Uuml;ber den Punkt "Eigenschaften" sollte das Null-Modem auf die vorhandenen 
+Gegebenheiten eingestellt werden: Unter "Allgemein" der serielle Anschlu&szlig; 
+COM 2 (im vorliegenden Beispiel), die maximale Geschwindigkeit auf 115200 
+(hier mu&szlig; der gleiche Wert wie beim Kommunikationspartner stehen). Unter 
+dem Karteikartenreiter "Einstellungen" w&auml;hlt Ihr 8 Datenbits, keine Parit&auml;t 
+und 1 Stoppbit.
+Im Unterpunkt "Erweitert" ist die "Datenflu&szlig;kontrolle mit Hardware 
+(RTS/CTS)" abzuhaken.
+
+
+3.2.2 Konfiguration des Netzwerks
+
+Klickt auf der Windows 9x-Oberfl&auml;che das Icon "Arbeitsplatz" und im sich 
+&ouml;ffnenden Fenster das Icon "DF&Uuml;-Netzwerk" an. W&auml;hlt nun "Neue Verbindung 
+erstellen". Gebt einen passenden Namen f&uuml;r den anzuw&auml;hlenden Computer in 
+die oberste Zeile ein, z.B. AMIGA.
+
+Screenshot:
+<IMG SRC="../extra/WinNullmodem.png" ALT="Screenshot">
+
+Im Punkt "W&auml;hlen Sie ein Ger&auml;t" ist das "Generic NULL Modem" zu selektieren 
+und mit "Konfigurieren..." &uuml;berpr&uuml;ft Ihr die Einstellungen (Schnittstellen-
+Geschwindigkeit, Anschlu&szlig; ... ) sicherheitshalber nochmals.
+Diese sollten den bereits gew&auml;hlten entsprechen. Mit einem Klick auf 
+"Weiter" tragt Ihr im nachfolgenden Fenster f&uuml;r die Rufnummer eine "0" ein. 
+Ein Klick auf "Weiter" zaubert in das Fenster "DF&Uuml;-Netzwerk" die soeben 
+erstellte Konfiguration AMIGA.
+Jetzt klickt Ihr ausnahmsweise mal mit der rechten Maustaste auf das neu 
+erstellte AMIGA-Icon und w&auml;hlt im aufklappenden Popup-Men&uuml; den Unterpunkt 
+"Eigenschaften". Im Reiterfeld "Allgemein" ist das H&auml;kchen "Ortsvorwahl und 
+W&auml;hlparameter verwenden" zu entfernen. Der Reiter "Servertypen" erlaubt nun 
+die passende TCP/IP-Konfiguration. Ihr w&auml;hlt unter "Typ des DF&Uuml;-Servers:" 
+den Eintrag "PPP:Internet, WindowsNT Server, Windowes98". Alle Checkboxen 
+bis auf "TCP/IP" bleiben ohne H&auml;kchen. Nun klickt Ihr auf "TCP/IP-
+Einstellungen..." und im sich &ouml;ffnenden Fenster auf "IP-Adresse festlegen". 
+Auch der Windows-PC ben&ouml;tigt eine eindeutige IP-Adresse, in diesem Fall die 
+192.168.1.3. Also tragt Ihr selbige in das IP-Adressfeld ein.
+Zus&auml;tzlich sollte der Punkt "Vom Server zugewiesene Namensserveradressen" 
+angew&auml;hlt und die Felder "IP-Header-Komprimierung" und "Standard-Gateway im 
+Remote-Netzwerk verwenden" ohne H&auml;kchen sein. Klickt nun auf "OK".
+
+Screenshot:
+<IMG SRC="../extra/WinTCPIP.png" ALT="Screenshot">
+
+Im Verzeichnis "Windows" findet Ihr die Datei "hosts". &Ouml;ffnet diese Datei 
+in einem Editor und f&uuml;gt zus&auml;tzlich zum bereits vorhandenen Eintrag
+127.0.0.1 localhost
+die entsprechenden Rechner mit ihren IP-Adressen ein. F&uuml;r den vorliegenden 
+Fall erg&auml;nzen wir die hosts-Datei mit 
+192.168.1.2 amiga
+192.168.1.3 windows
+und speichern die ge&auml;nderte Datei unter gleichem Namen ab.
+
+
+4 Verbindungsaufbau
+
+4.1 Amiga
+
+Startet Miami und w&auml;hlt den Punkt "Online" an. Miami wartet nun auf einen 
+Kommunikationspartner.
+
+
+4.2 Windows9.x
+
+Ist Miami bereits gestartet, doppelklickt Ihr im Verzeichnis "DF&Uuml;-Netzwerk" 
+auf das Icon "Amiga" und versetzt so die zuvor erstellten Konfiguration in 
+Verbindungsbereitschaft. Klickt nun auf "Verbinden".
+Jetzt sollte im unteren Teil des Miami-Fenster ein "Hello" erscheinen. Um 
+die Verbindung zu einer endg&uuml;ltigen werden zu lassen, klickt im Miami-
+Fenster auf "Break senden (f8)".
+Nach wenigen Augenblicken steht zwischen Amiga und Win9x eine TCP/IP-
+Verbindung.
+
+
+5 Anwendungen
+
+Seit l&auml;ngerer Zeit bedient mein Amiga als Web- und FTP-Server neben einem 
+Linux- ebenso problemlos einen Windows-PC. Nat&uuml;rlich kann auch der Amiga 
+als Client &uuml;ber das beschriebene Netzwerk auf Windows9x- bzw. Linux-Server 
+zugreifen. Geeignete Software findet sich wie so oft im Aminet.
+
+Auch die Fernsteuerung eines Netzwerk-Rechners &uuml;ber Telnet ist 
+wechselseitig mit passender Software schnell und ohne H&uuml;rden realisiert.
+
+Die in diesem Bericht gew&auml;hlte serielle Schnittstellengeschwindigkeit 
+erm&ouml;glichte eine ruckelfreie, ber deshalb nicht weniger schwei&szlig;treibende 
+Gegnerhatz in Dxxm,
+
+Screenshot:
+<IMG SRC="../extra/DoomAmigaLinux.png" ALT="Screenshot">
+
+und war v&ouml;llig ausreichend f&uuml;r Strategie-Spiele a la FreeCiv.
+
+
+[1] AMIGA aktuell 06/00, Aufbau eines Netzwerks mit AmigaOS und Linux
+[2] im Aminet unter /comm/tcp/Miami32b-xx.lha
+[3] im Aminet unter /comm/tcp/NullTCP.lha 
+
+Uwe Pannecke &lt;Uwe.Pannecke@t-online.de&gt;«
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

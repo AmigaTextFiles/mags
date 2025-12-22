@@ -1,0 +1,138 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="asyncc.html">PREV</a> | <a href="switchppc.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Calling 68k Code from PPC Code (Contextswitch) </b>
+
+A Contextswitch can call 68k Code out of a PPC program, for example an
+AmigaDOS function.
+
+ALL AMIGADOS FUNCTIONS CALLED BY THE PPC WILL CAUSE A CONTEXTSWITCH.
+
+There is no way
+to do PPC&#060;-&#062;68k communication WITHOUT Contextswitches in a efficient way,
+even if some people assumed so on the comp.sys.amiga.misc discussions.
+Often in these discussions &quot;Messaging&quot; like the announced Messaging-Concept
+of Phase 5 was described as being superior to Context-Switches. It should
+be once more clarified, that Context-Switching is nothing more than a
+&quot;special case&quot; of Messaging. It was also discussed, that running PPC and
+68k parallel might help. In most cases this is not true. As soon as the
+two use common data there are serious problems coming out of the hardware
+design of the Boards, which will slow down the code below 68060 speed. And
+even in the best cases a speedup of more than 20% is not possible, even
+with a 060. If you really KNOW what you are doing, you COULD still try
+running the two CPUs parallel, like described in
+<a href="asyncc.html">Asynchrone Contextswitches</a>. Don't try it, when you don't
+know EXACTLY what you are doing !!! To clarify it once more: This has nothing
+to do with problems of certain kernel implementations, it is just a problem
+of the existing hardware. It behaves like this on both implementations
+for the current hardware. So only use the asynchrone version, if you
+know that the advantages will be better than the disadvantages in your
+specific coding problem.
+
+A Contextswitch consumes about 0.5 milliseconds, so you should be VERY careful,
+when to use it.
+
+Also note, that other tasks can continue while the context-switch waits
+for the second CPU to complete the Cache-stuff EVEN WITH SYNCHRONE
+CONTEXT-SWITCHES.
+
+When you use the contextswitch, the registers are mapped the following way:
+
+        d0      &#060;-&#062;     r3              fp0     &#060;-&#062;     f1
+        d1      &#060;-&#062;     r4              fp1     &#060;-&#062;     f2
+        d2      &#060;-&#062;     r22             fp2     &#060;-&#062;     f3
+        d3      &#060;-&#062;     r23             fp3     &#060;-&#062;     f4
+        d4      &#060;-&#062;     r24             fp4     &#060;-&#062;     f5
+        d5      &#060;-&#062;     r25             fp5     &#060;-&#062;     f6
+        d6      &#060;-&#062;     r26             fp6     &#060;-&#062;     f7
+        d7      &#060;-&#062;     r27             fp7     &#060;-&#062;     f8
+        a0      &#060;-&#062;     r5
+        a1      &#060;-&#062;     r6
+        a2      &#060;-&#062;     r28
+        a3      &#060;-&#062;     r29
+        a4      &#060;-&#062;     r2
+        a5      &#060;-&#062;     r30
+        a6      &#060;-&#062;     r31
+
+Now there are some macros inside Stormc:ASM-Include/powerpc/powerpc.i (or
+StormC:ASM-Includes/powerpc/powerpc.i, i recommend copying the two
+Include-Paths together to one directory) to do a Contextswitch.
+
+RUN68k
+
+This macro takes two parameters. The first one is the Library base (in case
+of a Shared Library function), the second one the library function offset
+(in case of a Shared Library function). The parameters have to be put to
+the correct PowerPC registers, like needed for the register mapping described
+above.
+
+You have to XREF _PowerPCBase. Of other Bases, _DOSBase and _SysBase can also
+be XREF'ed, other bases have to be opened manually.
+
+Note, that RUN68k can only use d0/d1/a0/a1/fp0/fp1 for parameters. If you
+need other registers also, you have to use RUN68K_XL, which produces a bit
+slower and bigger code. RUN68K_XL supports ALL functions.
+
+If you do not call a library function but a &quot;normal&quot; function, the function
+name takes the place of the Library Base in this macro (RUN68K test, for example).
+
+RUN68K_XL trashes registers r7-r10, RUN68K trashes r4-r10.
+
+Both Macros have some extra parameters.
+
+RUN68K:
+
+3rd parameter: Flags (defined in powerpc.i, normally you won't need them).
+4th parameters: FPU (if you specify &quot;FPU&quot; as 4th parameter, the FPU registers
+                will also be available to the 68k funcion).
+
+RUN68K_XL:
+
+3rd parameter: Flags (defined in powerpc.i, normally you won't need them).
+4th parameter: Stacksize that should be provided to the context-switch. Normally
+               you should not provide stack-space during a context-switch.
+               Using registers is much faster :).
+5th parameters: FPU (if you specify &quot;FPU&quot; as 5th parameter, the FPU registers
+                will also be available to the 68k funcion).
+
+You can leave out parameters like that: RUN68k test,,FPU
+
+Also, a4&#060;-&#062;r2 always exchange the SmallDataBase (or _LinkerDB), so that the PPC can
+access the Variables (LinkerDB can be XREF'ed)
+
+You should be VERY careful with allocated memory, that should be used on the
+PPC. Best only use memory allocated with the functions of powerpc.library (this
+memory will be correctly aligned). Be especially CAREFUL, when using functions
+in a context-switch that allocate memory.
+
+Example:
+
+   prolog
+   ...
+   la      r6,intname                 ;libname-&#062;a1
+   li      r3,0                       ;libversion-&#062;d0
+   RUN68K  _SysBase,OpenLibrary       ;OpenLibrary
+   sw      r3,_IntuitionBase          ;save _IntuitionBase
+   tstw    r3                         ;library successfully opened?
+   beq     .exit                      ;no -&#062; exit
+   li      r5,0                       ;a0 = NULL
+   RUN68K  _IntuitionBase,DisplayBeep ;call DisplayBeep of intuition.library
+   ...
+   epilog
+intbase: dc.l 0
+intname: dc.b 'intuition.library',0
+   even
+
+
+
+</pre>
+</body>
+</html>

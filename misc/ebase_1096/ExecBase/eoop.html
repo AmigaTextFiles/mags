@@ -1,0 +1,523 @@
+<HTML>
+
+<HEAD>
+<TITLE>
+
+Using E's OOP Features
+
+</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1 align=center> Using E's OOP Features </H1>
+<H3 align=center> Ali Graham</H3>
+<center><p><a href="mailto:agraham@hal9000.net.au">&lt;agraham@hal9000.net.au&gt;</a></p></center>
+
+<h3 align=justify>
+
+    Introduction
+
+</h3>
+
+<P>
+
+    One of Amiga E's (many) wonderful features is the inclusion of
+    <B>O</B>bject <B>O</B>riented <B>P</B>rogramming. While it is not compulsory to use
+    this facility (indeed, I am sure many E coders -- largely those
+    who are used to programming in assembler -- may well never even
+    have looked at it), in many respects adapting your programming
+    style to include some object oriented design principles can be
+    a very good idea.
+
+<P>
+
+    For time and space reasons, I can't really assess the advantages
+    of OO versus traditional programming; I'd be here for days, and
+    no-one would want to read the article when I've finished. However,
+    there are hundreds, nay thousands, of good books debating
+    the differences between object oriented and traditional programming.
+
+<P>
+
+    In summary, though, the idea behind OOP is to limit the application
+    of a piece of code to the area of the implementation that it should be
+    dealing with. Accidentally overwriting a global variable with a local
+    one or accessing memory that does not belong to your task should become
+    a thing of the past, once you have learnt and applied the core principles
+    of object oriented design.
+
+<P>
+
+    To some degree the use of OOP is a 'religious' matter -- another
+    holy war on the scale of "My computer is better than your
+    computer". However, the advantages of OO design -- more efficient
+    and robust programs, as well as an easier design process -- should
+    be considered separately from any attachment to a particular
+    language or mode of programming; the principles can actually be applied
+    without using an object-oriented programming language, it is just that
+    these languages have been deliberately designed to facilitate the
+    implementation of an object oriented design.
+
+<P>
+
+    I don't want to merely repeat the words of the documentation on
+    E's OOP implementation; instead I'll pick out a few salient features
+    and analyse them in the context of a worked example. The example
+    (the full source of which is available as
+    <a href="messages.e"><code>messages.e</code></a>) is a module designed
+    to simplify message passing between programs.
+
+    (Also, the source code for two example programs
+     <a href="messages_1.e"><code>messages_1.e</code></a> and
+     <a href="messages_2.e"><code>messages_2.e</code></a> are also available.)
+
+<BR>
+<BR>
+
+<HR>
+
+<BR>
+
+<h3> OOP in Amiga E</h3>
+
+<P>
+
+    Object oriented programming -- like any other specialised and
+    obfuscated area -- has its own jargon. There are a few fundamental
+    terms (easy enough to pick up) which I will describe here, but bear
+    in mind that this is by no means a complete summary of OOP.
+
+<BR>
+<BR>
+
+    <DL>
+
+    <DT><b>Object</b><dd> A collection of variables (and procedures)
+                          organized to reflect some logical correspondence
+                          between the disparate parts. They are declared in
+                          E in the following manner:
+
+<pre>
+OBJECT example_object
+
+    x
+    y
+
+    gadget_ptr:PTR TO gadget
+
+ENDOBJECT
+
+</pre>
+
+    <DT><b>Class &amp; Inheritance</b><dd>
+                         A class is a generic term for an object's type. This
+                         serves as a way to define different objects; much as
+                         different <i>types</i> of variables can be declared in
+                         traditional programming languages. Objects can be declared
+                         as subclasses of other objects in E like so:
+
+<pre>
+OBJECT this_is_a_subclass OF example_object
+
+    a
+    b
+
+ENDOBJECT
+
+</pre>
+
+                         and the object will <i>inherit</i> the variables and
+                         procedures declared in example_object as well as
+                         possessing those that it has declared on its own. For the
+                         subclass, its full composition (if described separately)
+                         would be
+
+<pre>
+OBJECT another_example_object
+
+    x
+    y
+
+    gadget_ptr:PTR TO gadget
+
+ENDOBJECT
+
+</pre>
+    <DT><b>Instance</b><dd> An instance of an object is a declaration of that object.
+                            Any object must, of course, be declared before it can be used --
+                            OOP is similar to most traditional programming languages
+                            in this case (except maybe for BASIC :)
+<pre>
+</pre>
+    <DT><b>Method</b><dd> Methods are procedures which are declared as a part
+                          of an object. They are declared in E as
+
+<pre>
+PROC example_proc(x, y) OF example_object IS self.x+self.y
+
+</pre>
+
+    where the <i>self</i> predicate refers to the object itself,
+    and the variables to the variables which compose that object.
+
+<pre>
+</pre>
+    <DT><b>Constructors &amp; Destructors</b><dd> These terms refer to the
+        methods (i.e. procedures) used to respectively allocate and deallocate
+        the resources used during the lifetime of the object. An object (when
+        initialised) should always be called with its constructor, and when it
+        is no longer needed, its destructor should be used. E handles these
+        requirements with the following instructions: the constructor (which may
+        be any method of the object) is
+<pre>
+NEW example_object.init()
+
+</pre>
+        and the destructor, which for any object must be specifed as, e.g.,
+        <code>PROC end() OF example_object</code>, is
+<pre>
+END example_object
+</pre>
+    </DL>
+
+<P>
+
+    Despite the seeming uselessness of these terms, they serve as a sort
+    of verbal shorthand for the concepts that the object oriented programmer
+    finds him- (or her-) self dealing with.
+
+<BR>
+<BR>
+
+<HR>
+
+<BR>
+
+<h3> Designing reusable modules - the "black box" principle </h3>
+
+<P>
+
+    Everyone understands the principle of using procedures to reduce
+    duplication of source code. If you want to do something more than
+    once in your program, why write it more than once? This is one of
+    the principles that informs object oriented design. It enables
+    the programmer (with a little careful thought) to design reusable
+    code which can be used by many separate projects (or indeed,
+    programmers) at once. In the old paradigm, if you needed to reuse
+    code for another project, you copied it from the source of the old
+    program; for larger projects, this rapidly became unwieldy. Now, of
+    course, all this has changed. With the arrival of object oriented
+    design, there is a way to avoid all of the bugbears of traditional
+    programming practice; admittedly, a new set of problems may well
+    arise, but they are on a completely different level to the
+    mundanity and the chances for error that are laid at the door of
+    traditional programming practices.
+
+<P>
+
+    E supports this "modular" approach through <b>MODULE</b>s. Normally
+    modules are used in E to remove source code from a file, and to make
+    it available to more than one source file at atime (or, indeed,
+    another module). This does not change much for object oriented code;
+    it merely acts as a vehicle for the implementation of data-hiding.
+
+<P>
+
+    In order to reduce the amount of work that a coder needs to do,
+    it makes sense to make the interface to a procedure or a set of
+    procedures as well defined as possible. Any code that relies on
+    the internal construction of an object to achieve its aims will
+    need to be changed when the object is; for this reason, it is better
+    to hide the code through the <b>MODULE</b> mechanism, using the
+    <b>PRIVATE</b> command. This means that client procedures will
+    not be able to mess around with the internals of an object, and thus break
+    when the specification of the object is changed. Instead they will
+    be forced to access the object through a defined interface, which
+    need not change when the internals of the object (i.e. the variables
+    and methods that comprise that objects) are changed.
+
+<P>
+<HR>
+<P>
+<P>
+
+
+<h3> Object oriented design in a working example</h3>
+
+<P>
+
+    First, consider the problem that you have in front of you. In
+    my case, I wanted to abstract away as much base-level code
+    as possible from the message handling in my programs. The more
+    times you write complex code, the more chances for error you
+    create, so increasing abstraction is always a good idea.
+
+<p>
+
+    Initially (well, you have to start somewhere) I created a default
+    object called the <code>message_handler</code>. This object will
+    serve as the "shell" object for all message handling operations
+    at a single port. Any operations involving that port should be able
+    to be accessed through this object, thereby hiding the internals
+    of message transaction from everyday usage.
+
+<pre>
+
+ EXPORT OBJECT message_handler
+
+     sig
+
+     PRIVATE
+
+     port:PTR TO mp
+
+ ENDOBJECT
+
+</pre>
+
+<p>
+
+    <b>EXPORT</b> is an E directive to make this object accessible from
+    outside of the module; the <b>PRIVATE</b> command, on the other hand,
+    means that only methods belonging to this object will be able to access
+    the <code>port</code> variable. To all other objects and general purpose
+    code, for all intents and purposes, all that exists of the
+    <code>message_handler</code> is its public face - the <code>sig</code>
+    variable and the methods declared by the object.
+
+<P>
+
+    The first method that must be declared is, of course, the constructor. As
+    defined above, this will initialise the various resources used by the object's
+    methods. In order to be neat (always good programming practice) I always write
+    the destructor for the object at the same time and place it directly beneath
+    the constructor, so it is easy to check that all resources are being allocated
+    and dealloctaed properly.
+
+<pre>
+PROC init(mp=-1:PTR TO mp) OF message_handler
+
+    DEF t:PTR TO process
+
+    /*
+
+    If a port has been provided, it uses it; otherwise it
+    uses the default message port belonging to its own
+    process.
+
+    */
+
+    IF mp<>-1
+
+        self.port:=mp
+
+    ELSE
+
+        t:=FindTask(NIL)
+
+        self.port:=t.msgport
+
+    ENDIF
+
+    /*
+
+    This value will come in handy if the user of the module
+    wants to watch multiple ports at the same time.
+
+    */
+
+    self.sig:=Shl(1, self.port.sigbit)
+
+ENDPROC
+
+PROC end() OF message_handler
+
+    /* It is necessary to clear the port of all messages */
+
+    DEF m:PTR TO message_node
+
+    WHILE m:=self.get() DO self.reply(m)
+
+ENDPROC
+
+</pre>
+
+<p>
+
+And here are some more exciting methods; these depend upon the construction
+of the <a href="#message_node_def">message_node</a> as well.
+
+<p>
+
+<pre>
+PROC wait() OF message_handler IS WaitPort(self.port)
+
+PROC send(target:PTR TO mp, taglist:PTR TO tagitem) OF message_handler
+
+    DEF tm:PTR TO message_node
+
+    NEW tm.init(self.port, taglist)
+
+    PutMsg(target, tm)
+
+ENDPROC
+
+PROC wait_for_value(tag, id) OF message_handler
+
+    DEF m:PTR TO message_node, finish=FALSE
+
+    REPEAT
+
+        self.wait()
+
+        WHILE m:=self.get()
+
+            IF (m.get(tag)=id) THEN finish:=TRUE
+
+            self.reply(m)
+
+        ENDWHILE
+
+    UNTIL (finish=TRUE)
+
+ENDPROC
+
+PROC get() OF message_handler IS GetMsg(self.port)
+
+PROC reply(m:PTR TO message_node) OF message_handler
+
+    IF (m.replyport<>self.port) THEN ReplyMsg(m) ELSE END m
+
+ENDPROC
+</pre>
+
+
+<p>
+
+    Since Amiga E's system modules implement all of the
+    basic Amiga OS structures as <b>OBJECT</b>s, it is possible
+    to declare objects as subclasses of the standard system ones.
+    I have used this technique below. The advantage of this is that
+    these objects can then be accessed using the same OS routines
+    (in this case <code>PutMsg()</code>, <code>GetMsg()</code>, etc.)
+    as the objects that they are based on.
+
+<P>
+
+    I have used tagitems (which require the 'utility.library' to be
+    open) because this is a solution which is arbitrarily extendable.
+    Each message may contain as much or as little information as you prefer.
+    It means a little more work to begin with; you must rememember to
+    initialise any tag values as <code>TAG_USER</code> or higher. (See
+    the example source code included with this tutorial for an illustration
+    of this technique.)
+
+<pre>
+EXPORT OBJECT <a name="message_node_def">message_node</a> OF mn PRIVATE
+
+    tags:PTR TO LONG
+
+ENDOBJECT
+
+PROC init(port:PTR TO mp, tags:PTR TO LONG) OF message_node
+
+    self.ln.type:=NT_MESSAGE
+    self.length:=SIZEOF message_node
+    self.replyport:=port
+    self.tags:=tags
+
+ENDPROC
+
+PROC get(tagvalue) OF message_node IS GetTagData(tagvalue, NIL, self.tags)
+
+PROC change(taglist:PTR TO tagitem) OF message_node IS ApplyTagChanges(self.tags, taglist)
+</pre>
+
+<P>
+<HR>
+<P>
+<P>
+
+
+<h3>Actually <i>using</i> the example</h3>
+
+<P>
+
+    These modules may now be accessed in an abstracted fashion - see the
+    example sources (<a href="messages_1.e"><code>messages_1.e</code></a> and
+    <a href="messages_2.e"><code>messages_2.e</code></a>)for details.
+
+<P>
+
+    Unfortunately, time/space reasons prevent me from launching into a
+    detailed explanation of the code (this article is already later than
+    it should be :) but it should be relatively clear what I'm trying
+    to show. Don't be afraid to build, adapt, or change the code in any way;
+    it is actually a simplified version of the one that I am using at the moment,
+    because that would have taken up even more space, and would not have
+    illustrated as clearly the principles I am trying to convey.
+
+<P>
+    
+<HR>
+<P>
+<P>
+
+
+<h3>Conclusion</h3>
+
+<P>
+
+    These may seem like great lengths to go to for such a small gain
+    in productivity. This is true for the task described here, but OOP
+    scales very well. It makes it much easier to maintain and develop
+    larger projects than you can by using traditional programming models.
+    I tend to use OOP for most of my programs these days - even if you don't
+    want to move completely to the OOP model, you can still use your time more
+    effectively by delegating tasks such as opening and closing libraries
+    to objects. The advantage of this is that you write the code once, do
+    it properly and then never look at it again, instead of having to adapt
+    and interweave it with any new code you write. It reduces the chance of
+    typing mistakes and makes the actual code look much cleaner. Choosing
+    descriptive variable names here helps a lot, too. Which would you prefer?
+
+<pre>
+message.send(screenblankerport, [MSG_ID,  START_BLANKING
+                                 TAG_DONE])</pre>
+
+<P align=center>
+
+or
+
+<P>
+
+<pre>
+mn.length:=SIZEOF mn
+mn.replyport:=thisport
+mn.ln.name:=STARTBLANKING
+
+PutMsg(screenblankerport, mn) /* and so on... */
+</pre>
+
+<P>
+
+    The choice is yours - obfuscated, boring, spaghetti code or clean, elegant,
+    object oriented works of art. Masterpieces!
+
+<P>
+
+    (At this point, the author had to be forcibly restrained from launching into
+     <i>The Programmer's Artistic Manifesto</i>....
+
+<P>
+
+    "Programmers of the world, unite! You have nothing to lose but your
+    <code>GOTO</code>s.")
+
+
+<P>
+<hr>
+<a href="default.html">Table of Contents</a>
+</BODY>
+</HTML>

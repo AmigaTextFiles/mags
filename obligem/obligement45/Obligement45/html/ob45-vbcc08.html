@@ -1,0 +1,213 @@
+<html>
+ <head>
+  <title>VBCC 0.8</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Test de VBCC 0.8 </font>par&nbsp;<a href="mailto:mathias.p@wanadoo.fr">Mathias&nbsp;Parnaudeau</a></div><br><br><br>
+
+
+Même si de très nombreux langages sont disponibles, la programmation sur Amiga fait la part belle au C.
+Le passage au PowerPC permet de faire le ménage dans les compilateurs disponibles et ce n'est pas plus mal
+pour clarifier la situation et assurer un support correct, au niveau des bibliothèques par exemple.
+Au final, il reste deux compilateurs complémentaires&nbsp;: GCC le standard et VBCC le complément qui mérite
+qu'on fasse la lumière sur lui, en présentant ses caractéristiques et ses particularités.<br><br>
+
+<font size="+1" color="#ccbb33">Pas si accessoire</font><br><br>
+
+Malgré sa position d'outsider, VBCC possède de réelles qualités et après un an et demi d'expérience,
+il s'avère être un très bon choix, notamment pour les débutants. Dès l'installation, on reste en terrain
+connu&nbsp;: désarchivage lha, renseignement des chemins pour les includes dans le fichier de configuration,
+exécution de ce fichier et voilà&nbsp;! Cet argument est cependant moins caractéristique depuis que GCC
+s'installe tout seul avec le SDK MorphOS ou OS4 et même en 68k avec le package GoldEd.
+En revanche, la grande force de VBCC, c'est de pouvoir générer des exécutables pour des cibles différentes
+(Amiga 68k, WarpOS, MorphOS,...) en spécifiant juste un argument à la compilation&nbsp;! La cross-compilation
+ne peut pas être plus accessible&nbsp;!<br><br>
+
+VBCC souffre de manques (pas de débogueur ni de profileur exploitable) et de bogues mais il est activement
+supporté. Les réponses arrivent rapidement et l'auteur donne des détails très instrutifs,
+de quoi évoluer dans sa compréhension des compilateurs (édition de liens, formats de bibliothèques,...).
+Voici un exemple pour illustrer cette réactivité&nbsp;: un projet 68k nécessitait le support des nombres
+et fonctions mathématiques 64 bits et ce fut implémenté en quelques jours&nbsp;! J'ai pu recevoir directement
+un correctif par mail sans attendre. D'autres problèmes remontés ont pu être corrigés rapidement,
+comme un bogue dans la conversion de flottants en entiers 64 bits. Les fonctions DoSuperNew et SetSuperAttrs
+ont été ajoutées dans la libamiga pour MorphOS juste pour avoir signalé leur absence à l'auteur.
+Ainsi, vu cette écoute, on comprend que plus les développeurs utiliseront VBCC, plus celui-ci sera amélioré
+et complet.<br><br>
+
+La cross-compilation et le support constituent de réels avantages mais malgré tout, VBCC traîne parfois la
+réputation de second, pas forcément capable d'assurer le portage d'applications Linux ou de s'attaquer à
+de gros développements. Il n'en est rien&nbsp;! Des preuves indiquent que VBCC est tout à fait à la hauteur
+pour compiler des projets conséquents. En effet, des outils classiques (xlHTML, TinyGL, l'économiseur
+d'écran Matrix,...) ont été obtenus grâce à lui mais il est possible d'aller plus loin&nbsp;: GlQuake,
+la bibliothèque vorbis 68k et SDL, Zip-Zap, SX Rally, SongPlayer 1.62, Smart Lines,... tous ont
+aussi été compilés avec succès. Et signalons que le compilateur se recompile lui-même (et pour la
+première fois avec l'option d'optimisation -O1, grâce à la puissance et à la mémoire du Pegasos).<br><br>
+
+<font size="+1" color="#ccbb33">Particularités de VBCC</font><br><br>
+
+Après les points forts qui ont dû donner envie d'offrir sa chance à VBCC, nous aborderons ici tout ce qui fait
+son identité. La documentation, au format PDF ou HTML, fournit bien entendu des informations mais elle contient
+des lacunes. C'est pourquoi cette partie se propose de revenir sur plusieurs points qui sont autant de compléments
+à la documentation officielle.<br><br>
+
+Chaque compilateur est différent par ses options, ses directives, son interprétation des erreurs et warnings,
+ses capacités de débogage,... VBCC n'échappe pas à la règle. Voici donc des informations et des conseils.<br><br>
+
+<b>VBCC se distingue de GCC</b>. Déjà, si vous n'aviez pas bien compris ce qu'était la ixemul et que ça vous
+causait des soucis, soyez rassuré, VBCC n'a rien à voir avec ça. En revanche, certaines fonctions des bibliothèques
+livrées avec GCC ne sont pas forcément présentes&nbsp;: strdup, alloca, rint,... Le passage au PowerPC a mis en
+évidence le problème d'alignement des structures et les deux compilateurs cités ont adopté deux notations différentes.
+GCC utilise les directives "pragma pack" alors que pour VBCC ce sont les pragmas "amiga-align" et "default-align".
+A la différence d'OS4, seul GCC est supporté sur ce point dans les includes MorphOS, ce qui n'encourage pas à
+choisir VBCC. On se rend compte que les théories de l'évolution s'appliquent ici&nbsp;: s'adapter ou périr. Heureusement
+ici, Stéphane Saragaglia a écrit un script Perl
+(<a href="http://aurora.gotdns.org/amiga/UpdateMosIncForVbcc.pl">aurora.gotdns.org/amiga/UpdateMosIncForVbcc.pl</a>)
+qui corrige les includes MorphOS et permet leur utilisation avec VBCC sans se soucier par la suite des alignements
+et des pragmas correspondants.<br><br>
+
+Le support de la <b>norme ISO 1999</b> est activable avec -c99, ce qui devient à l'usage rapidement systématique. Ne serait-ce
+que pour programmer en C en suivant ses dernières spécifications et ensuite, cela autorise les commentaires à la
+C++ ou les macros varargs. Ces dernières peuvent d'ailleurs poser un problème dont la cause réelle provient en fait
+des inlines. Ainsi, il existe la directive de compilation -DNO_INLINE_STDARG qui a pour effet d'utiliser des
+stubs d'amiga.lib à la place des inlines. Ca peut devenir utile pour la programmation MUI notamment.<br><br>
+
+La <b>création d'une bibliothèque statique</b> varie suivant l'OS cible&nbsp;: un simple "join &lt;liste des objets&gt; TO malib.lib"
+suffit pour AmigaOS 68k et WarpOS, sinon VBCC propose sa propre commande "ar" à utiliser avec l'option "q" pour
+MorphOS. Attention, il est préférable de spécifier le chemin "VBCC:bin/ar" car sinon, la commande équivalente proposée
+par GCC pourrait être utilisée et elle ne connaît pas l'option "q". Normalement, VBCC accepte les bibliothèques
+des autres compilateurs mais ça peut ne pas être le cas (exemple de la SDL qui contient des références inconnues de VBCC).<br><br>
+
+Pour VBCC, la <b>notion de NULL</b> n'est pas considérée comme la valeur zéro mais comme le pointeur nul "((void *)0)",
+ce qui peut provoquer des erreurs de compilation, constatée parfois dans du code peu rigoureux où un NULL a été choisi
+abusivement. Par exemple, lors de l'appel de la fonction OpenDevice, l'argument terminal doit être "0L" (son type est ULONG)
+et non pas NULL comme c'est souvent le cas.<br><br>
+
+Enfin, pour donner un dernier conseil, travaillez toujours avec l'<b>option d'optimisation</b> -O1 maxi pour n'utiliser
+-O2 que, éventuellement, dans la phase finale. En effet, ce niveau d'optimisation peut générer du code bogué dans
+certains cas&nbsp;; vous vous retrouvriez avec une application qui plante, ce qui est toujours dommage. D'autres ennuis,
+cette fois-ci liés au compilateur, peuvent être évités en augmentant la taille de la pile.<br><br>
+
+<font size="+1" color="#ccbb33">Les cibles</font><br><br>
+
+La cross-compilation est la capacité à compiler un programme pour un OS cible à partir d'un système différent.
+Ce qui se fait par exemple aisément, c'est la compilation 68k depuis MorphOS, avec le simple ajout (à la compilation
+mais aussi à l'édition de lien) de l'option +m68k. Cette fonctionnalité est appréciable, d'autant qu'il est possible
+de tester le programme grâce à l'émulation 68k de MorphOS.<br><br>
+
+Une partie importante touche au débogage. Avec GCC, la simple option "-g" permet d'obtenir dans l'exécutable des
+informations exploitables avec un débogueur. VBCC utilise plusieurs options toutes en nuances&nbsp;:-).<br><br>
+
+L'option -g active le support du débogage mais par défaut les informations sont au format DWARF, supporté par aucun
+débogueur 68k mais qui prendrait tout son sens avec MorphOS ou AmigaOS4. Pour indiquer un format compatible avec
+le 68k, on doit utiliser l'option additionnelle -hunkdebug&nbsp;:<br><br>
+
+vc +m68kdb -c99 -g -hunkdebug -c programme .c<br><br>
+
+On remarque l'option "+m68kdb" alors qu'on avait évoqué "+m68k". Cette dernière fait référence au fichier de
+configuration "VBCC:config/m68k" qui retire tous les symboles (informations) de débogage&nbsp;: c'est la fameuse
+opération de "strip" que l'on ne veut bien sûr pas appliquer ici&nbsp;! C'est pourquoi on fait appel au fichier
+"m68kdb", tout simplement.<br><br>
+
+Un programme contenant les symboles de débogage est ensuite exploité en cas de hit grâce à l'outil FindHunkOffset
+qui permet de localiser précisément l'emplacement du code fautif. Cet outil ne fonctionne qu'avec les binaires
+au format Hunk, c'est-à-dire qu'il est destiné au 68k et à WarpOS.<br><br>
+
+<font size="+1" color="#ccbb33">Avenir radieux</font><br><br>
+
+Celui-ci n'est assuré que si on le supporte activement et si on sait saisir cette chance qui nous est présentée.
+Il est impensable de rejeter VBCC parce qu'il est différent de GCC&nbsp;! Au contraire, l'utilisation des deux est
+d'ailleurs recommandée puisqu'ils lèvent des erreurs et warnings différents, ce qui permet de rendre le code plus
+portable et plus propre. Preuve de ses capacités, VBCC est officiellement supportés par l'AmigaOS 4.0 pour lequel
+il génère du code natif (même code en fait, seuls le startup et la vclib diffèrent).<br><br>
+
+Au niveau des évolutions prévues, on compte le support du module AltiVec du G4&nbsp;: les assembleurs (pasm et vasmppc)
+sont déjà conçus pour ça. L'idée d'un débogueur et d'un profileur a été soulevée mais cela implique des modifications
+pas si triviales. La priorité va à la correction d'un ou deux bogues localisés par l'auteur, à la suite de quoi
+on pourrait voir arriver une mise à jour complète, la dernière datant de quelques années. Des propositions seront
+faites pour que la documentation soit enrichie.<br><br>
+
+Si tout ce descriptif vous a convaincu, je vous invite à vous rendre sur la page dédiée à ce compilateur&nbsp;:
+<a href="http://devnull.owl.de/~frank/index_e.html" target="_blank">devnull.owl.de/~frank/index_e.html</a>.
+Et on n'oublie pas l'article d'Olivier Fabre sur l'installation et la configuration de VBCC&nbsp;:
+<a href="http://www.guru-meditation.net/main.php3?root=168" target="_blank">www.guru-meditation.net/main.php3?root=168</a>.<br><br>
+
+Au final, quelle action y a-t-il à mener&nbsp;? De l'avis même de Frank Wille&nbsp;: "Promouvoir le compilateur est la chose
+la plus importante que vous puissiez faire".<br><br><br>
+
+
+
+<table width="100%" cellspacing="0" cellpadding="10" bgcolor="#112233" border="1">
+ <tr>
+  <td><br>
+   <div align="center"><font size="+1" color="#ccbb33">FICHE RECAPITULATIVE</font></div><br><br>
+    <b>Nom</b>&nbsp;: VBCC 0.8.<br>
+    <b>Auteur</b>&nbsp;: Volker Barthelmann, Franck Wille.<br>
+    <b>Genre</b>&nbsp;: Compilateur (programmation).<br>
+    <b>Date</b>&nbsp;: 2001-2004.<br>
+    <b>Configuration minimale</b>&nbsp;: AmigaOS 2.0, 68020.<br>
+    <b>Configuration souhaitée</b>&nbsp;: Amiga PowerPC ou Pegasos.<br>
+    <b>Prix</b>&nbsp;: gratuit.<br><br>
+
+    <b>NOTE</b>&nbsp;: 8/10<br><br>
+
+    <b>Points forts&nbsp;:</b><br><br>
+
+     - Installation facile, par rapport à GCC 68k.<br>
+     - Facilité de cross-compilation inégalée&nbsp;!<br>
+     - Support technique réactif et enrichissant.<br>
+     - Facilite la programmation réseau car GCC 68k pose des problèmes d'includes.<br><br>
+
+   <b>Points faibles&nbsp;:</b><br><br>
+
+     - Toujours quelques bogues, principalement d'optimisation.<br>
+     - Pas de support C++.<br>
+     - Profiler non fonctionnel.<br><br>
+
+  </td>
+ </tr>
+</table>
+
+<br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

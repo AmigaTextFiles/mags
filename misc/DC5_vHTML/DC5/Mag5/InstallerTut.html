@@ -1,0 +1,39 @@
+<HTML><H2><B>Installer Tutorial</B></H2>
+
+<P>This is a quick guide on how to create scripts for the Installer utility. If you are producing anything which requires an installer, you should use this utility rather than an AmigaDOS 
+script or a self-coded attempt; not only does it keep a standard approach for users, but it is a powerful program.
+
+<P>Of course, many are put off by its apparent complexity, but don't! The best advice is to get hold of installer scripts, and look at them in a text editor. Maybe use one as the basis for your script, editing it where necessary.
+
+<P>For this tutorial, we will look at the Installer for the Full version of DoubleClick Issue 4 (how appropriate). This is under the filename 'Install_DC4.txt', and you can view it <A HREF="Install_DC4.txt">here</A> if you wish with multiview. Please note that I have added '.txt' so that this mag can load it as a text file - it is usual to have no extensions for scripts!
+
+<P>Let's have a look at it. The semicolons are for comments like in a DOS script - the rest of the line ignored. All the commands are placed in brackets, ie, ( command ), but you can also nest commands, eg, ( command (another command) ). The command <TT>(complete 0)</TT> sets the pecentage value displayed - put this at various places in your script with appropriate percentage values. Next we have the set command. This takes the form:
+<BR><TF><TT>(set variable value)</TT>
+<BR>Where the variable is given the value specified. In the script, we have the variable DC4-dest, which will hold the directory location to install to, but you will see the is a whole  
+load more stuff than the simple for I gave. Don't worry, it isn't too complex - remember what I said about nested commands. The askdir command displays a directory listing, and gets the user to select a drawer, and then returns the selected directory as the value to be stored as DC4-dest. <TT>askdir</TT> takes certain parameters; prompt is the message displayed, and help is what is displayed if the user selects 'Help'. <TT>\n</TT> just means start a new line.
+
+<P>Then another set command, and here we see the tackon command:
+<BR><TF><TT>(tackon variable bit-to-add-on)</TT>
+<BR>Basically, it adds the bit onto the specified variable. Here, we add a drawer name onto the selected drawer, as we are following the convention of installing into a newly created drawer <I>inside</I> the selected drawer.
+
+<P>And then we create that drawer with makedir. <TT>(infos)</TT> means that the drawer will have an icon.
+
+<P>After a few more drawers are created (with the help of tackon), we get to the file copying with the copyfiles command. As well as setting a prompt and help listing (which we set to the default by using @copyfiles-help), we set the source and destination with the parameters <TT>source</TT> and <TT>dest</TT>. We can filter out files with <TT>pattern</TT>. Here, we say all files by specifying "#?", but later we copy individual files (eg, "Issue4"). (infos) this time means that '.info' files are copied.
+
+<P>You will see that for some of the files, there is an <TT>if</TT> command. When copying files to Libs: and C:, we don't 
+want to overwrite what might be a newer version, so we only copy if the file doesn't exist (NB: Even better, you could check the version of the currently installed file, but I'm not sure on how to do that yet!) The format for if is:
+<BR><TF><TT>(if (test) (commands to carry out if test is true) )</TT>
+<BR><TT>test</TT> takes the form <TT>operator variable1 variable2</TT>, eg, <TT>= a b</TT> would test if a was equal to b. Or <TT>&lt;&gt; c d</TT> would test if c was not equal to d. Easy! Note that you can also have an else clause, ie, a set of commands to follow if the condition isn't satisfied:
+<BR><TF><TT>(if (test) (commands if true) (commands if false) )</TT>
+
+<P>Well, that's about it for this script, except for <TT>(exit)</TT> - guess what that does!
+
+<P>To get your script working from Workbench, give it a Project icon, and set the default tool to Installer. There are various tooltypes, again, just look at the Install_DC4 script, and other scripts, to see what can be done. In particular, you can set the minimum and default installer level (ie, Novice, Intermediate, Expert), as well as setting the application name.
+
+<P>Oh yes, a piece of advice. If you are having problems in running the script, then make sure your brackets match up, ie, you have one ) for every (, as that seemed to be the biggest problem for me!
+
+<P>Have fun!
+
+<P><B>Mark</B>
+
+</HTML>

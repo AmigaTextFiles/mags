@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="Workshops1.html"><IMG SRC="../menu/links.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops3.html"><IMG SRC="../menu/rechts.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Workshops
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H2>2. Workshop: Samba und der Amiga - Teil 1 (von Werner Brennecke)</H2>
+<P>
+&raquo;Zum Vorwort:
+</P>
+<P>
+Nachdem ich gl&uuml;cklicherweise ein paar Amiga-Netzwerkkarten
+ergattert hatte, stand ich vor dem Problem meinen A4000 und
+A2000 irgendwie zu verbinden. Eine Linux Rechner sollte
+da auch noch mit rein.
+</P>
+<P>
+Der Linux Rechner sollte Newsserver/Proxy und gleichzeitig
+File und Printserver spielen. Auf das Thema Newsserver/Proxy gehe
+ich hier nicht ein, da helfen die Linux HOWTOs zu einem schnellem
+Erfolgserlebnis :-)
+Wenn da Handlungsbedarf besteht, kann man ja mal dr&uuml;ber reden.
+</P>
+<P>
+Anf&auml;nglich expirimentierte ich mit NFS, verwarf es aber wieder,
+da es sehr viel &Auml;rger macht, der nicht oder nur sehr Zeitaufwendig
+nachzuvollziehen ist.
+</P>
+<P>
+Das Hauptproblem waren sporadische &quot;Bitkipper&quot; in Files,
+die mich zum fast zum Wahnsinn brachten.
+</P>
+<P>
+Aus den Amiga-Newsgroups erfuhr ich, das ich damit nicht alleine
+war. Eine L&ouml;sung war nicht in Sicht, also schwenkte ich um auf Samba.
+</P>
+<P>
+Da es bei Samba keine leichtverst&auml;ndliche Doku zum amigaspezifischen
+Teil gibt, hatte ich es mir stichpunkartig mitnotiert. Da mehreren
+Leute die gleichen Startschwierigkeiten hatten, entschloss ich mich
+diese Notizen in einem Text zu verfassen und zu ver&ouml;ffentlichen.
+</P>
+<P>
+Den ersten Teil (die reine Installation von Samba) ist fertig,
+der zweite Teil wird a.s.a.p. nachgereicht.
+</P>
+<P>
+Dort wird dann der SMB-Handler und das Drucken unter Samba
+behandelt.
+</P>
+<P>
+Wer Verbesserungen oder W&uuml;nsche hat, immer her damit. Meine
+E-Mail ist &quot;<A HREF="mailto:wb@pag.mayn.de">wb@pag.mayn.de</A>&quot;. Flames bitte nach /dev/null :-)
+</P>
+<P>
+Mein eigentlicher Job ist in der Entwicklung von Hardware,
+den Amiga betreibe ich als Hobby. Sozusagen als
+Entspannung zu Win9x und WinNT tags&uuml;ber. :-) Dashalb kann
+ich mich nicht als Sambaprofi bezeichnen und bitte deshalb
+mir eventuelle Fehler zu mailen.
+</P>
+<P>
+Wer Tippfehler findet, kann sie behalten ;-)
+</P>
+<P>
+1.Was ist Samba??
+</P>
+<P>
+Samba ist eine Sammlung von Programmen, um Freigaben von Laufwerken
+und Druckern in einem Netzwerk mittels dem SMB Protokoll nutzen zu k&ouml;nnen.
+Die M&ouml;glichkeit besteht, selbst Laufwerke und Drucker freizugeben.
+Urspr&uuml;nglich kommt es aus der Unix Welt um Windows-Resourcen mit nutzen zu
+k&ouml;nnen und umgekeht eigene Resouren freizugeben. F&uuml;r die verschiedensten
+Betriebssysteme ist SAMBA schon portiert worden -&gt; Amiga, Netware, OS/2
+u.s.w.
+</P>
+<P>
+Ben&ouml;tigt wird Samba, ixemul und sp&auml;ter sambahandler
+</P>
+<P>
+Um Samba nutzten zu k&ouml;nnen muss ein laufender TCP/IP Stack
+installiert sein. Wenn also ein Ping versagt, ist man mit
+Samba zu fr&uuml;h dran :-)
+</P>
+<H3>2. Woher bekomme ich es?</H3>
+<P>
+Aus dem Aminet, unter comm/net/samba*****.lha)
+</P>
+<H3>3. Installation</H3>
+<P>
+Ich kann hier nur zur Installation unter AmiTCP schreiben, da ich mit
+Miami keine grossen Erfahrungen habe. Sollte aber auch nicht viel
+anders sein.
+</P>
+<P>
+Wer da ein paar Tips geben kann, nur her damit. Ich lasse es gerne
+in den Text mit einflie&szlig;en.
+</P>
+<H3>3.1 Auspacken und Zusatzprogramme installieren</H3>
+<P>
+Als erstes Samba in das Verzeichniss AmiTCP:samba auspacken.
+</P>
+<P>
+Die Verzeichnisse AMiTCP:samba/var AMiTCP:samba/var/locks m&uuml;ssen
+von Hand angelegt werden, da sie beim Auspacken nicht erstellt
+werden.
+</P>
+<H3>3.2 inetd.conf</H3>
+<P>
+Folgende Zeile muss in AmiTCP:db/inetd.conf mit eingetragen
+werden:
+</P>
+<PRE>
+       netbios-ssn stream tcp nowait root AmiTCP:samba/bin/smbd smbd
+</PRE>
+<P>
+Sie kann direkt aus AmiTCP:samba/inetd.conf.addon kopiert werden.
+</P>
+<H3>3.3 services</H3>
+<P>
+Diese Zeilen bitte in AmiTCP:db/services eintragen:
+</P>
+<PRE>
+   netbios-ssn     139/tcp
+   netbios-ns      137/udp
+</PRE>
+<P>
+Sie k&ouml;nnen direkt aus AmiTCP:samba/services.addon kopiert werden.
+</P>
+<H3>3.4 startnet</H3>
+<P>
+Um den Samba-Server zu starten, muss folgende Zeile in AmiTCP:bin/startnet
+eingetragen werden:
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Run &lt;&gt;NIL: AmiTCP:samba/bin/nmbd &lt;&gt;NIL: nmbd -D -n Rechnername&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Achtung, hinter dem Parameter &quot;-n&quot; wird der Rechnername eingetragen,
+dieser wird dann sp&auml;ter in Verbindung mit den Freigaben benutzt.
+Dieser Name erscheint dann in den Browserlisten.
+</P>
+<H3>3.5 Gastuser erstellen</H3>
+<P>
+Es muss ein Gastuser mit passender Gruppe vorhanden sein oder erstellt
+werden. Am einfachsten ist es die ADDON Files hinzuzuf&uuml;gen.
+&quot;passwd.addon&quot; zu &quot;AmiTCP:db/passwd&quot;
+&quot;group.addon&quot; zu  &quot;AmiTCP:db/group&quot;
+</P>
+<H3>3.6 Assigns</H3>
+<P>
+ETC muss nun zu Amitcp:db assigned werden. Einfach ein
+&quot;Assign ETC: AmiTCP:db&quot; in der User-Startup hinzuf&uuml;gen
+</P>
+<H3>3.7 Ixemul.library installeren</H3>
+<P>
+Ixemul.library in der Mindestversion 45.0 installieren.
+Hier muss ich auf die begleitende Installationsanweisung
+verweisen. :-)
+</P>
+<H3>3.8 Enviroment Variablen</H3>
+<P>
+Die env variable TMPDIR muss gesetzt sein damit nmbd funktioniert,
+Vorgabe ist T:
+</P>
+<H3>4. Konfigurieren</H3>
+<P>
+Nur der abschliessende Teil :-) Die Konfiguration erfolgt in
+AmiTCP:samba/lib/smb.conf.
+</P>
+<P>
+Diese Datei ist in mehreren Sektionen unterteilt, diese Sektionen
+werden mit der Zeichen [] eingeleitet. [global] steht f&uuml;r
+allgemein g&uuml;ltige Parameter. Was hier eingetragen wird,
+gilt f&uuml;r alle Abschnitte. Zum Gl&uuml;ck ist hier sehr viel
+vordefiniert (mit Kommentartext). Wichtig ist, das man seine
+Arbeitsgruppe in der Zeile &quot;workgroup=&quot; eintr&auml;gt. Nur
+Rechner der gleichen Arbeitsgruppe k&ouml;nnen Freigaben
+gegenseiting nutzen.
+</P>
+<P>
+Nun erfolgen die eigentlichen Freigaben. Jede Freigabe
+wird mit [Freigabenamen] definiert.
+</P>
+<P>
+Danach erfolgen die Parameter, die fast selbsterkl&auml;rend sind.
+</P>
+<P>
+Hier ein Beispiel aus meiner smb.conf:
+</P>
+<PRE>
+[Daten]
+  comment = Platte DH2
+  path = /DH2/
+  read only = no
+  public = yes
+  browsable = yes
+</PRE>
+<P>
+Freigabenamen ist &quot;Daten&quot;.
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">&quot;comment&quot;&nbsp;</TD><TD VALIGN="TOP">ist der Text, der im Browser als Begleittext erscheint&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&quot;path&quot;&nbsp;</TD><TD VALIGN="TOP">zeigt auf die eigentliche Freigabe. Hier ist mein&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">Laufwerk DH2 freigegeben.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&quot;read only&quot;&nbsp;</TD><TD VALIGN="TOP">ist selbsterkl&auml;rend, &quot;read only = no&quot; bedeutet das&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">auch geschrieben werden kann.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&quot;public&quot;&nbsp;</TD><TD VALIGN="TOP">bedeutet, ob ein Benutzer/passwort abgefragt werden soll.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">Bei &quot;public=yes&quot; kann jeder Rechner in der Arbeitsgruppe&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">hierauf zugreifen.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&quot;browsable&quot;&nbsp;</TD><TD VALIGN="TOP">meint, ob die Freigabe im Browser mitgef&uuml;hrt wird.&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">Wenn &quot;browsable&quot; auf &quot;no&quot; steht, muss man die Freigabe&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">zum Verbinden kennen!&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Wenn nun alle definiert sind, AmiTCP starten mit Startnet.
+</P>
+<H3>5.testen :-)</H3>
+<P>
+Mit dem smbclient in AmiTCP:samba/bin kann ich nun auf Freigaben
+anderer Rechner zugreifen. Zum ersten Testen lassen wir
+uns unsere eigenen auflisten mit:
+</P>
+<PRE>
+    AmiTCP:samba/bin/smbclient -L Rechername
+</PRE>
+<P>
+Rechnername steht f&uuml;r den Namen, der in Startnet eingetragen ist.
+Bei mir A4000.
+</P>
+<P>
+Jetzt sollte so was in der Art erscheinen:
+</P>
+<PRE>
+ Added interface ip=192.168.174.4 bcast=192.168.174.7 nmask=255.255.255.248
+ Server time is Sat Oct 30 19:45:55 1999
+ Timezone is UTC+0.0
+ Domain=[MEINE] OS=[Unix] Server=[Samba 1.9.16p9]
+
+ Server=[a4000] User=[wb] Workgroup=[MEINE] Domain=[MEINE]
+
+    Sharename      Type      Comment
+    ---------      ----      -------
+    Daten          Disk      Platte DH2
+    homes          Disk      Home directories
+    IPC$           IPC       IPC Service (My Amiga)
+    wb             Disk      Home directories
+
+
+   This machine has a browse list:
+
+    Server               Comment
+    ---------            -------
+    A4000                My Amiga
+
+
+   This machine has a workgroup list:
+
+    Workgroup            Master
+    ---------            -------
+    MEINE                A4000
+</PRE>
+<P>
+Gl&uuml;ckwunsch :-) Samba l&auml;uft schon mal. Wenn nicht, noch mal alles
+Schritt f&uuml;r Schritt durchgehen.
+</P>
+<P>
+Alles weitere im zweiten Teil.
+</P>
+<P>
+to by continued......
+</P>
+<P>
+Werner Brennecke &lt;<A HREF="mailto:wb@pag.mayn.de">wb@pag.mayn.de</A>&gt;&laquo;
+</P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops1.html"><IMG SRC="../menu/pfeil_links.gif" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+<A HREF="Workshops3.html"><IMG SRC="../menu/pfeil_rechts.gif" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

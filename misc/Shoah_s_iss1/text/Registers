@@ -1,0 +1,93 @@
+@Database SHOAH.s.guide
+@Node MAIN "Registers"
+Registers ( Major stuff now ).
+
+Please make sure you understand this bit before moving on, it's the basis for
+nearly everything else !
+
+The 680x0 processor ( The CPU, in old Amigas you'll have a 68000, in an A1200
+you'll have a 68020, etc. ) has parts to it called registers, just pretend
+they're special bits of memory.
+
+There are 8 data registers and 8 address registers, but what the hell does
+that mean ? Well the data registers ( d0-d7 ) are a storage space for data
+( No honestly ) and the address registers ( a0-a6 ) are for, well try and
+guess. Hang on, a0-a6, where's a7 ? Well this points to something called a
+stack ( A stack is just a short bit of memory for storing odds and ends
+which a program needs, trust me it'll all fall into place soon ), and is
+known as the stack pointer ( @{"SP" link SHOAH-SP} ) funnily enough.
+
+Another register is the program counter ( PC ) which tells the computer
+which "line number" we're on.
+
+Yet another ( The last ) register is a 16bit ( All the others are 32bit ) one
+and is called the status register ( @{"SR" link SHOAH-SR} ) and contains information about all
+kinds of things.
+@Endnode
+
+@Node SHOAH-SP "Registers"
+The Stack Pointer ( SP ).
+	Don't mess around with this register ( a7 ). It points to a small
+        list of memory ( Usually 4096 bytes, have a look at a tool icon on
+	your Workbench ) in which you can store all types of information
+	( Such as the SR, d0-d7, a0-a6 and the PC ).
+	Just to complicate matters further, there are two types of stack
+	pointer, the User Stack Pointer ( USP ) and a System Stack Pointer
+	( SSP ), although you don't really have to worry about the difference
+	at the moment.
+@Endnode
+
+@Node SHOAH-SR "Registers"
+The Status Register ( SR ).
+	This is quite complicated ( Oh good ) compared to the other registers
+	, but luckily you won't have to give a toss about it's contents at
+	the  moment ! ( But for the curious amongst you,...
+
+
+        bit:  15  14  13  12  11  10   9   8   7   6   5   4   3   2   1   0
+	--------------------------------------------------------------------
+	Name:  T   -   S   -   -  I2  I1  I0   -   -   -   X   N   Z   V   C
+
+
+	Bit:	Name:		But what does it do ?
+	--------------------------------------------------------------------
+	0	C (Carry)	Carry flag, used by maths and shift
+				instruction.
+
+	1	V (Overflow)	Like the carry flag, tells you if you've got
+				a negative/postive number.
+
+	2	Z (Zero)	Set if some operation results in 0.
+
+	3	N (Negative)	This bit is set if an operation results in a
+				negative value.
+
+	4	X (Extended)	Also like the carry flag.
+
+	5	-		Not Used ( On 68000 ).
+
+	6	-		Not Used ( On 68000 ).
+
+	7	-		Not Used ( On 68000 ).
+
+	8	I0		The following three bits are for masking the
+
+	9	I1		various interrupt levels, between 0 - 7.
+
+	10	I2
+
+	11	-		Not Used ( On 68000 ).
+
+	12	-		Not Used ( On 68000 ).
+
+	13	S (Supervisor)	If 0 then the processor runs in User mode, if
+				1 then run in Supervisor mode.
+
+	14	-		Not Used ( On 68000 ).
+
+	15	T (Trace)	This bit is for single stepping the code, ie
+				for debugging.
+	--------------------------------------------------------------------
+
+	so you happy now ? ).
+@Endnode

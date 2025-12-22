@@ -1,0 +1,63 @@
+<HTML>
+
+<HEAD>
+
+<TITLE> </TITLE>
+
+</HEAD>
+
+<BODY bgcolor=turquoise text=#000000 link=#0000ff vlink=#ff0000 alink=#ff9900>
+
+<table>
+<tr>
+ <td><b> Name:                
+ <td>Andreas Guldner
+</tr>
+<tr>
+ <td><b> Pseudonym:           
+ <td>-
+</tr>
+<tr>
+ <td><b> Geburtsdatum:        
+ <td>06.01.1971
+</tr>
+<tr>
+ <td><b> Wohnort:             
+ <td>Landsberg am Lech (Bayern, ca. 40 km südl. v. Augsburg)
+</tr>
+<tr>
+ <td valign=top><b> Anschrift:           
+ <td>Augsburgerstr. 16, 86899 Landsberg, Tel. 08191/47238 (Koch=Oma)
+</tr>
+<tr>
+ <td valign=top><b> Hardware:            
+ <td>A 4000 (Micronik Big Tower), OS 3.0, 14 MB Ram<br>
+                      PPC 604e/200 Mhz. + 68060/50 Mhz + 32 MB 64bit-Ram<br>
+                      HD 120 MB Seagate ST3144 + HD 1.2 GB Seagate ST51270<br>
+                      HD 540 MB Quantum Maverick (SCSI)<br>
+                      2x-CD-ROM Toshiba XM3401b (SCSI)<br>
+                      14,4x-CD-ROM Toshiba XM3801b (SCSI)<br>
+                      Grafikkarte Cybervision 64 4 MB<br>
+                      17"-Monitor M 1764<br>
+                      Drucker Canon BJC 4200<br>
+                      HD-Laufw. (Chinon FZ357a) + DD-Laufw. (Chinon FZ357)<br>
+<br>
+                      A 500, 2 MB Ram, ext. DD-Laufw., M 1564 Monitor<br>
+<br>
+                      C 64 II + Floppy 1541 II + Monitor<br>
+                      Atari VCS 2600, u.v.a.m.
+</tr>
+<tr>
+ <td valign=top><b> Interessen:          
+ <td>- Spiele (Rollensp., Strategie, Flipper u.v.a.m.)<br>
+                      - WB verändern, CDs durchsuchen, Progs testen<br>
+                      - Compis aufrüsten - über Compis reden (u.v.a.m.)
+</tr>
+</table>
+
+
+
+
+</BODY>
+
+</HTML>

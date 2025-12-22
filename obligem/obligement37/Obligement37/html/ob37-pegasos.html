@@ -1,0 +1,630 @@
+<html>
+ <head>
+  <title>Hardware : le Pegasos</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="5,1,756,80" href="http://obligement.free.fr">
+  <area shape="rect" coords="11,87,74,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="88,87,184,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="200,87,302,105" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="316,87,432,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="442,87,512,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="526,87,630,105" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="648,87,746,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#113333" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Hardware : le Pegasos </font>par&nbsp;<a href="mailto:niffo@free.fr">Nicolas Gressard</a></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">Introduction</font><br><br>
+
+Comme chacun sait, le Pegasos est la nouvelle alternative à l'Amiga classique tel que nous le connaissons,
+proposée par l'équipe Genesi/BPlan/MorphOS. Alors que Amiga Inc n'a pas encore pu montrer son nouveau 
+système actuellement en préparation, il est d'ores et déjà possible d'acheter et d'utiliser le Pegasos 
+sous MorphOS.<br><br>
+
+<font size="+1" color="#ccbb33">1. Présentation matérielle</font><br><br>
+
+<font size="+1" color="#ccbb33">1.1 La carte mère</font><br><br>
+
+La carte mère du Pegasos est une carte au format micro ATX. Elle est minuscule puisqu'elle mesure seulement
+236mm x 172mm. Elle est architecturée autour d'un processeur de type PowerPC et d'un chipset constitué 
+de deux puces appelées NorthBridge et SouthBridge. Sur une carte mère, le NorthBridge - ici nommé "Articia"
+et fourni par MAI (eh oui, le constructeur de la carte mère de l'AmigaOne) - s'occupe de la gestion du
+processeur, de la mémoire, du bus PCI, du port AGP et du cache de niveau 2. Le SouthBridge - provenant ici 
+de chez VIA - intègre quant à lui la gestion des entrées/sorties, du son, de l'USB, de l'IDE, etc.
+La version de la carte mère décrite ici est la "BetaTesteur 2" référencée "1A1 (public release)", c'est à 
+dire la version actuelle. Voici la liste de ce qu'elle intègre en standard&nbsp;:<br><br>
+
+- 1 slot CPU pouvant accepter une carte fille pouvant comporter un PowerPC G3 (entrée de gamme&nbsp;: 600 Mhz) jusqu'à 2 PowerPC G4 (800 Mhz et plus),<br>
+- 2 slots SDRAM pouvant accepter des barrettes mémoire au standard PC133 acceptant jusqu'à 2 Go de Ram,<br>
+- 3 slots PCI dont un acceptant une carte fille pour prolonger le bus horizontalement ("rizer card"),<br>
+- 1 slot AGP x2,<br>
+- 2 bus IDE ATA-100,<br>
+- 1 port floppy (non géré par MorphOS pour l'instant),<br>
+- 1 port parallèle Centronic,<br>
+- 1 port série RS232,<br>
+- 1 port joystick type PC,<br>
+- 1 entrée son "line in",<br>
+- 1 sortie son "line out",<br>
+- 1 entrée "microphone",<br>
+- 1 sortie audio numérique optique,<br>
+- 1 prise clavier de type PS/2,<br>
+- 1 prise souris de type PS/2,<br>
+- 1 port Ethernet 10/100 Mb Realtek Phyceiver 8201,<br>
+- 4 ports USB VIA 8231 (2 internes, 2 externes),<br>
+- 2 port Firewire (IEEE 1394 VIA VT6306) externes,<br>
+- 1 port Firewire (IEEE 1394 VIA VT6306) interne,<br>
+- 1 entrée micro interne,<br>
+- 1 entrée son "vid" interne,<br>
+- 1 entrée son "aux" interne,<br>
+- 1 entrée son haut-parleurs,<br>
+- 1 connecteur pour interface infra-rouge IRDA interne,<br><br>
+
+Voici une photo de la <a href="../gfx/cartepegasos.jpg" target="_blank">carte mère</a><br><br>
+
+La seule différence visuelle permettant de repérer les versions "Betatesteur 1" et "Betatesteur 2" est la présence 
+d'un correctif matériel situé sous le NorthBridge Articia constitué de 2 petites puces. Ce correctif a été mis en 
+place suite à la découverte d'un bogue dans la puce Articia qui avait comme conséquences un mauvais fonctionnement
+de l'IDE (corruption de fichiers !), du réseau et d'autres fonctions liées principalement au DMA (Direct Memory Access).<br><br>
+
+Le processeur embarqué sur la carte mère étant un PowerPC, il est complètement erroné de comparer sa fréquence 
+d'horloge (ici 600 MHz) à la fréquence d'horloge cadençant les processeurs des PC afin d'en déduire sa puissance.
+Il s'agit là du même type de processeurs que ceux utilisés dans les ordinateurs Macintosh. Pour avoir une idée 
+des performance de la machine, référez-vous à la dernière partie de cet article&nbsp;: les benchmarks.<br><br>
+
+<font size="+1" color="#ccbb33">1.2 Compatibilité matérielle liée au hard</font><br><br>
+
+Cette carte mère aux normes de tous les standards actuels est compatible avec la majorité des périphériques IDE,
+floppy, PCI, AGP, Ram, Firewire, USB du marché. Seul le slot CPU reste propriétaire.
+Alors que le support de ces périphériques est essentiellement un problème lié à l'existence de pilotes, 
+certaines incompatibilités matérielles sont à noter. En effet, toutes les barrettes mémoire de type SDRam 
+ne sont pas acceptées. Il est dit sur le site officiel (et dans un parfait franglais) que les barrettes 
+acceptées sont&nbsp;:<br><br>
+
+- Buffered 256 MB or 1 GB SDRAMs<br>
+- NO hyperpage SDRAMs (most 512 MB are hyperpage, beware)<br>
+- Certaines "unbuffered 128MB SDRAMs" semblent fonctionner<br><br>
+
+Si vous souhaitez assembler vous-même votre Pegasos, c'est certainement sur ce point que vous aurez le plus de
+soucis. D'autre part, certains périphériques IDE comme des disques dur ou des lecteurs de cédé refusent de 
+démarrer sur les bus IDE du Pegasos. J'ai personnellement fait l'expérience d'un lecteur "AOpen 56X-MTRP" 
+refusant parfaitement de démarrer (tiroir bloqué), qu'il soit en maître, esclave, seul ou accompagné sur un 
+des deux bus IDE. Paradoxalement, quelqu'un m'a rapporté avoir fait fonctionner sans problèmes ce même 
+modèle de lecteur.<br><br>
+
+<font size="+1" color="#ccbb33">1.3 Compatibilité matérielle liée au soft</font><br><br>
+
+Comme je le disais précédemment, la compatibilité liée au soft (système d'exploitation) est directement 
+dépendante des pilotes existants. Ainsi, sous MorphOS, vous aurez le choix entre un nombre restreint de 
+cartes graphiques soit&nbsp;:<br><br>
+
+- Les cartes à base de puce Permedia2,<br>
+- Les cartes Voodoo3, Voodoo4 et Voodoo5,<br>
+- Les cartes à base de puce SIS 6326,<br>
+- Les cartes à base de puce ATI Radeon 7000, 8000, 9000.<br><br>
+
+En matière de carte réseau, sont supportées&nbsp;:<br>
+- L'interface Ethernet intégrée (Realtek Phyceiver 8201),<br>
+- Les cartes à base de puce RTL 8139 et RTL 8029AS.<br><br>
+
+En ce qui concerne les cartes SCSI, les seules supportées pour l'instant sont celles utilisant une
+puce Symbios.<br><br>
+
+Le Pegasos pouvant également être utilisé sous Linux, les cartes supportées sous ce système 
+d'exploitation sont celles pour lesquelles il existe un pilote.<br><br>
+
+<font size="+1" color="#ccbb33">1.4 Prix</font><br><br>
+
+Comme nous l'avons vu, la machine dispose de composants standarts de l'industrie et de ce fait, le Pegasos
+peut être considéré comme une machine bon marché. Les revendeurs proposent de larges éventails de configurations
+possibles, en voici quelques exemples : <br><br>
+
+<b>- Carte mère :</b> (chez Software Paradise)<br>
+Carte mère Pegasos avec carte processeur G3/600 MHz (649 Euros).<br><br>
+
+<b>- Pegasos "Silver" :</b> (chez Software Paradise)<br>
+Carte mère Pegasos dans un boîtier moyen tour Silver, carte processeur
+G3/600 MHz, carte graphique ATI Radeon 7200 64 MO DDR, 128 Mo SDRam, disque dur 40 Go UDMA-100
+7200 tours, lecteur de DVD x16 x48, clavier, souris mollette PS2 (1049 Euros).<br><br>
+
+<b>- Gamme Entry :</b> (chez APS)<br>
+Carte mère Pegasos dans un boitier mini tour, carte processeur G3/600 MHz, carte graphique Voodoo3 3000 16 Mo, disque dur 40 Go, Ram 128 Mo,
+CD-ROM 52x, Clavier et souris PS/2 (930 Euros).<br><br>
+
+<b>- Gamme Excellence Plus :</b> (chez APS)<br>
+Carte mère Pegasos dans un boitier tour aluminium, carte processeur G3/600 MHz, carte graphique Radeon 8500 128 Mo,
+disque dur 80 Go, Ram 512 Mo, lecteur combi DVD-ROM/graveur CD Plextor, clavier et souris optique sans fil (1670 Euros).<br><br>
+
+<b>- Configuration "Basic" :</b> (chez Pegasos-Suisse)<br>
+Carte mère Pegasos dans un boîtier tower REL 26 luxe, disque dur Seagate 7200 tours 40 Go, floppy DD, lecteur DVD
+16x/48x, ATI Radeon 7000 TV 64 Mo, 256 Mo SDRam, clavier, souris Logitech, sound-system Logitech Z-340 (1080 Euros).<br><br>
+
+<b>- Configuration "Premium" :</b> (chez Pegasos-Suisse)<br>
+Carte mère Pegasos dans un boîtier tower REL 26 luxe, disque dur Seagate 7200 tours 80 Go, floppy DD, lecteur DVD
+16x/48x, graveur CDR/CDRW, ATI Radeon 8500 128 Mo, 512 Mo SDRam, clavier, souris Logitech, sound-system Logitech Z-340 (1455 Euros).<br><br>
+
+
+<font size="+1" color="#ccbb33">2. Présentation logicielle</font><br><br>
+
+<font size="+1" color="#ccbb33">2.1 OpenFirmware</font> (voir <a href="../gfx/firmware.jpg" target="_blank">capture d'écran</a>)<br><br>
+
+Le Firmware est l'équivalent de ce que certains d'entre vous appellent le "BIOS" sur les PC avec un rôle 
+plus important tout de même. En effet, le Firmware intègre les fonctionnalités du BIOS comme la 
+reconnaissance et l'initialisation du matériel, mais aussi celles d'un bootloader tel que "Lilo" 
+ou autre "Grub". L'OpenFirmware est un véritable petit système d'exploitation dont la gestion se fait en ligne de commande.
+Si votre Pegasos n'a jamais été paramétré, lors de son démarrage vous vous retrouvez dans le Firmware avec une invite 
+de commande du type "ok _". La philosophie de son utilisation se rapproche du fonctionnement des systèmes de 
+type Unix, c'est à dire que les périphériques sont assimilés à une hiérarchie de répertoires. Toujours comme 
+sous Unix, vous pouvez afficher le contenu d'un répertoire grâce à la commande "ls". Pour afficher la liste 
+des périphériques reconnus par le Firmware, vous pouvez taper "show-devs". Si vous voulez voir les périphériques 
+PCI reconnus, tapez "cd /pci" puis "ls". Si vous souhaitez voir les périphériques IDE reconnus, entrez dans la 
+branche IDE en tapant "cd ide" puis "ls", vous verrez sans doute s'afficher votre lecteur cédé et votre disque dur.
+Là ou vous allez vous apercevoir que cela va beaucoup plus loin, c'est lorsque vous allez comprendre que le 
+Firmware est capable de voir les partitions et même les fichiers présents sur les partitions ! Ainsi vous pouvez 
+taper "cd disk@0,0" pour entrer sur votre disque dur (disque 0 du bus IDE 0). En tapant "ls" vous allez voir 
+s'afficher la liste des partitions de votre disque dur, et vous pouvez aller encore plus loin si le type de 
+partition est reconnu par le Firmware en entrant carrément dans la partition et en listant les fichiers 
+contenus sur cette dernière toujours grâce à la commande "ls".<br><br>
+
+Pour booter sur le cédé MorphOS, vous devrez par exemple taper "boot /pci/ide/cd boot.img", "boot.img" étant 
+le nom du kernel à exécuter sur le cédé.<br><br>
+
+Un certain nombre de variables d'environnement sauvegardées en nv-ram (Ram non volatile) sont présentes dans 
+le Firmware. Elles vont par exemple servir à définir le périphérique et le fichier de boot par défaut.<br>
+- "setenv boot-file boot.img" fixe le fichier boot.img comme étant le fichier de boot par défaut.<br>
+- "setenv boot-device /pci/ide/disk@0,0:0" fixe la première partition du premier disque du premier port IDE comme étant la partition de boot par défaut.<br>
+- "setenv auto-boot? true" autorise le boot automatique sur le périphérique par défaut.<br><br>
+
+Vous aurez compris que pour l'instant, la partition de boot doit être de type FFS, ce qui implique également
+qu'elle ne pourra pas faire plus de 2 Go. Rien ne vous empêche par la suite d'installer le support d'un 
+autre FileSystem sous MorphOS et d'utiliser des partitions autres que FFS pouvant gérer plus de 2 Go.<br><br>
+
+Vous pouvez également essayer la commande HELP qui vous guidera à travers la liste des commandes disponibles.<br><br>
+
+
+<font size="+1" color="#ccbb33">2.2 Installation "from scratch"</font><br><br>
+
+Pour installer MorphOS sur un disque vierge, vous devez donc procéder comme suit&nbsp;:<br><br>
+
+- Booter sur le cédé fourni à partir du Fimware (voir ci-avant en 2.1),<br>
+- Sous MorphOS, aller dans le répertoire "Tools" et lancer "SCSIConfig",<br>
+- Créer une partition FFS pour le système (512 Mo par exemple),<br>
+- Utiliser l'option "Format Disk" du menu "utilities" de Ambient, le remplaçant du WorkBench, pour formater la partition (les partitions non formatées n'apparaissent pas sur le bureau),<br>
+- Ouvrir un shell à partir du menu "Ambient" de Ambient,<br>
+- Recopier l'ensemble du cédé sur le HD avec la commande "copy cd0: dh0: all",<br>
+- Remettre les attributs des fichiers en "rwed" en tapant la commande "protect #? all +rwed" à partir de dh0:<br>
+- Rendre auto-bootable la partition à partir du Firmware (voir ci-avant en 2.1).<br><br>
+
+
+<font size="+1" color="#ccbb33">2.3 MorphOS</font><br><br>
+
+MorphOS est un système d'exploitation "AmigaOS-Like" natif PowerPC. Il est compatible avec l'AmigaOS au niveau 
+API et intègre un compilateur 68k "just in time" (JIT). Tout cela signifie que le système est capable 
+d'exécuter les anciens programmes Amiga 68xxx par émulation et recompilation au vol, ce qui confère à cette 
+fonctionnalité une incroyable efficacité. Ce procédé est, entre-autres, celui utilisé par l'émulateur Amiga
+"UAE" sur PC et est également celui qui a été utilisé sur MacOS pour permettre la transition en douceur des 
+processeurs 68xxx vers les processeurs PowerPC. Plus fort, MorphOS est capable d'exécuter de manière 
+complètement transparente les programmes écrits pour les cartes accélératrices PowerPC sur Amiga classique
+quelque soit leur format&nbsp;: WarpUP ou PowerUP ! Encore plus fort, MorphOS dispose d'une émulation Warp3D 
+permettant d'utiliser les logiciels faisant appel aux fonctions de cette API 3D.
+La compatibilité est dans l'ensemble très bonne, pour peu évidemment, que l'on n'utilise pas des programmes 
+accédant directement aux spécificités matérielles des Amiga comme par exemple les circuits vidéo ou sonores.
+L'idéal reste bien évidemment d'utiliser des programmes directement compilés pour MorphOS s'il sont disponibles.
+Ces prouesses techniques passées en revue, il faut cependant être conscient que MorphOS est un OS qui n'est 
+pas terminé ! Le premier problème auquel on se heurte lorsque qu'on le met en place est l'instabilité du 
+remplaçant du Workbench qui est fourni&nbsp;: Ambient_1.10. Il faut donc soit faire sans 
+(Magellan, Scalos ?), soit réussir à s'en procurer une version stable car elles existent (NDLR : une mise à jour
+de l'ensemble du système est prévue pour très bientôt, elle résoudra le problème d'instabilité 
+ce cette version-ci d'Ambient).<br>
+D'autre part, une fois le système installé, vous vous apercevrez très vite qu'il manque des fonctionnalités 
+indispensables comme une pile IP ou même un simple éditeur de texte et il faudra, pour l'instant, 
+très souvent avoir recourt à votre ancien système et/ou à Aminet afin d'y récupérer des utilitaires et 
+morceaux d'OS (libraries, etc.). Même s'il est prévu à terme que la plupart de ces fonctionnalités manquantes 
+fassent partie de l'OS, vous devrez, pour l'instant, pas mal bricoler avant d'avoir un système à peu près 
+fonctionnel. J'utilise personnellement une carte vidéo de type SIS-6326, et j'ai pas mal de logiciels, et 
+en particulier les logiciels faisant appel à Warp3D, qui plantent à cause de bogues présents dans le pilote.
+Là encore, je sais que le problème a été résolu, mais que le correctif n'est pas encore distribué. De plus,
+la 3D accélérée fonctionne bien avec les cartes de type Voodoo tandis qu'elle n'est pas encore supportée 
+sur les cartes de type ATI Radeon.<br><br>
+
+Les personnes habituées à utiliser un Amiga classique ne seront absolument pas dépaysées, puisque MorphOS 
+fonctionne exactement comme l'AmigaOS. Cependant, afin de ne pas mélanger les composants des deux systèmes, 
+les répertoires "Libs", "Devs", "C"  etc. se trouvent eux-mêmes dans un répertoire nommé "MorphOS". Les 
+répertoires du même nom situés à la racine du disque continuent à exister et à être utilisés, mais sont 
+vide lors de l'installation de l'OS. C'est dans ces derniers qu'il est recommandé de mettre les fichiers 
+n'appartenant pas à MorphOS.<br><br>
+
+Quels sont les logiciels fourni avec le système ? Aucun pour l'instant à part une version du navigateur
+Voyager. Côté système on retrouve CyberGraphX, MUI et AHI en standard. A terme, on devrait trouver les 
+logiciels suivant intégrés à MorphOS&nbsp;: AmiTCP 5, FroggerNG, APDF, TurboPrint, etc.<br><br>
+
+Cet article est avant tout un test du Pegasos, nous verrons plus en profondeur le système MorphOS
+dans un prochain numéro d'Obligement.<br><br>
+
+
+<font size="+1" color="#ccbb33">2.4 Linux</font><br><br>
+
+Je n'ai personnellement pas installé Linux sur ma machine, mais sachez qu'il est tout à fait possible 
+d'utiliser ce système d'exploitation dans sa version PowerPC sur le Pegasos. Normalement, toutes les 
+distributions sont installables pour peu que l'on utilise le kernel spécifique. Cependant, une distribution 
+spéciale Pegasos est en train d'être mise au point par l'équipe de Genesi.<br><br>
+
+
+<font size="+1" color="#ccbb33">3. Benchmarks</font><br><br>
+
+Les tests suivants sont donnés avec le logiciel SysSpeed, avec une résolution de 800x600 pour les tests
+graphiques. SysSpeed est, pour l'instant du seul outil qui puisse
+fonctionner sous tous les systèmes Amiga. Mais attention : de nombreux tests ne fonctionnent pas ou donnent
+des résultats fantaisistes, il faut donc prendre ces chiffres avec des pincettes, ce ne sont que des données
+numériques qui ne sont pas toujours vérifier dans la pratique (vitesse des logiciels, etc.).<br><br>
+
+Les tests sont réalisés sur 3 machines : <br><br>
+
+<b>Pegasos :</b> PowerPC G3/600 MHz, carte graphique SIS-6326 sur AGPx2, 256 Mo de SDRam.<br>
+<b>Amithlon :</b> Athlon 1.46 GHz, carte graphique GeForce 3 sur AGPx4, 256 Mo de SDRam DDR.<br>
+<b>Amiga PowerPC :</b> PowerPC 603e/240 MHz et 68040/25 MHz, carte graphique Permedia2 sur bus BlizzardPPC, 96 Mo de Ram SIMM EDO.<br><br>
+
+<table border="1" align="center" width="100%">
+ <tr>
+  <td nowrap align="center" width="100"><font color="#ccbb33"><b>Test</b></font></td>
+  <td nowrap align="center" width="100"><font color="#ccbb33"><b>Pegasos</b></font></td>
+  <td nowrap align="center" width="100"><font color="#ccbb33"><b>Amithlon</b></font></td>
+  <td nowrap align="center" width="100"><font color="#ccbb33"><b>Amiga PowerPC</b></font></td>
+ </tr>
+ <tr>
+  <td colspan=4 nowrap align="left"><b>Intuition - résultats en opérations par seconde</b></td>
+ </tr
+  <tr>
+  <td nowrap align="right">OpenWin16</td>
+  <td nowrap align="right">69</td>
+  <td nowrap align="right">8</td>
+  <td nowrap align="right">12</td>
+ </tr>
+  <tr>
+  <td nowrap align="right">OpenWin256</td>
+  <td nowrap align="right">65</td>
+  <td nowrap align="right">8</td>
+  <td nowrap align="right">12</td>
+ </tr>
+  <tr>
+  <td nowrap align="right">OpenWinHi</td>
+  <td nowrap align="right">54</td>
+  <td nowrap align="right">50</td>
+  <td nowrap align="right">12</td>
+ </tr>
+  <tr>
+  <td nowrap align="right">OpenWinTru</td>
+  <td nowrap align="right">38</td>
+  <td nowrap align="right">8</td>
+  <td nowrap align="right">9</td>
+ </tr>
+  <tr>
+  <td nowrap align="right">WinLayer16</td>
+  <td nowrap align="right">134</td>
+  <td nowrap align="right">33</td>
+  <td nowrap align="right">3</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">WinLayer256</td>
+  <td nowrap align="right">120</td>
+  <td nowrap align="right">33</td>
+  <td nowrap align="right">10</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">WinLayerHi</td>
+  <td nowrap align="right">74</td>
+  <td nowrap align="right">198</td>
+  <td nowrap align="right">9</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">WinLayerTru</td>
+  <td nowrap align="right">44</td>
+  <td nowrap align="right">33</td>
+  <td nowrap align="right">5</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">SizeWin16</td>
+  <td nowrap align="right">2911</td>
+  <td nowrap align="right">861</td>
+  <td nowrap align="right">59</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">SizeWin256</td>
+  <td nowrap align="right">1774</td>
+  <td nowrap align="right">983</td>
+  <td nowrap align="right">49</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">SizeWinHi</td>
+  <td nowrap align="right">1359</td>
+  <td nowrap align="right">875</td>
+  <td nowrap align="right">54</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">SizeWinTru</td>
+  <td nowrap align="right">314</td>
+  <td nowrap align="right">728</td>
+  <td nowrap align="right">54</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">MoveWin16</td>
+  <td nowrap align="right">2301</td>
+  <td nowrap align="right">3905</td>
+  <td nowrap align="right">200</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">MoveWin256</td>
+  <td nowrap align="right">1182</td>
+  <td nowrap align="right">3167</td>
+  <td nowrap align="right">202</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">MoveWinHi</td>
+  <td nowrap align="right">2096</td>
+  <td nowrap align="right">2755</td>
+  <td nowrap align="right">163</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">MoveWinTru</td>
+  <td nowrap align="right">1433</td>
+  <td nowrap align="right">1849</td>
+  <td nowrap align="right">130</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">ConOutP16</td>
+  <td nowrap align="right">280</td>
+  <td nowrap align="right">1749</td>
+  <td nowrap align="right">87</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">ConOutP256</td>
+  <td nowrap align="right">279</td>
+  <td nowrap align="right">1737</td>
+  <td nowrap align="right">86</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">ConOutPHi</td>
+  <td nowrap align="right">138</td>
+  <td nowrap align="right">898</td>
+  <td nowrap align="right">69</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">ConOutPTru</td>
+  <td nowrap align="right">76</td>
+  <td nowrap align="right">563</td>
+  <td nowrap align="right">52</td>
+ </tr>
+ <tr>
+  <td colspan=4 nowrap align="left"><b>Graphic - résultats en opérations par seconde</b></td>
+ </tr>
+ <tr>
+  <td nowrap align="right">PrintTxt16</td>
+  <td nowrap align="right">46981</td>
+  <td nowrap align="right">59549</td>
+  <td nowrap align="right">1137</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">PrintTxt256</td>
+  <td nowrap align="right">46979</td>
+  <td nowrap align="right">59468</td>
+  <td nowrap align="right">2082</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">PrintTxtHi</td>
+  <td nowrap align="right">26255</td>
+  <td nowrap align="right">58017</td>
+  <td nowrap align="right">1895</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">PrintTxtTru</td>
+  <td nowrap align="right">1610</td>
+  <td nowrap align="right">58905</td>
+  <td nowrap align="right">1936</td>
+ </tr>
+  <tr>
+  <td nowrap align="right">RectFill16</td>
+  <td nowrap align="right">43835</td>
+  <td nowrap align="right">109444</td>
+  <td nowrap align="right">6154</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">RectFill256</td>
+  <td nowrap align="right">43837</td>
+  <td nowrap align="right">109688</td>
+  <td nowrap align="right">6213</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">RectFillHi</td>
+  <td nowrap align="right">20986</td>
+  <td nowrap align="right">101927</td>
+  <td nowrap align="right">5257</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">RectFillTru</td>
+  <td nowrap align="right">12526</td>
+  <td nowrap align="right">69477</td>
+  <td nowrap align="right">3101</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">WrtPixel16</td>
+  <td nowrap align="right">1014126</td>
+  <td nowrap align="right">819659</td>
+  <td nowrap align="right">60017</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">WrtPixel256</td>
+  <td nowrap align="right">1014146</td>
+  <td nowrap align="right">879786</td>
+  <td nowrap align="right">59908</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">WrtPixelHi</td>
+  <td nowrap align="right">596840</td>
+  <td nowrap align="right">794343</td>
+  <td nowrap align="right">46687</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">WrtPixelTru</td>
+  <td nowrap align="right">597359</td>
+  <td nowrap align="right">879950</td>
+  <td nowrap align="right">47491</td>
+ </tr>
+ <tr>
+  <td colspan=4 nowrap align="left"><b>CPU/FPU 68k - résultats en millions d'opérations par seconde</b></td>
+ </tr>
+ <tr>
+  <td nowrap align="right">MIPS</td>
+  <td nowrap align="right">3208.70</td>
+  <td nowrap align="right">470.35</td>
+  <td nowrap align="right">17.88</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">MFLOPS</td>
+  <td nowrap align="right">300.81</td>
+  <td nowrap align="right">711.73</td>
+  <td nowrap align="right">6.55</td>
+ </tr>
+ <tr>
+  <td colspan=4 nowrap align="left"><b>CPU/FPU PowerPC - résultats en millions d'opérations par seconde</b></td>
+ </tr>
+ <tr>
+  <td nowrap align="right">MIPS</td>
+  <td nowrap align="right">688.73</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">295.29</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">MFLOPS</td>
+  <td nowrap align="right">566.30</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">182.75</td>
+ </tr>
+ <tr>
+  <td colspan=4 nowrap align="left"><b>PowerPC - résultats en Mo par seconde</b></td>
+ </tr>
+ <tr>
+  <td nowrap align="right">Readb</td>
+  <td nowrap align="right">277.85</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">77.11</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">Readh</td>
+  <td nowrap align="right">271.84</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">78.73</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">Readw</td>
+  <td nowrap align="right">262.49</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">78.78</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">Writeb</td>
+  <td nowrap align="right">122.43</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">73.70</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">Writeh</td>
+  <td nowrap align="right">87.75</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">54.17</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">Writew</td>
+  <td nowrap align="right">84.74</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">45.68</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">Copyb</td>
+  <td nowrap align="right">54.17</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">29.60</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">Copyh</td>
+  <td nowrap align="right">50.99</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">30.17</td>
+ </tr>
+ <tr>
+  <td nowrap align="right">Copyw</td>
+  <td nowrap align="right">47.92</td>
+  <td nowrap align="right"> - </td>
+  <td nowrap align="right">28.15</td>
+ </tr>
+
+</table>
+<br>
+
+Petite précision : le chiffre de 3208.70 Mips pour la vitesse du 68k pour le Pegasos est obtenu avec
+le compilteur JIT de MorphOS. L'émulation dite "static" n'offre que 39.90 Mips.<br><br>
+
+<b>Tests dans des cas pratiques :</b><br><br>
+
+Pour finir dans cette série de tests, voici des résultats obtenus dans des cas pratiques :<br><br>
+
+- WipEout 2097, rendu matériel, résolution 640x480 :<br>
+60 fps sur Pegasos G3/600 MHz + Voodoo3 (pilote 3D non-optimisé).<br>
+14 fps sur Amiga PowerPC + Permedia2.<br><br>
+
+- Heretic 2 et Shogo, rendu matériel, résolution 640x480 :<br>
+Sur Pegasos, entre 38 et 78 fps suivant les endroits (pilote 3D non-optimisé).<br>
+Sur Amiga PowerPC, entre 9 et 20 fps suivant les endroits.<br><br>
+
+- Quake 2, rendu logiciel, résolution 640x480 :<br>
+42 fps sur Pegasos.<br>
+8 fps sur Amiga PowerPC.<br><br>
+
+- Copie d'un fichier de 100 Mo entre 2 partitions SFS :<br>
+15 secondes sur Pegasos (soit 6.67 Mo/s).<br>
+2 minutes 12 secondes sur Amiga PowerPC (soit 0.76 Mo/s).<br><br>
+
+Note : la vitesse pour ce dernier test dépend de beaucoup de facteurs : fragmentation, RPM du disque dur, marque, etc.
+Adam Carrano nous annonce que son Pegasos, avec partitions SFS, met 49 secondes pour copier un fichier de 690 Mo entre
+2 partitions SFS (soit 14.08 Mo/s).<br><br> 
+
+<font size="+1" color="#ccbb33">Conclusion</font><br><br>
+
+Cette machine semble techniquement très prometteuse. La légèreté de son système lui donne une réactivité 
+complètement inégalée par les systèmes actuels. Sa réussite/longévité dépendra certainement de beaucoup 
+d'éléments sans rapport avec ses avantages techniques, mais souhaitons lui tout de même un avenir le 
+meilleur possible. Il faut aussi espérer que la guerre irraisonnée entre les deux acteurs du marché Amiga 
+n'aura pas raison d'eux avant même qu'ils puissent se faire connaître au grand public.<br>
+Une nouvelle version du Pegasos avec un matériel mis à jour (AGP x4, disponibilité du module G4 et bi-G4,...)
+arrivera courant 2003.<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

@@ -1,0 +1,865 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+<html>
+<head>
+   <title>AMIGA STORM => broj 7 => AS Special => Mala škola C-a</title>
+   <meta name="author" content="Davor Rivic (d_rivic@usa.net)">
+   <meta name="description" content="Hrvatski AMIGA casopis">
+   <meta name="keywords" content="Hrvatska, Amiga, casopis, STORM">
+   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-2">
+   <meta http-equiv="pragma" content="no-cache">
+   <meta http-equiv="expires" content="18-Feb-99">
+   <meta name="generator" content="CygnusEd Professional V4.2, Copyright Š 1987-1997 by CygnusSoft Software">
+</head>
+<body background="../gfx/background.jpg" link="blue" vlink="#ff00d6">
+<br>
+<table width="100%" border="1">
+<tr>
+<td bgcolor="#b43100" colspan="2">
+<font size="+2" color="#ffffff"><b><em>
+<center>
+Mala škola C-a
+<br>
+<font size="2">(3. dio)</font>
+</center>
+</em></b></font>
+</td>
+</tr>
+</table>
+<br>
+
+<!-- Mala skola C-a -->
+
+<br>
+
+<p>
+U prošlom broju su tipovi podataka u C-u samo ukratko spomenuti. Da bi se 
+(što prije) krenulo sa programiranjem bilo je dovoljno poznavati "int" tip.
+No, potrebno je i ostalim tipovima posvetiti dužnu pažnju.
+</p>
+<p>
+Najprije napomenimo da se u slučaju da "int" tip ne obezbjeđuje dovoljno 
+veliki opseg može koristiti tip "long int". Također, postoji tip "short 
+int", koji ima manji opseg od običnog "int"-a. U suštini "short int" zauzima 
+16 bita, "int" 16 ili 32 bita, a long najmanje 32 bita. Uvijek vrijedi da je 
+"short" &lt;= "int" &lt;= "long". Kod SAS C-a "short" je 16-obitan, a "int" i "long"
+su 32-bitni. Primjer:
+</p>
+<p>
+short int mali=5;<br>
+long int veliki;<br>
+</p>
+<p>
+Za rad s racionalnim (s pokretnim zarezom) koristi se tip "float" ili, 
+kada je potrebna još veća preciznost tip "double". Točni opseg ovih tipova 
+može  se pogledati u "float.h" fajlu. Rad sa racionalnim brojevima je dosta
+sporiji nego rad sa cijelim brojevima. Ako imate FPU situacija se donekle 
+popravlja, ali i dalje su cjelobrojni višestruko brži. Zato je poželjno 
+koristiti ih kad god je to moguće. Napišimo sada neki programčić:
+</p>
+<p>
+#include &lt;stdio.h&gt;<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float a,b;<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a=123e2;   // 123*10^2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b=34.746;<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf (" Zbroj je: %f ",a+b);<br>
+}<br>
+</p>
+<p>
+"%f" upozorava "printf" funkciju da se radi o parametru tipa "float". Ako 
+želimo da preciziramo oblik u kome treba ispisati broj stavljamo: "%a.bf", 
+gdje "a" označava ukupan broj znamenaka koje će se ispisati (računajući i
+decimalnu tocku!), a "b" broj decimala koje treba prikazati. Znači red
+</p>
+<p>
+printf ("Broj %10.3f\n",12345.766443);
+</p>
+<p>
+će ispisati:
+</p>
+<p>
+Broj 12345.766
+</p>
+<p>
+Kompajlirajte sada program. Može se desiti da se kompajler pobuni protiv 
+programa. To se dešava zato što za rad sa racionalnim brojevima postoji više 
+biblioteka. Da bi to ispravili startajte "scopts", idite u meni "code 
+options" i podesite korištenje odgovarajuće biblioteke (Math=...). Pošto je 
+sve proradilo kao što treba idemo dalje...
+</p>
+<p>
+Imamo zatim tip "char". Zauzima jedan bajt. Može biti predznačen (piše 
+se samo "char") ili nepredčnacen ("unsigned char"). Prvi ima opseg od -128 do 
++127, a drugi 0 do 255. Taj opseg je dovoljan za pamćenje znakova iz 
+loaklnog karakter seta, pa se uglavnom za to i koristi, mada je na 
+varijable tipa "char" moguće primjeniti i matematićke operacije. Dodijeliti 
+vrijednost varijabli ovog tipa možemo na više načina:
+</p>
+<p>
+#include &lt;stdio.h&gt;<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char c,d;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c=65;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;d='A';<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf ("c=%c kod c=%d   d= %c kod d=%d\n",c,c,d,d);<br>
+}<br>
+</p>
+<p>
+Dakle, najavili smo dvije varijable tipa "char", prvoj dodijelili vrijednost 65, a 
+drugoj smo dodijelili ASCII kod slova A (koji je također 65). Međutim, ako se 
+ovaj dio programa izvrši na nekom računalu koji ne koristi ASCII skup 
+znakova 'A' neće biti 65. Zato ako radimo sa znakovima bolje je koristiti 
+drugi nacin, jer je 'A' svuda 'A', a 65 nije svuda 'A'. Svrhu jednostrukog 
+navodnika ste naravno shvatili: između jednostrukih navodnika se stavlja 
+znak čiji nam je kod potreban. Podsjetimo se da "\n" i slične oznake 
+predstavljaju samo jedan znak (konkretno "\n"=10).
+</p>
+<p>
+Ako želimo da funkcija "printf" (a isto vrijedi i za "scanf") varijable 
+tipa char tretira kao cijele brojeve u format stringu stavljamo "%d", a ako 
+želimo da ih ispisuje kao znakove stavljamo "%c".
+</p>
+<p>
+Varijable svih tipova mogu graditi i nizove, matrice (dvodimenzionalne i
+višedimenzionalne). Da vidimo kako bi to izgledalo. Recimo želimo da u nizu
+od 12 elemenata zapamtimo broj dana u ekvivalntnom mjesecu:
+</p>
+<p>
+int mjeseci[12];  //niz pod imenom "mjeseci" od 12 elemenata
+</p>
+<p>
+Sada su nam dostupni elementi niza sa indeksima od 0 da 11. Ako želimo da
+popunimo niz možemo napisati:
+</p>
+<p>
+mjeseci[0]=31;<br>
+mjeseci[1]=28;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<br>
+mjeseci[11]=31;
+</p>
+<p>
+Na isti način ćemo koristiti te elemente:
+</p>
+<p>
+zbroj=mjeseci[0]+mjeseci[1]+ ... +mjeseci[11];
+</p>
+<p>
+Niz smo mogli popuniti i ovako:
+</p>
+<p>
+int mjeseci[12]={31,28,.......31};
+</p>
+<p>
+Učinak je potpuno isti, samo što smo uštedjeli nešto prostora, a i source je 
+čitljiviji. Čak smo kod "mjeseci[12]" mogli da izostavimo broj 12 - tada bi 
+kompajler sam prebrojao elemente niza.<br>
+Kod višedimenzionalnih polja princip je isti kao i kod nizova. Recimo:
+</p>
+<p>
+#include &lt;stdio.h&gt;<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mat[5][5]={{1,1,1,1,1},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{2,2,2,2,2},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{3,3,3,3,3},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{4,4,4,4,4},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{5,5,5,5,5}};<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Na mjestu 3,3 nalazi se
+%d\n",mat[3][3]);<br>
+}<br>
+</p>
+<p>
+Kao rezultat dobit će se broj 4. Popunjavanje matrice je moglo da se napiše u 
+jednom redu, ali je ovako preglednije.
+</p>
+<p>
+U memoriji su elementi matrice smješteni na slijedeći način:
+</p>
+<p>
+mat[0][0],mat[0][1],mat[0][2],.. mat[0][4],mat[1][0], ... mat[4][4]
+</p>
+<p>
+Najbrže se mijenja prvi indeks s desna.
+</p>
+<p>
+A sada jedno <b>UPOZORENJE:</b> kompajler ne provjerava da li navedeni član niza 
+zaista  postoji. Ako rezervirate 5 elementa, a pristupate 10-om kompajler 
+neće prijaviti nikakvu grešku (kao recimo u Basic-u). Zašto? Zato što bi 
+takvo provjeravanje višestruko usporilo pristup elementima niza i iz još 
+mnogo drugih razloga. Zato dobro vodite računa o tome!!!
+</p>
+<p>
+Nizovi i matrice se koriste na isti način i kod ostalih tipova podataka. 
+Nizovi tipa "char" mogu se tretirati i kao stringovi. U C-u se string 
+(niz znakova) piše između dvostrukih navodnika. Da bi se označio kraj 
+stringa na kraju mu se dodaje znak '\0'.
+</p>
+<p>
+#include &lt;stdio.h&gt;<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char c[6]="Amiga";<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("%s ",c);&nbsp;&nbsp;&nbsp;//&nbsp;%s - jer se radi o stringu<br>
+}
+</p>
+<p>
+Riječ "Amiga" ima 5 slova plus znak '\0' je 6 i u memoriji se pamti:
+</p>
+<p>
+'A','m','i','g','a','\0'
+</p>
+<p>
+Da ne bi brojali koliko slova ima string jednostano se broj elemenata može
+izostaviti:
+</p>
+<p>
+char c[]="Amiga rules!!";
+</p>
+<p>
+Stringovi se ne mogu porediti ili kopirati/nadovezivati kao, recimo, u
+Basic-u:
+</p>
+<p>
+char a[]="Amiga";<br>
+char b[]="rules";<br>
+char c[20];<br>
+<br>
+c=a+b;&nbsp;&nbsp;&nbsp;//&nbsp;Ovako neće moći!!<br>
+</p>
+<p>
+"a","b" i "c" zaista postoje. Varijabla "a" sadrži adresu prvog elementa 
+u nizu - a[0]. Ali nema smisla zbrajati adrese.
+</p>
+<p>
+Zato standardna C biblioteka obezbjeđuje dosta funkcija za rad sa stringovima. 
+Potrebno je samo include-ovati "string.h" header na početku 
+programa i one će vam postati dostupne. Pogledajte SAS C-ov (ili bilo koji 
+drugi) help, bilo koju knjigu da bi vidjeli koje su to funkcije i čemu služe. 
+Evo male ilustracije:
+</p>
+<p>
+#include &lt;stdio.h&gt;<br> 
+#include &lt;string.h&gt; 
+<br><br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char a[]="Amiga";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char b[]=" rules!!";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char c[20];&nbsp;&nbsp;&nbsp;//&nbsp;20 znakova će biti dovoljno.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strcpy (c,a);&nbsp;&nbsp;&nbsp;//&nbsp;Prvo kopiramo niz a u niz c.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strcat (c,b);    // A zatim nizu c nadovezujemo niz b.<br><br>
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*  Postoji i varijante "strncpy" i "strncat" koje koriste najviše n znakova pa je tako moguće izbjeći prekoračenje */<br><br>
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("%s\n",c);&nbsp;&nbsp;&nbsp;//&nbsp;%s pošto se radi o stringu.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("String je dug %d znaka.\n",strlen(c));<br> 
+<br>
+}
+</p>
+<p>
+Vrlo često je potrebno konvertirati jedan tip broja u drugi (npr. funkcija 
+traži da joj se proslijedi "int" tip, a mi imamo potrebnu vrijednost u 
+varijabli "float" tipa). To se radi tako što se ispred izraza koji se 
+dodijeljuje (ili kojim se poziva funkcija) u zagradi stavlja tip u koji se
+izraz želi konvertirati. Evo primjera:
+</p>
+<p>
+int a;<br>
+float b=56.8223;<br>
+</p>
+<p>
+a=(int)b;&nbsp;&nbsp;&nbsp;//&nbsp;"a" dobija vrijednost 56 jer se zaokružuje na manju vrijednost.
+</p>
+<p>
+printf (" b=%f int(b)=%d\n",b,(int)b);&nbsp;&nbsp;&nbsp;//&nbsp;funkciji se proslijeđuje "float" >>>int tip<<<
+</p>
+<p>
+Napomenimo samo još da indeksi pomoću kojih se pristupa nizu moraju biti
+cijeli brojevi.
+</p>
+<br>
+<p>
+Do sada smo koristili operaciju zbrajanja brojeva. Nabrojmo operacije
+dostupne u C-u:
+</p>
+<p>
+<table border="2">
+<tr>
+<td>Operacija</td>
+<td>Uloga</td>
+</tr>
+<tr>
+<td align="center">=</td>
+<td>dodijeljivanje</td>
+</tr>
+<tr>
+<td align="center">+</td>
+<td>zbrajanje</td>
+</tr>
+<tr>
+</tr>
+<tr>
+<td align="center">-</td>
+<td>oduzimanje</td>
+</tr>
+<tr>
+<td align="center">*</td>
+<td>množenje</td>
+</tr>
+<tr>
+<td align="center">/</td>
+<td>dijeljenje</td>
+</tr>
+<tr>
+<td align="center">%</td>
+<td>ostatak pri dijeljenju</td>
+</tr>
+<tr>
+<td align="center">++</td>
+<td>inkrementacija</td>
+</tr>
+<tr>
+<td align="center">--</td>
+<td>dekrementacija</td>
+</tr>
+<tr>
+<td align="center">&</td>
+<td>logičko AND</td>
+</tr>
+<tr>
+<td align="center">|</td>
+<td>logičko OR</td>
+</tr>
+<tr>
+<td align="center">!</td>
+<td>logičko NOT</td>
+</tr>
+<tr>
+<td align="center">^</td>
+<td>logičko ekskluzivno OR</td>
+</tr>
+<tr>
+<td align="center">&lt;&lt;</td>
+<td>pomijeranje u lijevo</td>
+</tr>
+<tr>
+<td align="center">&gt;&gt;</td>
+<td>pomijeranje u desno</td>
+</tr>
+</table>
+<br>
+</p>
+<p>
+Da objasnimo one koji nisu baš najjasniji:
+</p>
+<p>
+<b>%</b><br>
+Kada cijelobrojno dijelimo 13 na 5 dobijamo 2 i ostatak 3: 
+</p>
+<p>
+i=13;<br>
+printf("%d ",i%5);<br>
+<br>
+Ne treba miješati sa postotkom u format stringu.
+</p>
+<p>
+<b>++</b> i <b>--</b><br>
+
+Služe za povećavanje/smanjivanje varijable za jedan. Ako se pišu ispred 
+varijable prvo se izvrši inkrementacija/dekrementacija, pa sa tom novom 
+vrijednošću varijable se računa dalje. A ako su navedeni poslije varijable 
+prvo se izvrše proračunavanja u tom redu, a zatim inkrementacija/dekrementacija:
+</p>
+<p>
+int a=b=10;&nbsp;&nbsp;&nbsp;//&nbsp;Može se i ovako dodijeljivati.<br>
+int c;<br>
+</p>
+<p>
+c=a++;&nbsp;&nbsp;&nbsp;//&nbsp;"c" će dobiti vrijednost 10, pa će se nakon toga "a" uvećati za 1<br>
+c=--b;&nbsp;&nbsp;&nbsp;//&nbsp;umanjit će se "b" za 1, pa će se nova vrijednost dodijeliti varijabli "c"<br>.
+</p>
+<p>
+Isto bi bilo da smo napisali:
+</p>
+<p>
+int a=b=10;<br>
+int c;<br>
+</p>
+<p>
+c=a;<br>
+a=a+1;&nbsp;&nbsp;&nbsp;//&nbsp;moglo je samo a++ ili ++a, pošto je to jedina operacija redoslijed nije bitan
+</p>
+<p>
+b=b-1;<br>
+c=b;<br>
+</p>
+<p>
+
+<b>&</b>, <b>|</b>, <b>!</b>, <b>^</b>, <b>&gt;&gt;</b>, <b>&lt;&lt;</b><br>
+
+Operacije nad bitovima. "&" ne treba mijesati s onim za unarnim operatorom "&" za 
+dobijanje adrese varijable. Evo i primjeera:
+</p>
+<p>
+
+<table>
+<tr>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;0101</td>
+<td>&nbsp;0101</td>
+<td></td>
+<td>&nbsp;&nbsp;&nbsp;0101</td>
+</tr>
+<tr>
+<td>&1100</td>
+<td>|1100</td>
+<td>!1100</td>
+<td>^1100</td>
+</tr>
+<tr>
+<td>----</td>
+<td>----</td>
+<td>----</td>
+<td>----</td>
+</tr>
+<tr>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;0100</td>
+<td>&nbsp;1101</td>
+<td>0011</td>
+<td>&nbsp;&nbsp;&nbsp;1001</td>
+</tr>
+</table>
+</p>
+<br>
+<p>
+<b>10100011&lt;&lt;3 = 00011000</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>10100011&gt;&gt;3 =
+00010100</b>
+
+
+Pomijeranje (šiftovanje) u lijevo za jedno mjesto je ekvivalentno množenju sa 2, 
+samo je brže.
+<br>
+iftovanje na desno je ekvivalentno dijeljenju sa dva. No, dobar 
+kompjaler, kakav je <b>SAS</b> sam uvodi optimizacije i kad god je moguće spore 
+operacije množenja i dijeljenja zamijenjuje šiftovanjem.
+</p>
+<p>
+Pored "++" i "--" skraćenog označavanja C posjeduje još vrsti optimizacija u 
+pisanju. Pri računanju novog sadržaja varijable on zavisi može se koristiti 
+skraćeni oblik. Npr:
+</p>
+<p>
+a=a+1;
+</p>
+<p>
+može se pisati:
+</p>
+<p>
+a+=1;
+</p>
+<p>
+Varijabli "a" se dodaje iznos izraza desno od znaka "+=". Isto vrijedi i za 
+"/=", "*=" itd.
+</p>
+<p>
+a*=3*b+17; je isto što i a=a*(3*b+17);
+</p>
+<p>
+Nadam se da je jasno. Sada ćemo se pozabaviti naredbama za kontrolu toka 
+programa. Naime, znamo da se svi dijelovi programa ne izvršavaju isti broj 
+puta - neki se izvrše i više stotina tisuća puta, a neki ponekad i nikad.
+<br>
+Da vidimo kako se kontrola toka ostvaruje u C-u:
+</p>
+<br>
+<p>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font size="4">if-else iskazi</font>
+</p>
+<p>
+
+Kada želimo da se neki blok naredbi izvrši (ili ne izvrši) u zavisnosti od 
+vrijednosti nekog izraza koristimo ovu "naredbu". Struktura je slijedeca:
+</p>
+<p>
+if (uslov)<br>
+&nbsp;&nbsp;&nbsp;naredba
+</p>
+<p>
+
+Znači, testira se uslov (mora biti u zagradama), pa ako je ispunjen izvršava 
+se naredba iza iskaza, a ako nije naredba iza se preskače (ne izvršava). Ako 
+ima više naredbi koje treba uslovno izvršiti stavljaju se unutar velikih 
+(vitičastih) zagradi. Evo primjera:
+</p>
+<p>
+#include &lt;stdio.h&gt;<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int a;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf(" Unesi šifru: ");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scanf("%d",&a);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (a==5766)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("\nTočno. Sistem vam je na raspolaganju.\n");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("\nifra je netočna! Uljez!!\n");<br>
+<br>
+}<br>
+
+</p>
+<p> 
+Unosimo broj, koji se smješta u varijablu "a" i "if" iskazom provjeravamo da 
+li je to broj 5766 (točan broj). Ako jeste ispisuje se jedna poruka, a ako 
+nije druga. Zapazite da se umjesto "=" koristi dupli znak jednakosti!
+Jednostruki se koristi kod dodijeljivanja, pa da ne bi došlo do zabune kada je 
+potrebno provijeriti točnost nekog iskaza koristi se "==". Da je pisalo:
+</p>
+<p>
+if(a=5766)
+</p>
+<p>
+varijabla "a" bi dobila vrijednost 5766 i cijeli iskaz bi bio istinit.
+Usvari, kod svih uslovnih iskaza se sračuna vrijednost izraza u zagradama, pa 
+se na osnovu te vrijednosti određuje šta će se izvršiti. Ako je vrijednost 0 
+iskaz je netočan, a ako je bilo šta drugo točan je. Npr.
+</p>
+<p>
+if (5)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;naredba
+</p>
+<p>
+Naredba će se uvijek izvršiti jer je vrijednost izraza (5) različita od nule.<br>
+Ili npr. if(a) znaci isto što i if (a!=0). 
+<br>
+"!=" znaci razlicito (od).
+</p>
+<p>
+Pored uslova "==" koriste se i ovi uslovi:
+</p>
+<p>
+<table>
+<tr>
+<td>!=</td>
+<td>različito</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>veće</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>manje</td>
+</tr>
+<tr>
+<td>&gt;=</td>
+<td>veće ili jednako</td>
+</tr>
+<tr>
+<td>&lt;=</td>
+<td>manje ili jednako</td>
+</tr>
+<tr>
+<td>&&</td>
+<td>logičko "i"</td>
+</tr>
+<tr>
+<td>||</td>
+<td>logičko "ili"</td>
+</tr>
+</table>
+</p>
+<p>
+<br><br>
+Primjer:
+</p>
+<p>
+if (a==5 && b>7)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;naredba
+</p>
+<p>
+Naredba će se izvršiti samo ako je a=5 i ako je b>7. Ako makar jedan uslov
+nije zadovoljen nareda se ne izvršava. Da je pisalo:
+</p>
+<p>
+if (a==5 || b>7)
+</p>
+<p>
+bilo bi dovoljno da je makar jedan od oba uslova ispunjen (ili oba dva) pa
+da se naredba izvrši. 
+</p>
+<br>
+<p>
+U gornjem primjeru je upotrijebljena proširena verzija "if" iskaza. Ona se 
+koristi kada, recimo, jednu naredbu treba izvršiti kada je uslov zadovoljen, a 
+drugu kada nije, pa da se ne bi pisale dvije "if" strukture i dva puta
+provjeravao uslov, piše se jedna "if else" struktura. Dakle:
+</p>
+<p>
+if (uslov)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;naredba 1<br>
+else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;naredba 2<br>
+</p>
+<p>
+Uvijek se izvršava samo jedna od dvije naredbe i to prva ako je uslov ispunjen, 
+a druga ako nije.
+</p>
+<p>
+Postoji jos širi oblik "if" iskaza. On se koristi kada je potrebno provijeriti 
+više iskaza od kojih je samo jedan točan u zavisnosti od toga koji će
+(ne)izvrsiti neke naredbe.  Oblik je slijedeći:
+</p>
+<p>
+if (uslov1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;naredba 1<br>
+else if (uslov2)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;naredba2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<br>
+else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;naredba5
+</p>
+<p>
+Dakle, provijerava se "uslov1". Ako je točan izvršava se "naredba1" i izlazi se 
+iz cijelog "if" iskaza (ostale provjere se i ne vrše). Ako nije, provijerava se 
+"iskaz2", pa ako je on točan izvršava se "naredba2" i tako redom.  Ako ni jedan od 
+uslova nije ispunjen izvršava se naredba iza riječi "else". "else" je moguće 
+i izostaviti iz "if" konstrukcije. Primjer:
+</p>
+<p>
+if(a==1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Broj jedan, hmmm...\n");<br>
+else if(a==2)<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Broj dva?!?\n");&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//Pošto ima više naredbi moraju se staviti između vitičastih zagrada<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Mrzim broj dva\n");<br>
+}<br>
+else if (a==3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Odlicno, broj tri!\n");<br>
+else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Broj nepoznat\n");<br>
+</p>
+<p>
+
+Znači, provijera se da li je a=1. Ako jeste. ispisuje se prva poruka, a ako 
+nije provijerava se da li je 2, pa ako jeste druga itd. Ako nije ni 1 ni 2
+ni 3 izvršava se naredba poslije "else". 
+</p>
+<br>
+<p>
+
+<b>"switch"</b> naredba ima slijedeći oblik:
+</p>
+<p>
+switch (a)<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case b:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;naredba1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case c:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;neredba2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;naredbaN<br>
+}<br>
+</p>
+<p>
+U prvom redu u zagradi se stavlja izraz (varijabla) koji se provjerava. Zatim 
+se navode vrijednosti za koje se treba odraditi neka naredba. Kada se vrijednost 
+poslije riječi "case" poklopi sa vrijednošću izraza (var.) koji se provjerava 
+izvršavaju se SVE ostale naredbe u "switch" strukturi. Ako želimo da se 
+izvrši samo jedan dio (između dva "case"-a) na kraju bloka naredbi 
+staviti ćemo  "break".  "switch" blok je između srednjih velikih zagrada. Ako 
+izraz ne dobije ni jedno od ispitivanih vrijednosti izvršava se naredba (blok 
+naredbi) posle riječi "default".
+</p>
+<p>
+Recimo da varijabla <i>smijer</i> sadrži jedan od brojeva: 1,2,4 ili 8 i da oni 
+označavaju stranu na koju je povučen joystick. Za svaku <i>smijer</i> trebamo da 
+pozovemo funkciju koja obrađuje taj slučaj:
+</p>
+<p>
+switch (smijer)<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gore();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 2:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dolje();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 4:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lijevo();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case 8:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;desno();<br>
+}<br>
+</p>
+<p>
+Da nismo stavljali <i>break</i> i da je, recimo, <i>smijer</i> imao vrijednost 1 pozvale bi se 
+sve funkcije u "switch" strukturi. Pošto je "case 8" zadnja provjera nema
+potrebe stavljati "break".
+</p>
+<br>
+<p>
+Petlje se koriste kada neki broj naredbi treba ponoviti više puta.
+</p>
+<p>
+<b>for</b> petlja ima oblik:
+</p>
+<p>
+for (izraz1; izraz2; izraz3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tijelo petlje
+</p>
+<p>
+Izrazi 1 i 3 su najčešće izrazi dodijeljivanje, a izraz 2 je najčešće neko 
+poređenje. Petlja se "vrti" (tijelo petlje se ponavlja) dok god je izraz 2 
+istinit. Izraz 1 se izvršava samo jednom na početku, a izraz 3 pri svakom 
+prolazu. Recimo da želimo ispisati kvadrate prvih 20 brojeva:
+</p>
+<p>
+#include &lt;stdio.h&gt;<br>
+main()<br>
+{<br>
+int i;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(i=1;i&lt;=20;i++)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("i=%3d  ",i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("i^2=%d\n",i*i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+</p>
+<p>
+Varijablu "i" postavljamo na vrijednost 1 (izraz1), provjeravamo da li je i&lt;=20
+(izraz2), pošto jeste izvršava se prvi prijelaz i povećava "i" za 1 (izraz3).
+<br>
+ Bez obzira da li stoji i++ ili ++i taj dio će se izvršiti poslije izvršenja
+tijela petlje.
+</p>
+<p>
+<b>while</b> petlja je jednostavnija. Kod nje se samo navodi uslov:
+</p>
+<p>
+while (uslov)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tijelo petlje
+</p>
+<p>
+Kod nje, za razliku od for petlje ne mora postojati specijalna indeksna
+varijabla.<br>
+Recimo da želimo da prebrojimo koliko elemenata u nekom nizu ima prije 
+pojavljivanja prve nule:
+</p>
+<p>
+#include &lt;stdio.h&gt;<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int niz[]={5,2,7,77,4,32,66,43,0,0,0};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int i=0;<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (niz[i]!=0)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i++;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Prva %d elemenata nisu nule.\n",i);<br>
+}<br>
+</p>
+<p>
+Svaki element poredimo sa nulom, pa ako je različit prelazimo na slijedeći 
+(tj. uvećavamo "i"). Kada se dostigne element sa vrijednošću nula brojanje 
+se prekida.<br>
+Postoji i oblik <b>while</b> petlje kod koga je poređenje na kraju petlje, 
+pa se tijelo petlje uvijek izvrši makar jednom:
+</p>
+<p>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tijelo petlje<br>
+while (uslov)<br>
+<br>
+Sve navedeno za <b>while</b> vrijedi i za <b>do-while</b>.
+</p>
+<p>
+C obiluje skraćenicama svakakve vrste. Evo još jedne koja mijenja blok naredbi, 
+a vraća jednu od dvije moguće vrijednosti u zavisnosti od navedenog uslova:
+</p>
+<p>
+<i>uslov ? vrijednost za točno : vrijednost za netočno</i>
+</p>
+<p>
+Vrijednosti za točno i netočno mogu biti izrazi, funkcije...
+</p>
+<p>
+
+#include &lt;stdio.h&gt;<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int a;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int b;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int max;<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Unesi 2 broja:");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scanf ("%d %d",&a,&b);<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max=a&lt;b ? b : a;<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Veći je broj %d\n",max);<br>
+
+}<br>
+</p>
+<p>
+
+"max" dobija vrijednost varijable "b" ako je uslov ispunjen (a&lt;b), a
+vrijednost "a" ako nije.
+</p>
+<br>
+<p>
+Za kraj evo i jednog "malo većeg" programa. Nije komentiran, ali sam 
+siguran de će te ga lako shvatiti (ako ste pratili predhodne nastavke). 
+Da bi vijedeli šta radi morate ga iskompajlirati i startati. Ustvari i ne 
+morate, jer ne treba neka mudrost da bi se to ukapiralo iz listinga.  :)
+</p>
+<p>
+#include &lt;stdio.h&gt;<br>
+main()<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int vrh=1000, dno=0, i=1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char c,s[10];<br><br>
+   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("<b>\f</b>Zamisli jedan broj između 0 i %d, a ja ću ga pogoditi iz najviše deset<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>\n</b>pokušaja.\n",vrh);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Odgovaraj sa veći, manji ili točno (i nemoj lagati).\n\n\n");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Jel' to možda broj %d ?", (vrh+dno)/2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scanf("%s",s);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c=s[0];<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(c=='m' || c=='M')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vrh=(vrh+dno)/2-1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i++;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else if(c=='v' || c=='V')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dno=(vrh+dno)/2+1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i++;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else if(c!='t' && c!='T')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("Molim?\n");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (c!='t' && c!='T');<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printf("URA!!! \nPogodio sam iz samo %d puta!!!\n",i);<br>
+}
+</p>
+<br>
+<p>
+Do slijedećeg nastavka vježbajte i budite spremni, jer neće biti lako kao do 
+sada. ;>>>>>
+</p>
+<p align="right">
+<img src="../gfx/milangolubovic.gif" alt="Milan Golubovic" width="138" height="26">
+</p>
+<br>
+</body>
+</html>

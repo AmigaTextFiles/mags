@@ -1,0 +1,77 @@
+/*   PMods - Packed Module Sender v2.1 : Henrik Nystrom 1995 */
+
+Call addlib('rexxreqtools.library',0,-30,0)
+
+Arg opt fil.1 fil.2 fil.3 fil.4 fil.5 fil.6 fil.7 fil.8 fil.9 fil.10
+
+Do
+ If opt > '' Then Do
+   PLAYER = opt
+   Say '*** PModS - Packed Module Sender - v2.1 : Henrik Nystrom 1995 ***'
+   If opt = '?' then DO
+    Say
+    Say 'Usage: [rx] PModS playername fil.1 fil.2 fil.3 ... fil.10'
+    Say
+    EXIT
+   End
+   If fil.1 > '' then do
+     Do i=1 to 10
+      If fil.i > '' then fil.count = i
+     End
+    End
+   Else Do
+    Say 'No files selected.'
+    Exit
+   End
+  End
+ Else Do
+
+  NL = '0a'x
+  Call rtezrequest("Packed Modules Sender v2.1" || NL ||,
+  " Henrik Nystrom 1995 ", " Let's Rock ")
+
+  Call rtezrequest("Choose module player to use." || NL ||,
+  "It must exist in your path.", "_HiP|_SmartPlayer|_Other|_QUIT")
+  If rtresult == 0 then EXIT
+  If rtresult == 1 then PLAYER = "Run >NIL: HiP "
+  If rtresult == 2 then PLAYER = "Run >NIL: Smartplay "
+  If rtresult == 3 then 
+  Do
+    play = 0
+    PLAYER = rtgetstring(,"Enter name of your modulplayer.", "Name:",,
+    "_Ok|_Quit")
+    If rtresult == 0 then EXIT
+   End
+  Else play = 1
+  Do
+   Call rtfilerequest("DH0:",,"Pick modules", ,,
+   "rtfi_height=184  rtfi_matchpat=#?(.lha|.lzx|.lzh)  rtfi_flags=freqf_multiselect",fil)
+   If fil == 0 then Exit
+  End
+ End
+End
+
+Address COMMAND 'Assign PMODS: REMOVE'
+Address COMMAND 'Delete Ram:PModS/ all FORCE >NIL:'
+Address COMMAND 'Makedir Ram:PModS'
+TempDir = 'RAM:PModS/'  
+Address COMMAND 'Assign PMODS: 'TempDir
+Do i=1 to fil.count
+ UNP = Upper(Right(fil.i,3))
+ If (UNP = 'LHA' | UNP = 'LZH') & play = 1 then PLAYER = PLAYER '"'fil.i'"'
+ Else Address COMMAND UNP' -q x 'fil.i' PAT #?.mod mod.#? PMODS:'
+End
+Address COMMAND 'List PMODS: PAT (#?.mod|mod.#?) FILES LFORMAT %p%n >PIPE:blist.txt'
+Call Open(blist,'PIPE:blist.txt','R')
+Do forever
+ mod = ReadLN(blist)
+ If EOF(blist) then break
+ PLAYER = PLAYER '"'mod'"'
+End
+Call Close(blist)
+Signal On break_c
+Address COMMAND PLAYER
+
+BREAK_C:
+ EXIT
+

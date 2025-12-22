@@ -1,0 +1,34 @@
+echo "Installationscript for utilities => Mealström July97"
+echo "Checking a few things first..."
+if exists "c:lha"
+   setenv > nil: exlha true
+   setenv > nil: cont true
+endif
+if not $exlha eq true
+   echo "Lha not found in c: drawer, please install this before continuing this "
+   echo "sript."
+   setenv > nil: cont false
+endif
+if not $cont eq false
+   echo "Proceeding with instalation..."
+   echo " The files will be extracted in the drawer:"
+   echo "   SYS:FILES/MEALSTRÖM/JULY97"
+   if not exists "sys:files"
+       makedir sys:files
+       echo "Making drawer sys:files..."
+       copy envarc:sys/def_drawer.info sys:files.info
+   endif
+   if not exists "sys:files/Mealström"
+       makedir sys:files/Mealström
+       echo "Making directory sys:files/Mealström..."
+       copy envarc:sys/def_drawer.info sys:files/Mealström.info
+   endif
+   if not exists "sys:files/Mealström/July97"
+       makedir sys:files/Mealström/July97
+       echo "Making directory sys:files/Mealström/July97..."
+       copy envarc:sys/def_drawer.info sys:files/Mealström/July97.info
+   endif
+   echo "Extracting *.l?? files..."
+   lha -q x *.l?? sys:files/Mealström/July97/
+   echo "All is extracted, have fun :-)"
+endif

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Workshops4.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops6.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Workshops
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="Inhalt"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H2>5. Kurzanleitung: FFS-Festplatte unter Suse Linux 7.1 (von Andreas Kiefl)</H2>
+<P>
+Ich habe heute einen Kernel f&uuml;r Suse 7.1 kompiliert, mit dem ich auf dem PC
+auf eine Amiga-formatierte Platte zugreifen kann. Wer es selbst probieren
+will, hier kurz die Vorgehensweise:
+</P>
+<P>
+Zuerst m&uuml;ssen die Kernelsourcen installiert sein. Wenn nicht schon
+geschehen, sollte man das jetzt mit Yast2 nachholen. Dann als root eine
+Shell (z.B. xterm) &ouml;ffnen und ins Verzeichnis &quot;/usr/src/linux&quot; wechseln. In
+dieser Shell (z.B. xterm) &quot;make xconfig&quot; eingeben. Dann kommt eine
+graphische Oberfl&auml;che, bei der man alles N&ouml;tige aktivieren kann. Hier muss
+vor allem bei &quot;filesystems&quot; affs-Support aktiviert werden. Beim Restlichen
+kann das Vorgegebene unver&auml;ndert &uuml;bernommen oder auch nach Bedarf ge&auml;ndert
+werden. Anschlie&szlig;end das Ergebnis abspeichern und xconfig beenden.
+</P>
+<P>
+Jetzt sollte eine Sicherheitskopie des derzeitigen Kernels /boot/vmlinuz
+unter anderem Namen (eventuell vmlinuz_old) erstellt werden. Anschlie&szlig;end
+nacheinander folgende Befehle abarbeiten (ohne &quot; &quot;). Dazu muss man wieder
+im Verzeichnis /usr/src/linux sein.
+</P>
+<PRE>
+&quot;make dep&quot;                       &uuml;berpr&uuml;ft Abh&auml;ngigkeiten
+&quot;make clean&quot;                     r&auml;umt den Festplattenbereich auf
+&quot;make zlilo&quot;                     &uuml;bersetzt und installiert den Kernel
+&quot;make modules&quot;                   &uuml;bersetzt die Module
+&quot;make modules_install&quot;           installiert sie.
+</PRE>
+<P>
+Zwischen den einzelnen Befehlen abwarten, bis der Computer den jeweils
+letzten Befehl abgearbeitet hat. Das kann unter Umst&auml;nden einige Zeit
+dauern.
+</P>
+<P>
+Nach Ende dieser Prozedur ist jetzt im Verzeichnis /usr/src/linux die eben
+entstandene Datei &quot;vmlinux&quot; zu sehen; diese ins Verzeichnis /boot unter dem
+Namen &quot;vmlinuz&quot; kopieren.
+</P>
+<P>
+Wer Schwierigkeiten mit dem Kopieren unter Linux hat, kann es auch mit mc
+(Norton-Commander-Clone) oder mit tkdesk versuchen, damit geht es ganz
+einfach.
+</P>
+<P>
+Jetzt den Computer runterfahren, ausschalten und die Amiga-Platte einbauen.
+Anschlie&szlig;end neu starten. Es startet dann schon der neue Kernel. Nun muss
+ein neues Verzeichnis &quot;/amiga&quot; angelegt und der Datei &quot;/etc/fstab&quot; die
+Amiga-Platte hinzugef&uuml;gt werden.
+</P>
+<P><B>Beispiel:</B></P>
+<PRE>
+/dev/hdc1 /amiga affs noauto, user 0 0
+</PRE>
+<P>
+&Auml;hnlich wie die dort schon stehenden Windows-Partitionen, nur muss statt
+&quot;vfat&quot; oder &quot;msdos&quot; &quot;affs&quot; eingetragen werden. Dabei &quot;hdc1&quot; durch die
+Position der Amiga-Platte ersetzen. Wenn sie die erste am zweiten IDE-Port
+ist, kann man &quot;hdc1&quot; so stehen lassen.
+</P>
+<P>
+Nun noch in einer Shell (xterm) den Befehl &quot;mount /dev/hdc1&quot; (oder &quot;hdc2&quot;,
+&quot;hda2&quot;, etc., je nachdem, wo die Amiga-Platte ist) eingeben. Anschlie&szlig;end
+m&uuml;sste die Amiga-Platte unter &quot;/amiga&quot; zu &ouml;ffnen sein.
+</P>
+<P>
+Falls wider Erwarten Probleme auftauchen, kann der neuen Kernel wieder
+durch den alten ersetzt werden. Das gilt auch, wenn bestimmte Dinge nicht
+mehr wie erwartet funktionieren sollten. Eventuell reicht es ja auch, den
+neuen Kernel als &quot;vmlinuz_ami&quot; zu sichern und nur bei Bedarf, d.h. wenn
+Daten von Amiga-formatierten Platten auf den PC kopiert werden sollen, zum
+Starten zu verwenden.
+</P>
+<P><B>Andreas Kiefl &lt;<A HREF="mailto:kieflrunding@web.de">kieflrunding@web.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops4.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops6.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

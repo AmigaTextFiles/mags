@@ -1,0 +1,453 @@
+<HTML>
+<HEAD><TITLE>PovRay</TITLE></HEAD>
+<BODY BACKGROUND="../../pics/bg.gif" BGCOLOR="#FFFFFF" LINK="#FF0000" VLINK="#0000FF">
+<HR>
+<P>
+<A HREF="../index.html"><IMG SRC="../../pics/deco/software.gif" BORDER=0 ALT="Software"></A>
+<P>
+<P>
+<CENTER><IMG SRC="../../pics/lines/lrain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<CENTER>
+<H1>Persistance of Vision Raytracer Review</H1><BR>
+<I>Mauro 'M&amp;F' Fontana(mfontana@ing.unico.it)</I>
+</CENTER>
+<P>
+<CENTER><IMG SRC="../../pics/lines/srain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<H3>PovRay v2.2</H3>
+<H4><IMG SRC="../../pics/bullets/dgr.gif" ALIGN="middle" ALT="o"> Introduction</H4>
+<P> Persistance of Vision Raytracer (or shortly PovRay) is a <B>freeware</B> raytracer with undoubtely powerful and professional
+features. It is programmed by a team of programmers, mostly university
+teachers, that have decided to code an advanced raytracer in their spare
+time and then making it available to everyone, source code included.
+<P> Being written is ANSI C, the code has the advantages to be compilable on
+any machine, from a PC compatible to a SGI workstation with very little
+changes. Moreover, the sources can be studied and used by anyone who want to
+learn more about how raytracing work, and even modyifing them to try to
+improve or add new features (read the legal doc included with all archives
+of PovRay to know the limitation imposed in the modificationof the source
+code).
+<P> All these features, however, have their drawbacks, and the most visible
+one is the fact that there's not a graphical modeler for the objects or the
+scenes. The work must be done completely with a simple text editor and then
+giving it to the raytracer as the input file to be converted into a
+wonderful true color picture.
+<P> So, if you manage to pass through the first impact with this quite rude
+aspect of the program you can then start enjoying all its advanced and
+powerful features that make it one of the better raytracer ever created for
+every platform.
+<P> The program comes with an electronic manual of more than 300 KBytes of
+pure ASCII text. The quality of the manual is, without doubts, of very high
+quality and can be used to learn lots of interesting things about raytracing
+and the 3D modeling in general. It should be read by anyone that is
+interested in computer graphics even though he has no intentions to use
+PovRay.
+<P><H4><IMG SRC="../../pics/bullets/dgr.gif" ALIGN="middle" ALT="o"> Features</H4>
+<UL>
+<P><H5><IMG SRC="../../pics/bullets/gre.gif" ALIGN="middle" ALT="o"> Quality</H5>
+<P> The output file is always a 24-bit depth picture whose format depends on
+the choices of the user, and that of the particular version of the program
+used. The Amiga version can export in IFF24, DUMP (or QRT) and TGA (Targa)
+formats.
+<P> The maximum quality of the pictures produced is excellent, better than
+with many other commercial programs that may cost hundreds of dollars.
+<BR> The user has, however, the option to set many of the option that define
+the final quality of the created images. Once the scene is ready to be
+rendered, the user can decide which will be the kind of rendering done,
+having the option to exclude progressively complex calculations like
+shadows, reflections, refractions, textures and colors. This together with
+the fact that the antialiasing algorythm can be turned on/off with variuos
+quality settings. Finally the user can choose the resolution of the image
+going from tiny sizes for previews to a virtually infinite resolution (even
+10000x10000 if you have enough memory and time).
+<BR> And if all this is not enough, during the creation of the scene there
+is the option to render only a small part of the picture whose offset and
+size can be expressed as absolute pixel posizions or percentual of the total
+resulting size of the image.
+<P> So the development of the scenes is simplified and made much faster
+thank to the reduced time the user has to wait.
+<P> The syntax used for describing a scene is quite simple, similar to that
+of the C language for structure (not syntax, not *, &amp; , symbols), keeping
+powerful features like the option to have include file where to keep
+separate part of the scene (such as general object, colors or texture
+definitions) or macro definition.
+<P><H5><IMG SRC="../../pics/bullets/gre.gif" ALIGN="middle" ALT="o">Objects</H5>
+<P> The primitives that can be used in PovRay v2.2 are quite a lot and are
+subdivided in groups with specific similarities and behaviours. I'll
+describe only the most interesting and original ones.
+<UL>
+<P><IMG SRC="../../pics/bullets/lgr.gif" ALIGN="middle" ALT="o"> <B>Solid Finite Primitives</B>
+<UL>
+<BR> They are 7: blob, box, cone, cylinder, height field, sphere and
+torus. <BR> All these have a well define inside and can be used in <A
+HREF="#CSG">CSG</A> Being finite automatic bounding is used to speed up
+the rendering times.
+<P> The interesting objects are the blob and the height field.
+<BR> <B>Blobs</B> are objects made up of spheres that attract or
+repulse each others with a defined mathematical law that depends on their
+strenght and radius. The results can be relative smooth complex objects
+that cannot be obtain in any way, or with lots of pain, with other
+modeling techniques.
+<BR> <B>Height fields</B> are objects that use colors of an image
+to define the height of the relative point. It is then possible to create
+simple landscapes in a very simple way, even though the control and
+check of specific points is not possible.
+</UL>
+<P><IMG SRC="../../pics/bullets/lgr.gif" ALIGN="middle" ALT="o"> <B>Finite Patch Primitives</B>
+<UL>
+<BR> They are 4: bicubic patch, disc, smooth triangle and triangle.
+<BR> The are totally thin, finite objects which have no well define
+inside. Can be used only in <A HREF="#CSG">CSG</A> union operation.
+<P> These are almost all interesting.
+<BR> <B>The triangle</B> is used primarly to create more complex
+and smooth object than with other methods. As their number may be quite
+big to describe an object with a good precision, it is recommended to use
+external modeler and then convert the resulting objects. As an example,
+Imagine modeler builds up all its object with triangles, which then can be
+converted to PovRay (see later).
+<BR> <B>The smooth triangle</B> are similar to the previous one,
+but the normal surface at the join ponts are averaged, giving a more
+smooth surface (Phong method).
+<BR> <B>The bicubic patch</B>, or Bezier patch, is an object made
+up of bezier curves that describe a surface. This is a quite complex
+object to understand and handle, but it can be descibed as a square grid
+of 16 points, with 4 points for every edge. The points are the control
+points of the Bezier curves (which is similar to a spline, if you know
+what is it), that will define smooth curves transformed into a surface.
+The mathematical surface will then be subdivided in smaller pieces
+(following user settings) and then approximated. It can be used to
+describe very complex bumped surfaces, like creased fabrics, in a very
+realistic (though complex) way.
+</UL>
+<P><IMG SRC="../../pics/bullets/lgr.gif" ALIGN="middle" ALT="o"> <B>Infinite Solid Primitives</B>
+<UL>
+<BR> They are 5: plane, cubic, poly, quadric and quartic
+<BR> The may be infinite primitives, so they do not respond to automatic
+bounding, but may be used in <A HREF="#CSG">CSG</A> operations.
+<P> Very interesting objects are:
+<BR> <B>Poly</B> are objects that use mathematical equations to
+describe a 3D object. The equation order can go from 2 to 7 inclusively.
+They are quite complex to understand (and handle) but very simple to use.
+If you undestand a bit of matemathics these are perfect to render
+realistically (and maybe with special effects) those object that you see
+produced with expensive mathematical programs like Mathematica or MapleV.
+<BR> <B>Quadric, cubic and quartics</B> are the same as above but
+they are for respectively second, third and fouth order equations. They
+exists to avoid to type all the not needed parameters in the poly
+definition, but works the same way. For instance, the quadrics (2nd order
+equations) can be used to create objects like spheres, ellipsoids, cones,
+cylinders, paraboloids and hyperboloids.
+</UL>
+</UL>
+<P> Together with these objects, there are 3 more operations that can be
+used to create other, more complex objects, starting from the primitives
+listed above. The tecnique through which the objects are combined and
+modified is called <A NAME="CSG">CSG</A> (Constructive Solid Geometry).
+<P> The operations available are Union, Difference and Intersection plus a
+special kind of Union called Merge that removes the intersecated surfaces,
+useful for transparent objects whose inside is going to be rendered without
+unwanted artifacts produced by the internal surfaces of united ojects.
+<P> With CSG (which corresponds to boolean operations) is then possible to
+build much more complex objects starting from simple primitives. It is then
+possible to cut a cylindrical hole inside a sphere or cut primitives into
+smaller pieces using planes or other thin patches.
+<BR> For this to work in the right way the user has to understand quite well
+what are the meanings of inside and outside of objects, which may be simple
+for a box or a sphere, but a bit more complex for planes or objects obtained
+by equations.
+<P> Once you have learned the objects you can use, you have to learn how to
+put them into the space for building the scene, how to place the camera and
+the lights. This however is an aspect that is described very well in the
+manual, which, as I have already said, should be read by anyone who wants to
+understand better how raytracing works.
+<P><H5><IMG SRC="../../pics/bullets/gre.gif" ALIGN="middle" ALT="o">Transformations</H5>
+PovRay allows the user to apply some simple transformations to all the
+elements of a scene (objects, textures, lights, camera) to define precisely
+its aspect and position. These transformation are Scale, Rotate, Translate
+and can be applied to all the 3 axis which define the working space.
+<BR> The only important thing to note is that those transformations are
+<B>always</B> executed in the exact order they are encountered and
+are always referred to the origin of the world (coordinates 0,0,0). The
+order is important as they may not perform the same transformation if
+applied in a different order. Rotating an object after having translated it
+somewhere far away from the origin will make it rotate around the origin,
+not around one of its axes statically (like a spinning effect). To obtain a
+spinning effect the objects must be brought to the origin of the world,
+rotated and then translated again in the wanted position. This is not as
+complex as it appears as most of the objects, as soon as they are created,
+are at the origin of the world ready to be scaled, rotated and then
+translated.
+<P> An important feature is the fact that the transformation can be applied
+everywhere even before a CSG operation and after it. This gives lots of
+flexibility to the modeling of objects.
+<P><H5><IMG SRC="../../pics/bullets/gre.gif" ALIGN="middle" ALT="o">Textures</H5>
+<P> Objects needs to have a coloured surface to be useful in a scene (unless
+you want them all white). This aspect in PovRay is very powerful and gives
+incredible results showing how it is relatively easy to have high quality
+procedural textures (whose source code could be used to add mathematical
+textures to programs that do not support them, like LightWave).
+<P> The incredibly high quality textures PovRay can create, can make it a
+tool just to produce texture brushes for other programs. But surely this
+will be an underuse of the possibilities the program has.
+<P> Every object in the scene can have its own texture, which is mantained
+also after CSG operations. It is then possible to have an union of objects
+each having a different texture that will then be maintained after the
+union, or override completely the texture of the single objects with a new
+one that affects completely the new created object.
+<BR> All textures, and even every single component of the texture, can have
+their own tranformations (scale, rotate, translate).
+<P> Texture are made up of 3 basic part, each describing a particular
+physical aspect of the surface:
+<UL>
+<IMG SRC="../../pics/bullets/lgr.gif" ALIGN="middle" ALT="o"> Pigment <BR>
+<IMG SRC="../../pics/bullets/lgr.gif" ALIGN="middle" ALT="o"> Normal <BR>
+<IMG SRC="../../pics/bullets/lgr.gif" ALIGN="middle" ALT="o"> Finish <BR>
+</UL>
+<P><H4><IMG SRC="../../pics/bullets/lgr.gif" ALIGN="middle" ALT="o">Pigment</H4>
+<P> Pigment attribute specifies what will be the colours of the surface. A
+colour map is specified and will represent colours in a virtual range
+between 0 and 1. The colours are defined using the usual RGB components
+(in the range 0 - 1) and a filter component that specify how much a color
+is transparent. This allows for complex transparency where only some
+shades can be transparent while the rest of the texture may be completely
+opaque.
+<BR> Then an procedural algorythm is specified that will map that colour
+map on the surface of the object. The available algorythms are:
+<P><UL>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Agate</B> Similar to Marble but with a different
+turbulence function. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Bozo</B> Uses a noise function. One of the most
+configurable pattern.<BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Checker</B> To map checkers. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Color</B> For simple solid color. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Gradient</B> Smooth transition between colors. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Granite</B> Use simple 1/f noise function. Quite
+effective. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Hexagon</B> To map hexagons. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Leopard</B> Creates regular geometric pattern of
+circular spots. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Mandel</B> Compute the standard mandelbrot
+fractal pattern. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Marble</B> Smoothly blends color of a repetitive
+colour map.<BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Onion</B> Creates concentric spheres like layers
+of an onion. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Radial</B> Wraps the colour map into a radial
+map along the Y axis. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Spotted</B> As Bozo but with no turbulence. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Wood</B> Creates concentric circles of smoothly
+blended colours. <BR>
+</UL>
+<P> Moreover, if you think these are not enough there's always the option
+to use standard brush mapping (with planar, cylindrical and spherical
+mapping) and automatic antialiasing of the brush while being mapped for
+higher quality results.
+<P> All the patterns above have standard parameters that can be modified
+to obtain interesting and different effects even using the same kind of
+pattern. The parameters are:
+<P><UL>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Turbulence</B> Its a function that calculates a
+particular kind of noise (called DNoise, that returns a direction instead
+of a simple number). It is used to decide which color has to be put in the
+resulting pattern. The turbulence value goes from 0 to whatever and can be
+specified independently for every axis. Higher the value bigger the
+turbulence. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Octaves</B> As Turbulence uses a way of
+consecutive steps to arrive to the final point it has to use, this decide
+the number of steps the function has to perform before ending. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Omega</B> This determines the reduction of the
+distance performed by consecutive steps. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Lambda</B> Determines how different the direction
+of a step is different from the previous one. <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Frequency and Phase</B> Useful for rotating the
+colours of a color map or determining the number of the defined color map
+that should fit in the range 0-1. They are very useful for the normal
+waves patterns (see below). <BR>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Quick Colour</B> Not really a parameter but is
+used as an extra attribute that will define the solid color the object
+will have when rendering with textures disabled (to speed up time
+rendering).
+</UL>
+<P> Finally the pattern can be subjected to the usual transformations like
+scaling, rotation and translation.
+<P><H4><IMG SRC="../../pics/bullets/lgr.gif" ALIGN="middle" ALT="o">Normal</H4>
+<P> Normal is anything which is ortogonal to something else. Here normal
+referres to a virtual axis ortogonal to the surface on a specific point
+that in raytracing is used to determine the behaviour of the light in that
+point.
+<BR> The Normal attribute is used as a "trick" to produce pseudo-realistic
+bump effects on the surface without having to add too muck complexity to
+the object. The effect relies on the fact that in raytracing the
+proprierties of an object that are perceived are mostly the reflective
+proprierties. Altering the way the light behave on a surface can
+dramatically change the aspect of an object.
+<P> Like colour patterns there are different ways to alter the appearence
+of a surface, and these are:
+<P><UL>
+<IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Bumps</B> It is used to produce rounded random
+pattern of bumps, like those of an orange skin. This uses the same random
+noise of the Bozo but the result are transformed in perturbations of the
+normal surface.
+<BR> <IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Dents</B> Very effective with metal
+textures.
+<BR> <IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Ripples</B> Realistic function to create
+bumps like those of a dropped ripple. Here the frequency and phase
+parameters can be used to animate the entire effect.
+<BR> <IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Waves</B> Used to simulate the waves of the
+sea. As above frequency and phase can be used to animate the effect.
+<BR> <IMG SRC="../../pics/bullets/cya.gif" ALIGN="middle" ALT="o"> <B>Wrinkles</B> Used to simulate wrinkles on
+some surfaces (paper, cellophane).
+</UL>
+<P> Together with these mathematical transformations there is also the
+option to use brush mapping, where the color of the brush specify the
+virtual height of the relative point.
+<P> All the transformations which can be applied to the colour pattens can
+be execute on the normal attribute as well.
+<P> <B>IPORTANT:</B> The normal effect works in such a way that it
+is mainly visible when the normal of the surface points directly toward
+the camera, while has no effect when the normal of the surface is
+orthogonal to the camera. More precisely, the perturbing normal process
+will not have any effect on the edge of the objects (for instance a
+sphere), and its physical form will not be altered. So in the end bumps
+will mot appear on the edge of the objects and this may be taken into
+account if the user does not want to introduce visible artifacts in the
+final rendering. The process that performs a physical change of the object
+is called displacement map and is quite complex, and its not implemented
+in this version of the program.
+<P><H4><IMG SRC="../../pics/bullets/lgr.gif" ALIGN="middle" ALT="o">Finish</H4>
+<P> Here we define all the attributes of the object behaviour which relate
+to the light. Without listing all the available proprierties specifically
+the object can have highlights, phong shades, reflectivity, proper ambient
+light, diffusion, brilliance, specular reflections, specular highlights,
+metallic highlighs, refraction and ior (index of refraction). If an object
+is transparent is defined in its colour map (See above).
+<P> PovRay has then everything needed to create complete textures in all
+their apects, and its flexibility puts it a step above many other kind of
+programs that just use the brush mapping method or do not have all the
+features to create realistic textures.
+<P> But if this is not enough again, PovRay provides other ways to create
+much more complex textures, like tiles textures, material maps or layered
+textues, that are all defined starting from the definition of simple
+textures as seen above.
+<P> The produced textures, thanks also to the high quality of the
+rendering, are very realistic and respond perfectly to the behaviour of
+the light in real life. Expecially glasses are very good and the
+refraction effect is so accurate that the behaviour of the lenses are
+perfectly realistic (something that some other programs cannot say as they
+may just approximate the behaviour of the refraction effect, simulating a
+real ray tracing engine). Moreover PovRay enjoys the use TIR (Total
+Internal Reflection) algorythm which creates the real behaviour of the
+light when the transparent object has lots of faces (like precious gems,
+diamonds, but also prisms).
+<P> An important feature of texturing is the fact that the mathematical
+textures are defined in the 3D space (not only 2D) by simple projection.
+Thus the inner of the object is affected too by the texture, even though
+the projection may not produced the wanted results. In this case it is
+better to subdivide the object in smaller parts and to texture them
+independently.
+<P><H5><IMG SRC="../../pics/bullets/gre.gif" ALIGN="middle" ALT="o">Light</H5>
+<P> The use of the light in raytracing is fundamental for good results,
+unlike someone may think who concentrates all his efforts on the perfect
+modeling of objects and not studying enough how they are placed with
+respect to the lights and the camera. Have a look at the artcle dedicated
+to the lights and shadows in raytracing (<A
+HREF="../tuto/lights.html">Lights and shadows</A>)
+<P> In PovRay lights are treated as normal objects, but they are sizeless
+(so texturing and scaling them has no effect, but they may be coloured).
+There are 3 kinds of lights: point lights, spotlight and area light (which
+have 2 dimension size).
+<P> While the first two kind are similar to those used in other programs
+(spotlight has it parameter to define the cone and the falloff of the
+light), the area light is quite interesting (and original, as there's no
+other program I know that use them).
+<P> <B>Area lights</B> are light sources distributed over a surface
+infinetly thin. Apart the way they are defined in POvRay, they are very
+useful as they simulate real light in a much better way. In real life, in
+fact, there are no natural sizeless lights which cast sharp shadows (read
+the <A HREF="../tuto/lights.html">article</A> on the argument if not
+yet) and if used can create much more realistic pictures than by using
+artificial point sized lights.
+<P><H5><IMG SRC="../../pics/bullets/gre.gif" ALIGN="middle" ALT="o">Camera</H5>
+<P> Last but not least there's the use of the camera. In PovRay the camea
+is used as a real professional camera, where the user can decide the angle
+of view (or field of vision), and lots of other parameters that define the
+laws of the world where the scene his created. There's also the option to
+decide the aspect ratio between the X and Y axes to produce pictures that
+have to be seen on particular kind of screens (like PAL TV, NTSC TV, HDTV
+or whatever) having them perfectly sized for that particular monitor.
+</UL>
+<P> There are other advanced features of the program that I have not covered
+like the possibility to make animations or the external configuration files.
+However everything is described in a very good way in the manual coming with
+the archives of PovRay.
+<P> The requirements are on the whole very low. As for all programs of this
+kind faster is the processor less time you have to wait and greater the
+enjoyment. Quality and rendering settings can make the rendering process a
+task that takes few seconds or some hours. However for scenes of medium
+complexity at medium resolutions it's similar to other programs and it's in
+the range of some minutes. Rendering time increases exponentially as
+resolution is raised and antialiasing is activated. Just as an example it
+took me 20 hours for every texture demo scene which is included in the
+archive on my old A500 plus at a resolution of 640x512. On the whole, not
+that bad (if you know how slow the MC68000 is). With the 040 it took 24
+minutes with multitasking on (handled by Exeutive) and with me writing this
+and using HSC, while on a Pentium 90 with MS-DOS it took about 20 minutes at
+resolution of 640x480 (can't remember if there was antialiasing or not, but
+I suppose the standard one was set).
+<P> The program is distributed in different archives which contain binaries,
+examples and the source code for a total of more than 5 MB of compressed
+stuff. Apart the sources, which may interest only some advanced programmer,
+the interesting things are the exectables (IEEE or FPU), 350KMytes of
+documentation in ASCII format and a serie of other files like ready to be
+used includes with hundreds of textures (stones, metals, glasses, skies,
+woods and lots of other ones), objects and colours definitions and a set of
+example scenes divided in levels, from the most simple to the most complex
+(and beautiful), together with some examples of mathematical objects and
+marvellous demos which demonstrate the power of the program.
+<P> My advice is to compile the texture demos at a decent video resolution
+(at least 640x480) at maximum quality (antialiasing is not that important)
+just to have an idea of the quality of the results. If your machine is fast
+(or you are ready for a all night rendering) compile also the fish13 scene
+in the level3 directory and be amazed!
+<P> The official Amiga version of PovRay version 2.2 can be found on Aminet
+as IEEE and FPU versions. However, together with these ones, there is also a
+not official version, expecially suited for the Amiga as it supports
+CyberGFX software as well as the AGA chipset for the display of the
+rendering in a screen or even in a window on a public screen. This version,
+though not official, is much more stable. I have been using this for some
+years now, and I have had no problems at all with it. There's also another
+version compiled for the 040 exploiting all the raw power of the 040 FPU
+which however has some limitations like not being able to display images
+while compiling and not being that stable.
+<P> The program is supported with many external programs which may be useful
+for converting picture file formats. On Aminet there are other useful
+programs like GUIs for the shell options, logo makers, animators and object
+converters. We'll see these in a future issue of Tarantula.
+<P>
+<CENTER><IMG SRC="../../pics/lines/srain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<P>
+<P><UL>
+<B>Name</B>: Persitence of Vision (PovRay) <BR>
+<B>Version</B>: 2.2 <BR>
+<B>Author</B>: Various <BR>
+<B>Kind</B>: Graphics - Raytracer <BR>
+<B>Distribution</B>: Freeware - See documentation for limitations <BR>
+<B>IQ</B>: Very high <BR>
+<B>Location</B>: Aminet/gfx/3D in variuos archives <BR>
+<B>Quality</B>: Excellent <BR>
+</UL><P>
+<UL>
+<B>Pro</B>: Freeware, lots of advanced features, incredibly high quality output,
+professional documentation, lots of examples included in the archive. <BR>
+<B>Cons</B>: No graphical modeler, lacks of some fatures like splines and automatic
+importing of text, some object may be too diffult to be used manually. <BR>
+</UL>
+<P>
+<CENTER><IMG SRC="../../pics/lines/lrain3d.gif" WIDTH="100%"
+ALT="------------------------------------------"></CENTER>
+<P>
+<A HREF="../index.html"><IMG SRC="../../pics/small/summary.gif" ALIGN="right" ALT="Summary" BORDER=0></A>
+</BODY>
+</HTML>

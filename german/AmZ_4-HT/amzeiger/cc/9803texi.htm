@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/98 - TexInfo</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>TexInfo kennenlernen und nutzen</H1>von<BR><A HREF="mailto:C.Jahn@gmx.de">Carsten Jahn</A></DIV>
+<P>
+Eine einheitliche Syntax, aus der sich AmigaGuide- und TeX-Dokumente und
+eine &quot;ASCII-.doc&quot; f&uuml;r die Druckerausgabe erzeugen lassen?
+</P><P>
+Tats&auml;chlich bringt <B>Texinfo</B> diese Formate gut unter einen Hut. Erzeugbar
+sind auch sogenannte Info-Dateien f&uuml;r eine Art Online-Hilfe bei Unix,
+die auf dem Amiga zwar anwendbar aber kaum verbreitet ist. Nach HTML
+kann auch konvertiert werden (sagt die Anleitung), ein solches Proggi
+ist mir aber noch nicht &uuml;ber den Weg gelaufen.
+</P><P>
+Texinfo ist gut f&uuml;r die Dokumentation von Programmen geeignet, deshalb
+stelle ich es an dieser Stelle vor. Der Einstieg wird auch erkl&auml;rt.
+</P><P>
+Der Autor eines Texinfo-Dokuments sollte gestalterisch eher defensiv
+veranlagt sein, die erzeugten AmigaGuide-Dokumente nutzen das System
+nicht aus (keine farbige Ausgabe). Daf&uuml;r kann man die Struktur des
+Textes sehr genau vorgeben. Verf&uuml;gbar sind Elemente wie Kapitel und
+Abschnitte, &quot;Men&uuml;s&quot; f&uuml;r Hypertext-Systeme, Ausschnitte / Zitate und z.B.
+Hervorhebungen, deshalb sollte physische Textauszeichnung wie fett,
+kursiv, unterstrichen vermieden werden. Sie sind aber auch m&ouml;glich.
+</P><P>
+Texinfo (bzw. das zugeh&ouml;rige Formatierungsprogramm &quot;makeinfo&quot;) habe ich
+von der Geek Gadgets 2 (Amiga Developer Environment). Im Aminet gibt es
+zum Beispiel text/hyper/mkguide155.lha, mit dem sich Texinfo-Dateien
+nach AmigaGuide konvertieren lassen.
+</P><P>
+<B>Bedienung von Makeinfo:</B>
+</P><P>
+&quot;makeinfo --help&quot; listet die verf&uuml;gbaren Kommandozeilenoptionen.
+</P><P>
+Ein sinnvoller Aufruf, um einen AmigaGuide-Text zu erzeugen, w&auml;re:
+</P><P>
+makeinfo   --amiga-40   -o ram:x.guide   x.texi
+</P><P>
+Makeinfo erzeugt auch AmigaGuide-Dokumente f&uuml;r OS 2.x (Argument --amiga)
+und f&uuml;r OS 3.0 (Argument --amiga-39). Es gibt da so kleine Unterschiede.
+</P><P>
+Mit --fill-column X l&auml;&szlig;t sich die Anzahl der Zeichen pro Zeile einstellen,
+die der erzeugte Text maximal haben darf (Standard ist 72).
+</P><P>
+Wenn man mit TeX eine DVI-Datei zur Ausgabe eines richtigen Handbuchs
+erzeugen will, mu&szlig; man nichts umkonvertieren. Eine Texinfo-Datei sollte
+am Anfang das Kommando &quot;\input texinfo&quot; enthalten, das von makeinfo
+&uuml;berlesen wird. TeX jedoch holt eine Art Include in den Speicher, das
+die Texinfo-Befehle zu TeX-Befehlen umm&uuml;nzt. TeX kann den Rest der
+Texinfo-Datei ganz normal lesen. Die &quot;texinfo.tex&quot;-Datei, die TeX zu
+Beginn lesen mu&szlig;, ist auf der Geek Gadgets CD dabei (etwas versteckt
+als &quot;ADE/share/automake/texinfo.tex&quot;).
+</P><P>
+<B>Die Grundelemente von Texinfo</B>
+</P><P>
+Wer schon mal ein AmigaGuide-Dokument geschrieben hat, kennt sicher die
+Einteilung in <B>Nodes</B>. Am Bildschirm wird immer nur ein Node auf einmal
+pr&auml;sentiert (ggf. darf der Benutzer scrollen), Querverweise rufen einen
+anderen Node auf. In einem Node ist die Inhaltsseite, in einem anderen
+evtl. der Index des Dokuments.
+</P><P>
+F&uuml;r die Darstellung am Bildschirm kann makeinfo auch &quot;Men&uuml;s&quot;, also
+Auflistungen von Querverweisen, erzeugen.
+</P><P>
+Im &quot;TeX-Modus&quot; (also beim Interpretieren durch TeX) werden die Nodes und
+Men&uuml;s sinnvollerweise &uuml;berlesen, jedenfalls was den Satz von Text angeht
+(Referenzen werden nat&uuml;rlich trotzdem gepr&uuml;ft). Aber es gibt ja noch
+Befehle zur Strukturierung von Text, mit denen man Kapitel, Abschnitte,
+Unterabschnitte u.&auml;. definieren kann. Auch im Info/AmigaGuide-Modus sind
+sie n&uuml;tzlich (und sollten auch verwendet werden!). So wird ein
+einheitlicher Satz von &Uuml;berschriften erreicht, TeX numeriert die
+&Uuml;berschriften zus&auml;tzlich durch.
+</P><P>
+Wichtig zu Dokumentationszwecken sind auch Spezialbefehle, die Parameter,
+Funktionsnamen, Shortcuts u.&auml;. markieren. Beispiele und Sourcecodes lassen
+sich auch wiedergeben, ohne da&szlig; Texinfo darin herumpfuscht.
+</P><P>
+<B>Eine Texinfo-Datei</B>
+</P><P>
+Um einige Leistungen von Texinfo aufzuzeigen, folgt hier ein kleines
+Beispiel. Nat&uuml;rlich ist das nur ein kleiner Ausschnitt. Andererseits
+interpretiert makeinfo die Syntax auch nicht so vollst&auml;ndig, wie es
+m&ouml;glich w&auml;re, z.B. verweisen die Index-Eintr&auml;ge nur auf einen bestimmten
+Node, nicht auch auf eine Zeile innerhalb des Nodes, was bei langen Nodes
+w&uuml;nschenswert w&auml;re.
+</P><P>
+Die Texinfo.guide (in ADE/guide/) ist erstmal etwas abschreckend, da
+600 KB gro&szlig;, aber dank dieser kleinen Einf&uuml;hrung sicher &uuml;bersichtlicher.
+<B>Achtung</B>: man sollte die Datei vielleicht besser nicht in Multiview lesen,
+weil AmigaGuide die @-Zeichen von Texinfo f&uuml;r den Beginn eigener Befehle
+h&auml;lt, wenn sie am Zeilenanfang stehen (und den Texinfo-Befehl dann nicht
+ausgibt).
+</P><P>
+Die Steuerbefehle beginnen alle mit &quot;@&quot;, wie gleich ersichtlich wird.
+Sollen die Zeichen <B>@</B>, <B>{</B> und <B>}</B> ausgegeben werden, mu&szlig; <B>@@</B>, <B>@{</B> und <B>@}</B>
+benutzt werden.
+</P><P>
+&quot;@c&quot; macht den Rest der Zeile zum Kommentar, aber da ich hier ziemlich
+viel zu kommentieren habe, verwende ich an dieser Stelle kein @c. Der
+Texinfo-Quelltext ist einger&uuml;ckt dargestellt. Die &uuml;bersetzbare Datei
+<B>bankraub.texi</B> liegt bei.
+</P><P>
+        \input texinfo
+</P><P>
+So geht es immer los, siehe oben.
+</P><P>
+        @set VERSION 1.1
+</P><P>
+Hier wird eine Variable, ein Makro gesetzt (wie bei #define in C).
+Sie kann sp&auml;ter mit @value ausgelesen werden.
+</P><P>
+        @settitle Bankraub @value{VERSION}
+</P><P>
+Titel des Dokuments. Au&szlig;erdem wird mit @value die Variable abgefragt,
+die eben gesetzt wurde.</P><P>
+
+        @node    Top,       &Uuml;ber Bankraub, (dir),         (dir)
+</P><P>
+Hier geht ein Node los. Folgende Parameter hat diese Zeile:
+</P><P>
+&quot;Top&quot;: ist der Name des Nodes, wird von Bez&uuml;gen etc. verwendet.
+ Der Start-Node hei&szlig;t immer &quot;Top&quot;.
+</P><P>
+&quot;&Uuml;ber Bankraub&quot;: So hei&szlig;t der n&auml;chste Node (f&uuml;r die Bl&auml;ttersymbole)
+</P><P>
+&quot;(dir)&quot;: An dieser Stelle steht der Name des Nodes, der der beim
+R&uuml;ckw&auml;rtsbl&auml;ttern ber&uuml;cksichtigt wird. Da der erste Node keinen Vorg&auml;nger
+hat, steht hier &quot;(dir)&quot;. makeinfo u.&auml;. Tools setzen daf&uuml;r ggf. den Node
+einer anderen Datei ein.
+</P><P>
+&quot;(dir)&quot;: &Auml;hnlich wie beim vorhergehenden Parameter, nur da&szlig; es hier um
+den hierarchisch &uuml;bergeordneten Node geht. -- Also den, &uuml;ber den diese
+Seite aufgerufen werden kann, aus Sicht der Men&uuml;s.
+</P><PRE>
+        Bankraub, ein innovatives Programm!
+
+        @menu
+        * &Uuml;ber Bankraub::    Sinn und Zweck
+        * Aufruf::           Wie wird Bankraub @value{VERSION} benutzt?
+        * Bugs::             Probleme mit Bankraub.
+        * Index::            Index.
+        @end menu
+</PRE><P>
+Hier ist ein Men&uuml; zu sehen. Viele der Texinfo-Strukturen (&quot;<B>Umgebungen</B>&quot;
+werden sie genannt, analog zu TeX) sind in &quot;@xy&quot; und &quot;@end xy&quot; eingebettet.
+</P><P>
+Das Men&uuml; erstellt eine Liste von Links im Hypertextdokument und bleibt
+ohne Textausgabe in TeX.
+</P><P>
+Jeder Eintrag beginnt mit einem Stern. Dann folgt der Text, der im
+Querverweis-Knopf zu lesen ist, ein Doppelpunkt, und der Name des Nodes,
+zu dem der Knopf verweist. Weil man recht frei bei der Definition der
+Nodenamen ist (Leerzeichen erlaubt), sollte man so sinnvolle Nodenamen
+w&auml;hlen, da&szlig; sie gleichzeitig als Beschreibungstext durchgehen. In diesem
+Fall mu&szlig; man den Namen nur einmal schreiben, wie oben (sonst z.B. &quot;* &Uuml;ber
+Bankraub:About:&quot;, wenn der Node &quot;About&quot; hei&szlig;en w&uuml;rde).
+</P><P>
+Nach dem n&auml;chsten Doppelpunkt kommt die weitergehende Beschreibung,
+darf auch in der n&auml;chsten Zeile weitergehen (nat&uuml;rlich ohne Sternchen
+am Anfang).</P><PRE>
+        @node    &Uuml;ber Bankraub, Aufruf,    Top,      Top,
+        @chapter &Uuml;ber Bankraub
+</PRE><P>
+Mit Chapter erzeugt man ein neues Kapitel. In AmigaGuide wird der
+&Uuml;berschriftentext mit Sternchen unterstrichen, TeX setzt ihn in einer
+gr&ouml;&szlig;eren Schrift und beginnt eine neue Seite, etc. Verweise in TeX
+benutzen den Namen auch, a la &quot;Siehe 2.1.1 &Uuml;ber Bankraub, Seite 123&quot;.
+</P><P>
+        @section Zweck
+</P><P>
+Section ist eine untergeordnete Unterteilungsebene, ein Chapter kann
+mehrere Sections und eine Section mehrere Subsections enthalten...
+</P><P>
+        @cindex  Zweck
+</P><P>
+Hier wird dem &quot;Concept Index&quot; (Texinfo kennt mehrere Indizes, auch f&uuml;r
+Shortcuts, programminterne Befehle u.a.) ein neuer Eintrag hinzugef&uuml;gt.
+</P><PRE>
+        Bankraub liegt inzwischen in der Version @value{VERSION} vor. Das
+        Programm macht eine spezielle Art der &Uuml;berweisung, die im &uuml;bergreifenden
+        Computersystem der Banken programmiert ist, f&uuml;r den normalen Kunden
+        zug&auml;nglich.@footnote{Zwar ist der Trick, der in Bankraub ausgenutzt
+        wird, schon lange &uuml;ber die Eingabe geheimer Codes im Geldautomaten
+        nutzbar, bringt aber ein gewisses Aufsehen mit sich, da um die 200
+        Ziffern getippt werden m&uuml;ssen.}
+</PRE><P>
+Mit @footnote{Text} erstellt man Fu&szlig;noten. In Hypertext-Dokumenten kann
+man sowohl &quot;echte&quot; Fu&szlig;noten (der Text erscheint ganz unten im Node) und
+Verweise zu einem neuen Node mit dem Fu&szlig;notentext erhalten. Man entscheidet
+das &uuml;ber den Aufruf von makeinfo, mit dem Parameter &quot;--footnote-style end&quot;
+bzw. &quot;--footnote-style separate&quot;.
+</P><PRE>
+        @section Voraussetzungen
+        @cindex  Voraussetzungen
+
+        @itemize @bullet
+        @item Visa-Fotokarte
+        @item Eigene Kontonummer beginnt mit @code{04}.
+        @end itemize
+</PRE><P>
+Das war eine Aufz&auml;hlung! Zwischen &quot;@itemize&quot; und &quot;@end itemize&quot; kann man
+&quot;@item&quot; benutzen, das jeweils einen neuen Punkt (den @bullet) vor den Text
+eines einzelnen Aufz&auml;hlungspunkts stellt. Bei @itemize kann man angeben,
+wie der Punkt aussehen soll, m&ouml;glich w&auml;re z.B. auch &quot;@itemize -&quot; f&uuml;r
+Spiegelstriche.
+</P><P>
+Die Itemize-Umgebungen lassen sich auch verschachteln, es wird
+trotzdem korrekt einger&uuml;ckt.
+</P><P>
+Mit &quot;@code&quot; wird die &quot;04&quot; zu etwas ganz besonderem deklariert. Oft ist es
+schwierig, die richtige Markierungsart f&uuml;r eine bestimmte Information zu
+finden, aber Texinfo bietet ja so manches (mal in der Anleitung st&ouml;bern...)
+</P><PRE>
+        @node    Aufruf,        Bugs,      &Uuml;ber Bankraub, Top
+        @cindex  Aufruf
+        @chapter Aufruf
+
+        Bankraub wird folgenderma&szlig;en aufgerufen:
+
+        @code{Bankraub} @var{MyAccount} @var{StealAccount} @var{Amount}
+</PRE><P>
+&quot;@var{}&quot; rahmt &quot;metasyntaktische Variablen&quot; :) ein, hier sind es einfach
+Platzhalter f&uuml;r einzusetzende Parameter.
+</P><PRE>
+        Dabei haben die Parameter folgende Bedeutungen:
+
+        @multitable @columnfractions .3 .7
+        @item @var{MyAccount}
+        @tab die eigene Kontonummer und Bankleitzahl im Format @var{Konto}:@var{BLZ}
+        @item @var{StealAccount}
+        @tab wie bei @var{MyAccount}, jedoch das Konto, das etwas erleichtert werden soll.
+        @item @var{Amount}
+        @tab der Betrag des Geldtransfers in DM.
+        @strong{ACHTUNG:} Negative Betr&auml;ge kehren die Transferrichtung um!
+        @end multitable
+</PRE><P>
+Toll, Texinfo kann auch ein wenig Tabellen machen, mit der
+&quot;<B>multitable</B>&quot;-Umgebung. Die hier vorgestellte Variante arbeitet mit festen
+Spaltenbreiten, in Bruchteilen der Gesamtbreite der Seite angegeben (die
+erste Spalte erh&auml;lt 30%, die zweite 70% des bedruckbaren Platzes). Mit
+&quot;@item&quot; beginnt man eine neue Zeile, mit &quot;@tab&quot; schaltet man zur n&auml;chsten
+Spalte.
+</P><P>
+Die Anzahl der Spalten bestimmt man durch die Anzahl der Bruchteile, die
+man im Kopf angibt.
+</P><P>&quot;@strong{}&quot; hebt einen Text hervor, &quot;@emph{}&quot; ist eher als Betonung
+gedacht (&quot;der Polizist scho&szlig; @emph{so} weit daneben, da&szlig; eine
+unbeteiligte Passantin...&quot;)
+</P><PRE>
+        Bitte beachten Sie auch die @ref{Bugs,Programmfehler}
+</PRE><P>
+Das ist ein Querverweis. Zuerst wird der anzuspringende Node genannt, dann
+der Text, der im Knopf erscheinen soll. Es gibt noch die @xref-Variante,
+die zus&auml;tzlich ein &quot;See ...&quot; erzeugt.
+</P><PRE>
+        @node    Bugs,          Index,     Aufruf,   Top
+        @cindex  Bugs
+        @chapter Bugs (Programmfehler)
+
+        @cindex Lastschrifteinzug
+        @cindex Schnuppertransponder
+
+        Nat&uuml;rlich gehen wir davon aus, da&szlig; bei derart sensibler Software eine
+        Fehlfunktion den Anwender besonders &auml;rgerlich stimmen wird. Denkbar w&auml;re,
+        da&szlig; der Transfer durch einen Fehler im Bankserver-Schnuppertransponder
+        von der Bank als Lastschrifteinzug gedeutet wird. Der Bestohlene wird
+        sich wohl bei Ihnen melden. Daher m&ouml;chten wir Ihnen den Rat geben, nur
+        Konton zu bestehlen, wo es sowieso nicht auff&auml;llt.
+
+        Umgekehrt k&ouml;nnen Sie nat&uuml;rlich besonders gro&szlig;e Summen von Regierungskonten
+        abzweigen, um z.B. noch den Euro zu verhindern (Konvergenzkriterien), aber
+        das wird wohl kaum noch m&ouml;glich sein.
+
+        @cindex Gef&auml;ngnis
+
+        Jedenfalls gab es in der Vorg&auml;ngerversion 1.0 einen kleinen Fehler, der
+        ein paar Anwender ins Gef&auml;ngnis gebracht hat. Wir sind aber zuversichtlich,
+        den behoben zu haben...
+
+        @node    Index,         (dir),     Bugs,     Top
+        @chapter Index
+
+        Und da isser, von Texinfo selbst erzeugt:
+
+        @printindex cp
+</PRE><P>
+Mit &quot;@printindex&quot; wird ein Index ausgegeben. Ich sagte schon, da&szlig; es
+mehrere Indizes gibt. &quot;cp&quot; bezeichnet den Concept Index.
+</P><P>
+Das war der Querschnitt durch eine Texinfo-Datei. Die <A HREF="9803dat.lha">Datei</A> selbst ist zum
+Herumprobieren separat dabei.
+</P><P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9803pool.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0398/main.htm"">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../kw/wb_tun4.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

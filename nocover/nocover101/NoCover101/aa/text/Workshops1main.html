@@ -1,0 +1,304 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Workshops / Hintergrundberichte / Buchvorstellungen
+---------------------------------------------------
+
+1. Einf&uuml;hrung in die Reaction-Programmierung (von Martin R. Elsner)
+
+Teil 5: Ressourcen
+
+
+Heute kommen wir zu einem etwas anderen Teil der Programmentwicklung, der nicht
+direkt mit Reaction zusammenh&auml;ngt, den man aber auch f&uuml;r unsere Objekte ben&ouml;tigt
+(ich hoffe, die Puristen unter euch werden mir das nicht &uuml;bel nehmen ;).
+Zus&auml;tzlich zum eigentlichen Quellcode ben&ouml;tigt man meist weitere Daten;
+man spricht auch von Ressourcen (w&ouml;rtlich "Vorr&auml;te" oder "Hilfsmittel").
+Dabei handelt es sich weitgehend um Texte und Grafiken.
+
+Dabei kommt den Texten eine besondere Bedeutung zu, da diese
+m&ouml;glichst immer in der richtigen Sprache erscheinen sollen! Gerade im
+Amiga-Bereich sollte man darauf achten, dass eigene Programme mindestens
+die Voraussetzungen daf&uuml;r bieten. Die eigentliche &Uuml;bersetzung (d.h. die
+Erstellung sogenannter "Catalogs") kann mit geringen Kenntnissen von fast jedem
+Interessierten angefertigt werden, was den Programmierer wieder sehr entlastet.
+Die Lokalisierung eines Programms soll der Hauptteil des heutigen Kurses werden,
+zuvor aber ein paar Worte zu den
+
+
+Grafiken
+
+Grafiken m&uuml;ssen im Allgemeinen nicht sprachspezifisch sein, aber verw&ouml;hnte User
+m&ouml;chten gerne auch diesen Teil des Programms selbst konfigurieren. Zum Teil ist
+es auch n&ouml;tig, dem Anwender die Auswahl zwischen verschieden gro&szlig;en Grafiken zu bieten
+(siehe z.B. die Bilder in den Listern von ClassAction, die 16 oder 11 Pixels hoch
+sein k&ouml;nnen), da verschiedene Bildschirmaufl&ouml;sungen oder Schriften Aussehen und
+Benutzbarkeit des Programms beeintr&auml;chtigen.
+
+Da das Einbinden von Grafiken in den Quelltext nicht ohne Hilfsmittel m&ouml;glich ist,
+empfehle ich daf&uuml;r den Einsatz von ReActor. Dort k&ouml;nnen Images angelegt und
+direkt mit Bin&auml;rdaten gef&uuml;llt werden, die dann in der von ReActor erzeugten
+Objektdatei abgelegt werden. Vorteile sind hier die einfache Handhabung
+und die Kompaktheit des Programms, Nachteil ist allerdings die statische Festlegung,
+die ein &Auml;ndern der Grafiken nur durch Neukompilieren erlaubt. Au&szlig;erdem ist es nicht
+m&ouml;glich, selten benutzte Grafiken erst bei Bedarf zu laden.
+
+Statt mit ReActor kann man Bilder aber auch im Quelltext anlegen, und zwar mit
+dem Bitmap-Objekt. Es erlaubt die Angabe einer Grafikdatei (BITMAP_SourceFile),
+aus der mittels Datatypes die ben&ouml;tigten Informationen ausgelesen werden. Wichtig
+ist hierbei, dass der Bildschirm mit BITMAP_Screen &uuml;bergeben wird, damit die
+Farbinformationen richtig zusammengestellt werden. Daran sollte man auch denken,
+wenn das Programm verschiedene Bildschirme benutzt; ein Bitmap kann nicht f&uuml;r
+mehrere Screens benutzt werden, ohne die Bildinformationen neu zu berechnen.
+&Uuml;brigens erlauben nicht alle Datatypes die Erzeugung einer Transparenz-Maske
+(siehe BITMAP_Masking/BITMAP_MaskPlane), so dass manche Grafiken immer als
+Rechtecke erscheinen. Hier empfiehlt sich ein Test mit verschiedenen
+Grafikformaten, wobei das altgediente IFF-Format immer brauchbare Ergebnisse liefert
+und auch mit allen Grafikprogrammen am Amiga bearbeitet werden kann.
+
+W&auml;hrend alle BOOPSI-Objekte, die Schalter und Eingabem&ouml;glichkeiten kapseln, im Kern
+aus einer "struct Gadget" bestehen, bauen Bitmaps, Labels etc. auf einer
+"struct Image" auf (dies wird auch in der Klassenhierarchie deutlich: die
+"rootclass" als Basis ist Mutterklasse f&uuml;r "gadgetclass", "imageclass" und "icclass",
+wobei letztere eher unbedeutend ist). Dies hat den Vorteil, dass an allen Stellen,
+an denen ein Image erwartet wird (u.a. bei den Knoten der Listbrowser-Labels),
+ein Zeiger z.B. auf das Bitmap-Objekt verwendet werden kann, denn die ersten Bytes
+dieses Objekts enthalten eine "struct Image".
+
+Dadurch ist es ohne Probleme m&ouml;glich, Grafikdateien aus einem Verzeichnis einzulesen
+und zu verwenden, die dann auch ausgetauscht werden k&ouml;nnen, z.B. um ganze "Skins",
+also einheitliche Oberfl&auml;chen, zu realisieren (siehe auch WINDOW_BackFillName der
+Window-Klasse).
+
+Soweit zu den Grafiken, nun zum schwierigeren Teil:
+
+
+Catalog Descriptions
+
+Die Vorbereitung eines Programms f&uuml;r die &Uuml;bersetzung nennt man Lokalisierung.
+Grundlage ist am Amiga immer eine Catalog-Description-Datei (#?.cd).
+Wer das Tool ReActor verwendet, hat schon Bekanntschaft mit dieser Datei gemacht,
+denn in ihr werden s&auml;mtliche anzuzeigenden Texte abgelegt (z.B. die Werte f&uuml;r
+GA_Text, WA_Title usw.). Deswegen fordert ReActor an diesen Stellen auch schon
+die Eingabe einer ID, mit der dieser Text sp&auml;ter automatisch durch einen
+entsprechenden &uuml;bersetzen String ersetzt werden kann.
+
+Wenn weitere Texte im Programm ben&ouml;tigt werden (Fehlermeldungen, Warnhinweise,
+Men&uuml;punkte,...), sollte man diese der Einfachheit halber in ReActor einbinden,
+da die Koordination sonst etwas aufwendiger ist. Dazu kann man z.B. unter "Images"
+Labels hinzuf&uuml;gen, die dann in LABEL_Text den entsprechenden Text
+(z.B. "Are you sure?"), unter "Locale ID" einen aussagekr&auml;ftigen Namen
+("MSG_AREYOUSURE") und als "Object Name" eine &auml;hnliche Bezeichnung mit Wiedererkennungswert
+erhalten ("LABEL_AREYOUSURE"). Sortiert man die Eintr&auml;ge alphabetisch, so erh&auml;lt
+man dadurch eine gute &Uuml;bersicht &uuml;ber die vorhandenen Texte.
+
+Doch die .cd-Datei l&auml;sst sich genauso gut auch per Hand anlegen, wenn man ReActor nicht
+nutzen m&ouml;chte. Sie sieht beispielsweise so aus:
+
+; *** catalog description file of "ClassAction.res"
+;
+MSG_HELP (272//)
+Help
+;
+MSG_ICONIFY (273//)
+Iconify
+;
+MSG_PROJECT (274//)
+Project
+;
+...
+
+Der Aufbau ist recht einfach:
+&lt;Name&gt; (&lt;Nummer&gt;/&lt;Mindestl&auml;nge&gt;/&lt;H&ouml;chstl&auml;nge&gt;)
+&lt;Standardtext&gt;
+;
+
+Die Werte in der Klammer k&ouml;nnen jeweils entfallen, was dann bedeutet:
+keine Nummer: Nummer des letzten Eintrags + 1
+keine Mindest-/H&ouml;chstl&auml;nge: keine Beschr&auml;nkung des Strings.
+
+(Zu den Namenskonventionen siehe CatComp-Anleitung)
+
+Allerdings sollte man an der von ReActor generierten .cd-Datei nichts per Hand
+&auml;ndern, da diese beim n&auml;chsten Speichern in ReActor &uuml;berschrieben wird.
+
+
+Von der Beschreibung zum Quelltext
+
+Mit dem Programm CatComp, das u.a. auf der DevCD zu finden ist, oder &auml;hnlichen
+Programmen (siehe unten) lassen sich nun aus der .cd-Datei Quelltexte erzeugen.
+Der Aufruf:
+
+  catcomp myproject.cd CFILE myproject.h
+
+Dies erzeugt eine Header-Datei myproject.h, in der Nummern und Strings enthalten sind.
+Dies reicht aus, um im Quelltext einen lokalisierten Text anzusprechen. ReActor ben&ouml;tigt
+allerdings auch eine Objektdatei mit den n&ouml;tigen Informationen, sodass eine .asm-Datei
+erzeugt werden muss:
+
+  catcomp myproject.cd CFILE myproject.h ASMFILE myproject.asm XDEF
+
+Die zus&auml;tzliche Assembler-Datei muss nun noch &uuml;bersetzt und zum Programm gelinkt werden.
+
+In StormC kann die .cd-Datei einfach zum Projekt hinzugef&uuml;gt werden, als
+&Uuml;bersetzungsskript w&auml;hlt man "catcomp.srx", das man per Hand &auml;ndern sollte
+("Makefile editieren"):
+
+  PARSE ARG '"' filename '"' '"' projectname '"' .
+
+  /* .h und .asm-Datei erzeugen, wobei "CD" angeh&auml;ngt wird, um Verwechslungen zu vermeiden */
+  objectname_h = LEFT(filename,LASTPOS('.cd',filename)-1)||"CD.h"
+  objectname_asm = LEFT(filename,LASTPOS('.cd',filename)-1)||"CD.asm"
+
+  OBJECTS filename objectname_h objectname_asm
+
+  ADDRESS COMMAND "catcomp "||filename||" CFILE "||objectname_h||" ASMFILE "||objectname_asm||" XDEF"
+
+  ADDFILE objectname_h QUIET
+  ADDFILE objectname_asm QUIET
+
+F&uuml;r die zus&auml;tzliche .asm-Datei, die nach dem Kompilieren im Projekt auftaucht,
+kann das &Uuml;bersetzungsskript "phxass.srx" ausgew&auml;hlt werden; folgende &Auml;nderung
+bietet sich an:
+
+ADDRESS COMMAND 'StormC:StormSYS/PhxAss '||filename||' TO '||objectname||' SET "CATCOMP_ARRAY" NOEXE I stormc:asm_include QUIET'
+
+In stormc:asm_include habe ich die Assembler-Includes (auf der DevCD:
+"ADCD_2.1:NDK/NDK_3.5/Include/include_i/#?") hinterlegt, die PhxAss ben&ouml;tigt.
+
+
+Verwendung der lokalisierten Texte
+
+Das Projekt sollte jetzt schon &uuml;bersetzt werden k&ouml;nnen und laufen.
+In allen Dateien, in denen wir lokalisierte Texte verwenden wollen, m&uuml;ssen wir
+die n&ouml;tigen Header-Dateien einf&uuml;gen:
+
+  #include &lt;proto/locale.h&gt;
+  #define CATCOMP_NUMBERS
+  #define CATCOMP_STRINGS
+  #include "MyProjectCD.h"
+
+Im Quelltext m&uuml;ssen wir die Locale.library und den entsprechenden Catalog &ouml;ffnen:
+
+  struct LocaleBase *LocaleBase;
+  struct Catalog *MyCatalog;
+  *LocaleBase = (struct LocaleBase*)OpenLibrary( "locale.library",39 );
+  *MyCatalog = OpenCatalog( NULL,"MyProject.catalog",OC_BuiltInLanguage,"english",
+    OC_Version,1,CATVERS,TAG_DONE );
+
+und nat&uuml;rlich am Ende mit CloseCatalog(MyCatalog) und CloseLibrary(LocaleBase)
+wieder schlie&szlig;en.
+OC_BuiltInLanguage gibt die Sprache der Texte an, die unser Projekt bereits enth&auml;lt.
+Man sollte diese Texte immer in Englisch angeben, damit man im Falle fehlender Catalogs
+immer noch die Chance hat, alle Beschriftungen und Meldungen zu verstehen.
+OC_Version ist von Interesse, falls mehrere Programmversionen existieren und
+Ver&auml;nderungen bei den Texten stattgefunden haben. Unver&auml;nderte Texte werden nur dann
+richtig dargestellt, wenn auch die Nummern identisch sind, was bei der Verwendung von
+ReActor nicht unbedingt der Fall ist. Auf die Version des Catalogs werde ich unten noch
+kurz eingehen.
+
+W&auml;hrend das Ergebnis von OpenLibrary gepr&uuml;ft werden sollte, kann uns der R&uuml;ckgabewert
+von OpenCatalog fast egal sein - solange wir nur die Funktion GetCatalogStr() benutzen,
+reicht auch ein NULL-Wert, sodass das Programm in jedem Fall mit den Standardtexten
+benutzt werden kann!
+
+Um die von ReActor erzeugten Objekte brauchen wir uns nicht mehr zu k&uuml;mmern, nur unsere
+eigenen Texte m&uuml;ssen noch eingebaut werden: z.B.
+
+  ShowMessage( GetCatalogStr(MyCatalog,MSG_AREYOUSURE,MSG_AREYOUSURE_STR) );
+
+(vorausgesetzt, es existiert eine Funktion ShowMessage(), die einen Text anzeigt).
+Dies kann mit einem Makro auch abgek&uuml;rzt werden: mit
+  #define GETSTR(id) GetCatalogStr(MyCatalog,id,id ## _STR)
+reicht dann
+  GETSTR(MSG_AREYOUSURE)
+
+Das bedeutet nat&uuml;rlich, dass s&auml;mtliche Quelltextdateien nach solchen Texten
+durchsucht, die Texte in ReActor oder direkt in die .cd-Datei eingetragen und dann
+im Quelltext mit GetCatalogStr() ausgelesen werden m&uuml;ssen ...
+
+
+Catalog erzeugen
+
+Damit auch die richtigen Texte im Programm angezeigt werden, m&uuml;ssen nat&uuml;rlich zun&auml;chst
+Catalogs erzeugt werden. Zu diesem Zweck empfehle ich das Programm ReCatIt, das die Arbeit
+sehr erleichtert. Entscheidet man sich f&uuml;r die manuelle Methode, so sind 3 Schritte n&ouml;tig:
+
+1. &Uuml;bersetzungsdatei #?.ct erzeugen:
+
+  catcomp MyProject.cd CTFILE MyProject.ct
+
+2. &Uuml;bersetzungsdatei &uuml;bersetzen und anpassen; Beispiel:
+
+  ## version $VER: ClassAction.catalog 44.0 (05-05-02)
+  ## codeset 0
+  ## language deutsch
+  ;
+  MSG_HELP
+  Hilfe
+  ;
+  MSG_ICONIFY
+  Verbergen
+  ;
+  MSG_PROJECT
+  Projekt
+  ;
+
+3. Catalog erzeugen:
+
+  catcomp MyProject.cd MyProject.ct CATALOG MyProject.catalog
+
+... und fertig. ReCatIt vereint alle drei Schritte und bietet eine praktische
+Oberfl&auml;che zur Bearbeitung der Texte.
+
+Screenshot:
+<IMG SRC="../extra/reaction5.png" ALT="Screenshot">
+
+Diesen Catalog muss man allerdings im richtigen Verzeichnis hinterlegen,
+denn der Name "MyProject.catalog" sagt nichts &uuml;ber die Sprache aus. Sie wird im
+Verzeichnis Locale:Catalogs/&lt;Sprache&gt; oder PROGDIR:Catalogs/&lt;Sprache&gt; abgelegt,
+also z.B. in Locale:Catalogs/deutsch/MyProject.catalog.
+
+F&uuml;r weitergehende Fragen verweise ich auf die Docs von locale.library,
+CatComp und ReCatIt.
+
+
+Ich hoffe, das hat wieder ein paar Probleme gel&ouml;st, Fragen beantwortet und
+den Ansto&szlig; zu vielen &Uuml;bersetzungen geliefert!
+&Uuml;brigens ist die Lokalisierung am Amiga meiner Meinung nach besser gel&ouml;st als
+unter Windows, selbst wenn man dort eine sonst recht komfortable
+Entwicklungsoberfl&auml;che wie Delphi nutzt.
+Ein kleiner Hinweis in eigener Sache: ClassAction erlaubt es recht einfach,
+.cd/.ct-Dateien mit mehreren Cli-Befehl oder ARexx-Skripten zu verbinden, so
+dass man den Aufruf von CatComp oder ReCatIt mit einem Mausklick
+(oder zweien ;) erledigen kann.
+
+So, genug der Werbung, jetzt kann ausprobiert werden,
+
+euer Martin R. Elsner &lt;email@martin-elsner.de&gt;
+
+
+Bezugsquellen:
+
+CatComp:
+  DevCD: ADCD_2.1:NDK/NDK_3.5/Tools/CatComp
+  (leider nicht im Aminet - falls jemand eine Adresse kennt, unter der man
+  CatComp herunterladen kann, w&auml;re ich &uuml;ber einen Hinweis dankbar!)
+FlexCat (Alternative zu CatComp mit kleineren Unterschieden):
+  Aminet: dev/misc/FlexCat.lha
+KitCat (kompatible, aber etwas eingeschr&auml;nkte - deutsche - Alternative zu CatComp):
+  Aminet: dev/misc/KitCat.lha
+ReCatIt:
+  Aminet: dev/misc/ReCatIt.lha oder dev/misc/ReCatItPro.lha
+CatEdit (Alternative zu ReCatIt):
+  Aminet: dev/misc/CatEdit.lha
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 06/99 - Netzwerkgrundlagen 2/4:</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Netzwerkgrundlagen 2/4:</H1>Netzprotokolle<br>von<BR>
+<A HREF="mailto:T.Heinrich@amzeiger.de">Thomas Heinrich</A></DIV>
+
+<P>[Statt der urspr&uuml;nglichen drei werden es doch vier Teile; d.Chefred.] </P>
+
+<P>F&uuml;r diesen Kurs sind vier Teile geplant:</P>
+
+<OL>
+<LI>Hardware</LI>
+<LI><b>Netzprotokolle (Genesis, MiamiDx)</b></LI>
+<LI>Anwendersoftware (Apache, Samba,...).</LI>
+<LI>Sicherheitsprobleme </LI>
+</OL>
+
+<P><B>Qual der Wahl?</B>  </P>
+
+<P>Haben Sie sich f&uuml;r eine Netzwerkhardware entschieden, stehen Sie vor dem
+Problem, sich eine Software auszusuchen, besser gesagt, ein Netzprotokoll.
+Wie in der letzten Folge zur Netzhardware schon angesprochen, gibt es f&uuml;r
+die reinen Amigal&ouml;sungen zum Teil eigene Protokolle. Das ist sp&auml;testens
+dann nutzlos, wenn Sie andere Rechnertypen, wie Mac und PC, in Ihr
+Netzwerk mit einbinden wollen. </P>
+
+<P>Andererseits haben Sie es mit der Software auch recht einfach. Denn im
+Grunde genommen gibt es nur ein einziges Protokoll, das von allen Rechnern
+auf jeden Fall verstanden wird: TCP/IP - das Internet(working)-Protokoll.
+Sogar Microsoft mu&szlig;te das nach dem verpennten Internetboom einsehen und
+installiert mit Windows 98 TCP/IP als Standardprotokoll, nicht mehr das
+(propriet&auml;re) NetBEUI, wie noch unter Windows 95. </P>
+
+<P><B>Gl&uuml;ck gehabt</B>        </P>
+
+<P>Fast schon unglaublich ist die Auswahl der TCP/IP-Stacks f&uuml;r den Amiga.
+Neben dem Pionier AmiTCP (neuerdings GENESiS genannt) gibt es noch den
+AS-225, besser bekannt als Surfer-Kit von Commodore/Amiga Int. Und
+nat&uuml;rlich Miami, bzw. MiamiDeluxe. Als Vertreter der Randgruppen m&ouml;chte
+ich noch Termite-TCP nennen, habe es aber noch nie wirklich im Einsatz
+gesehen.     </P>
+
+<P>Die weitaus meisten User d&uuml;rften heute Miami oder GENESiS benutzen, also
+werde ich mich im folgenden auf diese beiden konzentrieren.  </P>
+
+<P><B>Sinn und Zweck</B>  </P>
+
+<P>Wozu braucht man eigentlich einen TCP-Stack? Haben Sie Ihre Rechner &uuml;ber
+die serielle Schnittstelle verbunden, w&uuml;rde nat&uuml;rlich auch ein einfaches
+Terminal wie Term oder Microdot ausreichen, um Daten auszutauschen. Aber
+es w&auml;re doch viel sch&ouml;ner, z.B. die Festplatten der jeweiligen Rechner
+f&uuml;r alle anderen verf&uuml;gbar zu machen. Das geht mit Terminalprogrammen
+nat&uuml;rlich nicht, oder nur in eine Richtung (z.B. mit PC2AM). </P>
+
+<P>Damit ein Hard- und Software-unabh&auml;ngiger Datenaustausch m&ouml;glich ist,
+gibt es eine Protokollebene, den TCP-Stack, der im Grunde nur einzelne
+Datenpakete zwischen den beteiligten Rechnern vermittelt. Es erfolgt
+grunds&auml;tzlich keine Interpretation der ausgetauschten Daten, daf&uuml;r sind
+die User-Programme, die sogenannten Clients, zust&auml;ndig. Doch dazu in der
+n&auml;chsten Folge mehr.</P>
+
+<P><B>Hausnummern</B></P>
+
+<P>Damit der TCP-Stack wei&szlig;, von welchem Rechner Daten ankommen und an
+welchen Rechner sie zugestellt werden sollen, gibt es sogenannte
+IP-Adressen. Sie haben solche Zahlen-Punkt-Kombinationen vielleicht
+schon gesehen: 127.0.0.1 w&auml;re ein Beispiel.</P>
+
+<P>Bauen Sie ein Netz mittels TCP/IP auf, so mu&szlig; jeder Rechner eine
+eindeutige Adresse haben. Solange Sie nicht aufs Internet zugreifen, das
+dasselbe Protokoll verwendet, k&ouml;nnen Sie fast beliebige Kombinationen
+verwenden. Sie brauchen nur vier Zahlen, getrennt durch einen Punkt. Die
+Zahlen d&uuml;rfen Werte von 0 bis 255 annehmen. Nur die vierte Zahl darf nicht
+0 oder 255 sein, da diese Werte reserviert sind. 0 bezeichnet ein ganzes
+Unternetzwerk, und 255 die sogenannte Broadcast-Adresse, f&uuml;r Nachrichten
+an alle Rechner im Netz. </P>
+
+<P>Hat aber einer der Rechner einen Internetanschlu&szlig;, m&uuml;ssen Sie IP-Adressen
+aus den f&uuml;r private Zwecke reservierten Bereichen nehmen, also eine
+10.x.x.x oder eine 192.x.x.x IP. Der Grund ist leicht einzusehen: Das
+Internet ist ein permanentes, &ouml;ffentliches Netz, in dem eine IP genau
+einem Server geh&ouml;rt. Vergeben Sie eine &ouml;ffentliche IP an einen Ihrer
+privaten Rechner, dann landen sie auf Ihrem eigenen Computer, statt
+beim Internetserver. </P>
+<P>
+Damit Sie es einmal geh&ouml;rt haben: Es gibt sogenannte Klasse A-, B-, und C-
+Netze. Ein A-Netz (192.x.x.x) kann &uuml;ber 16 Millionen Rechner (oder Zug&auml;nge
+zu anderen Netzen!) enthalten. Ein B-Netz (192.168.x.x) enth&auml;lt demzufolge
+&uuml;ber 65000 IPs, ein C-Netz (192.168.1.x) noch 254 nutzbare IPs, was
+normalerweise f&uuml;r Zuhause gut ausreicht. </P>
+
+<P>Noch ein Hinweis: Windows bockt manchmal, wenn eine IP eine Null enth&auml;lt,
+z.B. bei 192.168.0.1
+                     </P>
+<P><B>Auskunft</B>  </P>
+
+<P>Der TCP-Stack ist also dazu da, zwischen den einzelnen Rechnern zu
+vermitteln, aber auch zwischen Rechnern und anderen Netzen, wie dem
+Internet. Au&szlig;erdem kann jeder Rechner Services anbieten, also anderen
+Rechnern Methoden zum Zugriff auf den eigenen Rechner bieten. Dies l&auml;uft
+&uuml;ber Ports, an denen verschiedene Serverprogramme ihre Dienste anbieten,
+z.B. benutzt ein Browser normalerweise den Port 80, um einen HTTP-Webserver
+anzusprechen, der genau auf diesem Port l&auml;uft, quasi an dieser Leitung
+lauscht, ob jemand eine Webseite anfordert. Dabei sind die Ports aber
+nicht fest gebunden, es k&ouml;nnte genauso gut jemand einen Server auf Port
+2000 oder sonstwo laufen lassen. Das ist aber wieder ein Thema f&uuml;r die
+n&auml;chste Folge. </P>
+
+<P>Wichtig ist hierbei das Zusammenspiel von Services, das die Ports
+reserviert, und InetD, das die Server auf den Ports laufen l&auml;&szlig;t. InetD
+ist der &quot;Internet-D&auml;mon&quot;, ein Programm, das bei Anfragen an einem Port
+den zugeh&ouml;rigen Server startet. Beide, Miami und GENESiS, bieten dazu
+eine grafische Benutzeroberfl&auml;che. Unter Unix (NetBSD, Linux) hingegen
+mu&szlig; man mit ASCII-Konfigurationsdateien jonglieren. Auch Windows 95 und
+98 verstecken ihre Serverf&auml;higkeiten sehr gut vor dem Anwender, denn es
+gibt ja Windows NT, das Microsoft f&uuml;r Serverzwecke verkauft...  </P>
+
+<P><B>Luxus f&uuml;r alle</B> </P>
+
+<P>Hat also jeder Rechner eine eigene IP, sind alle Standardports
+eingerichtet, kann man die Internetprogramme, die man normalerweise nur
+f&uuml;rs Internet benutzt hat, auch im privaten Netzwerk (LAN - Local Area
+Network) verwenden, z.B. FTP oder Browser - vorausgesetzt, es l&auml;uft ein
+Server daf&uuml;r auf dem angesprochenen Rechner. Hier ist GENESiS Miami
+wesentlich voraus, ein Gl&uuml;ck nur, da&szlig; Miami auch die Server des alten
+AmiTCP benutzen kann, so da&szlig; man hier von den freigegebenen AmiTCP-
+Versionen &quot;klauen&quot; kann.     </P>
+
+<P><B>Sicherheit</B></P>
+
+<P>Ein weiterer Zweck des TCP-Stacks ist die Verwaltung von Usern und Gruppen.
+Eigentlich geh&ouml;rt so eine Funktionalit&auml;t in das Betriebssystem integriert,
+aber nur Unix und Windows NT haben es auch dort. Der Nutzen der
+Useridentifikation ist die Systemsicherheit: Man kann Dienste z.B. nur an
+ganz bestimmte User oder Usergruppen freigeben, oder andersherum, Zugriffe
+von unerw&uuml;nschten Usern unterbinden. Miami nimmt diesen Teil etwas
+lockerer, GENESiS hat eine komfortablere Userverwaltung. Allerdings ist
+dazu zu sagen, da&szlig; das Amiga-Betriebssystem eben KEINE Sicherheit &uuml;ber
+User/Gruppen zul&auml;&szlig;t. Man ben&ouml;tigt zus&auml;tzliche Programme, wie z.B. das
+Multi-User-Filesystem.  </P>
+<P>
+Viel wirkungsvoller kann man sich sch&uuml;tzen, indem man einzelne Ports
+sperrt, z.B. FTP-Verbindungen auf den eigenen Rechner nur innerhalb des
+Netzwerkes zul&auml;&szlig;t, von au&szlig;erhalb (dem Internet) aber sperrt. GENESiS
+bewerkstelligt dies durch ziemlich kryptische Zugriffsfilter, MiamiDeluxe
+hingegen bietet einen echten, voll konfigurierbaren Firewall.         </P>
+
+<P><B>Feuerwand?</B> </P>
+
+<P>Solch ein Firewall ist bei gro&szlig;en Netzen meistens sogar ein eigener
+Rechner. Er hat den Sinn, hereinkommende Anfragen fremder Server nach
+vom User festgelegten Regeln zu untersuchen. Da dies auf der Paketebene
+geschieht, ist ein Firewall sehr sicher, aber auch gut ausgelastet. Jedes
+Paket kann hier nach Port, Ursprungs-IP, Ziel-IP, usw. gefiltert werden.
+GENESiS' Filter hingegen kennen nur Ports, Protokolltypen und User.  </P>
+
+<P>Gefiltert werden kann mit einem Firewall nat&uuml;rlich auch nach au&szlig;en: Wenn
+die Homepage Ihres Intimartikelversenders pl&ouml;tzlich nicht mehr anw&auml;hlbar
+ist, hat Ihr Chef wohl einen Eingriff ins Firmennetzwerk angeordnet...
+Es soll auch schon vorgekommen sein, da&szlig; &quot;www.arbeitsamt.de&quot; nicht
+erreichbar war... </P>
+
+<P><B>Verge&szlig;lich</B> </P>
+
+<P>K&ouml;nnen Sie sich trotz allem die IP-Nummern nicht merken? Auch daf&uuml;r
+bietet ein TCP-Stack eine Funktionalit&auml;t: Unter &quot;Hosts&quot; kann man f&uuml;r die
+IP-Nummern der lokalen Rechner (und bitte nur die der lokalen!) auch
+Namen vergeben. Zuerst mu&szlig; man sich eine Domain ausdenken, in der Art
+&quot;meinLAN.net&quot;. Vermeiden Sie auch hier &ouml;ffentliche Namen, sonst landen
+Sie wieder nicht da, wo Sie eigentlich hinwollen. Diese Domain bezeichnet
+dann Ihr privates LAN.      </P>
+
+<P>Nun k&ouml;nnen Sie den einzelnen Rechnern noch Namen geben, z.B. &quot;Amiga1&quot;,
+&quot;Amiga2&quot;, &quot;WinPC&quot;, &quot;Mac&quot;, usw. Ansprechen k&ouml;nnen Sie einen bestimmten
+Rechner dann entweder direkt mit der IP-Nummer, oder jetzt viel
+komfortabler mit z.B. &quot;Amiga1.meinLAN.net&quot;, oder &quot;Mac.meinLAN.net&quot;.</P>
+<P>
+<B>Servieren</B> </P>
+
+<P>Wenn Sie jetzt einen Amiga mit einem FTP- und HTTP-Server ausstatten,
+k&ouml;nnen Sie sich von allen anderen Rechnern mittels der entsprechenden
+Programme, z.B. Netscape vom PC, in den &quot;Server-Amiga&quot; einloggen und
+von dort WWW-Seiten und andere Dateien beziehen. Mit einem Telnet-Server
+ist es sogar m&ouml;glich, vom PC oder Mac aus in einer Amiga-Shell zu arbeiten!
+Aber Vorsicht, das geht nat&uuml;rlich auch vom Internet aus, wenn Sie das
+nicht durch Filter oder einen Firewall sperren. Und durch die mangelhafte
+User- und Gruppenunterst&uuml;tzung durch das AmigaOS ist so mittels &quot;Format&quot;
+oder &quot;Delete&quot; schnell ein betr&auml;chtlicher Schaden entstanden.  </P>
+
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9906inst.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0699/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../mmx/9906mmx.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; `99 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>
+
+

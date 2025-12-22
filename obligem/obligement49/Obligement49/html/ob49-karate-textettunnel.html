@@ -1,0 +1,303 @@
+<html>
+ <head>
+  <title>Karate - text et tunnel</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique&nbsp;: Karate - scrolltext et tunnel </font>par&nbsp;<a href="mailto:l.stephanoni@free.fr">Laurent&nbsp;Stephanoni</a></div><br><br><br>
+
+
+<b>Note&nbsp;: le script de cet article est fourni <a href="../files/karate_helloworld_chapitre3.k">ici</a>.</b><br><br>
+
+
+
+Alors, notre première "démo" n'était pas trop mal, non ? Mais il manque pourtant une chose essentielle ! Non, pas l'image
+avec une jolie damoiselle dénudée... Laquelle alors ? Une petite Kpart avec un scrolltext, bien sûr !
+Et derrière, pour se la raconter un peu, on va mettre un tunnel.<br><br>
+
+<font size="+1" color="#ccbb33">1. Le scrolltext</font><br><br>
+
+<font size="+1" color="#ccbb33">1.1 Les fonts</font><br><br>
+
+Eh oui, avant de taper du texte, il faut déjà des polices de caractères. Une police Karate est très simple en fait.
+Il s'agit simplement d'une image dans laquelle tous les caractères sont présents, les uns à côté des autres.
+Vous pouvez jeter un coup d'oeil à "karate:data/fonts1.iff" par exemple.<br><br>
+
+<div align="center">
+<img src="../gfx/karate-fonts.jpg" width="256" height="256" border="0" alt="Police de caractère de Karate"><br><br>
+</div>
+
+Pour charger cette police, il nous
+faudra connaître la liste des caractères présents, le nombre de caractères par ligne, ainsi que la taille d'un caractère.
+Dans notre cas, on a des caractères de 32 par 32, qui arrivent 8 par 8 :<br><br>
+
+ABCDEFGH<br>
+IJKLMNOP<br>
+QRSTUVWX<br>
+YZ012345<br>
+6789<br>
+!?'(),-.<br><br>
+
+On les chargera par l'appel au constructeur BMFONT (BitMap Font) suivant :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>&lt;BMFONT> police | data/fonts1.iff | 32 | 32 | 8 
+         | abcdefghijklmnopqrstuvwxyz0123456789    !?'[],-. &lt;/BMFONT>
+</pre>
+</font></td></tr></table>
+<br>
+
+
+<font size="+1" color="#ccbb33">1.2 Le texte</font><br><br>
+
+Chaque texte doit être construit à l'aide du constructeur KTEXT. Seuls les caractères qui sont listés dans
+le constructeur du BMFONT seront affichés. De même, les espaces blancs (retours chariot, tabulations et espaces)
+seront supprimés au début et à la fin du texte, et à chaque retour chariot dans le texte. Il faut donc "baliser"
+le texte pour conserver son formatage. Par exemple on peut entourer chaque ligne entre des "+". Si on reprend
+le texte d'intro de <a href="http://www.k-fighter.net" target="_blank">www.k-fighter.net</a>, ça peut donner :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>
+&lt;KTEXT> promo |
++karate fighter is a+
++  demomaker used to+
++  make visual demos+
++ that can work on a+
++  very large number+
++of amiga computers.+
++      it uses 680x0+
++software engine and+
++   can run on 68020+
++  aga screens up to+
++68060 Cybergraphics+
++  machines, and run+
++fine on new powerpc+
++amiga architectures+
++and Amiga emulators+
++           as well.+&lt;/KTEXT>
+</pre>
+</font></td></tr></table>
+<br>
+
+
+On a choisi d'écrire une vingtaine de caractères par ligne. Comme vous le voyez, en dehors des "+" pour marquer les
+vraies lignes, on n'utilise que des caractères qui apparaissent dans le constructeur de la police (minuscules).<br><br>
+
+
+<font size="+1" color="#ccbb33">1.3 L'affichage</font><br><br>
+
+L'affichage du texte se fait par deux effets : DisplayText et DisplayTextPlain. Ils sont identiques, sauf
+que le DiplayTextPlain affiche la couleur zéro (pas de transparence, donc plus rapide).
+Pour afficher du texte dans un rectangle, il va nous falloir :<br>
+
+<ul>
+<li>Un rectangle,
+<li>Une police,
+<li>Un texte,
+</ul>
+
+Et des données sur ce texte :<br>
+
+<ul>
+<li>Le nombre de caractères avant le retour chariot,
+<li>Le nombre maximum de caractères à dessiner,
+<li>Le numéro du premier caractère à afficher,
+<li>Puis les coordonnées du premier caractère à afficher. Il s'agit des 4 coordonnées habituelles des sprites dans karate. C'est à partir de la position et de la taille du premier caractère que tout le texte sera affiché.
+</ul>
+
+Notre scrolltext vertical s'écrit donc ainsi :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>&lt;FX>
+   &lt;PA> DisplayText &lt;/PA>
+   &lt;PA> &lt;/PA>
+   &lt;PA> police &lt;/PA>
+   &lt;PA> promo &lt;/PA>
+
+   &lt;PA> CTE | 22 &lt;/PA> 20 caractères par ligne + les 2 balises
+   &lt;PA> CTE | 400 &lt;/PA> 400 caractères au total
+   &lt;PA> CTE | 0 &lt;/PA> en commencant au caractère 0
+
+   &lt;PA> CTE | 0 &lt;/PA>
+   &lt;PA> AFF | 1.2 | -0.0025 &lt;/PA> Pour un scroll vertical, on bouge les Y
+   &lt;PA> CTE | 0.05 &lt;/PA>
+   &lt;PA> AFF | 1.25 | -0.0025 &lt;/PA>
+&lt;/FX>
+</pre>
+</font></td></tr></table>
+<br>
+
+
+Pour un scrolltext horizontal, on changera les coordonnées du premier caractère, par exemple :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>&lt;FX>
+   &lt;PA> DisplayText &lt;/PA>
+   &lt;PA> &lt;/PA>
+   &lt;PA> police &lt;/PA>
+   &lt;PA> promo &lt;/PA>
+
+   &lt;PA> CTE | 400 &lt;/PA> plus de limite au nombre de caractères par ligne
+   &lt;PA> CTE | 400 &lt;/PA> 400 caractères au total
+   &lt;PA> CTE | 0 &lt;/PA> en commencant au caractère 0
+   &lt;PA> AFF | 1.2 | -0.0025 &lt;/PA>
+   &lt;PA> CTE | 0.90 &lt;/PA>
+   &lt;PA> AFF | 1.25 | -0.0025 &lt;/PA>
+   &lt;PA> CTE | 0.95 &lt;/PA>
+&lt;/FX>
+</pre>
+</font></td></tr></table>
+<br>
+
+
+Ici, le rendu sera moyen, du fait de la justification à droite du texte. De plus, c'est beaucoup plus lent,
+il faudra donc penser à mettre énormément de frame à jouer dans le &lt;PLAY>.<br><br>
+
+Par contre, un scrolltext horizontal, ça peut s'optimiser, en calculant finement l'indice du premier caractère
+à écrire, et le nombre de caractère à écrire.<br><br>
+
+
+<font size="+1" color="#ccbb33">2. Un premier pas vers la 3D : le tunnel</font><br><br>
+
+<font size="+1" color="#ccbb33">2.1 Une caméra</font><br><br>
+
+On ne va pas écrire notre texte sur rien ! On va donc mettre un joli tunnel derrière.
+Le tunnel est un effet 2D classique de raycasting (lancer de rayon), qui imite la 3D. Il lui faut une caméra
+pour gérer la vision en 3D de la chose. Une caméra ? N'ayez pas peur. Une caméra, en Karate, c'est
+un point dans l'espace (x, y, z), un angle de vue (o1, o2, o3), et une focale. Les angles en Karate
+vont de -1 à 1. En jouant sur la focale, on peut rapprocher ou éloigner un objet, comme sur
+un appareil photo (ou une caméra, aussi).<br><br>
+
+On crée la caméra comme suit (première ligne, la position, deuxième ligne, les rotations ou angles, troisième ligne la focale) :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>&lt;KCAM> camera |
+ 0 | 0 | 0 |
+ 0 | 0 | 0 |
+ 1 &lt;/KCAM>
+</pre>
+</font></td></tr></table>
+<br>
+
+
+On va la poser au centre de l'univers, le tunnel sera centré autour. On va la faire regarder perpendiculairement à
+l'axe du tunnel. On fera tourner la caméra autour de cet axe et on va avancer dans le tunnel, histoire de
+donner du mouvement. On n'est absolument pas obligé de faire ça. Si on veux juste poser une caméra,
+on définit tous les paramètres une fois pour toute dans son constructeur. Mais c'est sympa de se déplacer
+dans le tunnel. On va donner ce mouvement avec un "SetCamCoord", comme suit :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>&lt;FX>
+   &lt;PA> SetCamCoord &lt;/PA>
+   &lt;PA> camera &lt;/PA>
+   &lt;PA> CTE | 0 &lt;/PA>      X de la camera
+   &lt;PA> CTE | 0 &lt;/PA>      Y de la camera
+   &lt;PA> AFF | 0 | 4 &lt;/PA>  Z de la camera, qui avance,
+         parce qu'on avance dans le tunnel
+
+   &lt;PA> CTE | 0 &lt;/PA>
+   &lt;PA> CTE | 0.5 &lt;/PA> on est perpendiculaire au tunnel
+   &lt;PA> AFF | 0 | -0.002 &lt;/PA> on tourne un peu
+   &lt;PA> CTE | 0.5 &lt;/PA> focale moyenne, pour ne
+                        pas se retrouver trop loin des parois
+&lt;/FX>
+</pre>
+</font></td></tr></table>
+<br>
+
+
+Si vous voulez vraiment vous amuser, et vous prendre la tête, vous pouvez jouer avec les paramètres
+angulaires, il y a vraiment moyen de se détruire les neurones pour bien appréhender cette fonction.<br><br>
+
+Ici, on a utilisé un système de positionnement relativement complexe (plein d'angles) pour placer
+notre caméra. Et tous ces réglages par angle peuvent être embêtants pour suivre un objet par exemple.
+Pour résoudre cela, l'auteur de Karate a créé une deuxième fonction, qui prend en paramètres un
+point dans l'espace qui sera la position de la caméra, un autre point qui sera le point visé,
+un angle autour de l'axe passant par ces deux points, et une focale. Cet effet s'appelle
+"SetCamTarget", et on en reparlera plus tard, quand on abordera la 3D.<br><br>
+
+
+<font size="+1" color="#ccbb33">2.2 The tunnel now !</font><br><br>
+
+Un tunnel, c'est simple en fait. On a juste besoin d'un rectangle, d'une texture, et d'une camera. On donne
+ensuite la distance entre les deux bords du tunnel (la largeur du tunnel, quoi), et le niveau de zoom de
+la texture. Il reste trois paramètres, deux non utilisés, et le dernier pour dire si la couleur zéro
+sera transparente ou pas.<br><br>
+
+Ce qui nous donne :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>&lt;FX>
+   &lt;PA> Tunnel &lt;/PA>
+   &lt;PA> &lt;/PA> le rectangle par défaut
+   &lt;PA> texture &lt;/PA> notre texture utilisée précédemment
+   &lt;PA> camera &lt;/PA> notre nouvelle camera
+
+   &lt;PA> CTE | 2 &lt;/PA> la largeur du tunnel
+   &lt;PA> CTE | 0.25 &lt;/PA> le zoom sur la texture
+
+   &lt;PA> 2CTE | 0 | 0 &lt;/PA> Des trucs pas utilisés
+   &lt;PA> CTE | 0 &lt;/PA> Pas de couleur zero transparente
+&lt;/FX>
+</pre>
+</font></td></tr></table>
+<br>
+
+
+Ceci est à écrire avant le FX du scrolltext.<br><br>
+
+On ajoute tout ça dans une kpart qui a pour ID "texte" par exemple, et on ajoute la ligne suivante dans le kscript
+principal :<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>&lt;PLAY> texte | 1000 | 0 | 1 &lt;/PLAY> dans le kscript principal.
+</pre>
+</font></td></tr></table>
+<br>
+
+
+Et ça nous donne le script disponible <a href="../files/karate_helloworld_chapitre3.k">ici</a>.<br><br>
+
+Et voilà ! Dans le prochain article, on verra comment réutiliser les anciennes parts dans une nouvelle part, et
+aussi la magie des rectangles ! Ça nous permettra de grandement améliorer cette part de texte nouvellement créée.<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

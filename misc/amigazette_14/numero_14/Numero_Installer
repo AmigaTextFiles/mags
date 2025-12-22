@@ -1,0 +1,54 @@
+; Script di controllo per l'installazione del Numero_14 di AMIGAzette
+; $VER: installer 2.0.0 (18.01.2003)
+; Scritto da Francesco De Napoli
+
+
+; Definizione delle frasi di uso comune!!!
+(set nomedisco ""
+)
+
+(set frase1
+       (cat   "In quale directory preferisci INSTALLARE la rivista "
+              "Amigazette")
+)
+
+(set frase2
+       (cat "Attendere!\nSto creando la directory \""
+             nome-dir
+             "Amigazette\""
+       )
+)
+
+(set frase3
+       (cat "\n\nAttendere!\n\nSto copiando tutti i files "
+            "necessari nella directory \""
+             "Amigazette\""
+       )
+)
+
+(set @default-dest "Amigazette:")
+
+; Script vero e proprio
+
+(set nome-dir
+       (askdir
+              (prompt frase1)
+              (help @askdir-help)
+              (default @default-dest)
+       )
+)
+
+
+
+
+;-------------------
+(complete 0)
+(working "Installando gli articoli...")
+(run ("c:lhex >CON:0/0//60/lhex/AUTO -a -f \"-w=%s\" x %snumero_14.lha" nome-dir nomedisco))
+(complete 95)
+
+(working "Modificando ed aggiornando i file...")
+(run ("c:lhex >CON:0/0//60/lhex/AUTO -a -f \"-w=%s\" x %spatcher.lha" nome-dir nomedisco))
+(complete 99)
+
+(exit "Godetevi Amigazette!")

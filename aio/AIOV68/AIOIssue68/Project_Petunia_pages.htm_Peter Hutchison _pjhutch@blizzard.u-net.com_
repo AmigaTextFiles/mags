@@ -1,0 +1,439 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<title>Project Petunia pages</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#008080" vlink="#000080" topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+
+<h1 align="center"><font face="Arial">
+<img border="0" src="petunia.jpg" alt="Project Petunia" width="200" height="257"></font></h1>
+
+<h1 align="center"><font color="#008080" face="Arial">Project Petunia</font></h1>
+<h2 align="center"><font face="Arial">Experimental Dynamic Recompilation-based<br>
+Motorola 680x0 Processor Emulation<br>
+For PowerPC Processors</font></h2>
+<p align="center"><font face="Arial">Last update: <b>13.02.2003</b></font></p>
+<blockquote>
+<h3 align="left"><font face="Arial">Table of content</font></h3>
+<ul>
+  <li><a href=#intro><font face="Arial">Introduction</font></a></li>
+  <li><a href=#features><font face="Arial">Emulated features</font></a></li>
+  <li><a href=#problems><font face="Arial">Problems</font></a></li>
+  <li><a href=#future><font face="Arial">Future plans</font></a></li>
+  <li><a href=#speed><font face="Arial">Speed tests</font></a></li>
+  <li><a href=#faq><font face="Arial">Frequently Asked Questions</font></a></li>
+  <li><a href=#downloads><font face="Arial">Downloads</font></a></li>
+  <li><a href=#thanks><font face="Arial">Thanks to</font></a></li>
+  <li><a href=#contact><font face="Arial">Contact</font></a></li>
+</ul>
+</blockquote>
+<hr width=90% align=center height=2>
+
+
+<blockquote>
+<h3 align="left"><font face="Arial"> <a name="intro"></a>Introduction</font></h3>
+  <blockquote>
+<p align="left"><font face="Arial"> Project Petunia is an experimental Motorola 680x0 processor emulation for
+PowerPC based Amigas with dynamic recompilation.</font></p>
+<p align="left"><font face="Arial"><b>Dynamic recompilation</b> (or also called <b> just-in-time compilation</b> or simply
+<b>JIT</b> compilation) is a technique of translation of the emulated processor machine code to an executer processor machine code on-the-fly.<br>
+ This technique is a common method nowadays, usually used in JAVA applications, and it is also
+applied in several emulators with success.</font></p>
+<p align="left"><font face="Arial">Hopefully Amiga's future may lead one day to that situation, that we
+can leave the 680x0 processor, and only a (or more) PowerPC processor(s) do the hard work.
+This time a fast emulation of the "old", 680x0-based programs will be a must. Up to now I haven't seen a really fast emulation of the Motorola
+processors for PowerPCs. I believe in the strength of PowerPC processors, I could not believe that a 604e-233 Mhz PPC processor can only emulate a rather slow
+50 Mhz 68030 Morotola or so.</font></p>
+<p align="left"><font face="Arial">That is why I started this project, and it seems 
+fulfill my expectations.</font></p>
+<p align="center"><b><font face="Arial">Petunia  will be officially the part of 
+AmigaOS4.</font></b></p>
+<p align="center"><font face="Arial"><a href="http://os.amiga.com/">For more 
+information, look for the Amiga Inc. pages.</a></font></p>
+  </blockquote>
+<a name=features></a><h3 align="left"><font face="Arial">Emulated features</font></h3>
+  <blockquote>
+<p align="left"><font face="Arial">The target of the emulation right now is high 
+compatibility with Motorola 68040, without MMU support. (MMU support planned in 
+a later stage.)</font></p>
+<p align="left"><font face="Arial">The actual form is rather limited, it is 
+working as a so-called <i>application runner</i>. This method means that only 
+one task is running under the emulation, the rest of the system stays native on 
+the Motorola 680x0 processor. Actually it means that every system calls (and 
+even some special memory area readings) automatically implies later unnecessary
+<i>context-switches</i> between the two processors, thus slowing down the 
+emulation, and causing tons of running problems.<br>
+Later, when the OS core available for PowerPC native form, the emulator will be 
+integrated, and it will leave all the troubles behind with the application 
+running form. </font></p>
+    <p align="left"><b><font face="Arial">What is ready for now (V0.39)?</font></b></p>
+<font face="Arial"> Emulated opcodes: </font>
+    <ul>
+      <li><font face="Arial">all integer opcodes of the 68040, except MMU-related 
+      opcodes,</font></li>
+      </a>
+      <li><font face="Arial">all of the 68881/882/68040 FPU opcodes, except: 
+      FSAVE, FRESTORE. (Including software-only supported 68040 
+      opcodes.)</font></li>
+    </ul>
+<a name=features></a>
+<p align="left"><font face="Arial">Addressing:</font></p>
+    <ul>
+      <li>
+<p align="left"><font face="Arial">all addressing modes which is supported in 
+68020 and up,</font></p>
+      </li>
+      <li>
+<p align="left"><font face="Arial">byte, word, longword, single, double, 
+extended data for the FPU.</font></p>
+      </li>
+</ul>
+    <p align="left"><font face="Arial"> Flag emulation: all flags.<br>
+    At compiling a low level flag data flow analysis allows runtime optimalizations on 
+    compiled code. </font></p>
+    <p align="left"><font face="Arial"> Context switches at AmigaOS calls by patching
+    JSR d16(A6).</font></p>
+    <p align="left"><font face="Arial">WarpUP programs are working too. (With 
+    double context-switches yet.)</font></p>
+    <p align="left"><font face="Arial">A context switch forced on every 
+    non-cacheable data from the system, eg. on an Execbase reading.</font></p>
+  </blockquote>
+  <a name=problems></a><h3 align="left"><font face="Arial">Problems</font></h3>
+  <blockquote>
+ <font face="Arial">Unsupported features: </font>
+ <ul>
+  <li><font face="Arial"><b>Registers:</b> SFC, DFC</font></li>
+  <li><font face="Arial"><b>Opcodes:</b> CALLM, RTM, CINV, CPUSH, PFLUSH, PFLUSHA, PTEST</font></li></ul>
+
+ <font face="Arial">What programs are not working for now?
+    Which is </font>
+    <ul>
+      <li><font face="Arial">containing some kind of unemulated
+        opcode (see </font><font face="Arial"> <a href=#features>Emulated features</a> above);</font></li>
+      <li><font face="Arial">a badly written program, causing
+        memory hits, or self-modifying on an illegal way;</font></li>
+      <li><font face="Arial">applying several tasks or interrupts
+        with some kind of special synchrony (eg. non-exec messaging way), lots of the
+        demos and games are doing this;</font></li>
+      <li><font face="Arial">applying interrupts or backcall
+        hooks, those might cause problems.</font></li>
+    </ul>
+  </blockquote>
+  <a name=future></a><h3 align="left"><font face="Arial">Future plans</font></h3>
+  <blockquote>
+    <ul>
+      <li><font face="Arial"><b>more compatibility</b> with 68040
+        processor,</font></li>
+      <li><font face="Arial"> <b>MMU</b> emulation.</font></li>
+    </ul>
+  </blockquote>
+<a name=speed></a><h3 align="left"><font face="Arial">Speed tests</font></h3>
+<blockquote>
+  <p align="left"><font face="Arial">I know that there are no bigger lies than 
+  benchmarks, but I decided I add some special speed tests here.</font></p>
+  <p align="left"><font face="Arial">Don't forget:  the <i>actual numbers</i> do 
+  not
+  count, only the <b> magnitude </b>compared to each other. (Values are mostly 
+  running times in seconds, this means emulation initialization and translation time 
+  were calculated into those values.)</font></p>
+
+  <center>
+    <table border="0" cellpadding="4" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber1">
+      <tr>
+        <td align="center">&nbsp;</td>
+<TD align="center" bgcolor="#C0C0C0">
+<font face="Arial"><b>040/25</b></font></TD>
+<TD align="center">
+<b><font face="Arial">040/40</font></b></TD>
+<TD align="center" bgcolor="#C0C0C0">
+<b><font face="Arial">060/50</font></b></TD>
+<TD align="center">
+<P><font face="Arial"><b>Petunia on<br>
+603e/160</b></font></TD>
+<TD align="center" bgcolor="#C0C0C0">
+<P><b><font face="Arial">Petunia on<br>
+603/210</font></b></TD>
+<TD align="center">
+<b><font face="Arial">Petunia on<br>
+604/233</font></b></TD>
+      </tr>
+      <tr>
+        <td align="center"><font face="Arial"><b>Mandel (secs)</b></font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">35.17</font></td>
+        <td align="center"><font face="Arial">21.44</font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">5.24</font></td>
+        <td align="center"><font face="Arial">6.9</font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">5.78</font></td>
+        <td align="center"><font face="Arial">3.37</font></td>
+      </tr>
+      <tr>
+        <td align="center"><b><font face="Arial">Julia FPU (secs)</font></b></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">92.51</font></td>
+        <td align="center">-</td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">23.39</font></td>
+        <td align="center"><font face="Arial">21.66</font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">18.04</font></td>
+        <td align="center"><font face="Arial">14.27</font></td>
+      </tr>
+      <tr>
+        <td align="center"><font face="Arial"><b>C2Ptest (secs)</b></font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">31.33</font></td>
+        <td align="center"><font face="Arial">30.47</font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">13.17</font></td>
+        <td align="center"><font face="Arial">21.42</font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">11.93</font></td>
+        <td align="center"><font face="Arial">13.32</font></td>
+      </tr>
+      <tr>
+        <td align="center"><font face="Arial"><b>Demoeffect (FPS)</b></font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">5.76</font></td>
+        <td align="center"><font face="Arial">9.16</font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">22.28</font></td>
+        <td align="center"><font face="Arial">33.06</font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">50.41*</font></td>
+        <td align="center"><font face="Arial">49.57</font></td>
+      </tr>
+      <tr>
+        <td align="center"><b><font face="Arial">Voxelspace</font></b><font face="Arial"><b> (FPS)</b></font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">13</font></td>
+        <td align="center"><font face="Arial">17-18</font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">23</font></td>
+        <td align="center"><font face="Arial">16-18</font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">20</font></td>
+        <td align="center"><font face="Arial">30</font></td>
+      </tr>
+      <tr>
+        <td align="center"><font face="Arial"><b>LZX packing (secs)</b></font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">11.65</font></td>
+        <td align="center">-</td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">4.30</font></td>
+        <td align="center"><font face="Arial">10.58</font></td>
+        <td align="center" bgcolor="#C0C0C0"><font face="Arial">-</font></td>
+        <td align="center"><font face="Arial">6.20</font></td>
+      </tr>
+    </table>
+    </center>
+
+  <p align="left"><font face="Arial"><u>Please note</u>: the final speed will be 
+  even higher, due to several reasons. The huge difference between <i>Voxelspace</i> 
+  and <i>Demoeffect</i> came from the <b>context-switch issue</b>, yet every system call 
+  implies a context-switch. (Demoeffect does no system calls in the main loop, 
+  Voxelspace calls the system several times for checking user interactivity.) In <i>
+  AmigaOS4</i> context-switching will be no longer an issue.</font></p>
+
+  <p align="left"><i><font face="Arial">* This test on this machine ran w/o 
+  output on the screen because of a software error.</font></i></p>
+
+<font face="Arial">About test programs: </font>
+  <ul>
+    <li><font face="Arial"><b>Mandel</b> - calculation a 500x200 pixel
+      sized mandelbrot and display in a window trough WriteChunkyPixels by
+      each lines.</font></li>
+    <li><font face="Arial"><b>Julia FPU</b> - memory copy of a 640x480 area with 
+    modulo.</font></li>
+    <li><font face="Arial"><b>C2Ptest</b> - chunky to planar 
+      conversion, a complex arithmetic work.</font></li>
+    <li><font face="Arial"><b>Demoeffect</b> - a bubbling picture 
+      effect (pixel displacement) on a 320x240 CGX screen from <i>Stephen Fellner</i>, the numbers show the calculated frame 
+      per seconds value.</font></li>
+    <li><font face="Arial"><b>Voxelspace</b> - well known Voxel 
+      space demo from </font><font face="Arial"> <a href="http://www.haage-partner.de">Haage&amp;Partner</a>, the numbers show the average frame 
+      per second values read from screen. Setup: &quot;t&quot; parameter and 320x240x8 
+      screen.</font></li>
+    <li><b><font face="Arial">LZX packing</font></b><font face="Arial"> - 
+    compression test with lzx, using petunia executable as the source, and 
+    parameter &quot;-3&quot;, for advanced compression ratio (and more processor power 
+    requirement).</font></li>
+  </ul>
+
+<p><font face="Arial">You can also check the speed of your configuration, look out for the <a href=#downloads>Downloads</a>.</font></p>
+
+<font face="Arial">About test machines: </font>
+      <ul>
+        <li><font face="Arial">A1200+BlizzardPPC 603e/160, 040LC/25, 
+        Mediator+Voodoo3+Picasso96,</font></li>
+        <li><font face="Arial">A1200+BlizzardPPC 603e/210, 040/25, 
+        BlizzardVision+CGX,</font></li>
+        <li><font face="Arial">A4000+WarpEngine 040/40, 
+      CyberVision64+Picasso96,</font></li>
+        <li><font face="Arial">A4000+CyberstormPPC 604e/233,
+      060/50, PicassoIV+Picasso96.</font></li>
+  </ul>
+  <p align="left">
+  <font face="Arial">Thanks for the benchmarks to <i>Chip/Kangoroo, Sau,</i> and <i>Ph03n1x</i>.</font></blockquote>
+
+
+  <a name=faq></a><h3 align="left"><font face="Arial">Frequently Asked Questions</font></h3>
+<blockquote>
+<p align="left"><font face="Arial">After a long period of
+checking forums, chat boards and answering e-mails I decided to add a FAQ part
+into the project page. I hope I can clean up all the important questions arising in you.
+If something is not clear enough feel free to </font><font face="Arial"> <a href=contact.html>write a mail</a>.</font></p>
+
+<p><font face="Arial"><b>When will the emulation be ready?</b><br>
+"When it is done." :)<br>
+Ok, it was just a joke... (Sorry Thomas! ;) Technically the emulation is
+ready. Now we are working on the integration into the kernel. It is not a
+long period process, if everything is working as it planned. I cannot tell you
+more precise interval.</font></p>
+
+<p><font face="Arial"><b>Why the version number is so low? Will it ever hit 1.0?</b><br>
+Version number shows nothing, it is only a fiction of the software author. I
+could raise it to 1.5, but what would be the change? Nothing. So, don't
+bother about it.<br>
+When the initial release come into the picture I will give 1.0 to it, I
+promise... :)</font></p>
+
+<p><font face="Arial"><b>What kind of processor will be emulated?</b><br>
+Motorola 68040 with FPU, but without Memory Management Unit (MMU).</font></p>
+
+<p><font face="Arial"><b>When will the FPU work?</b><br>
+It is ready, up and running.</font></p>
+
+<p><b><font face="Arial">What happens with the &quot;software supported&quot; 68881/882 
+FPU opcodes</font></b><font face="Arial"><b>? Does it need some kind of software 
+emulation like Oxypatcher?</b><br>
+No, that would be nonsense. I implemented all the 68881/882 FPU opcodes like it 
+would be supported by the processor &quot;natively&quot;. So no need for any patching, 
+like 68040.library or Oxypatcher.</font></p>
+
+<p><font face="Arial"><b>How fast will the emulation be in AmigaOS4?</b><br>
+Actually nobody knows. Don't believe to anyone who tell you the speed
+depending on some kind of fuzzy calculation from the actual speed results.
+There is far too much questions involved yet without answers. Stay tuned, I
+am sure emulation will work around at least an M68060/50Mhz level on a PPC604/233.
+Faster processors will gain more speed, of course.<br>
+There will be a much more overall speedup of every operation in the whole system,
+because almost nothing except the legacy programs will work from the
+emulator, the rest of the system will be native PowerPC code.<br>
+Not to mention the fact: some opcodes and operations need more effort from the 
+emulator to keep it compatible, the others are easier to implement. So the speed 
+is highly depending on the actual 680x0 code.</font></p>
+
+<p><font face="Arial"><b>Will my favorite AGA game/demo work?</b><br>
+To tell you the truth: I can hardly believe. My work is about a processor-only
+emulation and not about the full legacy support. The chipset dependencies of an AGA program cannot be solved. (At
+least it is a hard work.) There is only one chance to get most of the old stuff
+working: by UAE. I am sure there will be a native version of UAE quite soon
+for AmigaOS4.<br>
+My opinion is 80-90% of the system friendly M68k programs will work properly 
+under Petunia anyway.</font></p>
+
+<p><font face="Arial"><b>Do you plan UAE support?</b><br>
+I don't know yet. There will be a possibility of reaching the emulation from
+the AmigaOS4, so theoretically UAE would even go on with Petunia's engine, if somebody
+does a special version. I don't intend to do it, but I would help gladly to
+anybody in this work.<br>
+Petunia has nothing to do with JIT version of Intel based UAE, my emulator
+is working on a very different way. UAE-JIT is tied closely to
+Intel-compatible processors.<br>
+No, I won't code on Intel. I rather leave computer industry than switching to
+an Intel platform and become a farmer or <i>detective of fishermen</i>. ;)</font></p>
+
+<p><font face="Arial"><b>How does the emulation work?</b><br>
+There are three approaches for an emulation: </font>
+<ul>
+<li><font face="Arial">a <b>full machine emulation</b> with
+emulation-traps for a very few native code, UAE is working with this
+method,</font></li>
+
+<li><font face="Arial">a <b>virtual machine</b> starts every time,
+when an emulated program started, every resources are virtualized (so called:
+Amiga-in-the-box or sandbox-emulator), JAVA Virtual Machine and MacOS X are
+working like this,</font></li>
+
+<li><font face="Arial">a <b>task based</b> emulation: each
+emulated task has it's own emulation process independently from the others,
+with escaping trough the so called emulation-traps at each system calls. The emulation in
+AmigaOS4 will work with this method, except that there will an MMU-based
+68k code identifying be used instead of usual emulation-trapping, thus
+increasing the switching speed, lowering the memory requirements and
+simplifying the 68k code patching mechanism.<br>
+ Why is it good for us? There is no need for virtualization of resources, no 
+delay until building a complex sandbox-mechanism, each task has it's own 
+interpretation/translation state, no interferences. The rest of the system can 
+work on full speed, because -except the emulated programs- it is native PowerPC 
+code, and every task scheduled individually. (Keeping the usual Amiga-feeling in 
+feedback and working.)</font></li>
+</ul></p>
+
+<p><font face="Arial"><b>What about the upcoming PowerPC processors?</b><br>
+PowerPC platform is a well planned superscalar family with the possibility of
+easy change to 64bit implementation from 32bit one. While the future Amigas
+have 32bit PowerPCs as a main processor Petunia will work without any
+issues.<br>
+Changing to 64bit PowerPC processors requires a bit rework of some parts, but
+it is not a huge problem.<br>
+Changing to other type of processors which are not PowerPC machine code
+compatible is pointless and almost impossible, because all the emulation code were made
+of PowerPC assembly and closely tied to this architecture.</font></p>
+
+<p><font face="Arial"><b>Will Petunia support AltiVec in PowerPC
+G4?</b><br> I see no real need of AltiVec in the emulation, because it does
+not need any periodic computation parts, except some runtime optimalization
+in the translation and memory copy. I will look after if any SIMD opcode
+could be used or not later.</font></p>
+
+<p><font face="Arial"><b>What about symmetric multiprocessor support?</b><br>
+Not an issue at all. Because of task-based emulation form each task has its
+own translation stage. As long as the kernel and the scheduler solve the
+sharing of free processor time for each task or thread, Petunia will gain
+full speed from symmetric multiprocessor environment. (A full machine emulation 
+and some times a virtual machine cannot gain speed from symmetric 
+multiprocessors, so task-based emulation is a better approach this time too. See 
+above: emulation working.) </font></p>
+
+<p><font face="Arial"><b>What is your opinion about AmigaOS4?</b><br>
+It will be killer. I can hardly wait. :)<br>
+Remember the change from AOS1.3 to AOS2.0? AmigaOS4 will be a much bigger
+step forward.</font></p>
+
+<p><font face="Arial"><b>Do you plan to share your work with
+the MorphOS guys?</b><br>
+No. MOS has its own way, which is different what I want. I don't hate them 
+anyway... :)</font></p>
+
+</blockquote>
+                  
+  <a name=thanks></a><h3 align="left"><font face="Arial">Thanks to</font></h3>
+  <blockquote>
+    <p align="left"><font face="Arial"> I would like to thank to the following people for helping me in several
+    ways (direct or indirect) in realizing this project (in no particular order):<br>
+    <br>
+    Michael Sinz, Frank Wille, Steffen Häuser, Sam Jordan, Thomas Richter, 
+    Jochen Becher, Stephen Fellner, Ben Hermans, Timothy De Gro<span lang="hu">ot</span>e, 
+    Sven Ottemann, Ben Yoris, Viktor Varga, Péter &quot;Jam&quot; Markovits, Tamás Baldauf, Emeric/SpaceHawks, 
+    LouiSe, Artlace, Tibor Szakács, Attila Bácskai, Róbert Márk Horváth, Blackie, 
+    Sau, Charlie/inQ, Chip/Kangoroo, Ph03n1x,</font></p>
+    <p align="left"><font face="Arial">and</font></p>
+    <p align="left"><font face="Arial">Csaba &quot;<i>UnReal</i>&quot; Kémeri for the
+    project logo.<br>
+    </font></p>
+  </blockquote>
+<a name=contact></a><h3 align="left"><font face="Arial">Contact</font></h3>
+<blockquote>   
+<center>
+<!-- Begin Nedstat Basic code -->
+<!-- Title: Pages of Álmos Rajnai -->
+<!-- URL: http://amigos.amiga.hu/rachy -->
+<script language="JavaScript" src="http://m1.nedstatbasic.net/basic.js">
+</script>
+<script language="JavaScript">
+<!--
+  nedstatbasic("ABtjyQZdC4zHRaXLmdFlTnK6LdjA", 0);
+// -->
+</script>
+<noscript>
+<a target="_blank" href="http://v1.nedstatbasic.net/stats?ABtjyQZdC4zHRaXLmdFlTnK6LdjA"><img
+src="http://m1.nedstatbasic.net/n?id=ABtjyQZdC4zHRaXLmdFlTnK6LdjA"
+border="0" nosave width="18" height="18"></a></noscript>
+<!-- End Nedstat Basic code -->
+</center>
+
+</body>
+
+</html>

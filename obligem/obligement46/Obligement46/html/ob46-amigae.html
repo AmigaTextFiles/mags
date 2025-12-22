@@ -1,0 +1,370 @@
+<html>
+ <head>
+  <title>Amiga E - notions complémentaires</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Programmation&nbsp;: Amiga E - notions complémentaires </font>par&nbsp;<a href="mailto:damien.guichard@wanadoo.fr">Damien&nbsp;Guichard</a></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">Deuxième étape</font><br><br>
+
+Dans l'article précédent, on a introduit l'exploitation des ressources AmigaOS et on a apprécié combien la
+lisibilité du langage Amiga-E rend cette gestion plus claire et plus sûre.
+Dans cet article on utilise ces notions de base pour expliquer comment paramétrer le logiciel.
+Car tout logiciel réaliste comprend une logique complexe de paramétrage et de personnalisation.
+Enfin cet article présente de nouvelles notions qui préparent le prochain article, c'est-à-dire la
+programmation des interfaces graphiques et de l'interactivité proprement dite.<br><br>  
+
+
+<font size="+1" color="#ccbb33">Les arguments Shell</font><br><br>
+
+Les paramètres DOS sont interprétés par la fonction ReadArgs() de la dos.library,
+on fournit un tableau de LONGs à ReadArgs(), et en retour ReadArgs() y stocke toutes les
+valeurs de paramètres DOS.  
+Bien entendu, il faut appeler FreeArgs() quand on a terminé.<br><br>
+
+Cet exemple simple affiche le MESSAGE fourni comme argument shell&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+ENUM ERR_OK,ERR_ARGS
+
+DEF myargs:PTR TO LONG,rdargs
+
+PROC main() HANDLE
+  myargs:=[0]
+  rdargs:=ReadArgs('MESSAGE/A',myargs,NIL)
+  IF rdargs=NIL THEN Raise(ERR_ARGS)
+  PrintF('\s\n',myargs[0])
+EXCEPT DO
+  SELECT exception
+  CASE ERR_ARGS
+    PrintF('Bad Args!\n')
+  ENDSELECT
+  IF rdargs THEN FreeArgs(rdargs)
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+Pour plus d'information sur ReadArgs() et les paramètres DOS, voir les Autodocs.<br><br>
+
+
+<font size="+1" color="#ccbb33">Les arguments Workbench</font><br><br>
+
+Les types d'outil (tooltypes) sont vraiment pratiques, et même plus pratiques que les paramètres DOS car
+ils sont persistants. Donc les types d'outil sont utiles même si on démarre du Shell. Ils fournissent les
+paramètres de base que l'utilisateur Shell pourra affiner par des paramètres DOS.<br><br>
+
+Voici comment faire pour lire les types d'outil&nbsp;:<br><br>
+
+<b>1.</b> Ouvrir la icon.library.<br><br>
+
+Puis si on démarre du Shell&nbsp;:<br><br>
+
+<b>2.</b> Obtenir le chemin d'accès du programme, via GetProgramName() de la dos.library.<br><br>
+
+Ou si on démarre du Workbench&nbsp;:<br><br>
+
+<b>2a.</b> Obtenir le chemin du répertoire <b>wbmessage.arglist.lock</b>, via NameFromLock() de la dos.library.<br>
+<b>2b.</b> Ajouter le nom du programme <b>wbmessage.arglist.name</b>, via AddPart() de la dos.library.<br><br>
+
+Continuer&nbsp;:<br><br>
+
+<b>3.</b> Charger l'objet icône du programme via GetDiskObject() de la icon.library.<br>
+<b>4.</b> Lire les types d'outil via FindToolType() de la icon.library, les types d'outil inexistants retournent NIL.<br>
+<b>5.</b> Une fois terminé, libérer l'objet icône via FreeDiskObject().<br><br>
+
+Le code suivant illustre l'ensemble du processus, il lit le type d'outil MESSAGE
+dans le fichier .info du programme, et l'affiche dans le Shell ou sur le Workbench&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'reqtools','icon'
+MODULE 'workbench/startup','workbench/workbench'
+
+ENUM ERR_OK,ERR_NOREQTOOLS,ERR_NOICON,ERR_NOINFO,ERR_NOMESSAGE
+
+DEF prog[80]:STRING
+DEF wbmsg:PTR TO wbstartup
+DEF diskobj:PTR TO diskobject
+
+PROC main() HANDLE
+  DEF rcode,msg
+
+  reqtoolsbase:=OpenLibrary('reqtools.library',37)
+  IF reqtoolsbase=NIL THEN Raise(ERR_NOREQTOOLS)
+
+  iconbase:=OpenLibrary('icon.library',37)
+  IF iconbase=NIL THEN Raise(ERR_NOICON)
+
+  IF wbmessage
+    wbmsg:=wbmessage
+    NameFromLock(wbmsg.arglist.lock,prog,80)
+    AddPart(prog,wbmsg.arglist.name,80)
+  ELSE
+    GetProgramName(prog,80)
+  ENDIF
+  IF (diskobj:=GetDiskObject(prog))=NIL THEN Raise(ERR_NOINFO)
+
+  msg:=FindToolType(diskobj.tooltypes,'MESSAGE')
+  IF msg=NIL THEN Raise(ERR_NOMESSAGE)
+
+  display(msg)
+
+EXCEPT DO
+
+  rcode:=10
+
+  SELECT exception
+  CASE ERR_NOREQTOOLS
+    PrintF('Could not open reqtools.library v37+ !\n')
+  CASE ERR_NOICON
+    display('Could not open icon.library v37+ !')
+  CASE ERR_NOINFO
+    display('Could not open .info file!')
+  CASE ERR_NOMESSAGE
+    display('Could not find MESSAGE tooltype!')
+  DEFAULT
+    rcode:=0
+  ENDSELECT
+
+  IF diskobj THEN FreeDiskObject(diskobj)
+  IF iconbase THEN CloseLibrary(iconbase)
+  IF reqtoolsbase THEN CloseLibrary(reqtoolsbase)
+
+ENDPROC rcode
+
+PROC display(msg)
+  IF wbmessage
+    RtEZRequestA(msg,'Ok',0,0,0)
+  ELSE
+    PrintF('\s\n',msg)
+  ENDIF
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+<font size="+1" color="#ccbb33">Le "versionnement"</font><br><br>
+
+Une chaîne de version de programme est identique à n'importe quelle autre chaîne de version&nbsp;:<br><br>  
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+PROC main()
+  PrintF('Hello World!\n')
+ENDPROC
+
+CHAR '$VER: HelloWorld 1.0 (04.05.2004) Copyright © Damien Guichard'
+</pre>
+</font></td></tr></table>
+<br>
+
+La commande C:Version permet d'afficher cette information de version.
+Si vous ne l'avez pas déjà, préférez plutôt <a href="http://de.aminet.net/pub/aminet/util/sys/VersionWB.lha">VersionWB</a>
+de Håkan Parting.<br><br>
+
+<font size="+1" color="#ccbb33">La localisation</font><br><br>
+
+C'est le domaine de la locale.library.
+Localiser un programme n'est vraiment pas compliqué.
+Un catalogue contient toutes les chaînes du programme.
+Il est ouvert par OpenCatalogA() et fermé par CloseCatalog().
+Entre-temps toutes les chaînes sont lues via GetCatalogStr().<br><br>
+
+Utilisez <a href="http://de.aminet.net/pub/aminet/dev/misc/EasyCatalog.lha">EasyCatalog</a> pour produire le catalogue.<br><br>
+
+Et voici comment localiser un HelloWorld&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+MODULE 'locale'
+
+ENUM ERR_OK,ERR_NOLOCALE
+
+ENUM CAT_HELLO
+
+DEF cat
+
+PROC main() HANDLE
+  localebase:=OpenLibrary('locale.library',38)
+  IF localebase=NIL THEN Raise(ERR_NOLOCALE)
+  cat:=OpenCatalogA(NIL,'hello.catalog',NIL)
+  PrintF(GetCatalogStr(cat,CAT_HELLO,'Hello World!\n'))
+EXCEPT DO
+  SELECT exception
+  CASE ERR_NOLOCALE
+    PrintF('Could not open locale.library v38+ !\n')
+  ENDSELECT
+  IF cat THEN CloseCatalog(cat)
+  IF localebase THEN CloseLibrary(localebase)
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+Ce programme pourrait écrire "Bonjour le monde!\n" avec le catalogue approprié et "français" comme langue sélectionnée.
+À noter qu'il n'y a pas besoin de quitter si OpenCatalogA échoue.
+Dans ce cas le programme utilise simplement les chaînes internes.<br><br>
+
+<b>Note importante&nbsp;:</b> si "english" est le langage sélectionné alors OpenCatalogA n'ouvrira PAS de catalogue, et ce même
+si un catalogue "english" est présent. Dans ce cas OpenCatalogA renvoie toujours NIL, c'est pourquoi il faut sélectionner
+"français" pour tester la localisation.<br><br>
+
+
+<font size="+1" color="#ccbb33">Les signaux de tâche</font><br><br>
+
+Les applications à interface graphique sont dirigées par les événements,
+elles sont en repos en attente d'un signal qui les réactive. Une tâche en repos ne consomme aucune puissance
+processeur. Vous pouvez mettre votre programme en repos en appelant Wait() avec les événements dont vous voulez
+être averti. <br><br>
+
+Par exemple ce programme est en repos jusqu'à réception d'un "Break" émis en appuyant sur le bouton "Break"
+de PriMan v2.0&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>OPT OSVERSION=37
+
+CONST SIGNAL_BREAK=$1000
+
+PROC main()
+  PrintF('sleeping... (use PriMan v2.0 to continue)\n')
+  Wait(SIGNAL_BREAK)
+  PrintF('running...\n')
+ENDPROC
+</pre>
+</font></td></tr></table>
+<br>
+
+Téléchargez PriMan v2.0 ici&nbsp;: <a href="http://de.aminet.net/pub/aminet/util/moni/Priman20.lha">aminet/util/moni/Priman20.lha</a>.<br><br>
+
+Plus tard nous verrons comment Wait() peut attendre d'autres événements comme les événements de fenêtre.<br><br>
+
+
+<font size="+1" color="#ccbb33">Les listes d'attributs (tag lists)</font><br><br>
+
+Les listes d'attributs sont un moyen très flexible pour passer des paramètres aux fonctions AmigaOS. Une liste d'attributs
+est simplement un tableau de LONGs qui a toujours la forme suivante&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>  [TAG1,info1,TAG2,info2,...,0]
+</pre>
+</font></td></tr></table>
+<br>
+
+Une étiquette en majuscules indique quel attribut est renseigné par le LONG "info" suivant.
+Le "info" est la valeur de l'attribut.
+Le type liste d'attributs est natif en Amiga-E.<br><br>
+
+Notez que les listes d'attributs sont allouées statiquement.
+Pour des listes d'attributs allouées dynamiquement il faut utiliser NEW&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>  NEW [TAG1,info1,TAG2,info2,...,0]
+</pre>
+</font></td></tr></table>
+<br>
+
+Parmi de nombreuses autres librairies, Intuition et Gadtools font un usage intensif des listes d'attributs.
+Pour plus d'information sur les listes d'attributs, voir les Includes et les Autodocs de la utility.library.<br><br>
+
+
+<font size="+1" color="#ccbb33">Les listes Exec</font><br><br>
+
+De nombreux éléments de l'AmigaOS, comme par exemple les écrans, sont reliés
+entre eux par les listes Exec.
+Alors qu'une liste d'attributs ressemble fort à un tableau statique, une
+liste Exec est dynamique comme une liste chaînée, on peut y insérer ou y
+retirer des éléments.
+Les fonctions de base pour ce faire sont AddHead(), AddTail(),
+RemHead(), RemTail(), Insert() et Remove() de la librairie exec.<br><br>
+
+Cette fonction alloue une liste Exec vide&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>MODULE 'exec/nodes','exec/lists'
+
+PROC newlist()
+  DEF list:PTR TO mlh
+  list:=NewR(SIZEOF mlh)
+  list.head:=list+4
+  list.tailpred:=list
+ENDPROC list
+</pre>
+</font></td></tr></table>
+<br>
+
+Et celle-ci retourne un nouveau noeud de liste portant le nom spécifié&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre>PROC newnode(name)
+ENDPROC NEW [0,0,0,0,name]:ln
+</pre>
+</font></td></tr></table>
+<br>
+
+Pour plus d'information sur les listes Exec, voir les Autodocs de la
+exec.library ainsi que les Includes exec/nodes.h et exec/lists.h.<br><br>
+
+
+<font size="+1" color="#ccbb33">Pour aller plus loin</font><br><br>
+
+La documentation indispensable c'est les Autodocs de Commodore, et c'est encore mieux dans le format AmigaGuide&nbsp;:
+<a href="http://de.aminet.net/pub/aminet/dev/misc/AmigaOS_guides.lha">aminet/dev/misc/AmigaOS_guides.lha</a>.<br><br>
+
+Les non moins indispensables AmigaOS Includes&nbsp;: <a href="http://www.amiga.com/3.9/download/NDK3.9.lha">www.amiga.com/3.9/download/NDK3.9.lha</a>.<br><br>
+
+Le compilateur EC v3.3a de Wouter van Oortmerssen (version complète)&nbsp;:
+<a href="http://www.aminet.net/dev/e/amigae33a.lha">www.aminet.net/dev/e/amigae33a.lha</a> et <a href="http://www.aminet.net/dev/e/ec33a.lha">aminet/dev/e/ec33a.lha</a>.<br><br>
+
+Le compilateur ECX de Leif Salomonsson (version démo)&nbsp;: <a href="http://home.swipnet.se/blubbe/ECX">home.swipnet.se/blubbe/ECX</a>.<br><br>
+
+L'Amiga-E mailing list&nbsp;: <a href="http://www.freelists.org/list/positron">www.freelists.org/list/positron</a>.<br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

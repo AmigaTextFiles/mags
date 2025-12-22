@@ -1,0 +1,84 @@
+ 
+;;
+;; $Filename: Installez-AmigaQuébec $
+;; $Date: 1995/04/29 16:38:00 $
+;; $Revision: 1.0 $
+;; $Author: Yannick Koehler $
+;;
+
+(set is_update 0)
+(set @user-level 1)     ; force to use average mode
+(complete 0)
+
+(set kickstart (getenv "KickStart"))
+ 
+(set aq_dest
+        (askdir
+                (prompt "Dans quel disque ou tiroir voulez-vous "
+                "que le tiroir Amiga Québec soit créé?")
+                (help "Le programme d'installation va créer un tiroir appellé "
+                          "\"AmigaQuébec\" dans le disque ou le tiroir choisi.  Tous "
+                          "les fichiers et tiroirs d'Amiga Québec seront placés dans "
+                          "ce nouveau tiroir.")
+                (default @default-dest)
+        )
+)
+
+(complete 10)
+
+(if (exists (tackon aq_dest "AmigaQuébec"))
+        (set is_update 1)
+        (makedir (tackon aq_dest "AmigaQuébec") (infos))
+)
+(set aq_dest (tackon aq_dest "AmigaQuébec"))
+
+(complete 20)
+
+(set @default-dest aq_dest)
+(set disk_space (getdiskspace aq_dest))
+
+(set disk_space_needed 70000)
+
+(complete 30)
+
+(if (AND (< disk_space disk_space_needed) (NOT is_update))
+        (
+                (set answer1
+                        (askbool
+                                (prompt "Il n'y a pas assez d'espace libre pour installer "
+                                                "\"Amiga Québec\" sur ce disque. "
+                                                "Voulez-vous continuer?")
+                                (help "Amiga Québec nécessite approximativement 70 kilooctets "
+                                          "d'espace libre pour que l'installation soit complète.")
+                        )
+                )
+                (if (NOT answer1)
+                        (abort "Installation d'Amiga Québec annulé.  Manque d'espace "
+                                   "libre sur le disque \""
+                                   (getdevice @default-dest)
+                                   "\"."
+                        )
+                )
+        )
+)
+
+(complete 70)
+
+(working "Installation des fichiers relatifs à Amiga Québec.")
+(copyfiles
+        (pattern "ami#?")
+        (source "")
+        (dest aq_dest)
+        (help @copyfiles-help)
+)
+(copyfiles
+        (source "p-view")
+        (dest "C:")
+        (help @copyfiles-help)
+)
+
+(complete 99)
+(run "p-view " (tackon aq_dest "AmigaQuébec.iff"))
+
+(complete 100)
+(exit)

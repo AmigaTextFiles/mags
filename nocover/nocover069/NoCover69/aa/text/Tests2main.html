@@ -1,0 +1,176 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+2. Bemerkungen zum AmigaOS 3.5 (von Gernod Schomberg)
+ 
+»Die folgenden Notizen sind nur meine ersten pers&ouml;nlichen Eindr&uuml;cke, sie 
+sind kein Test des neuen Betriebssystems. Ich habe einen A4000T mit einer 
+Samsung-3GB-AT-Festplatte am IDE-Bus, kontrolliert vom scsi.device, die 
+leider so langsam anl&auml;uft, dass ich ca. 10 Sekunden nach Einschalten den 
+Reset-Griff (oder -Knopf am Rechner) bet&auml;tigen muss. Die am Rechner 
+einstellbare Anlaufzeit-Verz&ouml;gerung funktioniert hier leider nicht. Auch 
+der Zugriff auf andere Laufwerke (ZIP, Diskette) ist vor dem Reset nicht 
+m&ouml;glich. Das CD-Laufwerk am IDE-Bus l&auml;uft mit dem atapi.device. Durch diese 
+Konstellation k&ouml;nnen u.U. einige der M&auml;ngel, die ich erkannte, bedingt 
+sein.
+
+Die OS3.5-CD kommt in der &uuml;blichen CD-H&uuml;lle, ist durch den Boing-Ball 
+sofort zu erkennen. Support-Hinweis und Registrierkarte liegen bei, ebenso 
+ein B&uuml;chlein mit einem Gru&szlig;wort von Petro Tyschtschenko und Hinweisen zur
+Installation.
+
+Die Installation war absolut unproblematisch, aber auf Empfehlung im Text
+hatte ich meine Startpartition noch einmal in einer freien Partition 
+gesichert, obwohl ich meinen monatlichen Komplettbackup erst vor drei Tagen 
+gemacht hatte. Absolut unn&ouml;tig, wie es sich herausstellte.
+
+Die Installation in zwei Schritten ging mit dem neuen Installer ohne
+Schwierigkeiten vor sich. Die damit dargestellten Bildchen sind hier zwar
+Spielerei, aber ich kann mir vorstellen, dass Programmierer diese 
+Eigenschaft sinnvoll einsetzen werden. Den Installer selbst probierte ich 
+dann mit einer neuen Version von Voyager aus, er ist mit den alten Skripts 
+voll kompatibel. Die in Mailing-Listen vereinzelt beschriebenen M&auml;ngel bei 
+der Installation traten bei mir nicht auf.
+
+Beim Booten nach dem Einschalten macht der Rechner nach Starten des neuen
+SetPatch einen Soft-Reboot. Ich hatte das zun&auml;chst auf meine Konfiguration
+geschoben, aber in der Miami-Mailinglist wies Fred Wright, den ich wegen 
+seiner Kenntnisse und klaren Beschreibungen sehr sch&auml;tze, darauf hin, dass 
+die SCSI-Hosts dadurch auf die &Uuml;berwindung der 4GB-Grenze eingerichtet
+w&uuml;rden. Ich hatte es &uuml;berhaupt nur bemerkt, weil ich als allererstes in der
+Startup-Sequence ein Boot-Bild aufrufe. Als ich das hinter SetPatch 
+verschob, war der Reset nur bei besonderer Aufmerksamkeit zu erkennen.
+
+Ich habe den Eindruck, dass alles etwas schneller geht. Auch die 
+systemeigenen GlowIcons bremsen anders als fr&uuml;her die Newicons den Betrieb 
+&uuml;berhaupt nicht.
+Was mir, wie schon bei NewIcons, nicht gefiel, war, dass beim &Ouml;ffnen einer
+wohlgef&uuml;llten Schublade wie z.B. Libs: s&auml;mtliche Dateien mit den 
+aufwendigen GlowIcons dargestellt werden. Als Nichtbesitzer einer 
+Grafikkarte bin ich am Ende durch die gro&szlig;e Zahl der Dateien so knapp an 
+ChipRAM, dass ich nicht einmal ein WB-Men&uuml; &ouml;ffnen kann. Und der n&auml;chste 
+Guru steht wegen Speicher-Fragmentation ins Haus! Aber ich habe bei den 
+Def_Icons in Envarc:Sys f&uuml;r das Def_Tool.icon und das Def_Project.icon die 
+alten OS3.1-Icons eingerichtet, nun geht es wieder.
+
+
+In der Schublade WBStartup habe ich au&szlig;er einigen ARexx-Scripts folgende
+Commodities, die z.T. auch patchen:
+
+  AFiloCron     backclock    BlueEyes       DOSPrefs        Facts
+  FastFontList  FKey         Gblank         GlobalTrash     HotBarII
+  IconCalendar  MoreTools    NewMode        PointerX        PowerSnap
+  StartRC       ToolAlias
+
+Sie laufen alle einwandfrei.
+
+In der Startup-Sequence rufe ich HappyENV auf, das das Verzeichnis ENV:
+speziell anlegt, um das Kopieren des gesamten ENVARC:-Inhalts zu vermeiden
+und damit den Boot-Vorgang zu beschleunigen. Funktioniert immer noch!
+
+In der User-Startup sind folgende Patches wichtig:
+
+CopyMemQuicker : Keine Probleme, ich pr&uuml;fe noch, ob es &uuml;berhaupt n&ouml;tig ist.
+DiskSafe       : Siehe unten.
+VirtualIcons   : Siehe unten.
+
+Besonderes:
+
+1. HappyDT ist ein Patch, der es erlaubte, aus jedem Programm heraus mit
+   Datatypes beliebige Dateien zu laden, z.B. aus DPaint .jpg, .gif usw.    
+   und ben&ouml;tigt eine datatypes.library Version mindestens 45. Ich habe      
+   diesen Patch bei Bedarf aufgerufen (er st&ouml;rt einzelne Programme). OS 3.5  
+   hat datatypes.library Version 44.40, HappyDT l&auml;uft nicht. Ich hatte      
+   Version 45.4 von datatypes.library wieder eingerichtet, da wurde z.B.    
+   der eingestellte Warn-Sound nicht mehr erkannt, es kam zu Fehlern bei    
+   DPaint bzw. PPaint im Zusammenhang mit HappyDT. HappyDT ist nicht mehr   
+   verwendbar.
+
+2. Mit DiskSafe wurde im OS 3.1 bei einem Dreifinger-Reset des Rechners
+   w&auml;hrend des Beschreibens eines Laufwerks eine Pause von 10 Sekunden bis
+   zum endg&uuml;ltigen Abbruch eingelegt und in dieser Zeit wurde die Datei
+   ordnungsgem&auml;&szlig; geschlossen. Das scheint jetzt auch noch zu funktionieren,
+   eine Testdiskette war nach dieser r&uuml;den Behandlung noch in Ordnung. Hier
+   sind noch Versuche auf der Festplatte n&ouml;tig, aber ich muss mir zuerst    
+   eine Test-Partition daf&uuml;r einrichten.
+
+2. Mit VirtualIcons konnte man CD-Piktogramme an beliebiger Stelle und       
+   darauf ge&ouml;ffnete Fenster dazu in beliebiger Anordnung fixieren. Ist mit  
+   OS 3.5 nicht mehr m&ouml;glich! Die vorhandenen Einstellungen f&uuml;r die Icons   
+   werden befolgt, jedoch nicht mehr die Schubladeneinstellungen, neue      
+   Einstellungen k&ouml;nnen nicht mehr angelegt werden. Leider nicht mehr       
+   verwendbar.
+
+3. IconInstaller erlaubte es, beliebige Icons gegeneinander auszutauschen.
+   Dabei konnte man den Typ, das Defaulttool usw. ver&auml;ndern. Funktioniert
+   nicht mehr.
+
+4. IconDeluxe, ein Icon-Zeichenprogramm, mit dem man auch die Icongr&ouml;&szlig;e
+   beliebig ver&auml;ndern konnte, funktioniert mit GlowIcons nicht, es erkennt
+   die Farben nicht. Es konnte allerdings auch mit NewIcons nicht
+   umgehen. Die Farbeinschr&auml;nkungen gelten auch f&uuml;r Iconian.
+
+   Beide Programme werden durch den neuen IconED recht gut, aber nicht
+   vollst&auml;ndig ersetzt.
+
+5. Die Notstart-Diskette, die man sich erzeugen lassen kann, ist f&uuml;r mich
+   wertlos. Da die Notstart-Disk auf die OS3.5-CD zugreifen will, das
+   Laufwerk von der Diskette aber nicht angemeldet werden konnte 
+   (wahrscheinlich wegen meiner Laufwerks-Konstellation), l&auml;uft das Ganze
+   ins Leere!
+
+[Siehe Nachtrag im Anschluss an diesen Artikel; Anm. d. Red.]
+
+   Ich bekomme nicht einmal ein Shell-Fenster, in dem ich mich
+   weiterhangeln k&ouml;nnte. Meine alte OS3.1-Notstart-Disk funktioniert noch,
+   auch wenn ich da auch keinen Zugriff auf CD habe. Ich werde mir aber     
+   eine eigene OS3.5-Diskette zusammenstellen.
+
+Weitere Probleme habe ich bis jetzt (innerhalb gut einer Woche) nicht
+festgestellt. Alle Programme laufen einwandfrei. Die neuen Druckertreiber
+habe ich noch nicht in Betrieb genommen, weil ich mit TurboPrint und 
+Studio, die weiter ihre Dienste tun, gut ausger&uuml;stet bin.
+
+Was mir nicht gef&auml;llt, ist die Beschreibung im HTML- und PDF-Format. HTML 
+ist sehr z&auml;h, AmigaGuide w&auml;re besser, auch wenn es nicht so bunt ist. Und 
+anstatt PDF h&auml;tte man sicher ein Format nehmen k&ouml;nnen, das man auf unserem 
+Rechner ohne Verrenkungen ausgeben kann. Ich habe es bis jetzt nicht 
+ansehen k&ouml;nnen, da mein APDF und auch GhostScript 5 behaupten, es sei 
+"encrypted". Hier ist "Studio" von Wolf Faust ein gutes Beispiel, wie man 
+eine Beschreibung mitliefert!
+
+[Verschl&uuml;sselte PDF-Dateien lassen sich mit einer speziellen Version von 
+Apdf, die auf http://berlin.all.de/~termi/amiga.html heruntergeladen werden 
+kann, anzeigen; Anm. d. Red.]
+
+Sonst bin ich mit dem neuen OS und den M&ouml;glichkeiten, die es bietet, sehr
+zufrieden. Der Geschwindigkeitszuwachs z.B. beim &Ouml;ffnen von Fenstern ist
+deutlich erkennbar. Einige neue M&ouml;glichkeiten in den WB-Men&uuml;s sind sehr
+sinnvoll, ich merke erst jetzt, was mir gefehlt hat.
+
+Ich hoffe f&uuml;r die nicht mehr funktionierenden Patches und auch f&uuml;r die 
+Icon-Programme, dass die Amiga-Gemeinschaft noch genug Programmierer hat, 
+die sich f&uuml;r die Verbesserungen ins Zeug legen werden.
+
+Gernod Schomberg &lt;g.schomberg@t-online.de&gt;«
+
+
+Nachtrag:
+
+Ich hatte als eigentlich gr&ouml;&szlig;ten Mangel beim neuen AOS3.5 geschrieben, dass 
+die Emergency-Disk f&uuml;r den Notstart bei mir nicht funktioniert.
+Einige &Uuml;berlegungen w&auml;hrend dem Ausprobieren brachten mich dazu, das
+atapi.device von IDEFIX, das f&uuml;r den Betrieb des CD-Laufwerks bei mir
+zust&auml;ndig ist, von meiner Festplatte nach Devs: auf der Disk zu
+kopieren und siehe da, die Disk startet nun einwandfrei und &uuml;bergibt
+den Betrieb an die OS3.5 - CDROM!
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,34 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="fpuarith.html">PREV</a> | <a href="fpumac.html">NEXT</a>
+<hr>
+<pre>
+
+<b> FPU Compare Commands </b>
+
+fcmpu crf,Fa,Fb
+fcmpo crf,Fa,Fb
+
+These are the compare commands for FPU Numbers. The crf should always be specified.
+fcmpu and fcmpo only are different in the handling of Not-A-Number's. I
+recommend not using Not-a-Numbers with compares to keep this stuff easy.
+
+Branch Commands are the usual beq,ble,bgt,..., with an additional bun (Branch, if
+unordered) and bnu (Branch, if not unordered), which uses Bit 3 of the crf.
+A Compare is Unordered, if one of the Numbers was a Not-A-Number.
+
+Principially you get an exception, when you do a fcmpo, and at least one of the
+numbers is not a number (at least if the not-a-number was created because of an
+invalid arithmetic operation). This does not happen with fcmpu, where you can check
+this with bun and bnu as described above. Note, that the exception won't happen,
+if you don't change the FPSCR Bits. WarpOS switches the FPU Exceptions off, as
+default.
+
+</pre>
+</body>
+</html>

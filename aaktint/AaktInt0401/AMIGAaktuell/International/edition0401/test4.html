@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Test reports</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="test3.html" OnMouseOver="status='Software test: Benchmark Program 틻miGOD� (by Uwe Pannecke)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="test.html" OnMouseOver="status='Test reports' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="showreport.html" OnMouseOver="status='Show report 팄ateway Computer Show - Amiga 2001� (by Jerry Withers)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Test reports
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H2>4. Software test: FTP-Daemon &raquo;OrangeFTPd&laquo; (by Uwe Pannecke)</H2>
+<P><B>A daemon in orange</B></P>
+<P><B>OrangeFTPd by Mark Olsen</B></P>
+<H3>1. Caught in the net</H3>
+<P>
+If you can believe the media (especially around the time the CeBit is on here in Germany), the whole (human) world will be caught up in a network sooner or later. If these apocalyptic visions come true, nothing's gonna work without network access, not even getting new toilet paper.
+</P>
+<P>
+When faced with this vision, the lowly connection of several computers for the purpose of transferring files seems to be quite old-fashioned. But that's exactly what this report is going to be about.
+</P>
+<P>
+As soon as computers are connected and theoretically able to exchange information, the question How? comes up.  One possibility, which is not without reason critically eyed by Internet security fanatics, is the venerable FTP, the File Transfer Protocol. What is true for the Internet does not have to apply on a local network. Here the security issue is not of grave importance or can be guaranteed with relatively simple measures. The elegance of FTP transfers is also quite convincing.
+</P>
+<P>
+I noticed a new star on the sky of Amiga FTP daemons while browsing the Aminet: The first public release of OrangeFTPd[1] from the Dane Mark Olsen (maybe a descendant of the legendary Egon Olsen, the head of the Olsen Gang?). He has released his FTP daemon as Freeware, and is planning to release it under the GPL later. According to his own comments, Mark Olsen wrote OrangeFTPd because he was looking for a good, fast and free FTP daemon, but couldn't find any. Now let's see if OrangeFTPd is able to fulfil 
+these demands.
+</P>
+<H3>2. Requirements</H3>
+<P>
+Besides an Amiga, only a working TCP/IP stack like Miami, AmiTCP or Genesis is required. Quite modest requirements, after all.
+</P>
+<H3>3. Installation</H3>
+<P>
+This modesty is continued in the installation, which just involves copying the drawer anywhere on the hard disk.
+</P>
+<P>
+<A HREF="img/oFTPd_Dir.png"><IMG SRC="thumb/oFTPd_Dir.jpg" WIDTH="120" HEIGHT="57" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+In my case, OrangeFTPd went into my Miami drawer. The documentation is very slim. Mark Olsen gets to the point of integrating the program into the TCP/IP stack in only three short sentences. In comparison to this, the disclaimer seems verbose. It warns you that OrangeFTPd might format your hard disk, destroy your monitor, kill your cat, you could lose your job and your life might be ruined. You have been warned :).
+</P>
+<H3>4. Integration in Miami</H3>
+<P>
+Well, since the documentation could discourage a few people, I will now exemplarily describe the integration into Miami. We'll assume that the computers are interlinked with a working TCP/IP connection, as described in [2] and [3].
+</P>
+<P><B>Allowed users</B></P>
+<P>
+Open the Miami configuration window and choose the section &quot;users&quot; from &quot;database&quot;. Now create a new user and specify name, password, user- and group-ID and the home directory.
+</P>
+<P>
+<A HREF="img/oFTPd_MiaUser.png"><IMG SRC="thumb/oFTPd_MiaUser.jpg" WIDTH="120" HEIGHT="45" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+For our example, the user shall be called &quot;uwep&quot;, has the user-ID &quot;101&quot; (but the ID number is not critical), the group-ID &quot;98&quot; (this is the group ftp, which will created later), and get the home directory &quot;Work2:&quot;. He can only move inside this directory after logging in.
+</P>
+<P><B>FTP-group</B></P>
+<P>
+Now, still in &quot;database&quot;, select &quot;groups&quot; and create a new entry, with the ID &quot;98&quot; (you can choose your own number, as long as it doesn't clash with existing groups) and the belonging user, &quot;uwep&quot; in our case.
+</P>
+<P>
+<A HREF="img/oFTPd_MiaGroup.png"><IMG SRC="thumb/oFTPd_MiaGroup.jpg" WIDTH="120" HEIGHT="62" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Of course you can define several allowed users here, separated by commas.
+
+</P>
+<P><B>Autostart OrangeFTPd</B></P>
+<P>
+To have OrangeFTPd started every time you go online, you add an entry in &quot;Events&quot;. Under &quot;Online&quot;, using the option &quot;Shell&quot;, enter OrangeFTPd with the complete path and maybe the option &quot;-nogui&quot; (this stops OrangeFTPd from opening the GUI at startup),
+</P>
+<P>
+<A HREF="img/oFTPd_MiaEvents.png"><IMG SRC="thumb/oFTPd_MiaEvents.jpg" WIDTH="120" HEIGHT="45" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+and save the modified configuration under a suitable name.
+</P>
+<H3>5. Usage</H3>
+<P>
+Now that Miami is configured, it's time for testing. Go online with Miami and start your favourite FTP client on one of the connected computers. A viable program for Windows9x would be for example WS_FTP, which can be found under [4]. For our example, I will use a Linux-based FTP client called IglooFTP [5].
+</P>
+<P>
+<A HREF="img/oFTPd_Lin.png"><IMG SRC="thumb/oFTPd_Lin.jpg" WIDTH="103" HEIGHT="96" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+To successfully connect, the following information has to be entered in the FTP client: the IP of the Amiga running OrangeFTPd (here &quot;amiga.xwing.de&quot;), the allowed user (here &quot;uwep&quot;), his password (here erm, I won't tell) and the port (usually &quot;21&quot;). And now the data transfer can begin.
+</P>
+<H3>6. Result</H3>
+<P>
+The current version of OrangeFTPd cannot be started via InetD, so you have to run it from &quot;Events&quot;. If you want to quit Miami, you explicitly have to quit OrangeFTPd before. But Mark Olsen has planned support for InetD in the future.
+</P>
+<P>
+During the test phase, OrangeFTPd worked reliably and fast. If you are looking for an FTP daemon for the Amiga but haven't found anything suitable, you should take a look. An interesting piece of free software.
+</P>
+[1] in Aminet at <A HREF="http://us.aminet.net/pub/aminet/comm/tcp/OrangeFTPd.lha">comm/tcp/OrangeFTPd.lha</A><BR>
+[2] U.P., TCP/IP between Amiga and Windows9x-PC, AmigaAktuell, 07/2000,<BR>
+[3] U.P., TCP/IP between Amiga and Linux, AmigaPlus, 12/2000, S. 44ff<BR>
+[4] http://www.com-online.de<BR>
+[5] <A HREF="http://www.littleigloo.org" TARGET="_top">http://www.littleigloo.org</A><BR>
+<P><B>Uwe Pannecke &lt;<A HREF="mailto:Uwe.Pannecke@t-online.de">Uwe.Pannecke@t-online.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="test3.html" OnMouseOver="status='Software test: Benchmark Program 틻miGOD� (by Uwe Pannecke)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="showreport.html" OnMouseOver="status='Show report 팄ateway Computer Show - Amiga 2001� (by Jerry Withers)' return true;" OnMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

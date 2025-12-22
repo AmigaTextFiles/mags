@@ -1,0 +1,276 @@
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>WOA
+
+[1mARexx Part 2
+[0m
+
+   Welcome back!  I hope by now, you have had a chance to experiment with
+the Singing Amiga program <insert link to previous article>, and maybe you
+have even allowed your
+
+Amiga to participate in birthday celebrations.  In this article, I hope to
+continue the spirit of using Amigas in new ways, while still covering new
+topics of programming.  As promised, this article also uses ARexx, although
+I do not feel I can guarantee ARexx will be in my next article,as I feel
+it will be too primitive.
+
+   Before we go any further, however, I need you to download something
+(These files are downloadable from the WOA Site) from Aminet, or from the
+website http://www.bgui.e-na.net/index.html.  I evaluated various library
+extensions to ARexx, and I have chosen BGui, because it was well-packaged.
+Please download bgui.lha and bgui_rexx.lha onto your system, and be sure
+that it is version 41.10 for bgui.library and version 4.0 for
+rexxbgui.library, written by Jilles Tjoelker.  Once you have downloaded
+the two libraries, expand them into some directory.  For our convenience,
+please create a logical assign to this directory called BguiRexx:.  It can
+be executed as follows from any Amiga Shell environment, but should be
+copied to the Amiga clipboard:
+
+assign BguiRexx: <full path, including drive, of where you expanded the
+                 archive>
+
+Also, please create this next assignment, making sure it points to the
+libs/ subdirectory of the archive we expanded.  Some folks prefer to stuff
+the library files into their libs: directory, but that makes for messy
+uninstalls, and messy libs: directories, not unlike the System subdirectory
+on any Microsoft machine.  They lack this power, you see.
+
+assign libs: BguiRexx:libs add
+
+   Once you have written and executed these two commands (make sure you
+don't leave out the "add" part on the second command), place them, in this
+order, at the end of the file s:user-startup on your computer, as follows
+(and include the comment lines):
+
+
+; begin BGui Library Assignments
+
+assign BguiRexx: <full path, including drive, of where you expanded the
+                  archive>
+
+assign libs: BguiRexx:libs add
+
+; end BGui Library Assignments
+
+
+   The assignment is important, and our program will not work without the
+library reference.  Built into this archive from Jilles is the assignment,
+packaged as a single-line script with an icon, for easy use.  Although this
+is a fine way to do it, it must be done once every session, before one of
+the BGui-based ARexx programs is run, and that becomes a little tedious to
+remember.  Incidentally, if you do want to use the icon, make sure that the
+script flag on the icon is checked, or it will not work; I have also found
+that selecting the file from Workbench and renaming it to "BGUI Assign"
+keeps me from getting it confused with the Assign command that it uses,
+which is located in your C: directory.  Incidentally, Manuel Lemos of the
+BGUI team has informed me they will be addressing the changes to this icon
+in their latest release.  If you visit the BGUI website listed above, you
+may decide to join their mailing list.  I strongly urge you to do so; they
+have been quite helpful.
+
+   On the subject of icons, I have included an icon to accompany the
+example file "slideshow.rexx."  This is in an effort to make for a more
+elegant look.  I rather dislike how Iconx defaults itself to launch a
+console window, as it is very distracting, and if not handled properly, it
+remains on the screen as an annoying artifact.  Please note that the
+graphics belong to the BGUI team, and I have never been one for icon
+artistry.
+
+   With these formalities out of the way, let's get on with the tutorial
+itself.  BGUI is a means of introducing libraries and functions.  Although
+we used functions in the previous article, none were as complex as a
+Graphical User Interface library.  BGUI is a library for building a
+graphical interface to software.  It is available in 3 programming
+languages, including ARexx, C, and E.  In using BGUI, I have found it to
+be stable, flexible, and cleverly designed.  It overcomes some of the
+cumbersome design issues in Visual Basic, by using implicit proportionality
+in the layout of the window.  It isn't full-featured by my definition,
+but on the other hand, it has plenty of extras.  My only reservation about
+it is in the documentation.  Although a fair effort was made to document
+syntax and parameters, I feel that purpose and usage content was lacking
+in some of the more mysterious functions.  It is my expectation that this
+could change, and it was the author's intention to expose usage by
+including a full spectrum of examples.  If you find BGUI is really fun for
+you, like I have,I suggest you join their mailing list forum, which is
+described at the end of this article, and ask the author for help.
+
+   Now, for the program itself, I spent a long time trying to come up with
+a good example, and I had difficulty coming up with a small enough program
+that was better than the last one.  I erred tremendously on the side of
+too big of a program, just to make this program better than the last, and
+I must appologize for that.  I decided upon a narrated slideshow for my
+example; believe it or not, that is a longer, harder program than getting
+the computer to sing a song.  You will notice, as before, that I wrote a
+software plan, which you will find on the sidebar.  As you read that plan,
+please note, however, that if you do not have Multiview available in your
+command search path, you will discover that this program won't run the
+slideshow, and may give you nasty errors about illegal commands,
+executables not being found, and so forth.  Your options are to upgrade
+to a version of the OS that includes Multiview, or to replace the line
+that calls Multiview with the name of a viewer of your own, provided you
+know its command-line syntax.  Please refer to the comments in the source
+code for an explanation.
+
+   Note that the application is now divided into four areas of operation.
+The first section initializes the application, the second manages settings
+and options in the GUI, the third shows the slideshow, and the last manages
+shutdown.  It is very important to consider phases of operation when
+planning software.  Some people determine this with flow charts or state
+diagrams.  I prefer state diagrams, but it is only a preference.  For an
+application of this size, formal diagramming may not be necessary, but it
+is essential that the operational phases are described, and the connections
+between them are detailed, as I have done for this application.
+
+   In addition to the plan itself, I have included a file format document.
+Any time there is to be a file associated with program development, the
+file format should be documented.  Granted, this is a simplistic file
+format, but in testing software, it is essential that there are no
+unknowns, and input files can be the greatest source of risk.  Since the
+graphics fed to the Multiview application are handled externally from the
+ARexx, no effort will be made to address those formats.
+
+   Whenever a program contains a user interface, it is insufficient to
+state what buttons will be in the interface, and what text fields there
+will be.  Too often, applications are designed without the user in
+consideration; perhaps the GUI elements are laid out in a way that is easy
+to program, or maybe there isn't enough room for a text string to be
+visible.  These considerations were made when this application was
+designed.  Even when the application is a video game, there will always
+be scores shown, lives left, and so forth.  If these don't fit on the
+screen, or are displayed in an awkward location, the user interface will
+fail for the user.  If there is ever a time to ask for input, it is on
+planning a user interface.  The end result should be a diagram,
+proportional to the end product. A benefit of BGUI is that the window can
+be resized and the proportions are maintained, adding to the versatility
+of the user interface.  In GUI builders, it is sometimes a good idea to
+experiment with a few different layouts before deciding on the final one.
+
+   The BGUI library exists as a standard Amiga library, with an interface
+accessible by ARexx. There are many libraries accessible to ARexx, although
+those that require C structs are tricky or nearly impossible to access.
+I have at least found use for the math library in my ARexx programs in the
+past.  All libraries must be opened if they are not already in memory.
+The very first portion of the program checks to see if the library is in
+memory, and then proceeds to open it if it is not available.  The library
+will stay in memory until it is removed.
+
+   In BGUI, in addition to opening the library itself, an open and a close
+statement exist for using commands in this library.  This initially sounds
+redundant, but it is not, I assure you. Consider the arbitrary "open" and
+"close" calls to be markers for the beginning and ending of a session.
+Opening the library itself merely places it in memory, ready to use.
+Starting a session that uses this library will initialize certain elements,
+and in the case of BGUI, start monitoring tasks. This monitoring portion
+is what is crucial to programming a GUI.
+
+   For most developers, there is a main "loop" in their code, where inputs
+are checked, and outputs are called.  For this application, it is the
+second section of the program, where the source code is waiting for a BGUI
+windows event.  In loops of this nature, the application will idle or
+perform maintenance tasks until some input is received (input from the
+user, or from some other source, such as a device).  indeed, this
+application has an idle loop in the second section; the statement 'nop' is
+where it idles.
+
+   For most of the BGUI functions, the function will either make changes
+to the environment or to a variable, or it will return a value from the
+environment.  The BGUIset statements make changes to the environment,
+everything from which item is selected in the list of Slides, to clearing
+text descriptions once a new slide has been added.  The BGUIget statements
+retrieve settings from various controls; I commonly check to see which
+slide is selected in the list view, sometimes to determine which one to
+delete when the drop button is pressed, as well as for other activities.
+The BGUIwinWaitEvent function waits for something to happen in the window
+created for the application.  Most of the time, function calls pass
+parameters that are to be modified, or to affect the environment.
+Sometimes, due to the limitation of what can be returned from a function,
+the result of a function is actually stored in the parameters that are
+passed into it.  In several instances in this program, the stem "Shows" is
+filled with the contents of the list view.  Sometimes, programmers who
+build libraries struggle with complexity in what is returned from a
+function.  In one case, it might be a good idea to return the modified
+value, and in other cases, as it is with the "Shows" stem, it is better to
+modify a parameter, and use the return value to identify the outcome of
+the function call with a return code.  This can be more efficient than
+having to re-evaluate the results when the input parameters are returned,
+since the parameters are often structurally complex.
+
+   In ARexx, like in Perl and other interpreted languages, function calls
+can have a lot of control over what is called scope (literally, what is in
+range to be seen).  Some functions see all variables that are visible in
+the portion of the program from which they are called.  Others can only see
+what has been passed, and the rest of the variables are invisible.  The
+Expose function in ARexx allows for certain variables to be visible from
+within the function, even though they are not strictly paramters to that
+function.  In many ways, I am rather fond of ARexx an Perl for this ability.
+In this application, there are two functions.  Neither have a reason to
+have information hidden from them, since they are merely procedures best
+left separated from the main code, because of their separate functions.
+But, perhaps I wrote a sort function; I might use a loop variable, and
+rather than worry if my loop variable name was used in some other function,
+I might decide to hide all the other names, and only concern my sort
+function with the parameters passed into it.  Whatever you prefer, always
+consider scope as both a tool and a potential for errors which are
+difficult to identify.
+
+   There are far too many nuances in this application to review each one
+individually.  It is alive with comments, and I suggest that you read the
+comments carefully.  However, I will review a common and tricky operation
+in this program, one that is always useful.  In programming, lists are
+often used for maintaining information in order.  More common a name than
+lists is the name "linked list."  This is a list which is often used to
+debauch programmers into believing pointers are the only way to do anything
+in the C programming language, but it is still a list by my terms.
+
+   Lists need to have a record of the first entry, and they need to be
+managed in such a way as to know when the end has been reached.  Some lists
+are designed to work from either end equally well.  Regardless, the real
+thing about lists is that their contents shift.  In our list of slides, one
+slide might be moved up a bit, or another one added, or still another one
+deleted.  The code surrounding the add, drop, up, and down buttons all
+have a segment that deals with maintaining the list.  The list is actually
+stored in two places.  The slides are stored in the "Shows" stem, and the
+rest of the data is stored in the "Texts" stem.  The reason for this is
+because the function that retrieves the contents of the list view wipes out
+the stem that is given to it, since it takes only an input parameter, and
+does not return data as its return value.
+
+   List operations can be described as an addition or a removal.  The up
+and down buttons swap entries up by one or down by one by performing a
+removal and then an addition, but in different places.  In an addition, if
+the addition is at the end, like it is for the add button, then the work is
+simple.  One more entry is added directly after the last entry.  If the
+list had pointers, then the previous last entry in the list would need to
+have its "next" pointer updated to point to the new entry, but since an
+ARexx stem is being used, the work is much simpler.  A "middle" addition is
+much more difficult in an ARexx stem (and easier in the world of pointers).
+  All the entries at the addition need to be copied down to the next entry
+below each one, so that at the point of addition, the entry matches the one
+before it.  The point of entry is then overwritten with the new addition.
+A simple example is a short list of letters in the alphabet.  If we begin
+with the list " A B D E" and realize later a need to add the letter "C,"
+then first, all the entries are copied down by one, so the list temporarily
+looks like this: "A B B D E."  Then "C" is added over the second "B" as
+follows: "A B C D E," and the list operation is complete.
+
+   List removal is the same operation, but rather than moving down, the
+entries move up, and the last entry is cleared.  Another example;
+initially, our list is: "A B X C D E," then it temporarily becomes
+"A B C D E E," and the last entry is cleared, with our list ending up as:
+"A B C D E."
+
+   I really hope you have enjoyed working in ARexx.  I do not anticipate
+further lessons in it, as I have learned that the current Next Generation
+Amiga trend is towards Java, and I think that further programming tutorials
+will be headed in that direction.  Hopefully, with a little luck, I can
+convince Jeroen Vermuellen to finish Merapi in time for my next article;
+it will bring Java to existing Amigas.  I want it known that I had planned
+on doing a tutorial of the QNX Neutrino GUI model next, because I have
+their technical manuals, but in light of recent developments, I find that
+less useful.  My two cents on that matter: "At least the consumer market
+has heard of Linux.  Amigas don't need to be any more obscure than they
+already are."
+
+>>>W<<<<<
+>>>>O<<<< Joe Solinsky
+>>>>>A<<<
+

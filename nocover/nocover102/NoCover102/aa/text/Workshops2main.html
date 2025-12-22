@@ -1,0 +1,324 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+2. Workshop: Monatskalender in PHP (von Michael Christoph)
+
+PHP ist eine moderne Internetskriptsprache (eine Mischung aus Basic, C und 
+Perl) und liegt auch in der aktuellen Version 4.0 f&uuml;r den Amiga vor.
+Da es sich im Gegensatz zu JavaScript um eine serverseitige 
+Programmiersprache handelt, ist ein laufender Webserver zwingende 
+Voraussetzung f&uuml;r das Erstellen, Testen und Laufen lassen von PHP-Skripten. 
+Auch diese Aufgabe meistert der Amiga mit dem Apache-Webserver souver&auml;n.
+
+
+* DIE INSTALLATIONSANWEISUNGEN GIBT ES WOANDERS
+
+Soviel als Einleitung zu PHP. Grundlagen und Installationsanleitungen 
+finden sich im Amiga-Magazin 08/2001 bzw. auch online unter 
+http://www.meicky-soft.de/amiga-magazin/mysql.html
+
+
+* EIN PAAR EINLEITENDE WORTE
+
+Ich will hier keinen Einstiegskurs in die PHP-Programmierung beginnen, wer 
+aber bereits (in anderen Sprachen) programmieren kann und sich f&uuml;r PHP 
+interessiert, sollte trotzdem gut zurechtkommen.
+
+Und im Gegensatz zu anderen Publikationen und Vorgehensweisen werde ich 
+sofort mit dem fertigen Beispiel beginnen, das dann Schritt f&uuml;r Schritt 
+genauer betrachtet wird. Dabei handelt es sich auch schon um ein sehr 
+praktisches Beispiel und nicht die in B&uuml;cher oft zu findenden dreizeiligen 
+Kurzbeispiele. Trotzdem soll dieses Beispiel lediglich als Grundlage 
+dienen, das jeder nach seinen W&uuml;nschen noch weiter ausbauen
+kann.
+
+
+* DAS BEISPIEL
+
+Screenshot:
+<IMG SRC="../extra/php-kalender.png" ALT="Screenshot">
+
+ 1 &lt;?php
+ 2   /* kalender.php */
+ 3   /* 01.08.2002, Michael Christoph &lt;michael2meicky-soft.de&gt; */
+ 4 
+ 5 
+ 6   /* Hilfsfunktion zur Ermittlung von Feiertagen */
+ 7   function isFeiertag($m,$d,$y)
+ 8   {
+ 9     /* es wird nur der Sonntag als Feiertag erkannt */
+10     if( date("w",mktime(1,1,1,$m,$d,$y)) == 0 )
+11       return 'red';
+12     else
+13       return 'black';
+14   }
+15 
+16 
+17   /* erstes Element leer, damit Monat 1 = Januar ist */
+18   $monatstr = array("", "Januar", "Februar", "M&auml;rz", "April", "Mai",
+                       "Juni", "Juli", "August", "September", "Oktober",
+                       "November", "Dezember");
+19 
+20   /* beim ersten Aufruf den heutigen Monat und Jahr anzeigen */
+21   if(!(isset($jahr)))
+22   {
+23     $jahr = date("Y",time());
+24     $monat = date("n",time());
+25   }
+26   $tag = 1;
+27   $timestamp = mktime(1,1,1,$monat,$tag,$jahr);
+28 
+29   /* das Kalenderblatt als Tabelle ausgeben */
+30   echo "&lt;center&gt;&lt;br&gt;&lt;br&gt;";
+31   echo "&lt;table width='800' border='0'&gt;";
+32   echo "&lt;tr&gt;";
+33   echo "&lt;td align='center' valign='top'&gt;";
+34 
+35   /* Link f&uuml;r vorherigen Monat erzeugen */
+36   if($monat &gt; 1)
+37     echo "&lt;a href='kalender.php?monat=" . ($monat-1) . "&jahr="
+                    . $jahr . "'&gt;" . $monatstr[$monat-1] . "&lt;/a&gt; &lt;--- ";
+38   else
+39     echo "&lt;a href='kalender.php?monat=12&jahr=" . ($jahr-1) . "'&gt;"
+                                         . $monatstr[12] . "&lt;/a&gt; &lt;--- ";
+40 
+41   /* das aktuelle Monat dazwischen mit Jahreszahl ausgeben */
+42   echo " &lt;font size='5' face='tahoma'&gt;" . $monatstr[$monat]
+                                                        . " $jahr&lt;/font&gt; ";
+43 
+44   /* Link f&uuml;r folgenden Monat erzeugen */
+45   if($monat &lt; 12)
+46     echo " ---&gt; &lt;a href='kalender.php?monat=" . ($monat+1)
+                  . "&jahr=" . $jahr . "'&gt;" . $monatstr[$monat+1] . "&lt;/a&gt;";
+47   else
+48     echo " ---&gt; &lt;a href='kalender.php?monat=1&jahr=" . ($jahr+1)
+                                            . "'&gt;" . $monatstr[1] . "&lt;/a&gt;";
+49 
+50   echo "&lt;table width='150' border='1'&gt;";
+51 
+52   /* als &Uuml;berschrift die Wochentage eintragen */
+53   echo "&lt;th align='center' width='20'&gt;Mo&lt;/th&gt;";
+54   echo "&lt;th align='center' width='20'&gt;Di&lt;/th&gt;";
+55   echo "&lt;th align='center' width='20'&gt;Mi&lt;/th&gt;";
+56   echo "&lt;th align='center' width='20'&gt;Do&lt;/th&gt;";
+57   echo "&lt;th align='center' width='20'&gt;Fr&lt;/th&gt;";
+58   echo "&lt;th align='center' width='20'&gt;Sa&lt;/th&gt;";
+59   echo "&lt;th align='center' width='20'&gt;&lt;font color='red'&gt;So&lt;/font&gt;&lt;/th&gt;";
+60   echo "&lt;tr&gt;";
+61 
+62   /* erst mal einr&uuml;cken bis zum Wochentag des 1. */
+63   $wochentag = date("w",$timestamp);
+64   if($wochentag == 0) $wochentag = 7;  /* 0=Sonntag */
+65   for($i=1; $i&lt;$wochentag; $i++)
+66   {
+67     echo "&lt;td align='center'&gt;&nbsp;&lt;/td&gt;";
+68   }
+69 
+70   /* dann alle Tage des Monats ausgeben */
+71   while(checkdate($monat,$tag,$jahr))
+72   {
+73     echo "&lt;td align='center'&gt;&lt;font color='"
+                    . isFeiertag($monat,$tag,$jahr) . "'&gt;$tag&lt;/font&gt;&lt;/td&gt;";
+74     /* am Sonntag ist die Zeile zu Ende und eine neue wird begonnen */
+75     if(isFeiertag($monat,$tag,$jahr) == "red") { echo "&lt;/tr&gt;&lt;tr&gt;"; }
+76     $tag++;
+77   }
+78 
+79   /* noch auff&uuml;llen bis zum Sonntag */
+80   if(! (isFeiertag($monat,$tag-1,$jahr) == "red"))
+81   {
+82     while(! (isFeiertag($monat,$tag,$jahr) == "red"))
+83     {
+84       echo "&lt;td align='center'&gt;&nbsp;&lt;/td&gt;";
+85       $tag++;
+86     }
+87     echo "&lt;td align='center'&gt;&nbsp;&lt;/td&gt;";
+88   }
+89 
+90   echo "&lt;/tr&gt;";
+91   echo "&lt;/table&gt;";
+92   echo "&lt;/td&gt;";
+93 
+94   echo "&lt;/tr&gt;";
+95   echo "&lt;/table&gt;";
+96   echo "&lt;/center&gt;";
+97 
+98 ?&gt;
+
+
+* ERKL&Auml;RUNG ZUM BEISPIEL
+
+Das Beispiel ist lediglich zur besseren Orientierung zeilenweise 
+nummeriert. Die Zahlen sind nicht mit einzugeben! Zeilen ohne Nummer sind 
+lediglich zur besseren Lesbarkeit umgebrochen worden und einzeilig. 
+Speichert es unter dem Namen "kalender.php" ab. Wichtig ist, als Endung 
+".php" oder ".php3" oder ".php4" oder ".phps" zu verwenden, um Apache 
+mitzuteilen, dass der Textinhalt erst noch verarbeitet werden muss, bevor 
+er an den Browser gesendet wird. Dabei h&auml;ngt es von der Apache-
+Konfiguration ab, welche Endungen erkannt und benutzt werden k&ouml;nnen. Lokal 
+kann dies in Apache:conf/httpd.conf eingetragen werden, ansonsten ist beim 
+ISP nachzufragen.
+
+PHP kann innerhalb eines HTML-Codes eingebettet werden, aber auch 
+umgekehrt, HTML-Anweisungen k&ouml;nnen von PHP-Code erzeugt werden.
+Mittels "&lt;?php" oder auch kurz "&lt;?" wird der Begin eines PHP-Blocks 
+gekennzeichnet. Entsprechend ist "?&gt;" als Endmarkierung zu verwenden. 
+Au&szlig;erhalb dieses Blockes kann ganz normaler HTML-Code geschrieben
+werden.
+
+Das ganze Programm setzt sich lediglich aus ein paar unterschiedlichen PHP-
+Funktionen zusammen. Diese werde ich hier nur kurz vorstellen.
+
+Heutzutage gibt es eine gro&szlig;e Anzahl an PHP-Literatur. "GoTo PHP 4" aus dem 
+Addison-Wesley-Verlag (590 Seiten, 39,95 EURO mit CD) sei hier als 
+empfehlenswertes Beispiel genannt. Ein sehr umfangreiches (&uuml;ber 7 MByte 
+gro&szlig;en) PHP-Handbuch ist unter "http://www.php.net/manual/de/" zu finden.
+
+- isset
+  dient zur &Uuml;berpr&uuml;fung, ob eine Variable gesetzt ist oder nicht.
+  Wird ein PHP-Skript aufgerufen, stehen automatisch alle Aufrufoptionen 
+  der URL-Zeile als benannte Variablen zur Verf&uuml;gung.
+  Der Aufruf "http://localhost/kalender.php?monat=8&jahr=2002" 
+  erzeugt die beiden Variablen $monat und $jahr (Variablen werden
+  durch ein vorangestelltes Dollarzeichen gekennzeichnet) und setzt
+  sie auf die Werte 8 und 2002. Wird nur die Anweisung
+  "http://localhost/kalender.php" aufgerufen, sind beide Variablen
+  nicht vorhanden.
+
+- echo
+  ist wohl die wichtigste Funktion und erlaubt neben printf
+  die Ausgabe von Text und HTML-Code an den aufrufenden Web-Browser.
+
+- mktime
+  erlaubt die Erstellung eines sogenannten Timestamps. Der Timestamp
+  kann Datum und Uhrzeit als Integerzahl repr&auml;sentieren. Zu beachten
+  ist die Reihenfolge der Parameter: Stunde,Minute,Sekunde,Monat,Tag,Jahr!
+  
+- date
+  erlaubt die Ausgabe eines Timestamps in benutzerverst&auml;ndlicher Form.
+  Anhand Platzhalterzeichen kann sehr flexibel das Ausgabeformat festgelegt 
+  werden ("w" z.B. f&uuml;r den Wochentag)
+  
+- checkdate
+  dient zur &Uuml;berpr&uuml;fung eines Datums auf G&uuml;ltigkeit. Zu beachten ist
+  die Reihenfolge der Parameter: Monat,Tag,Jahr!
+  
+- array
+  erlaubt das Erstellen von Arrays. Dabei k&ouml;nnen beliebige Datentypen
+  in einem Array gemischt werden (also z.B. Zahlen und Strings).
+  Auch assoziative Arrays sind m&ouml;glich und werden in der Form
+  "name =&gt; michael" geschrieben.
+
+- for
+  Z&auml;hlschleife, wie in C
+  
+- while
+  Schleife mit Kopfbedingung, wie in C
+  
+- isFeiertag
+  eigene Hilfsfunktion
+
+
+* DAS BEISPIEL WIRD BETRACHTET
+
+Das Beispiel beginnt eigentlich in Zeile 18, da vorher lediglich eine neue 
+Funktion bekannt gegeben wird. Es können auch mehr Funktionen sein bzw. 
+diese aus externen Dateien "includiert" werden.
+
+In Zeile 18 wird lediglich ein Array erzeugt, das die Monatsnamen in 
+deutscher Schreibweise enth&auml;lt. Die Funktion date() liefert zwar mittels 
+des Platzhaltersymbols "F" auch den Monatsnamen, allerdings mit englischer 
+Bezeichnung. Da PHP (wie auch C) bei 0 zu z&auml;hlen beginnt, die Monate aber 
+mit 1 beginnen, wird das erste Element des Arrays leer gelassen.
+
+Die Zeilen 21 bis 25 dienen dazu, festzustellen, ob das Skript mit oder 
+ohne Parameter aufgerufen wurde. Ohne Parameter (also 
+"http://localhost/kalender.php" allein) werden der heutige Monat und Jahr 
+als Startwerte verwendet. Ansonsten wird dieser Programmteil gar nicht 
+ausgef&uuml;hrt.
+Zeile 26 setzt den Tagesz&auml;hler auf 1. Er wird sp&auml;ter bei der Ausgabe 
+jeweils ums eins erh&ouml;ht, bis zum Monatsletzten.
+
+Weiter geht es dann in der Zeile 27, in der aus dem Datum (und einer f&uuml;r 
+unser Beispiel irrelevanten Uhrzeit 1 Uhr, 1 Minute und 1 Sekunde) ein 
+Timestamp zur weiteren Verarbeitung generiert wird.
+
+Die Zeilen 30 bis 33 beginnen dann mit der Erzeugung einer HTML-Tabelle.
+
+In den Zeilen 36 bis 39 wird ein HTML-Link erzeugt, bei dessen Auswahl der 
+vorhergehende Monat im Browser angezeigt wird. Falls der aktuelle Monat 
+noch nicht Januar ist, wird der Link f&uuml;r einen Monat verringert erzeugt, 
+ansonsten f&uuml;r Dezember des vorhergehenden Jahres.
+
+Zeile 42 schreibt zwischen die beiden Links den Namen des aktuellen Monats 
+mit Jahreszahl in einer gr&ouml;&szlig;eren Schrift.
+
+Zeilen 45 bis 48 erzeugen entsprechend einen Link f&uuml;r den folgenden Monat. 
+Falls noch nicht Dezember ist, f&uuml;r den n&auml;chsten Monat, sonst f&uuml;r Januar des 
+darauffolgenden Jahres.
+
+Falls das Monatsarray (Zeile 18) sofort mit "Januar" als ersten Eintrag 
+begonnen worden w&auml;re, h&auml;tte f&uuml;r die vorangegangenen Zeilen 36 bis 48
+jeweils als Index [$monat-1] geschrieben werden m&uuml;ssen. Deutlich besser zu 
+lesen ist es allerdings ohne die -1, und auch die Fehleranf&auml;lligkeit wird 
+verringert.
+
+Die Zeilen 53 bis 59 sorgen dann daf&uuml;r, dass als Tabellen&uuml;berschriften die 
+Wochentage verwendet werden. Dabei wird der Sonntag rot geschrieben (wie 
+alle sp&auml;teren Sonntage im Kalender auch).
+
+In Zeile 63 wird ermittelt, auf welchen Wochentag der Monatserste f&auml;llt. 
+Das Ergebnis ist ein Zahlenwert von 0 (=Sonntag) bis 6 (=Samstag). Falls es 
+sich um einen Sonntag handelt, erh&ouml;hen wir in Zeile 64 den Wert auf 7. In 
+den folgenden Zeilen 65 bis 68 werden n&auml;mlich Wochentage-1 leere Tabellen-
+Felder erzeugt.
+
+Die eigentliche Ausgabe des Kalenders erfolgt dann in den Zeilen 71 bis 77. 
+Diese Schleife wird solange durchlaufen, bis das Datum nicht mehr g&uuml;ltig 
+ist. Dadurch werden alle Tage des Monats als einzelne Zellen ausgegeben. 
+Zeile 73 ist daf&uuml;r zust&auml;ndig, dass die Tage, die auf einen Sonntag fallen, 
+in rot ausgegeben werden.
+Zeile 75 hingegen beginnt eine neue Reihe, wenn der Sonntag ausgegeben 
+wurde. Zeile 76 z&auml;hlt lediglich den Tagesz&auml;hler um eins hoch.
+
+In Zeile 80 wird gepr&uuml;ft, ob das zuletzt ausgegebene Datum ein Sonntag war. 
+Ist dies nicht der Fall, werden die Zeilen 82 bis 87 ausgef&uuml;hrt, die daf&uuml;r 
+sorgen, dass noch entsprechend viele leere Zellen erzeugt werden, um die 
+aktuelle Reihe zu vervollst&auml;ndigen.
+
+Die Zeilen 90 bis 96 dienen dann lediglich noch zum Abschlie&szlig;en der 
+Tabellenanweisungen.
+
+
+Damit sollte das Beispiel doch ausf&uuml;hrlich genug beschrieben worden sein, 
+damit es jeder Interessierte leicht nachvollziehen und vor allem verstehen 
+kann.
+
+Lediglich die Zeilen 7 bis 14 muss ich noch nachreichen. Hierbei handelt es 
+sich um eine Hilfsfunktion, mit der festgestellt werden soll, ob das 
+&uuml;bergebene Datum ein Feiertag ist. Bisher beschr&auml;nkt sich die Funktion 
+allerdings darauf, den Sonntag zu erkennen. Dazu wird in Zeile 10 das Datum 
+in einen Timestamp konvertiert und mittels der Date-Funktion der Wochentag 
+ermittelt. Liefert diese 0 zur&uuml;ck, ist es ein Sonntag, und es wird als 
+R&uuml;ckgabe "red" geliefert, ansonsten "black". Dieser String wird direkt als 
+Farbkodierung f&uuml;r die HTML-Font-Anweisung verwendet.
+
+
+* FORTSETZUNG ERW&Uuml;NSCHT?
+
+Wenn seitens der Leser Interesse besteht, bin ich gerne bereit, dieses 
+Beispiel weiter auszubauen und in Verbindung mit einer mySQL-Datenbank mit 
+dynamischen Inhalten zu erg&auml;nzen, beispielsweise f&uuml;r einen Terminkalender.
+Schreibt uns, was euch interessiert!
+
+Michael Christoph &lt;michael@meicky-soft.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

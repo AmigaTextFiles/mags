@@ -1,0 +1,216 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Workshops / Hintergrundberichte / Buchvorstellungen
+---------------------------------------------------
+
+1. Erweiterung der CyberstormPPC um ZIF-Sockel - Teil 2 (von Dirk Wenk)
+
+[Achtung: Die Durchf&uuml;hrung der im Folgenden beschriebenen Arbeiten
+erfolgt auf eigene Gefahr!]
+
+Dies ist momentan NUR eine theoretische &Uuml;berlegung. Das hei&szlig;t, so
+m&uuml;sste/k&ouml;nnte der Umbau vonstatten gehen. Es hei&szlig;t nicht, dass es
+dann tats&auml;chlich funktioniert.
+
+Es ist dringend davon abzuraten, nach diesem Artikel irgendwelche
+Ver&auml;nderungen an seiner CSPPC-Karte vorzunehmen!
+
+Sollte trotzdem jemand so dumm sein? Dann wei&szlig; ich von nix!
+
+
+.......Teil 2
+
+So, da sind wir wieder mit unserem Workshop, der hiermit sein noch
+offenes Ende finden wird ... (leider). &Uuml;brigens entsteht dieser Text in
+der S-Bahn Richtung MG. Mobil auf einem Palm mit Tastatur! Das nur so
+am Rande ;)
+
+Aber nun weiter im Text.
+
+In der Zwischenzeit haben mich ein paar sehr interessante Emails zu
+diesem Projekt erreicht und ich m&ouml;chte diesen Personen nochmals
+herzlich daf&uuml;r danken.
+
+
+Wie schon gesagt gibt es 2 M&ouml;glichkeiten, die neue CPU anzuschlie&szlig;en:
+
+1. Wir entfernen den originalen Prozessor und verbinden die Leitungen
+mit unserer ZIF-Platine
+
+oder
+
+2. Wir entwerfen eine Karte, die wir in den Erweiterungsport der CSPPC
+stecken k&ouml;nnen. Zu Letzterem fehlen mir allerdings die Informationen,
+sodass ich dort nicht weiter komme. Allerdings w&auml;re folgendes auch sehr
+nett:
+
+Wir nehmen eines dieser neuen PCI-Erweiterungsboards mit Steckplatz und
+stecken dort eine vom Mac bekannte G3/G4 Karte ein.
+
+Vorteil: Weniger Entwicklungskosten, stabiler Halt und keine Eingriffe
+in die CSPPC-Hardware.
+
+Nachteile: Man muss eine Anpassung des PowerUp/WarpUp-Treibers vornehmen,
+damit diese CPU richtig angesprochen werden kann. Und nat&uuml;rlich muss
+man erst mal so eine Karte finden, auf der der PPC Prozessor nicht fest
+aufgel&ouml;tet ist! Klingt irgendwie wie nach der SharkPPC? Ja, und es
+besteht auch kein so gro&szlig;er Unterschied.
+
+
+Seit der 604-CPU wurden bei der neuesten Prozessor-Generation neue
+Anschl&uuml;sse dazugetan, aber auch einige wieder eingespart bzw.
+ver&auml;ndert. Zum einen kommen die L2-Cache-Leitungen dazu. Aber zum
+Gl&uuml;ck brauchen wir uns darum keine Sorgen zu machen, da auf dem ZIF-
+Board bereits alles richtig mit dem dazu geh&ouml;rigen Cache installiert
+ist. Aber die weggelassenen Signale k&ouml;nnten Probleme bereiten. Es sind 
+davon so interessant klingende Signale wie "Halt", "Stop" und "Databus
+Ready" betroffen!
+
+Dazu kommt noch die Ungewissheit, welche Leitungen auf der 604-CPU
+&uuml;berhaupt in Gebrauch sind!
+
+
+Aber nun weiter zu dem Problem der Pegel-Anpassung.
+
+Wie man aus den PDF-Dateien (auf Anfrage) zu den 74xxx234 Chips
+entnehmen kann, gibt es schnelle und langsamere und die
+Operationsspannung ist auch variabel. Allerdings ist die
+Ausgangsspannung nie h&ouml;her als die Versorgungsspannung. Na... ahnt ihr
+schon, worauf ich hinaus will? Genau ... zum Datenempfang schalten wir
+die 74er Bauteile einfach runter auf 3,3 Volt und umgekehrt zur&uuml;ck auf
+5 Volt!
+
+Allerdings ist das wieder viel Fummelarbeit, so viele 74er Chips neu
+zu verdrahten. Und dann fehlen uns nat&uuml;rlich noch die Adressleitungen.
+Habt ihr schon mal gesehen, wie seltsam die 74er Chips zwischen den
+beiden SIMM-Sockeln miteinander verbunden sind? Vom Ausgang des ersten Chip
+an den Eingang des zweiten Chip und von dessen Ausgang an den Eingang von
+Chip 3. Was genau das jetzt bezwecken soll, wei&szlig; ich leider auch nicht.
+Aber vielleicht f&auml;llt euch etwas dazu ein ...? (Ich warte auf eure Mail :)
+
+Jetzt kommen wir zum Anschlie&szlig;en des ZIF-Sockels. Wenn wir uns die
+Infos zum ZIF-Sockel ansehen, werden wir feststellen, dass sogar die
+Pin-Belegung fast identisch ist mit der des 60x-Busses. So k&ouml;nnen wir
+recht einfach diesen Sockel anschlie&szlig;en. Wir m&uuml;ssen nur die Pins von der
+CSPPC-Seite mit denen des ZIF-Sockels vergleichen und anschlie&szlig;en. (Aber
+die Pegel-Anpassung nicht vergessen!).
+
+Der einzige Unterschied ist, dass wir beim ZIF-Sockel noch ein paar Pins
+&uuml;brig haben, die zum Einstellen der MHz-Zahl da sind. Wenn wir also auf
+unserer Adapterplatine einen Dip-Schalter installieren bzw. einen
+elektrischen Schalter, der dann vom ZIF-Board aus angesteuert wird, so
+k&ouml;nnen wir die MHz-Zahl bzw. die Takt-Teilung einstellen. Wichtig f&uuml;r
+kommende ZIF-Karten ist die Verf&uuml;gbarkeit auch von hohen Teilern, da die
+m&ouml;gliche Busfrequenz auch immer mehr ansteigt.
+
+Bei den heutigen Prozessoren sind Busgeschwindigkeiten von 33 MHz bis
+133 MHz m&ouml;glich. Und je h&ouml;her die Busgeschwindigkeit, um so h&ouml;her auch der
+Speicherdurchsatz. Leider sind wir aber auf Grund der CSPPC-Architektur
+und dem verwendetem Speicher auf max. 75 MHz beschr&auml;nkt. Obwohl mir auch
+von Leuten berichtet wurde, die den Bus auf 80 MHz getrieben haben, und
+zwar durch den Einsatz von leider recht seltenen 50-ns-Speicherbausteinen.
+Nat&uuml;rlich muss man bei einer solchen Extrembelastung ordentlich k&uuml;hlen.
+
+
+Fassen wir nun noch mal alle M&ouml;glichkeiten zusammen, damit wir uns
+nicht verirren.
+
+1. M&ouml;glichkeit: Wir entfernen die 604-CPU, verbinden alle Anschl&uuml;sse
+mit unserer Adapterplatine, von wo aus die Signale durch Bausteine
+zur Pegelanpassung auf 3,3 Volt und umgekehrt angepa&szlig;t werden (&uuml;brigens
+brauchen wir auf das Timing auf Grund der sehr schnellen Pegelanpassung
+von ca. 2,2 ns bei diesen Bausteinen nicht zu achten). Von der
+Pegelanpassung aus geht es direkt zum ZIF-Sockel. Zus&auml;tzlich installieren
+wir noch die Stromversorgung.
+
+Dazu noch ein Tipp: Sollte man einen guten, starken Chip installiert
+haben, der wohl die gew&uuml;nschte Leistung jedoch mit zuviel Volt liefert,
+kann man am einfachsten die Spannung durch in Reihe geschaltete Dioden
+senken. (Dieser Tipp stammt &uuml;brigens von der Motorola-Seite im Internet
+http://www.mot.com). Hat man zum Beispiel eine Core-Spannung von 2,7
+Volt, aber der Spannungs-IC liefert 3,3 Volt, so schlie&szlig;en wir dazwischen
+eine Diode an und schon haben wir durch den Spannungsabfall an der
+Diode (0,7 Volt bzw. 0,5 Volt je nach Typ) unsere gew&uuml;nschte Spannung.
+&Uuml;brigens sollte man beachten, dass die Core-Spannung in letzter Zeit
+immer weiter abnimmt. Waren es am Anfang noch 3,3 Volt Core-Spannung
+(060 und 603/604) sind es heute nur noch 1,8 Volt!
+
+Jetzt, da wir die Spannung haben, fehlt nur noch die Einstellung des
+Bustaktes, die wir mit einem Dip-Schalter schnell erledigt haben. In
+der ZIF-PDF-Datei ist genau beschrieben, wo diese Schalter anzuschlie&szlig;en
+sind.
+
+Was jetzt noch zu tun ist, sollte nicht mehr so schwer sein.
+Prozessorkarte in den ZIF-Sockel und einschalten (Finger kreuzen nicht
+vergessen!)  ;)
+
+
+2. M&ouml;glichkeit: Wir erledigen einen Teil der Pegelanpassung durch
+&Auml;ndern der Versorgungsspannung der 74er-Bausteine auf der CSPPC. Der
+Rest d&uuml;rfte dann mit nur einem Pegelanpassungs-Chip zu erledigen sein
+wie bei L&ouml;sung Nummer 1. Zu beachten ist allerdings, dass, sobald die
+Signale nicht zur PPC wandern, der Pegel in Richtung 68k wieder auf 5
+Volt gesetzt wird. Aber Vorsicht, nicht f&uuml;r die 74er-Bausteine, die jetzt
+die Signale f&uuml;r die PPC-CPU gespeichert haben! Realisieren k&ouml;nnte man
+das durch die "Databus Ready"-Signale des PPC-Prozessors (ohne Gew&auml;hr).
+Allerdings wei&szlig; ich nicht genau, wie das funktionieren kann. Der Rest
+bleibt allerdings gleich wie bei L&ouml;sung Nummer 1.
+
+
+Bei der 3. L&ouml;sung nehmen wir nicht mehr die Signale direkt von den
+empfindlichen Kontakten der CSPPC-Karte, sondern vom Erweiterungsanschluss
+der CSPPC.
+
+Dort sollten jedenfalls alle wichtigen Signale anliegen, die wir
+brauchen. Die ein oder zwei Signale, die dort nicht anliegen, k&ouml;nnen wir
+dann immer noch direkt von der Platine abnehmen. Und unsere
+Adapterplatine k&ouml;nnen wir bei dieser L&ouml;sung dann auch direkt in
+diesen Erweiterungssteckplatz einstecken. Das bedeutet mehr
+Stabilit&auml;t. Leider wei&szlig; ich nicht, wie der Bus dort beschaltet ist.
+Aber das hatte ich ja schon erw&auml;hnt.
+
+
+Nun kommen wir zur 4. und einfachsten L&ouml;sung: Wir nehmen einfach einen
+PCI-Board-Adapter, den wir in den Erweiterungsslot einbauen, um darauf
+die PCI-G4-Karten, wie sie vom Mac her bekannt sind, einzusetzen. Ein
+gro&szlig;er Vorteil hierbei ist wie anfangs schon mal erw&auml;hnt, dass wir die
+Bastelei sparen, allerdings brauchen wir dann angepasste Treiber, um
+diese CPU &uuml;berhaupt ansprechen zu k&ouml;nnen (wie bei der SharkPPC, wo dann
+auch Treiber n&ouml;tig sind). Dar&uuml;ber hinaus kann es von Vorteil sein, wenn
+man diese Karte mit eigenem Speicher best&uuml;cken kann. Hier sei nur die
+Begrenzung der Busgeschwindigkeit auf der CSPPC erw&auml;hnt. Allerdings
+sind hierbei auch die meisten PPC-Prozessoren nicht in einem ZIF-Sockel
+untergebracht, sondern sind direkt fest aufgel&ouml;tet.
+
+Wenn ihr noch mehr Infos braucht, schreibt mir einfach.
+
+Besonders entt&auml;uschend sind manche PPC-Programme, wenn man sieht, dass
+ihre PPC-Leistung schlechter ist als bei einem 060 Prozessor. Und das
+nur, weil die Software nicht optimiert ist. Bestes Beispiel ist hier
+wohl die PPC-Version von LHA!
+
+Daran merken wir, dass Prozessor-Speed allein nicht ausreicht, um
+wirklich schnell zu sein!
+
+
+Da ich beruflich viel zu tun habe, werde ich die Weiterentwicklung
+dieses Projektes leider auf unbefristete Zeit einstellen m&uuml;ssen. Im
+Moment ist der Job einfach wichtiger als private Hobbys, ich hoffe ihr
+versteht das. Allerdings w&uuml;rde ich mich freuen von euch zu h&ouml;ren, wie
+ihr diese Dinge vorantreibt ... falls jemand Lust hat weiterzumachen.
+Alle Dokumente, die ich habe, sende ich euch gerne zu.
+Die Dateien bestehen &uuml;berwiegend aus PDF-Dateien. Die interessantesten
+stammen nat&uuml;rlich von der www.mot.com-Seite ;)
+
+Dirk Wenk &lt;dirk@wax7.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

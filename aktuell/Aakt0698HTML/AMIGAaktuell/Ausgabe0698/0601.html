@@ -1,0 +1,911 @@
+<HTML>
+<HEAD><TITLE>
+Workshops / Hintergrundberichte
+</TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+
+<TABLE width=100% border=0 cellpadding=3 cellspacing=0>
+
+<tr>
+<td bgcolor="#000000">
+<A HREF="0600.html"><IMG SRC="../menu/links.gif" BORDER=0 WIDTH=15 HEIGHT=15></A>
+<A HREF="0602.html"><IMG SRC="../menu/rechts.gif" BORDER=0 WIDTH=15 HEIGHT=15></A>
+<font color="#FFFFFF">
+Workshops / Hintergrundberichte
+</font>
+</TD></tr>
+</TABLE>
+
+
+<P>
+
+<H2>1. ARexx-Kurs - Teil 5 (von Heiko Kuschel)</H2>
+
+<P>
+»ARexx-Kurs: &Uuml;bersicht
+<P>
+1. Einf&uuml;hrung in ARexx.
+<UL><LI>
+   Wie funktionierts?
+</LI><LI>
+   Was brauche ich?
+</LI><LI>
+   Installation
+</LI><LI>
+   ein erstes kleines Programm
+</LI><LI>
+   Ein- und Ausgabe
+</LI><LI>
+   do...end
+<P>
+</LI></UL>
+2. Programmstruktur und Ansteuerung von anderen Programmen
+<UL><LI>
+   if
+</LI><LI>
+   do...end
+</LI><LI>
+   address
+</LI><LI>
+   Tracing
+<P>
+</LI></UL>
+3. Ein- und Ausgabe; Funktionen
+<UL><LI>
+   Ein- und Ausgabe
+</LI><LI>
+   Stringfunktionen
+</LI><LI>
+   mathematische Funktionen
+</LI><LI>
+   Konvertierungsfunktionen
+</LI><LI>
+   Bitmanipulation
+<P>
+</LI></UL>
+4. komplexere Programmstrukturen
+<UL><LI>
+   Operatoren
+</LI><LI>
+   Procedure
+</LI><LI>
+   Libraries
+</LI><LI>
+   Systemfunktionen
+<P>
+</LI></UL>
+5. Aufbau von Skripten
+<UL><LI>
+   ein ARexx-Skript konzipieren
+</LI><LI>
+   MUIRexx
+</LI><LI>
+   Libraries
+</LI><LI>
+   Beispiele f&uuml;r die Vernetzung von Programmen«
+<P>
+</LI></UL>
+»
+<H3>5. Beispiele f&uuml;r die Vernetzung von Programmen</H3>
+<H3>5.0. Vorbemerkungen</H3>
+Hier wiederhole ich f&uuml;r Quereinsteiger noch einmal einen Teil der
+Vorbemerkungen, die ich zum ganzen Kurs gemacht habe.
+<P>
+Der Kurs wird als reine Text-Datei angefertigt, da auch Amiga Aktuell u.a.
+in ASCII-Form verschickt wird. Um den Text etwas zu gliedern, habe ich
+daher ein paar "Textmarker" eingef&uuml;gt.
+<P>
+<PRE>********** unterteilt einzelne Abschnitte
+__________ bezeichnet Beginn und Ende eines ARexx-Programms. Die Striche
+geh&ouml;ren nicht zum Programm!</PRE>
+<FONT SIZE=2>(In der HTML-Version benutzen wir natürlich "schickere" Kennzeichnungen)</FONT>
+<P>
+ARexx-Befehle werden in diesem Kurs immer GROSS geschrieben, obwohl das
+eigentlich nicht n&ouml;tig ist. Auf diese Weise kann man sie aber leichter
+erkennen.
+<P>
+Ich hoffe, da&szlig; diese Regelung den Kurs etwas leserlicher macht.
+<P>
+Wenn ihr spezielle Fragen habt, etwas nicht verstanden habt oder Anregungen
+und Ideen f&uuml;r weitere Kursteile habt, k&ouml;nnt ihr euch gerne an mich wenden.
+Ich selbst benutze folgende ARexx-f&auml;hige Programme und kann daher auf deren
+Programmierung kurz eingehen, wenn das gew&uuml;nscht wird:
+Wordworth, GoldEd, Database Professional, YAM, Miami, Voyager, TurboCalc.
+<P>
+Hier meine Kontaktadresse:
+<P>
+Heiko Kuschel<BR>
+Lehmgrubenweg 13<BR>
+97280 Remlingen<BR>
+E-Mail: <A HREF="mailto:hk0006@wuerzburg.baynet.de">hk0006@wuerzburg.baynet.de</A>
+<P>
+Und jetzt... viel Spa&szlig; mit ARexx!
+<P>
+<H3>5.1. Ein ARexx-Skript konzipieren</H3>
+Mittlerweile haben wir so ziemlich alle ARexx-Befehle durchgemacht, die es
+gibt. Aber - wie mache ich daraus nun ein sinnvolles ARexx-Skript? Bei
+vielen Vorhaben ist das gar nicht so einfach, denn manche Programme, die
+&uuml;ber ARexx anzusteuern sind, haben so ihre Eigenheiten. Ein paar
+Grundprobleme m&ouml;chte ich in diesem Kursteil ansprechen und dann noch
+Skripte vorstellen, die ich selber f&uuml;r den "Hausgebrauch" geschrieben habe.
+<P>
+<H4>5.1.1. Wie finde ich die Adresse?</H4>
+<P>
+Fast alle ARexx-f&auml;higen Programme bieten die M&ouml;glichkeit, ARexx-Skripte
+&uuml;ber Men&uuml; oder sonstwie direkt aus dem Programm heraus zu starten. Dann ist
+der Port des startenden Programms als ARexx-Port voreingestellt, an den die
+Befehle geschickt werden sollen. Das sieht dann so aus:
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=8><TR><TD BGCOLOR="#EEEEEE"><PRE>
+OPTIONS RESULTS
+PortName = ADDRESS()
+</PRE></TD></TR></TABLE>
+<P>
+Wenn sp&auml;ter ein anderes Programm angesteuert wird und dadurch der Port mit
+ADRRESS xxx ver&auml;ndert wird, kannst Du anschlie&szlig;end wieder auf das Programm
+zur&uuml;ckkommen, das das Skript gestartet hat. Und zwar ganz einfach mit
+<P>
+<PRE>ADDRESS VALUE PortName</PRE>
+<P>
+PortName ist hier die Variable, in der der Portname des Programms abgelegt
+wird, das das Skript gestartet hat. Z.B. Wordworth.1 oder YAM etc.
+<P>
+<H4>5.1.2. Eigenheiten der einzelnen Programme</H4>
+<P>
+Manche Programme haben nicht nur einen einzigen ARexx-Port. Stattdessen
+&ouml;ffnen sie f&uuml;r jedes Fenster einen eigenen, z.B. Wordworth und, soweit ich
+wei&szlig;, auch Final Writer. Die werden dann durchnumeriert: Wordworth.1,
+Wordworth.2 usw.
+<P>
+Dadurch kann man sich nie sicher sein, da&szlig; ein bestimmter Port tats&auml;chlich
+existiert! Es kann ja sein, da&szlig; das Fenster (und damit der Port), dem
+Wordworth.1 zugeordnet wurde, geschlossen wurde. Vielleicht existieren
+gerade nur Wordworth.3 und Wordworth.5. Wenn ich Wordworth also von au&szlig;en
+ansteuern will, ohne da&szlig; das Skript aus Wordworth heraus gestartet wurde,
+ist es ziemlich schwierig, einen richtigen Port zu finden. Ich behelfe mir
+immer mit der folgenden kleinen Schleife:
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=8><TR><TD BGCOLOR="#EEEEEE"><PRE>
+options results
+DO Num = 1 to 20
+WwPort = "WORDWORTH." || Num
+IF SHOW(PORTS, WwPort) THEN DO
+Address Value WwPort
+leave Num
+end
+end
+if num=21 then do
+echo "Wordworth nicht gefunden! Programm endet."
+quit
+end
+</PRE></TD></TR></TABLE>
+<P>
+&Uuml;brigens gibt es auch andere Programme, die eine Zahl hintendran h&auml;ngen,
+bei der diese Zahl aber etwas anderes bedeutet. Der normale ARexx-Port von
+GoldEd hei&szlig;t z.B. GOLDED.1 Hier gibt es nur ein GOLDED.2, wenn GoldEd
+tats&auml;chlich nochmal neu gestartet wird. Alle Fenster mit unterschiedlichen
+Texten innerhalb von GoldEd haben dagegen diesen einen ARexx-Port GOLDED.1.
+Bei GoldEd gibt es noch eine weitere Besonderheit: Der Text mu&szlig; f&uuml;r den
+normalen Zugriff gesperrt werden. Dabei mu&szlig; seit Version 4 von GoldEd auch
+noch angegeben werden, f&uuml;r welche Version dieses Skript geschrieben wurde.
+Sinnvoll, da sich der ARexx-Wortschatz von GoldEd beim Sprung von Version 3
+auf 4 ziemlich ge&auml;ndert hat. Einzelheiten dazu stehen in der Online-Hilfe
+zu GoldEd.
+<P>
+Ein Wort noch zu allgemeinen Problemen mit der Ausf&uuml;hrung von Programmen:
+Gerade bei Database Professional (DBPro) habe ich festgestellt, da&szlig; es oft
+genau auf die Schreibweise (gro&szlig;/klein etc.) ankommt. Oft ist es auch
+n&ouml;tig, da&szlig; Argumente in Anf&uuml;hrungszeichen gesetzt werden. Beachte dabei
+folgendes: Aus
+<PRE>FINDBASE "Adressen.db"</PRE>
+wird f&uuml;r Database:
+<PRE>FINDBASE Adressen.db</PRE>
+<P>
+Du mu&szlig;t stattdessen das Ganze nochmal in Anf&uuml;hrungszeichen setzen, da immer
+die &auml;u&szlig;ersten durch ARexx entfernt werden:
+<PRE>'FINDBASE "Addressen.db"'</PRE>
+Alternativ m&uuml;&szlig;te eigentlich auch gehen:
+<PRE>FINDBASE '"Addressen.db"'</PRE>
+An Database wird dann dieser Text &uuml;bermittelt:
+<PRE>FINDBASE "Adressen.db"</PRE>
+<P>
+Kapiert? Ich hoffe es. Das Kapitel mit den Anf&uuml;hrungszeichen ist eines der
+kompliziertesten in der ganzen ARexx-Programmiererei.
+<P>
+&Uuml;brigens: Mir ist es auch schon passiert, da&szlig; ich einen Befehl genau so
+eingegeben habe, wie er im Handbuch steht, und es hat trotzdem nicht
+funktioniert. Das war bei Beckertext III.
+<P>
+<H3>5.2. MUIRexx</H3>
+<P>
+<H4>5.2.1. Kurzeinf&uuml;hrung</H4>
+<P>
+MUIRexx ist ein ausgesprochen gutes Hilfsmittel, um komplizierteste
+Bedienoberfl&auml;chen zu erstellen. Es ist gewisserma&szlig;en die Schnittstelle
+zwischen ARexx und dem "Magic User Interface", kurz: MUI, mit dem
+inzwischen viele Programme programmiert sind (z.B. YAM, Voyager, STFax,...)
+MUIRexx ist anders als andere Libraries: Es ist ein eigenes Programm, das
+&uuml;ber ARexx gesteuert wird und, je nach den Befehlen, die es erh&auml;lt, ein
+Fenster mit Schaltfl&auml;chen, Listern, Texten oder was auch immer aufbaut. Es
+ist im Aminet erh&auml;ltlich unter dev/mui und kostet eine Shareware-Geb&uuml;hr von
+15 US-Dollar.
+<P>
+Nun wird das aber nicht einfach &uuml;ber <TT><FONT COLOR="#550000">ADDRESS MUIREXX</FONT></TT> gemacht, sondern jedes
+erstellte Fenster bekommt einen eigenen ARexx-Port. Am einfachsten schaffst
+Du das, indem Du mit MUIRexxBuild ein neues Fenster erstellst und dem einen
+Namen gibst. Ich habe auf diese Weise ein Fenster mit dem Namen "Listen"
+erstellt, das wird dann &uuml;ber <TT><FONT COLOR="#550000">ADDRESS</FONT></TT> Listen angesteuert.
+Das Ganze funktioniert so &auml;hnlich wie eine <TT><FONT COLOR="#550000">DO... END</FONT></TT>-Schleife: Erst wird
+ein Fenster definiert, und darin einzelne Gruppen:
+<PRE>WINDOW
+GROUP
+GROUP
+...
+ENDGROUP
+ENDGROUP
+GROUP
+....
+ENDGROUP
+ENDWINDOW</PRE>
+Das w&auml;re eine typische Grundstruktur f&uuml;r eine Fensterdefinition. Die ganzen
+Dinge mit diversen Variablen usw. kannst Du dabei weitgehend MUIRexxBuild
+&uuml;berlassen, das &uuml;brigens selbst eine MUIRexx-Anwendung ist!
+<P>
+<H4>5.2.2. Ein Beispiel</H4>
+Bis jetzt habe ich es immerhin geschafft, ein Fenster aufzubauen, das
+verschiedene Gruppen enth&auml;lt. Nur das dazugeh&ouml;rige Programm fehlt noch, das
+die damit verbundenen Aktionen auch ausf&uuml;hrt... Da es hier aber um die
+Arbeit mit MUIRexx geht, m&ouml;chte ich das Ganze trotzdem einmal kurz
+vorstellen. Weitere Beispiele finden sich ja auch im MUIRexx-Ordner.
+Mein kleines Skript soll mir eigentlich die Verwaltung von Mailinglisten
+vereinfachen. Das sind so eine Art EMail-Rundschreiben-Gruppen. Ich schicke
+eine Mail an eine bestimmte Adresse, und diese Mail wird an alle verteilt,
+die sich in der Mailingliste eingetragen haben.
+Um in so eine Liste zu kommen, mu&szlig; man an eine jeweils unterschiedliche
+Adresse eine Mail schicken, etwa "subscribe PAmiga-list meine-Email-
+Adresse". &Auml;hnlich mit unsubscribe, wenn man wieder rauswill. Und daneben
+gibt es noch manche Mailinglisten, bei denen man sich auch kurzzeitig
+ausklinken kann, ohne sich vollst&auml;ndig zu verabschieden, indem man die
+Optionen auf NOMAIL setzt, das hei&szlig;t, ich kriege im Moment keine Mail. F&uuml;r
+jede Mailingliste existiert also:
+<UL><LI>
+   eine Adresse, an die alle Befehle geschickt werden m&uuml;ssen
+</LI><LI>
+   ein Befehl, um sich einzuschreiben
+</LI><LI>
+   ein Befehl, um sich wieder auszuschreiben
+</LI><LI>
+   evtl. ein Befehl, um die Listenoptionen auf NOMAIL zu setzen
+</LI><LI>
+   evtl. ein Befehl, um NOMAIL wieder r&uuml;ckg&auml;ngig zu machen.
+</LI></UL>
+Da ich immer wieder mal wechsle, dachte ich mir, es w&auml;re sinnvoll, das &uuml;ber
+ein Programm zu machen. Dabei wollte ich zun&auml;chst aus einer gro&szlig;en Liste
+(wer die haben will, kann mich anmailen) ein paar Standard-Mailinglisten
+ausw&auml;hlen k&ouml;nnen, die dann wiederum einzeln an- und abgeschaltet werden
+k&ouml;nnen.
+<P>
+Das dazugeh&ouml;rige Fenster stelle ich mir so vor, da&szlig; ich eine Liste der
+aktuellen (sprich: von mir vorausgew&auml;hlten) Mailinglisten habe und &uuml;ber
+"Prefs" weitere dazunehmen kann oder welche herausnehmen kann. In einer
+Zeile untendrunter soll, sofern vorhanden, eine kurze Beschreibung der
+Mailingliste stehen, die ich gerade angeklickt habe.
+... und so sieht mein Programm dazu aus:
+<P>
+(da einige Programmzeilen sehr lang sind, habe ich die l&auml;ngeren unter ihnen
+mit zwei Kommentarzeilen eingerahmt. F&uuml;r viele von Euch ist sonst
+vermutlich nicht zu erkennen, wo eine Programmzeile unterbrochen ist.
+<PRE>/*Das Folgende ist eine Zeile*/</PRE>
+hier dazwischen steht eine lange Programmzeile
+<PRE>/*bis hier*/</PRE>
+<P>
+Das folgende Programm wird aus einer Shell heraus wie folgt gestartet:
+<PRE>muirexx:muirexx Listen.rexx PORT Listen</PRE>
+Listen.rexx ist dabei der Name des Skripts.
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=8><TR><TD BGCOLOR="#EEEEEE"><PRE>
+/* Application created by MUIBuild */
+<P>
+address Listen
+<P>
+MUIA_Listview_DragType = 0x80425cd3
+MUIA_List_DragSortable = 0x80426099
+MUIV_Listview_DragType_Immediate = 1
+TRUE = 1
+MUIA_Listview_MultiSelect = 0x80427e08
+MUIA_Dropable = 0x8042fbce
+MUIV_Listview_MultiSelect_Default = 1
+MUIA_List_Quiet = 0x8042d8c7
+MUIV_List_Insert_Sorted = -2
+line = '%s';
+<P>
+/*Diese Variablen wurden von MUIRexxBuild selbstst&auml;ndig eingef&uuml;gt*/
+<P>
+window COMMAND """quit""" PORT Listen TITLE """Mailinglisten-Verwaltung"""
+group HORIZ REGISTER LABELS "Aktuelle,Prefs"
+group ID Aktuell
+group HORIZ
+group FRAME
+text LABEL "Liste der aktuellen Mailinglisten"
+list ID List1
+endgroup
+group FRAME
+text LABEL "Status"
+space
+radio LABELS "On,Off,Nomail"
+space
+endgroup
+endgroup
+view ID Help1 STRING "Hilfetext"
+endgroup
+group ID Prefs
+group HORIZ
+group FRAME
+/*Das Folgende ist eine Zeile*/
+text LABEL "Liste der bekannten Mailinglisten" list ID List2 ATTRS
+MUIA_Listview_DragType MUIV_Listview_DragType_Immediate
+MUIA_List_DragSortable TRUE
+/*bis hier*/
+endgroup
+group FRAME
+/*Das Folgende ist eine Zeile*/
+text LABEL "Aktuelle Liste" list ID List3 ATTRS MUIA_Listview_DragType
+MUIV_Listview_DragType_Immediate MUIA_List_DragSortable TRUE MUIA_Dropable
+TRUE
+/*bis hier*/
+endgroup
+endgroup
+view ID Help2 STRING "Hilfetext2"
+endgroup
+endgroup
+endwindow
+<P>
+/* bis hierher sollte es ziemlich verst&auml;ndlich sein. */
+callhook ID List2 PORT INLINE INCLUDE List3 DROP,
+COMMAND """options results;
+address Listen;
+line='%s';
+/*Das Folgende ist eine Zeile*/
+'list ID "List2" INSERT POS "MUIV_List_Insert_Sorted"
+STRING' line;
+/*bis hier*/
+'list ID "List3" REMOVE STRING' line;
+'list ID "List1" REMOVE STRING' line;"""
+callhook ID List3 PORT INLINE INCLUDE List2 DROP,
+COMMAND """options results;
+address Listen;
+line='%s';
+/*Das Folgende ist eine Zeile*/
+'list ID "List3" INSERT POS "MUIV_List_Insert_Sorted"
+STRING' line;
+/*bis hier*/
+/*Das Folgende ist eine Zeile*/
+'list ID "List1" INSERT POS "MUIV_List_Insert_Sorted"
+STRING' line;
+/*bis hier*/
+'list ID "List2" REMOVE STRING' line;"""
+callhook ID List1 INCLUDE List1
+list ID List1 INSERT STRING "YAM"
+list ID List1 INSERT STRING "PAmiga"
+list ID List1 INSERT STRING "I-Amiga"
+list ID List1 INSERT STRING "TeamAmiga"
+list ID List1 INSERT STRING "STFax"
+list ID List3 INSERT STRING "YAM"
+list ID List3 INSERT STRING "PAmiga"
+list ID List3 INSERT STRING "I-Amiga"
+list ID List3 INSERT STRING "TeamAmiga"
+list ID List2 INSERT STRING "CU-Amiga"
+list ID List2 INSERT STRING "Voyager"
+list ID List3 INSERT STRING "STFax"
+</PRE></TD></TR></TABLE>
+Ich hoffe, da&szlig; der Aufbau des Fensters auch beim Lesen des Quelltextes
+halbwegs verst&auml;ndlich wird. "REGISTER" sind die Karteikartenreiter am
+oberen Ende des Fensters. Wenn ich eine Gruppe sp&auml;ter nocheinmal
+weiterverwenden mu&szlig;, kann ich ihr mit ID einen Namen zuweisen, also z.B.
+<TT><FONT COLOR="#550000">GROUP ID ErsteGruppe</FONT></TT>.
+<P>
+Schwieriger wird schon die Sache mit Callhook. Hier werden Ereignisse
+definiert, nach denen irgendeine Aktion stattfinden soll. Also: Wenn ich in
+"Prefs" einen Listennamen aus dem einen Lister in den anderen ziehe, mu&szlig;
+dieser Name nat&uuml;rlich im alten Lister verschwinden und im neuen auftauchen.
+Da Computer, selbst Amigas, leider nicht intelligent genug sind, mu&szlig; ich
+ihm das extra sagen. Das sieht dann so aus:
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=8><TR><TD BGCOLOR="#EEEEEE"><PRE>
+callhook ID List2 PORT INLINE INCLUDE List3 DROP,
+COMMAND """options results;
+address Listen;
+line='%s';
+/*Das Folgende ist eine Zeile*/
+'list ID "List2" INSERT POS "MUIV_List_Insert_Sorted"
+STRING' line;
+/*bis hier*/
+'list ID "List3" REMOVE STRING' line;
+'list ID "List1" REMOVE STRING' line;"""
+</PRE></TD></TR></TABLE>
+Das hei&szlig;t: Wenn in List2 etwas fallengelassen wird, und zwar aus List3,
+dann starte ein ARexx-Skript, das den MUIRexx-Task Listen addressiert. In
+List2 wird der Name der Mailingliste eingef&uuml;gt (mit %s), in List3 entfernt
+und ebenso in List1. (Das ist die erste, die man sieht, auf der Seite
+"Aktuelle".)
+<P>
+Um das Programm zu vervollst&auml;ndigen, fehlen jetzt also nur noch weitere
+solche Callhooks, die dann erst einmal den jeweils zur Liste geh&ouml;rigen
+Hilfetext anzeigen, auf der Seite "Aktuelle" den richtigen Radioknopf f&uuml;r
+die jeweils angeklickte Liste aktivieren (also ob sie an, aus oder auf
+NOMAIL gesetzt ist) - und au&szlig;erdem noch eine Reihe von Kn&ouml;pfen, um die
+entsprechenden Befehls-mails loszuschicken, abzubrechen oder eine &Uuml;bersicht
+&uuml;ber den aktuellen Stand der Dinge auszugeben. Vielleicht hast Du ja Lust,
+so etwas zu machen... :)
+<P>
+Anbei mein einfaches Programm, das vier verschiedene Mailinglisten
+bestellt. So habe ich das bisher gehandhabt:
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=8><TR><TD BGCOLOR="#EEEEEE"><PRE>
+/* YAM und I-Amiga werden auf MAIL gesetzt, Pamiga und Team Amiga
+bestellt*/
+/* $VER: 1.0. 23.2.98 */
+options results
+if ~show("P",YAM) then address command "run Yam:Yam"
+<P>
+address command
+'echo >t:Yamtext "SET YAM MAIL"'
+'echo >t:Iamigatext "SET I-AMIGA MAIL"'
+'echo >t:PAmigatext "SUBSCRIBE PAMIGA-LIST <A HREF="mailto:hk0006@wuerzburg.baynet.de">hk0006@wuerzburg.baynet.de</A>"'
+'echo >t:TAmigatext "SUBSCRIBE TeamAmiga <A HREF="mailto:hk0006@wuerzburg.baynet.de">hk0006@wuerzburg.baynet.de</A>"'
+<P>
+"sys:rexxc/Waitforport YAM"
+<P>
+address YAM
+mailwrite
+writemailto "<A HREF="mailto:Listserv@tu-clausthal.de">Listserv@tu-clausthal.de</A>"
+"writeletter t:Yamtext"
+writequeue
+mailwrite
+writemailto "<A HREF="mailto:Majordomo@lists.netlink.co.uk">Majordomo@lists.netlink.co.uk</A>"
+"writeletter t:PAMIGATEXT"
+writequeue
+mailwrite
+writemailto "<A HREF="mailto:listserv@listserv.acsu.buffalo.edu">listserv@listserv.acsu.buffalo.edu</A>"
+"writeletter t:Iamigatext"
+writequeue
+mailwrite
+writemailto "<A HREF="mailto:majordomo@thule.no">majordomo@thule.no</A>"
+"writeletter t:TAMIGATEXT"
+writequeue
+address command
+"delete >NIL: t:yamtext"
+"delete >NIL: t:?amigatext"
+</PRE></TD></TR></TABLE>
+Ich denke, dieses Skript solltest Du inzwischen mit Leichtigkeit verstehen.
+<P>
+<H3>5.3. andere Libraries</H3>
+<P>
+<H4>5.3.1. rexxreqtools.library</H4>
+<P>
+Die rexxreqtools.library findet sich, soweit ich wei&szlig;, im Aminet.
+<P>
+Sie enth&auml;lt die Funktionen der reqtools.library, also alle Arten von
+Requestern. Auch daf&uuml;r gibt es im Lieferumfang schon ein paar Demos, mit
+denen man ganz gut weiterarbeiten kann. Ich m&ouml;chte nur eben vorstellen, wie
+ich ein Skript beginne, das zuerst nachsieht, ob Wordworth l&auml;uft und dann
+den Requester von Wordworth verwendet, ansonsten aber Rexxreqtools:
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=8><TR><TD BGCOLOR="#EEEEEE"><PRE>
+options results
+DO Num = 1 to 20
+WwPort = "WORDWORTH." || Num
+IF SHOW(PORTS, WwPort) THEN DO
+Address Value WwPort
+leave Num
+end
+end
+if num=21 then do
+if ~show("L",rexxreqtools.library) then do
+call addlib("rexxreqtools.library", 0, -30, 0)
+end
+gadtxt= "_Holen|E_nde|_To-Do-Liste|_Cancel"
+Anf = upper(rtgetstring(" ","Bitte Textstelle eingeben:","Text
+3.0.",gadtxt))
+buttonresult=rtresult
+end
+else do
+do i=0 to 5
+viewwindow i
+end    /* wenn Makro nicht von WW aus aufgerufen wird, ist sonst die
+Workbench vorne*/
+/* keine Ahnung, wie man herausfinden kann, welches Fenster
+existiert.*/
+/*Das Folgende ist eine Zeile*/
+WizardReq TITLE "Text 3.0." LABEL "Bitte Textstelle eingeben:" TEXTBOX 1
+"_Stelle:" BUTTON 1 "_Holen" BUTTON 2 "E_nde" BUTTON 3 "_To-Do-Liste"
+BUTTON "-1" "_Cancel"
+/*bis hier*/
+buttonresult = RESULT
+Wizard_GetTextBox 1
+Anf = UPPER(RESULT)
+end
+select
+when buttonresult = 2 then do
+when buttonresult = -1 then do
+etc.
+end
+</PRE></TD></TR></TABLE>
+Hier hast Du nun also zwei verschieden definierte Requester drin: Einen mit
+einem Wordworth-Befehl (<TT><FONT COLOR="#550000">WizardReq</FONT></TT>) und einen mit der Rexxreqtools.library
+(<TT><FONT COLOR="#550000">rtgetstring</FONT></TT>).
+Gleichzeitig nat&uuml;rlich auch die verschiedenen M&ouml;glichkeiten, das Ergebnis
+des Requesters abzufragen: Bei reqtools wird der eingegebene Text sofort
+als Variable &uuml;bergeben. Welcher Knopf gedr&uuml;ckt wurde, kann &uuml;ber die
+Variable rtresult abgefragt werden. Bei Wordworth steht die Nummer des
+Knopfs in RESULT, und der eingegebene Text ebenfalls, nachdem der Befehl
+Wizard_GetTextBox eingegeben wurde. Dabei die Nummer der Textbox nicht
+vergessen! (hier 1) Es sind n&auml;mlich mehrere Textboxen in ein und demselben
+Requester m&ouml;glich.
+<P>
+Der "Abbruch"-Knopf hat die Nummer "-1" erhalten, da RESULT ebenfalls -1
+enth&auml;lt, wenn das Schlie&szlig;gadget in der linken oberen Ecke bet&auml;tigt wird. So
+haben wir zwei Fliegen mit einer Klappe geschlagen.
+<P>
+<H4>5.3.2. rexxtricks.library</H4>
+<P>
+Die Rexxtricks.library enth&auml;lt eine Menge n&uuml;tzlicher Funktionen aus den
+folgenden Bereichen:
+<P>
+<PRE>AmigaDOS-Funktionen
+SCSI-Funktionen
+Clipboard-Funktionen
+Listen-Funktionen
+Publicscreen-Funktionen
+Icon-Funktionen
+Sonstige Funktionen</PRE>
+<P>
+Diese im einzelnen zu erl&auml;utern, w&uuml;rde hier zu weit f&uuml;hren. Aber ich wollte
+einmal auf diese Library aufmerksam machen, denn sie kann oft wirklich
+n&uuml;tzlich sein. Lies mal die Anleitung, sie ist ziemlich gut!
+<P>
+<H3>5.4. Beispiele f&uuml;r die Vernetzung von Programmen</H3>
+<P>
+<H4>5.4.1. Beckertext und Wordworth</H4>
+<P>
+Das Sch&ouml;ne an ARexx ist ja gerade, da&szlig; es auch m&ouml;glich ist, mehrere
+Programme miteinander zu verkn&uuml;pfen. Ein kleines Beispiel hatten wir
+bereits in einem fr&uuml;heren Kursteil: Ein Skript, das Miami und YAM startet,
+online geht, Post sendet und abholt und wieder offline geht. Das war
+nat&uuml;rlich relativ simpel.
+<P>
+Beim folgenden Skript kommt immerhin dazu, da&szlig; ein bestimmter Text
+irgendwie zwischen zwei Anwendungen ausgetauscht werden soll. Ich habe es
+geschrieben, weil ich fr&uuml;her viel mit Beckertext gearbeitet habe, jetzt
+inzwischen aber Wordworth verwende. Da BT und WW leider kein gemeinsames
+Clipboard verwenden, Wordworth au&szlig;erdem keinen "Dazuladen"-Befehl kennt,
+war es gar nicht so einfach, das zu realisieren. Eigentlich tut dieses
+Skript nichts anderes, als einen bereits markierten Text aus Beckertext in
+das aktuelle Wordworth-Dokument an der aktuellen Stelle einzuf&uuml;gen. Und so
+sieht das Ganze aus:
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=8><TR><TD BGCOLOR="#EEEEEE"><PRE>
+/*  BT-Text (markierten Block) in WW5 einsetzen - MJ+HK 17.6.96  */
+OPTIONS RESULTS
+WwPortName = Address()
+GetFont
+OldFont = Result
+GetFontSize
+OldFontSize = Result
+Address ('bt3')
+kopiere
+neudok
+einsetzen
+'asichern "T:BT"'
+schliesse
+Address Value WwPortName
+New
+Address Value Result
+Open FILENAME "T:BT"
+SelectAll
+Font NAME OldFont SIZE OldFontSize
+Copy
+Close FORCE
+Address Value WwPortName
+Paste
+Address Command delete "T:BT"
+</PRE></TD></TR></TABLE>
+Also: Das Skript wird aus Wordworth aufgerufen, sonst ist es nicht m&ouml;glich,
+das aktuelle Fenster in Wordworth zu bestimmen.
+Dann wird festgestellt, welche Schriftart an der aktuellen Stelle
+eingestellt ist, damit auch der neue Text gleich in dieser Schriftart
+erscheint.
+<P>
+Anschlie&szlig;end setze ich den aktuellen Port auf Beckertext. Warum da die
+Klammern n&ouml;tig sind, wei&szlig; ich wirklich nicht. So stehts im Handbuch, und
+nur so funktioniert's auch.
+<P>
+Mit Beckertext ist es nicht m&ouml;glich, einen Block einzeln abzuspeichern.
+Also: Neues Dokument &ouml;ffnen, Block hineinkopieren, Dokument als reinen Text
+abspeichern. Und jetzt das gleiche r&uuml;ckw&auml;rts f&uuml;r Wordworth: Neues Dokument
+&ouml;ffnen, mit der richtigen Schrift formatieren, ins "richtige" Dokument
+kopieren, fertig.
+<P>
+<H4>5.4.2. Typisch Multitasking...</H4>
+<P>
+Als n&auml;chstes m&ouml;chte ich euch noch ein Skript vorstellen, an dem eine Menge
+Programme beteiligt sind: Wordworth, GoldEd, Database Pro, YAM. Dieses
+Skript habe ich geschrieben, um die Texte, die ich schreibe, archivieren,
+ausdrucken, im Gro&szlig;druck f&uuml;r meinen Opa ausdrucken, an Freunde in
+verschiedenen Dateiformaten mailen zu k&ouml;nnen. Und das alles in einem
+Aufwasch. :)
+Selbst wenn Du einige der Programme nicht selbst hast, hoffe ich, da&szlig; Du
+den einen oder anderen Kniff brauchen kannst. Schau's Dir mal an.
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=8><TR><TD BGCOLOR="#EEEEEE"><PRE>
+/* $VER: 1.1. 19.8.97 - 23.1.98*/
+options results
+Wordworthport=Address()
+/*Das Folgende ist eine Zeile*/
+wizardreq title "Ansprache versenden" label "Bitte Nummer der Ansprache
+eingeben." textbox 1 "_Nummer:" textbox 2 "In _DB &uuml;bernehmen (J/N):"
+textbox 3 "_Gro&szlig;druck erstellen (J/N):" textbox 4 "_Mail verschicken (J/N)"
+textbox 5 "Anzahl N_ormaldrucke:" Button 1 "_Ok" Button "-1" "_Abbruch"
+/*bis hier*/
+if result = "-1" then do
+exit
+end
+<P>
+Wizard_Gettextbox (1)
+Nummer=Right(Result,3,"0")
+Wizard_Gettextbox (2)
+DB=Result
+<P>
+Wizard_Gettextbox (3)
+Grossdruck=Result
+<P>
+Wizard_Gettextbox (4)
+Mail=Result
+<P>
+Wizard_Gettextbox (5)
+Normaldruck=Result
+<P>
+/* bis hierher wird &uuml;berpr&uuml;ft, welche der Aktionen tats&auml;chlich durchgef&uuml;hrt
+werden sollen. */
+/*Meine Ansprachen sind durchnumeriert, und zwar nach dem Schema
+002.Beschreibung */
+if Normaldruck="J" then Normaldruck=1
+if Normaldruck>0 then do
+SAVEAS NAME "Text:Wordworth7/Dokumente/Ansprachen/000.TEMP"
+end
+/*Wenn ein Ausdruck in der "Normalform" gew&uuml;nscht ist, mu&szlig; die Datei
+zwischengespeichert werden.*/
+/*Den tats&auml;chlichen Namen des Textes kann man mit Wordworth leider nicht
+herausfinden.*/
+if DB="J" then do
+if ~show("P",DataBase) then address command "run Text:DBProV3.1/db"
+end
+if Mail="J" then do
+'SAVEAS RTF Name T:Ansprache.rtf'
+'SAVEAS WORDPERFECT Name T:Ansprache.wpf'
+if ~show("P",YAM) then address command "run Yam:Yam"
+end
+/*Hier werden die jeweils ben&ouml;tigten Programme gestartet:*/
+/*DBPRo, falls eine Aufnahme in die Datei gew&uuml;nscht ist,*/
+/*und YAM, falls die Ansprachen per EMail verschickt werden sollen.*/
+<P>
+address command
+if ~Exists("Text:Wordworth7/Dokumente/Ansprachen/"||Nummer||".kurz")
+then do
+/*Das Folgende ist eine Zeile*/
+"echo > Text:Wordworth7/Dokumente/Ansprachen/"||Nummer||".kurz"
+'"Ansprache Nr. '||Nummer||'"'
+/*bis hier*/
+"echo >> Text:Wordworth7/Dokumente/Ansprachen/"||Nummer||".kurz" '"Text:
+"'
+"echo >> Text:Wordworth7/Dokumente/Ansprachen/"||Nummer||".kurz"
+'"Datum: "'
+"echo >> Text:Wordworth7/Dokumente/Ansprachen/"||Nummer||".kurz" '"Ort:
+"'
+"echo >> Text:Wordworth7/Dokumente/Ansprachen/"||Nummer||".kurz"
+'"Stichworte: "'
+"echo >> Text:Wordworth7/Dokumente/Ansprachen/"||Nummer||".kurz"
+'"Beschreibung: "'
+end
+/*Hier gebe ich mir selbst ein kleines Formular f&uuml;r eine Kurzbeschreibung
+vor.*/
+/*Der doppelte Pfeil nach echo bewirkt, da&szlig; der Text an die bestehende
+Datei*/
+/*angeh&auml;ngt wird.*/
+/*Ein Teil davon wird in der Datenbank weiterverwendet, die ganze Datei
+auf*/
+/*jeden Fall mit der entsprechenden Nummer und dem Anh&auml;ngsel .kurz
+abgespeichert.*/
+<P>
+"ged Text:Wordworth7/Dokumente/Ansprachen/"||Nummer||".kurz sticky"
+/*GoldEd wird gestartet, damit ich meine Kurzbeschreibung bearbeiten
+kann.*/
+/*Die Option sticky bewirkt, da&szlig; das Skript erst dann weiterl&auml;uft, wenn
+ich*/
+/*GoldEd wieder beendet habe.*/
+if Mail="J" then do
+if ~show("P",GOLDED.1) then address command ged
+"sys:rexxc/Waitforport GOLDED.1"
+address GOLDED.1
+Lock current release 4
+'open t:Ansprache.rtf'
+replace string "&auml;" by "'8a" all quiet
+replace string "&ouml;" by "'9a" all quiet
+replace string "&uuml;" by "'9f" all quiet
+replace string "&szlig;" by "'a7" all quiet
+unlock
+'save all nolf exit'
+/* Was soll das nur schon wieder sein? Hier ersetze ich alle &auml;,&ouml;,&uuml;,&szlig;*/
+/* durch die entsprechenden Codierungen, wie sie im RTF-Format eigentlich*/
+/* verwendet werden - nur Wordworth macht das leider nicht. Zumindest*/
+/* WW6 nicht - ich habe WW7 darauf noch nicht &uuml;berpr&uuml;ft.*/
+address command
+'echo >t:Ansprachemailtext "Hallo!"'
+'echo >>t:Ansprachemailtext "Anbei eine Ansprache von mir."'
+'echo >>t:Ansprachemailtext "Viele Gr&uuml;&szlig;e"'
+'echo >>t:Ansprachemailtext'
+'echo >>t:Ansprachemailtext "Heiko"'
+'echo >>t:Ansprachemailtext "Hier die Kurzfassung:"'
+/*Das Folgende ist eine Zeile*/
+'join t:Ansprachemailtext
+Text:Wordworth7/Dokumente/Ansprachen/'||Nummer||'.kurz to
+t:Ansprachemailtext2'
+/*bis hier*/
+"sys:rexxc/Waitforport YAM"
+address YAM
+mailwrite
+/*  writemailto "Tscho"
+"writesubject Ansprache_von_Heiko"
+"writeletter t:Ansprachemailtext2"
+writequeue
+mailwrite*/
+writemailto "ThoVo"
+"writesubject Ansprache_von_Heiko"
+"writeletter t:Ansprachemailtext2"
+"writeattach t:Ansprache.rtf"
+writequeue
+mailwrite
+writemailto "Reinhard"
+"writesubject Ansprache_von_Heiko"
+"writeletter t:Ansprachemailtext2"
+"writeattach t:Ansprache.wpf"
+writequeue
+end
+/*OK, jetzt werden die Dateien verschickt. Einmal nur die
+Kurzbeschreibung,*/
+/*einmal als RTF-Datei, einmal als WordPerfect-Datei.*/
+if DB="J" then do
+address DataBase
+GETFILENAME
+if Result=0 then do
+SAVE
+end
+'OPEN Text:DBProV3.1/Aufs&auml;tze/Aufs&auml;tze.db'
+'DEMARKRANGE $F1 "#?"'
+'SHOW ALL'
+<P>
+'SETSEARCH FIELD PART'
+<P>
+'SEARCHFIELD $F1'
+'SEARCH eig. Anspr.'
+'SEARCHFIELD $F2'
+'SETSEARCH GREATER'
+'SEARCHNEXT ' Nummer
+if RC=0 then do
+GETDATA $F1
+IF RESULT="EIG. Anspr." THEN DO
+SCHONDA=1
+END
+END
+/* Hier wird in DBPro erstmal &uuml;berpr&uuml;ft, ob nicht schon ein Eintrag f&uuml;r*/
+/* diese Ansprache vorhanden ist. Ein neuer wird nur gemacht, wenn diese*/
+/* Nummer nicht gefunden wurde. (SCHONDA=0)*/
+IF SCHONDA ~=1 THEN DO
+'ADD'
+'PUTDATA $F1 eig. Anspr.'
+'PUTDATA $F2' NUMMER
+'PUTDATA $F3 Kuschel, H.'
+/*Das Folgende ist eine Zeile*/
+<P>
+Erfolg=OPEN("Kurzdatei","Text:Wordworth7/Dokumente/Ansprachen/"||Nummer||".
+kurz","R")
+/*bis hier*/
+If Erfolg then do
+Do while ~EOF("Kurzdatei")
+Zeile=Readln("Kurzdatei")
+Select
+when abbrev(Zeile,"Text")=1 then do
+'PUTDATA $F4 'substr(Zeile,7)
+end
+when abbrev(Zeile,"Datum")=1 then do
+DatumOrt=substr(Zeile,8)
+end
+when abbrev(Zeile,"Ort")=1 then do
+DatumOrt=DatumOrt||", "||substr(Zeile,6)
+'PUTDATA $F7 'DatumOrt
+end
+when abbrev(Zeile,"Stichworte")=1 then do
+'PUTDATA $F12 'substr(Zeile,13)
+end
+Otherwise do
+NOP
+end
+end
+end
+end
+/* Jetzt werden die Daten in die einzelnen Felder meiner Datei
+geschrieben:*/
+/* $F1 ist der Oberbegriff, $F2 die Nummer, $F3 der Autor. Alles andere*/
+/* lese ich aus der Kurzdatei, die ich vorhin angelegt habe. Das wird
+dann*/
+/* automatisch an die richtige Stelle geschrieben.*/
+<P>
+'SORT $F1 $F2'
+'SAVE'
+end
+end
+/*Sortieren, speichern, Ende.*/
+if Grossdruck = "J" then do
+address value Wordworthport
+SAVEAS NAME "Text:Wordworth7/Dokumente/Ansprachen/000.GROSSDRUCK"
+DOCUMENT A4 "2cm" "2cm" "1.67cm" "2.54cm" 1 "2cm" LANDSCAPEOFF
+CTRLDOWN
+CURSOR UP
+SHIFTDOWN
+CURSOR DOWN
+FONT SIZE "24pt"
+PARAGRAPH 0 0 0 FULL AUTO ONEHALF
+PRINTOPTIONS REVERSE BLACKANDWHITE ODDANDEVENPAGES
+SAVE
+PRINT
+end
+/*Gro&szlig;druck, falls gew&uuml;nscht. Das Dokumentformat mu&szlig; ge&auml;ndert werden,*/
+/*weil ich normalerweise DinA4 quer zweispaltig bevorzuge.*/
+/*Durch den ganzen Sermon mit CTRLDOWN etc. wird der gesamte Text*/
+/*markiert. Dann stelle ich die Schriftgr&ouml;&szlig;e 24pt. ein, ein geeignetes*/
+/*Absatzformat, und ab in den Drucker damit. */
+If Normaldruck>0 then do
+address value Wordworthport
+OPEN FILENAME "Text:Wordworth7/Dokumente/Ansprachen/000.TEMP" FORCE
+PRINTOPTIONS REVERSE BLACKANDWHITE COLLATE COPIES NORMALDRUCK
+ODDANDEVENPAGES
+PRINT
+end
+/*Die "normale" Druckvariante kommt nach dem Gro&szlig;druck, weil sie viel
+l&auml;nger*/
+/*dauert. Querformat ist ziemlich langsam mit Wordworth. :( */
+/*Beachte bei PRINTOPTIONS, da&szlig; eine initialisierte Variable drin ist!*/
+/*An einer Stelle steht NORMALDRUCK. In dieser Variable ist gespeichert,*/
+/*wie viele Ausdrucke ich davon haben will.*/
+address command
+If Mail="J" then do
+"delete >NIL: t:Ansprache.rtf"
+"delete >NIL: t:Ansprachemailtex#?"
+"delete >NIL:  t:Ansprache.wpf"
+If Normaldruck>0 then do
+"delete >NIL: Text:Wordworth7/Dokumente/Ansprachen/000.TEMP"
+END
+/*Ein bi&szlig;chen aufr&auml;umen mu&szlig; sein. :)  */
+</PRE></TD></TR></TABLE>
+So, das war ein ziemlich langes Programm. Viele weitere Programme, oft auch
+kommentierte, findest Du im Aminet, im Verzeichnis util/rexx. Schau Dich
+ruhig einmal um. Evtl. findest Du dort auch schon das, was Du gerade
+schreiben wolltest... oder auf jeden Fall gute Anregungen f&uuml;rs eigene
+Programmieren.
+<P>
+<H3>5.5. Das Ende</H3>
+Das war der ARexx-Kurs. Geschafft. Ich hoffe, Du hattest Spa&szlig; daran, und
+ich konnte das meiste halbwegs verst&auml;ndlich erkl&auml;ren. Wenn Du Probleme
+haben solltest, wende Dich an meine Adresse.
+Ich m&ouml;chte demn&auml;chst den ganzen Kurs ins AmigaGuide-Format umwandeln und
+dann im Aminet ver&ouml;ffentlichen. Er wird voraussichtlich ver&ouml;ffentlicht
+unter docs/help/ARexx-Kurs.lha Da ich dabei ein paar AGuide-Kniffe einbauen
+will, br&auml;uchte ich jemanden, der/die diesen Guide unter AmigaOS 2.x testet.
+Ich wei&szlig; n&auml;mlich nicht, wie es da funktioniert. Au&szlig;erdem suche ich Leute,
+die mir ein paar Kurzinformationen zu anderen Texteditoren als GoldEd geben
+k&ouml;nnen, damit ich auch diese Editoren ber&uuml;cksichtigen kann.
+Solltest Du Dich hier irgendwo angesprochen f&uuml;hlen, melde Dich doch bitte
+mal bei mir. Danke!
+<P>
+Heiko«
+<P>
+
+
+<P ALIGN=RIGHT>
+<A HREF="0600.html"><IMG SRC="../menu/pfeil_links.gif" BORDER=0 WIDTH=20 HEIGHT=20></A>
+<A HREF="0602.html"><IMG SRC="../menu/pfeil_rechts.gif" BORDER=0 WIDTH=20 HEIGHT=20></A>
+</P>
+</BODY>
+</HTML>

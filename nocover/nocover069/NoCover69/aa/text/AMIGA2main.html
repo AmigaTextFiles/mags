@@ -1,0 +1,255 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+2. H&auml;ufig gestellte Fragen zum AmigaOS 3.5
+
+»Amiga OS 3.5 - H&auml;ufig gestellte Fragen
+
+Dieser Bereich gibt Antworten und L&ouml;sungen zu h&auml;ufig gestellten Fragen. Der
+Bereich wird jedes Mal aktualisiert wenn das Supportteam Informationen zu
+einem neuen allgemeinen Problem erh&auml;lt. Schauen Sie daher immer zuerst hier
+vorbei, wenn Sie ein Problem haben und lesen Sie die einzelnen Bereiche
+aufmerksam durch.
+
+
+* Vorbereitung zur Installation
+
+Machen Sie unbedingt eine Sicherheitskopie Ihrer
+Systempartition.
+
+M&ouml;glicherweise m&uuml;ssen Sie ihre Systempartition auch vergr&ouml;&szlig;ern um OS 3.5
+installieren zu k&ouml;nnen. Es werden mindestens 20MB freier Festplattenplatz
+abgepr&uuml;ft.
+
+W&auml;hrend des Starts von AmigaOS wird die startup-sequence und auch die
+user-startup ausgef&uuml;hrt. Sollten Sie dort Programme starten, die tiefer
+ins AmigaOS eingreifen, so deaktivieren Sie diese zuerst. Die Installation
+von AmigaOS 3.5 nimmt keine &Auml;nderungen an diesen Dateien vor.
+
+68040 bzw. 68060.library
+
+Bei der kompletten Neuinstallation von OS3.5 auf eine leere
+Festplattenpartition ist es notwendig, da&szlig; OS3.1 zuvor installiert wird.
+OS3.1 finden Sie ebenfalls auf der CD-ROM. Beachten Sie dabei jedoch, da&szlig;
+eventuell f&uuml;r den Betrieb notwendige 68040- oder/und 68060-Bibliotheken
+von den jeweiligen Original-Disketten installiert werden m&uuml;ssen, damit Ihr
+System von dieser neu installierten Festplattenpartiton wieder gestartet
+werden kann.
+
+Am einfachsten erzeugen Sie sich eine Notfalldiskette, booten &uuml;ber diese
+Diskette und installieren dann Ihr System neu. Dabei werden sowohl die
+notwendigen CPU-Bibliotheken als auch ein eventuell vorhandener
+Grafikkartentreiber automatisch installiert.
+
+
+* Installation
+
+F: Ich erhalte die Fehlermeldung "Sie ben&ouml;tigen mindestens 10
+MByte freien Speicher auf Ihrer Bootpartition." habe jedoch 15 MB frei,
+doch die Installation bricht ab!
+
+A: Dies ist ein Fehler im Installationsscript. Ben&ouml;tigt werden 20 MB freier
+Speicher auf der Bootpartition. Bitte richten Sie diese entsprechend ein
+oder entfernen Sie Dateien.
+
+
+* Patches
+  Icons
+  NewIcons
+  MagicWB
+
+SetPatch
+
+Das Programm SetPatch wird in der startup-sequence gestartet und korrigiert
+in der Haupsache bekannte Fehler im AmigaOS. Ab OS 3.5 ersetzt es zudem die
+Treiber f&uuml;r die Ansteuerung der internen SCSI und IDE Hardware der
+verschiedenen Modelle. Diese neuen Treiber erlauben den Betrieb von
+Festplatten mit einer Kapazit&auml;t gr&ouml;&szlig;er als 4 Giga Byte.
+
+Es sind Probleme bekannt mit einigen Amiga 3000 Modellen und einigen
+4fach-Erweiterungskarten f&uuml;r IDE. In diesem Fall erweitern Sie den Aufruf
+des SetPatch Programms bitte folgenderma&szlig;en:
+
+C:SetPatch QUIET SKIPROMUPDATES "scsi.device"
+
+Bedenken Sie, dass auch OS 3.5 keine direkte Unterst&uuml;tzung f&uuml;r
+4fach-Adapter f&uuml;r IDE enth&auml;lt. Bitte benutzen Sie die gleiche Software,
+die Sie auch bislang verwendet haben.
+
+Sollten Sie dennoch Probleme mit dem Start von AmigaOS 3.5 haben, so
+benennen Sie die Datei "DEVS:AmigaOS ROM Update" um. Dadurch werden die
+Ersatzmodule insgesamt ausgelassen.
+
+ACHTUNG: WIRD SETPATCH BEIM STARTEN DEAKTIVIERT, STEHT WEDER DIE NEUE ICON-
+NOCH DIE WORKBENCH.LIBRARY ZUR VERF&Uuml;GUNG.
+
+SetPatch mit NewStyleDevice Patch
+
+Das Programm SetPatch erweitert viele bekannte Hardwaretreiber um neue
+M&ouml;glichkeiteiten. Dazu benutzt es eine Konfigurationsdatei
+"DEVS:NSDPatch.cfg". Uns ist ein Konflikt zwischen dem Hardwaretreiber
+cd.device, der Teil des
+AmigaOS ist und einem weiteren cd.device (Hersteller unbekannt) gemeldet
+worden. Sollten Sie dieses cd.device benutzen, so deaktivieren Sie bitte
+die entsprechende Zeile in DEVS:NSDPatch.cfg, in dem Sie mit einem
+Texteditor vor die Zeile ein # Zeichen stellen.
+
+LoadV43Module
+
+Wenn Sie Ihr System schon durch den Befehl LoadV43Module und passende
+Moduldateien f&uuml;r den Betrieb von Festplatten g&ouml;&szlig;er 4 Gigabyte erweitert
+haben, so sollten Sie diese Befehle entfernen. SetPatch &uuml;bernimmt jetzt
+diese Aufgaben.
+
+NSDPatch
+
+Der Aufruf von NSDPatch ist nicht mehr n&ouml;tig, da SetPatch diese Aufgabe
+&uuml;bernimmt.
+
+NewIcons
+
+AmigaOS 3.5 enth&auml;lt eine neue icon.library. Diese Bibliothek ist f&uuml;r die
+Verwaltung und Darstellung der Piktogramme verantwortlich. Viele Benutzer
+haben "NewIcons" installiert, einen Patch, der eine Verbesserung der
+Piktogrammdarstellung bewirkt. Die Wirkung dieses Patches wird nun auch
+durch die icon.library &uuml;bernommen. Sie k&ouml;nnen und sollten den Aufruf des
+NewIcon Patches aus Ihrer startup-sequence oder user-startup entfernen.
+
+Das Programm IconEdit kann benutzt werden, um NewIcons in echte OS 3.5
+Icons zu verwandeln. Das ist nicht notwendig, um NewIcons auf der
+Workbench zu sehen, beschelunigt allerdings das Laden und Darstellen der
+Piktogramme.
+
+F&uuml;llstandsanzeiger
+
+Die Workbench zeigt Ihnen nun - wie schon zu Zeiten von OS 1.3 - den
+F&uuml;llstand Ihrer Festplatte links im Fenster an. Diese Anzeige wird jedoch
+auch von einigen Patches erwirkt. Deaktivieren Sie diese Patches, sonst
+erhalten Sie die F&uuml;llstandanzeige doppelt.
+
+ARQ
+
+ARQ (ein Patch, der die Systemrequester versch&ouml;ndert) hat Probleme auf
+manchen OS 3.1 Systemen bereitet. F&uuml;r OS 3.5 scheinen mehr Systeme
+betroffen zu sein. Bitte ersetzten Sie diesen Patch durch einen anderen.
+
+MagicWB
+
+Wollen Sie weiterhin MagicWB Piktogramme benutzen, so ben&ouml;tigen Sie
+weiterhin einen Patch, der die Farbpens daf&uuml;r reserviert. Sonst werden die
+Piktorgramme mit falschen Farben dargestellt.
+
+FastIPrefs
+
+Wenn Sie das Programm FastIPrefs benutzen, so sollten Sie dieses wieder
+durch IPrefs ersetzen. IPrefs von AmigaOS 3.5 unterst&uuml;tzt neue
+Voreinsteller, die OS 3.1 nicht kannte und unterst&uuml;tzt ebenfalls einige
+Optionen von FastIPrefs. Ebenso wurden bekannte Fehler entfernt.
+
+Keine Glow Icons nach der Installation
+
+Wenn nach der Hauptinstallation keine Glow Icons sichtbar sind liegt das an
+einem Fehler im verwendeten Filesystem. Das Ph&auml;nomen wurde unter
+SmartFileSystem bereits korrigiert. Bitte verwenden Sie die aktuellste
+Version. Aber unter PFS3 kommt es vor, da&szlig; unser Tool, das die Piktogramme
+ersetzt (MergeIcons) keine Dateien zum Ersetzen findet.
+
+Hierbei hilft nur das manuelle Einsetzen der Piktogramme mit den neuen
+Workbench-Eigenschaften.
+
+Rahmen um die Ikons kann nicht abgeschaltet werden
+
+Siehe Punkt "FastIPrefs"
+
+
+* RTG
+  Picasso 96
+  CyberGraphX CyberGraphX und Picasso96
+
+OS 3.5 unterst&uuml;tzt die Graphikartensoftware CyberGraphX und Picasso96. F&uuml;r
+den Betrieb von CyberGraphX ist es jedoch n&ouml;tig, da&szlig; Sie das Update der
+Version 3, welches auf der OS 3.5 CD ROM enthalten ist installieren. Sonst
+arbeitet OS 3.5 nicht in jedem Fall fehlerfrei.
+
+Nutzer der Version 4.0 von CyberGraphX laden sich bitte zum Update auf V4.1
+die Datei biz/patch/cgxv42_r1.lha aus dem Aminet oder von der "Freie 
+Updates"-Seite der Schatztruhe.
+
+
+* Diverses
+
+Binary Datatype
+
+Durch die Installation von AmigaOS 3.5 werden s&auml;mtliche Datatypes
+deaktiviert. Nach der Installation k&ouml;nnen Sie diese wieder aktivieren.
+Leider ist der Binary.datatype nicht mit OS 3.5 kompatibel. Dieser
+Datatype nimmt insofern eine Sonderrolle ein, da&szlig; er keine
+Datatype-Beschreibung in DEVS:Datatypes ben&ouml;tigt. Allein die Existenz des
+Datatypes in SYS:Classes/Datatypes/ reicht aus, damit er benutzt wird.
+Sollten Sie Abst&uuml;rze bei der Anzeige unbekannter Dateien (Dateien ohne
+geeigneten Datatype) in Multiview haben, so stellen Sie bitte sicher, dass
+Sie keine Datei Binary.datatype in der Schublade SYS:Classes/Datatypes
+haben.
+
+SKIPROMMODULES (Fehler im Handbuch)
+
+Unter der Fehlerbeschreibung im Installationshandbuch wir leider f&uuml;r das
+Abschalten des neuen SCSI-Devices eine falsche Kommandozeile-Option
+angegeben. Die Richtige Kommandozeile mu&szlig; hei&szlig;en:
+
+SetPatch QUIET SKIPROMUPDATES scsi.device
+
+Das einfache Umbennenen der Datei "DEVS:AmigaOS3.5 ROM Update" f&uuml;hrt zum
+gleichen Resultat.
+
+Absturz beim &Ouml;ffnen einer Schublade auf der Workbench
+
+Offensichtlich h&auml;ngt dieser Fehler mit der installierten Picasso 2-Software
+zusammen. Bitte installieren Sie CyberGaphX oder Picasso96 welches Sie auf
+der CD-ROM finden.
+
+Prefs Programme k&ouml;nnen nicht gestartet werden
+
+Offensichtlich ist auf Ihrem System ein altes ClassAct in LIBS:
+installiert. Bitte kontrollieren Sie, ob Boopsi-Classen in der Schublade
+LIBS:Classes enthalten sind und deaktivieren Sie sie. F&uuml;hren Sie danach
+einen Neustart durch und probieren es erneut. Eventuell existiert auch
+eine Schublade Sys:ClassAct, die ebenfalls deaktiviert werden mu&szlig;.
+
+Im Datei-Infofenster erscheint der Einsteller f&uuml;r "Start durch:" nicht
+
+In Ihrer WBStartup-Schublade ist das Tool RAWBInfo enthalten. Durch die
+Installation dieses Tools wird der Info-Dialog der Workbench durch einen
+neuen Dialog ersetzt, der die ReAction-Eigenschaften nutz. Leider sind
+dann allerdings die neuen Workbench-Einstellm&ouml;glichkeiten nicht mehr
+vorhanden. Bitte deaktivieren Sie dieses Programm durch erneutes Starten
+und entfernen es aus der WBStartup-Schublade.
+
+Die AWeb-Toolbar enth&auml;lt nur Pixelm&uuml;ll
+
+Dieser Effekt ist auf AGA-Screens zu beobachtem. Leider gibt es zu diesem
+Problem noch keine L&ouml;sung. Auf OCS/ESC und Grafikkarten-Screens tritt
+dieses Problem nicht auf.
+
+
+* Anwendungen 
+
+Wordworth 7
+
+Wordworth7 startet nicht mehr, da die Art des aufrufenden Piktogramms nicht
+korrekt interpretiert wird.
+Abhilfe: Wordworth-Piktogramm anklicken, "Informationen anzeigen" aufrufen
+und den "Start durch:" von ARexx auf Workbench &auml;ndern. Danach l&auml;&szlig;t sich
+Wordworth wieder einwandfrei starten.«
+
+(Quelle: AMIGA)
+     
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

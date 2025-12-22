@@ -1,0 +1,67 @@
+@Database SHOAH.s.guide
+@Node MAIN "Plasma"
+Plasma.
+
+I DIDN'T write the code, I just set it up the way I like it and made it work
+on a A1200 without having to use Run12 or some other degrader. The brief doc
+below was written by the coder, Rene Olsthoorn, sorry I've not got a better
+tutorial to go with this but the source is quite straight forward to follow,
+have fun...
+
+First of all,try other value's on fvert,qhor,qvert,fhor. different plasma !!
+You can see,that the horizontal distance between two colors is eight pixels. 
+As you may know,that's the minimum distance between two copper-colors. But 
+how can you move all the colors 56 horizontal pixels ?? -> solution:
+
+- You need 4 bitplane's.
+
+plasmaline(this line is important):
+ dc.l $00ff00ff,$ff00ff00,$00ff00ff,$ff00ff00
+
+bitpl1: plasmaline
+bitpl2: plasmaline+2 + shifted 8 pixels to the right
+bitpl3: plasmaline+2
+bitpl4: plasmaline+4 + shifted 8 pixels to the right
+
+So,
+bpl1: dc.l $00ff00ffff00ff0000 ff00ffff00ff0000 ff00ffff00ff0000
+bpl2: dc.l $--00ffff00ff0000ff 00ffff00ff0000ff 00ffff00ff0000
+bpl3: dc.l $00ffff00ff0000ff00 ffff00ff0000ff00 ffff00ff0000
+bpl4: dc.l $--ff00ff0000ff00ff ff00ff0000ff00ff ff00ff0000
+            | | | | | | | | |  | | | | | | | |
+color-      --  06  05  09  10   06  05  09  10
+register.     13  11  02  04   13  11  02  04
+
+You put the registervalue's(example: 13=$198) into the copperlist under the 
+bitplane.
+          (1)  56 pixels 
+bitplane:  X <----------->
+
+copper:    X , , , , , , X
+          (2)           (3)
+
+(1)= bitplane combination for color13.
+(2)= copper instruction that defines color13.
+(3)= also copper instr.that def.color13,but 64 pixels away from (2).
+
+Now,you can shift the bitplane 56 pixels,and the colors wont't change.
+Are you shifting more than 56 pixels then the bitplane combination will
+take(ofcourse) the color of the new defined color13 (3),and the color 
+changes.
+
+Ofcourse I shifted the lines with the blitter. I also used the blitter for 
+putting the colors into the copperlist. load the green-bar into A,red in B
+,and blue in C. Put them together into D with all the minterms on,except the
+one where all the bits are zero.
+
+By the way:you can easily make a much nicer plasma,if you make the sinus much
+bigger,but it still must go from 0 to 56. And you can put diffent value's 
+into the fvertx(sinus frequenty) and qvertx(speed of sinus).
+The vertical sinus has got no limitations,so you can make a sinus for it
+that goes further than 56 pixels.
+
+Greets: Rene Olsthoorn.
+
+				@{"View the Source" link SHOAH.s:Source/Plasma.s/MAIN}
+
+@Endnode

@@ -1,0 +1,233 @@
+<HTML>
+<HEAD>
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.0//EN">
+<META NAME="author" CONTENT="Mario Nitschke / HTML-Konvertierung Marcel Hanson">
+<META NAME="description" CONTENT="AMIGA TIMES 01/97 - Deutsches AMIGA Games und Info Magazin">
+<META NAME="keywords" CONTENT="Amiga,Information,Spiele,deutsch,Tips">
+<!-- PROGRAM="WebPlug v1.21 © 1996-97 Esteve Boix" -->
+<TITLE>AMIGA TIMES 02/97 - Programmierkurs Assembler - Listing 3</TITLE>
+</HEAD>
+
+<BODY  BACKGROUND="../images/bg.gif" BGCOLOR="#A4A4E1" TEXT="#000000" LINK="#FF0000" ALINK="#F00000" VLINK="#AA0000">
+
+<DIV ALIGN=CENTER>
+<TABLE BORDER=0>
+<TR>
+<TD>
+<A HREF="edit.html"><IMG SRC="../images/edit.gif" ALT="Editorial" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD>
+<TD>
+<A HREF="inhalt.html"><IMG SRC="../images/inh.gif" ALT="Inhalt" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD>
+<TD>
+<A HREF="impressum.html"><IMG SRC="../images/impr.gif" ALT="Impressum" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD></TR></TABLE></DIV><HR>
+
+<PRE>
+;Beschreibung: Eine sich bewegender Balken.
+;Autor       : Enrico Bauermeister
+;Datum       : 13.10.1997
+;Assembler   : TFA AsmOne v1.29
+;==========================================
+ 
+; graphics.library &ouml;ffnen
+;------------------------
+ lea      gfxname(pc),a1       ;Name der Library
+ moveq    #0,d0                ;Version der Library
+ move.l   4.w,a6               ;Basisadresse der exec.library
+ jsr      -552(a6)             ;OpenLibrary()
+ tst.l    d0                   ;Lib ge&ouml;ffnet ?
+ beq      ende                 ;nein -> ende
+ lea      _GfxBase(pc),a0      ;Basisadresse der graphics.library
+ move.l   d0,(a0)              ;in _GfxBase sichern
+ 
+ 
+; Interrupts verbieten (Mulitasking abschalten)
+;-----------------------------------------------
+ jsr      -120(a6)             ;Disable() - Wir schalten hier das
+                               ;Multitasking ab. Unser Programm hat
+                               ;nun den ganzen Amiga f&uuml;r sich alleine.
+ 
+ 
+; alte Copperliste speichern
+;---------------------------
+ move.l   _GfxBase(pc),a6
+ move.l   $26(a6),OldCop       ;Auf Adresse $26 zur Basisadresse
+                               ;der graphics.library liegt die Adresse
+                               ;der aktuellen Copperliste.
+ 
+ 
+; unsere eigende Copperliste starten
+;------------------------------------
+ move.l   #Copperliste,$dff080 ;Im Register COP1LC steht nun die Adresse
+                               ;unserer Copperliste.
+ move.w   d0,$dff088           ;Wir starten unsere Copperliste indem wir
+                               ;irgendeinen Wert ins Register COPJMP1
+                               ;reinschreiben, z.B. D0.
+ 
+; pruefen ob wir schon an Zeile 255 angekommen sind
+;---------------------------------------------------
+Pruefe:
+ cmpi.b   #$ff,$dff006         ;cmpi - compare immediate -
+                               ;Inhahlt von Register VHPOSR ($dff006)
+                               ;mit der Konstante $ff (255) vergleichen.
+ bne.s    Pruefe               ;Vergleich nicht wahr -> Pruefe
+ 
+ 
+; wenn ja
+;---------
+ bsr.s    BewegeCopper         ;bsr - branch to subroutine -
+                               ;Rountine BewegeCopper ausf&uuml;hren (jede
+                               ;1/50 Sekunde)
+                       
+; pruefen on wir noch auf Zeile 255 sind, und auf Zeile 0 warten
+;----------------------------------------------------------------
+Warte:
+ cmpi.b   #$ff,$dff006         ;255 in VHPOSR ?
+ beq.s    Warte                ;nein -> Warte
+ 
+ 
+; linke Maustaste gedrueckt ?
+;-----------------------------
+ btst     #6,$bfe001           ;btst - test bit -
+                               ;Testen ob Bit 6 im Register PRA ($bfe001)
+                               ;gesetzt (also 1) ist.  bne.s    Pruefe
+;nein -> Pruefe
+ 
+; alte COPPERLIST wieder starten
+;--------------------------------
+ move.l  OldCop(pc),$dff080    ;In Register COP1LC steht nun wieder die
+                               ;Adresse der alten Copperliste
+ move.w  d0,$dff088            ;In COPJMP1 irgendeinen Wert -> alte
+                               ;Copperliste starten
+ 
+ move.l  4.w,a6                ;Basisadresse der exec.library
+ jsr     -126(a6)              ;Enable() - So, nun k&ouml;nnen wieder mehrere
+                               ;Programme den Amigs nutzen.
+ 
+ 
+; Interrupts wieder zulassen (Multitasking einschalten)
+;------------------------------------------------------
+ move.l  4.w,a6                ;Basisadresse der exec.library
+ jsr     -126(a6)              ;Enable() - So, nun k&ouml;nnen wieder mehrere
+                               ;Programme den Amigs nutzen.
+ 
+ 
+; graphics.library wieder schliessen
+;------------------------------------
+ move.l   _GfxBase(pc),a1      ;Basisadresse der graphics.library
+ jsr      -414(a6)             ;CloseLibrary()
+ 
+; Programm verlassen
+;--------------------
+ende
+ moveq    #0,d0                ;R&uuml;ckgabewert des Programmes
+ rts                           ;und tsch&uuml;&szlig; ...
+ 
+; Datenbereich
+;--------------
+gfxname:  dc.b  'graphics.library',0
+          cnop  0,2
+_GfxBase: dc.l  0
+OldCop:   dc.l  0
+Richtung: dc.b  0,0            ;Hier speichern wir ob sich der Balken
+                               ;nach oben oder untern bewegen mu&szlig;.
+ 
+ 
+; Nun unseren Farbbalken bewegen
+;--------------------------------
+BewegeCopper:
+ lea      Wait_o,a0            ;effektive Adresse von Wait_o nach A0 laden
+ tst.b    Richtung             ;Richtung == 0 ?
+ beq.w    BalkenRunter         ;wenn ja -> BalkenRunter
+ cmpi.b   #$2C,(a0)            ;Ist das obere Ende des Balkens schon an
+                               ;Zeile 44 ?
+ beq.s    SetzeRichtungRunter  ;wenn ja -> SetzeRichtungRunter
+ subq.b   #2,(a0)              ;2 vom ersten WAIT abziehen -> der Balken
+                               ;steigt
+ subq.b   #2,8(a0)             ;2. Wait - 8 zu der Adresse des ersten WAITs
+                               ;          addieren und schon haben wir das
+                               ;          zweite (8 Byte weiter als das
+                               ;          erste)
+ subq.b   #2,8*2(a0)           ;3. Wait
+ subq.b   #2,8*3(a0)           ;4. Wait
+ subq.b   #2,8*4(a0)           ;5. Wait
+ subq.b   #2,8*5(a0)           ;6. Wait
+ subq.b   #2,8*6(a0)           ;7. Wait
+ subq.b   #2,8*7(a0)           ;8. Wait
+ subq.b   #2,8*8(a0)           ;9. Wait
+ subq.b   #2,8*9(a0)           ;10. Wait
+ rts
+ 
+ 
+SetzeRichtungRunter:
+ clr.b    Richtung             ;"Richtung" auf 0 setzen
+ rts
+ 
+ 
+BalkenRunter:
+ 
+ lea      Wait_u,a0            ;effektive Adresse von Wait_u nach A0 laden
+ 
+ cmpi.b   #$E6,(a0)            ;Ist das untere Ende des Balkens schon an
+                               ;Zeile 230 ?
+ beq.s    SetzeRichtungRauf    ;wenn ja -> SetzeRichtungRauf
+ lea      Wait_o,a0            ;effektive Adresse von Wait_o nach A0 laden
+ addq.b   #2,(a0)              ;2 zum ersten WAIT addieren -> der Balken
+                               ;sinkt
+ addq.b   #2,8(a0)             ;2. Wait
+ addq.b   #2,8*2(a0)           ;3. Wait
+ addq.b   #2,8*3(a0)           ;4. Wait
+ addq.b   #2,8*4(a0)           ;5. Wait
+ addq.b   #2,8*5(a0)           ;6. Wait
+ addq.b   #2,8*6(a0)           ;7. Wait
+ addq.b   #2,8*7(a0)           ;8. Wait
+ addq.b   #2,8*8(a0)           ;9. Wait
+ addq.b   #2,8*9(a0)           ;10. Wait
+ rts
+ 
+SetzeRichtungRauf:
+ move.b   #$FF,Richtung        ;Konstante $FF in "Richtung" kopieren
+ rts
+ 
+ 
+; Unsere eigene COPPERLIST definieren
+;-------------------------------------
+ SECTION Grafik,CODE_C
+Copperliste:
+            dc.w $100,$200     ;BPLCON0 -> Bitplanes abschalten
+            dc.w $180,$000     ;COLOR0  -> Schwarz
+Wait_o:
+            dc.w $2C07,$FFFE   ;WAIT    -> Auf Zeile 44 warten
+            dc.w $180,$300     ;COLOR0  -> Anfangsrot
+            dc.w $2E07,$FFFE   ;WAIT    -> auf Zeile 46 warten
+            dc.w $180,$600     ;COLOR0  -> ...
+            dc.w $3007,$FFFE   ;WAIT    -> auf Zeile 48 warten
+            dc.w $180,$900     ;COLOR0  -> ...
+            dc.w $3207,$FFFE   ;WAIT    -> auf Zeile 50 warten
+            dc.w $180,$C00     ;COLOR0  -> ...
+            dc.w $3407,$FFFE   ;WAIT    -> auf Zeile 52 warten
+            dc.w $180,$F00     ;COLOR0  -> ...
+            dc.w $3607,$FFFE   ;WAIT    -> auf Zeile 54 warten
+            dc.w $180,$C00     ;COLOR0  -> ...
+            dc.w $3807,$FFFE   ;WAIT    -> auf Zeile 56 warten
+            dc.w $180,$900     ;COLOR0  -> ...
+            dc.w $3A07,$FFFE   ;WAIT    -> auf Zeile 58 warten
+            dc.w $180,$600     ;COLOR0  -> Endrot
+            dc.w $3C07,$FFFE   ;WAIT    -> auf Zeile 60 warten
+            dc.w $180,$300     ;COLOR0  -> Endrot
+Wait_u:
+            dc.w $3E07,$FFFE   ;WAIT    -> auf Zeile 62 warten
+            dc.w $180,$000     ;COLOR0  -> Scwarz
+            dc.w $FFFF,$FFFE   ;ENDE DER COPPERLIST
+ 
+ 
+ END
+</PRE>
+
+<P ALIGN=CENTER>
+<A HREF="wshop.html#re3">Zur&uuml;ck zum Programmierkurs</A>
+
+</BODY>
+</HTML>
+

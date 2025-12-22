@@ -1,0 +1,358 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Workshops.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops2.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Workshops
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="Inhalt"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H1>Workshops / Hintergrundberichte / Buchvorstellungen</H1>
+<H2>1. Einf&uuml;hrung in die Reaction-Programmierung (von Martin R. Elsner)</H2>
+<H3>Teil 5: Ressourcen</H3>
+<P>
+Heute kommen wir zu einem etwas anderen Teil der Programmentwicklung, der nicht
+direkt mit Reaction zusammenh&auml;ngt, den man aber auch f&uuml;r unsere Objekte ben&ouml;tigt
+(ich hoffe, die Puristen unter euch werden mir das nicht &uuml;bel nehmen ;).
+Zus&auml;tzlich zum eigentlichen Quellcode ben&ouml;tigt man meist weitere Daten;
+man spricht auch von Ressourcen (w&ouml;rtlich &quot;Vorr&auml;te&quot; oder &quot;Hilfsmittel&quot;).
+Dabei handelt es sich weitgehend um Texte und Grafiken.
+</P>
+<P>
+Dabei kommt den Texten eine besondere Bedeutung zu, da diese
+m&ouml;glichst immer in der richtigen Sprache erscheinen sollen! Gerade im
+Amiga-Bereich sollte man darauf achten, dass eigene Programme mindestens
+die Voraussetzungen daf&uuml;r bieten. Die eigentliche &Uuml;bersetzung (d.h. die
+Erstellung sogenannter &quot;Catalogs&quot;) kann mit geringen Kenntnissen von fast jedem
+Interessierten angefertigt werden, was den Programmierer wieder sehr entlastet.
+Die Lokalisierung eines Programms soll der Hauptteil des heutigen Kurses werden,
+zuvor aber ein paar Worte zu den
+</P>
+<H3>Grafiken</H3>
+<P>
+Grafiken m&uuml;ssen im Allgemeinen nicht sprachspezifisch sein, aber verw&ouml;hnte User
+m&ouml;chten gerne auch diesen Teil des Programms selbst konfigurieren. Zum Teil ist
+es auch n&ouml;tig, dem Anwender die Auswahl zwischen verschieden gro&szlig;en Grafiken zu bieten
+(siehe z.B. die Bilder in den Listern von ClassAction, die 16 oder 11 Pixels hoch
+sein k&ouml;nnen), da verschiedene Bildschirmaufl&ouml;sungen oder Schriften Aussehen und
+Benutzbarkeit des Programms beeintr&auml;chtigen.
+</P>
+<P>
+Da das Einbinden von Grafiken in den Quelltext nicht ohne Hilfsmittel m&ouml;glich ist,
+empfehle ich daf&uuml;r den Einsatz von ReActor. Dort k&ouml;nnen Images angelegt und
+direkt mit Bin&auml;rdaten gef&uuml;llt werden, die dann in der von ReActor erzeugten
+Objektdatei abgelegt werden. Vorteile sind hier die einfache Handhabung
+und die Kompaktheit des Programms, Nachteil ist allerdings die statische Festlegung,
+die ein &Auml;ndern der Grafiken nur durch Neukompilieren erlaubt. Au&szlig;erdem ist es nicht
+m&ouml;glich, selten benutzte Grafiken erst bei Bedarf zu laden.
+</P>
+<P>
+Statt mit ReActor kann man Bilder aber auch im Quelltext anlegen, und zwar mit
+dem Bitmap-Objekt. Es erlaubt die Angabe einer Grafikdatei (BITMAP_SourceFile),
+aus der mittels Datatypes die ben&ouml;tigten Informationen ausgelesen werden. Wichtig
+ist hierbei, dass der Bildschirm mit BITMAP_Screen &uuml;bergeben wird, damit die
+Farbinformationen richtig zusammengestellt werden. Daran sollte man auch denken,
+wenn das Programm verschiedene Bildschirme benutzt; ein Bitmap kann nicht f&uuml;r
+mehrere Screens benutzt werden, ohne die Bildinformationen neu zu berechnen.
+&Uuml;brigens erlauben nicht alle Datatypes die Erzeugung einer Transparenz-Maske
+(siehe BITMAP_Masking/BITMAP_MaskPlane), so dass manche Grafiken immer als
+Rechtecke erscheinen. Hier empfiehlt sich ein Test mit verschiedenen
+Grafikformaten, wobei das altgediente IFF-Format immer brauchbare Ergebnisse liefert
+und auch mit allen Grafikprogrammen am Amiga bearbeitet werden kann.
+</P>
+<P>
+W&auml;hrend alle BOOPSI-Objekte, die Schalter und Eingabem&ouml;glichkeiten kapseln, im Kern
+aus einer &quot;struct Gadget&quot; bestehen, bauen Bitmaps, Labels etc. auf einer
+&quot;struct Image&quot; auf (dies wird auch in der Klassenhierarchie deutlich: die
+&quot;rootclass&quot; als Basis ist Mutterklasse f&uuml;r &quot;gadgetclass&quot;, &quot;imageclass&quot; und &quot;icclass&quot;,
+wobei letztere eher unbedeutend ist). Dies hat den Vorteil, dass an allen Stellen,
+an denen ein Image erwartet wird (u.a. bei den Knoten der Listbrowser-Labels),
+ein Zeiger z.B. auf das Bitmap-Objekt verwendet werden kann, denn die ersten Bytes
+dieses Objekts enthalten eine &quot;struct Image&quot;.
+</P>
+<P>
+Dadurch ist es ohne Probleme m&ouml;glich, Grafikdateien aus einem Verzeichnis einzulesen
+und zu verwenden, die dann auch ausgetauscht werden k&ouml;nnen, z.B. um ganze &quot;Skins&quot;,
+also einheitliche Oberfl&auml;chen, zu realisieren (siehe auch WINDOW_BackFillName der
+Window-Klasse).
+</P>
+<P><B>Soweit zu den Grafiken, nun zum schwierigeren Teil:</B></P>
+<H3>Catalog Descriptions</H3>
+<P>
+Die Vorbereitung eines Programms f&uuml;r die &Uuml;bersetzung nennt man Lokalisierung.
+Grundlage ist am Amiga immer eine Catalog-Description-Datei (#?.cd).
+</P>
+<P>
+Wer das Tool ReActor verwendet, hat schon Bekanntschaft mit dieser Datei gemacht,
+denn in ihr werden s&auml;mtliche anzuzeigenden Texte abgelegt (z.B. die Werte f&uuml;r
+GA_Text, WA_Title usw.). Deswegen fordert ReActor an diesen Stellen auch schon
+die Eingabe einer ID, mit der dieser Text sp&auml;ter automatisch durch einen
+entsprechenden &uuml;bersetzen String ersetzt werden kann.
+</P>
+<P>
+Wenn weitere Texte im Programm ben&ouml;tigt werden (Fehlermeldungen, Warnhinweise,
+Men&uuml;punkte,...), sollte man diese der Einfachheit halber in ReActor einbinden,
+da die Koordination sonst etwas aufwendiger ist. Dazu kann man z.B. unter &quot;Images&quot;
+Labels hinzuf&uuml;gen, die dann in LABEL_Text den entsprechenden Text
+(z.B. &quot;Are you sure?&quot;), unter &quot;Locale ID&quot; einen aussagekr&auml;ftigen Namen
+(&quot;MSG_AREYOUSURE&quot;) und als &quot;Object Name&quot; eine &auml;hnliche Bezeichnung mit Wiedererkennungswert
+erhalten (&quot;LABEL_AREYOUSURE&quot;). Sortiert man die Eintr&auml;ge alphabetisch, so erh&auml;lt
+man dadurch eine gute &Uuml;bersicht &uuml;ber die vorhandenen Texte.
+</P>
+<P>
+Doch die .cd-Datei l&auml;sst sich genauso gut auch per Hand anlegen, wenn man ReActor nicht
+nutzen m&ouml;chte. Sie sieht beispielsweise so aus:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+; *** catalog description file of &quot;ClassAction.res&quot;
+;
+<B>MSG_HELP (272//)</B>
+Help
+;
+<B>MSG_ICONIFY (273//)</B>
+Iconify
+;
+<B>MSG_PROJECT (274//)</B>
+Project
+;
+...
+</PRE></TD></TR></TABLE>
+<P>
+Der Aufbau ist recht einfach:
+<Name> (<Nummer>/<Mindestlänge>/<Höchstlänge>)
+<Standardtext>
+;
+</P>
+<P>
+Die Werte in der Klammer k&ouml;nnen jeweils entfallen, was dann bedeutet:
+keine Nummer: Nummer des letzten Eintrags + 1
+keine Mindest-/H&ouml;chstl&auml;nge: keine Beschr&auml;nkung des Strings.
+</P>
+<P><B>(Zu den Namenskonventionen siehe CatComp-Anleitung)</B></P>
+<P>
+Allerdings sollte man an der von ReActor generierten .cd-Datei nichts per Hand
+&auml;ndern, da diese beim n&auml;chsten Speichern in ReActor &uuml;berschrieben wird.
+</P>
+<P><B>Von der Beschreibung zum Quelltext</B></P>
+<P>
+Mit dem Programm CatComp, das u.a. auf der DevCD zu finden ist, oder &auml;hnlichen
+Programmen (siehe unten) lassen sich nun aus der .cd-Datei Quelltexte erzeugen.
+Der Aufruf:
+</P>
+<PRE>
+  catcomp myproject.cd CFILE myproject.h
+</PRE>
+<P>
+Dies erzeugt eine Header-Datei myproject.h, in der Nummern und Strings enthalten sind.
+Dies reicht aus, um im Quelltext einen lokalisierten Text anzusprechen. ReActor ben&ouml;tigt
+allerdings auch eine Objektdatei mit den n&ouml;tigen Informationen, sodass eine .asm-Datei
+erzeugt werden muss:
+</P>
+<PRE>
+  catcomp myproject.cd CFILE myproject.h ASMFILE myproject.asm XDEF
+</PRE>
+<P>
+Die zus&auml;tzliche Assembler-Datei muss nun noch &uuml;bersetzt und zum Programm gelinkt werden.
+</P>
+<P>
+In StormC kann die .cd-Datei einfach zum Projekt hinzugef&uuml;gt werden, als
+&Uuml;bersetzungsskript w&auml;hlt man &quot;catcomp.srx&quot;, das man per Hand &auml;ndern sollte
+(&quot;Makefile editieren&quot;):
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  PARSE ARG '&quot;' filename '&quot;' '&quot;' projectname '&quot;' .
+
+  /* .h und .asm-Datei erzeugen, wobei &quot;CD&quot; angeh&auml;ngt wird, um Verwechslungen zu vermeiden */
+  objectname_h = LEFT(filename,LASTPOS('.cd',filename)-1)||&quot;CD.h&quot;
+  objectname_asm = LEFT(filename,LASTPOS('.cd',filename)-1)||&quot;CD.asm&quot;
+
+  OBJECTS filename objectname_h objectname_asm
+
+  ADDRESS COMMAND &quot;catcomp &quot;||filename||&quot; CFILE &quot;||objectname_h||&quot; ASMFILE &quot;||objectname_asm||&quot; XDEF&quot;
+
+  ADDFILE objectname_h QUIET
+  ADDFILE objectname_asm QUIET
+</PRE></TD></TR></TABLE>
+<P>
+F&uuml;r die zus&auml;tzliche .asm-Datei, die nach dem Kompilieren im Projekt auftaucht,
+kann das &Uuml;bersetzungsskript &quot;phxass.srx&quot; ausgew&auml;hlt werden; folgende &Auml;nderung
+bietet sich an:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ADDRESS COMMAND 'StormC:StormSYS/PhxAss '||filename||' TO '||objectname||' SET &quot;CATCOMP_ARRAY&quot; NOEXE I stormc:asm_include QUIET'
+</PRE></TD></TR></TABLE>
+<P>
+In stormc:asm_include habe ich die Assembler-Includes (auf der DevCD:
+&quot;ADCD_2.1:NDK/NDK_3.5/Include/include_i/#?&quot;) hinterlegt, die PhxAss ben&ouml;tigt.
+</P>
+<H3>Verwendung der lokalisierten Texte</H3>
+<P>
+Das Projekt sollte jetzt schon &uuml;bersetzt werden k&ouml;nnen und laufen.
+</P>
+<P>
+In allen Dateien, in denen wir lokalisierte Texte verwenden wollen, m&uuml;ssen wir
+die n&ouml;tigen Header-Dateien einf&uuml;gen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  #include <proto/locale.h>
+  #define CATCOMP_NUMBERS
+  #define CATCOMP_STRINGS
+  #include &quot;MyProjectCD.h&quot;
+</PRE></TD></TR></TABLE>
+<P>
+Im Quelltext m&uuml;ssen wir die Locale.library und den entsprechenden Catalog &ouml;ffnen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  struct LocaleBase *LocaleBase;
+  struct Catalog *MyCatalog;
+  *LocaleBase = (struct LocaleBase*)OpenLibrary( &quot;locale.library&quot;,39 );
+  *MyCatalog = OpenCatalog( NULL,&quot;MyProject.catalog&quot;,OC_BuiltInLanguage,&quot;english&quot;,
+    OC_Version,1,CATVERS,TAG_DONE );
+</PRE></TD></TR></TABLE>
+<P>
+und nat&uuml;rlich am Ende mit CloseCatalog(MyCatalog) und CloseLibrary(LocaleBase)
+wieder schlie&szlig;en.
+</P>
+<P>
+OC_BuiltInLanguage gibt die Sprache der Texte an, die unser Projekt bereits enth&auml;lt.
+Man sollte diese Texte immer in Englisch angeben, damit man im Falle fehlender Catalogs
+immer noch die Chance hat, alle Beschriftungen und Meldungen zu verstehen.
+OC_Version ist von Interesse, falls mehrere Programmversionen existieren und
+Ver&auml;nderungen bei den Texten stattgefunden haben. Unver&auml;nderte Texte werden nur dann
+richtig dargestellt, wenn auch die Nummern identisch sind, was bei der Verwendung von
+ReActor nicht unbedingt der Fall ist. Auf die Version des Catalogs werde ich unten noch
+kurz eingehen.
+</P>
+<P>
+W&auml;hrend das Ergebnis von OpenLibrary gepr&uuml;ft werden sollte, kann uns der R&uuml;ckgabewert
+von OpenCatalog fast egal sein - solange wir nur die Funktion GetCatalogStr() benutzen,
+reicht auch ein NULL-Wert, sodass das Programm in jedem Fall mit den Standardtexten
+benutzt werden kann!
+</P>
+<P>
+Um die von ReActor erzeugten Objekte brauchen wir uns nicht mehr zu k&uuml;mmern, nur unsere
+eigenen Texte m&uuml;ssen noch eingebaut werden: z.B.
+</P>
+<PRE>
+  ShowMessage( GetCatalogStr(MyCatalog,MSG_AREYOUSURE,MSG_AREYOUSURE_STR) );
+</PRE>
+<P>
+(vorausgesetzt, es existiert eine Funktion ShowMessage(), die einen Text anzeigt).
+Dies kann mit einem Makro auch abgek&uuml;rzt werden: mit
+</P>
+<PRE>
+  #define GETSTR(id) GetCatalogStr(MyCatalog,id,id ## _STR)
+</PRE>
+<P>reicht dann</B>
+<PRE>
+  GETSTR(MSG_AREYOUSURE)
+</PRE>
+<P>
+Das bedeutet nat&uuml;rlich, dass s&auml;mtliche Quelltextdateien nach solchen Texten
+durchsucht, die Texte in ReActor oder direkt in die .cd-Datei eingetragen und dann
+im Quelltext mit GetCatalogStr() ausgelesen werden m&uuml;ssen ...
+</P>
+<H3>Catalog erzeugen</H3>
+<P>
+Damit auch die richtigen Texte im Programm angezeigt werden, m&uuml;ssen nat&uuml;rlich zun&auml;chst
+Catalogs erzeugt werden. Zu diesem Zweck empfehle ich das Programm ReCatIt, das die Arbeit
+sehr erleichtert. Entscheidet man sich f&uuml;r die manuelle Methode, so sind 3 Schritte n&ouml;tig:
+</P>
+<P><B>1. &Uuml;bersetzungsdatei #?.ct erzeugen:</B></P>
+<PRE>
+  catcomp MyProject.cd CTFILE MyProject.ct
+</PRE>
+<P><B>2. &Uuml;bersetzungsdatei &uuml;bersetzen und anpassen; Beispiel:</B></P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  ## version $VER: ClassAction.catalog 44.0 (05-05-02)
+  ## codeset 0
+  ## language deutsch
+  ;
+  MSG_HELP
+  Hilfe
+  ;
+  MSG_ICONIFY
+  Verbergen
+  ;
+  MSG_PROJECT
+  Projekt
+  ;
+</PRE></TD></TR></TABLE>
+<P><B>3. Catalog erzeugen:</B></P>
+<PRE>
+  catcomp MyProject.cd MyProject.ct CATALOG MyProject.catalog
+</PRE>
+<P>
+... und fertig. ReCatIt vereint alle drei Schritte und bietet eine praktische
+Oberfl&auml;che zur Bearbeitung der Texte.
+</P>
+<P>
+ <A HREF="img/reaction5.png"><IMG SRC="thumb/reaction5.jpg" WIDTH="120" HEIGHT="84" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Diesen Catalog muss man allerdings im richtigen Verzeichnis hinterlegen,
+denn der Name &quot;MyProject.catalog&quot; sagt nichts &uuml;ber die Sprache aus. Sie wird im
+Verzeichnis Locale:Catalogs/<Sprache> oder PROGDIR:Catalogs/<Sprache> abgelegt,
+also z.B. in Locale:Catalogs/deutsch/MyProject.catalog.
+</P>
+<P>
+F&uuml;r weitergehende Fragen verweise ich auf die Docs von locale.library,
+CatComp und ReCatIt.
+</P>
+<P>
+Ich hoffe, das hat wieder ein paar Probleme gel&ouml;st, Fragen beantwortet und
+den Ansto&szlig; zu vielen &Uuml;bersetzungen geliefert!
+&Uuml;brigens ist die Lokalisierung am Amiga meiner Meinung nach besser gel&ouml;st als
+unter Windows, selbst wenn man dort eine sonst recht komfortable
+Entwicklungsoberfl&auml;che wie Delphi nutzt.
+</P>
+<P>
+Ein kleiner Hinweis in eigener Sache: ClassAction erlaubt es recht einfach,
+.cd/.ct-Dateien mit mehreren Cli-Befehl oder ARexx-Skripten zu verbinden, so
+dass man den Aufruf von CatComp oder ReCatIt mit einem Mausklick
+(oder zweien ;) erledigen kann.
+</P>
+<P><B>So, genug der Werbung, jetzt kann ausprobiert werden,</B></P>
+<P>
+euer Martin R. Elsner &lt;<A HREF="mailto:email@martin-elsner.de">email@martin-elsner.de</A>&gt;
+</P>
+<P><B>Bezugsquellen:</B></P>
+<P><B>CatComp:</B></P>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">DevCD: ADCD_2.1:NDK/NDK_3.5/Tools/CatComp&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">(leider nicht im Aminet - falls jemand eine Adresse kennt, unter der man&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">CatComp herunterladen kann, w&auml;re ich &uuml;ber einen Hinweis dankbar!)&nbsp;</TD></TR>
+</TABLE>
+<P><B>FlexCat (Alternative zu CatComp mit kleineren Unterschieden):</B></P>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Aminet: <A HREF="http://de.aminet.net/pub/aminet/dev/misc/FlexCat.lha">dev/misc/FlexCat.lha</A>&nbsp;</TD></TR>
+</TABLE>
+<P><B>KitCat (kompatible, aber etwas eingeschr&auml;nkte - deutsche - Alternative zu CatComp):</B></P>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Aminet: <A HREF="http://de.aminet.net/pub/aminet/dev/misc/KitCat.lha">dev/misc/KitCat.lha</A>&nbsp;</TD></TR>
+</TABLE>
+<P><B>ReCatIt:</B></P>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Aminet: <A HREF="http://de.aminet.net/pub/aminet/dev/misc/ReCatIt.lha">dev/misc/ReCatIt.lha</A> oder <A HREF="http://de.aminet.net/pub/aminet/dev/misc/ReCatItPro.lha">dev/misc/ReCatItPro.lha</A>&nbsp;</TD></TR>
+</TABLE>
+<P><B>CatEdit (Alternative zu ReCatIt):</B></P>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Aminet: <A HREF="http://de.aminet.net/pub/aminet/dev/misc/CatEdit.lha">dev/misc/CatEdit.lha</A>&nbsp;</TD></TR>
+</TABLE>
+<P ALIGN="RIGHT">
+<A HREF="Workshops.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops2.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

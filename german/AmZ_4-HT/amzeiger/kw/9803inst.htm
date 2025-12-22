@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/98 - Installer-Kurs</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN="CENTER"><H1>Installer-Kurs</H1>von<BR><A HREF="mailto:A.Wyrwa@BBrandes.in-brb.de">Andr&#233; Wyrwa</A></DIV>
+
+<H3>1.  Einf&uuml;hrung, &Uuml;berblick, Grundlagen</H3>
+<P>Der Commodore-Installer wurde einst entwickelt, um den Programmierern
+eine standardisierte Basis f&uuml;r das Schreiben von Scripts zu geben, mit
+denen der User ihre Produkte auf Festplatte installieren kann.
+</P><P>Dies hat gleich zwei Vorteile: den Prgrammierern vereinfacht es das
+Schreiben solcher Scripts und der User mu&szlig; sich nicht bei jedem Programm
+mit einer anderen Form von Installations-Programm oder unkonfortablem
+DOS-Script herumschlagen.
+</P><P>Wie vielseitig der Commodore-Installer dabei ist, zeigen sowohl die
+Vielzahl von Installer-Scripts zu den einzelnen Programmen, als auch
+einige Spielereien, wie ein auf dem Installer basierendes Adventure und
+&auml;hnliches. Der Installer hat sich auf dem Amiga durchgesetzt, von einer
+guten Software erwartet man geradezu, da&szlig; sie ein Installer-Script
+mitliefert.
+</P><P>Dieser Kurs soll einen Einblick in die Sprache des Installers geben
+und es somit jedem erm&ouml;glichen, eigene Scripts f&uuml;r seine Produkte zu
+schreiben. Obwohl er so konzipiert sein soll, da&szlig; auch jemand, der
+noch nie programmiert hat, danach solche Scripts schreiben kann (wobei
+allerdings ein gewisses Grundverst&auml;ndnis des Amiga-Betriebssystems und
+der Workbench vorausgesetzt wird), werden in den letzten beiden
+Kursteilen Dinge genannt werden, die auch f&uuml;r solche User interessant
+sein k&ouml;nnten, die bereits Erfahrungen mit dem Installer haben.
+</P><P>Der Kurs basiert auf meinen pers&ouml;nlichen Erfahrungen, die ich sowohl
+beim Lesen und Schreiben einiger Anwendungen f&uuml;r den Installer gewonnen
+habe, als auch auf der im Paket des Installer V43.3 enthalten englischen
+Anleitung von Loren Wilton. Das beigef&uuml;gte <A HREF="9803sg.htm">StyleGuide</A> ist eine direkte -
+allerdings kommentierte - &Uuml;bersetzung des entsprechenden Abschnitts in
+dieser Anleitung.
+</P><P>Der Kurs bezieht sich &uuml;brigens auf die V43.3, diese sollte also vorhanden
+sein.</P><P>
+Hier eine kurze &Uuml;bersicht &uuml;ber die Inhalte der einzelnen Kursteile:
+</P><B>
+<OL>
+<LI>Einf&uuml;hrung, &Uuml;berblick, Grundlagen</LI>
+<LI>Kommunikation mit dem User, grundlegende Kommandos</LI>
+<LI>Dateioperationen</LI>
+<LI>weiterf&uuml;hrende Funktionen und Statements</LI>
+<LI>Scriptoptimierung, Lokalisierung</LI>
+<LI>Tricks f&uuml;r Fortgeschrittene, Tools</LI>
+</OL></B>
+<P><B>Aber genug der Vorrede</B>, beginnen wir mit dem Wesentlichen.
+</P><P>Die Sprache des Installers ist keine vollwertige Programmiersprache, sie
+ist nicht dazu konzipiert, komplexe Anwendungen zu schreiben. Deshalb darf
+man auch nicht erwarten, da&szlig; man den Funktionsumfang anderer Sprachen
+geboten bekommt. Aber gerade die Beschr&auml;nktheit des Installers ist seine
+St&auml;rke, denn dadurch ist das Schreiben von Scripts sehr einfach.
+</P><P>Zun&auml;chst einmal soll auf den Ablauf der Programmausf&uuml;hrung eingegangen
+werden. Beim Start des Installers, der normalerweise &uuml;ber die Workbench
+erfolgt, werden zun&auml;chst die <A HREF="9803tool.htm">Tooltypes</A>, die beim Aufruf &uuml;bergeben wurden,
+ausgelesen, die wichtige Informationen zur Abarbeitung beinhalten k&ouml;nnen.
+</P><P>Desweiteren wird nat&uuml;rlich das Script gelesen und vorcompiliert, also
+in eine Sprache &uuml;bersetzt, die der Installer dann leichter interpretieren
+kann. Au&szlig;erdem hat dies den Vorteil, da&szlig; Syntax- und strukturelle Fehler
+noch vor Abarbeitung des Scripts erkannt werden k&ouml;nnen. Ist alles glatt
+gegangen, pr&auml;sentiert der Installer im Regelfall die beiden Startup-Seiten.
+</P><P>Dort kann der User das sogenannte User-Level w&auml;hlen, das seinen
+Kenntnisgrad repr&auml;sentieren soll, eine sehr wichtige Komponente, die
+erheblichen Einflu&szlig; auf die Abarbeitung des Scripts hat. Ist dies
+geschehen, k&ouml;nnen noch die Optionen f&uuml;r die Art der Protokollierung und
+ob das Script wirklich abgearbeitet oder nur durchgetestet (pretend-mode)
+werden soll. Sind diese beiden Seiten &uuml;berwunden, wird mit der Abarbeitung
+des Scripts fortgefahren.
+</P><P>Und damit kommen wir <B>zur eigentlichen Sprache</B> des Installers.</P><P>
+Die Sprache gliedert sich in Funktionen, Statements, und Variablen. Wer
+andere Sprachen kennt, dem f&auml;llt auf, da&szlig; ich keine Operatoren erw&auml;hnte.
+Dies liegt daran, da&szlig; diese hier wie Funktionen behandelt werden.
+</P><P><B>Variablen</B> funktionieren wie Schubladen, in denen man eine Information
+ablegen kann. &Auml;hnlich ARexx verzichtet der Installer weitestgehend auf
+eine spezielle Formatierung der Variablen. Er unterscheidet jedoch
+zwischen INTEGER- und STRING-Variablen. Zur Konvertierung zwischen diesen
+beiden Typen dienen die Funktion <B>(CAT )</B> und das Statement <B>(SET )</B>, wir
+werden darauf eingehen, wenn wir diese betrachten. Desweiteren kennt der
+Installer bisher nur globale Variablen. F&uuml;r die Namen der Variablen
+besteht nur die Einschr&auml;nkung, da&szlig; sie keine Basiselemente der Sprache
+enthalten d&uuml;rfen und mittels Leerstellen abgegrenzt sein m&uuml;ssen (genaueres
+im <A HREF="9803sg.htm">StyleGuide</A>).
+</P><P>
+Zuletzt sei noch erw&auml;hnt, da&szlig; der Installer einige vordefinierte @{"Variablen" link Inst-Var}
+zur Verf&uuml;gung stellt.
+</P><P>
+Damit sind wir auch schon bei den Funktionen. An Funktionen k&ouml;nnen
+Parameter &uuml;bergeben werden die sie zu je einem Ergebniswert verarbeiten.
+</P><P>
+Eine Funktion hat immer das Schema <B>(FUNKTION parameter parameter ...)</B>.
+</P><P>
+Der Ergebniswert ersetzt bei der Ausf&uuml;hrung sozusagen die Funktion. So
+kann man die Variable <B>#var</B> mit einem Funktionsergebnis belegen, indem man
+folgende Zeile schreibt:
+</P><P>
+<B>(SET #var (FUNKTION parameter ...))</B>.
+</P><P>
+(SET ) selbst ist wie bereits erw&auml;hnt ein Statement. Obwohl das prim&auml;re
+Anliegen von Statements nicht die R&uuml;ckgabe von Ergebniswerten ist, liefern
+diverse Statements verschiedene sekund&auml;re Ergebnisse, die man in einfachen
+Scripts kaum brauchen wird, die aber in aufwendigeren F&auml;llen oder bei
+gezielter Fehler&uuml;berwachung eine Rolle spielen. Dies k&ouml;nnen Wahrheitswerte,
+- also 0 f&uuml;r falsch oder 1 f&uuml;r wahr - sein, mit denen kontrolliert werden
+kann, ob die Operation geklappt hat. Es gibt aber auch andere F&auml;lle, wie
+beispielsweise bei (SET ).
+</P><P>
+Um diese drei Kategorien nun noch zu einem interpretierbaren Sourcecode
+zu verbinden, bedarf es einiger sprachlicher Grundelemente, die hier
+beispielhaft aufgez&auml;hlt werden sollen...
+<PRE>
+    dezimale Integer-Zahl:      `5', `32769', `-3'
+
+    hexadezimale Integer-Zahl:  `$a000', `$FB'
+
+    bin&auml;re Integer-Zahl:        `%0010010', `%11'
+
+    (Flie&szlig;kommazahlen kennt der Installer nicht.)
+
+    Strings:                    `"Hello"', `'Hello''
+
+    Symbole:                    `#x', `**var**', `P_Prozedur',
+    (Var.- und Proz.-Namen)     `@interne-variable'
+
+    Kommentare:                 ;dies ist ein Kommentar
+    (werden durch ; eingeleitet)
+</PRE><BR>
+Au&szlig;erdem spielen runde Klammern eine gro&szlig;e Rolle, die Kommandos von
+restlichem Code abgrenzen und zur Festlegung von Priorit&auml;ten bei der
+Programmausf&uuml;hrung dienen (wie mathematische Klammern).
+<P>
+Und dann sind da freilich noch die Leerstellen, Tabulatoren und
+Zeilenumbr&uuml;che, sogenannter "Whitespace", der einfach dazu da ist,
+Symbole und Befehle voneinander zu trennen und nat&uuml;rlich zur
+&uuml;bersichtlichen Gestaltung des Codes benutzt werden sollte.
+</P><P>
+Nachdem ich die grundlegenden Elemente im allgemeinen benannt habe, w&auml;re
+der n&auml;chste Schritt die konkrete Einf&uuml;hrung in die Kommandos, so da&szlig; erste
+einfache Scripts entstehen k&ouml;nnen und mit dem User in Interaktion getreten
+werden kann, was ja eine wesentliche Aufgabe des Installers ist.
+</P><P>
+Dem wollen wir uns aber erst in der n&auml;chsten Ausgabe widmen, bis dahin
+sollten Sie schonmal einen Blick ins <A HREF="9803sg.htm">StyleGuide</A>, auf die <A HREF="9803tool.htm">Tooltypes</A>, sowie
+die <A HREF="9803var.htm">Variablen</A> werfen.
+
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="packer_2.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0398/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../mmx/9803mmx.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

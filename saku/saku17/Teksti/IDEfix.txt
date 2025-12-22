@@ -1,0 +1,112 @@
+5
+1*
+
+{A                             IDEFix & Atapi.device
+{A                             ---------------------
+
+{7                               Kimmo  Hämäläinen
+
+
+Ajatus   CD-ROM-asemasta   A1200-koneessani   syntyi   kesällä   1995   nopeiden
+CD-ROM-asemien  hintojen  pudottua  alle  1000  markkaan.  Ainoana ongelmana oli
+IDE-aseman  liittäminen  A1200:n  IDE-liitäntään,  joka  ei  vakiona  ymmärtänyt
+PC-maailman     IDE-asemia.     Ratkaisu     ongelmaan     löytyi    Aminetista.
+Atapi.device-paketissa   oli   demoversio  ajureista,  joilla  IDE-aseman  saisi
+toimimaan  A600/A1200/A4000-koneiden  sisäisessä IDE-liitännässä. Atapi-pakettia
+tutkimalla löysin luettelon CD-ROM-asemista. jotka toimisivat paketissa olevilla
+ajureilla.  Pienen hintavertailun jälkeen päädyin Mitsumin FX-400 -asemaan, joka
+oli  4-nopeuksinen,  vaikutti  muutenkin  hyvältä  asemalta  ja jonka hinta sopi
+kukkarolleni hyvin.
+
+Saatuani  aseman  käsiini  rakensin  kaapelin,  jolla  sain  liitettyä A1200:ssa
+olevaan  2,5" IDE-liitäntään yhden 3,5" kiintolevyn ja romppuaseman. Liitettyäni
+asemat  koneeseen  asensin  atapi-paketissa  olevat  ohjelmat koneelle, ja asema
+lähti  toimimaan  erinomaisesti.  Paketissa  olevat ajurit olivat demoversioita,
+jotka  lopettivat  toimintansa  muutaman kuukauden jälkeen, ja koneen kelloa oli
+rassattava  taaksepäin,  jotta  sain  aseman  toimimaan.  Kellon  rassaaminen ei
+miellyttänyt, ja halusin liittää koneeseen vielä toisen kiintolevyn, joten aloin
+metsästää  atapi.devicen  virallista pakettia, jonka mukana tulisi myös palikka,
+jolla IDE-liitäntään saisi neljä laitetta kiinni.
+
+Pitkällisen  etsinnän  jälkeen  löysin Broadlinelta IDEFix-paketin, joka sisälsi
+atapi.devicen,  CacheCDFS  2  -CD-ROM-tiedostojärjestelmän, CD32-emulaattorin ja
+palikan,  jolla  sisäisen  IDE-liitännän  saisi  laajennettua.  Viikon odottelun
+jälkeen paketti saapui postissa ja hintaa oli 520 mk + postikulut.
+
+Paketti  sisälsi  korpun,  jolla  oli kaikki ohjelmisto, n. 40-sivuinen vihkonen
+asennusohjeineen ja mikä tärkeintä, paketista löytyi pieni piirilevy, jolla piti
+saada  neljä laitetta kytkettyä. Pieni pettymys oli palikan ohjeiden puuttuminen
+kokonaan,  ohjekirjassa  ei  ollut  mitään  ohjeita  palikan  liittämiseen, eikä
+korpulta   löytynyt   sen  enempää  tietoa.  Onneksi  palikka  oli  suhteellisen
+yksinkertainen,  ja  siinä  oli valmiiksi lattakaapelin pätkä, jolla palikan sai
+liitettyä  A1200:n  sisäiseen  IDE-liitäntään.  Piirilevyllä  oli myös liitäntä,
+jolla   sen   saisi   liitettyä  A4000:n  IDE-liitäntään  ja  liittimet,  joihin
+kiintolevyt  ja  romppuasemat  saisi liitettyä. Lisäksi palikan avulla koneeseen
+pystyy  ohjekirjan  mukaan  liittämään  IDE-nauha-asemia.  Paketti ei sisältänyt
+muita kaapeleita kuin liitännän A1200:n emolevylle.
+
+Palikka on seuraavan näköinen:
+
+        ______________
+       |              |
+  IN1  | ------------ |  2,5" liitin
+  IN2  |--------------|  3,5" liitin
+  OUT1 |--------------|  3,5" liitin
+  OUT2 |--------------|  3,5" liitin
+  OUT3 | ------------ |  2,5" liitin
+       |______________|
+
+
+IN1-liitännästä  vedin  kaapelin  A1200:n emolle IDE-liitäntään. OUT1-liitäntään
+liitin  kiintolevyn  (master),  OUT2-liitäntään  toisen  kiintolevyn  (slave) ja
+viimeiseen   OUT3-liitäntään   romppuaseman   (slave)  2,5"<->3,5"-sovittimella.
+Laitteiden liittäminen tuotti hieman päänvaivaa palikan ohjeiden puutteen takia,
+mutta  loppujen lopuksi sain kaikki toimimaan. Neljännen laitteen liittämistä en
+ole vielä pystynyt testaamaan.
+
+Ohjelmiston  asennus  oli  helppoa  Commodoren Installerilla, ja Installer hoiti
+kaiken muun paitsi IDEFix-komennon lisäämisen startup-sequenceen. IDEFix-komento
+täytyi lisätä itse setpatch-komennon jälkeen. IDEFix-komento mahdollistaa neljän
+laitteen  palikan  käytön  ja  se  parantaa  myös  IDE-laitteiden toimivuutta ja
+nopeutta.  Kiintolevyilläni  nopeus  lisääntyi  pikaisesti tutkittuna n. 200-400
+kt/s ja CD-ROM antoi lukunopeudeksi parhaimmillaan yli 600 kt/s entisen 590 kt/s
+sijaan.
+
+IDEFix-paketti  on  erinomainen  ratkaisu  niille  käyttäjille,  jotka  haluavat
+IDE-romppuasemat   toimimaan   ja  edullista  kiintolevytilaa  IDE-kiintolevyjen
+muodossa.  Ohjelmisto  sisältää myös ajurit SCSI-asemille, joten ohjelmistoa voi
+käyttää  myös  koneissa,  joiden  käyttöjärjestelmän  mukana  ei  ole toimitettu
+CD-ROM-tiedostojärjestelmää. Pakettia saa tilattua myös ilman laajennuspalikkaa,
+jolloin hinta putoaa muutamia satasia. Tarkasta hinnasta ei ole tietoa.
+
+Mukavana    lisänä   paketissa   on   ohjelmat   AudioCD-levyjen   soittoon   ja
+CD32-emulaattori,   jolla   CD32:n  pelit  saa  toimimaan  AGA-koneissa  suoraan
+rompulta.  Lisäksi mukana tulee muutamia Shell-ohjelmia. Esim. IDE-kiintolevyjen
+parkkeeraus     onnistuu    näppärästi    "ship    <unit>"    -komennolla    tai
+"autopark"-komennolla,  ja  levyt  saa  sammutettua  vaikka  yön ajaksi, jolloin
+äänekkäimpien levyjen käyntiääni saattaa häiritä kauneusunia.
+
+CD-ROM-ohjelmisto    toimii    jo    AmigaDOS-versiosta   2.04   alkaen,   mutta
+CD32-emulaattori  ja  neljän  laitteen  laajennus  vaatii vähintään version 3.0.
+Lisäksi   CD32-emulaattori  vaatii  luonnollisesti  AGA-koneen  eli  käytännössä
+A1200/A4000:n.
+
+
+{3Valmistaja:
+
+The ATAPI package
+
+Hirsch & Wolf OHG
+Mittelstr. 33
+56564 Neuwied
+Germany
+
+Tel.: ++49-2631-83990
+Fax.: ++49-2631-839931
+
+Pakettia tuo Suomeen ainakin Broadline Oy, hinta oli tammikuun 1996 alussa
+520 mk.
+
+Lisätietoja voi udella osoitteesta:
+
+Kimmo Hämäläinen, robin@jytol.fi

@@ -1,0 +1,543 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 12/98 - Installer-Kurs Befehls&uuml;bersicht</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>&Uuml;bersicht &uuml;ber die Befehle des dritten Kursteils</H1></DIV>
+
+<PRE>
+<I>Anmerkung:</I> Parameter, die mit (Pflichtparameter) gekennzeichnet sind, sind
+           unbedingt anzugeben. Fehlen sie, verweigert der Installer die
+           Ausf&uuml;hrung des Scripts.
+
+
+<B>Systemanalyse</B>
+
+<B><A NAME="Getsize">(GETSIZE )</A></B>
+
+ <I>Schablone:</I>   (getsize &lt;Pfad+Name&gt;)
+
+ <I>Funktion:</I>  Liefert die Gr&ouml;ﬂe der Datei &lt;Pfad+Name&gt; in Bytes.
+
+ <I>R&uuml;ckgabe:</I>  Dateigr&ouml;ﬂe in Bytes.
+
+ <I>Beispiel:</I>  (getsize &quot;S:Startup-Sequence&quot;)
+
+
+<B><A NAME="Getdevice">(GETDEVICE )</A></B>
+
+ <I>Schablone:</I>   (getdevice &lt;Pfad&gt;)
+
+ <I>Funktion:</I>  Gibt den Datentr&auml;ger zur&uuml;ck, auf dem sich &lt;Pfad&gt; befindet.
+
+ <I>R&uuml;ckgabe:</I>  Datentr&auml;gername.
+
+ <I>Bemerkung:</I> Der Datentr&auml;gername wird ohne Doppelpunkt zur&uuml;ckgegeben.
+
+ <I>Beispiel:</I>  (getdevice &quot;S:&quot;)  ;liefert z.B. &quot;Workbench3.0&quot;
+
+
+<B><A NAME="Getdiskspace">(GETDISKSPACE )</A></B>
+
+ <I>Schablone:</I>   (getdiskspace &lt;Pfad&gt;)
+
+ <I>Funktion:</I>  Ermittelt den freien Platz auf dem Datentr&auml;ger, der durch
+                     &lt;Pfad&gt; angegeben wird.
+
+ <I>R&uuml;ckgabe:</I>  Freien Speicherplatz in Bytes oder -1, falls der Pfad
+                     nicht richtig ist oder die Information nicht besorgt werden
+                     kann.
+
+ <I>Beispiel:</I>  (getdiskspace &quot;SYS:&quot;)
+
+
+<B><A NAME="Getsum">(GETSUM )</A></B>
+
+ <I>Schablone:</I>   (getsum &lt;Pfad+Name&gt;)
+
+ <I>Funktion:</I>  Ermittelt die Checksumme der Datei &lt;Pfad+Name&gt;.
+
+ <I>R&uuml;ckgabe:</I>  Checksumme.
+
+ <I>Bemerkung:</I> Die Funktion findet ihre h&auml;ufigste Anwendung darin, daﬂ
+            Softwareautoren damit &uuml;berpr&uuml;fen, ob es sich bei einer Datei
+            tats&auml;chlich um die von Ihnen publizierte Version handelt, bevor
+            sie installiert wird. (Wird eine Datei manipuliert, so &auml;ndert sich
+            die Checksumme.)
+
+ <I>Beispiel:</I>  (getsum @icon)
+
+
+<B><A NAME="Getversion">(GETVERSION )</A></B>
+
+ <I>Schablone:</I>   (getsum &lt;Pfad+Name&gt; &lt;Paramter&gt;)
+
+ <I>Funktion:</I>  Liefert die Versionsnummer der angegebenen Datei.
+            Dazu muﬂ diese entweder ein RomTag mit Versions-ID-String oder
+            einen OS2.x-Versions-String.
+
+ <I>Parameter:</I> (resident) - Mittels Angabe dieses Parameters wird der
+            Installer veranlaﬂt, im Speicher nach der Datei zu suchen, z.B.
+            Libraries und Devices.
+
+ <I>R&uuml;ckgabe:</I>  Versionsnummer als Maske von 32 Bits. Die oberen 16 Bit
+            enthalten dabei die Versionsnummer, die unteren 16 die Revisions-
+            Nummer.
+            (Es gibt verschiedene Wege, diese Werte aus der R&uuml;ckgabe zu
+            isolieren, einen gibt das Beispiel.)
+
+            Kann die Versionsnummer nicht ermittelt werden, so wird der Wert
+            0 zur&uuml;ckgegeben.
+
+
+ <I>Bemerkung:</I> Wird &lt;Pfad+Name&gt; nicht angegeben, so wird die Version
+            des Betriebssystems zur&uuml;ckgegeben.
+
+            Bei Libraries und Devices ist darauf zu achten, daﬂ die Funktion
+            im Gegensatz zum AmigaDOS-Versions-Befehl nicht automatisch in den
+            entsprechenden Verzeichnissen danach sucht, die Pfade m&uuml;ssen also
+            vollst&auml;ndig angegeben werden, es sei denn, man m&ouml;chte im Speicher
+            suchen.
+
+ <I>Beispiel:</I>  (set #version (getversion &quot;intuition.library&quot; (resident))
+            (set #ver (/ #version 65536))
+            (set #rev (- #version (* #ver 65536)))
+            (message &quot;Sie benutzen Intuition V&quot; ver &quot;.&quot; rev &quot;.&quot;)
+
+            Ein weiteres Beispiel bietet die Prozedur [-&gt;] (P_CONVERSION ).
+
+
+<B><A NAME="Getenv">(GETENV )</A></B>
+
+ <I>Schablone:</I>   (getenv &lt;Name&gt;)
+
+ <I>Funktion:</I>  Liest die Environment-Variable &lt;Name&gt; aus.
+
+ <I>R&uuml;ckgabe:</I>  Inhalt der ENV-Variablen.
+
+ <I>Bemerkung:</I> Der Installer verf&uuml;gt @{u}nicht@{uu} &uuml;ber direktes Gegenst&uuml;ck
+            (SETENV ), da Environment nichts als einzeilige ASCII-Dateien
+            sind, kann dessen Funktion durch (TEXTFILE ) &uuml;bernommen werden.
+
+ <I>Beispiel:</I>  (set #SysVer (getversion))
+            (textfile
+             (dest &quot;ENV:SysVer&quot;)
+             (append #SysVer)
+            )
+            (set #SysVer 0)           ;L&ouml;schen der Variablen
+            (message &quot;System-Version (32-Bit-Wert): &quot; (getenv &quot;SysVer&quot;))
+
+
+<B><A NAME="Getassign">(GETASSIGN )</A></B>
+
+ <I>Schablone:</I>   (getassign &lt;Name&gt; &lt;Option&gt;)
+
+ <I>Funktion:</I>  Liefert den Pfadnamen, auf den das &lt;Name&gt; verweist.
+            Normalerweise ist nur die Angabe von Assigns m&ouml;glich, durch
+            Angabe einer der folgenden Optionen kann das aber ge&auml;ndert
+            werden:
+
+            &quot;v&quot; - nur Datentr&auml;ger (Volumes) untersuchen.
+
+            &quot;a&quot; - nur logische Assigns untersuchen (Voreinstellung).
+
+            &quot;d&quot; - nur Laufwerke (Devices) untersuchen.
+
+            (z.B. ist ein logisches Assign der Systempartition &quot;SYS:&quot;, ihr
+             Datentr&auml;ger z.B. &quot;Workbench3.0&quot; und ihr Laufwerk z.B. &quot;dh0:&quot;.)
+
+ <I>R&uuml;ckgabe:</I>  Zugeh&ouml;riger Pfadname oder ein leerer String, falls
+            &lt;Name&gt; nicht gefunden wird oder durch die durch eine Option
+            vorgenommene Beschr&auml;nkung ausgeschlossen wird.
+
+ <I>Bemerkung:</I> Die Funktion kann benutzt werden, um zu ermitteln, ob
+            es sich bei einem String um den Pfad eines Datentr&auml;gers, eines
+            Assigns, oder eines Laufwerkes handelt.
+
+            &lt;Name&gt; muﬂ ohne Doppelpunkt angegeben werden.
+
+            Die Funktion kann keine Assigns behandeln, die erst zugewiesen
+            werden, wenn sie gebraucht werden. Es wird dann ein leerer
+            String zur&uuml;ckgegeben.
+
+ <I>Beispiel:</I>  (getassign &quot;SYS&quot;)
+
+            oder
+
+            (getassign &quot;FONTS&quot; &quot;a&quot;)   ; liefert einen leeren String, falls
+                                      ; &quot;FONTS:&quot; kein Assign ist, sondern
+                                      ; z.B. ein gleichnamiger Datentr&auml;ger
+                                      ; oder es gar nicht existiert
+
+
+<B><A NAME="Iconinfo">(ICONINFO )</A></B>
+
+ <I>Schablone:</I>   (iconinfo &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  Liest Informationen aus einem Icon aus.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu
+                              dieser Funktion, der dem User sagen soll, was der
+                              Installer von ihm m&ouml;chte. Wird nur bei Angabe von
+                              (confirm) angezeigt.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (dest &lt;Icon&gt;) - Hiermit wird das Icon angegeben, aus dem gelesen
+                            werden soll. &quot;.info&quot; braucht nicht mit angegeben
+                            zu werden.
+            (gettooltype &lt;Tooltype&gt; &lt;Variable&gt;) - Schreibt den Inhalt des
+                                                  &lt;Tooltype&gt; in die &lt;Variable&gt;
+            (getdefaulttool &lt;Variable&gt;) - Liest den Defaulttool-Eintrag und
+                                          schreibt ihn in die &lt;Variable&gt;
+            (getstack &lt;Variable&gt;) - Legt den Stack-Eintrag in der &lt;Variable&gt;
+                                    ab.
+            (getposition &lt;x&gt; &lt;y&gt;) - Ermittelt die Position des Icons und
+                                    schreibt die Bildschirmkoordinaten in die
+                                    Variablen &lt;x&gt; bzw. &lt;y&gt;.
+                                    Hat das Icon keine feste Position, so wird
+                                    -1 zur&uuml;ckgegeben.
+                                    Diese Funktion dient dem erhalten von Icon-
+                                    Positionen bei Updates o.&auml;., miﬂbrauchen
+                                    Sie sie nicht, da der User bei wildem
+                                    Ver&auml;ndern der Icon-Positionen sehr
+                                    irritiert sein kann.
+            (confirm [&lt;User-Level&gt;]) - Falls angegeben, wird der User um
+                                       Best&auml;tigung gebeten.
+                                       &lt;User-Level&gt; gibt dabei an, ab welchem
+                                       User-Level die Tafel pr&auml;sentiert werden
+                                       soll, m&ouml;glich sind 1 f&uuml;r AVERAGE und 2
+                                       f&uuml;r EXPERT.
+            (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+
+
+ <I>Bemerkung:</I> Beachten Sie bitte, daﬂ diese Funktion bei den meisten
+            Parametern die Angabe von Variablen verlangt, in die die Werte
+            geschrieben werden sollen, statt wie die anderen Funktionen die
+            Angabe von Werten selbst.
+
+ <I>Beispiel:</I>  (iconinfo
+             (dest @icon)
+             (getdefaulttool #deftool)
+            )
+            (message &quot;Dieses Script wurde mittels &quot; #deftool &quot; gestartet.&quot;)
+
+
+<B><A NAME="Database">(DATABASE )</A></B>
+
+ <I>Schablone:</I>   (database &lt;Info&gt; [&lt;Vergleichswert&gt;])
+
+ <I>Funktion:</I>  Ermittelt Informationen &uuml;ber die Hardware-Konfiguration
+            des Rechners, auf dem das Script l&auml;uft. &lt;Info&gt; ist dabei einer
+            der im folgenden aufgez&auml;hlten Strings und gibt an, welche
+            Information Sie w&uuml;nschen. Wird kein &lt;Vergleichswert&gt; angegeben,
+            so liefert die Funktion einen der in Klammern angegebenen Werte.
+
+            &quot;vblank&quot; (&quot;50&quot;, &quot;60&quot;)
+            &quot;cpu&quot; (&quot;68000&quot;, &quot;68010&quot;, &quot;68030&quot;, &quot;68040&quot;, &quot;68060&quot;)
+            &quot;fpu&quot; (&quot;NOFPU&quot;, &quot;68881&quot;, &quot;68882&quot;, &quot;FPU40&quot;)
+            &quot;graphics-mem&quot; (gibt einen String mit dem freien Chipmem in Bytes
+                            zur&uuml;ck)
+            &quot;total-mem&quot; (gibt einen String mit dem freien Gesamtspeicher in
+                         Bytes zur&uuml;ck)
+            &quot;chiprev&quot; (&quot;AA&quot;, &quot;ECS&quot;, &quot;AGNUS&quot;)
+
+            Wird ein &lt;Vergleichswert&gt; angegeben, der einem der in den Klammern
+            angegebenen entsprechen muﬂ, so ist das Resultat ein boolescher
+            Wert (0 oder 1), der angibt, ob die Angabe zutrifft.
+
+ <I>Bemerkung:</I> Versuchen Sie immer, Ihr Script so zu schreiben, daﬂ
+            auch unvorhergesehene Werte auftreten k&ouml;nnen, man weiﬂ nie, wie
+            der Rechner des Users aussieht, die Kunst besteht darin, alle
+            M&ouml;glichkeiten abzudecken.
+
+ <I>Beispiel:</I>  (not (patmatch &quot;68000|68010&quot; (database &quot;cpu&quot;))
+
+
+
+<B>optische Gestaltung</B>
+
+<B><A NAME="Execute">(EXECUTE )</A></B>
+
+ <I>Schablone:</I>   (execute &lt;Script+Argumente&gt; &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  F&uuml;hrt ein AmigaDOS-Script aus, wobei nat&uuml;rlich auch
+            Argumente &uuml;bergeben werden k&ouml;nnen.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu
+                              dieser Funktion, der dem User sagen soll, was der
+                              Installer von ihm m&ouml;chte. Wird nur bei Angabe von
+                              (confirm) angezeigt.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (confirm [&lt;User-Level&gt;]) - Falls angegeben, wird der User um
+                                       Best&auml;tigung gebeten.
+                                       &lt;User-Level&gt; gibt dabei an, ab welchem
+                                       User-Level die Tafel pr&auml;sentiert werden
+                                       soll, m&ouml;glich sind 1 f&uuml;r AVERAGE und 2
+                                       f&uuml;r EXPERT.
+            (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+
+ <I>R&uuml;ckgabe:</I>  Gibt den prim&auml;ren Result-Wert des Scripts zur&uuml;ck
+            (seit Inst. V42).
+            Auﬂerdem wird in der Variablen @ioerr das sekund&auml;re Resultat
+            abgelegt.
+
+ <I>Bemerkung:</I> Script und Argumente m&uuml;ssen in einem einzigen String
+            &uuml;bergeben werden.
+
+ <I>Beispiel:</I>  (execute &quot;S:Shell-Startup&quot;
+                      (prompt &quot;F&uuml;hre Shell-Startup aus.&quot;)
+                      (help &quot;Keine Hilfe verf&uuml;gbar.&quot;)
+                     )
+
+
+<B><A NAME="Run">(RUN )</A></B>
+
+ <I>Schablone:</I>   (run &lt;Kommandozeile&gt; &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  F&uuml;hrt eine AmigaDOS-Befehlszeile aus.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu
+                              dieser Funktion, der dem User sagen soll, was der
+                              Installer von ihm m&ouml;chte. Wird nur bei Angabe von
+                              (confirm) angezeigt.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (confirm [&lt;User-Level&gt;]) - Falls angegeben, wird der User um
+                                       Best&auml;tigung gebeten.
+                                       &lt;User-Level&gt; gibt dabei an, ab welchem
+                                       User-Level die Tafel pr&auml;sentiert werden
+                                       soll, m&ouml;glich sind 1 f&uuml;r AVERAGE und 2
+                                       f&uuml;r EXPERT.
+            (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+
+ <I>R&uuml;ckgabe:</I>  Gibt den prim&auml;ren Result-Wert des Befehls zur&uuml;ck
+            (seit Inst. V42).
+            Auﬂerdem wird in der Variablen @ioerr das sekund&auml;re Resultat
+            abgelegt.
+
+ <I>Bemerkung:</I> Die Befehlszeile muﬂ als ein String &uuml;bergeben werden.
+
+ <I>Beispiel:</I>  (run &quot;c:dir &gt;ram:libs.dir libs:&quot;)
+
+
+<B><A NAME="Rexx">(REXX )</A></B>
+
+ <I>Schablone:</I>   (rexx &lt;ARexx-Script&gt; &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  F&uuml;hrt ein ARexx-Script aus.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu
+                              dieser Funktion, der dem User sagen soll, was der
+                              Installer von ihm m&ouml;chte. Wird nur bei Angabe von
+                              (confirm) angezeigt.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (confirm [&lt;User-Level&gt;]) - Falls angegeben, wird der User um
+                                       Best&auml;tigung gebeten.
+                                       &lt;User-Level&gt; gibt dabei an, ab welchem
+                                       User-Level die Tafel pr&auml;sentiert werden
+                                       soll, m&ouml;glich sind 1 f&uuml;r AVERAGE und 2
+                                       f&uuml;r EXPERT.
+            (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+
+ <I>R&uuml;ckgabe:</I>  Gibt den prim&auml;ren Result-Wert des Scripts zur&uuml;ck
+            (seit Inst. V42).
+            Auﬂerdem wird in der Variablen @ioerr das sekund&auml;re Resultat
+            abgelegt.
+
+ <I>Bemerkung:</I> Script und Argumente m&uuml;ssen in einem einzigen String
+            &uuml;bergeben werden.
+
+            L&auml;uft RexxMast nicht, so wird ein Fehler generiert.
+
+ <I>Beispiel:</I>  (rexx &quot;RexxC:special.rexx&quot;)
+
+
+
+<B>Scriptgestaltung</B>
+
+<B><A NAME="Complete">(COMPLETE )</A></B>
+
+ <I>Schablone:</I>   (complete &lt;Prozentwert&gt;)
+
+ <I>Funktion:</I>  Setzt den im Titel-Balken des Installer-Fensters angezeigten
+            &lt;Prozentwert&gt;. Dieser dient dazu, den User zu informieren, wie
+            weit die Installation bereits fortgeschritten ist.
+
+ <I>Beispiel:</I>  (complete 30)
+
+
+<B><A NAME="Working">(WORKING )</A></B>
+
+ <I>Schablone:</I>   (working &lt;String&gt; [&lt;String&gt; ...])
+
+ <I>Funktion:</I>  F&uuml;gt die Strings zusammen und &ouml;ffnet eine Tafel, auf
+            der diese dann unter der Zeile &quot;Working on Installation&quot;
+            angezeigt werden. Im Gegensatz zur Message-Funktion wird
+            inzwischen mit der Installation fortgefahren. Die Tafel wird
+            solange angezeigt, bis ein anderes Kommando wieder das
+            Installer-Fenster f&uuml;r die Kommunikation mit dem User beansprucht.
+
+ <I>Bemerkung:</I> Bei Installer-internen Funktionen ist es sinnvoller,
+            deren Status-Anzeigen zu verwenden, sofern sie &uuml;ber solche
+            verf&uuml;gen (z.B. (COPYFILES )).
+
+ <I>Beispiel:</I>  (working &quot;Entpacke Archiv \&quot;Daten.lha\&quot; nach &quot; #destdir &quot;.&quot;)
+
+
+
+<B>sonstige</B>
+
+<B><A NAME="Symbolset">(SYMBOLSET )</A></B>
+
+ <I>Schablone:</I>   (symbolset &lt;Var_Name&gt; &lt;Wert&gt; [&lt;Var_Name2&gt; &lt;Wert2&gt; ...])
+
+ <I>Funktion:</I>  Die Funktion setzt die Variable, die durch &lt;Var_Name&gt;
+            benannt wird, auf den Wert &lt;Wert&gt;. Dies erlaubt eine Art
+            dynamisches Arbeiten mit Variablen &auml;hnlich Pointern in anderen
+            Sprachen.
+
+ <I>R&uuml;ckgabe:</I>  Der Wert, den die bezeichnete Variable zuvor enthielt.
+
+ <I>Bemerkung:</I> Sollte die bezeichnete Variable noch nicht existieren, so
+            wird sie angelegt.
+
+            Beachten Sie bitte, daﬂ im Unterschied zu Set &lt;Var_Name&gt; nicht
+            direkt eine Variable ist, sondern erst eine bezeichnet.
+            Das Beispiel sollte dies verdeutlichen.
+
+            Beachten Sie bitte, daﬂ es ein Gegenst&uuml;ck zu dieser Funktion zum
+            Auslesen von Variablen gibt: [-&gt;] (SYMBOLVAL ).
+
+ <I>Beispiel:</I>  (set #var_name &quot;#var)
+            (symbolset #var_name &quot;Jetzt d&uuml;rfte alles klar sein.&quot;)
+            (message (cat &quot;Inhalt von \&quot;#var_name\&quot; ist: &quot; #var_name &quot; .\n\n&quot;
+                          &quot;Inhalt von \&quot;#var\&quot; ist: #var &quot; .\n\n&quot;))
+
+
+<B><A NAME="Symbolval">(SYMBOLVAL )</A></B>
+
+ <I>Schablone:</I>   (symbolval &lt;Var_Name&gt;)
+
+ <I>Funktion:</I>  Liest die durch &lt;Var_Name&gt; bezeichnete Variable aus.
+            Dies erlaubt eine Art dynamisches Arbeiten mit Variablen &auml;hnlich
+            Pointern in anderen Sprachen.
+
+ <I>Bemerkung:</I> Das Beispiel oder ein Vergleich mit dem Gegenst&uuml;ck
+            [-&gt;] (SYMBOLSET ) sollte die Funktionsweise verdeutlichen.
+
+ <I>Beispiel:</I>  (set #var_name &quot;#var&quot;)
+            (set #var &quot;Inhalt von #var.&quot;)
+            (message (cat &quot;Ergebnis ist &quot; (symbolval #var_name) &quot;.&quot;))
+
+
+
+<B> String-Bearbeitung </B>
+
+<B><A NAME="Strlen">(STRLEN )</A></B>
+
+ <I>Schablone:</I>   (strlen &lt;String&gt;)
+
+ <I>Funktion:</I>  Gibt die L&auml;nge von &lt;String&gt; in Zeichen zur&uuml;ck.
+
+ <I>R&uuml;ckgabe:</I>  Anzahl der Zeichen in &lt;String&gt;.
+
+ <I>Beispiel:</I>  (set #string
+             (askstring
+              (prompt &quot;Bitte den zu pr&uuml;fenden String eingeben.&quot;)
+              (help @askstring-help)
+              (default &quot;Bitte ersetzen.&quot;)
+             )
+             (message (cat &quot;Der String \&quot;&quot; #string &quot;\&quot; ist &quot; (strlen #string)
+                           &quot; Zeichen lang.&quot;))
+
+
+<B><A NAME="Substr">(SUBSTR )</A></B>
+
+ <I>Schablone:</I>   (substr &lt;String&gt; &lt;Start&gt; [&lt;L&auml;nge&gt;])
+
+ <I>Funktion:</I>  Schneidet beginnend mit dem &lt;Start&gt;-en Zeichen einen
+            Teil der L&auml;nge &lt;L&auml;nge&gt; aus &lt;String&gt; heraus.
+            Wird &lt;L&auml;nge&gt; weggelassen, so endet der Teilstring mit dem Ende von
+            &lt;String&gt;.
+
+ <I>R&uuml;ckgabe:</I>  Der ausgeschnittene Teilstring.
+
+ <I>Bemerkung:</I> Die Funktion beginnt bei der Z&auml;hlung der Zeichen mit
+            dem Wert 0!
+
+ <I>Beispiel:</I>  (set #teilstring (substr #string (- (strlen #string) 5)))
+            ;#teilstring enth&auml;lt die letzten 5 Zeichen von #string
+
+
+
+<B>allgemeines, Control-Statements</B>
+
+<B><A NAME="Procedure">(PROCEDURE )</A></B>
+
+ <I>Schablone:</I>   (procedure &lt;Prozedurname&gt; [&lt;Argumente&gt;] &lt;Kommandos&gt;)
+
+ <I>Funktion:</I>  Definiert eine Prozedur mit den Namen &lt;Prozedurname&gt;, der
+            ggf. die &lt;Argumente&gt; &uuml;bergeben werden, und die die &lt;Kommandos&gt;
+            umfaﬂt.
+
+ <I>R&uuml;ckgabe:</I>  Der R&uuml;ckgabewert des letzten Befehls der Prozedur.
+
+ <I>Bemerkung:</I> Die &Uuml;bergabe von Argumenten ist erst seit Installer V42.7
+            m&ouml;glich.
+
+            Der Installer kennt bisher noch keine lokalen Variablen, d.h. alle
+            Variablen, die auﬂerhalb der Prozedur definiert wurden, gelten auch
+            innerhalb ihrer und umgekehrt.
+
+            Beachten Sie, daﬂ &lt;Prozedurname&gt; kein String, sondern nur ein
+            symbolischer Name ist, also weder eine Variable daf&uuml;r angegeben
+            werden kann, noch der Name in Anf&uuml;hrungszeichen geschrieben werden
+            darf. (s. Beispiel)
+
+            Es empfielt sich, dem Prozedurnamen ein Pr&auml;fix voranzustellen, um
+            evtl. Probleme mit folgenden Installer-Versionen zu vermeiden.
+            Empfohlen wird daf&uuml;r &quot;P_&quot;.
+
+ <I>Beispiel:</I>  (procedure P_PROZENT #p_Wert #p_GWert
+             (set #p_einProzent (/ #p_GWert 100))
+             (/ #p_Wert #p_einProzent)        ;letzter Befehl = Wert&uuml;bergabe
+            )                                 ;Prozedur-Ende
+
+           (asknumber
+            (prompt &quot;Bitte den Grundwert eingeben.&quot;)
+            (help @asknumber-help)
+            (default 100)
+           )
+           (asknumber
+            (prompt &quot;Bitte den Wert eingeben.&quot;)
+            (help @asknumber-help)
+            (default 10)
+           )
+           (message (cat #Wert &quot; sind &quot; (P_PROZENT #Wert #GWert)
+                         &quot; % von &quot; #GWert &quot;.&quot;))
+
+           Weitere Beispiele bieten (P_CONVERSION ) und (P_ASKDIR_SIZE ),
+           s. Bin-Verzeichnis.
+
+</PRE>
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9812inst.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz1298/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../mmx/9812mmx.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; `98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

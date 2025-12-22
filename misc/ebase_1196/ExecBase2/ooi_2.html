@@ -1,0 +1,301 @@
+<html>
+<head><title>Object Oriented Intuition - Part 2</title></head>
+<body>
+<h1 align=center>Object Oriented Intuition - Part 2</h1>
+<h3 align=center>by John Corigliano</h3>
+<center><p><a href="mailto:jcorig@udel.edu">&lt;jcorig@udel.edu&gt;</a>
+</p></center>
+<p>
+Last month I illustrated the class heirarchy and discussed each class. This
+month I will introduce the <b>IApplication</b> class and also discuss the
+much needed <b>classlib</b>.
+</p><p>
+<h3>The Top Level Class</h3>
+Every program that uses OOI will have an object of type <i><tt>IApplication</tt></i>.
+This class is mostly just the wrapper around the event loop that just about
+every Amiga program has. You know what I'm talking about:
+<pre>
+while (!done) {
+    sig = Wait(sig1 | sig2 | sig3)
+    if (sig & sig1) ...
+    else if (sig & sig2) ...
+    else if (sig & sig3) ...
+    else ....
+}
+
+</pre>
+Well, with OOI you will never have to code this again! All you'll have to
+do is <i>register</i> an <i>event</i> with IApplication and it will
+automatically handle waiting for signals.
+</p><p>
+<h3>Registering Events</h3>
+An event, in the OOI sense, is one of the following things:
+<ul>
+<li>An IDCMP message from Intuition
+<li>A regular message a la exec.library
+<li>A plain ol' signal, also from exec.
+</ul>
+The astute reader may notice that each of these things are all really
+just signals, but OOI will handle each one differently.
+</p><p>
+To register an event, you just need to instantiate an object of one of these
+three (3) classes (or an object derived from one):
+<ul>
+<li>IUserWidow - an encapsulation of Intution windows
+<li>IMessagePort - an encapsulation of Exec message ports
+<li>ISignal - an encapsulation of an Exec signal
+</ul>
+Then, call the IApplication class member function <i><tt>AddEvent()</tt></i>
+with a reference to the object. For example:
+<pre>
+// Derive a class from IMessagePort
+class MyPort : public IMessagePort
+{
+    public:
+        ...
+        Message * EventHandler(Message *m);
+};
+
+// Derive a class from IUserWindow
+class MyWindow : public IUserWindow
+{
+    public:
+        DECLARE_RESPONSE_TABLE;
+
+    protected:
+        void HandleButton1();
+        void HandleButton2();
+        void HandleRawkey(int code, int qualifier);
+    ...
+};
+
+// Derive a class from IApplication
+class MyApp : public IApplication
+{
+    public:
+       SetupWindow();
+    protected:
+       MyPort *port;
+};
+
+// The main function
+main()
+{
+    MyApp app();
+    app.Run;
+}
+
+// Create the window and port and add the events
+void MyApp::SetupWindow()
+{
+    MainWindow = new MyWindow();
+    AddEvent(*MainWindow);
+
+    port = new MyPort;
+    AddEvent(*port);
+
+    ...
+}
+
+// Create the response table for class MyWindow
+DEFINE_RESPONSE_TABLE1(MyWindow, IUserWindow)
+  ID_GADGETUP(BUTTON_1, HandleButton1)
+  ID_GADGETUP(BUTTON_2, HandleButton2)
+  ID_RAWKEY(HandleRawkey)
+END_RESPONSE_TABLE
+
+// Create the functions for handling events
+void MyWindow::HandleButton1()
+{
+    ...
+}
+
+void MyWindow::HandleButton2()
+{
+    ...
+}
+
+void MyWindow::HandleRawkey(int code, int qualifier)
+{
+    ....
+}
+
+</pre>
+First, we define a class called <i><tt>MyPort</tt></i>, which is derived from
+the pre-defined class <i><tt>IMessagePort</tt></i>. This class's main job
+is to override IMessagePort's <i><tt>EventHandler()</tt></i> function.
+IApplication calls this function when a message arrives at the port.
+</p><p>
+The <i><tt>MyWindow</tt></i> class is a bit different. If any of you have
+ever used Borland's OWL for the PC this should look very familiar. Instead
+of having to define a single EventHandler function, classes derived from
+IUserWindow need to supply a member function for each event it wishes to
+handle. In the example, the MyWindow class wants to handle IDCMP_GADGETDOWN
+messages from BUTTON_1 and BUTTON_2, as well as IDCMP_RAWKEY events.
+</p><p>
+The tricks to setting all this up are the macros DEFINE_ and
+DECLARE_RESPONSE_TABLE (the concept here was <i>borrowed</i> form OWL,
+but my implementation is <b>much</b> different :). Together, these two
+macros will declare and define two member functions. I haven't actually
+written these macros yet, but they will look something like this:
+<pre>
+#define DECLARE_RESPONSE_TABLE(cls) \
+    IntuiMessage * EventHandler(IntuiMessage *i);\
+    IntuiMessage * EventStub(IntuiMessage *i)
+
+#define DEFINE_RESPONSE_TABLE1(cls,base) \
+    IntuiMessage * cls::EventHandler(IntuiMessage *i) { \
+        if (NULL != EventStub(i)) return base::EventHandler(i); \
+        else return NULL; \
+    } \
+    IntuiMessage *cls::EventStub(IntuiMessage *i) { \
+        if (NULL == i) return NULL;
+
+#define ID_GADGETUP(b,f) \
+        else if (i->Class == IDCMP_GADGETUP && \
+                    ((Gadget *)(i->IAddress))->GadgetID == b) {\
+            f(); \
+            ::ReplyMessage((Message *)i); \
+            return NULL; \
+        }
+
+#define ID_RAWKEY(f) \
+        else if (i->Class == IDCMP_RAWKEY) {\
+            f(i->Code, i->Qualifier); \
+            ::ReplyMessage((Message *)i); \
+            return NULL; \
+        }
+
+#define END_RESPONSE_TABLE \
+        else return i;\
+    }
+
+</pre>
+So, when all is said and done, the macros above would pre-process into:
+<pre>
+IntuiMessage * MyWindow::EventHandler(IntuiMessage *i) {
+    if (NULL != EventStub(i)) return IUserWindow::EventHandler(i);
+    else return NULL;
+}
+IntuiMessage *MyWindow::EventStub(IntuiMessage *i) {
+    if (NULL == i) return NULL;
+    else if (i->Class == IDCMP_GADGETUP &&
+                   ((Gadget *)(i->IAddress))->GadgetID == BUTTON_1) {
+        HandleButton1();
+        ::ReplyMessage((Message *)i);
+        return NULL;
+    }
+    else if (i->Class == IDCMP_GADGETUP &&
+                   ((Gadget *)(i->IAddress))->GadgetID == BUTTON_2) {
+        HandleButton2();
+        ::ReplyMessage((Message *)i);
+        return NULL;
+    }
+    else if (i->Class == IDCMP_RAWKEY) {\
+        HandleRawkey(i->Code, i->Qualifier); \
+        ::ReplyMessage((Message *)i); \
+        return NULL;
+    }
+    else return i;
+}
+
+</pre>
+Pretty groovy, huh?
+</p><p>
+Whenever you add an event, IApplication adds it to one of three internal
+linked lists (depending on what type of event you are adding). Also, it
+ORs the bitmask into a global bitmask that is can use for the exec.library
+<i><tt>Wait()</tt></i> function:
+<pre>
+void IApplication::AddEvent(IMessagePort& port)
+{
+    PortList.Add(&amp;port);
+    WaitMask |= port.GetSignalMask();
+}
+
+</pre>
+Of course, there will also be two other <i><tt>AddEvent()</tt></i> functions:
+one for IUserWindow and one for ISignal.
+</p><p>
+When your <i><tt>main()</tt></i> function executes <i><tt>app.Run()</tt></i>,
+the IApplication class eventually enters it's <i><tt>EventLoop()</tt></i>
+function:
+<pre>
+void IApplication::EventLoop()
+{
+    BOOL done = FALSE;
+    IntuiMessage *i;
+    Message *m;
+    ULONG sig;
+
+    while (!done) {
+        sig = Wait(WaitMask);
+
+        // Walk through window list
+        WindowList.Rewind();
+        while (IUserWindow *win = WindowList++) {
+            if (win->GetSignalMask() & sig) {
+                i = (IntuiMessage *)GetMessage(win->GetUserPort());
+                if (NULL != win->EventHandler(i))
+                    ReplyMessage((Message *)i);
+                sig = 0;                // Mark as handled
+                break;
+            }
+        }
+        // Walk through port list
+        if (0 != sig) {
+            PortList.Rewind();
+            while (IMessagePort *p = PortList++) {
+                if (p->GetSignalMask() & sig) {
+                    m = GetMessage(p->GetPort());
+                    if (NULL != p->EventHandler(m))
+                        ReplyMessage(m);
+                    sig = 0;                // Mark as handled
+                    break;
+                }
+            }
+        }
+        // Walk through signal list
+        if (0 != sig) {
+            SignalList.Rewind();
+            while (ISignal *s = SignalList++) {
+                if (s->GetSignalMask() & sig) {
+                    s->EventHandler();
+                }
+            }
+        }
+    }
+}
+</pre>
+</p><p>
+<hr>
+<h3>The Classlib</h3>
+As important as Intuition is to Amiga programming, there's much more to
+the Amiga OS. Thus, it is neccessary to create a companion library that
+takes care of everything else that OOI doesn't cover. For example,
+<ul>
+<li>A <b>Serial</b> class for reading/writing to the serial port
+<li>A <b>Printer</b> class for printing text and graphics
+<li>A <b>Thread</b> class for multithreading
+<li>A <b>BitMap</b> class for manipulating images
+<li>A <b>Sound</b> class for playing samples and mods
+<li>A <b>Container</b> class for lists, queues, trees, etc.
+<li>And a <b>whole lot</b> more.
+</ul>
+I've already started working on this, but...
+</p><p>
+<h3>Help Wanted!</h3>
+This project is going to be <b>huge</b> and there is just no way
+that I can do it alone. I need help (in more ways than one :). Somebody
+is already helping me with IGadgets (thanks Laurie :), but there are
+plenty of other classes to be made. If you interested, send me some
+e-mail.
+</p><p>
+<hr>
+<h3>No Code</h3>
+Due to time restraints, there is no code to download this month, but
+there should be some next month.
+</p>
+<hr>
+<a href="default.html">Table Of Contents</a>
+</body></html>

@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/98 - MemoryPools</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>MemoryPool-Verwendung</H1>von<BR><A HREF="mailto:T.Heinrich@t-online.de">Thomas Heinrich</A></DIV>
+
+oder: <B>Speicherfragmentierung mu&szlig; nicht sein</B>.<BR><BR>
+
+Der Amiga ist gewiss ein sehr effizienter Computer, aber auch nicht
+perfekt. Manch einer ist sicher schon an dem Problem verzweifelt, da&szlig;
+zwar genug freier Speicher angezeigt wird, sich aber ein bestimmtes
+Programm einfach nicht laden l&auml;&szlig;t. Startet man den Amiga neu,
+funktioniert alles einwandfrei.
+</P><P>
+Programmierer kennen diesen Effekt wahrscheinlich vor allem aus
+Bugreports, denn wer programmiert, hat meistens auch mehr als genug
+freie Resourcen. Schlie&szlig;lich ist der eine oder andere Compiler
+(GNU...) nicht gerade gen&uuml;gsam.
+</P><P>
+Seit Kickstart 3.0 gibt es ein System zur Speicherallokierung, die
+&quot;<B>Memory Pools</B>&quot;, das den Speicher nicht mehr so stark fragmentiert, bei
+richtiger Dimensionierung sogar fast ganz verhindert. Und es kommt noch
+besser: Sogar Benutzer von Kickstart 1.3 k&ouml;nnen in den Genu&szlig; der Memory
+Pools kommen, ganz einfach durch Verwendung derselben Pool-Routinen, die
+auch in der Linker-Library &quot;<B>amiga.lib</B>&quot; vorhanden sind. Wichtig ist, nur
+die amiga.lib ab der Version 40.15 zu verwenden (also die neueste), da
+erst ab hier die Funktionen fehlerfrei implementiert sind. Zu finden
+ist die Library u.a. auf der &quot;Amiga Developer CD&quot; unter
+&quot;NDK_3.1/Includes&Libs/linker_libs/amiga.lib&quot;.
+</P><P>
+Wer eine fr&uuml;here Version beutzt, sollte versuchen, die &quot;<B>pools.lib</B>&quot; zu
+bekommen und diese unbedingt VOR der amiga.lib zu linken. Benutzt man
+nur die Pool-Funktionen, tut es sogar die pools.lib alleine. Zu finden
+ist sie z.B. unter &quot;NDK_3.1/Includes&Libs/SetPatch40/pools.lib&quot; auf
+derselben CD.
+</P><P>
+Durch die Verwendung der amiga.lib/pools.lib-Funktionen entf&auml;llt auch
+der Check, ob das Programm unter 3.x oder fr&uuml;her l&auml;uft, die Routinen
+&uuml;bernehmen das n&auml;mlich selbst. Man ben&ouml;tigt also keine getrennte
+Pool-Verwaltung f&uuml;r alte und neue Kickstarts.
+</P><P>
+<B>Das Prinzip</B> der Memory Pools ist an sich simpel: Statt immer
+st&uuml;ckchenweise kleine Happen aus dem gro&szlig;en Speicherkuchen zu schneiden, nimmt
+man nur ein gro&szlig;es St&uuml;ck und teilt dieses dann, vom Betriebssystem
+abgeschottet, in die ben&ouml;tigten kleineren St&uuml;cke auf. Gibt man den
+Speicher dann wieder frei, merkt nur der Pool etwas davon - solange,
+bis man den gesamten Pool wieder freigibt (normalerweise am Programmende).
+Dann erh&auml;lt das Betriebssystem den gesamten Block am St&uuml;ck wieder zur&uuml;ck,
+ohne die Fragmentierung, die ohne Pool aufgetreten w&auml;re.
+</P><P>
+Der Programmierer hat sogar noch <B>einen weiteren Vorteil</B>: Selbst
+vergessene Speicherallokierungen werden mit dem Freigeben des Pools
+an das System zur&uuml;ckgeliefert. Nat&uuml;rlich nur, wenn sie aus dem Pool
+allokiert wurden.
+</P><P>
+<B>Der Nachteil</B> dieser Methode ist ganz offensichtlich, da&szlig; man Memory Pools
+nicht dazu benutzen kann, Speicher zu belegen, der nach Programmende noch
+belegt sein mu&szlig;, z.B. f&uuml;r Patches, Handler oder Interrupts. Deshalb sind
+die nachfolgenden Funktionen auch nur daf&uuml;r ausgelegt, irgendeinen
+Speichertyp (Chip oder Fast) zu belegen, der dann am Programmende auf
+jeden Fall wieder freigegeben wird. Ben&ouml;tigt man anderen Speicher (Chip,
+Public, 24BitDMA), mu&szlig; man ihn &uuml;ber AllocMem/AllocVec besorgen.
+</P><P>
+Die Beispielfunktionen verwenden au&szlig;erdem die <B>atexit()</B>-Funktion der
+ANSI C-Library. Man sollte also daf&uuml;r sorgen, da&szlig; der Compiler auch
+die n&ouml;tigen Startup-Funktionen benutzt. Die oft gesehene Trickserei
+mit &quot;_main()&quot; statt &quot;main()&quot; kann hier fatale Folgen haben, je nach
+Compiler.
+</P><P>
+Die Includes sind auf MaxonC V3 und 4 abgestimmt, sollten aber leicht
+anzupassen sein. Schwieriger wir es beim Assemblerinterface f&uuml;r die
+Pool-Funktionen: Je nach Compiler ist hier mehr Anpassungsarbeit n&ouml;tig.
+</P>
+<B>Meine Pool-Memory-Funktionen:<BR>
+BOOL setPool(ULONG size, BOOL debuG);</B><BR>
+<P>
+Diese Funktion erstellt einen Pool mit der Gr&ouml;&szlig;e <<B>size</B>>. D.h., ein St&uuml;ck
+Systemspeicher mit der angegebenen Gr&ouml;&szlig;e wird belegt. Aus diesem Pool
+sch&ouml;pft nun die Funktion "<B>Palloc()</B>" (siehe unten) ihre eigenen, kleineren
+Speicherteilchen. Ideal w&auml;re es, wenn der maximale Speicherbedarf des
+Programmes mit diesem einen St&uuml;ck Speicher abgedeckt w&auml;re. Doch woher
+soll man das wissen?
+</P><P>
+Dazu dient die Option <<B>debuG</B>> (ACHTUNG, Schreibweise!). Ist sie &quot;TRUE&quot;,
+dann wird der Pool-Speicherverbrauch mitprotokolliert und kann am Ende
+des Programms, oder wann immer es n&ouml;tig erscheint, mit der Funktion
+&quot;<B>memstats()</B>&quot; (siehe unten) in eine Ausgabedatei ausgegeben werden. So
+kann man bei einem Testlauf, oder von eventuellen Betatestern, den
+maximalen Speicherverbrauch auf unterschiedlichen Systemen ermitteln
+und das fertige Programm kann einen ausreichend gro&szlig;en Pool-Speicher
+allokieren.
+</P><P>
+Gibt die Funktion ein &quot;TRUE&quot; zur&uuml;ck, ist alles ok; gibt sie &quot;FALSE&quot;
+zur&uuml;ck, konnte der Pool nicht erzeugt werden (meistens wegen zu wenig
+Speicher).
+</P><P>
+Die Mindestgr&ouml;&szlig;e, die ein Pool haben mu&szlig;, ist mit &quot;<B>MIN_PUDDLE_SIZE</B>&quot; auf
+ein KByte festgelegt. Diesen Wert kann man an eigene Bed&uuml;rfnisse anpassen,
+jedoch ist ein KByte der unterste Grenzwert, ansonsten lohnt sich der
+Aufwand nicht.
+</P><P>
+Der Pool und alle daraus erzeugten Allokierungen werden beim Programmende
+freigegeben. Ich rate davon ab, &quot;<B>exitfunc()</B>&quot; irgendwo aus eigenem Antrieb
+zu verwenden. Es funktioniert, aber...
+
+<H3>ULONG *Palloc(ULONG size);</H3>
+
+Diese Funktion wird einfach wie &quot;AllocVec()&quot; benutzt, mit dem Unterschied,
+da&szlig; man keine Speicherflags zu &uuml;bergeben braucht.
+</P><P>
+ACHTUNG: Ist <<B>size</B>> gr&ouml;&szlig;er als der Pool, wird ein extra Speicherblock vom
+System angefordert. Ist nicht mehr genug freier Speicher im Pool, wird ein
+neuer Pool mit derselben Gr&ouml;&szlig;e wie unter &quot;<B>setPool()</B>&quot; angegeben, vom System
+angefordert.
+ </P><P>
+Der R&uuml;ckgabewert ist ein Zeiger auf den Speicherbereich, oder &quot;NULL&quot;,
+falls kein Speicher besorgt werden konnte.
+</P><P>
+HINWEIS: &quot;<B>Palloc()</B>&quot; allokiert immer 4 Bytes mehr als angegeben, um die
+L&auml;nge des Blocks zu speichern. Der R&uuml;ckgabewert zeigt auf den Nutzteil
+des Speicherblocks.
+</P><P>
+<B>NIEMALS</B> MITTELS &quot;Palloc()&quot; ALLOKIERTEN SPEICHER MIT &quot;FreeVec()&quot; FREIGEBEN!
+</P>
+<H3>void Pfree(ULONG *mem);</H3>
+Diese Funktion wird einfach wie &quot;<B>FreeVec()</B>&quot; benutzt. <<B>mem</B>> ist ein Zeiger
+auf einen mittels &quot;<B>Palloc()</B>&quot; allokierten Speicherbereich.
+<P>
+<B>NIEMALS</B> MITTELS &quot;AllocVec()&quot; ALLOKIERTEN SPEICHER MIT &quot;Pfree()&quot; FREIGEBEN !
+</P>
+<H3>ULONG memstats(STRPTR output, STRPTR header, STRPTR footer);</H3>
+Falls bei der Funktion &quot;<B>setPool()</B>&quot; die Option <<B>debuG</B>> auf &quot;TRUE&quot; gesetzt
+wurde, gibt diese Funktion eine kleine Statistik &uuml;ber den Pool-Speicherverbrauch aus.
+Wurde <<B>debuG</B>> nicht gesetzt, sind alle Werte null.
+<P>
+&lt;<B>output</B>&gt; bezeichnet eine Ausgabedatei, z.B. &quot;RAM:poolmem.debug&quot;, oder
+auch &quot;CON:////Debug Output&quot;, um eine Konsole zu &ouml;ffnen. Ist <<B>output</B>>
+&quot;NULL&quot;, dann wird die Standardausgabe (dos library/Output) verwendet.
+</P><P>
+<<B>header</B>> bezeichnet einen Text, der vor die Ausgabe gestellt wird, z.B.
+&quot;Memory Pools Output of Program MyFantasticProg\n\n&quot;
+</P><P>
+&lt;<B>footer</B>&gt; bezeichnet einen Text, der nach die Ausgabe gestellt wird, z.B.
+&quot;\nPlease report this output to programmer@beta.test.com\n&quot;
+</P><P>
+Jede Zeile ben&ouml;tigt eine eigene Formatierung, normalerweise gen&uuml;gt ein
+&quot;\n&quot; am Ende, man kann aber auch mehrere Zeilen ausgeben.
+</P>
+Ein Beispiel s&auml;he so aus:
+<PRE><b>
+   Memory Pools Output of Program MyFantasticProg
+
+   Maximum memory used:      73088 Bytes
+   Largest allocation:       16020 Bytes
+   Forgotten memory:           488 Bytes
+   Memory pool is valid !
+
+   Please report this output to programmer@beta.test.com
+</B></PRE><P>
+In diesem Fall k&ouml;nnte man den Pool mittels &quot;setPool(74000);&quot; einrichten,
+falls andere Betatester auf mehr Speicherverbrauch kommen, entsprechend
+h&ouml;her. Die Werte m&uuml;ssen aber sinnvoll sein.
+</P><P>
+Braucht das Programm bei einzelnen Usern z.B. 4 MByte, dann werden User
+mit weniger als 4 MByte freiem RAM nichts mit dem Programm anfangen
+k&ouml;nnen, da der Pool nicht erstellt werden kann.
+</P><P>
+Ich empfehle, &quot;<B>memstats()</B>&quot; per Tooltype oder Shell-Option zug&auml;nglich zu
+machen, zus&auml;tzlich zu einer Angabe des <<B>output</B>>-Parameters, z.B. DEBUG=on
+DEBUGOUTPUT=debugfile. So kann auch in der entg&uuml;ltigen Version einem User
+besser Hilfestellung gew&auml;hrt werden.
+</P>
+Der Quelltext der vorgestellten Funktionen ist im
+<A HREF="9803dat.lha">Bin&auml;rarchiv</B> verf&uuml;gbar.
+           
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9803mui.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0398/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9803texi.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,273 @@
+<html>
+ <head>
+  <title>Introduction &agrave; FPDF ou comment g&eacute;n&eacute;rer du PDF "en ligne"...</title>
+  <meta name="author" content="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+   <area shape="RECT" coords="0,0,760,82" href="http://obligement.free.fr">
+   <area shape="RECT" coords="14,85,74,105" href="../index.html" alt="Intro">
+   <area shape="RECT" coords="90,85,184,105" href="edito.html" alt="Editorial">
+   <area shape="RECT" coords="200,85,302,105" href="apropos.html" alt="A Propos">
+   <area shape="RECT" coords="318,85,430,105" href="sommaire.html" alt="Sommaire">
+   <area shape="RECT" coords="442,85,512,105" href="quizz.html" alt="Quizz">
+   <area shape="RECT" coords="526,85,630,105" href="musiques.html" alt="Musiques">
+   <area shape="RECT" coords="648,85,746,105" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#113333" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Programmation&nbsp;: introduction à FPDF </font>par&nbsp;<a href="mailto:bigdan@migazone.com?subject=FPDF">Arnaud&nbsp;Danassié</a></div><br><br><br>
+
+<div align="center">
+<a href="http://www.fpdf.org/" target="_blank"><img src="../gfx/logofpdf.gif" border="0"></a>
+</div>
+<br><br>
+
+<font size="+1" color="#ccbb33">Pourquoi utiliser FPDF&nbsp;?</font><br><br>
+
+Si vous vous êtes un jour ou l'autre intéressé au PHP, vous n'avez pu manquer de voir qu'il disposait de plusieurs
+jeux d'instructions permettant de générer du PDF (format Acrobat) via deux librairies appelées PDFlib et ClibPDF.<br><br>
+
+Le format Acrobat d'Adobe (ou PDF) a en effet su s'imposer depuis quelques années comme l'un des formats quasi
+universel&nbsp;: il devient donc de plus en plus intéressant de pouvoir générer du PDF depuis un site internet (en PHP
+dans notre exemple).<br><br>
+
+<a href="http://www.pdflib.com/" target="_blank">PDFlib</a> et <a href="http://www.fastio.com/" target="_blank">ClibPDF</a>
+fonctionnent très bien mais si vous lisez attentivement les petites lignes de leurs licences respectives, vous vous
+apercevrez vite qu'il faut payer une licence de 450 dollars US minimum pour PDFLib voire 1000 à 25000 dollars US
+pour ClibPDF dès lors que vous les utilisez de manière plus ou moins commerciale (dans une application, sur un site web,
+un serveur intranet, etc.)&nbsp;! Autant prendre de bonnes habitudes dès a présent, même pour votre page perso&nbsp;;-)<br><br>
+
+Plusieurs alternatives gratuites existent donc dont l'excellent freeware <a href="http://www.fpdf.org/" target="_blank">FPDF</a>
+dont nous parlerons dans tout le reste de cet article. Bien évidemment, il vous faut savoir programmer un minimum en PHP
+sinon vous allez passer un peu plus longtemps que les habitués du PHP à comprendre comment utiliser FPDF (prévoyez
+quelques heures de pratique avant de pouvoir générer des documents PDF complexes comme des devis, tableaux, factures
+sur plusieurs pages, etc.).<br><br>
+
+Un petit copier/coller de la page d'accueil du site de FPDF vous donneras une idée de ses points forts&nbsp;:<br><br>
+
+Le F de FPDF signifie Free&nbsp;: vous êtes libre de l'utiliser et de la modifier comme vous le souhaitez.<br><br>
+
+FPDF a d'autres avantages&nbsp;: des fonctions de plus haut niveau. Voici une liste de ses principales fonctionnalités&nbsp;:<br>
+
+<ul>
+<li>Choix des unités, du format des pages et des marges 
+<li>Gestion des en-têtes et pieds de page 
+<li>Saut de page automatique 
+<li>Saut de ligne automatique et justification 
+<li>Images (JPEG et PNG) 
+<li>Couleurs 
+<li>Liens 
+<li>Support des polices TrueType et Type1 
+<li>Compression des pages 
+</ul>
+
+FPDF ne nécessite aucune extension (à part Zlib pour activer la compression) et fonctionne avec PHP 4 (les versions
+avant la 1.4 sont également compatibles avec PHP 3).<br><br>
+
+Autre avantage non négligeable, Olivier Plathey, l'auteur de FPDF est un Français&nbsp;! FPDF est freeware mais rien ne vous
+interdit de lui verser une petite (ou moyenne) contribution si vous utilisez régulièrement FPDF.<br><br>
+
+Le site internet de FPDF est également très pratique avec un forum Français/Anglais assez complet ou vous pourrez poser
+vos questions, une rubrique scripts bien achalandée, des docs en Italien, Anglais, Portugais, Allemand, etc. Je
+vous recommande vivement de lire la <a href="http://www.fpdf.org/fr/FAQ.php" target="_blank">FAQ</a> si vous rencontrez
+un problème quelconque avec FPDF (genre une erreur type "FPDF error: Could not include font metric file" si vous avez
+oubliez de définir la constante FPDF_FONTPATH avec une ligne du genre <i>define('FPDF_FONTPATH','../font/');</i> dans vos
+scripts PHP ou, comme moi, directement dans fpdf.php ou encore si vous avez des soucis avec certaines versions d'IE).<br><br>
+
+Voilà ce que donne le script minimal pour générer un PDF de moins d'1 Ko avec le fameux "Hello World&nbsp;!"&nbsp;: <br><br>
+
+<TABLE WIDTH="100%" BGCOLOR="#C0C0C0"><TR><TD>
+<font color="#000000"><TT>
+&lt;?php<br>
+require('fpdf.php');<br>
+<BR>
+$pdf=new FPDF();<br>
+$pdf-&gt;Open();<br>
+$pdf-&gt;AddPage();<br>
+$pdf-&gt;SetFont('Arial','B',16);<br>
+$pdf-&gt;Cell(40,10,'Hello World&nbsp;!');<br>
+$pdf-&gt;Output();<br>
+?&gt;<br>
+</TT></font>
+</TD></TR></TABLE><BR>
+
+<font size="+1" color="#ccbb33">Installation</font><br><br>
+
+Comme FPDF est une classe PHP, il vous suffit d'un serveur web supportant le PHP4.x pour pouvoir générer du PDF en
+ligne&nbsp;: bref cela peut être aussi bien une page perso chez Free, Tiscali et cie (ou sur votre serveur web professionnel)
+qu'un serveur Apache qui tourne en local ou sur votre intranet...<br><br>
+
+L'installation est simplissime, il suffit de copier fpdf.php et les quelques fichiers de métriques contenus dans un sous
+répertoire appelé fonts/. Les polices utilisées par Fpdf par défaut sont les suivantes&nbsp;:<br><br>
+
+<ul>
+<li>Courier (caractères de largeur fixe) 
+<li>Helvetica ou Arial (synonymes; sans serif) 
+<li>Times (avec serif) 
+<li>Symbol (symboles) 
+<li>ZapfDingbats (symboles)
+</ul>
+<br>
+
+Vous pourrez bien sûr ajouter les polices dont vous avez besoin. C'est expliqué en détail dans le tutorial N°7.<br><br>
+
+Les pros du PHP pourront donc facilement jeter un oeil sur fpdf.php et l'améliorer pour le bénéfice de tou(te)s...
+Toute la procédure d'installation est très bien expliquée dans l'archive de FPDF 1.51 disponible sur le site en rubrique
+<a href="http://www.fpdf.org/fr/download.php" target="_blank">Downloads</a> (disponible en .zip ou .tgz).<br><br>
+
+<font size="+1" color="#ccbb33">Un cas concret&nbsp;: la présentation de l'AmigaOS 4 à l'Amiwest</font><br><br>
+
+Comme rien ne vaut un peu de pratique, nous allons voir une mini étude de cas. Je lisais récemment les news sur
+<a href="http://www.amigaimpact.com/" target="_blank">Amigaimpact</a> quand je suis tombé le 29 juillet dernier sur
+<a href="http://www.amigaimpact.com/modules.php?op=modload&name=News&file=article&sid=1370&mode=flat&order=0&thold=0" target="_blank">quelques lignes parlant du salon Amiwest</a>
+et notamment de la présentation de l'AmigaOS 4 effectuée par Ben Hermans.<br><br>
+
+Cette dernière était notamment disponible en <a href="http://os.amiga.com/amiwest-2003/AmiWestPresentation.pdf">version PDF de 1.93 Mo</a>
+mais celle-ci était commentée "Non lisible par les versions AmigaOS d'APDF"&nbsp;;-(<br><br>
+
+Effectivement, après quelques essais il s'avérait que ce PDF était illisible sous <a href="http://elesueur.free.fr/Apdf/" target="_blank">Apdf 2.2</a>
+(dernière version 68k) ou Adobe Acrobat 5 MacOSX mais passait très bien sur Pcul (Acrobat 5 sous zindoze) ou APDF 3.1 sous MorphOS qui
+est un vrai petit bijou (vitesse, compatibilité, etc.).<br><br>
+
+Ayant lu qu'on pouvait télécharger aussi <a href="http://os.amiga.com/amiwest-2003/AmiWestJPGs.zip">une archive zip de 3 Mo</a>
+avec toutes les images de la présentation, je me suis empressé de le faire... Après 5 mn de réflexion, je me suis dit qu'il
+y avait moyen de bricoler un PDF à partir de ces images (83 Jpg en 720x540x24 bits nommées Diapositive1.jpg, Diapositive2.jpg,
+etc... Diapositive83.jpg).<br><br>
+
+Aussitôt dit, aussitôt fait&nbsp;: voici donc le petit source PHP que j'ai pondu en quatrième vitesse&nbsp;:<br><br>
+
+<TABLE WIDTH="100%" BGCOLOR="#C0C0C0"><TR><TD>
+<font color="#000000"><TT>
+&lt;?php<br><br>
+require('../fpdf.php');<br>
+<br>
+// mode paysage, a4, etc...<br>
+<br>
+$pdf=new FPDF('L','mm','A4');<br>
+$pdf->Open();<br>
+<br>
+// champs facultatifs<br>
+<br>
+$pdf->SetAuthor('Hyperion - Ben Hermans');<br>
+$pdf->SetCreator('CygnusEd 4.21 & Fpdf');<br>
+$pdf->SetTitle('Amiwest AmigaOS4 Presentation');<br>
+$pdf->SetSubject('Remix by bIgdAn');<br>
+<br>
+// on  charge les 83 gfx...<br>
+<br>
+$pdf->SetMargins(0,0);<br>
+for ($i=1; $i<84; $i++) {<br>
+$pdf->AddPage();<br>
+$pdf->Image('Diapositive'.$i.'.JPG',0,0,297,210,'JPEG');<br>
+}<br>
+<br>
+// Et on affiche le pdf généré... (ou on le sauvegarde en local)<br>
+// $pdf->Output(); pour afficher sur votre browser<br>
+<br>
+$pdf->Output('amiwestpres_remix.pdf');<br><br>
+?&gt;<br>
+</TT></font>
+</TD></TR></TABLE><BR><br>
+
+<font size="+1" color="#ccbb33">Quelques explications</font><br><br>
+
+Ce script enregistré sous le nom amiwest.php, je l'ai posé sur mon serveur Apache (sous répertoire /AmiWest JPegs/)
+avec les 83 Jpg obtenues via l'archive zip précédente.<br><br>
+
+<TABLE WIDTH="100%" BGCOLOR="#C0C0C0"><TR><TD>
+<font color="#000000"><TT>
+require('../fpdf.php');<br>
+</TT></font>
+</TD></TR></TABLE><BR>
+La première ligne intègre fpdf.php (situé dans la racine du site dans notre exemple).
+<br><br>
+<TABLE WIDTH="100%" BGCOLOR="#C0C0C0"><TR><TD>
+<font color="#000000"><TT>
+$pdf=new FPDF('L','mm','A4');<br>
+$pdf->Open();<br>
+</TT></font>
+</TD></TR></TABLE><BR>
+Ensuite le constructeur FPDF indique que l'on crée un nouveau document PDF. Les paramètres (optionnels) servent à préciser l'orientation, l'unité de mesure et le format du document crée&nbsp;: dans notre exemple un document A4 en paysage (L pour Landscape, P pour Portrait) avec le mm en unité de mesure (pt&nbsp;: point, mm: millimètre, cm: centimètre, in&nbsp;: pouce). Par défaut, FPDF travail en A4 portrait et en mm.<br><br>Open() sert à indiquer que l'on va créer un fichier PDF (sans aucune page a ce moment, on verra un peu plus loin qu'il y a une fonction Addpage() appelée pour ajouter une page au document&nbsp;!).<br><br>
+<TABLE WIDTH="100%" BGCOLOR="#C0C0C0"><TR><TD>
+<font color="#000000"><TT>
+$pdf->SetAuthor('Hyperion - Ben Hermans');<br>
+$pdf->SetCreator('CygnusEd 4.21 & Fpdf');<br>
+$pdf->SetTitle('Amiwest AmigaOS4 Presentation');<br>
+$pdf->SetSubject('Remix by bIgdAn');<br>
+</TT></font>
+</TD></TR></TABLE><BR>
+
+Vous l'avez compris ces lignes servent à fixer l'auteur, le titre, etc... du document PDF tels qu'ils apparaîtront
+dans ses propriétés. Ces 4 lignes sont donc facultatives&nbsp;;-).<br><br>
+
+<TABLE WIDTH="100%" BGCOLOR="#C0C0C0"><TR><TD>
+<font color="#000000"><TT>
+$pdf->SetMargins(0,0);<br>
+for ($i=1; $i<84; $i++) {<br>
+$pdf->AddPage();<br>
+$pdf->Image('Diapositive'.$i.'.JPG',0,0,297,210,'JPEG');<br>
+}
+</TT></font>
+</TD></TR></TABLE><BR>
+
+La fonction SetMargins(0,0) fixe donc les marges du document à zéro. Ensuite on effectue 83 fois la boucle suivante
+(compteur $i de 1 à 83)&nbsp;: ajouter une page au document PDF,
+intégrer ensuite l'image nommée Diapositive + $i + ".JPG" ('Diapositive1.JPG' quand $i est à 1, etc...) sur la page
+nouvellement crée en la redimensionnant en 297 mm x 210 mm (format A4) puis recommencer avec la page suivante.<br><br>
+
+<TABLE WIDTH="100%" BGCOLOR="#C0C0C0"><TR><TD>
+<font color="#000000"><TT>
+$pdf->Output('amiwestpres_remix.pdf');<br>
+</TT></font>
+</TD></TR></TABLE><BR>
+
+Comme le document est terminé, nous enregistrons (sur le serveur web donc) le résultat dans le fichier "amiwestpres_remix.pdf"
+via la fonction Output(). Si nous avions remplacé cette ligne par <i>$pdf->Ouput();</i> le PDF généré aurait directement
+été envoyé au navigateur utilisé pour visionner la page amiwest.php&nbsp;!<br><br>
+
+Par exemple sous Aweb 3.4, j'ai configuré le type Mime "APPLICATION/pdf" pour utiliser directement (l'application externe)
+Apdf avec le paramètre %f lorsqu'on rencontre un fichier de type PDF. La même opération est à réaliser (à moins que le
+réglage ne soit déjà effectué) si vous utilisez IBrowse ou Voyager.<br><br>
+
+Le fichier généré pèse 3,32 Mo (aucune compression utilisée) mais sera parfaitement lisible sous Apdf 68k. A noter que la
+qualité moyenne des images est à imputer directement au redimensionnement "sauvage" des Jpg 720x540 en 29.7 cm x 21 cm.
+Si nous avions disposé des images et du texte d'origine, nous aurions pu facilement générer un PDF lisible sur un
+maximum d'afficheurs de PDF et beaucoup plus léger (quelques dizaines de Ko pour ce genre de documents)&nbsp;!<br><br>
+
+<font size="+1" color="#ccbb33">Aller plus loin avec FPDF</font><br><br>
+
+Ce petit article n'avait pour but que de vous présenter succinctement quelques unes des nombreuses possibilités de FPDF.
+Avec un peu de pratique (il y a 7 tutoriaux très progressifs et bien commentés livrés avec FPDF), vous maîtriserez
+rapidement les quelques dizaines de commandes FPDF qui vous permettront de gérer des tas de PDF en ligne (par exemple
+la liste des adhérents d'une association via une requête sur une base de données MySql, des planches d'étiquettes,
+des graphiques, tableaux, etc...). Si notre petit exemple vous a intéressé, vous pourrez retrouver prochainement un
+article plus complet (avec d'autres exemples) sur FPDF dans un prochain <a href="http://amigapower.chez.tiscali.fr/"
+target="_blank">aMiGa=PoWer</a> si tout va bien et si j'ai quelques échos positifs sur cet article&nbsp;;-)<br><br><br>
+
+<div align="center"><A href="#top">Retour en haut</a> | <A href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table></a>
+
+
+</body>
+</html>
+

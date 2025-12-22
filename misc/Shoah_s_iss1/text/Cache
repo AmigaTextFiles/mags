@@ -1,0 +1,50 @@
+@Database SHOAH.s.guide
+@Node MAIN "Cache Control"
+Cache Control.
+
+I've nicked this routine from the ReloKick v1.41 doc file, by Geesus 18/8/94.
+( This nice routine even checks for a >68000 CPU ). So the rest of this text
+is by Geesus...
+
+If you are a coder, then here is the routine to disable CPU caches.
+It also includes the processor checker that I have used.
+
+togglecaches:
+	move.l	4.w,a6
+	move.b	$129(a6),d0
+	and.b	#$f,d0
+	beq.s	.exit                    ;68000 processor!
+	lea	cache_switch(pc),a0
+	move.l	a0,$80.w
+	trap	#0
+.exit
+	rts
+
+cache_switch:
+	movec	cacr,d0                 ;dc.l $4e7a0002
+	eor.b	#1,d0                   ;TOGGLE!
+	movec	d0,cacr                 ;dc.l $4e7b0002
+	rte
+
+If your assembler doesn't assemble 68010+ instructions, then use the DC.L
+statements instead of the MOVEC's.
+
+Also, the caches can only be turned off/on in supervisor mode, that is why a
+TRAP statement is used.
+
+NOTE: The EOR.B statement above will TOGGLE bit#0 of D0.  If you want to say,
+just turn OFF caches, you could replace that line with 'BCLR #0,D0'.  BCLR
+will disable the caches, and a BSET will enable them again.
+
+                                   rAsPeKt!
+                  RESPEKT go's out 2 the following people:
+
+Coma/Eclipx, Denzil/LSD, Maverick/Indy, Mimic/Gaspipe, Phantom/Delite,
+Satan/Indy, Melv, Cuk, Jonesy, Coop, Nank, Matt, Everyone that I forget,
+Everyone at "What Everyone Wants" in Crewe, AND everyone on the scene!
+
+                  __________________________________________
+                 /                                          \
+                 | -=* ReloKick v1.41 - (c) Geesus 1994 *=- |
+                 \__________________________________________/
+@Endnode

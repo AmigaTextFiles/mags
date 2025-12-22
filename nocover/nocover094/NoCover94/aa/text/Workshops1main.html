@@ -1,0 +1,595 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+Workshops / Hintergrundberichte / Buchvorstellungen
+---------------------------------------------------
+
+1. Workshop: Programmierung in C++ - Teil 2 (von Thomas Richter)
+
+Diesmal soll es nun aber wirklich losgehen mit der versprochenen
+Objektorientierung. Aber halt! Was f&uuml;r eine Sorte Programm soll eigentlich
+&uuml;berhaupt entstehen? Ich denke hierbei an ein Vektor-Zeichenprogramm, etwas
+im Sinne von Amifig. Hierbei w&auml;hlt der Anwender verschiedene Objekte -
+hoppla, da ist ja schon das richtige Wort - aus, wie etwa Linien, Kreise,
+Dreiecke, und plaziert sie auf dem Bildschirm. Im Gegensatz zu
+Pixelzeichenprogrammen wie DPaint oder PPaint behalten die gemalten Figuren
+aber ihre Eigenst&auml;ndigkeit auch nach dem Erscheinen auf der Zeichenfl&auml;che,
+k&ouml;nnen von dort aus wieder aufgenommen werden, woanders plaziert werden,
+skaliert, gedreht oder verschoben werden.
+
+In einer "prozeduralen Programmiersprache" wie C w&uuml;rde man jetzt einzelne
+Funktionen bereitstellen, wie z.B. "ZeichneLinie" oder "ZeichneKreis" und
+w&uuml;rde diese aufrufen, wann immer das entsprechende Objekt auf dem Schirm
+erscheinen soll. Aber dies ist ein Kurs &uuml;ber C++, und wir wollen anders
+verfahren! Objekte wie "Kreis" oder "Linie" sollten wirklich genau das sein
+- Objekte n&auml;mlich - mit bestimmten F&auml;higkeiten, wie etwa die, sich selbst
+auf den Bildschirm zeichnen zu k&ouml;nnen, verschoben werden zu k&ouml;nnen und
+anderes. Wir werden diesmal noch nicht in die Programmierung der
+graphischen Oberfl&auml;che des AmigaOS einsteigen, sondern zun&auml;chst einmal in
+einer Art "Trockenschwimmen" einige der notwendigen Objekte erstellen.
+Hierzu lege man, wie im ersten Teil besprochen, zun&auml;chst ein neues C++-
+Projekt an. Nennen wir das Programm zun&auml;chst "Objekt.cpp".
+
+
+Das Punkt-Objekt
+
+Der einfachste Bestandteil einer Vektorgraphik ist wohl ein einzelner Punk.
+Er zeichnet sich nur durch seine Position aus, n&auml;mlich eine X-Koordinate
+und eine Y-Koordinate. Eine Linie ist dann gegeben durch ihre Endpunkte,
+zwei Punkte. Ein Kreis durch einen Punkt, den Mittelpunkt, und den Radius.
+Ein Rechteck durch zwei diagonal gegen&uuml;berliegende Eckpunkte. Wie bei einem
+Baukasten bauen wir also weitere Objekte auf der Basis des Punktes auf.
+K&uuml;mmern wir uns also zun&auml;chst nur um ein Punkt-Objekt. Folgende Zeilen, in
+Objekt.cpp eingetippt, bringen dem C++ Compiler bei, Punkte zu kennen:
+
+class Punkt {
+        int x;          // X-Koordinate
+        int y;          // Y-Koordinate
+};
+
+"class" ist hierbei die Anweisung an den Compiler, als n&auml;chstes die
+Definition eines Objektes zu erwarten, eine "Klasse" ist eine Sorte von
+Objekten, die C++ bereitstellt. Es gibt auch noch "structs", die wir
+zun&auml;chst nicht brauchen. Dahinter folgt der Objektname, wir nennen das
+Objekt "Punkt". Der Name ist willk&uuml;rlich, aber man sollte sich etwas
+Sinngebendes ausdenken, sonst findet man sich irgendwann sp&auml;ter nicht mehr
+im eigenen Programm zurecht. Zwischen den geschweiften Klammern { und }
+stehen die Bestandteile des Objektes, hier zwei "int", benannt x und y. Ein
+"int" ist einfach eine ganze Zahl. Wichtig ist, dass sowohl hinter der
+Objektdefinition als auch hinter der Definition seiner Komponenten jeweils
+ein Semikolon steht.
+
+So ein Punkt ist ja ganz nett, aber er soll auch noch irgendetwas k&ouml;nnen.
+Insbesondere soll er sich zeichnen lassen k&ouml;nnen. Eine "T&auml;tigkeit", die ein
+Objekt ausf&uuml;hren kann, nennt man eine "Methode". &Auml;hnlich wie die beiden
+Komponenten x und y schreiben wir diese Methode in das Objekt selbst
+hinein; da wir im Augenblick noch im Trockendock arbeiten, soll anstelle
+des Zeichnens des Punktes vorerst nur ausgegeben werden, dass wir dies an
+dieser Stelle tun wollen. Konsolenausgabe hatten wir schon im ersten Teil
+besprochen: Dies geschieht mittels des "cout" Objektes, das wir dem
+Compiler mittels Einbindens von "iostream.h" erkl&auml;ren m&uuml;ssen. Damit sieht
+das Programm so aus:
+
+#include &lt;iostream.h&gt;
+
+class Punkt {
+        int x;          // X-Koordinate
+        int y;          // Y-Koordinate
+
+        void Zeichne(void)
+        {
+            cout &lt;&lt; "Zeichne einen Punkt bei (" &lt;&lt; x &lt;&lt; "," &lt;&lt; y &lt;&lt; ").\n";
+        }
+};
+
+int main(int argc, char **argv)
+{
+Punkt p;        // mach' nen Punkt!
+
+        p.Zeichne();
+
+        return 0;
+}
+
+Wie schon im ersten Teil, k&ouml;nnen wir auszugebende Daten einfach mittels &lt;&lt;
+in cout hineinschieben, sie purzeln dann auf der Konsole heraus. Die
+Methode "Zeichne" liefert nichts - also void - zur&uuml;ck, im Gegensatz zu
+main, was immer eine Zahl, ein "int" zur&uuml;ckliefern muss. Argumente bekommt
+"Zeichne" auch nicht, wo der Punkt liegt, wei&szlig; er ja selbst. Der Zugriff
+auf die Koordinaten des Objektes, "x" und "y", geschieht innerhalb von
+"Zeichne" einfach mit deren Namen. Dem Compiler ist an dieser Stelle klar,
+dass hiermit die Komponenten, man sagt auch, die "Member" des eigenen
+Objektes gemeint sind.
+
+Das untere ist das Hauptprogramm, das wie immer "main" hei&szlig;en muss. Mittels
+"Punkt p" wird ein Objekt vom Typ "Punkt" erzeugt, und dieses Objekt
+bekommt den Namen "p". Die Zeile darunter, "p.Zeichen()", ruft die Methode
+"Zeichne" vom Objekt "p" auf. In den Klammern hinter "Zeichne" stehen die
+Argumente der Methode, und das sind - keine. Das Klammerpaar bleibt also
+leer.
+
+
+Privatangelegenheiten
+
+Versucht man nun das obige zu kompilieren, so gibt's bei mir hier folgende
+Fehlermeldung:
+
+Error: No access to member "Zeichne" of class "Punkt".
+
+Also, zu Deutsch: Keinen Zugriff auf Member "Zeichne" der Klasse "Punkt".
+Was ist geschehen? Diejenige Sorte von Objekten, die mit "class" definiert
+werden, schotten sich gegen die Umwelt ab. Man kommt "von au&szlig;en" nicht ohne
+weiteres an die Innereien der Klasse heran. Das ist f&uuml;r gew&ouml;hnlich eine
+gute Idee, wenn mehrere Programmierer an einem Projekt arbeiten, aber jeder
+an seinen eigenen Objekten arbeitet: Es bleiben die Details der inneren
+Verdrahtung der Objekte nach au&szlig;en verborgen, wodurch es dem Programmierer
+eines Objektes frei steht, diese zu &auml;ndern, ohne dass dadurch das gesamte
+Programm beeintr&auml;chtigt wird; kein anderer Programmteil kam bislang an das
+Innenleben des Objektes heran, kann also auch nicht davon abh&auml;ngen.
+
+Nun, das klingt jetzt zugegeben etwas doof: Wir haben ein Objekt, d&uuml;rfen
+aber nichts damit anfangen? Gut, damit wir etwas damit anfangen k&ouml;nnen,
+m&uuml;ssen wir offensichtlich einige bestimmte Teile des Objektes von au&szlig;en
+zugreifbar machen, und dies w&auml;re offenbar das Zeichnen des Punktes; dazu
+ist die Objektdefinition wie folgt abzu&auml;ndern:
+
+class Punkt {
+        int x;          // X-Koordinate
+        int y;          // Y-Koordinate
+public:
+        void Zeichne(void)
+        {
+            cout &lt;&lt; "Zeichne einen Punkt bei (" &lt;&lt; x &lt;&lt; "," &lt;&lt; y &lt;&lt; ").\n";
+        }
+};
+
+Mittels "public:" sagt man dem Compiler, dass die nun folgenden Member des
+Objektes &ouml;ffentlich, also von au&szlig;en zug&auml;nglich sind. Die Koordinaten x und
+y sind hiermit aber noch dem Punkt selbst vorbehalten und bleiben privat.
+Wir h&auml;tten dies auch explizit fordern k&ouml;nnen:
+
+class Punkt {
+private:
+        int x;          // X-Koordinate
+        int y;          // Y-Koordinate
+public:
+        void Zeichne(void)
+        {
+            cout &lt;&lt; "Zeichne einen Punkt bei (" &lt;&lt; x &lt;&lt; "," &lt;&lt; y &lt;&lt; ").\n";
+        }
+};
+
+"private" bedeutet n&auml;mlich genau das: Privat, Eintritt verboten!
+
+Wird nun das so entstandene Programm kompiliert und gestartet, so entsteht
+bei mir auf der Konsole folgendes:
+
+Zeichne einen Punkt bei (143435508,140284832).
+
+Die Zahlen k&ouml;nnen durchaus auch anders aussehen. Wie kommt es zu diesen
+gigantischen Zahlen? Nun, wir haben zwar einen Punkt definiert, aber beim
+Erstellen des Punktes nicht gesagt, wo dieser zu liegen habe. Und nun liegt
+er da, wo immer der Computer Lust hatte, ihn hinzulegen. Offensichtlich
+nicht ganz das, was wir wollten! Wir m&uuml;ssen beim Erstellen des Punktes die
+Koordinaten mit angeben k&ouml;nnen. Genau daf&uuml;r kann man eine bestimmte Methode
+definieren, einen sog. "Constructor". Er wird aufgerufen, wenn ein Objekt
+gebaut werden soll.
+
+#include &lt;iostream.h&gt;
+
+class Punkt {
+        int x;          // X-Koordinate
+        int y;          // Y-Koordinate
+public:
+        Punkt(int horizontal,int vertikal)
+        {
+           x = horizontal;
+           y = vertikal;
+           cout &lt;&lt; "Erstelle einen Punkt bei (" &lt;&lt; x &lt;&lt; "," &lt;&lt; y &lt;&lt; ").\n";
+
+        }
+
+        void Zeichne(void)
+        {
+           cout &lt;&lt; "Zeichne einen Punkt bei (" &lt;&lt; x &lt;&lt; "," &lt;&lt; y &lt;&lt; ").\n";
+        }
+};
+
+int main(int argc, char **argv)
+{
+Punkt p(1,2);      // mach' nen Punkt bei (1,2)!
+
+        p.Zeichne();
+
+        return 0;
+}
+
+Der Constructor hei&szlig;t immer genauso wie das Objekt selbst - also auch
+"Punkt" - und hat keine R&uuml;ckgabewerte. "void" darf man hier explizit nicht
+davorschreiben. Das ist zwar inkonsistent, aber historisch so entstanden.
+Im Constructor schieben wir die beiden Koordinaten "horizontal" und
+"vertikal" nach x und y und geben zur Kontrolle das Ergebnis nochmals aus.
+Jetzt, wo der Compiler wei&szlig;, dass zum Erstellen eines Punktes zwei Zahlen
+"horizontal" und "vertikal" notwendig sind, k&ouml;nnen wir mittels "Punkt p;"
+keinen Punkt mehr erstellen. Wir m&uuml;ssen schon explizit die geforderten
+Argumente des Constructors angeben! Dies passiert denn auch in der ersten
+Zeile von main().
+
+&Uuml;brigens muss der Constructor auch &ouml;ffentlich sein, sonst k&ouml;nnten wir in
+main() keine Punkte erstellen. Objekte mit privaten Konstruktoren k&ouml;nnen
+&uuml;brigens durchaus auch sinnvoll sein, aber dazu sp&auml;ter mehr.
+
+Das so erstellte Programm tut schon, was es soll: Ich erhalte auf dem
+Bildschirm folgendes:
+
+Erstelle einen Punkt bei (1,2).
+Zeichne einen Punkt bei (1,2).
+
+Also das erwartete! Zun&auml;chst wird ein Punkt erstellt, dann gezeichnet.
+Und dann? Ja, Punkte werden auch irgendwann gel&ouml;scht, nur bekommen wir
+davon nichts mit. Wir k&ouml;nnen dem Compiler aber sagen, das er etwas
+bestimmtes unternehmen soll, wenn wir Punkte l&ouml;schen. Dies sagt der
+sogenannte "Destructor" eines Objektes, der als Methodennamen den Namen des
+Objektes mit einer Tilde davor bezeichnet wird, also "~Punkt" in diesem
+Falle. "~" bezeichnet in C und C++ den Operator der Komplementbildung,
+gelesen als "nicht". Dies ist also die "nicht-Punkt"-Methode, oder "das
+Komplement vom Constructor". Damit h&auml;tten wir:
+
+#include &lt;iostream.h&gt;
+
+class Punkt {
+        int x;          // X-Koordinate
+        int y;          // Y-Koordinate
+public:
+        Punkt(int horizontal,int vertikal)
+        {
+           x = horizontal;
+           y = vertikal;
+           cout &lt;&lt; "Erstelle einen Punkt bei (" &lt;&lt; x &lt;&lt; "," &lt;&lt; y &lt;&lt; ").\n";
+
+        }
+
+        ~Punkt(void)
+        {
+           cout &lt;&lt; "L&ouml;sche einen Punkt.\n";
+        }
+
+        void Zeichne(void)
+        {
+           cout &lt;&lt; "Zeichne einen Punkt bei (" &lt;&lt; x &lt;&lt; "," &lt;&lt; y &lt;&lt; ").\n";
+        }
+};
+
+int main(int argc, char **argv)
+{
+Punkt p(1,2);      // mach' nen Punkt bei (1,2)!
+
+        p.Zeichne();
+
+        return 0;
+}
+
+Das so erhaltene Programm schreibt dann folgendes auf den Schirm:
+
+Erstelle einen Punkt bei (1,2).
+Zeichne einen Punkt bei (1,2).
+L&ouml;sche einen Punkt.
+
+Das ist ganz wie erwartet! Wo aber haucht denn nun der Punkt sein Leben
+aus?
+Nun, es gilt bei den hier verwendeten "automatischen" Objekten, wir werden
+noch andere Sorten kennenlernen, dass sie dann zerst&ouml;rt werden, wenn die
+geschweifte Klammer innerhalb derer sie erzeugt wurden, wieder geschlossen
+wird. Der Punkt geht also genau vor dem Ende von main, vor der }-Klammer
+wieder kaputt.
+
+
+Das Linien-Objekt
+
+Zwei Punkte machen eine Linie, insofern ist das Linienobjekt relativ
+offensichtlich zu erstellen; das folgende Code-Fragment ist hinter die
+Definition von "Punkt" einzuf&uuml;gen.
+
+class Linie {
+        Punkt   anfang;
+        Punkt   ende;
+public:
+        Linie(Punkt von, Punkt bis)
+         : anfang(von), ende(bis)
+        {
+                cout &lt;&lt; "Eine Linie wurde soeben erzeugt.\n";
+        }
+        //
+        ~Linie(void)
+        {
+                cout &lt;&lt; "Eine Linie wurde soeben gel&ouml;scht.\n";
+        }
+};
+
+Der Constructor der Linie sieht diesmal ein wenig seltsam aus, denn die
+Syntax mit dem Doppelpunkt ist neu; hier werden, ganz analog dem Punkt-
+Beispiel, "anfang" und "ende" mit den Werten von "von" und "bis"
+initialisiert. Man h&auml;tte hier alternativ auch
+
+        Linie(Punkt von, Punkt bis)
+        {
+                anfang = von;
+                ende   = bis;
+                cout &lt;&lt; "Eine Linie wurde soeben erzeugt.\n";
+        }
+
+schreiben k&ouml;nnen, was dasselbe bewirkt h&auml;tte. Aber man will ja etwas
+lernen!
+Diese Sonderbedeutung des Doppelpunktes gibt es aber nur f&uuml;r Constructors.
+Eingefleischte C++-Hasen werden vielleicht anmerken, dass es zwischen dem
+oberen und dem unteren Code einige diffizile Unterschiede gibt, was dessen
+genaue Bedeutung angeht, aber ich m&ouml;chte darauf im Augenblick nicht
+eingehen, um es nicht komplizierter als n&ouml;tig zu machen. In unserem Falle
+macht's sowieso keinen Unterschied.
+
+
+Fehlt noch das Zeichnen von Linien: Nun ja, hierzu br&auml;uchten wir nat&uuml;rlich
+die Koordinaten der Punkte. Wie w&auml;re es hiermit:
+
+       void Zeichne(void)
+        {
+                cout &lt;&lt; "Zeichne eine Linie von " &lt;&lt;
+                     "(" &lt;&lt; anfang.x &lt;&lt; "," &lt;&lt; anfang.y &lt;&lt; ") bis "&lt;&lt;
+                     "(" &lt;&lt; ende.y   &lt;&lt; "," &lt;&lt; ende.y   &lt;&lt; ").\n";
+        }
+
+Der Punkt hat wieder die Bedeutung von "Member von", also bezeichnet
+"anfang.x" "die X-Komponente des Punktes anfang des Objektes, von der
+Zeichne eine Methode ist". Das ist zwar korrektes C++, aber dennoch meckert
+der Compiler beim &Uuml;bersetzungsversuch:
+
+Error: No access to member "x" of class "Punkt"
+
+Richtig! "x" und "y" waren ja "privat", und damit kann die Linie darauf
+nicht zur&uuml;ckgreifen.
+
+F&uuml;r dieses Problem gibt es mehrere L&ouml;sungen:
+
+1) Wir machen x und y-Komponente des Punktes &ouml;ffentlich. Damit w&auml;ren wir
+zwar das Problem los, aber ein gutes Design w&auml;re das sicherlich nicht. Eins
+der Ziele der Objektorientierung war ja gerade, Privates von &Ouml;ffentlichem
+zu trennen.
+
+
+2) Wir "befreunden" die Linie mit dem Punkt; Freunde d&uuml;rfen sich
+gegenseitig in die Karten schauen, und somit d&uuml;rfte das Linie-Objekt auch
+auf die privaten Member des Punkt-Objektes sehen. Die C++-Syntax daf&uuml;r s&auml;he
+so aus:
+
+class Linie;
+
+class Punkt {
+        friend class Linie;
+        // ... weiter wie gehabt...
+
+
+Mit der Zeile oberhalb von "class Punkt" geben wir dem Compiler zun&auml;chst
+mal einen Tipp, dass es ein Objekt namens "Linie" geben wird, welches wir
+weiter unten dann genauer erkl&auml;ren. Mittels der Zeile "friend class Linie"
+im Punkt sagen wir, dass der Punkt mit der Linie befreundet ist. Die Linie
+darf dann also in die Privatangelegenheiten des Punktes hineinsehen.
+
+Auch das w&uuml;rde funktionieren, ist aber auch nicht ganz nach meinem
+Geschmack; mittels "friend" weicht man eine strenge Objektstruktur auf und
+baut Hintert&uuml;rchen ein; eine solche verlotterte Objektstruktur artet dann
+meist aus. Au&szlig;erdem k&ouml;nnte sowohl unter 1) als auch unter 2) eine Linie die
+Koordinaten ihrer Punkte &auml;ndern - doch das sollte der Punkt doch lieber
+selbst tun!
+Bleibt hart! Es gibt bessere Methoden!
+
+
+3) Die bessere Methode besteht darin, dass der Punkt "auf Anfrage" seine
+Koordinaten preisgibt, d.h. man baue zwei Methoden in den Punkt ein, die
+seine X bzw. Y-Koordinate verraten, ohne dass man jedoch diese dazu
+verwenden k&ouml;nnte, sie auch zu ver&auml;ndern. Hierzu muss das Programm nun wie
+folgt abge&auml;ndert werden:
+
+#include &lt;iostream.h&gt;
+
+class Punkt {
+        int x;          // X-Koordinate
+        int y;          // Y-Koordinate
+public:
+        Punkt(int horizontal,int vertikal)
+        {
+           x = horizontal;
+           y = vertikal;
+           cout &lt;&lt; "Erstelle einen Punkt bei (" &lt;&lt; x &lt;&lt; "," &lt;&lt; y &lt;&lt; ").\n";
+
+        }
+
+        ~Punkt(void)
+        {
+           cout &lt;&lt; "L&ouml;sche einen Punkt.\n";
+        }
+
+        void Zeichne(void)
+        {
+           cout &lt;&lt; "Zeichne einen Punkt bei (" &lt;&lt; x &lt;&lt; "," &lt;&lt; y &lt;&lt; ").\n";
+        }
+
+        int X_Hiervon(void)     // verrate die X-Komponente
+        {
+                return x;
+        }
+
+        int Y_Hiervon(void)     // verrate die Y-Komponente
+        {
+                return y;
+        }
+};
+
+
+class Linie {
+        Punkt   anfang;
+        Punkt   ende;
+public:
+        Linie(Punkt von, Punkt bis)
+         : anfang(von), ende(bis)
+        {
+           cout &lt;&lt; "Eine Linie wurde soeben erzeugt.\n";
+        }
+        //
+        ~Linie(void)
+        {
+           cout &lt;&lt; "Eine Linie wurde soeben gel&ouml;scht.\n";
+        }
+        //
+        void Zeichne(void)
+        {
+           cout &lt;&lt; "Zeichne eine Linie von " &lt;&lt;
+                   "(" &lt;&lt; anfang.X_Hiervon() &lt;&lt; "," &lt;&lt; anfang.Y_Hiervon() &lt;&lt; ") bis "&lt;&lt;
+                   "(" &lt;&lt; ende.X_Hiervon()   &lt;&lt; "," &lt;&lt; ende.Y_Hiervon() &lt;&lt; ").\n";
+        }
+};
+
+int main(int argc, char **argv)
+{
+Punkt p(1,2);      // mach' nen Punkt bei (1,2)!
+Linie l(Punkt(3,4),Punkt(5,6));
+
+        p.Zeichne();
+        l.Zeichne();
+
+        return 0;
+}
+
+Die Methoden "X_Hiervon()" und "Y_Hiervon()" des Punktes sind somit neu,
+und geben die X bzw. Y-Koordinate des Punktes zur&uuml;ck. Dadurch kann man
+diese Koordinaten zwar lesen, aber nicht &auml;ndern, was genau der gew&uuml;nschte
+Effekt ist.
+Man nennt solche Methoden auch "Accessor-Funktionen", da sie den Zugriff -
+"Access" - auf bestimmte Member erlauben. Im Linie-Objekt wurde die
+"Zeichne()"-Methode dahingehend ver&auml;ndert, dass nun die Zugriffsfunktionen
+der Punkte aufgerufen werden, statt direkt auf die Member zur&uuml;ckzugreifen.
+Im Hauptprogramm erstelle ich zus&auml;tzlich eine Linie namens "l", die mit
+zwei Punkten initialisiert wird: Der Startpunkt mittels "Punkt(3,4)" und
+der Endpunkt mittels "Punkt(5,6)". Die Linie wird au&szlig;erdem noch mittels
+"l.Zeichne()" "gemalt", zumindest wird ausgegeben, dass wir das wollen.
+
+
+Die fehlenden Punkte
+
+Dieses Programm kompiliert nun prima, und gibt folgenden Text aus:
+
+Erstelle einen Punkt bei (1,2).
+Erstelle einen Punkt bei (5,6).
+Erstelle einen Punkt bei (3,4).
+Eine Linie wurde soeben erzeugt.
+L&ouml;sche einen Punkt.
+L&ouml;sche einen Punkt.
+Zeichne einen Punkt bei (1,2).
+Zeichne eine Linie von (3,4) bis (5,6).
+Eine Linie wurde soeben gel&ouml;scht.
+L&ouml;sche einen Punkt.
+L&ouml;sche einen Punkt.
+L&ouml;sche einen Punkt.
+
+Aufmerksame Leser werden feststellen, dass hier zwar wie erwartet drei
+Punkte erzeugt werden - der einzelne Punkt bei (1,2) und die Start- und
+Endpunkte der Linien bei (3,4) und (5,6) - aber es werden f&uuml;nf Punkte
+gel&ouml;scht. Nanu? Was ist denn da passiert? Wird da etwas gel&ouml;scht, was nicht
+erstellt wurde?
+
+
+Doch, es geht hier alles mit rechten Dingen zu, nur zwei
+Erstellungsvorg&auml;nge finden im Verborgenen statt. Des R&auml;tsels L&ouml;sung sind
+die beiden Endpunkte der Linie: Der Compiler l&auml;sst diese zun&auml;chst als
+tempor&auml;re Objekte entstehen; mit diesen tempor&auml;ren Objekten wird der
+Constructor der Linie aufgerufen. Die tempor&auml;ren Objekte dienen dann zum
+Erstellen der Member "anfang" und "ende" der Linie, und *dieser* Vorgang
+bleibt uns verborgen; danach werden die tempor&auml;ren Punkte wieder gel&ouml;scht -
+das geschieht direkt nach Erstellen der Linie. Die restlichen L&ouml;schvorg&auml;nge
+sind die des einzelnen Punktes, und der beiden Endpunkte der Linie, wie
+erwartet.
+
+Noch ein Wort zum verborgenen Erstellungsvorgang: Hierbei wird ein
+"eingebauter" des Constructor des Punkt-Objektes aufgerufen, der zwar immer
+da ist, aber nicht explizit programmiert werden zu braucht; dies ist der
+sogenannte "Copy-Constructor", der einen neuen Punkt aus einem alten baut.
+Der eingebaute Constructor kopiert die Objekte einfach komponentenweise,
+was hier auch genau das richtige ist. Wir k&ouml;nnen ihn allerdings auch
+ausprogrammieren und damit den verborgenen Kopiervorgang sichtbar machen.
+Folgende Zeilen sind in das Punkt-Objekt einzuf&uuml;gen:
+
+        //
+        // der Copy-Constructor des Punktes
+        Punkt(const Punkt &orginal)
+        {
+                x = orginal.x;
+                y = orginal.y;
+                cout &lt;&lt; "Ein Punkt wurde geklont.\n";
+        }
+        //
+
+Die Aufrufparameter sehen etwas sonderlich aus: "const" bedeutet, dass der
+Parameter nicht vom Copy-Constructor &uuml;berschrieben wird, was sich von
+selbst versteht - das Original soll ja beim Erstellen eines neuen Punktes
+nicht leiden.
+Das "&" vor dem Parameter? Nun ja, ignorieren wir es im Augenblick, das ist
+etwas knifflig zu erkl&auml;ren. Es muss hier stehen, sonst klappt der Trick
+nicht. Der Rumpf des Constructors hingegen ist leicht zu erkl&auml;ren: Die x-
+und y-Koordinaten werden vom Original in den "Klon" eingetragen, und eine
+Nachricht dar&uuml;ber kommt auf die Konsole.
+
+Wird nun dieses Programm kompiliert und ausgef&uuml;hrt, so ergibt sich:
+
+Erstelle einen Punkt bei (1,2).
+Erstelle einen Punkt bei (5,6).
+Erstelle einen Punkt bei (3,4).
+Ein Punkt wurde geklont.
+Ein Punkt wurde geklont.
+Eine Linie wurde soeben erzeugt.
+L&ouml;sche einen Punkt.
+L&ouml;sche einen Punkt.
+Zeichne einen Punkt bei (1,2).
+Zeichne eine Linie von (3,4) bis (5,6).
+Eine Linie wurde soeben gel&ouml;scht.
+L&ouml;sche einen Punkt.
+L&ouml;sche einen Punkt.
+L&ouml;sche einen Punkt.
+
+Voilá, jetzt werden genau so viele Punkte erstellt wie gel&ouml;scht, wovon zwei -
+n&auml;mlich Start- und Endpunkt der Linie - durch Klonen aus den Argumenten
+hervorgehen.
+
+
+Ausblicke
+
+Wichtige Konzepte in dieser Folge war einerseits das "Information Hiding",
+d.h. das Verbergen von internen Verschaltungen eines Objektes vor Zugriffen
+von au&szlig;en, als auch die Erstellung von Constructors, Destructors und
+Methoden. Trotz alledem ist das augenblickliche Programm noch recht
+unbefriedigend:
+
+- Wir m&uuml;ssen Punkt- und Linienobjekt relativ umst&auml;ndlich aufdr&ouml;seln und
+einzeln in cout hineinschieben. Es w&auml;re w&uuml;nschenswert, wenn wir auch
+
+        cout &lt;&lt; Punkt(1,2);
+
+schreiben k&ouml;nnten. Das l&auml;sst sich in C++ durchaus bewerkstelligen, bedarf
+aber einiger weiterer Konzepte.
+
+- Wir haben nur einen Trockentest veranstaltet, d.h. weder Punkte noch
+Linien waren auf dem Bildschirm zu sehen.
+
+Insbesondere der letzte Punkt ist doch recht nervig, ging es doch darum,
+ein Zeichenprogramm zu erstellen. Insofern werden wir dem in der n&auml;chsten
+Folge abhelfen.
+
+Thomas Richter &lt;thor@math.TU-Berlin.DE&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

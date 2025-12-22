@@ -1,0 +1,83 @@
+
+(set #MSG_WELCOME "Welcome to the installation script for PowerWB.\n\nNOTE: you don't need to install PowerWB in order to use it. Before installing it you should better do some tests to see if it's working correctly (remember: this is only V0.5!)")
+(set #MSG_ASKEXE "Where do you want to copy the PowerWB executable?")
+(set #MSG_ASKHELP "Where do you want to copy the documentation (Amigaguide)?")
+(set #MSG_COPY_EXE "Copying executable")
+(set #MSG_COPY_HELP "Copying documentation")
+(set #MSG_USERSTART "Adding the following line to your s:user-startup:\n\n%s")
+(set #MSG_CHANGING_US "Changing user-startup")
+(set #MSG_ICONPOS "Correcting (UnSnapshot) icon position of %s")
+(set #MSG_DONE "Installation complete!\n\nNOTE: The \"Images\" directory has not been copied onto your HD, so do that by hand if you want or at least have a look at the pictures in this directory!\n\n")
+(set #MSG_DONE2 "Have a lot of fun with PowerWB and don't forget that it is Shareware!")
+(set #MSG_NOHELP "No help available. Sorry!")
+
+
+
+
+(welcome #MSG_WELCOME)
+
+(set #exedest
+	(askdir
+		(prompt #MSG_ASKEXE)
+		(default "sys:tools/commodities")
+		(help #MSG_NOHELP)
+	)
+)
+
+(set @default-dest #exedest)
+
+(set #helpdest
+	(askdir
+		(prompt #msg_ASKHELP)
+		(default "HELP:")
+		(help #MSG_NOHELP)
+	)
+)
+
+(copyfiles
+	(prompt #MSG_COPY_EXE)
+	(source "")
+	(choices "PowerWB" "PowerWB.info")
+	(dest #exedest)
+	(confirm)
+	(help #MSG_NOHELP)
+)
+
+(copyfiles
+	(prompt #MSG_COPY_HELP)
+	(source "")
+	(choices "PowerWB.guide" "PowerWB.guide.info")
+	(dest #helpdest)
+	(confirm)
+	(help #MSG_NOHELP)
+)
+
+(set #startline ("run <>NIL: \"%s\"" (tackon #exedest "PowerWB")))
+
+(message
+	(#MSG_USERSTART #startline)
+	(help #MSG_NOHELP)
+)
+
+(startup "PowerWB"
+	(prompt #MSG_CHANGING_US)
+	(help #MSG_NOHELP)
+	(confirm)
+	(command #startline)
+)
+
+(run ("noiconpos \"%s\"" (tackon #exedest "PowerWB"))
+	(prompt (#MSG_ICONPOS "executable"))
+	(help #MSG_NOHELP)
+	(confirm)
+)
+
+(run ("noiconpos \"%s\"" (tackon #helpdest "PowerWB.guide"))
+	(prompt (#MSG_ICONPOS "documentation"))
+	(help #MSG_NOHELP)
+	(confirm)
+)
+
+(exit #MSG_DONE #MSG_DONE2
+	(quiet)
+)

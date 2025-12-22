@@ -1,0 +1,116 @@
+<html>
+ <head>
+  <title>Créer une image de boot sous CyberGraphX</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr align="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique&nbsp;: créer une image de boot sous CyberGraphX </font>par&nbsp;<a href="mailto:obligement@free.fr">David Brunet</a></div><br><br><br>
+
+Parmi tous les avantages qu'offre CyberGraphX, il en est un qui ne sert à rien mais que les
+bidouilleurs adorent&nbsp;: afficher une image au démarrage de la machine.<br><br>
+
+<font size="+1" color="#ccbb33">Image de boot</font><br><br>
+
+Personnaliser sa séquence de démarrage passe aussi par l'ajout d'une image de boot. CyberGraphX, le système
+de gestion de cartes graphiques, propose donc cette option. Par défaut, CGX 3 affiche une image nommée
+"Light My Fire" et CGX 4 affiche l'image "CyberGraphX", mais on peut évidemment modifier tout cela.<br><br>
+
+L'image de boot est gérée par la librairie cgxbootpic.library présente dans votre tiroir sys:libs sur AmigaOS
+ou dans sys:morphos/libs sur MorphOS. Cette librairie est fournie avec CyberGraphX et est codée en 680x0,
+c'est l'un des rares fichiers à être encore en 680x0 dans le système MorphOS. La dernière version est
+la 41.7 datée de 1997.<br><br>
+
+La cgxbootpic.library contient l'image de boot qui doit être dans un format bien précis, en GIF 256 couleurs
+et dans une résolution de 640x480 non-entrelacée.<br><br>
+
+<font size="+1" color="#ccbb33">Créer une librairie</font><br><br>
+
+Malheureusement, pour personnaliser votre image de boot, vous ne pouvez pas renommer une image GIF
+en cgxbootpic.library. Pour cela, il faut transformer l'image en utilisant un petit outil du nom de
+MakeCGXBootPic développé par Jacob Ellis et disponible sur le site de <a href="http://www.vgr.com/bootpic/MakeCGXBootPic_07.lha">VGR</a>.<br><br>
+
+Il vous faut au préalable une image GIF avec les spécifications décrites plus haut. Ensuite, entrez dans
+un Shell et tapez la ligne suivante&nbsp;:<br><br>
+
+makecgxbootpic monimage.gif<br><br>
+
+Le résultat de l'opération se trouve dans la Ram. MakeCGXBootPic a créé une librairie du nom
+de cgxbootpic.library à partir de votre image. Il suffit maintenant de remplacer l'ancienne librairie
+par celle-ci afin d'avoir votre nouvelle image de boot (vous pouvez aussi renommer l'ancienne pour ne
+pas la perdre). Votre image de boot sera visible dès le prochain redémarrage.<br><br>
+
+<div align="center">
+<img src="../gfx/cgxboot-poweramiga.jpg" border="0" width="480" height="360" alt="Une image de boot"><br><br>
+<font size="-1">Un exemple d'image de boot</font><br><br><br>
+</div>
+
+Pour les feignants, des cgxbootpic.library sont disponibles un peu partout sur le net, notamment sur le site
+<a href="http://www.vgr.com/" target="_blank">www.vgr.com</a> (malheureusement avec pas mal de liens cassés) et
+celui de <a href="http://nogfx.free.fr/morphos/" target="_blank">nogfx.free.fr</a> créé par Nicolas Ramz.<br><br>
+
+<font size="+1" color="#ccbb33">Extraire une image</font><br><br>
+
+Depuis peu, un outil permet de faire l'inverse de MakeCGXBootPic, c'est à dire extraire
+l'image GIF d'une librairie. Cet outil se nomme <a href="http://nogfx.free.fr/morphos/Extract_BootPic.lha">Extract_BootPic</a>
+et est également codé par Nicolas Ramz. Par contre, il est seulement réservé à MorphOS.<br><br>
+
+Son utilisation se fait à partir d'un Shell&nbsp;:<br><br>
+
+Extract_BootPic libs:cgxbootpic.library ram:monimage.gif<br><br>
+
+Vous pouvez aussi lancer Extract_BootPic sans arguments. Les noms par défaut seront alors "mossys:libs/cgxbootpic.library"
+pour la librairie et "ram:cgxbootpic.gif" pour l'image.<br><br>
+
+<div align="center">
+<img src="../gfx/cgxboot-morphos14.jpg" border="0" width="480" height="360" alt="L'image de boot de MOS 1.4"><br><br>
+<font size="-1">L'image de boot de MorphOS 1.4 capturée par Extract BootPic</font><br><br><br>
+</div>
+
+<font size="+1" color="#ccbb33">A vous de jouer</font><br><br>
+
+L'image de boot n'est certes pas un élément crucial d'un système, mais c'est toujours sympathique
+d'avoir un joli graphisme au démarrage de sa machine. Si vous créez des cgxbootpic.library, n'hésitez
+pas à les distribuer sur le net&nbsp;!<br><br><br>
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br>
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>
+

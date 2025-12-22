@@ -1,0 +1,269 @@
+<html>
+<head><title>News - REBOL/Core Alpha to be Released</title></head>
+<body bgcolor=ffffff>
+  <table width=100% border=0 cellpadding=3 cellspacing=0>
+  <tr><td bgcolor=000000></td></tr>
+  <tr><th bgcolor=0000ee align=center><font size=+3 color=ffffff>REBOL/Core Alpha to be Released</font></th></tr>
+  <tr><td bgcolor=000000></td></tr>
+  </table><br><p>
+
+<p>The Alpha-test version of REBOL/Core is in its final stage of development
+and internal testing.  Over the last month the software has become stable
+enough to use for important jobs, such as running our email list server
+(Rebot) and converting our reference documentation to HTML.  Over the week
+ahead we will be finishing a few important documents and will begin to
+distribute the main program, documentation, and examples to the people on
+our Email Announcement List who have asked to test it.
+
+<p>Why just an Alpha Release?
+
+<p>This release of REBOL/Core is packed with many useful datatypes and
+functions; however, we consider this to be an Alpha because some of the
+main concepts are still evolving.  We need the freedom to continue to
+improve REBOL's core technology without concern for compatibility of an
+application base.
+
+<p>In other words...  function names and operations are subject to change as
+testing proceeds.  (Prototypes testers should expect that the Alpha will be
+different from the earlier versions.) In addition there are a number of
+crucial features that are not currently implemented that we would like to
+include in the Beta release.
+
+<p>REBOL on Multiple Platforms!
+
+<pDuring October Carl ported the REBOL/Core to a few other platforms,
+primarily as a test of kernel code computability.  The Alpha version now
+runs on the Amiga, Linux (X86), PC, and Macintosh.  All of these will be
+available for Alpha release, and we expect to add other platforms in the
+months ahead.
+
+<p>How to obtain REBOL
+
+<p>REBOL is not yet available for general distribution.  However, if you would
+like a private copy of the Alpha release for testing, join our Email List
+for information and instructions.
+
+<p>What Does it Cost?
+
+<p>We are planning to release REBOL as shareware ($50 US) for private
+non-commercial and educational uses.  This will be a fully enabled version,
+with no sly shareware limitations, tricks, or gimmicks.  Commercial,
+packaged, and licensed versions will also be available for businesses,
+institutions, and government use.  However, we remain open to your comments
+on this topic.
+
+<br><p><hr><br>
+
+<p><center>What is REBOL?</center>
+
+<p>REBOL is the Relative Expression-Based Object Language designed over
+several years by Carl Sassenrath, the software architect known for the
+Amiga multitasking operating system.
+
+<p>REBOL offers an easy way to share and exchange information and functions
+between computers and applications.  It is designed for organizing data and
+executing simple tasks.  REBOL is meant for users, hobbyists, educators,
+web writers, multimedia authors, technicians, experimenters...  anyone who
+seeks solutions to various problems that they face in the modern world of
+network computing.
+
+<p>If you've written HTML or shell scripts, you can write REBOL.  It is a
+messaging language, not a programming language.  In essence, REBOL scripts
+treat the Internet as if it were your own personal computer.  Messages can
+be transferred using existing Email, Web, and FTP (file transfer), but it
+will also allow direct communications through a new type of message port. 
+Messages can be as simple as a single line or as complex as a
+mini-application.
+
+<p>How is REBOL pronounced?  We say it as in the noun rebel, which means "a
+person who resists authority, suppression, or domination".  (And, a lot of
+people like to add the words "of Microsoft" to the end of that definition.)
+
+<p>REBOL Examples
+
+<p>A few examples will quickly provide you a general sense of how REBOL can be
+used.  If you want to print text, you can do so with a single line such as:
+
+<p><tt>print "Hello World!"</tt>
+
+<p>or, if you want to send that text as an email message to a friend:
+
+<p><tt>send friend@domain.com "Hello World!"</tt>
+
+<p>To execute a REBOL script stored on a web site:
+
+<p><tt>do http://www.rebol.com/scripts/address-book.r</tt>
+
+<p>or, from an FTP site (anonymous login used here):
+
+<p><tt>do ftp://rebol.com/scripts/address-book.r</tt>
+
+<p>If you want to grab a web page and save it as a file, you could write two
+lines:
+
+<p><tt>file: load http://www.cnet.com
+<br>save %cnet.html file</tt>
+
+<p>or just the line:
+
+<p><tt>save %cnet.html load http://www.cnet.com</tt>
+
+<p>But, what if you need to send that page to a friend:
+
+<p><tt>send friend@domain.com load http://www.cnet.com</tt>
+
+<p>Or, maybe you want to examine your email, but you don't want to remove it
+from the server quite yet:
+
+<p><tt>foreach message mailbox [print message]</tt>
+
+<p>However, suppose you need to do a few, more sophisticated operations, like
+getting information from your friend's address book application:
+
+<p><pre>
+info: ask rebol:domain.com/friend/address-book [
+    find-name "billy"
+]</pre>
+
+<p>which you're going to store in your own address book application running as
+a separate program on your computer:
+
+<p><tt>send rebol:/address-book/new-entry info</tt>
+
+<p>Another friend wants you to email all the files in your current directory:
+
+<p><tt>files: load %*
+<br>foreach file files [send ami@there.net load file]</tt>
+
+<p>or, perhaps all the files should be sent as a single message:
+
+<p><tt>message: ""
+<br>foreach file files [copy tail message load file]
+<br>send ami@there.net message</tt>
+
+<p>In thinking about it, you decide now would be a good time to send your broker
+that stock transaction (which her computer receives and auto-executes):
+
+<p><pre>
+send broker@sell-it-now.com {
+    Company: "Microsoft"
+    Symbol:  MSFT
+    Shares:  1000
+    Price:   132.54
+    Action:  sell
+]</pre>
+
+<p>Your boss wants several web pages emailed to him at 10:30AM each morning
+for the next ten days.  So, you fire up a separate unattended REBOL task:
+
+<p><pre>
+bossy: make task! [
+    pages: [
+        http://www.cnet.com
+        http://www.rebol.com/docs/doc.html
+        http://www.news-wire.com/news/today.html
+    ]
+ 
+    loop 10 [
+       wait 10:25AM  ; (boss likes stuff early)
+       foreach page pages [send boss@work.net load page]
+    ]
+]
+do bossy  ; (make it happen)</pre>
+
+<p>Or (this one is "complicated"), your friend is going to send you an email
+with a REBOL script that you need to execute as soon as it arrives, then
+send the result back to her:
+
+<p><pre>
+wait mailbox
+foreach message mailbox [
+    if ? find message hillary@wh.gov [
+        send hillary@wh.gov do message
+    ]
+]</pre>
+
+<p>You get the idea!  But, how would you ever know it could be this easy?  To
+start, we will provide 101 basic scripts on our WWW.REBOL.COM web site.  In
+addition, we will archive thousands of scripts written by others...  as
+source code that you can use to create your own messages and scripts.
+
+<p>REBOL v.s. Java
+
+<p>They are totally different.  REBOL, as was said above, is for sending
+messages, organizing data and executing simple tasks...  and, it is meant
+for users, hobbyists, educators, web writers, multimedia authors,
+technicians and experimenters.  The examples above give you an idea of how
+it can be applied.
+
+<p>Java is an advanced object-oriented distributed programming language meant
+for software engineers and application designers.  It is very good...  what
+C++ should have been ten years ago.  In Java the "Hello World" example
+above would be:
+
+<p><pre>
+class HelloWorld {
+    public static void main (String args[]) {
+        System.out.println("Hello World!");
+    }
+}</pre>
+
+<p>To those who understand object-oriented programming, Java is good stuff. 
+Programmers love it!  But...  more casual users might want other choices
+too.
+
+<br><p><hr><br>
+<center>Other Information</center>
+
+<p>Contributions!
+
+<p>If you like what you see, you can contribute in a several ways:
+
+<p>1. Send us a $50 contribution (we need it!)
+<br>2. Tell others about REBOL or ask them to visit WWW.REBOL.COM
+<br>3. Join our Email Announcement List
+<br>4. Add web links to WWW.REBOL.COM (banner: jpg gif)
+<br>5. Test REBOL Alpha and send us comments and bugs
+<br>6. Translate documents into other languages
+<br>7. Help write examples and documents about REBOL
+
+<p>The development of REBOL has been our full-time occupation for more than a
+year now!  There is no other funding other than from you!  This is a "do it
+or bust" vision, and we need your support.  Contributions can be made from
+anywhere in the world with First Virtual or send it directly to us at:
+
+<p>Carl Sassenrath
+<br>PO Box 264
+<br>Calpella, CA 95418
+<br>USA
+
+<p>E-Mail Announcement List
+
+<p>If you would like to be kept informed of REBOL news and releases, please
+send a message to our REBOL "BOT" (written in REBOL of course):
+
+<p>To: <a href="mailto:rebot@sassenrath.com">rebot@sassenrath.com</a> (yes rebot, not rebol)
+<br>Subject: Add
+
+<p>You will receive a confirmation that you have been added to the list, and
+you can remove your name at any time.  More features will be added to Rebot
+in the future, such as allowing you to request documentation, examples,
+program updates, registration, applications, etc.
+
+<p>Reference Manual Changes...
+
+<p>Due to a shortage of resources, the REBOL Reference Manual previously
+published on this Web site has fallen behind actual changes.  Although the
+basic ideas remain the same, a few of the details have changed and new
+concepts have been introduced (many aspects of the system have not yet been
+published, e.g.  the concepts of Paths, Ports, and Tasks).  We will be
+publishing the manual again, once it has been updated.
+
+<br><p><hr>
+<br><p><center>Copyright © Carl Sassenrath 1997
+<br>REBOL is a Trademark of Carl Sassenrath</center>
+  <br><p>
+  <table width=100% border=0 cellpadding=2 cellspacing=0><tr><td bgcolor=000000></td></tr></table><br><p>
+  <center><a href="news.html">Back to News</a></center>
+</body>
+</html>

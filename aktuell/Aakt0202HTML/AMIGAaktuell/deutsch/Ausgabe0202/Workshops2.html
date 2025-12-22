@@ -1,0 +1,524 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Workshops1.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops3.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Workshops
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="Inhalt"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H2>2. Einf&uuml;hrung in die Reaction-Programmierung - T. 2 (von Martin R. Elsner)</H2>
+<P><B>Windows, Ereignisbehandlung, Layouts und ReActor</B></P>
+<P>
+Bevor wir zum eigentlichen Thema kommen, hier noch ein paar Erg&auml;nzungen zum
+ersten Teil:
+</P>
+<P>
+Ein kleiner &quot;Fehler&quot; hatte sich in das Beispielprogramm eingeschlichen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ ...
+ GetAttr( WINDOW_Window, window, &amp;intuiwin );
+ ...
+</PRE></TD></TR></TABLE>
+<P>
+Das ist fast richtig, wird allerdings unter C++ zur&uuml;ckgewiesen, weil GetAttr
+als dritten Parameter einen ULONG* erwartet, und keinen Window*.
+Also einfach &auml;ndern in
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ GetAttr( WINDOW_Window, window, (ULONG*)&amp;intuiwin );
+</PRE></TD></TR></TABLE>
+<P>
+Michael Christoph hat mich darauf hingewiesen, dass er im Netz auch einen
+(sch&ouml;nen und umfangreichen) Reaction-Kurs unter [1] ver&ouml;ffentlicht hat. Au&szlig;erdem
+kam von ihm die begr&uuml;ndete Beschwerde, dass man beim &Ouml;ffnen der Libraries testen
+sollte, ob wirklich die ben&ouml;tigten Versionen vorhanden sind bzw. ob OS3.5
+installiert ist; dazu reicht es zu pr&uuml;fen, ob die resource.library ge&ouml;ffnet
+werden kann. Nat&uuml;rlich sollten immer alle Funktionsergebnisse kontrolliert
+und gegebenenfalls eine Fehlermeldung ausgegeben oder sogar das Programm
+beendet werden. Ich werde aber im Rahmen meiner Beispiele auf die Angabe dieser
+&Uuml;berpr&uuml;fungen verzichten, da ich sowieso nur einzelne Quelltextteile angebe.
+</P>
+<P>
+Wer trotzdem weiterlesen will ;) wird diesmal mehr &uuml;ber den Aufbau eines
+Fensters und die Abfrage der Ereignisse erfahren und ich gehe in einem Beispiel
+auf die Benutzung von ReActor ein.
+</P>
+<P>
+Im letzten Teil haben wir schon ein einfaches Window erzeugt, ge&ouml;ffnet und
+geschlossen. Als Tags k&ouml;nnen beim Erzeugen alle von Intuition bekannten
+Eigenschaften angegeben werden, also H&ouml;he, Breite, Position, Fenstertitel,
+die anzuzeigenden Windowgadgets und - besonders wichtig! - die IDCMP-Flags,
+also die Ereignisse, auf die das Fenster reagieren soll. Zus&auml;tzlich gibt es
+WINDOW_...-Tags, die spezielle F&auml;higkeiten der Window-Klasse bzw. von Reaction
+ausn&uuml;tzen, u.a. vereinfachte Ikonifizierung und Hintergrundgrafik.
+</P>
+<P>
+Ich m&ouml;chte hier nicht die Bedeutung aller einzelnen Tags auff&uuml;hren, sondern
+einmal einen Auszug aus der Fensterdefinition von ClassAction angeben
+(s&auml;mtliche Fensterwerte sind in der globalen Struktur Main abgelegt, was die
+&Uuml;bersicht deutlich erh&ouml;ht):
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ ...
+ WA_PubScreen, Main.Scr,
+ /* Bildschirm, auf dem ge&ouml;ffnet werden soll (Screen*) */
+ WA_Top,   Main.WinY,     WA_Left,   Main.WinX,
+ WA_Width, Main.WinWidth, WA_Height, Main.WinHeight,
+ /* Position und Gr&ouml;&szlig;e des Bildschirms */
+ WA_Zoom, Main.ZoomCoords,
+ /* Hier muss die Adresse eines Arrays aus 4 Worten stehen, */
+ /* d.h. short ZoomCoords[4];                               */
+ /* in dem die Werte Left/Top/Width/Height der alternativen */
+ /* Gr&ouml;&szlig;e gespeichert sind (-&gt;ZoomGadget)                   */
+ WA_RMBTrap, TRUE,
+ /* Rechte Maustaste &ouml;ffnet kein Men&uuml;, sondern wird als normales */
+ /* Ereignis behandelt                                           */
+ WINDOW_IconifyGadget, TRUE,
+ WINDOW_Icon,          Main.Dobj,
+ WINDOW_AppPort,       Main.AppPort,
+ WINDOW_AppWindow,     (ULONG)TRUE,
+ /* Diese Tags machen das Fenster zum AppWindow, d.h. wir werden      */
+ /* benachrichtigt, wenn der Benutzer auf das Iconify-Gadget          */
+ /* dr&uuml;ckt oder das AppIcon &ouml;ffnet oder wenn Icons auf unser Fenster  */
+ /* gezogen werden. Mehr dazu unten.                                  */
+ WINDOW_SharedPort, Main.MsgPort,
+ /* Wenn man unbedingt einen eigenen MessagePort angeben m&ouml;chte,  */
+ /* kann man dies hier tun.                                       */
+ /* Sonst wird ein neuer Port automatisch erzeugt.                */
+ WA_IDCMP, IDCMP_CLOSEWINDOW|IDCMP_GADGETUP|IDCMP_MOUSEBUTTONS|
+                   IDCMP_RAWKEY|IDCMP_DISKINSERTED|IDCMP_DISKREMOVED,
+ /* Das sind alle Ereignisse, die mich interessieren.             */
+ /* Die DISK-Ereignisse werden allerdings nicht von               */
+ /* WM_HANDLEINPUT gemeldet, daf&uuml;r gibt es einen anderen Weg:     */
+ WINDOW_IDCMPHook,     &amp;Main.IDCMPHook,
+ WINDOW_IDCMPHookBits, IDCMP_DISKREMOVED|IDCMP_DISKINSERTED|
+                                           IDCMP_MOUSEBUTTONS|IDCMP_RAWKEY,
+ /* Eine Alternative zu einer eigenen Ereignisauswertung sind     */
+ /* Hooks: man kann eine eigene Funktion definieren, die in allen */
+ /* angegebenen F&auml;llen automatisch aufgerufen wird.               */
+ WINDOW_BackFillName, Main.BackgroundPattern,
+ /* Eine feine Sache sind die Hintergr&uuml;nde: einfach einen Dateinamen */
+ /* angeben, und das Fenster wird bunt!                              */
+ ...
+</PRE></TD></TR></TABLE>
+<P>
+Dies sind nicht alle Tags, weil manche schon in ReActor definiert werden - wie
+das geht, steht weiter unten. Jetzt schauen wir uns mal an, wie die Ereignisse
+in einem Programm verarbeitet werden k&ouml;nnen. Dazu ver&auml;ndern wir unser
+Beispielprogramm etwas:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ ...
+ BOOL end;
+ ULONG windowsignal,receivedsignal,result,code;
+ MsgPort *applport;
+ #define BUTTON_ID 1
+ ...
+
+ button = (Object*)NewObject( BUTTON_GetClass(),NULL,
+                                                          GA_Text,&quot;Mein zweiter Reaction-Button ...&quot;,
+                                                          GA_ID,BUTTON_ID,    /* &lt;- */
+                                                          GA_RelVerify,TRUE,  /* &lt;- */
+                                                          TAG_END );
+
+ /* Unser Button erh&auml;lt eine eindeutige Nummer und soll sich melden, sobald  */
+ /* er (nach dem Dr&uuml;cken) losgelassen worden ist.                            */
+
+ SetGadgetAttrs( (Gadget*)layout,NULL,NULL,LAYOUT_AddChild,button,TAG_END );
+
+ applport = CreateMsgPort();
+ /* Dieser MessagePort wird nur f&uuml;r das Icon ben&ouml;tigt; ist unser Window      */
+ /* ikonifiziert, kann ja der Windowport keine Nachrichten mehr liefern.     */
+ /* Noch mal der Hinweis: Auch dieses Ergebnis sollte man pr&uuml;fen!            */
+ /* Andererseits k&ouml;nnen viele Funktionen auch mit NULL umgehen, also muss    */
+ /* das Programm nicht unbedingt beendet werden. Setzt man z.B. hier einfach */
+ /* applport = NULL, dann funktioniert nur das Iconify nicht.                */
+
+ window = (Object*)NewObject( WINDOW_GetClass(),NULL,
+                                                          WINDOW_Layout,layout,
+                                                          WINDOW_Position,WPOS_CENTERMOUSE,
+                                                          WA_Activate,TRUE,
+                                                          WA_Title,&quot;Fenster Teil 2 !&quot;,
+                                                          WA_DragBar,TRUE,
+                                                          /* jetzt kommen die neuen Attribute: */
+                                                          WA_CloseGadget,TRUE,
+                                                          WINDOW_AppWindow,TRUE,
+                                                          WINDOW_AppPort,applport,
+                                                          WINDOW_IconifyGadget,TRUE,
+                                                          WA_IDCMP,IDCMP_CLOSEWINDOW|IDCMP_GADGETUP,
+                                                          TAG_END );
+
+ /* Diesmal mit Schlie&szlig;gadget, Benachrichtigung bei Schlie&szlig;en oder Gadget */
+ /* Zus&auml;tzlich zu AppWindow, AppPort und IconifyGadget kann man noch das  */
+ /* Icon selbst angeben, das mit GetIconTags geholt werden kann.          */
+ /* Ansonsten wird ein Standardicon verwendet.                            */
+
+ DoMethod( window,WM_OPEN );
+
+ GetAttr( WINDOW_Window, window, (ULONG*)&amp;intuiwin );
+</PRE></TD></TR></TABLE>
+<P>
+Jetzt m&uuml;ssen wir auf die Ereignisse des Windows warten und entsprechend
+reagieren. Wenn wir nur Standardereignisse ben&ouml;tigen, reicht es dazu aus, die
+Funktion WM_HANDLEINPUT des Window-Objekts zu benutzen, bei manchen
+Gelegenheiten wird man aber um die Hooks nicht herumkommen (dazu sp&auml;ter mehr).
+Wir erhalten von WM_HANDLEINPUT eine Kombination aus dem ausl&ouml;senden Objekt
+und der Art des Ereignisses, die wir mit den WMHI-Konstanten zerlegen k&ouml;nnen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ GetAttr( WINDOW_SigMask,window,&amp;windowsignal );
+ end = FALSE;
+ while( !end ){
+
+   receivedsignal = Wait( windowsignal );
+
+   while( (result = DoMethod(window,WM_HANDLEINPUT, &amp;code)) != WMHI_LASTMSG){
+         /* code enth&auml;lt weitere Daten, z.B. die gedr&uuml;ckte Taste bei RAWKEY     */
+
+         switch( result &amp; WMHI_CLASSMASK ){
+           case WMHI_CLOSEWINDOW:{
+                 end = TRUE;
+                 break;
+           }
+           /* beim Iconify sollte man UNBEDINGT verhindern, dass in dem         */
+           /* Zeitraum, in dem das Fenster geschlossen ist, irgend etwas mit    */
+           /* dem nun ung&uuml;ltigen Zeiger intuiwin angestellt wird !              */
+           /* Dieser muss beim erneuten &Ouml;ffnen neu geholt werden.               */
+           case WMHI_ICONIFY:{
+                 DoMethod( window,WM_ICONIFY );
+                 intuiwin = NULL;
+                 break;
+           }
+           case WMHI_UNICONIFY:{
+                 DoMethod( window,WM_OPEN );
+                 GetAttr( WINDOW_Window, window, (ULONG*)&amp;intuiwin );
+                 break;
+           }
+           case WMHI_GADGETUP:{
+                 /* in result steht auch die mit GA_ID angegebene ID, um sie zu      */
+                 /* erhalten muss man aber nicht WMHI_GADGETMASK, sondern            */
+                 /* RL_GADGETMASK verwenden, da man sonst GadgetID und GruppenID     */
+                 /* (bitweises or) erh&auml;lt:                                           */
+                 switch( result &amp; RL_GADGETMASK ){
+                   case BUTTON_ID:{
+                         SetGadgetAttrs( (Gadget*)button,intuiwin,NULL,
+                           GA_Text,&quot;Ok!&quot;,TAG_END
+                         );
+                         break;
+                   }
+                 }
+                 /* Die GruppenID wird nur ben&ouml;tigt, falls man mit mehr als einer    */
+                 /* Gadget-Gruppe arbeitet (siehe ReActor!), da die GadgetID's nur   */
+                 /* innerhalb einer Gruppe eindeutig sind.                           */
+           }
+         }
+   }
+ }
+
+ DoMethod( window,WM_CLOSE );
+
+ DeleteMsgPort( applport );
+ /* kann auch mit NULL umgehen, man muss also keine Unterscheidung machen.   */
+ ...
+</PRE></TD></TR></TABLE>
+<P>
+&Uuml;brigens muss man zum genaueren Auswerten der AppWindow-Botschaften (z.B.
+welche Icons auf das Fenster gezogen wurden) direkt auf den applport
+zugreifen, d.h.
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ while( appmsg=(AppMessage*)GetMsg( applport ) ){
+   switch( appmsg-&gt;am_Type ){
+         case AMTYPE_APPICON:   ...
+         case AMTYPE_APPWINDOW: ...
+   }
+   ReplyMsg( (Message*)appmsg );
+ }
+</PRE></TD></TR></TABLE>
+<P>
+Dies sollte nach Wait und vor WM_HANDLEINPUT geschehen.
+</P>
+<P>
+Nun zum generellen Fensteraufbau: Das omin&ouml;se Layout-Gadget stand bisher immer
+still in der Ecke - dabei &uuml;bernimmt es eine der wichtigsten Aufgaben: die
+Aufteilung des Platzes im Fenster!
+</P>
+<P>
+In der aktuellen ClassAction-Version sind genau 11 Layout-Gadgets damit
+besch&auml;ftigt, Buttons, Listbrowser, Stringgadgets und den Fuelgauge im Fenster
+anzuordnen. Da dies bei gr&ouml;&szlig;eren Projekten schon etwas un&uuml;bersichtlich wird,
+sollte man sich schon am Anfang &uuml;berlegen, welche Funktionalit&auml;ten man ben&ouml;tigt
+und welche Gadgets (oder auch anderen Elemente wie Men&uuml;s) dies am effizientesten
+leisten. Dann kann man diese Elemente in horizontale oder vertikale Gruppen
+zusammenfassen und diese Gruppen-Layouts einem &uuml;bergeordnetes, n&auml;mlich dem
+Root-Layout, unterordnen. Eine gut &uuml;berlegte Aufteilung nutzt sowohl dem
+Programmierer (z.B. bei einer sp&auml;teren Erweiterung) als auch dem Benutzer
+(&Uuml;bersichtlichkeit, &Auml;hnlichkeit zu anderen Programmen).
+</P>
+<P>
+So erh&auml;lt man eine hierarchische Struktur, die in ReActor als Baum dargestellt
+wird. Die Layouts sind dabei im Grunde nur Hilfsobjekte f&uuml;r die Positionierung,
+k&ouml;nnen aber auch mit einem sichtbaren Rahmen versehen werden und eine
+&Uuml;berschrift erhalten, was die Oberfl&auml;che meist &uuml;bersichtlicher macht.
+</P>
+<P>
+Mit Tags k&ouml;nnen der Rahmen, die &Uuml;berschrift und die Farben, viel wichtiger aber
+die Positionierung der untergeordneten Elemente, angegeben werden:
+LAYOUT_Orientation legt fest, ob es sich um eine horizontale oder vertikale
+Gruppe handelt. Weiter kann festgelegt werden, ob die Elemente die gleiche Gr&ouml;&szlig;e
+haben sollen, ob sie z.B. in einem horizontalen Layout oben, unten oder in der
+Mitte auftauchen sollen, ob Platz zwischen den Elementen bzw. zwischen Elementen
+und Rahmen reserviert werden soll usw.
+</P>
+<P>
+Eingef&uuml;gt wird mit LAYOUT_AddChild: Mit diesem Tag kann dem Layout ein anderes
+Objekt (z.B. Button oder weiteres Layout) untergeordnet werden. Man kann hier
+die Adresse eines zuvor angelegten Objektes angeben oder direkt das Objekt
+erzeugen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ ...
+ LAYOUT_AddChild,NewObject(BUTTON_GetClass(),NULL,...,TAG_END),
+ ...
+</PRE></TD></TR></TABLE>
+<P>
+Somit ist es sogar m&ouml;glich, das gesamte Fenster in einem Befehl zu erzeugen:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ window = (Object*)NewObject(
+   WINDOW_GetClass(), NULL,
+   WINDOW_Layout, layout=NewObject(
+         LAYOUT_GetClass(), NULL,...,
+         LAYOUT_AddChild, button=NewObject(
+           BUTTON_GetClass(), NULL,...
+           TAG_END
+         ),
+         TAG_END
+   ),
+   ...
+   TAG_END
+ );
+</PRE></TD></TR></TABLE>
+<P>
+...was mit Reaction-Makros (siehe reaction/reaction_macros.h) noch sch&ouml;ner aussieht
+- wobei allerdings nicht verschwiegen werden soll, dass erstens manch andere
+Sprache nicht die direkte Zuweisung (...=NewObject) zul&auml;sst, und zweitens hier
+auch keine &Uuml;berpr&uuml;fung auf Fehler stattfinden kann (welche bei ge&ouml;ffneten
+Libraries im Grunde nur bei Speichermangel auftreten).
+<P>
+(Mit LAYOUT_AddImage werden Images hinzugef&uuml;gt, die zur Darstellung von Texten
+und Grafiken gedacht sind und daher zum Teil anders behandelt werden als
+Gadgets. Auf Images geh ich sp&auml;ter noch ein.)
+</P>
+<P>
+Falls nicht LAYOUT_Inverted,TRUE, angegeben wird, werden die Objekte in der
+Reihenfolge des Einf&uuml;gens von links nach rechts bzw. oben nach unten eingef&uuml;gt.
+Die Gr&ouml;&szlig;e des Elements soll ja im Allgemeinen automatisch berechnet werden,
+aber wir k&ouml;nnen mit CHILD_WeightedWidth bzw. CHILD_WeightedHeight den
+relativen Platzverbrauch angeben; der Wert 0 hei&szlig;t dabei minimale Gr&ouml;&szlig;e. Alle
+CHILD_...-Tags wirken sich dabei auf das zuvor mit AddChild / ModifyChild
+angegebene Element aus. Mit der Tagfolge
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+ SetGadgetAttrs( layout,intuiwin,NULL,
+   LAYOUT_ModifyChild,object1,
+   CHILD_WeightedWidth,30,
+   LAYOUT_ModifyChild,object2,
+   CHILD_WeightedWidth,70,
+   TAG_END
+ );
+ RethinkLayout( layout,intuiwin,NULL,TRUE );
+</PRE></TD></TR></TABLE>
+<P>
+kann man zum Beispiel auch nachtr&auml;glich die Aufteilung zwischen den zwei
+zuvor hinzugef&uuml;gten Objekten ver&auml;ndern. Da SetGadgetAttrs das Layout nicht
+neu zeichnet, muss RethinkLayout aufgerufen werden. Leider gibt es keine
+M&ouml;glichkeit, mit einem Ziehbalken direkt die Objekte anzupassen.
+</P>
+<P>
+Und jetzt zum interaktiven Teil: ReActor - ein paar Fu&szlig;stapfen ...
+</P>
+<P>
+Dann wollen wir mal: Wir starten einfach das Programm ReActor, gew&ouml;hnlich im
+Verzeichnis StormC:Tools/ReActor. Das Programm l&auml;dt alle Klassenbeschreibungen,
+und ein Fenster mit 6 Seiten zeigt sich:
+</P>
+<P>
+Windows - GadgetGroups - Images - Connections - Requesters - Misc
+</P>
+<P>
+Uns werden vor allem die ersten beiden interessieren, Images lassen sich auch
+unter den Gadgets anordnen, auf Connections gehe ich nur kurz ein, unter Misc
+ist dann nur noch ARexx interessant.
+</P>
+<P>
+Wir sind auf der Windows-Seite und w&auml;hlen &quot;Add &gt;&gt; ApplicationWindow.&quot;
+Ein Doppelklick auf das erschienene Fenster &ouml;ffnet ein weiteres Fenster, in dem
+man nun alle Eigenschaften (Tags) festlegen kann, die wir oben schon erw&auml;hnt
+haben. Aus der linken Liste werden Elemente mit Doppelklick ausgew&auml;hlt, diese
+erscheinen in der Mitte, rechts kann man dann die Eigenschaft festlegen. Wir
+klicken WA_Title (in der Mitte) an und geben rechts als Title &quot;Fenster Teil
+2 !&quot; ein. Wie schon erw&auml;hnt sollte man zun&auml;chst als Local ID drei Minuszeichen
+--- eingeben, solange man sein Programm nicht lokalisiert. Sp&auml;ter sollte man
+dann hier einen aussagekr&auml;ftigen Bezeichner wie MSG_WINDOWPART2 angeben, unter
+dem der Text sowohl im Programm als auch in der &Uuml;bersetzungsdatei erscheint.
+Die anderen Eigenschaften kann man so stehen lassen, wer m&ouml;chte kann ein paar
+Gadgets ausblenden oder die Gr&ouml;&szlig;e und Position des Fensters angeben. Allerdings
+stellen wir fest, dass WINDOW_Layout noch keinen Wert hat!
+</P>
+<P>
+Also Fenster mit &quot;Use&quot; schlie&szlig;en, nach &quot;GadgetGroups&quot; wechseln. Ein Klick auf
+&quot;Add&quot; &ouml;ffnet direkt das Fenster f&uuml;r unsere Gadgets. Oft reicht eine solche
+Gruppe aus, da wir hier den gesamten Layout-Baum einrichten k&ouml;nnten.
+Erste Aktion ist hier das Klicken auf &quot;Layout&quot; und das Doppelklicken auf
+&quot;Root layout&quot;. Das &ouml;ffnet wieder ein Fenster mit allen m&ouml;glichen Tags.
+Mit &quot;Use&quot; wieder raus, wir wollen endlich unseren Button!
+</P>
+<P>
+Einfach Doppelklick auf &quot;Button&quot;, der wird direkt an unser Layout angeh&auml;ngt.
+Wenn man hier einen Fehler gemacht hat, kann man mit &quot;Rem&quot; auch das Element
+wieder l&ouml;schen oder mit &quot;Up/Down&quot; an die richtige Stelle schieben.
+Der Button bekommt die gleichen Eigenschaften, wie wir sie oben direkt im
+Programm stehen hatten. Dabei f&auml;llt auf, dass die GA_ID zwar ausgew&auml;hlt ist,
+aber keine Zahl eingegeben werden kann - dieser Wert wird automatisch von
+ReActor vergeben, wir sollten daher dem Button einen sch&ouml;nen Namen geben:
+Haben wir mit &quot;Use&quot; das Button-Fenster verlassen, geben wir einfach unter
+&quot;Object Name&quot; BUTTON_EXAMPLE ein. Dieser Name dient sp&auml;ter zum Identifizieren
+des Gadgets im Programm. Das gleiche sollte man auch mit dem Layout, der
+Gruppe und dem Fenster machen, damit der Quelltext &uuml;bersichtlicher wird -
+z.B. LAYOUT_ROOT, GROUP_MAIN und WINDOW_MAIN.
+</P>
+<P>
+Jetzt m&uuml;ssen wir wieder auf die &quot;Windows&quot;-Seite, rein ins WINDOW_MAIN, und
+WINDOW_Layout anklicken. GROUP_MAIN steht nun zur Verf&uuml;gung und kann ausgew&auml;hlt
+werden.
+</P>
+<P>
+Bisher haben wir noch gar nichts vom Fenster gesehen, jetzt k&ouml;nnen wir es aber
+ausprobieren: im Hauptfenster gibt es den Button &quot;Open&quot;, der das Fenster
+probeweise &ouml;ffnet. Hier kann sich nat&uuml;rlich noch das eine oder andere vom
+sp&auml;teren Aussehen unterscheiden, aber zum Pr&uuml;fen der bisherigen Zusammenstellung
+sollte diese Vorschau alle W&uuml;nsche erf&uuml;llen. Eine Reaktion auf Mausklicks (au&szlig;er
+dem Schlie&szlig;-Button) sollte man nat&uuml;rlich nicht erwarten 8). Falls etwas nicht so
+aussieht, wie es sollte, einfach zur&uuml;ck auf die entsprechende Seite, Tag &auml;ndern
+und wieder auf &quot;Open&quot; klicken.
+</P>
+<P><B>Und hier die erw&auml;hnten 11 Layouts in ClassAction:</B></P>
+<P>
+ <A HREF="img/reaction2.png"><IMG SRC="thumb/reaction2.jpg" WIDTH="120" HEIGHT="84" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Hinter den Layouts verbergen sich noch weitere Buttons, StringGadgets und
+Penmaps.
+</P>
+<P>
+Wie bindet man nun das erzeugte Fenster in das Programm ein?
+</P>
+<P>
+Beim Speichern erzeugt ReActor mehrere Dateien: die Resourcedatei *.res, die die
+eingegebenen Informationen enth&auml;lt und nur f&uuml;r ReActor selbst n&ouml;tig ist; eine
+Objektdatei *.o mit den fertigen Images, Gadgets, Fenstern etc.; eine
+Headerdatei *.h, die die n&ouml;tigen Konstanten enth&auml;lt, um die Objekte aus unserem
+Programm heraus anzusprechen; und schlie&szlig;lich eine Catalogdatei *.cd, die die
+f&uuml;r die Lokalisierung n&ouml;tigen Informationen enth&auml;lt.
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Auf die Lokalisierung gehe ich sp&auml;ter ein; daher reichen folgende Schritte:&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">o Einbindung der Headerdatei in den Quelltext&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">o Objekte im Quelltext anlegen (dazu muss resource.library ge&ouml;ffnet werden)&nbsp;</TD></TR>
+</TABLE>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">und wie gewohnt verwenden&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">o&nbsp;</TD><TD VALIGN="TOP">Objektdatei zum Programm linken (zu Projekt hinzuf&uuml;gen)&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Also nehmen wir an, wir haben ein Fenster WINDOW_MAIN und eine Gruppe GROUP_MAIN
+mit einem Layout und einem Button BUTTON_EXAMPLE in ReActor angelegt:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+  #include <libraries/resource.h>
+  #include &quot;testprogramm.h&quot;           /* von ReActor */
+  RESOURCEFILE resource;
+  Library      *ResourceBase;
+  Screen       *screen;
+  Object       **group1;
+  ...
+  ResourceBase = OpenLibrary( &quot;resource.library&quot;,39 );
+  ...
+  screen = LockPubScreen( NULL );
+  /* wir m&uuml;ssen einen Screen angeben; gibt man statt einem Bildschirmnamen    */
+  /* in LockPubScreen NULL an, wird unser Fenster auf der Workbench ge&ouml;ffnet. */
+
+  resource = RL_OpenResource( RCTResource,screen,NULL );
+  /* &Uuml;ber diesen Zeiger wird der Inhalt unserer Resourcedatei angesprochen    */
+
+  window = RL_NewObject( resource,WINDOW_MAIN,...,TAG_END );
+  /* man kann hier weitere Tags angeben, die erst jetzt bekannt sind - z.B.   */
+  /* Hooks, Icon oder MessagePorts.
+
+  group1 = RL_GetObjectArray( resource, window, GROUP_MAIN );
+  /* jede Gruppe wird als Array angesprochen */
+
+  DoMethod( win,WM_OPEN );
+  GetAttr( WINDOW_Window,window,(ULONG*)&amp;intuiwin );
+  ...
+  /* ab jetzt unterscheidet sich das Vorgehen nicht von den &quot;handgemachten&quot;   */
+  /* Objekten, allerdings werden die Gadgets jetzt &uuml;ber das Array             */
+  /* angesprochen:                                                            */
+  SetGadgetAttrs( (Gadget*)group1[BUTTON_EXAMPLE],intuiwin,NULL,
+        GA_Text,&quot;...&quot;,TAG_END
+  );
+  /* BUTTON_EXAMPLE ist ebenfalls die GA_ID, die in der Ereignisbehandlung    */
+  /* auftreten wird (was oben unsere BUTTON_ID war).                          */
+  ...
+  DoMethod( window,WM_CLOSE );
+
+  RL_CloseResource( resource );
+  /* gibt auch alle Objekte (Window und Gadgets) frei */
+
+  UnlockPubScreen( NULL,screen );
+
+  CloseLibrary( ResourceBase );
+  ...
+</PRE></TD></TR></TABLE>
+<P>
+So, das sollte f&uuml;r diesmal reichen - mit ReActor kann man ja jetzt ausprobieren,
+was es so f&uuml;r Objekte gibt, und was die einzelnen Tags bedeuten (zur Not hilft
+ein Blick in die AutoDocs...). Wie erw&auml;hnt, sollte man aber am Anfang schon mal
+mit einem Absturz rechnen, wenn man irgendwo doch etwas verkehrt gemacht hat!
+</P>
+<P>
+Im n&auml;chsten Teil geht es dann um einzelne Gadgets und ihre Besonderheiten.
+</P>
+<P>
+&Uuml;brigens habe ich geh&ouml;rt, dass noch eine Reaction-Oberfl&auml;che f&uuml;r StrICQ gesucht
+wird - wer also Lust hat, kann sich daran versuchen!
+</P>
+<P>
+Ansonsten w&uuml;nsche ich schon mal viel Spa&szlig; mit Reaction,
+</P>
+<P>
+euer Martin R. Elsner &lt;<A HREF="mailto:email@martin-elsner.de">email@martin-elsner.de</A>&gt;
+</P>
+<P><B>[1] <A HREF="http://www.meicky-soft.de/amiga-magazin/reaction.html" TARGET="_top">http://www.meicky-soft.de/amiga-magazin/reaction.html</A></B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops1.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops3.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

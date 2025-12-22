@@ -1,0 +1,167 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+3. Hintergrund: Speicherschutz und virtueller Speicher (von M. Christoph)
+
+Nachdem der letzte Bericht wenig Reaktionen hervorgerufen hat, bis auf die
+Handvoll PPC-Fanatiker, kann das Thema mit dieser Aufgabe noch weiter
+vertieft werden.
+
+Zuerst mu&szlig; ich meine Aussage bez&uuml;glich MorphOS korrigieren, wie mir Ralph
+Schmidt mitteilte. Die angebotene M&ouml;glichkeit auf Klarstellung hat er
+jedoch unbeantwortet gelassen und somit seine Chance auf die
+Richtigstellung verspielt. Und ich werde mich h&uuml;ten, einen zweiten Versuch
+zu unternehmen, was und wof&uuml;r MorphOS nun ist.
+
+Bez&uuml;glich des Megahertz-Werts sei noch anzumerken, da&szlig; zwar Motorola-Chips
+(68k und PPC) eine st&auml;rker optimierte interne Befehlsverarbeitung aufweisen
+und daher mit weniger MHz auskommen, als ihre Konkurrenten. Diese weisen
+aber heute ein Vielfaches der MHz auf, wodurch sie eben mehr Rechenleistung
+an den Tag legen k&ouml;nnen. Und auch ein 2GHz-PPC, der nur in den Labors
+existiert, wird daran nichts &auml;ndern, da auch Intel/AMD nicht stehenbleiben.
+Der Marktanteil an Motorola-Chips ist trotz des breiten Einsatz in
+Industrie und Zubeh&ouml;rger&auml;ten verschwindend gering - unter 10%! Desweiteren
+w&uuml;rde ich ihn pers&ouml;nlich auch als r&uuml;ckl&auml;ufig einstufen. Als Beispiel seien
+Drucker und Modems angef&uuml;hrt, die immer weniger Eigenintelligenz aufweisen
+und statt dessen immer mehr vom PC (und dessen Intel-Prozessor) vorarbeiten
+lassen.
+Im Massenmarkt entscheidet eben der Preis und nicht die Leistung...
+
+
+* Warum Speicherschutz nie hundertprozentig funktionieren kann:
+
+Da&szlig; ein Windows NT/XP, aber auch das stabilste Betriebssystem der Welt,
+Linux, durch Unachtsamkeit oder auch mutwillig zum Absturz gebracht werden
+kann, zeigt, da&szlig; es keinen hundertprozentigen Speicherschutz geben kann.
+Alles was Speicherschutz tats&auml;chlich zu leisten imstande ist, ist das
+Betriebssystem am Laufen zu halten, wenn ein Anwendungsprogramm einen
+Fehler verursacht. Zu einem Verlust von unmittelbar vor einem
+Programmabsturz bearbeiteten Daten kann es jedoch trotzdem kommen, sofern
+die betreffende Software nicht &uuml;ber eine automatische "Notfall-Sicherungs-
+Funktion" verf&uuml;gt.
+
+Die ideale L&ouml;sung w&auml;re daher ein "Zwischending". Auf der einen Seite das
+Betriebssystem so abzuschotten, da&szlig; ihm kein Programm "schaden" kann. Auf
+der anderen Seite die Daten des Anwendungsprogramms auf Festplatte cachen,
+damit beim Crash eine m&ouml;glichst aktuelle Version der Daten zur Verf&uuml;gung
+steht.
+
+Wird ein Programm in den Speicher geladen, so bekommt es vom Betriebssystem
+einen speziell reservierten Bereich zugewiesen. Das Programm kann nicht
+au&szlig;erhalb dieses Bereichs zugreifen, und ein anderes Programm kann nicht
+innerhalb zugreifen. Sollen jetzt Nachrichten ausgetauscht werden (was
+st&auml;ndig notwendig ist), so wird der Wunsch an das Betriebssystem geschickt.
+Dieses reserviert f&uuml;r den Empf&auml;nger einen Speicherbereich, kopiert die
+Nachricht um und leitet es dem Zielprogramm zu usw. Dadurch wird
+verhindert, da&szlig; ein Programm im Speicher eines anderen "w&uuml;hlt". Da&szlig; das
+Ganze nat&uuml;rlich seine Zeit braucht (und Speicheroperationen brauchen
+relativ viel Zeit), sollte damit jedem klar sein. Mit mehr Megahertz und
+schnelleren RAM-Bausteinen reduziert sich nat&uuml;rlich der Zeitaufwand.
+Trotzdem wird oft die volle Performance ben&ouml;tigt. Hierf&uuml;r gibt es dann
+einen speziellen Speicherbereich, 'shared memory' genannt. Dieser kann von
+mehreren Programmen angesprochen werden. In diesem Fall sind aber spezielle
+Vorkehrungen notwendig, damit nicht zwei Programme gleichzeitig eine
+Nachricht dort ablegen. Und ganz egal ob shared oder single memory
+verwendet wird, k&ouml;nnen immer noch "undefinierte" Parameter in den
+Nachrichten zu Problemen im Zielprogramm f&uuml;hren - je nach Toleranz und
+Ber&uuml;cksichtigung des Programmierers.
+
+Und dann gibt es noch die Gruppe der Hardwaretreiber. Diese arbeiten schon
+aufgrund der Performance ohne Speicherschutz! Und genau das ist der
+Schwachpunkt, unter dem aktuell auch Windows XP stark leidet. Werden
+n&auml;mlich &auml;ltere Treiber unter XP verwendet, so reagieren diese oft nicht wie
+gew&uuml;nscht, sondern verhalten sich "unberechenbar". Das trifft prinzipiell
+auch auf Linux zu, wobei aber dort das Betriebssystem trotzdem noch besser
+abgeschirmt ist und eher mit "virtuellem Speicher" bzw. Speicherknappheit
+zu k&auml;mpfen hat.
+
+Wer also unter diesen Gesichtspunkten Speicherschutz verlangt, damit das
+neue Betriebssystem nicht mehr abst&uuml;rzt, wird entt&auml;uscht werden. Und nur
+weil es andere brauchen, um amoklaufende Programme in Schach zu halten,
+kann auch ein modernes Betriebssystem noch ohne Speicherschutz auskommen.
+Aber es ist eben ein "gutes" Verkaufsargument.
+
+Wie auch immer sich die Entwickler von OS 4.0 entscheiden, mu&szlig; es ein
+eindeutiges f&uuml;r oder wider sein, aber kein "wird vorgesehen". AmigaOS hat
+bereits mit der Version 2.0 vorgesehen, unixartige Dateirechte einzuf&uuml;hren.
+Die entsprechenden Bits sind zwar seit Jahren vorhanden, aber bis heute
+nicht in Benutzung. Auch Datei- und Verzeichnislinks wurden gleichzeitig
+eingef&uuml;hrt. Erst die vielen Fehlerkorrekturen in OS 3.5/3.9 machten die
+Benutzung von Links m&ouml;glich - und trotzdem werden sie nur halbherzig und
+nicht an allen Stellen unterst&uuml;tzt. Im Klartext hei&szlig;t das f&uuml;r den Anwender,
+da&szlig; Links nicht verwendet werden k&ouml;nnen. Und Speicherschutz setzt genauso
+tief im System an. Eine halbherzige Einbindung ist deshalb gleichzusetzen
+mit "wird niemals richtig funktionieren".
+
+
+* Warum virtueller Speicher auch kein Allheilmittel ist:
+
+Betrachtet man so manches Linux- (oder Unix- im allgemeinen) Programm, so
+stellen sich dem Amiga-Programmierer oftmals die Haare zu Berge. Es werden
+fortlaufend Dateihandles reserviert, die nie freigegeben werden, es wird
+Speicher ohne Ende angefordert und nicht einmal &uuml;berpr&uuml;ft, ob es
+funktioniert hat. Schlie&szlig;lich k&uuml;mmert sich ja das Betriebssystem darum, da&szlig;
+Speicher ausgelagert und dem Programm ein neuer Speicherbereich
+bereitgestellt wird. Und Linux soll sich am Programmende auch gef&auml;lligst
+darum k&uuml;mmern, da&szlig; wieder alle Ressourcen freigegeben werden. Diese
+Verschwendung an Ressourcen zeigt sich auch deutlich bei
+"Direktportierungen" wie z.B. mySQL oder Apache. W&uuml;rden Amiga-Programmierer
+auch so arbeiten, w&uuml;rden heutige Programme und einfache Tools nicht mehr
+auf "alten" (nicht aufger&uuml;steten) Amigas laufen.
+
+Ein abschreckendes Beispiel auf dem Amiga ist ArtEffect: Es verbraucht
+Speicher ohne Ende und lagert zus&auml;tzlich noch st&auml;ndig Daten aus. Und das
+auch wenn nur ein "kleines" Bild geladen wird. Da stellt sich mir die
+Frage, ob dort nur bewiesen werden soll, da&szlig; es nicht mehr ohne virtuellen
+Speicher geht.
+
+Virtueller Speicher ist somit mit Sorgfalt einzusetzen. Die notwendige
+Intelligenz bei den Programmierern ist allerdings oft anzuzweifeln. Dies
+f&uuml;hrt im Endeffekt lediglich zu langsameren Programmen, da jeder Speicher
+"ohne R&uuml;cksicht" reserviert und das Betriebssystem st&auml;ndig aus- und
+einlagern mu&szlig;, was auch seine Zeit ben&ouml;tigt, und nat&uuml;rlich Platz auf der
+Festplatte.
+
+Linux-Programmierer zeigen dabei h&auml;ufig auch die Unsitte, da&szlig; virtueller
+Speicher ohne Ende zur Verf&uuml;gung steht - so zumindest die
+Programmierphilosophie.
+Aber eine einfache Unachtsamkeit des Programmierers (z.B. mit einer
+rekursiven Funktion) oder des Anwenders (z.B. viele gro&szlig;e Grafiken in das
+Malprogramm laden) k&ouml;nnen dazu f&uuml;hren, da&szlig; sowohl Hauptspeicher, als auch
+der virtuelle Speicher auf der Festplatte nicht mehr ausreichen. Und dann?
+Dann bleibt sogar ein Linux einfach stehen oder l&auml;uft Amok. Ein
+vern&uuml;nftiges Amiga-Programm hingegen meldet "zuwenig freien Speicher" und
+verweigert die Operation oder startet nicht. Durch Beenden anderer
+Programme kann dabei genug Speicher freigegeben werden, um das andere
+Programm erneut zu starten. Und reserviert nicht jemand die letzten 100
+Byte des Chip-RAMs, l&auml;uft auch das Amiga-Betriebssystem und die Workbench
+absolut stabil weiter.
+
+Nicht vergessen werden sollte auch, aus welcher Zeit und aus welchem Grund
+es virtuellen Speicher gibt. "Damals", als Speicherbausteine noch teuer
+waren und Rechner mit 16 MByte auskommen mu&szlig;ten, war virtueller Speicher
+die L&ouml;sung, um &uuml;bergro&szlig;e Grafiken und Dokumente be- und verarbeiten zu
+k&ouml;nnen. Heutzutage, wo Rechner schon mit 256 MByte und mehr ausgeliefert
+werden, hat virtueller Speicher keine Bedeutung mehr und sollte deshalb
+auch nicht &uuml;berbewertet werden.
+
+
+Betrachtet man allerdings die Gr&ouml;&szlig;e so mancher Windows-Programme, stellt
+sich mir unweigerlich die Frage, ob dort nach "Kilogramm" abgerechnet wird?
+Ohne Zuwachs an sichtbaren Funktionen werden die Programme immer gr&ouml;&szlig;er und
+gr&ouml;&szlig;er. Oder soll hier nur der Speicherbaustein-Industrie unter die Arme
+gegriffen werden?
+
+Damit sollen es f&uuml;r heute genug der technischen Worte sein.
+
+Michael Christoph &lt;michael@meicky-soft.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

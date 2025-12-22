@@ -1,0 +1,250 @@
+@Database SHOAH.s.guide
+@Node MAIN "Bitplanes"
+Bitplanes.
+
+Bitplanes, well that's just a flash name for the screen memory. The screen is
+just a chunk of memory the same as your code, it's just that you can see it !
+
+Right think of DPaint, a standard lo-res screen is 320 by 256, so lets 
+convert that into memory...
+
+	320 is the number of pixels across the screen, so
+	320/8 is the number of bytes across the screen, ie 40 bytes
+	40*256 = 10240 bytes for a screen
+
+So...	1 Bitplane   = 10240 bytes	= 2 colours
+	2 Bitplanes  = 2*10240 bytes	= 4 colours
+	3 Bitplanes  = 3*10240 bytes	= 8 colours
+	4 Bitplanes  = 4*10240 bytes	= 16 colours
+	5 Bitplanes  = 5*10240 bytes	= 32 colours
+
+Therefore, for a standard 32 colour screen you need 51200 bytes. Now 'cause
+hardware registers can only read addresses in Chip Ram you have to store your
+bitplanes in chip, so if you are writing for all Amigas you have to take into
+account the fact that you only have .5Meg of Chip Ram to play with, and a 32
+colour screen takes quite a hefty chunk.
+
+What's that little Jimmy at the back, why do you need 5 bitplanes for 32 
+colours ? Well my little mate, each bit in each bitplane can only be a 0 or 1
+so if we have one bitplane each pixel can only be on/off eg black/white. But
+if you have 2 bitplanes you have twice as many bits, so each pixel can be...
+
+	00/01/10/11
+
+so with 2 bitplanes you can have 4 colours ( Have a think about it ).
+
+-----------------------------------------------------------------------------
+
+Right so we now know about bitplanes, how do we get them working ? Well you
+need to load the bitplane pointers every frame, and the best way to do this
+is via the good ol' copper, like this...
+
+	dc.w $00e0		;Two pointers for each bitplane, 'cause
+Bplanes	dc.w $0000		;hardware addresses can only handle words but
+	dc.l $00e20000		;each bitplane address is 32bits in size
+	dc.l $00e40000		;Pointers for bitplane 2
+	dc.l $00e60000
+	dc.l $00e80000		;Pointers for bitplane 3
+	dc.l $00ea0000
+	dc.l $00ec0000		;Pointers for bitplane 4
+	dc.l $00ee0000
+	dc.l $00f00000		;Pointers for bitplane 5
+	dc.l $00f20000
+
+So that's all there is to it ? If only.
+
+-----------------------------------------------------------------------------
+
+Modulos.
+A modulo is a value which is added to the address of the screen ( ? ). Bear
+with me...
+
+BPL1MOD	$108	- For the odd planes
+BPL2MOD	$10a	- For the even planes
+
+You also put these in your copperlist, ie
+
+	dc.w $0108,$0000	;Display a normal screen
+	dc.w $010a,$0000
+
+Some silly values,
+
+	dc.w $0108,40		;This will halve the size of your piccy
+	dc.w $010a,40
+
+	dc.w $0108,-40		;This will keep displaying the same line
+	dc.w $010a,-40
+
+You know those flood fill effects, well they use the above modulo value and
+just move it down a scan line every frame.
+
+-----------------------------------------------------------------------------
+
+DDFSTOP, DDFSTRT, DIWSTOP, DIWSTRT.
+These are confusing as hell, and a real sod to explain so I think I'll just
+cheat and give you examples...
+
+		DDFSTRT	$92                   	DDFSTOP	$94
+Screen Size	  Value		  	 	  Value
+Max		   $28		 		   $d8
+Wide		   $30			 	    ??
+Normal		   $38		 		   $d0
+Narrow		   $40		 		   $c8
+                                        
+		DIWSTOP $90			DIWSTRT $8e
+Scren Size	  Value				  Value
+PAL		  $2cc1				  $2c81
+Overscan PAL	  $3cd1				  $1c71
+NTSC		  $f4c1				  $2c81
+
+What does all that mean ? Well it determines where the screen is displayed &
+the size of the screen window, eg
+
+	dc.l $008e2c81,$00902cc1
+	dc.l $00920038,$009400d0
+
+-----------------------------------------------------------------------------
+
+Scroll register.
+You can smooth scroll the display by using BPLCON1 ( $102 ). It allows you to
+scroll the screen right in 16 pixel increments, with bits 0-3 for playfield 1
+and bits 4-7 for playfield 2 ( Playfield 1 is all the odd bitplanes, with
+playfield 2 being all the even planes ), so 
+
+To scroll both playfields right by 8
+
+	dc.w $0102,$0088
+
+and by 3
+	dc.w $0102,$0033
+
+And thats how you scroll the screen, but in our example we'll leave it at 0
+
+	dc.w $0102,$0000
+
+-----------------------------------------------------------------------------
+
+Video Priorty.
+This register, BPLCON2 ( $104 ), allows you to put hardware sprites over data
+such as the mouse pointer. Only the bottom bits 0-5 are used for this, ie
+bits 0-2 for playfield 1, and bits 3-5 control playfield 2, this handy table
+which was partly nicked from a Rombust tutorial ( Which are sooooooo much
+better than mine ) should help explain it
+
+Value   
+ 000	PF1/2	SP01	SP23	SP45	SP67
+ 001	SP01	PF1/2	SP23	SP45	SP67
+ 010	SP01	SP23	PF1/2	SP45	SP67
+ 011	SP01	SP23	SP45	PF1/2	SP67
+ 100	SP01	SP23	SP45	SP67	PF1/2
+
+So to give all the sprites priorty use this,
+
+	dc.w $0104,#%0000000000100100
+
+But in our example we'll just leave them at 0 ('cause we arn't having any
+sprites this issue )
+
+	dc.w $0104,$0000
+
+-----------------------------------------------------------------------------
+
+Turning on the bitplanes.
+To actually turn on the bitplanes you use BPLCON1 ( $100 ),ie
+
+	dc.w $0100,5200		;5 bitplanes
+	dc.w $0100,3200		;3 bitplanes
+	dc.w $0100,0200		;0 bitplanes, ie a blank screen
+
+There are other bits in BPLCON1, but you don't have to worry about them at
+the moment.
+
+-----------------------------------------------------------------------------
+
+We know now enough to write a copperlist to display our screen ( All of you
+who are used to AMOS/BLITZ won't believe how much effort there is in just
+displaying a screen ).
+
+CopperList:
+	dc.w $00e0		;Pointers for bitplane 1
+Bplanes	dc.w $0000
+	dc.l $00e20000
+	dc.l $00e40000		;Pointers for bitplane 2
+	dc.l $00e60000
+	dc.l $00e80000		;Pointers for bitplane 3
+	dc.l $00ea0000
+	dc.l $00ec0000		;Pointers for bitplane 4
+	dc.l $00ee0000
+	dc.l $00f00000		;Pointers for bitplane 5
+	dc.l $00f20000
+
+	dc.w $0108,$0000	;Set the modulos
+	dc.w $010a,$0000
+
+	dc.l $008e2c81,$00902cc1	;Set the size of the screen
+	dc.l $00920038,$009400d0
+
+	dc.w $0102,$0000	;No scrolling
+
+	dc.w $0104,$0000	;Put all the sprites at the back
+
+	...			;Put all the colour data in here
+
+		dc.l $3401fffe	;Wait 'til at the top of the screen
+	dc.w $0100,$5200	;Turn on 5 bitplanes, ie 32 colour screen
+
+So what else is there to do ? We have to load the bitplane pointers with the
+address of the screen ( In this case it'll be a nice picture ).
+
+	move.l	#Picture,d0		;Set up all the constants
+	move.l	d0,d1
+	move.l	#10240,d2		;Size of the screen ( Remember ? )
+	lea	Bplanes,a0		;Point to the bitplane pointers
+
+	move	d1,4(a0)		;Stuff the lo/hi pointers into the
+	swap	d1			;bitplane pointers in the copperlist
+	move	d1,(a0)
+		addq.l	#8,a0		;Next set of bitplane pointers
+		add.l	d2,d0		;Next bitplane
+		move.l	d0,d1	
+	move	d1,4(a0)		;Keep on doing all this for all 5
+	swap	d1			;bitplanes
+	move	d1,(a0)
+		addq.l	#8,a0
+		add.l	d2,d0
+		move.l	d0,d1	
+	move	d1,4(a0)
+	swap	d1
+	move	d1,(a0)
+		addq.l	#8,a0
+		add.l	d2,d0
+		move.l	d0,d1	
+	move	d1,4(a0)
+	swap	d1
+	move	d1,(a0)
+		addq.l	#8,a0
+		add.l	d2,d0
+	move	d0,4(a0)
+	swap	d0
+	move	d0,(a0)
+
+And thats about it, you just kill the OS the usual way, slap your picture on
+screen, wait for the left mouse button and quit. Here's one I made earlier...
+
+				@{"View the Source" link SHOAH.s:Source/Bitplane.s/MAIN}
+
+Now how do you put your own picture in there ? Well you draw yourself a nice
+one on DPaint/whatever and save it. Then load in IFFMaster and pick
+
+"Save Picture" --> "As Raw data".
+
+( Make sure that on the preferences the save method is normal and that the
+palette is save behind )
+
+Also remember to draw your picture in 320*256 and 32 colours !
+
+-----------------------------------------------------------------------------
+
+This is just a simple little introduction to display a screen, could HAM/hi-
+res/Dual playfield modes be in the next issue ?
+@Endnode

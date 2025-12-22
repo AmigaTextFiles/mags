@@ -1,0 +1,188 @@
+5
+1*
+
+{3                           Professional Filing System
+{3                           --------------------------
+
+                                  Sami Klemola
+
+
+Paremmin lyhenteellä PFS tunnetaan hollantilaisen Michiel Peltin  shareware-tie-
+dostojärjestelmä. PFS:n luvataan kasvattavan levykkeen kapasiteettia,  nopeutta-
+van lukemista 50 prosentilla ja kirjoittamista peräti 3-5 kertaa sekä hakemisto-
+listausta ja muita yksittäisiä levytoimintoja peräti 10-20 kertaa! Nopeampi  ha-
+kemiston listaus olisikin varmasti usean mielestä  tarpeen.  Lunastaako  ohjelma
+lupaukset vai onko kyseessä floppi? Nopeutuuko kirjoittaminen? Kasvaako  kapasi-
+teetti? Alatko pärjätä paremmin koulussa vai lähteekö kissaltasi karva?  Menitkö
+sekaisin? Kaikki selviää tässä artikkelissa! 
+
+
+{3Levynkäyttöjärjestelmän tasot
+{3-----------------------------
+
+Amigan käyttöjärjestelmä on massamuistien kannalta kolmitasoinen. Ylimmällä  ta-
+solla on DOS. Se lataa ja ajaa ohjelmat ja tarjoaa käynnistämilleen prosesseille
+ajonaikaisen ympäristön, jonka avulla ne voivat suoraan päästä  käsiksi  alemman
+tason  järjestelmiin.  DOS  tarjoaa  prosesseilleen  sekä  rajoitetusti   Execin
+tehtäville korkean tason liitynnän tiedostojärjestelmiin. Ohjelmat voivat  DOSin
+kautta suorittaa kaikki levytoimintonsa. DOS tarjoaa myös puskuroidut  luku-  ja
+kirjoitusrutiinit.
+
+DOS tarjoaa myös mahdollisuuden kommunikoida suoraan tiedostojärjestelmän  kans-
+sa. Siihen ei kuitenkaan useimmiten ole tarvetta. Tiedostojärjestelmät ovat  DO-
+Sin alla toimivia järjestelmiä, jotka  toimivat  levytoimintojen  alihankkijoina
+sille. DOS itse ei suorita luku- ja kirjoitustoimenpiteitä, vaan antaa  ne  tie-
+dostojärjestelmän käsiteltäväksi. Ohjelma voi myös, kuten jo todettu, tehdä suo-
+raan bisnestä sen kanssa. Tällöin ovat hyödynnettävissä  myös  toiminnot,  joita
+DOSin korkeamman tason liittymä ei välitä ohjelmalle. Yleisimmät Amigassa käyte-
+tyt tiedostojärjestelmät ovat OFS ja FFS.
+
+Alimmalla tasolla on laiteohjain, esimerkiksi trackdisk.device  (sisäänrakennet-
+tuun MFM-väylään liitetyt levyasemat) tai scsi.device  (Commodoren  SCSI-väylään
+liitetyt kovalevyt tai CD-asemat). Laiteohjain on toiminnaltaan "tyhmä". Se vain
+tekee, mitä sen käsketään tehdä. Tiedostojärjestelmä lähettää komennot  laiteoh-
+jaimelle. DOS ei ole koskaan suoraan tekemisissä laiteohjaimien kanssa.  Ohjelma
+voi toimia niin, mutta massamuistien kohdalla se ei ole suotavaa. 
+
+
+{3Tiedostojärjestelmä
+{3-------------------
+
+Levynkäyttöjärjestelmän keskus on tiedostojärjestelmä eli  filing  system,  joka
+tunnetaan myös lyhenteellä FS. DOS välittää sille ohjelmien käskyt  ja  se  taas
+käskee laiteohjainta. Tiedostojärjestelmä tekee kaiken  ajattelutyön.  Se  pitää
+muistissa, mitkä sektorit levyllä ovat käytössä ja missä  tiedostot  siellä  si-
+jaitsevat. Luettaessa tiedosto tiedostojärjestelmä lukee ensin hakemiston, josta
+usein on jo osia muistissa. Siitä se katsoo, millä sektoreilla tiedoston  blokit
+sijaitsevat ja komentaa sen mukaan laiteohjainta hakemaan ne kaikki sisään.
+
+Kirjoitettaessa tiedosto tiedostojärjestelmä etsii vapaita sektoreita ja täyttää
+ne kirjoittamalla dataa tiedostosta niille. Lopuksi kirjoitetaan tiedoston  tie-
+dot hakemistoon. Amigan levyasemat toimivat urapohjaisesti.  Niiltä  ei  koskaan
+lueta eikä niille kirjoiteta yksittäisiä sektoreita. Vaikka  tarvittaisiin  vain
+yksi sektori, koko ura on silti luettava tai kirjoitettava aina. Yhtä  tiedoston
+lukemista tai kirjoittamista varten voi laiteohjain joutua lukemaan jopa  kymme-
+niä uria, jos tiedoston sektorit ovat levällään levyllä. Sektorit voi  järjestää
+ulkoisilla ohjelmilla.
+
+Tiedostojärjestelmä siis on levynkäyttöjärjestelmän tärkein osa. Kuitenkin se on
+toteutettu jokseenkin kehnosti. Etenkin hakemiston lataamista joutuu  odottamaan
+ikuisuudelta tuntuvan ajan. Tämä johtuu siitä, että hakemisto ei ole kiinteä ko-
+konaisuus levyllä, vaan se kirjoitetaan dynaamisesti sinne, missä on vapaata ai-
+na kun sille tulee tarve laajentua. Lisäksi pitkillä tiedostoilla (yli 34.3  ki-
+lotavua OFS:n alla ja yli 36 kilotavua FFS:n alla) tulee tarve käyttää  nk.  Fi-
+leExt-blokkeja. Jostain syystä OFS:n tarvitsee lukea FileExt-blokit  myös  hake-
+mistoa luettaessa, ja kun niitä voi olla levyllä suuri määrä ja  ne  sijaitsevat
+hajautetusti, on hakemiston listaaminen OFS-levyltä  todella  hidasta.  FFS  tuo
+tähän pienen parannuksen, mutta edelleen hakemiston lataaminen on aika hidasta.
+
+OFS (Old tai Original FS) on Amigan ensimmäinen tiedostojärjestelmä. Fast Filing
+System eli FFS julkaistiin käyttöjärjestelmäjulkaisussa 1.3. Silloin  sitä  voi-
+tiin hyödyntää  kovalevyillä  sekä  pienin  virittelyin  ja  rajoituksin  levyk-
+keilläkin. Julkaisussa 2.04 tuli FFS, joka toimii täysin myös  levykkeillä.  FFS
+nopeuttaa levytoimintoja ja kasvattaa levykkeen kapasiteettia. DD-levykkeen  ka-
+pasiteetti formatoituna on OFS:n alla 837 kilotavua ja FFS:n alla 879 kilotavua.
+Julkaisu 3 tuo mukanaan kaksi uutta versiota kummastakin tiedostojärjestelmästä.
+Nyt sekä OFS:stä että FFS:stä on vanhojen versioiden lisäksi myös Intl-  ja  DC-
+versiot. Intl-versio osaa käsitellä kansainväliset merkit  oikein  ja  DC-versio
+(Directory Cache) nopeuttaa  hakemiston  lukemista  moninkertaisesti.  DC-versio
+ylläpitää kahta kopiota levyn tiedoista, ja toinen näistä on nopeasti luettavis-
+sa. Tästä syystä tosin tiedostojen kirjoittaminen on hitaampaa kuin standardilla
+FFS:llä, ja levytilan kulutus on hieman suurempi. 
+
+
+{3PFS:n toiminta
+{3--------------
+ 
+Edellä kuvatut FFS:n tuomat parannukset eivät PFS:n tekijälle  riittäneet,  vaan
+hän päätti kirjoittaa oman tiedostojärjestelmänsä, joka olisi vieläkin  parempi.
+Hakemistolistauksen luvataan olevan vielä kolme  kertaa  niin  nopea  kuin  FFS-
+DC:llä! Ja tottahan toki, niin se onkin. Hakemiston lukemisen  suuri  nopeus  on
+saatu aikaan niin, että koko levyn hakemisto pidetään RAMissa. Tällöin  hakemis-
+tolistauksia otettaessa ei tarvitse käynnistää  levyä  ollenkaan.  Haittapuolena
+tässä on muistinkulutus, joka on levykkeillä 30-60 kilotavua ja kovalevyllä jopa
+300 kilotavua.
+
+Toinen vielä merkittävämpi hyöty on PFS:ään implementoitu mekanismi, jonka avul-
+la levykkeiden invalidoituminen on saatu estettyä. Normaalistihan  levy  sekoaa,
+jos kone kaatuu tai levykkeen poistaa asemasta kesken kirjoittamisen ("You  MUST
+replace volume..."). Käyttöjärjestelmään on kyllä aina kuulunut  disk-validator,
+joka korjaa levykkeen seuraavalla käyttökerralla, mutta aina se ei onnistu, vaan
+levy on käyttökelvoton ja muutenkin siihen kuluu aikaa, parisataamegaisella  ko-
+valevypartitiolla minuuttikaupalla, koska koko levy on käytävä läpi sektori ker-
+rallaan.
+
+PFS tekee kaikki muutokset muistissa olevaan kopioon levykkeen hakemistosta.  Ne
+päivitetään levylle vasta, kun mitään ei ole tapahtunut puoleen sekuntiin.  Mer-
+kityksellisin on kuitenkin mekanismi, että kun levylle kirjoitetaan olemassaole-
+van tiedoston päälle, tiedostoa ei tuhota ensin, vaan mikäli levyllä  on  tilaa,
+uusi versio kirjoitetaan vapaille sektoreille ja vasta sen  jälkeen  päivitetään
+hakemisto eli vapautetaan vanhan tiedoston käyttämät sektorit ja laitetaan hake-
+mistoon uuden tiedoston tiedot.
+
+Tästä saatava hyöty on se, että jos kone sekoaa kirjoittamisen aikana, hakemisto
+on edelleen sitä edeltäneessä kunnossa, samoin kuin tiedosto, koska  uutta  tie-
+dostoa oltiin kirjoittamassa eri paikkaan levyllä. Näin PFS-levy ei koskaan  in-
+validatoidu! Jotta tämä toimisi, levyllä täytyy  olla  vapaata  tilaa  vähintään
+tiedoston pituuden verran plus 5 kilotavua. Tämä järjestely auttaa myös pitämään
+levykkeen fragmentoitumattomampana. Myös hakemisto ja allokaatiotaulukko  päivi-
+tetään samaan tapaan. Näin tiedot eivät koskaan  tuhoudu  kuten  muilla  tiedos-
+tojärjestelmillä, jos kirjoitus keskeytyy kesken päivittämisen.
+
+Toinen merkittävä hyöty levyn tietojen pitämisestä muistissa ja edellä kuvatusta
+päivitysmekanismista on hakemistotoimintojen uskomaton nopeus. Yksittäiset  toi-
+minnot, kuten tiedoston tuhoaminen (Delete), statusbittien muuttaminen (Protect)
+ja tiedoston uudelleennimeäminen (Rename) ovat äärettömän nopeita, koska muutok-
+set tehdään muistissa ja päivitetään hetkessä levylle.  Kokeilumielessä  tuhosin
+levykkeeltä 7 hakemistoa ja 175 tiedostoa. Aikaa siihen kului mukaanlukien  tie-
+tojen päivitys levylle alle sekunti! PFS:n hakemistotoiminnot ovat  aivan  usko-
+mattoman nopeat.
+
+PFS-asemalla ei AddBuffers-komento tee mitään. PFS käyttää dynaamista hakemisto-
+ja allokaatiotaulukkovälimuistia, mutta ilmeisesti se ei ollenkaan puskuroi var-
+sinaista levydataa. List-komento kertoo käytettyjen blokkien määrän väärin, kos-
+ka se olettaa, että jokaista tiedostoa kohti kuluu yksi  blokki  sen  headeriin.
+PFS ei kuitenkaan tuhlaa levytilaa sillä tavalla, vaan tiedot tallennetaan  huo-
+mattavasti tehokkaammin. Tästä syystä PFS-levyn kapasiteetti  on  suurempi  kuin
+FFS-levyn. Käsittelen toisaalla tässä lehdessä DiskSpare II:n, joka on myös  le-
+vynkäyttöä tehostava ohjelma. Samassa yhteydessä annan  tarkempaa  tietoa  PFS:n
+suorityskyvystä ja kerron, kuinka levyasemista saa vielä lisää irti  käyttämällä
+PFS:ää yhdessä DiskSpare II:n kanssa! 
+
+
+
+{3Loppuarvostelu
+{3--------------
+ 
+PFS, kuten monet kolmansien osapuolien tiedostojärjestelmät, ei tue  filenotifi-
+kaatiota, linkkejä ja recordlockeja. PFS-levyltä ei myöskään voi bootata.  Muis-
+tia kuluu ja PFS toimii kovalevyllä vain alle 32 megatavun  partitioilla.  Siinä
+olivat PFS:n huonot puolet. Kun hyvät puolet ovat reilusti nopeampi luku, monin-
+kertaisesti nopeampi kirjoitus, äärettömän nopeat  hakemistotoiminnot,  kasvanut
+kapasiteetti, invalidatoitumattomuus ja fragmentoitumattomampius, on PFS mahtava
+tiedostojärjestelmä! Kaikki huimat lupaukset osoittuivat paikkansapitäviksi.
+
+Kieltämättä 32 megatavun rajoitus partition koossa on aika suuri haitta.  Rajoi-
+tus johtuu siitä,  että  PFS  käyttää  16-bittisiä  sektorioffsettejä.  Parannus
+asiaan on tulossa. PFS:n seuraavassa versiossa ne tulevat  olemaan  32-bittisiä,
+ja silloin partition maksimikoko nousee kahteen teratavuun. Suurilla partitioil-
+la muistinkulutus voi myös tulla ongelmaksi. Siihenkin on jonkinlaista parannus-
+ta tulossa. Ilmeisesti hakemistosta pidetään vain osia muistissa.
+
+Uusin tänne asti kulkeutunut PFS:n versio on 9.5.4. Tekijä lupasi toimittaa  uu-
+den version vuodenvaihteeseen mennessä, mutta en ole sitä  vielä  saanut.  PFS:n
+distribuutioon kuuluu 020+-versio FS-segmentistä. Sen voi asentaa suoraan  kova-
+levylle RDB:n avulla, joten sitä ei tarvitse ladata L:-hakemistosta. Mukana  tu-
+lee myös MFS, MultiFileSystem, jonka avulla voidaan käyttää samalla asematunnuk-
+sella useita tiedostojärjestelmiä. Eräiden versioiden mukana tuli  myös  aiemmin
+mainittu DiskSpare II, mutta sen tekijä ei varmaan pitänyt siitä, että sitä  sa-
+nottiin "PFS-tooliksi" ja poistatti sen.
+
+PFS on sharewarea ja tällä hetkellä sen rekisteröimismaksu on 30 guldenia.  Suo-
+men rahassa kuluja tulee postimaksu ja muut kulut (mm. valuutanvaihdosta  aiheu-
+tuvat kulut) mukaanlukien siinä satasen pintaan, ja se  on  ehdottomasti  hinta,
+joka  PFS:stä  kannattaa  maksaa.  Tällä  hetkellä   rekisteröidyn   ja   rekis-
+teröimättömän version välillä ei ole mitään eroja, mutta niitä on ollut  ja  il-
+meisesti tulee taas olemaan. Itse olen PFS:n rekisteröinyt, ja suosittelen  sitä
+kaikille muillekin. Kerran kun on PFS-levykkeitä käyttänyt, ei niistä  voi  luo-
+pua. 

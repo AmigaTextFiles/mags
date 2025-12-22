@@ -1,0 +1,166 @@
+;
+; Install For ARArchive ©1995 Robert Reiswig
+; $Id: ARArchive  1.5 
+;
+(set osver (/ (getversion "LIBS:version.library") 65536))
+( if (= osver 37) ( (set workbench "2.0")) ( if (= osver 38) ( (set workbench "2.1"))
+( if (= osver 39) ( (set workbench "3.0")) ( if (= osver 40) ( (set workbench "3.1"))
+( if (= osver 41) ( (set workbench "4.0")) )))))
+
+( if (= osver 37) ( (set DefCpu 0)) ( if (= osver 38) ( (set DefCpu 1))
+( if (= osver 39) ( (set DefCpu 2)) ( if (= osver 40) ( (set DefCpu 3))
+( if (= osver 41) ( (set DefCpu 4)) )))))
+
+
+(if (< osver 37)  (abort "Sorry You need 2.0 or higher to run ARArchiver!") )
+
+(message "ARArchive V1.3.08\n\nBy: Robert Reiswig\nrcr@netcom.com\n\n"
+         "This Installer will do a few things:\n\nCopy ARArchive to where you tell it."
+         "\nAdd an AR: assign to your User-Startup.\n "
+         "Create a 'C:ARA' script for ARArchive-XXX\n(If selected)"
+) 
+
+
+
+
+(set How  (askchoice (choices "In LHA format (ie: ar301.lha)" "In LZX format (ie: ar301.lzx)" "In Uncompressed format (ie: ar301.guide)")
+                     (prompt "How do you store your Amiga Reports?")
+	             (help   "How do you store your Amiga Reports?")
+                     (default 0)
+	  )
+)
+
+
+(if (= How 0) (set HowText "ARArchive-LHA") )
+(if (= How 1) (set HowText "ARArchive-LZX") )
+(if (= How 2) (set HowText "ARArchive") )
+
+
+
+
+(set ARA_dest
+        
+           (askdir
+                   (prompt (cat "Where do you wish to install:\n" HowText))
+                   (help @askdir-help)
+                   (default @default-dest)
+                   
+           )
+                
+        
+)
+
+
+(set @default-dest ARA_dest) 
+
+
+(if (= How 0) (set HowCompress "LHA'ed") )
+(if (= How 1) (set HowCompress "LZX'ed") )
+(if (= How 2) (set HowCompress "Uncompressed (AmigaGuide)") )
+
+(set AR_dest
+     
+                (askdir
+                        (prompt (cat "In which drawer are the\n*" HowCompress "* Amiga Reports\nstored?"))
+                        (help @askdir-help)
+                        (default @default-dest)
+                )
+                
+)
+
+
+(set DoThis (cat "ASSIGN AR: " AR_dest))
+(run (DoThis))
+
+
+
+(if (= How 0) (set HowCompress "LHA") )
+(if (= How 1) (set HowCompress "LZX") )
+(if (= How 2) (set HowCompress "Uncompressed (AmigaGuide)") )
+
+
+(if (= How 0) (copyfiles (source "ARArchive-LHA") (dest ARA_dest) (infos) ))
+(if (= How 1) (copyfiles (source "ARArchive-LZX") (dest ARA_dest) (infos) ))
+(if (= How 2) (copyfiles (source "ARArchive") (dest ARA_dest) (infos) ))
+
+
+(if (< How 2)
+  (
+     (message (cat "\n\n\n\nNOTE\n~~~~~~~~~~~~~\nYou must be running AREXX and have " HowCompress
+                   " in the command path to use ARArchive!"))
+    
+
+     (set osverS (askchoice (choices "2.0" "2.1" "3.0" "3.1")
+                     (prompt "Please Select the OS Version you are running. "
+                             "This will be the Machine you will install ARArchive on. "
+                             "This is needed to tell the ARexx script to use AmigaGuide or Multiview. "
+                             "The Installer has found\n" workbench " version of the OS." )
+	             (help   "Select OS Ver")
+                     (default DefCpu)
+	         )
+     )
+     
+
+     (if (< osverS 3) (set AGViewer "SYS:Utilities/AmigaGuide") )
+     (if (> osverS 2) (set AGViewer "SYS:Utilities/Multiview") )
+ 
+     (delete "c:ARA")
+
+     (if (= How 0) (set UCC "lha -q x"))
+     (if (= How 1) (set UCC "lzx -q -m x"))
+     
+     (textfile (dest (tackon "c:" "ARA"))
+               (append "/* ARA-UnCompress Robert Reiswig V1.1   rcr@netcom.com */\n")
+               (append "ADDRESS COMMAND\n")
+               (append "parse arg ARfilePath ARfile\n")
+               (append " \n")
+               (append "/* Clean names off */\n")
+               (append "ARfilePath = Strip(ARfilePath,'B')\n")
+               (append "ARfile = Strip(ARfile,'B') \n")
+               (append " \n")   
+               (append "/* Set UnCompress command , AmigaGuide Viewer, where to Uncompress */\n")
+               (append "Where = \"T:\"\n")
+               (append "UnCompressCommand = \"" UCC "\"\n") 
+               (append (cat "GuideViewer = \"" AGViewer "\"\n"))
+               (append " \n")
+               (append "/* Do Its thing, Unpack , display , delete */\n")
+               (append "UnCompressCommand || ' ' || ARfilePath || ' ' || Where \n")
+               (append "GuideViewer || ' ' || Where || ARFile \n")
+               (append "'delete >nil: ' || Where || 'AR#?'\n")
+               (append " \n")
+               
+     )
+
+  )
+)
+
+(if (= How 0) (set filename "ARArchive-LHA"))
+(if (= How 1) (set filename "ARArchive-LZX"))
+(if (= How 2) (set filename "ARArchive"))
+       
+
+(if (< osverS 3)
+ ( 
+   (tooltype (prompt "Setting Tooltypes")
+	    (help   "Setting Tooltypes")
+            (dest   (tackon ARA_dest filename))
+            (setdefaulttool "AmigaGuide")
+   )
+ )
+) 
+
+
+(startup "ARArchive"
+          (prompt "Adding an ASSIGN to your S:User-startup.")
+          (command (DoThis))
+          (help
+                  "\nIn order for ARArchive to find the Amiga Reports"
+                  "an assign must be made for AR:"
+          )
+)
+
+
+
+
+
+

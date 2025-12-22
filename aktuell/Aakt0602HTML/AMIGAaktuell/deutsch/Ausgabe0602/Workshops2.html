@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<TR>
+<TD BGCOLOR="#000000">
+<A HREF="Workshops1.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops3.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<FONT COLOR="#FFFFFF">
+Workshops
+</FONT>
+</TD><TD ALIGN="RIGHT" BGCOLOR="#000000">
+<A HREF="index.html" TARGET="_top"><IMG SRC="../menu/inhalt.png" BORDER="0" WIDTH="36" HEIGHT="15" ALT="Inhalt"></A>
+</TD></TR>
+</TABLE>
+<BR>
+<H2>2. Nachtrag zum Workshop &raquo;Anti-Spam mit YAM&laquo; (von Christian Aichinger)</H2>
+<P>
+Wie in meinem letzten Workshop angek&uuml;ndigt, m&ouml;chte ich an dieser Stelle
+noch das erw&auml;hnte ARexx-Skript vorstellen, das die Archivierung von
+Spam-Absender-Adressen automatisch &uuml;bernimmt.
+</P>
+<P>
+Eines vorweg: Betrachtet das Skript bitte nur als Grundger&uuml;st. Im jetzigen
+Zustand ist es sicherlich noch nicht als fehlerfrei zu bezeichnen. So
+k&ouml;nnen zum Beispiel noch nicht mehrere Spam-Mails selektiert und von dem
+Skript verarbeitet werden.
+</P>
+<P><B>Funktion:</B></P>
+<P>
+Das Skript dient dazu, die E-Mail-Adresse einer(!) ausgew&auml;hlten Mail in das
+externe Killfile einzutragen und danach die komplette E-Mail in das
+&quot;Gel&ouml;schte&quot;-Postfach zu verschieben.
+</P>
+<P><B>Installation:</B></P>
+<P>
+Zuerst sollte der folgende Quelltext via Cut &amp; Paste in einer neuen Datei
+gespeichert werden (von ersten &quot;/*&quot; bis zum &quot;/* Ende */&quot; ausschneiden):
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+/*
+Exportiert die E-Mail-Adresse der ausgew&auml;hlten E-Mail in die im Argument
+angegebene Datei.
+
+Das Skript ist Public Domain. Jeder, der m&ouml;chte, kann dieses &quot;Grundger&uuml;st&quot;
+(mehr ist es auch nicht) weiterentwickeln. F&uuml;r Sch&auml;den, welcher Art auch
+immer, &uuml;bernehme ich keine Garantie oder Verantwortung.
+
+Die Benutzung dieses Skripts geschieht auf eigene Gefahr.
+*/
+
+PARSE ARG adrfile
+
+ADDRESS 'YAM'
+OPTIONS RESULTS
+
+/*
+keine Benutzereingaben m&ouml;glich
+*/
+APPBUSY
+
+/*
+Informationen &uuml;ber die ausgew&auml;hlte Mail &uuml;bernehmen
+*/
+MAILINFO STEM j.
+
+/*
+Absenderadresse mittels &quot;Echo&quot; in die angegebene Datei eintragen
+*/
+ADDRESS COMMAND 'echo &gt;&gt;' adrfile '&quot;' j.from '&quot;'
+
+/*
+Dieser Punkt verschiebt die selektierte Mail ins Deleted-Postfach
+*/
+MAILDELETE
+
+/*
+Benutzereingaben wieder m&ouml;glich
+*/
+APPNOBUSY
+/* Ende */
+</PRE></TD></TR></TABLE>
+<P>
+Als n&auml;chstes wird YAM gestartet und das Konfigurationsfenster ge&ouml;ffnet.
+Unter dem Konfigurationspunkt &quot;ARexx&quot; (links) muss nun ein neuer &quot;'Skripts'
+Men&uuml;eintrag&quot; ausgew&auml;hlt werden. Unter &quot;Name&quot; ist die Bezeichnung des neuen
+Men&uuml;eintrages festzulegen. Bei mir hei&szlig;t dieser einfach nur &quot;L&ouml;sche Spam&quot;.
+Das Cycle-Gadget rechts daneben muss auf &quot;ARexx&quot; stehen. Im Eingabefeld
+&quot;Skript&quot; wird der Dateiname des oben abgedruckten Skripts und zus&auml;tzlich
+als Argument das Killfile eingetragen. Die beiden unteren Buttons (&quot;&Ouml;ffne
+Konsolenfenster&quot; und &quot;Warte auf Beendigung&quot;) m&uuml;ssen abgew&auml;hlt sein. Wer
+jetzt nur &quot;Bahnhof&quot; verstanden hat, schaut sich das Bild an. ;)
+</P>
+<P>
+ <A HREF="img/yamspam.png"><IMG SRC="thumb/yamspam.jpg" WIDTH="120" HEIGHT="75" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+&Uuml;brigens habe ich von einem Leser noch den Hinweis auf eine gute Webseite
+zum Thema bekommen. Unter <A HREF="http://www.antispam.de" TARGET="_top">http://www.antispam.de</A> gibt es ein FAQ und ein
+Forum, in dem man weitere Hilfe zur Spam-Abwehr bekommen kann.
+</P>
+<P><B>Christian Aichinger &lt;<A HREF="mailto:christian@aakt.de">christian@aakt.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops1.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops3.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

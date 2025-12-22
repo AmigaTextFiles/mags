@@ -1,0 +1,132 @@
+@Database SHOAH.s.guide
+@Node MAIN "How to use that silly little Copper thing"
+The Copper
+
+Most of you will have heard of this, but...
+
+What is it ?
+It is a simple CO-Processor, like a FPU, but it only knows 3 commands !
+What does it do ?
+It lets you alter hardware registers in sync with the TV screen
+
+To start with, I better explain a bit about how telly pictures work.
+Your TV has 625 lines going down it ( It took fucking hours to count them all
+I can tell you ) and Mr.TV goes from the top left to the bottom right of the
+screen drawing each frame every 50th of a second ( That's not exactly true,
+he only does 313 lines each 50th of a second, that's why you TV has a slight
+flicker ( That's how interlace mode works)). With the copper you can find out
+exactly which line you are on, and do cool things with it.
+
+What are the commands then ?
+
+	Move
+	Wait
+	Skip
+
+and that's all there is to it ! Well not quite, to "program" the copper you
+have to use dc.w statements, ie
+
+	move	#$0f00,$df0180		;Make colour 0, ie paper, red
+
+as a copper command you would write this as...
+
+	dc.w $0180,$0f00
+
+therefore,
+
+	move	#$000f,$df0182		;Make colour 1 blue
+
+	dc.w $0182,$000f
+
+Fairly easy yeah ?
+
+	dc.l $8001fffe			;Wait until line $80
+
+Remember - The Wait command always has $fffe as it's second word
+
+Please Note - I'm not going to go into huge detail of how & why, I think it
+	      just complicates things, just trust me on this one.
+
+So, lets write a simple little copperlist
+
+	dc.w $0180,$0000		;Set the paper to black
+	dc.l $8001fffe			;Wait 'till about halfway down
+	dc.w $0180,$000f		;Now change the colour to blue
+
+Where's the skip command you may ask, well I've never seen it used ever ! So
+just forget about it.
+
+To end a copperlist you just tell it to wait forever, ie
+
+	dc.l $fffffffe
+
+You should call this twice because A1000's had a hardware bug where sometimes
+they would miss the command first time ! ( I know there are very few A1000s
+around, but is aiming for total compatability such a bad thing ? )
+
+So, back to our copperlist,
+
+	dc.w $0180,$0000		;Set the paper to black
+	dc.l $8001fffe			;Wait 'till about halfway down
+	dc.w $0180,$000f		;Now change the colour to blue
+	dc.l $fffffffe			;End it all
+	dc.l $fffffffe
+
+Have you seen those little hacks that put a nice colourwash on your Workbench
+screen ? Well now you know how to do them
+
+	dc.w $0180,$0001
+	dc.l $3001fffe
+	dc.w $0180,$0002
+	dc.l $3101fffe
+	dc.w $0180,$0003
+	dc.l $3201fffe
+	...
+	dc.l $fffffffe
+	dc.l $fffffffe
+
+Now you know how to write a copperlist, here's the actual code...
+
+				@{"View the Source" link SHOAH.s:Source/Copper.s/MAIN}
+
+1. We start off with the usual start up routine ( See @{"Killing the pesky OS" link SHOAH.s:text/Killing_the_OS/MAIN} )
+2. Then we bsr to the init routine, which
+	a) Uses our @{"macro" link SHOAH.s:SHOAH_Libs/Macros.lib/MAIN} to set up the copperlist
+	b) We then turn the copper on by setting its @{"DMA" link SHOAH.s:text/DMA/MAIN} bit
+	c) Then we bsr to MAIN
+		a1) The main loop just checks for the left mouse button...
+		b1) and RTS's when it's pressed...
+	d) To Init, which RTS's to...
+3. The RestoreSystem call
+4. Then we quit, after making sure d0=0, ie no error code
+
+You should be able to work out what the copperlist does ( It's just a series
+of move & wait commands ).
+
+Fairly simple eh ? Now you may wonder why I've got an init routine and then a
+main routine when just one would do, well it makes your code easier to read
+and update.
+
+
+Last few points about the copper,
+
+If you want to wait for a line below 255 then use...
+
+	dc.l $ffdffffe
+
+Then just start again, ie
+
+	dc.l $ffdffffe
+	dc.l $0101fffe
+	etc.
+
+Sometimes when you are doing a smooth colour fade ( Like in our example ) you
+will notice slight glitches at the edge, well use
+
+	dc.l $xx07fffe
+
+instead ( It's better to use $xx01fffe if you are setting up displays etc.,
+'cause it gives you a little bit more time ).
+
+And thats it for this time...
+@EndNode

@@ -1,0 +1,174 @@
+<html><body><pre>
+<hr>
+<h3>                                                REVIEW: A LOOK AT THE EFFECTIVENESS OF PNG</h3>
+<h4>            Andy Dean                                                                                                                            <a href="mailto:adean@eleceng.ucl.ac.uk">adean@eleceng.ucl.ac.uk</a></h4>
+<hr></pre>
+<i>[Well, it's mostly review.  It's part plug, since the author of the
+article also wrote Image Studio, but hey...-Jason]</i></p>
+
+Dear Jason,</p>
+
+After reading the excellent article on GIF/PNG by Michael Console
+Battilana in AmigaReport 3.11, I thought you may be interested in the
+following article.  We've recently added PNG support to ImageStudio and
+I've had a chance to test the new file format's performance against
+existing formats.  I'd be delighted if you would consider the following
+article for inclusion in AmigaReport, it will of interest to anyone who
+deals with bitmap images.</p>
+
+<ul><ul><ul>        All the best,</p>
+<ul><ul><ul>
+                Andy Dean</p>
+</ul></ul></ul></ul></ul></ul>
+<hr>
+At the start of 1995 the GIF file format was the centre of attention when
+it was revealed that the LZW compression algorithm used for its data
+compression was under patent from Unisys.  This meant that authors of
+commercial and shareware software that wrote GIF files were required to
+pay Unisys (or Compuserve, the designer of the GIF format) royalties for
+every copy of their software sold.</p>
+
+This was deemed unacceptable by many users of GIF and so suggestions were
+put forward as to the creation of a royalty-free replacement for the GIF
+format.  A few ideas have been suggested, but the most complete solution
+to date is the new PNG (Portable Network Graphics) file format.</p>
+
+PNG takes the following features from GIF:</p>
+<ul>
+<li>Storage of palette based images of up to 256 colours.
+<li>Interlaced redraw for quick display on World Wide Web browsers.
+<li>Transparent colour, allowing for non-rectangular images.
+<li>Powerful lossless compression algorithm.
+<li>Extendable for future expansion.</p>
+</ul>
+and adds the following abilities:</p>
+<ul>
+<li>Full colour images up to 48bits per pixel.
+<li>Full alpha channel.
+<li>Image pre/post filtering to further aid compression.
+<li>More levels of interlacing for faster display.</p>
+</ul>
+The full PNG specification has not yet been released (it is up to the
+tenth draft at the time of writing), but already a PNG support library is
+being written to aid software authors in loading and saving PNG files from
+within their programs.</p>
+
+As the co-author of the Amiga shareware image processing program
+"ImageStudio", I was very interested in this new format.  So with the
+pre-release version of the PNG support library, the tenth draft of the PNG
+specs and the trusty SAS/C debugger at the ready, I wrote a PNG module for
+ImageStudio.</p>
+
+My aims were to find out exactly what PNG could be useful for.  I was
+interested in:</p>
+<ul>
+<li>How fast PNG files were to load and save.
+<li>How large a PNG file is compared to other popular formats.</p>
+</ul>
+I tested the PNG module with 3 images:</p>
+<pre>
+        "Bud"         - 256 colour, 640x806 scanned image of a Budweiser advert.
+        "Colourface"  - 24bit, 574x815 scanned image of a woman's face.
+        "Williams"    - 24bit, 640x480 raytraced image of a Williams Formula1 grand prix car.
+</pre>
+With such a small number of images it is difficult to represent all types
+of image, but they represent perhaps the most popular types of image that
+are found in the 256 colour and 24bit formats.</p>
+
+The results of load/save times and file size are given below:</p>
+<pre>
+Image    Format         Load time       Save time       File size
+-----    ------         ---------       ---------       ---------
+Bud      IFF-ILBM       11s             11s             460K
+         GIF            14s             17s             371K
+         PNG            11s             52s             326K
+         LHA(1)         4s              29s             411K
+
+Colour-  IFF-ILBM24     32s             28s             1,195K
+face     JPEG(2)        32s             30s             95K
+         PNG            33s             5m26s           691K
+         TIFF-LZW(3)    1m09s           1m15s           1,450K
+         LHA(1)         10s             1m12s           1,099K
+
+Williams IFF-ILBM24     16s             17s             354K
+         JPEG(2)        16s             18s             48K
+         PNG            15s             3m07s           104K
+         TIFF-LZW(3)    27s             24s             178K
+         LHA(1)         2s              19s             175K
+</pre>
+Notes:
+<ul>
+<li>The computer used for all the tests was an Amiga 4000/030 with 10MB of RAM and a 25MHz 68030.
+
+<li>The software used to load and save the images was ImageStudio v2.1.1 (68020+ version).
+
+<li>(1) LHA is not an image file format. These values are the
+        results of taking the IFF-ILBM and compressing it with LHA
+        v1.38. The load time is the time taken to decompress the file,
+        the save time is the compression time. This operation is a
+        typical method of storing files to reduce their size.
+
+<li>        (2) The JPEGs were saved with a quality setting of 85. JPEG
+        uses lossy compression, so information was lost over the original
+        24bit images; this explains JPEG's ability to create much
+        smaller files than any of the other formats.
+
+<li>        (3) The TIFF-LZW files were loaded/saved by ImageFX v1.52 as
+        ImageStudio cannot use TIFF-LZW yet.
+</ul>
+The colour mapped "Bud" image showed the least of the improvements in
+compression, but it was still significantly smaller than any of the other
+formats.  When you're paying per kilobyte of file downloaded, any
+reduction in file size is welcome.</p>
+
+It is the 24bit images where PNG excels.  In both the scanned "Colourface"
+and raytraced "Williams" images, the PNG image was almost half the size of
+the nearest lossless format.  JPEG still creates the smallest files, but
+at the cost of losing some of the image information.  In the case of the
+"Colourface" image, the loss of information was almost imperceptible.
+With the clean raytraced "Williams" image however, the JPEG artifacts were
+quite noticible.</p>
+
+I'll leave it up to the individual to decided whether PNG looks like a
+useful format for their own use.  As all the PNG images were smaller than
+the other lossless formats it seems a good idea to consider PNG for
+storing files for archiving in all cases.  Using JPEG to store scanned
+24bit images is possible, but for storing computer generated images (from
+a raytracer, landscape generator or fractal program) the need for lossless
+compression is paramount.</p>
+
+At the moment the creation of PNG files is substantially slower than with
+the other formats.  This again suggests that PNG files lend themselves to
+applications where they are compressed once and read many times.</p>
+
+The ImageStudio PNG module used for these tests is now released on Aminet
+as:</p>
+<ul>
+        <a href="http://ftp.wustl.edu/pub/aminet/gfx/conv/ImageStudioPNG.lha">gfx/conv ImageStudioPNG.lha</a>
+</ul>
+The code is based on a pre-release v0.6 of the PNG library and so should
+still be considered "work in progress".  The PNG library loads the
+majority of the PNG files I've come across and saves PNG files correctly,
+including support for interlacing and a transparent colour.  The above
+archive contains both 68000 and 68020+ versions of the PNG module.
+Unregistered users of ImageStudio will find that PNG files loaded with the
+module will be clipped to 512x512, registered users will have a fully
+functional module.  The module will be uploaded on the 7th of June 1995 so
+please give it a couple of days to propagate around the Aminet network.</p>
+
+PNG is currently supported by both "ImageStudio" and Cloanto's "Personal
+Paint v6.3" on the Amiga, but as PNG becomes more popular I guess the
+format will be supported by many more packages.</p>
+
+For more information on the GIF saga, I suggest reading Michael Console
+Battilana's article in AmigaReport 3.11. </p>
+
+Excerpts are taken from the PNG specification, tenth draft.</p>
+
+Permission is granted to reproduce this article (or parts of) in online
+and printed magazines, provided the author is credited for the work.  The
+article remains Copyright 1995 Andy Dean.</p>
+
+PNG information and sample images can be obtained by anonymous ftp at
+<a href="ftp://ftp.uu.net/graphics/png">ftp.uu.net /graphics/png</a>
+</pre></body></html>

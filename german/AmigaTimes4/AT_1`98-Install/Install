@@ -1,0 +1,164 @@
+;Beschreibung: Installationsskript für die AmigaTimes.
+;Autor       : Enrico Bauermeister (c) 1997
+;Datum       : 12.11.1997 - 07.12.1997
+;=====================================================
+
+;geübter Benutzer
+(user 1)
+
+;Namen der Quelldateien setzen
+(set #amigatimesmain "AmigaTimes_1_98")
+(set #amigatimesinfo "AmigaTimes_1_98.info")
+(set #amigatimesausgabe "AmigaTimes4.guide")
+(set #titelbild "titelbild.iff")
+(set #titelmusik "mod")
+(set #pt.jpg "pt.jpg")
+(set #vt "vt")
+(set #excite.iff "excite.iff")
+(set #atlas.gif "atlas.gif")
+(set #13 "13")
+(set #megablast.gif "megablast.gif")
+(set #amiga.raw "amiga.raw")
+(set #sprite.iff "sprite.iff")
+(set #bm2.pic "bm2.pic")
+(set #steuer.pic "steuer.pic")
+(set #17bit.pic "17bit.pic")
+(set #installation-done
+ (cat "Die Installation der Amiga Times 1/98 ist abgeschlossen.\n"
+      "Bitte starten Sie Ihren Amiga neu, damit alle nötigen\n"
+      "Assign's ausgeführt werden können. Danke!\n\n\n\n"
+      "Viel Spaß bei unserer aktuellen Ausgabe wünscht Ihnen\n"
+      "die AMIGA TIMES Redaktion!"))
+
+
+(complete 0)
+
+;Willkommenstext
+(welcome "AMIGA TIMES HD Installation\n\nCopyright 1997 by Enrico Bauermeister\n\nUpdate: 20.02.1998 (mn)")
+
+;Installations-Ziel vom Nutzer erfragen
+(set #destination
+ (askdir
+  (prompt "Wo soll die AmigaTimes installiert werden? Ein Verzeichnis"
+          "\ "AmigaTimes\" wird dort erstellt!")
+
+  (help @askdir-help)
+  (default "sys:")
+ )
+)
+
+;Pfad und Name vom Ziel-Verzeichnis erstellen
+(set #fulldestination (tackon #destination "AmigaTimes"))
+
+;Pfad und Namen von Unterverzeichnisse im Zielverzeichnis erstellen
+(set #picdir (tackon #fulldestination "pic"))
+(set #moddir (tackon #fulldestination "mod"))
+(set #cdir   (tackon #fulldestination "c"))
+(set #font (tackon #fulldestination "sys:fonts/courier"))
+
+;Ziel-Verzeichnis erstellen
+(makedir #fulldestination
+ (infos)
+)
+
+;Unterverzeichnisse erstellen
+(makedir #picdir)
+(makedir #moddir)
+(makedir #cdir)
+(makedir #font)
+
+;Dateien kopieren
+(copyfiles
+ (source #amigatimesmain)
+ (dest #fulldestination)
+)
+(copyfiles
+ (source #amigatimesinfo)
+ (dest #fulldestination)
+)
+(copyfiles
+ (source #titelbild)
+ (dest #picdir)
+)
+(copyfiles
+ (source #pt.jpg)
+ (dest #picdir)
+)
+(copyfiles
+ (source #titelmusik)
+ (dest #moddir)
+)
+(copyfiles
+ (source #amigatimesausgabe)
+ (dest #fulldestination)
+)
+(copyfiles
+ (source #vt)
+ (dest #cdir)
+)
+(copyfiles
+ (source #excite.iff)
+ (dest #picdir)
+)
+(copyfiles
+ (source #megablast.gif)
+ (dest #picdir)
+)
+(copyfiles
+ (source #17bit.pic)
+ (dest #picdir)
+)
+(copyfiles
+ (source #amiga.raw)
+ (dest #picdir)
+)
+(complete 50)
+(copyfiles
+ (source #sprite.iff)
+ (dest #picdir)
+)
+(copyfiles
+ (source #steuer.pic)
+ (dest #picdir)
+)
+(copyfiles
+ (source #bm2.pic)
+ (dest #picdir)
+)
+(copylib
+ (source "iff.library")
+ (dest "LIBS:")
+)
+(copylib
+ (source "ptreplay.library")
+ (dest "LIBS:")
+)
+(copyfiles
+ (source "courier.font")
+ (dest "FONTS:")
+)
+(copyfiles
+ (source "13")
+ (dest #font)
+)
+(copyfiles
+ (source #atlas.gif)
+ (dest #picdir)
+)
+
+;Assign setzen
+(startup "AmigaTimes1_98"
+ (help "")
+ (prompt "Huhu")
+ (command (cat "assign AmigaTimes1_98: " #fulldestination))
+ (confirm)
+)
+(run (cat "assign AmigaTimes: " #fulldestination))
+
+(complete 100)
+
+(user 1)
+(message #installation-done)
+(exit (quiet))
+
+

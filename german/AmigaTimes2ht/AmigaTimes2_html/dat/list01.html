@@ -1,0 +1,144 @@
+<HTML>
+<HEAD>
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.0//EN">
+<META NAME="author" CONTENT="Mario Nitschke / HTML-Konvertierung Marcel Hanson">
+<META NAME="description" CONTENT="AMIGA TIMES 01/97 - Deutsches AMIGA Games und Info Magazin">
+<META NAME="keywords" CONTENT="Amiga,Information,Spiele,deutsch,Tips">
+<!-- PROGRAM="WebPlug v1.21 © 1996-97 Esteve Boix" -->
+<TITLE>AMIGA TIMES 02/97 - Programmierkurs Assembler - Listing 1</TITLE>
+</HEAD>
+
+<BODY  BACKGROUND="../images/bg.gif" BGCOLOR="#A4A4E1" TEXT="#000000" LINK="#FF0000" ALINK="#F00000" VLINK="#AA0000">
+
+<DIV ALIGN=CENTER>
+<TABLE BORDER=0>
+<TR>
+<TD>
+<A HREF="edit.html"><IMG SRC="../images/edit.gif" ALT="Editorial" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD>
+<TD>
+<A HREF="inhalt.html"><IMG SRC="../images/inh.gif" ALT="Inhalt" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD>
+<TD>
+<A HREF="impressum.html"><IMG SRC="../images/impr.gif" ALT="Impressum" BORDER="0" WIDTH="128" HEIGHT="27"></A>
+</TD></TR></TABLE></DIV><HR>
+
+<PRE>
+;Datei       : listing1.asm
+;Beschreibung: Beispiel zum &Ouml;ffnen der "graphics.library".
+;Autor       : Enrico Bauermeister
+;Datum       : 03.10.1997
+;Assembler   : TFA AsmOne v1.29
+;=========================================================
+ 
+ lea      gfxname(pc),a1       ;lea - load effective adress -
+                               ;Die effektive Adresse des Symbols
+                               ;"gfxname" nach A1 kopieren
+ 
+ 
+ moveq    #0,d0                ;moveq - move quick -
+                               ;Versionsnummer der Library nach D0
+                               ;kopieren. 0 hei&szlig;t beliebige Version.
+                               ;Wenn sich die Konstante im Bereich
+                               ;-128..127 befindet, sollte man "moveq"
+                               ;benutzen, es ist dann schneller als
+                               ;als ein "move". Ist die Konstante
+                               ;nicht in diesem Bereich mu&szlig; sowieso
+                               ;ein normales "move" benutzt werden.
+ 
+ 
+ move.l   4.w,a6               ;Basisadresse der "exec.library" nach
+                               ;A6 kopieren.
+ 
+ 
+ jsr      -552(a6)             ;jsr - jumb to subroutine -
+                               ;Hier wird die Funktion "OpenLibrary"
+                               ;der "exec.library" aufgerufen. "jsr"
+                               ;erwartet immer eine Adresse zu der
+                               ;gesprungen werden soll. In diesem
+                               ;Fall berechnet sich die Adresse aus
+                               ;dem Inhalt von A6 und der -552 (dies ist
+                               ;der Library-Vector-Offset der Funktion
+                               ;"OpenLibrary").
+ 
+ 
+ tst.l    d0                   ;tst - test operand -
+                               ;Hier wird D0 auf 0 getestet. "OpenLibrary"
+                               ;gibt in D0 die Basisadresse der ge&ouml;ffneten
+                               ;Library zur&uuml;ck, oder bei einem Fehler 0.
+ 
+ 
+ beq.s    ende                 ;beq - branch equal -
+                               ;Lieferte der obenstehende Test einen wahren
+                               ;Wert (in D0 stand also 0) wird zu "ende"
+                               ;gesprungen. Das ".s" steht f&uuml;r "short",
+                               ;dadurch wird der ausf&uuml;hrbare Code kleiner.
+ 
+ 
+ lea      gfxbase(pc),a0       ;Effektive Adresse von "gfxbase" nach A0
+                               ;kopieren.
+ 
+ 
+ move.l   d0,(a0)              ;Inhalt von D0 nach der Adresse die in A0
+                               ;steht kopieren.
+ 
+ 
+ move.l   gfxbase(pc),a6       ;Adresse von "gfxbase" pc-relativ nach A6
+                               ;kopieren.
+;   ....
+;
+;   Hier k&ouml;nnten wir jetzt Funktionen der "graphics.library" nutzen.
+;
+;   ....
+ 
+ 
+ move.l   gfxbase(pc),a1       ;Adresse von "gfxbase" pc-relativ nach A1
+                               ;kopieren.
+ 
+ 
+ move.l   4.w,a6               ;Basis der "exec.library" nach a6 kopieren.
+ 
+ 
+ jsr      -414(a6)             ;Funktion "CloseLibrary" aufrufen.
+ 
+ 
+ ende                          ;"ende" ist ein Label (oder Sprungmarke)
+ 
+ 
+ moveq    #0,d0                ;0 nach D0 kopieren. Das ist der R&uuml;ckgabe-
+                               ;wert unseres Programms.
+ 
+ 
+ rts                           ;rts - return from subroutine -
+                               ;Und R&uuml;ckkehr zur Shell. Programmende.
+ 
+ 
+gfxname   dc.b 'graphics.library',0  ;dc - define constant -
+                                     ;Dies ist kein 68000er Befehl
+                                     ;sondern eine Assemblerdirektive.
+                                     ;Die Zeichenkette "graphics.library"
+                                     ;wird ab symbolischer Adresse
+                                     ;"gfxname" in den Speicher ge-
+                                     ;schrieben.
+ 
+ 
+ cnop     0,2                  ;"cnop" richtet die obenstehende Zeichen-
+                               ;kette auf Wortgrenze (einer geraden
+                               ;Adresse) aus. Die CPU kann nicht auf
+                               ;ungerade Adessen zugreifen.
+ 
+ 
+gfxbase   dc.l 0               ;Diesmal ein Langwort im Speicher reser-
+                               ;vieren. Dieses Langwort wird &uuml;ber das
+                               ;Symbol "gfxbase" angesprochen.
+ 
+ 
+ end                           ;Alles hinter "end" ignoriert der Assembler.
+</PRE>
+
+<P ALIGN=CENTER>
+<A HREF="wshop.html#re1">Zur&uuml;ck zum Programmierkurs</A>
+
+</BODY>
+</HTML>
+

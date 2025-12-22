@@ -1,0 +1,263 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Testberichte</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="Tests2.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Tests.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Tests4.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Testberichte
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H2>3. Softwaretest: PowerMac-Emulator &raquo;iFusion&laquo; (von Jochen Abitz)</H2>
+<H3>iFusion - Der Powermac auf dem PowerAmiga</H3>
+<P>
+Lange hat es gedauert, doch jetzt wird er endlich ausgeliefert. Auf dr&auml;ngen
+der Kunden, denn fertig ist der Emulator noch nicht.
+</P>
+<P>
+Doch bevor ich anfange Aufzuz&auml;hlen, was noch gemacht werden mu&szlig;, schauen
+wir uns doch erst einmal an wie es ausgeliefert wird.
+</P>
+<P>
+Man erh&auml;lt eine schicke DVD-H&uuml;lle mit einer CD. Nicht mehr und nicht
+weniger. Da&szlig; auf der CD nicht gerade einmal 1 MB enthalten ist, sollte uns
+nicht st&ouml;ren.
+</P>
+<P>
+Also installieren, mit Hilfe des Installers. Sekunden sp&auml;ter ist das Paket
+dann auf der Platte und erwartet von uns gestartet zu werden. Doch halt:
+Erst mu&szlig; konfiguriert werden. Das kann mit Hilfe eines Installers
+passieren, welches Schritt f&uuml;r Schritt Dinge abfragt (auf Englisch. Sowieso
+ist alles auf Englisch - Anwender sollten also auch diese Sprache verstehen
+k&ouml;nnen), oder man konfiguriert alles per Texteditor. Meine Konfiguration
+sieht folgenderma&szlig;en aus:
+</P>
+<TABLE><TR><TD BGCOLOR="#e0e0e0"><PRE>
+;---------------------------------------------------
+;       iFUSION NewWorld Emulation Declarations
+;---------------------------------------------------
+
+;Paths to externally loaded drivers
+
+FirmWare:               drivers/OFDrvr
+
+Video:                  drivers/VideoDrvr
+
+Devices:                drivers/BlockDrvr
+
+;---------------------------------------------------
+;       Hardware Configuration
+;---------------------------------------------------
+
+CPUID:    8            ;Processor Version=G3
+
+RAM:      48
+
+NVRAM:    NVRAM
+
+ROM:    ROM/rom_91
+
+;---------------------------------------------------
+;       Amiga Device Configuration
+;---------------------------------------------------
+
+Device:    Macintosh:    -rw    -direct
+
+Device:    CD0:     -cd
+
+Device:    DH1:    -rw    -direct
+
+DisableSCSIDrvr:    yes
+
+SCSIDEV:    0    scsi.device/1    -hw
+
+;--------------------------------------------------
+;       Video Display Configuration
+;--------------------------------------------------
+
+DisplaySize:    1024/768/75
+
+Depth:    15
+
+VideoRefreshRate:    30
+
+VideoDirectModes:    yes
+
+VideoRefreshModes:    no
+
+VideoAmigaModes:    no
+
+CacheVidMem:    yes
+
+GammaCorrection:    1.0 1.0 1.0
+
+;--------------------------------------------------
+;       Input Configuration
+;--------------------------------------------------
+
+MouseRes:    400
+
+HardwareMouse:    no
+
+KeyboardType:    5
+
+;--------------------------------------------------
+;       Audio Configuration
+;--------------------------------------------------
+
+StartupSnd:    startup-snd
+
+PlayStartupSnd:   yes
+
+DisableSnd:    no
+
+_
+</PRE></TD></TR></TABLE>
+<P>
+Es d&uuml;rfte also nicht all zu schwer fallen, dieses Script auf seine
+Bed&uuml;rfnisse abzu&auml;ndern.
+</P>
+<P>
+Als n&auml;chsten Schritt braucht man die MacOS-CD (8.6 - 9.1 werden
+unterst&uuml;tzt). Darauf ist im Systemordner das File &quot;Mac OS Rom&quot; welches
+einfach in den &quot;Rom&quot;-Ordner in Fusion kopiert und umbenannt wird. Bei mir
+heisst das Rom-File also &quot;rom_91&quot;.
+</P>
+<P>Dann noch folgende Env-Einstellungen vornehmen:</P>
+<UL>
+<LI> Im Verzeichnis Envarc:Powerpc die Variable memprot auf 1
+</LI>
+<BR><LI> Im Verzeichnis Envarc:Powerpc die Variable EnAlignExc auf 1 (Dieses File
+  existiert meistens nicht und mu&szlig; notfalls per Hand angelegt werden.
+</LI>
+</UL>
+<P>
+Dann noch die beiden Librarys f&uuml;r WarpOS von der iFusion-CD in Libs:
+kopieren.
+</P>
+<P>
+Im Configscript ist das erste eingetragene Device auch das Boot-Device.
+Also f&uuml;r die Installation das CD-Laufwerk an erster Stelle setzen und dann
+die Festplattenpartition (welche vorher AmigaDOS-Formatiert sein mu&szlig;).
+Doppelklick auf Run_iFusion und die Emulation startet.
+</P>
+<P>
+Der Mac bootet von der CD und nach einiger Zeit k&ouml;nnen wir den Installer
+vom MacOS beginnen. Wenn vorher keine Mac-Platte formatiert war, fragt das
+System noch, ob die Platte formatiert werden soll. Einige Mausklicks weiter
+und der Installationsvorgang l&auml;uft.
+</P>
+<P>
+Bei mir und bei anderen war folgendes w&auml;hrend der Installation aufgetreten:
+Der Bildschirm wurde Schwarz. Die Installation ging ganz normal weiter, wie
+man am arbeitenden CD-Laufwerk sehen konnte, aber es war halt nichts zu
+sehen. Vielleicht geht der Mac in eine Art &quot;Ruhemodus&quot;. Auf jeden fall
+sollte man keine Taste dr&uuml;cken, sondern ganz normal weiter machen lassen,
+bis einige Zeit nichts zu h&ouml;ren ist. Wenn das der Fall sein sollte - Return
+dr&uuml;cken. Ausschalten des Macs wird durch die Tastenkombination L-
+Amiga + Shift + Esc erzwungen. Nach erfolgreicher Installation mu&szlig; das
+Konfig-File wieder ge&auml;ndert werden. Das Boot-Device ist ja nun nicht mehr
+das CD-Rom-Laufwerk, sondern die Partition. Also diese nach ganz oben
+gestellt, abspeichern und neues Starten des Macs.
+</P>
+<P>
+Ist dieser Hochgefahren, kann man erst mal seine Einstellungen t&auml;tigen und
+die Bildschirmaufl&ouml;sung auf ein ertr&auml;gliches Ma&szlig; einstellen. Standardm&auml;&szlig;ig
+ist er n&auml;mlich auf 640x480x256 eingestellt.
+</P>
+<P>
+Unter dem Apfelmen&uuml;/Kontrollfelder/Erweiterungen Ein/Aus kann man auch
+gleich nichtben&ouml;tigte Systemerweiterungen und Kontrollfelder ausschalten,
+welche noch nicht ben&ouml;tigt werden und damit nur Speicher verschwenden. Da
+k&ouml;nnen zum Beispiel Netzwerk-, Firewire, CD-Rom-, Grafiktreiber usw. erst
+einmal ausgeschaltet werden.
+</P>
+<P>
+Neustart - Und der Mac m&uuml;sste schon weniger Speicher verbrauchen.
+</P>
+<P><B>Kompatibilit&auml;t:</B></P>
+<P>
+Die Emulation ist unglaublich Kompatibel. Ich habe noch kein Programm
+gefunden, was nicht l&auml;uft. Getestet habe ich Photoshop 5.5, Bryce 3,
+ITunes, IMovie (Firewire m&uuml;sste man jetzt am Amiga haben ;), Norton
+Utilities 6, Tech Tools Pro 3, Corel Draw, Freehand 9, Actua Soccer, Myth,
+also quer durch die Bank. Alles l&auml;uft.
+</P>
+<P><B>Geschwindigkeit:</B></P>
+<P>
+Die Emulation hat folgende Pferdef&uuml;&szlig;e, welche die Performace nach unten
+dr&uuml;cken:
+</P>
+<UL>
+<LI> Noch keinen Grafiktreiber im Refreshed-Mode. Nur der Refresh-Mode-Treiber
+  bietet eine zufriedenstellende Geschwindigkeit, welche im direkten-Treiber,
+  der direkt den langsamen Grafiktreiber benutzt, noch nicht wirklich
+  erziehlt werden kann.
+</LI>
+<BR><LI> Disk-Zugriffe m&uuml;ssen &uuml;ber den Umweg des 68K/PPC-Switch laufen. Das
+  bedeutet eine Vielzahl von Context-Switches, welches die
+  Festplattenperformance nach unten dr&uuml;ckt. Um dem gegenzuwirken hilft es
+  unter Umst&auml;nden auf der Amigaseite der Partition 2000 Buffer zus&auml;tzlich zu
+  geben.
+</LI>
+</UL>
+<P>
+Die Reine Berechnungsgeschwindigkeit ist &uuml;berraschend hoch, wenn man
+bedenkt was f&uuml;r eine Hardware das PowerUP-Board von Phase 5 ist. (Kein 2nd-
+Level-Cache). Sie erreicht ann&auml;hernd 604e-Geschwindigkeit. (Siehe
+Screenshot im Vergleich mit 8100 601).
+</P>
+<P>
+<A HREF="img/speedometer.jpg"><IMG SRC="thumb/speedometer.jpg" WIDTH="120" HEIGHT="90" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P><B>Folgende Features sind noch nicht fertiggestellt:</B></P>
+<UL>
+<LI> SCSI-Unterst&uuml;tzung. Es k&ouml;nnen momentan nur Blockdevices angesprochen
+  werden. CD-Brenner und dergleichen, welche &uuml;ber SCSI-Befehle angesprochen
+  werden, k&ouml;nnen noch nicht benutzt werden. (z.B. Toast).
+</LI>
+<BR><LI> Mounten von Mac-Partitionen &uuml;ber das Programm zum Datenaustausch &uuml;ber die
+  Amiga-Seite. Wer ein Zip hat, kann das erst einmal als Blockdevice mit
+  anmelden und so Daten austauschen.
+</LI>
+<BR><LI> Soundunterst&uuml;tzung. Der Start-Sound geht schon, aber Sound in Spielen
+  etc. sucht man noch vergeblich.
+</LI>
+</UL>
+<P>
+Da die Blittersoft die Amiga-Lizenz von iFusion gekauft haben und
+Blittersoft die Entwicklung voranschreiten lassen will, wird man sehen, da&szlig;
+diese Funktionen wohl schon bald integriert werden. Auch eine AmigaDE
+(AmigaOS4?)-Version soll entwickelt werden.
+</P>
+<P>
+Das bleibt auch zu hoffen, denn die Hardware, die jetzt das obere Ende des
+Amigas darstellt (604e) ist f&uuml;r diese Betriebssysteme eigentlich schon
+hoffnungslos veraltet. Auf einem neuen G3/G4-Amigaboard wird man wohl eher
+seine Freude an dieser Emulation haben.
+</P>
+<P><B>Jochen Abitz &lt;<A HREF="mailto:jockel-amiga@gmx.de">jockel-amiga@gmx.de</A>&gt;</B></P>
+<P><B>Nachtrag (eingef&uuml;gt von Christian Aichinger):</B></P>
+<P>
+iFusion wurde von Jochen Abitz auf folgendem Amiga-System getestet:
+</P>
+<P>
+Amiga 4000 mit CyberStormPPC 604e/200, 68060/50, CyberVisionPPC, 100 MB
+Ram, 6 GB IDE-, 4,5 GB UW, 21&quot; Monitor, Serielle 4D Maus, IDE-CDRom 32-
+fach, 32fach SCSI CDRom Teac, CDRW Philips CDD 3600, OS 3.9, 100 MB Zip
+SCSI.
+</P>
+<P ALIGN="RIGHT">
+<A HREF="Tests2.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Tests4.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

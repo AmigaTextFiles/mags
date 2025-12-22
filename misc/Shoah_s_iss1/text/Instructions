@@ -1,0 +1,540 @@
+@Database SHOAH.s.guide
+@Node MAIN "Instruction"
+List of ( 68000 ) instructions...
+
+Well the important ones anyway,
+
+@{"ABCD" link SHOAH-ABCD}		@{"ADD" link SHOAH-ADD}		@{"AND" link SHOAH-AND}		@{"ASL/ASR" link SHOAH-ASL_ASR}
+@{"Bcc" link SHOAH-Bcc}		@{"BCHG" link SHOAH-BCHG}		@{"BCLR" link SHOAH-BCLR}		@{"BRA" link SHOAH-BRA}
+@{"BSET" link SHOAH-BSET}		@{"BSR" link SHOAH-BSR}		@{"BTST" link SHOAH-BTST}		@{"CLR" link SHOAH-CLR}
+@{"CMP" link SHOAH-CMP}		@{"DBcc" link SHOAH-DBcc}		@{"DIVS" link SHOAH-DIVS}		@{"DIVU" link SHOAH-DIVU}
+@{"EOR" link SHOAH-EOR}		@{"EXG" link SHOAH-EXG}		@{"EXT" link SHOAH-EXT}		@{"JMP" link SHOAH-JMP}
+@{"JSR" link SHOAH-JSR}		@{"LEA" link SHOAH-LEA}		@{"LSL/LSR" link SHOAH-LSL_LSR}	@{"MOVE" link SHOAH-MOVE}
+@{"MULS" link SHOAH-MULS}		@{"MULU" link SHOAH-MULU}		@{"NEG" link SHOAH-NEG}		@{"NOP" link SHOAH-NOP}
+@{"NOT" link SHOAH-NOT}		@{"OR" link SHOAH-OR}		@{"PEA" link SHOAH-PEA}		@{"ROL/ROR" link SHOAH-ROL_ROR}
+@{"RTE" link SHOAH-RTE}		@{"RTS" link SHOAH-RTS}		@{"SUB" link SHOAH-SUB}		@{"SWAP" link SHOAH-SWAP}
+@{"TRAP" link SHOAH-TRAP}		@{"TST" link SHOAH-TST}
+
+Key...
+@{"Label" link SHOAH.s:text/labels/MAIN}
+@{"Reg" link SHOAH.s:text/Registers/MAIN}
+An	- An address register
+Dn	- A data register
+<ea>	- A register or an address/label
+#n	- A direct value
+Source	- The source operand
+Dest	- The destination operand ( Shock )
+@Endnode
+@Node SHOAH-ABCD "ABCD"
+ABCD
+
+	ABCD	source,dest	;Addition of two BCD numbers
+
+A Binary Coded Decimal number is a way of storing whole numbers, and I'm 
+going to cheat and not describe it,'cause it's very unlikely that you'll ever
+use them ( And to be honest I don't really have a clue ).
+
+Other BCD commands are -
+
+	NBCD	source,dest	;Negation of a BCD number
+
+	SBCD	source,dest	;Subtraction of BCD numbers
+@Endnode
+@Node SHOAH-ADD "ADD"
+ADD
+
+	ADD	source,dest	;Add two numbers together, no shit.
+
+Other variations on the ADD command are -
+
+	ADDA	source,An	;Add to an address register
+
+	ADDI	#n,<ea>		;Add a number to an address or register
+
+Don't bother worrying about the above two, good assemblers will convert the
+ADD command to these variations for you.
+
+	ADDX	source,dest	;Add two numbers with transfer to the X flag
+				;( See @{"SR" link SHOAH-SR} )
+
+	ADDQ	#n,<ea>		;Add quickly two numbers ( #n can only be
+				;between 0-8 )
+@Endnode
+@Node SHOAH-AND "AND"
+AND
+
+	AND	source,dest	;Perform a logic and
+
+Logical commands always do my head in, they're a real twat to remember.
+
+Logical and -	The result is 1 if both bits are 1, 0 otherwise
+
+eg.
+	move.b	#%00101011,d0
+	AND.b	#%11001101,d0
+
+Therefore d0 =
+
+	0 0 1 0 1 0 1 1
+and	1 1 0 0 1 1 0 1
+	---------------
+=	0 0 0 0 1 0 0 1
+
+Another variation on the AND command is -
+
+	ANDI	source,dest	;Perform a logic and with a constant
+
+Again, don't worry about this variation, good assemblers will do it for you.
+@Endnode
+@Node SHOAH-ASL_ASR "ASL/ASR"
+ASL/ASR
+
+	ASL	#n,<ea>		;Arithmetic shift left  ( *2 ^n )
+	ASR	#n,<ea>		;Arithmetic shift right ( /2 ^n )
+
+These shift bits left/right, and perform crude division/multiplication
+( Crude because it's not as accurate as DIVU/DIVS-MULU/MULS ).
+
+If using ASL/ASR and the sign changes, the V flag in the status register will
+be set.
+@Endnode
+@Node SHOAH-Bcc "Bcc"
+Bcc
+
+	Bcc	label		;Branch depending on the Condition Codes, cc
+
+In BASIC these commands would be
+
+	IF such & such THEN GOTO label
+
+The condition codes are,
+
+	cc		Condition
+	--------------------------------------------------------------
+	T		True, same as BRA
+	F		False, ie never branches ( Useless ? )
+	HI		HIgher than
+	LS		Lower or the Same
+	CC		Carry Clear ( ie higher or the same )
+	CS		Carry Set ( ie lower )
+	HS		Higher or the Same
+	LO		Lower
+	NE		Not Equal
+	EQ		Equal
+	VC		Overflow Clear
+	VS		Overflow Set
+	PL		Positive
+	MI		Negative
+	GE		Greater or Equal
+	LT		Less Than
+	GT		Greater	Than
+	LE		Less or Equal
+	--------------------------------------------------------------
+@Endnode
+@Node SHOAH-BCHG "BCHG"
+BCHG
+
+	BCHG	#n,<ea>		;Swap bit #n
+
+eg,
+	move.b	#%10010010,d0
+	BCHG	#5,d0
+
+Therefore d0 =
+
+	1 0 0 1 0 0 1 0
+	    ^
+	    |
+	This is bit #5 ( Remember you start counting from 0 )
+
+bchg	1 0 1 1 0 0 1 0
+
+A usefull example of this is...
+
+	BCHG	#1,$bfe001	;Toggle the power LED on/off
+@Endnode
+@Node SHOAH-BCLR "BCLR"
+BCLR
+
+	BCLR	#n,<ea>		;Clear bit #n
+
+eg,
+	move.b	#%10010010,d0
+	BCLR	#4,d0
+
+Therefore d0 =
+
+	1 0 0 1 0 0 1 0
+	      ^
+	      |
+	This is bit #4 ( Remember you start counting from 0 )
+
+bclr	1 0 1 0 0 0 1 0
+@Endnode
+@Node SHOAH-BRA "BRA"
+BRA
+
+	BRA	Label		;GOTO label
+
+This is like the JMP ( JuMP to label ) command, but takes less memory and is
+quicker ( But is limited to a shorter range )
+
+	BRA.s	Label
+
+If possible, use this because it's even shorter and quicker, but with an even
+shorter range.
+@Endnode
+@Node SHOAH-BSET "BSET"
+BSET
+
+	BSET	#n,<ea>		;Set bit #n
+
+This is the opposite of @{"BCLR" link SHOAH-BCLR}
+@Endnode
+@Node SHOAH-BSR "BSR"
+BSR
+
+	BSR	Label		;GOSUB label
+
+This is the short equavilant of JSR, it is quicker but has a smaller range.
+Use it for calling subroutines, eg.
+
+	BSR	Add_two_numbers
+	...
+Add_two_numbers	
+	add	#2,d0
+	rts
+
+Also, always try and use BSR.s, 'cause it's quicker and smaller ( But with a
+smaller range again ). See @{"RTS" link SHOAH-RTS}
+
+See RTS
+@Endnode
+@Node SHOAH-BTST "BTST"
+BTST
+
+	BTST	#n,<ea>		;Test bit #n
+
+Use this for checking individual bits, eg
+
+	move.b	#%10010010,d0
+	BTST	#5,d0
+	bne.s	.bit_set
+	...
+.bit_set
+	...
+@Endnode
+@Node SHOAH-CLR "CLR"
+CLR
+
+	CLR	<ea>		;Clear address/register ( ie set it to 0 )
+@Endnode
+@Node SHOAH-CMP "CMP"
+CMP
+
+	CMP	source,dest	;CoMPare two values
+
+In BASIC this would be,
+
+	IF such & such...
+
+For example,
+
+	move	#2,d0
+	CMP	#5,d0
+	beq.s	.the_same
+	...
+.the_same
+	...
+
+See @{"Bcc" link SHOAH-Bcc}
+@Endnode
+@Node SHOAH-DBcc "DBcc"
+DBcc
+
+	DBcc	Reg,label	;Test condition, decrement and branch
+
+This is a really useful little instruction and is normally used as
+
+	DBRA	Reg,label
+
+eg,
+
+	move	#49,d7
+.loop
+	add	#$0001,$df0180
+	DBRA	d7,.loop
+
+This would flash the screen colour 50 times ( Remember to count 0 as a number
+, an easy way to remember this is...
+
+	move	#50-1,d7
+
+just subtract 1 from the actual number you need )
+
+Please note, the register you use as a counter must be at least a word !
+@Endnode
+@Node SHOAH-DIVS "DIVS"
+DIVS
+
+	DIVS	source,dest	;Division of 32bit destination with a 16bit
+				;source.
+
+This is the acurate way of dividing numbers ( ie sloooow ) and the result is
+stored in the low word of the dest and the remainder in the high word.
+Only use this for really accurate things, such as vectors and fractals ( But
+if you are writing those sorts of routines why are you looking here ? ).
+@Endnode
+@Node SHOAH-DIVU "DIVU"
+DIVU
+
+	DIVU	source,dest	;Division without bothering with the sign bit
+
+This is the quicker, and therefore less acurate, way of dividing numbers.
+@Endnode
+@Node SHOAH-EOR "EOR"
+EOR
+
+	EOR	source,dest	;Exclusive OR
+
+Another logical command, God I hate these fiddly little things,
+
+Logical eor -	The result is 1 if the bits are different, 0 otherwise
+
+eg.
+	move.b	#%00101011,d0
+	EOR.b	#%11001101,d0
+
+Therefore d0 =
+
+	0 0 1 0 1 0 1 1
+eor	1 1 0 0 1 1 0 1
+	---------------
+=	1 1 1 0 0 1 1 0
+@Endnode
+@Node SHOAH-EXG "EXG"
+EXG
+
+	EXG	Rn,Rn		;EXchanGe of two registers
+
+I've never had to use this myself, but you may find it useful.
+@Endnode
+@Node SHOAH-EXT "EXT"
+EXT
+
+	EXT	Dn		;EXTend the size of a data register
+
+On 68000 machines you can only extend to word size !
+@Endnode
+@Node SHOAH-JMP "JMP"
+JMP
+
+	JMP	Label		;JuMP to label
+
+This is the same of the BASIC command GOTO. You should always try and use the
+@{"BRA" link SHOAH-BRA} command when you can ( Use JMP when jumping to an
+actual address, ie
+
+	JMP	$49152
+
+although it's quite rare that you'll ever have to use proper addresses ).
+@Endnode
+@Node SHOAH-JSR "JSR"
+JSR
+
+	JSR	Label		;Jump to SubRoutine
+
+This in BASIC would be the GOSUB command. You should only use this is you are
+jumping to a subroutine at an actual address. 
+
+See @{"BSR" link SHOAH-BSR} & @{"JMP" link SHOAH-JMP} & @{"RTS" link SHOAH-RTS}
+@Endnode
+@Node SHOAH-LEA "LEA"
+LEA
+
+	LEA	<ea>,An		;Load an Effective Address
+
+Use the LEA command like this,
+
+	move.l	#Label,a0
+	LEA	Label,a0
+
+Both commands to the same, but the LEA command is quicker and shorter.
+@Endnode
+@Node SHOAH-LSL_LSR "LSL/LSR"
+LSL/LSR
+
+	LSL	#n,<ea>		;Logical Shift Left
+	LSR	#n,<ea>		;Logical Shift Right
+
+Using these shift commands, you lose the sign bit, see @{"ASL/ASR" link SHOAH-ASL_ASR}
+@Endnode
+@Node SHOAH-MOVE "MOVE"
+MOVE
+
+	MOVE	source,dest	;Move the source to the destination
+
+You should really know what this one does ! Variations on it are...
+
+	MOVEA	<ea>,An		;The assembler will convert the normal MOVE
+				;command to this for you
+	MOVEM	<ea>,Regs	;MOVE Multiple, used mainly for storing An/Dn
+				;on the stack
+	MOVEM	Regs,<ea>	;The same as above
+	MOVEP	source,dest	;For moving data to peripherals ( Hardly ever
+				;used, ever )
+	MOVEQ	#n,Dn		;Nice quick version, can only use an 8bit
+				;constant though
+@Endnode
+@Node SHOAH-MULS "MULS"
+MULS
+
+	MULS	source,dest	;Multiplication of 2 words into a longword
+
+This is an accurate multiplication command, keeps the sign intact and all
+that jazz ( Takes about a week of proccessor time ).
+@Endnode
+@Node SHOAH-MULU "MULU"
+MULU
+
+	MULU	source,dest	;Multiplication of 2 words into a longword
+
+This is a less accurate version of @{"MULS" link SHOAH-MULS}, and is quicker.
+@Endnode
+@Node SHOAH-NEG "NEG"
+NEG
+
+	NEG	<ea>		;NEGation of an operand
+
+I've never used this, and I don't think I ever will.
+@Endnode
+@Node SHOAH-NOP "NOP"
+NOP
+
+	NOP			;No OPeration
+
+This is sooooooooo easy, it dosen't do anything ! ( If you used to code on
+the C64 then you'll know this one allready )
+@Endnode
+@Node SHOAH-NOT "NOT"
+NOT
+
+	NOT	<ea>		;Inversion of the operand
+
+Another bloody logical command, and another one I don't understand properly,
+sorry.
+@Endnode
+@Node SHOAH-OR "OR"
+OR
+
+	OR	source,dest	;Logical OR
+
+I'll try and explain this one,
+
+Logical or -	The result is 1 if either bit is 1, 0 otherwise
+
+eg.
+	move.b	#%00101011,d0
+	OR.b	#%11001101,d0
+
+Therefore d0 =
+
+	0 0 1 0 1 0 1 1
+or	1 1 0 0 1 1 0 1
+	---------------
+=	1 1 1 0 1 1 1 1
+@Endnode
+@Node SHOAH-PEA "PEA"
+PEA
+
+	PEA	<ea>		;Put an Effective Address on the stack
+
+eg
+
+	move.l	#label,-(a7)
+	PEA	Label
+
+Both these do the same thing, but the PEA command is quicker, and it's got a
+funnier name.
+@Endnode
+@Node SHOAH-ROL_ROR "ROL/ROR"
+ROL/ROR
+
+	ROL	#n,<ea>		;ROtate Left
+	ROR	#n,<ea>		;ROtate Right
+
+These commands just rotate a value by #n increments, crap example
+
+	0 1 0 0 1 0 1 1
+rol	1 0 0 1 0 1 1 0
+@Endnode
+@Node SHOAH-RTE "RTE"
+RTE
+
+	RTE			;ReTurn from Exception
+
+If you run an exception command you have to use this to return from it, like
+the @{"RTS" link SHOAH-RTS} command in a subroutine, eg
+
+	move.l	#trap0,$80
+	trap	#0
+	...
+trap0
+	...
+	RTE
+@Endnode
+@Node SHOAH-RTS "RTS"
+RTS
+
+	RTS			;ReTurn from Subroutine
+
+This is exactly the same as the BASIC command, eg
+
+	bsr	.do_something
+	...
+.do_something
+	...
+	RTS
+
+Don't forget to put these in at the end of the subroutine, or you're stack
+will get messed up and you'll be in all types of trouble !
+@Endnode
+@Node SHOAH-SUB "SUB"
+SUB
+
+	SUB	source,dest	;SUBtract one number from the other
+
+This is the exact opposite of @{"ADD" link SHOAH-ADD}.
+@Endnode
+@Node SHOAH-SWAP "SWAP"
+SWAP
+
+	SWAP	Dn		;Swap the low and high parts
+
+You'll mainly use this command for setting up things like a copperlist and
+bitplanes etc, eg
+
+	move.l	#Copperlist,d0
+	move	d0,high_part
+	SWAP	d0
+	move	d0,low_part
+@Endnode
+@Node SHOAH-TRAP "TRAP"
+TRAP
+
+	TRAP	#n		;Cause an exception
+
+See @{"RTE" link SHOAH-RTE} for the basics of setting up a trap exception.
+@Endnode
+@Node SHOAH-TST "TST"
+TST
+
+	TST	<ea>		;TeST it the operand for a 0 value
+
+eg,
+
+	cmp.b	#0,label
+	TST.b	label
+
+Both do the same thing, but the TST command is shorter and quicker.
+@Endnode

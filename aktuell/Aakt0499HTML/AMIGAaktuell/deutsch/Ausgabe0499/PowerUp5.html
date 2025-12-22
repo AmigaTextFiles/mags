@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>PowerUp-to-date</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="PowerUp4.html"><IMG SRC="../menu/links.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="PowerUp.html"><IMG SRC="../menu/hoch.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="PowerUp6.html"><IMG SRC="../menu/rechts.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+PowerUp-to-date
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H2>5. &Auml;nderungen bei den Escena-G3-Karten / Auslieferung verz&ouml;gert sich</H2>
+<P>
+&raquo;Braunschweig, den 12. M&auml;rz 1999
+</P>
+<P>
+&Auml;nderungen f&uuml;hren zu einer verz&ouml;geren Auslieferung
+</P>
+<P>
+Der Bedarf bzgl. der beiden Punkte ZorroII-Kompatibilt&auml;t und einer PCI-
+artigen Erweiterungsm&ouml;glichkeit war uns schon seit einiger Zeit bewu&szlig;t.
+Allerdings f&uuml;hrten bisherige Konzepte, diese Punkte mit in das Projekt zu
+integrieren stets zu stark ansteigenden Bauteilkosten und
+Entwicklungszeiten. Daher wollten wir dieses erste G3-Projekt nicht damit
+belasten.
+</P>
+<P>
+Ende Dezember haben wir dann allerdings eine L&ouml;sung gefunden, die
+Problematik unter einen Hut zu bringen; PCI stellte sich als geeignet
+heraus, nicht nur als Anschlu&szlig; f&uuml;r Peripherieger&auml;te zu dienen, sondern auch
+als ein 'Zwischen-Bus' zu fungieren.
+</P>
+<P>
+Da dies nicht unser erstes PCI-Design war, hofften wir, die
+Entwicklungszeit f&uuml;r diese Implementation auf sechs Wochen dr&uuml;cken zu
+k&ouml;nnen. Das hat sich aber als nicht realistisch herausgestellt. Derzeit
+sind noch ein paar kleinere Teile &uuml;brig, von denen wir erwarten, sie Anfang
+der n&auml;chsten Woche komplettieren zu k&ouml;nnen.&laquo;
+</P>
+<P>
+&raquo;Technische Details
+</P>
+<P>
+Eine der gr&ouml;&szlig;ten Aufgaben war das Design des Speicher-Schnittstelle. Die im
+folgenden beschriebene Geschwindigkeit wird vom Bustakt von 66MHz bestimmt.
+Die tats&auml;chliche Bandbreite kann, wenn der Bustakt h&ouml;her oder niedriger
+ist, entsprechend variieren.
+</P>
+<P>
+Die Bus-Schnittstelle wurde f&uuml;r eine Bandbreite von 427 MB/s entworfen.
+Dies kann bei gepufferten Speicherzugriffen erreicht werden. Die nicht
+pufferbaren werden als Einzelzugriffe durchgef&uuml;hrt und reduzieren damit die
+Bandbreite auf 267 MB/s w&auml;hrend des Transfers. Die Speicherbandbreite kann
+bis auf 217 MB/s (88 MB/s ungepuffert) zur&uuml;ckgehen, aber das sollte nur bei
+einer Blockierung auftreten.
+</P>
+<P>
+Allerdings hat beim PPC eine Adre&szlig;&uuml;bertragung eine Mindestdauer von 3
+Taktzyklen. Solche Ein-Prozessor-Speicher-Einzelzugriffe liefern nur einen
+maximale Datenrate von 178 MB/s. Dabei darf der kleine Unterschied zwischen
+Bandbreite und Datenrate nicht verwechselt werden. All dies ist nicht f&uuml;r
+den Burst-Modus relevant, da diese eine L&auml;nge von 5 Taktzyklen, innerhalb
+derer 32 Bytes &uuml;bertragen werden, haben, in denen die 3 Takte f&uuml;r die
+Adress&uuml;bertragung enthalten sind.
+</P>
+<P>
+Da die vom PPC angeforderte Datenrate normalerweise niedriger als die
+verf&uuml;gbare Bandbreite ist, ergibt sich eine Leerlaufzeit auf dem Bus, die
+es erlaubt, Zugriffe eines zweiten Prozessors oder DMA-Kontrollers
+einzustreuen.
+</P>
+<P>
+Dies h&auml;ngt jedoch in hohem Ma&szlig;e von der Anwendung ab. Tasks, die nur Daten
+herumschieben, verbrauchen mehr Bandbreite als z.B. ein Raytracer mit
+reinen Berechnungen.
+</P>
+<P>
+Diese hohe Bandbreite wird durch den ausgiebigen Einsatz von Adress-
+Pipelining erm&ouml;glicht. Der PPC unterst&uuml;tzt dies durch separate Arbitrierung
+f&uuml;r den Adre&szlig;- und den Datenbus, so da&szlig; (Speicher) Zyklen, die eine
+Latenzzeit erfordern, nicht den Bus durch Waitstates belegen.
+</P>
+<P>
+&Uuml;bertragungsanforderungen werden in der Adress-Pipeline abgelegt und daraus
+Microcode generiert. Nur wenn der Datenbus im Wartezustand ist, wird die
+Adress-Pipeline &uuml;bergangen und die Anforderung direkt an die folgenden
+Schaltungsteile weitergereicht.
+</P>
+<P>
+SDRAMs k&ouml;nnen eine maximale Bandbreite von 533 MB/s erreichen, aber da sie
+intern DRAMS sind, ben&ouml;tigen sie manchmal etwas Zeit um Daten liefern oder
+zu erhalten. Die ben&ouml;tigten Taktzyklen hierf&uuml;r nennt man Latenzzeit. Um
+nicht den Datenbus w&auml;hrend eines Kommandos komplett zu belegen, berechnet
+die 'Datenbus-Voraussage-Einheit' die Latenzzeit aufgrund der Informationen
+des Microcodes, und kann so vorhersagen, wann der Datenbus frei werden
+wird. Die Speicher-Kontroller verteilen die Speicherkommandos gem&auml;&szlig; diesen
+Informationen. Das Board bietet maximal acht Speicherb&auml;nke (zwei DIMM-
+Pl&auml;tze), so das eine Blockierung nicht allzu oft auftreten sollte.
+</P>
+<P>
+Das PowerPC-Karte sitzt direkt im Zorro-Bus. Damit wird eine schnelle
+Verbindung zu Grafikkarten und SCSI-Kontrollern auf diesem Bus
+gew&auml;hrleistet, ohne da&szlig; man an dem Engpa&szlig; (Fat/&quot;Super&quot;-)Buster vorbei mu&szlig;.
+Damit wird die Bandbreite nur von der Zorro Backplane und den teilnehmenden
+Devices bestimmt.
+</P>
+<P>
+Das Board unterst&uuml;tzt nur das Zorro-III-Protokoll, da nur dieses die
+richtige Geschwindigkeit &uuml;ber DMA und Burst-Modus zur Verf&uuml;gung stellen
+kann. Zorro-II zeigt seine schwerwiegende Beschr&auml;nkung besonders bei der
+&Uuml;bertragung von Grafikdaten. Damit ist zwar noch nicht das letzte Wort &uuml;ber
+den Zorro-II-Bus gesprochen, doch derzeit kann man nicht mehr dazu sagen.
+</P>
+<P>
+Es gibt keine M&ouml;glichkeit mehr, EDO oder FPM DRAMS einzusetzen, da dies
+alle Vorteile des Pipelining-Konzepts zerst&ouml;ren w&uuml;rde und andererseits
+wurden solche RAMS in DIMM-Bauform bisher ohnehin nicht bei Amigas
+eingesetzt, so da&szlig; hier keine gr&ouml;&szlig;eren Speicherkapazit&auml;ten verschwendet
+werden m&uuml;&szlig;ten.
+</P>
+<P>
+&Auml;nderungen
+</P>
+<P>
+Urspr&uuml;nglich bestand das Design aus einem zentralen Kontrollerchip, der auf
+der einen Seite die Kontrolle &uuml;ber das Prozessor/Speichersystem &uuml;bernahm
+und auf der anderen Seite ein direktes ZorroIII-Interface vorsah.
+</P>
+<P>
+Die Spezifikationen auf der Seite des Prozessor/Speichersystem haben sich
+nicht ge&auml;ndert. Auf der Interface-Seite dagegen wurde das ZorroIII-
+Interface nun gegen ein vollst&auml;ndiges Master/Slave(Target) PCI-Interface
+ersetzt.
+</P>
+<P>
+Die Funktion dieses Bausteins ist somit nun mit einer 'North Bridge' eines
+PC-Chipsatzes vergleichbar, nat&uuml;rlich angepa&szlig;t auf PowerPC/Amiga
+Verh&auml;ltnisse.
+</P>
+<P>
+Das Zorro-Interface befindet sich nun in einem zus&auml;tzlichem Baustein, der
+PCI-Zorro-Bridge. Auch diese Interface ist voll Master/Slave-f&auml;hig.
+</P>
+<P>
+Da es sich bei PCI um ein Bussystem mit niedriger Latenz handelt, sind hier
+keine wesentliche Performance-Abstriche (gegen&uuml;ber einem direkten ZorroIII-
+Interface) zu erwarten. Unterst&uuml;tzt wird dies durch den Einsatz
+chipinterner Puffer.
+</P>
+<P>
+Damit l&auml;&szlig;t sich die &uuml;ber den 32-bit, 33MHz PCI-Bus zu erwartende maximale
+Bandbreite aus dem Design mit etwa 96 MB/s absch&auml;tzen.
+</P>
+<P>
+Errungenschaften
+</P>
+<P>
+Diese recht grundlegende &Auml;nderung er&ouml;ffnet zwei wesentliche Vorteile.
+</P>
+<P>
+Zum einen ist es nun m&ouml;glich, &uuml;ber einen Steckverbinder eine Karte
+vorzusehen, die mit Standard-PCI Bausteinen best&uuml;ckt ist. Solche Bausteine
+exitstieren zum Beispiel f&uuml;r SCSI, Grafikausgabe und USB.
+</P>
+<P>
+Eine Karte, die in einem Zorro-Slot sitzt, kann aus mechanischen Gr&uuml;nden
+keinen 'echten' PCI-Slot bieten. Da es sich aber nur um einen
+Steckverbinder handelt, sollte es technisch m&ouml;glich sein, mehrere PCI-
+Komponenten auf einer Karte zu integrieren. Welche Bausteine daf&uuml;r
+ausgew&auml;hlt werden sollten, wird zu gegebener Zeit noch zu entscheiden sein.
+</P>
+<P>
+Zum anderen bietet uns der zus&auml;tzliche Chip (die PCI-Zorro Bridge) nun die
+bisher fehlenden Pin-Ressourcen, um auch ein ZorroII Interface
+implementieren zu k&ouml;nnen. Durch das oben beschriebene PCI-Interface macht
+es zudem jetzt deutlich mehr Sinn als zuvor, eine Prozessorkarte in einem
+ZorroII-Slot zu betreiben, wenn bandbreitenintensive Daten nicht mehr &uuml;ber
+den ZorroII-Bus m&uuml;ssen.
+</P>
+<P>
+Dadurch sollte es machbar werden, die Brainstormer-Karte auch ein einem
+A2000 zu betreiben. Allerdings kann durch die Vielfalt der sich im Markt
+befindlichen Beschleunigerkarten derzeit schlecht abgesch&auml;tzt werden, ob es
+kompatibilit&auml;sbedingt (insbesondere im DMA-Betrieb) zu eventuellen
+Einschr&auml;nkungen kommen kann.&laquo;
+</P>
+<P>
+(Quelle: Escena)
+</P>
+<P ALIGN="RIGHT">
+<A HREF="PowerUp4.html"><IMG SRC="../menu/pfeil_links.gif" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+<A HREF="PowerUp6.html"><IMG SRC="../menu/pfeil_rechts.gif" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

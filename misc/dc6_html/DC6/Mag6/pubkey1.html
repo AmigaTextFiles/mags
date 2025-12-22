@@ -1,0 +1,70 @@
+<HTML>
+<HEAD>
+<TITLE>Public Key Encryption
+</TITLE>
+</HEAD>
+<BODY>
+
+<H1><B><CENTER>Public Key Encryption</CENTER></B></H1>
+
+<P>Here, I will explain what Public Key encryption is, and how you can set about doing it. What I won't do is tell you how to write a program - I am not entirely sure on that matter, I must admit, due to the large numbers involved.
+
+<P>The basic principle of encryption is this: You take your message, and then encode it according to some particular set of rules - usually a keyword is used in the process. You then decode 
+it by perform the operations in reverse, and therefore exactly 'undo' what you did, to get the original message.
+
+<P>If you wanted to exchange a message with someone else, both people would have to know the rules on how to encode and decode the message, but the problem is someone else could find out what these rules are. All the time you have to tell someone what the keyword is, or whatever, there is a danger that the information could leak to other people.
+
+<P>The key point is that the encoding is easily reversible. That is, if you know the way that a message was encoded, you can set about doing it in reverse, and then (relatively) easily decode the message. Public Key encryption changed that.
+
+<P>Imagine you wanted to send a message off to somebody else, 
+in secret. This person would first give you a piece of information, called a public key. You then use this key to encode 
+the message. As the name suggests, it doesn't matter who knows about this key.
+
+<P>You would think that if someone knew the public key, and thus the method of encoding, they could reverse the process and decode 
+the message. This is not the case with Public Key encryption, at least, it is *very* hard to do so (see later). Instead, you need a private key, a piece of information which only the person you are sending the message to knows. As he doesn't give it out to anyone, there is less chance of it falling into the wrong hands.
+
+<P>So how do you do it? First of all, we need some large prime numbers. By large, I mean <I>large</I>, that is, several hundred digits. The procedure works with small primes, but it is much easier to crack such codes. Even so, for this tutorial, I will select small primes so you can see what is happening. I shall take p=3, q=11.
+
+<P>Choose two such large primes, and call them p and q. Now we calculate the value (p-1)(q-1), and choose a number d that is coprime to (p-1)(q-1) (coprime means that it has no common factors with the number, ie, the highest common factor is 1). We will take d=7, which is coprime to 20.
+
+<P>Now we calculate pq, and call this number n. In our case, n=33. We also need to calculate a number e, such that:
+<BR><CENTER>ed = 1 (mod (p-1)(q-1) )</CENTER>
+<BR>This means that e times d, when divided by (p-1)(q-1) will have a remainder of 1. Alternatively, we could write:
+<BR><CENTER>ed + f(p-1)(q-1) = 1</CENTER>
+<BR>for some integer f. So we must find a solution for e in the equation:
+<BR><CENTER>7e + 20f = 1</CENTER>
+<BR>There is a method we can use to find out e quickly (well, for 
+a computer). First, take 20 and divide by 7 to get the remainder, in this case, 6. Then do 7 divided by 6 to get the remainder 1. If we don't get 1, then carry on like this until you do (eg, if the first two numbers where 60 and 23, we would get 60, 23, 14, 9, 5, 4, 1) So we get the sequence:
+<BR><CENTER>20, 7, 6, 1</CENTER>
+<BR>Now we can rewrite 1 in terms of the previous two terms, that 
+is, 1 = 4 - 3. We then take each of these terms (4 and 3), and rewrite each in the form of the two terms previous, until we get to the first two terms (60 and 7). Thus:<UL>
+<LI>1 = 7 - 6
+<LI> = 7 - (20 - 2 x 7)
+<LI> = 3 x 7 - 1 x 20
+</UL>
+<BR>So we get e=3. Note that if we get e less than zero, just add multiples of (p-1)(q-1) to e until it is greater than zero. Let us quickly consider another example, where are two numbers are 60 and 23. We get the sequence 60, 23, 14, 9, 5, 4, 1, as we said, and the calculations go like this:<UL>
+<LI>1 = 5 - 4
+<LI> = (14 - 9) - (9 - 5)
+<LI> = (60 - 2 x 23) - 2 x 9 + (14 - 9)
+<LI> = 60 - 2 x 23 - 3 x (23 - 14) + 14
+<LI> = 60 - 5 x 23 + 4 x (60 - 2 x 23)
+<LI> = 5 x 60 - 13 x 23
+</UL>
+<BR>So here we get e=-17, so we add 60 to get e=43.
+
+<P>Back to out original example. To recap, we have p=3, q=11, n=33, d=7, e=3. Now any message can be represented by a sequence of numbers, and we represent the message with numbers that range from 0 to n-1 (from 0 to 32, in our case). We encode an individual number, a, according to this formula:
+<BR><CENTER>b = a ^ e (mod n)</CENTER>
+<BR>where b is the encoded number. That is, we take a, put it to the power of e, and then divide by n. The remainder is the encoded number. For example, let's take a number a=27. a^e=27^3=19683. Divide this by 33, and we get the remainder 15, which is our encoded number b. To decode, we do b^d=15^7=170859375. Divide by 33, and we get remainder 27, our original number! Do this for all of the numbers, and you can encode and decode messages.
+
+<P>So if you want someone to encode a message, you just tell them 
+the values of e and n, but keep p, q and d secret. The thing to remember is that in practice, as I said the primes p and q are extremely large, otherwise, you could compute p, q and d if you knew what e and n were. With very large numbers, this is extremely difficult.
+
+<P>This is what the RC5 cracking that the Amiga team is participating in is all about. If you know the public key, it is not impossible to crack the message, just very hard. By using immense processing power, the 56 bit encryption code was finally broken. Of course, it does not mean the encryption is insecure; that is a hell of a lot of processing power that is required to crack just one message. On the other hand, as computers get more and more powerful, the encryption will need to be made more secure, for example, the 64 bit encryption that is currently being worked on will take 256 times longer to crack.
+
+<P>Public Key encryption is used extensively in the modern world, 
+for example when transferring information securely through the Internet.
+
+<P><B>Mark</B>
+
+</BODY>
+</HTML>

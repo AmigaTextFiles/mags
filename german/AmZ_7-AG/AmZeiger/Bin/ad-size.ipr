@@ -1,0 +1,94 @@
+(PROCEDURE P_ASKDIR-SIZE
+
+;************************************************
+;*** AskDir-Size V1.13 by André Wyrwa in 1997 ***
+;************************************************
+;
+; Einleitung/Beschreibung:
+;
+; Diese Prozedur fragt den User nach einem Verzeichnis, genau wie ASKDIR,
+; jedoch mit dem Unterschied, daß eine vorrausgesetzte Mindestkapazität des
+; Datenträgers in KB angegeben werden kann und bei der Abfrage das gewählte
+; Verzeichnis daraufhin überprüft wird. Ist nicht genügend Kapazität
+; vorhanden, so kann die Abfrage wiederholt oder die Installation abgebrochen
+; werden.
+; Dabei werden für die bereits gewählten Verzeichnisse die Kapazitäten
+; für den jeweiligen Datenträger in einer Variablen mit dem Namen
+; #adsdt_<Datenträgername> aufaddiert, so daß es problemlos möglich ist,
+; zunächst alle Abfragen durchzuführen und erst dann mit der eigentlichen
+; Installation zu beginnen, wie im StyleGuide des Installers beschrieben.
+;
+; (c) 1997 André Wyrwa
+; Die Prozedur ist FREEWARE und darf unverändert in Installer-Scripts
+; verwendet werden.
+;
+;
+; History:
+;
+; V1.0  (??.03.1997)  -  erste Erstellung
+; V1.1  (19.03.1997)  -  SYMBOLSETs jetzt sicherer
+; V1.11 (09.04.1997)  -  Hilfe-Text verbessert
+; V1.12 (10.04.1997)  -  SYMBOLSETs jetzt noch sicherer
+;                        (erste öffentliche Version)
+; V1.13 (15.12.1997)  -  Dokumentation erweitert
+;
+;
+; Aufruf:
+;
+; (P_ASKDIR-SIZE
+;   <prompt>    ;wie PROMPT-Parameter
+;   <help>      ;wie HELP-Parameter
+;   <default>   ;wie DEFAULT-Parameter
+;   <size>      ;benötigte Kapazität in KB
+; )
+;
+; Bsp: (SET #dir (P_ASKDIR-SIZE "Hallo." "Hilfe" "Work:" 512))
+;
+;
+; Variable:
+;
+; #ads_default      (Default-Dir)
+; #ads_dir          (Ergebnis-Dir)
+; #ads_disk         (Device, auf dem das Verzeichnis ist)
+; #ads_dsize        (freier Platz auf dem Device)
+; #ads_fit          (genug freier Platz?)
+; #ads_help         (Hilfe-String)
+; #ads_prompt       (Prompt-String)
+; #ads_size         (benötigte Größe)
+; #adsdt_<device>   (schon für andere Verzeichnisauswahlen
+;                    reservierter Platz auf <device>)
+;
+;************************************************
+
+ #ads_prompt
+ #ads_help
+ #ads_default
+ #ads_size
+ (
+  (SET #ads_fit 0)
+  (WHILE (= #ads_fit 0)
+   (
+    (SET #ads_dir
+     (ASKDIR
+      (PROMPT (CAT #ads_prompt "\nEs werden ca. "#ads_size" KByte Festplattenkapazität benötigt."))
+      (HELP (CAT #ads_help "\n\n---\n\n" @askdir-help "\nEs wird dabei geprüft, wieviel Kapazität auf dem gewählten Datenträger noch verfügbar ist."))
+      (DEFAULT #ads_default)
+     )
+    )
+    (SET #ads_disk (GETDEVICE #ads_dir))
+    (SET #ads_dsize (GETDISKSPACE #ads_dir))
+    (IF (<= (+ (* #ads_size 1024) (SYMBOLVAL (CAT "#adsdt_" #ads_disk))) #ads_dsize)
+     (
+      (SET #ads_fit 1)
+      (SYMBOLSET (CAT "#adsdt_" #ads_disk) (+ (SYMBOLVAL (CAT "#adsdt_" #ads_disk)) (* #ads_size 1024)))
+     )
+     (
+      (MESSAGE (CAT "\n\nFEHLER!\n\nNicht genug Festplattenkapazität.\n\n\nbenötigt werden: " #ads_size " KByte\nverfügbar auf "#ads_disk": " (/ #ads_dsize 1024) "KByte\n\n\n\"Weiter\" drücken um ein anderes Verzeichnis zu wählen."))
+     )
+    )
+   )
+  )
+  (CAT #ads_dir)         ;Übergabe des Procedur-Ergebnisses
+ )
+)
+

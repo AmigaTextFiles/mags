@@ -1,0 +1,170 @@
+·
+ ¹F.Rendszer³
+ °
+
+
+
+
+»
+
+
+                                   ¾Part I.¼
+
+½ Elõszó:   Ez  a  cikk a PoWeR #8-ban `Programozás - az alapok` címen szereplõ
+iromány folytatása.¼
+
+ Aki  a  PoWeR #8-ban szereplõ programot begépelte, meglepõdve tapasztalhatta,
+hogy  sajnos  nem fordította le az ASSEMBLER (Már aki egyáltalán ASSEMBLER-ben
+próbálta...).    Szóval   ez  azért  van,  mert  egy  pár,  általunk  használt
+szimbólumot  nem  ismert  fel.   Például az _LVOOldOpenLibrary nevû offszetet.
+Ezek   az  offszetek,  meg  még  egy  csomó  más  adat,  struktúra  stb.   ún.
+¾include-file-okba¼   van   gyûjtve.   Programírás  elõtt  eldöntöd,  hogy  mely
+LIBRARY-ket  akarod  használni,  majd  a  hozzájuk  tartozó  include-file-okat
+beinclude-ozod.   Ez  az ASSEMBLER >include< utasításával történik.  Az elõbbi
+program futtatásához például az exec.library offszetjeire van szükség.  Persze
+ha  csak  két  rendszerrutint  használunk,  akkor  még nem érdemes az exec-hez
+tartozó  összes include-ot betölteni, elég csak ez a két offszet.  Ja, azt nem
+írtam  még  le,  hogy  mi  is  az  az  offszet.  Naszóval, amikor megnyitjuk a
+LIBRARY-t,  visszakapunk  a  D0-ban egy címet.  Ezen a címen egy csomó érdekes
+dolog  van, de fõleg az ELõTTE lévõ dolgok érdekelnek minket. ½ Itt van ugyanis
+az adott LIBRARY ugrótáblája.¼  Ez azt jelenti, hogy egy csomó JMP utasítás van
+itt.  Az include-file-okban levõ offszetek ezeknek a JMP-knek a relatív címeit
+tartalmazzák, a D0-ban visszakapott értékhez képest.  Mivel a visszakapott cím
+ELõTT  van  az  ugrótábla,  ezért  az  offszetek  mindig negatívok.  Tehát egy
+LIBRARY valamelyik rutinját a következõképpen lehet meghívni:
+
+¾        ...
+        ...
+        jsr     _LVONameOfRutin(a6)
+        tst.l   d0
+        beq.s   _Valami_Hiba_Van
+        ...
+        ...¼
+
+ ½Természetesen  a LIBRARY báziscímének az A6-ban kell lennie.¼  Bármely LIBRARY
+meghívása  után a D0-ban a kimeneti érték.  Ha ez 0, akkor valami hiba folytán
+nem  sikerült a végrehajtás.  Fontos tudni, hogy a rendszerrutinok nem hagyják
+változatlanul  a  regisztereket.   Fõleg az elsõ három-négy regisztert szokták
+használni,  szóval ha valami fontosat akarunk tárolni, akkor használjuk inkább
+a d4-d7, és az a3-a5 regisztereket.  Egyébként ezt sosem lehet biztosan tudni.
+ A  rendszerprogramozás  során  elõbb-utóbb találkozni fogtok a struktúrákkal.
+Egy  struktúra  tulajdonképpen  egy  adathalmaz,  ahol minden adatnak megvan a
+saját  helye.   Általában ha meghívunk egy rutint, és sok adatra van szüksége,
+akkor csak megadjuk a struktúra címét, és majd innen veszi az adatokat.  Ennek
+egy  fejlettebb változati az ún.  TagList-ek.  Ezek is struktúrák, de az egyes
+adatok  helye nem kötött, hanem az adat elõtt egy longword jelzi, hogy most mi
+is következik.  Azt hiszem a struktúrák elég érthetõek mindenki számára, ezért
+inkább írok egy példát a TagList-ekre:
+
+¾ScreenTags      dc.l    SA_Width,STDSCREENWIDTH
+                dc.l    SA_Height,STDSCREENHEIGHT
+                dc.l    SA_DEPTH,3
+                ...
+                ...¼
+
+ Ez  egy ScreenTagList, és egy új képernyõ megnyitásakor használjuk.  Amikor a
+rendszerrutin   elkezdi  feldolgozni  a  struktúránkat,  megnézi  a  következõ
+longword-öt.   Ez  jelzi  neki, hogy most milyen adat fog következni.  Például
+itt  elõször  a képernyõ szélességét állítja be, majd a magasságát, és végül a
+bitplane-ek számát.  Ez azért kényelmesebb annál, mintha minden adatnak kötött
+helye  lenne  a  listában.   Na  azt  hiszem,  ennyi elég is általánosságban a
+rendszerprogramozásról.  Akkor most jöjjenek a konkrétumok.
+
+ Kezdjük mindjárt az ½exec.library-vel:¼
+
+ Az  exec  gyakorlatilag a leglényegesebb LIBRARY.  Az õ feladata a task-ok, a
+megszakítások   és   a   különbözõ   rendszerfeladatok  elvégzése.   Az  egyik
+leglényegesebb  rendszerrutin  az  OpenLibrary.   Ehhez  hasonló  funkciójú az
+OldOpenLibrary   nevû   rutin.   A  különbség  a  kettõ  között  az,  hogy  az
+OldOpenLibrary  nem  kéri  a megnyitandó LIBRARY verziószámát, automatikusan a
+0-t veszi verziószámnak.  Ezzel szemben az OpenLibrary a D0-ban kéri a LIBRARY
+verziószámát.   A  másik  paraméter  amire  a rutinnak szüksége van, a LIBRARY
+neve.   Ez  egy  0-ra  végzõdõ string a memóriában, és ennek a kezdõcímét kell
+megadni az A1-ben.  Példát láthattatok rá a PoWeR #8-ban.  Amit visszakapunk a
+D0-ban,az  a  LIBRARY  báziscíme,  amirõl  már volt szó.  Ha nem ROM-library-t
+akarunk   megnyitni,  akkor  bekéri  a  Boot-lemezt,  és  megpróbálja  a  LIBS
+alkönyvtárban megkeresni a kért LIBRARY-t.  Ha ez nem sikerül, akkor 0-val tér
+vissza.   A  LIBRARY  bezárása  pont fordítva történik, és erre csak egy rutin
+van,  a  CloseLibrary.   Itt az A1-be kerül a LIBRARY báziscíme, és ezután már
+hívhatjuk is a rutint.  Ennyit a LIBRARY mûveletekrõl.
+ A  következõ fontos dolog az exec-ben a memóriakezelés.  Ha például írunk egy
+programot,  ami  be akar tölteni egy file-t vagy csak egyszerûen memóriára van
+szüksége, akkor sok lehetõségünk van.  Íme néhány:
+
+ 1.   Egyszerûen eldöntjük, hogy például $34546-tól miénk a szükséges memória.
+Ekkor többféle eredményt kaphatunk az elsõ memóriamódositáskor:  vagy kifagy a
+gép  vagy  nem,  vagy  csak  nem  úgy  mûködik ahogy kéne.  Ezt a módszert nem
+ajánlom senkinek, aki igaz barátja a rendszernek.
+
+ 2.    Használjuk  a  forráslistában  a  BLK.x  direktívát  a  kívánt  terület
+lefoglalására.   Ez  már  jobb,  de  még  mindig nem az igazi.  Ugyanis ha egy
+változó  méretû memóriarészre van szükségünk (tehát programírás közben még nem
+tudjuk  a  hosszát) akkor a lehetséges legnagyobb méretet kell lefoglalni, ami
+persze  nem túl jó, gondoljunk csak bele, ha egy ismeretlen méretû file-t kell
+betölteni...
+ 3.   Elegánsan  használjuk  az  exec  erre készített rutinjait.  Ez a legjobb
+módszer.
+
+ Én  most  a  3.   módszert  magyarázom  el  részletesen.   Az  elsõ  dolog  a
+memórialefoglalás.   Erre  2  rutin  is  létezik,  az AllocMem és az AllocAbs.
+Mindenekelõtt  azt  kell  megérteni,  hogy mi történik a lefoglalt memóriával.
+Nagyon  egyszerû  a  válasz,  ha  mi nem nyúlunk hozzá, akkor semmi.  Éppen az
+benne  a  jó, hogy a rendszer nem piszkálja, és lefoglaláskor csak olyat enged
+lefoglalni,  amit  õ  nem  használ,  vagyis  még  szabad.  Egyébként érdemes a
+memóriát rendszerbarát módon kezelni minden programunkban, még akkor is ha egy
+DOOM-szerû  játékot  írunk.   Ugyanis  ha csak simán, fixcímesen programozunk,
+felülírhatunk  rendszerterületeket,  és nem lehet majd GURU-mentesen kilépni a
+programból  (Most  nem  az  újságra  gondoltam...).   Tehát  visszatérve a két
+rutinhoz,  mindkettõben  bemeneti  adat  a  d0-ban  tárolt  hossz.  Ez jelzi a
+lefoglalandó  byte-ok  számát.  Az AllocAbs-nak még egy adatra van szüksége az
+A1-ben,  ez  pedig egy abszolút cím.  Ettõl a címtõl kezdve foglal le memóriát
+nekünk.   Persze nem biztos, hogy szabad ez a memóriaterület, ezért MINDIG meg
+kell  vizsgálni  a végeredményt!!!  Ha esetleg 0-t kapunk vissza, akkor inkább
+próbálkozzunk máshol (eszünkbe ne jusson felszabadítani ezt a területet(!!!)).
+Ha  nem  0-át kapunk vissza, akkor miénk a pálya, írhatunk, olvashatunk ezen a
+területen.   A  másik  gyakrabban  használt  rutin  az  AllocMem.  Itt a másik
+paraméter a d1-ben van.  Ez sokfélét fog jelezni a rutinnak, az egyes bitek is
+mást jelentenek:
+
+¾ 00.bit:  Publikus memória
+ 01.bit:  Chip-ram
+ 02.bit:  Fast-ram
+ 16.bit:  Memória törlése
+ 17.bit:  Legnagyobb block¼
+
+ Szóval  itt lehet beállítani, hogy milyen memóriát foglaljunk le, gondolom ez
+mindenkinek egyértelmû.
+ Ha  vége van a programunknak, nem árt ha felszabadítjuk a lefoglalt memóriát,
+mert  esetleg  két  futtatás  után  nem lesz szabad memória.  Erre a célra egy
+rutin létezik, ez a FreeMem.  Kezelése értelemszerû, A1-be a kezdõcímet, D0-ba
+a  hosszot  kell  berakni,  majd  meghívjuk a rutint.  Akik 2.0-ás, vagy annál
+fejlettebb   KickStarttal   rendelkeznek,   azoknak   lehetõségük  nyílik  egy
+kényelmesebb  memóriakezelés  megvalósítására.  Ezt támogatják az AllocVec, és
+az FreeVec rutinok.  Mindkettõt ugyanúgy használhatjuk, mint az AllocMem, és a
+FreeMem  rutinokat,  de a fõ különbség az, hogy a memória felszabadításnál nem
+kell  emlékeznünk  a  méretre,  az  Operációs  Rendszer  megjegyzi helyettünk.
+Szóval  az  AllocVec  használata megegyezik az AllocMem-ével, de a FreeVec-nél
+nem  kell  a  d0-ban  lennie  a  felszabadítandó memória méretének!  Ez néhány
+esetben  nagyon megkönnyíti a munkánkat, de nem mindig.  Például ha lefoglalok
+egy jó nagy memóriablockot, majd úgy döntök, hogy a felét felszabadítom, akkor
+az AllocMem/FreeMem rutinokat célszerû használni.
+ És  végül  nem  árt,  ha beszélünk az AvailMem rutinról.  Ez nem csinál mást,
+csak  a  d1-ben  megadott  memóriatípus hosszát adja meg.  Magyarul a bemeneti
+adat  a  d1-ben  van, és ez az AllocMem/AllocVec rutinoknál is használt típust
+adja  meg.  Végeredményként megkapjuk a kérdéses memóriarész hosszát.  Ehhez a
+rutinhoz egyébként nem kell 2.0-ás KickStart.
+
+ Még egy pár jótanács:
+
+ -  Mindig  nézzétek meg, hogy sikeres volt-e a memórialefoglalás, mert csúnya
+dolgok fognak történni, ha 0-tól felülírod a memóriát...
+ - Csak olyan memóriát szabadíts fel, amit TE foglaltál le!
+ - Csak olyan memóriát szabadíts fel, ami le van foglalva!
+ Ja, remélem mindenki tudja, hogy mi a különbség a Chip- és a Fast-RAM között!
+
+ Akkor  ennyit a memóriakezelésrõl.  Remélem minden érthetõ volt.  A következõ
+számban  idõlegesen  elhagyjuk  az  exec-et,  és a dos.library felé nézelõdünk
+majd.   Addig  is  valahogy  bírjátok ki...  ¾(Az említett cikk ebben a számban
+megtalálható - JaGu.)¼
+
+                                                ½COP¼

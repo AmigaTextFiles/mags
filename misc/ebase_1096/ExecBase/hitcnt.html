@@ -1,0 +1,194 @@
+<html>
+<head><title>Introduction To CGI</title></head>
+<body>
+<h1 align=center>Introduction To CGI</h1>
+<h3 align=center>by John Coriglano</h3>
+<center><p><a href="mailto:jcorig@udel.edu">&lt;jcorig@udel.edu&gt;</a>
+</p></center><p>
+CGI (<b>C</b>ommon <b>G</b>ateway <b>I</b>nterface).  What <i>exactly</i>
+is it? You've probably heard about it, but if you're not a web page
+creator, you might not know really what it is.
+</p><p>
+First, CGI is <b>not</b> a programming language. You can use just
+about any language you like to create CGI programs.  The only requirements
+are that the language can:
+<ul>
+<li> Read from stdin
+<li> Write to stdout
+<li> Access global environment variables.
+</ul>
+By far, the two most popular languages being used for CGI are C and Perl.
+Personally, I prefer Perl, since it does not have to be compiled.
+</p><p>
+CGI programs are run on the <i>server</i> - the server does the work of
+setting up environment variables, running the program, and passing the
+output of the program to the <i>client</i>. So, for example, when you click
+on the <tt>Submit</tt> button of a form, the server collects all the data
+and sets up all the variables, then launches the program. It then takes
+the output of the program and passes that back to the client as an http
+document. Thus, you cannot run CGI programs without a server.
+</p><p>
+If you're not familiar with Perl, than you probably don't work with
+UNIX too much!  Perl is very popular on UNIX systems.  It is an interpreted
+language that has great file and string manipulation features. It is
+a very good choice for use with CGI.  There is an Amiga port of Perl on
+Aminet.
+</p>
+<h3>Using CGI From Your Pages</h3>
+<p>
+There are three (3) steps to adding CGI to your (or your client's) web
+pages:
+<ol>
+<li> Obtain permission from the ISP (Internet Service Provider)
+<li> Create the CGI programs
+<li> Add links to your CGI programs from the HTML documents
+</ol>
+How to obtain permission depends on your ISP.
+</p>
+<h3>An Access Counter Example</h3>
+I'm sure you have seen the ubiquitous access counters on web pages:
+<i>You are hit #xxxxx since 01.02.95</i>. Without getting into a debate
+about what purpose these things serve, let's go over the steps on how
+to add one to our web pages.
+</p><p>
+First, we need to decide what language to use. I choose Perl! The main
+benefit of Perl is that it does not have to be compiled. So, you can
+create the script on an Amiga and it should run on a UNIX box with no
+modifications.
+</p>
+<h3>How It Works</h3>
+<p>
+We are going to make a text-only counter (creating a graphic one is
+beyond the scope of this article). The counter will be updated whenever
+the script is executed.  But here's the $64,000,000 question: <i>how does
+our script get executed?</i>
+</p><p> 
+Many of those access counters you've seen require a special program that
+runs <i>all the time</i> on the ISP's machine. Many ISPs don't like
+that, and don't allow them so we are going to make a friendlier version.
+</p><p>
+This can be done one of two ways:
+<ol>
+<li> A dummy home page.
+<li> Make the script the home page
+</ol>
+For the first method to work, simply create a page that only has a little
+welcome message (or whatever) and a link to our script. The HTML for
+this might be:
+<pre>
+&lt;html&gt;&lt;head&gt;&lt;title&gt;"Welcome To Our Site"&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;img src="welcome.gif" alt="Welcome To Our Site"&gt;
+&lt;p&gt;
+&lt;form action="welcome.cgi" method="POST"&gt;
+&lt;input type="submit" value="Press To Continue"&gt;
+&lt;/form&gt;
+&lt;/body&gt;&lt;/html&gt;
+
+</pre>
+And you might get a page that looks like this:<br>
+<img align=center src=welcome.gif alt="Example Page Image"><br>
+When somebody visits our page, they will have to click the button to keep
+going. When they do that, the Perl script <i>welcome.cgi</i> will get executed.
+</p><p>
+To do the second method, just tell people to go directly to the Perl
+script when they want to access your home page. For example, if we are
+located at "nowhere.cool.com" and we have our script in the /cgi-bin
+directory, we would tell everyone that our home page is
+<pre>
+http://nowhere.cool.com/cgi-bin/welcome.cgi
+
+</pre>
+This will take them directly to the script, bypassing the welcome page.
+</p>
+<h3>Well, what about the script?</h3>
+<p>
+Now we finally get to the actual script.  All this program does is it
+creates an HTML document on the fly.  The actual documment will be
+coded directly into the program, but it could also be kept in a disk
+file.
+</p><p>
+In order to make the document, the script just needs to print the lines
+of the document to stdout and the server takes that and passes it along
+to the client as an HTML doc.  The only prerequisite is that the very
+first thing that the program prints <b>must</b> be:
+<pre>
+Content-type: text/html\n\n
+
+</pre>
+<b>Note that there are <i>two (2)</i> newline characters!!</b> This is very
+important.
+</p><p>
+After this, the program just prints out the document, inserting the correct
+count in the right place. So (drum roll please), here's the script:
+</p>
+<pre>
+#!/usr/bin/perl
+
+# The file that holds the number of hits to date
+$cnt_file = "/home/myplace/counter"
+
+# Initialize the counter in case we can't get the file
+$cnt = 0;
+
+# First, open the file that has the current counter value.
+# This file should have one line (but we check them all) and
+# the format of that line should be:
+#  COUNTER: <i>x</i>
+# Where <i>x</i> is the number of accesses so far.
+if open(CNTER, $cnt_file)) {
+    while (&lt;CNTER&gt;) {
+        if (/^COUNTER: (\d*)/) {
+            $cnt = $1;
+        }
+    }
+    close(CNTER);
+}
+
+# Increment the counter
+$cnt++;
+
+# Write the new value back to the file for next access
+if (open(CNTR, "&gt;".$cnt_file)) {
+    print CNTR "COUNTER: $cnt\n";
+    close(CNTR);
+}
+
+# Now all that's left is to print out the HTML code
+# Can't forget this!
+print "Content-type: text/html\n\n";
+
+# Now for the HTML
+print "&lt;html&gt;&lt;head&gt;&lt;title&gt;Access Page&lt;/title&gt;&lt;/head&gt;\n"
+print "&lt;h1&gt; Welcome To The Access Page &lt;/h1&gt;\n";
+printf "You are visitor %05d to this page!\n", $cnt;
+print "Check out our stock:\n";
+print "&lt;ul&gt;\n";
+print "&lt;li&gt; &lt;a href=\"/home/my_home/widgets.html\"&gt; Widgets &lt;/a&gt;\n";
+print "&lt;li&gt; &lt;a href=\"/home/my_home/gizmos.html\"&gt; Gizmos &lt;/a&gt;\n";
+print "&lt;li&gt; &lt;a href=\"/home/my_home/doohickeys.html\"&gt; Doohickeys &lt;/a&gt;\n";
+print "&lt;/ul&gt;\n";
+print "&lt;/body&gt;&lt;/html&gt;\n"
+
+</pre>
+<p>
+And you should get something like this (except with real links):
+<hr>
+<h1> Welcome To The Access Page </h1>
+You are visitor 00123 to this page.
+Check out our stock:
+<ul>
+<li> Widgets
+<li> Gizmos
+<li> Doohickeys
+</ul>
+<hr>
+Well, I guess that's all for now! Until next time, here are some
+books you might want to check out:
+<ul>
+<li> <i>Programming Perl</i> L. Wall and R. Schwartz
+<li> <i>CGI Programming in C & Perl</i> Thomas Boutell
+</ul>
+<hr>
+<a href="default.html"> Table of Contents </a>
+</body></html>

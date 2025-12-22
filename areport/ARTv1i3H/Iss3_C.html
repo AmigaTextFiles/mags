@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 3.0//EN">
+<!-- This document follows the HTML 3.0 standard -->
+
+<html>
+  <head>
+    <title>Programming in C</title>
+  </head>
+  <body>
+
+    <h1 align="left">Programming in C</h1>
+    <h3 align="right">By Ken Howe &lt;khowe90@entergy.com&gt;</h3>
+
+    <hr>
+
+    <p> About three months ago I finally gained access to the internet
+      and started browsing around Aminet. I usually look for utilities
+      and source code to help me in my programming efforts on the
+      Amiga. I also read Amiga Report and lo and behold I spotted a
+      copy of the first Issue of Amiga Report Tech Journal. After
+      reading the first and now second edition I thought the concept
+      had great potential.
+    </p>
+
+    <p> I know how difficult it is learning to program the Amiga
+      especially as most Amiga magazines only touch the surface of
+      programming, running the same old simple programming
+      tutorials. I used to buy those magazines month in month out
+      hoping to find something useful but no. So I soldiered on as
+      most people have and learned what I know very slowly. I am by no
+      means a great Amiga programmer and alot of people may already
+      know most of the concepts that I will be talking about in the
+      coming issues so if you think you can do better put together an
+      Article and maybe you can teach me something!!
+    </p>
+
+    <p> Ive been doing small development on the Amiga on and off for
+      about 3 years mainly just to teach myself C and soon C++. I
+      program Client Server Windows Application for a living, can
+      Program over 10 different programming languages and have been
+      programming for over eight years. I may not be an Amiga expert
+      but I hope I know a bit about programming.
+      </p>
+
+    <p> Well thats the background, Ive only had a week to put this
+      article together so Im just going to do a few programming tips,
+      mainly a few tricks I have learn't about ANSI C. I hope to do
+      more article for future issues with a bit more meat in them!
+      </p>
+
+    <ol>
+      <li>Stop yourself from making the
+	<code>if(&nbsp;a&nbsp;=&nbsp;b&nbsp;)</code> mistake by
+	declaring a define statement as follows<br>
+ 
+	<code>#define EQU ==</code>
+	
+	<p>Then anywhere you would normally use
+	<code>if(&nbsp;a&nbsp;==&nbsp;b&nbsp;)</code> use
+	<code>if(&nbsp;a&nbsp;EQU&nbsp;b&nbsp;)</code>. Your C compiler
+	may already have this defined. I always include a header file
+	of mine called Kens.h with this define and a few other things
+	just to make sure.</p></li>
+
+      <li>Initialised auto variables for strings, arrays or any
+	composite object is very inefficient. If you do not recognise
+	the name it simply put means a variable that is automatically
+	initialised for you. Example:<br>
+    
+	<code>int i = 0;</code>
+     
+	<p>Each object defined in this way will occupy exactly twice
+	  the storage space. Also the compiler will reset the variable
+	  every time the function is called. This involves copying the
+	  variable contents from a safe location in memory into your
+	  working variable.</p>
+	
+	<p>This not only wastes CPU time, it also makes for larger
+	  memory overheads and larger stack usage. In most cases the
+	  variable can be changed to be static if this is not the case
+	  then try to use a global buffer shared between all routines,
+	  which you can initialise yourself. Example:<br>
+     
+	  Replace: <code>void func( void ) { char ls_Msg = "This is
+	    time consuming";...} </code><br> 
+	  With: <code>void func( void ) { static char ls_Msg = "Much
+	    Better";...}</code></p> 
+      </li>   
+
+      <li>Pre increment/decrement operators are more efficient than
+	post increment/decrement operators. This is valid mostly when
+	they are combined in expressions using compare. Example<br>
+     
+	<code>( ++li_A < li_B )</code>
+     
+	<p>There is no saving when they are being used in the simple
+	  for of <code>li_A++</code> or <code>li_B++</code>. The
+	  reason for the benefit of
+	  <code>(&nbsp;++li_A&nbsp;<&nbsp;li_B&nbsp;)</code> over
+	  <code>(&nbsp;li_A++&nbsp;<=&nbsp;li_B&nbsp;)</code> is that
+	  the compiler must generate an extra jump instruction to
+	  prevent the increment from happening.</p></li>
+      
+      <li>You can reduce the size of simple if/else blocks, where the
+	instructions are single lines by always performing the else
+	instruction then having a plain if. You remove a JMP
+	instruction from your code. Example:<br>
+	
+	Replace: <code>if( li_A < li_B ) li_Z = 10; else li_Z = 0;</code><br>
+	With:    <code>li_Z = 0; if( li_A < li_B ) li_Z = 10;</code>
+      </li>
+
+      <li>You can use register variables to dramatically increase the
+	speed of loops within your program but! you must be careful
+	when declaring more than one register in a single declare
+	statement.
+
+	<p>
+	When you declare the register variables, declare them
+	singularly with the inner most variable declared first. Thus
+	making sure the most used variable is the register variable
+	whenever a spare register is available. Example:<br>
+	
+	  Replace: <code>register int li_I, li_J;</code><br>
+	
+	  With:    <code>register int li_J; &47;* J in inner most
+	variable *&47; <br>
+	    register int li_I;</code>
+	</p>
+      </li>
+
+      <li>In SAS/C you can change the size of the default console
+	window by including the following command just after your last
+	include:<br>
+	
+	<code>char __stdiowin[]="CON:0/0/700/550/Window Title";</code>
+     
+	<p>This command works the same as the DOS shell program so you
+	  can adjust the size and coordinates of the window.</p>
+      </li>
+
+      <li> Care should be taken when defining a macro that makes up
+	more than one statement, for example:<br>
+	
+	<code>#define ABORT (void)printf("Aborting\n");exit(1);</code>
+	
+	<p>It is easy then to use ABORT in other parts of the program
+	  but it can cause problems when not used in a straight
+	  forward manner such as in an if statement. In order to avoid
+	  problems like this you should always enclose multi statement
+	  macros in a do {} while(0) construct, for example:<br>
+	  
+	  <code>#define ABORT do {(void)printf("Aborting\n");exit(1);}
+	  while(0);</code>
+	</p>
+      </li>
+
+      <li> Parameterized macros should always have parentheses ()
+	around the parameters in a parameterized macro. The helps to
+	overcome the following.<br>
+	
+	<code>#define SQR( number ) ( number * number ) <br>
+	  li_Size = SQR( 5 )</code><br>
+     
+	equates to<br>
+     
+	<code>li_Size = ( 5 * 5 )</code><br>
+	
+	but consider<br>
+     
+	<code>li_Size = SQR( 5 + 6 )</code>br>
+     
+	equates to<br>
+     
+	<code>li_Size = ( 5 + 6 * 5 + 6 )</code><br>
+     
+	<p>Therefore if we use the rule of always putting parentheses
+	  around parameters we overcome the problem, for example:<br>
+     
+	  <code>#define SQR( number ) ( ( number ) * ( number ) ) <br>
+	    li_Size = SQR( 5 + 6 )</code><br>
+	  
+	  gives<br>
+     
+	  <code>li_Size = ( ( 5 + 6 ) * ( 5 + 6 ) )</code><br>
+	  </p>
+     
+	<p>(NOTE) never use ++ and -- with macros, consider:<br>
+	
+	  <code>li_Size = SQR( li_Val++ )</code><br>
+     
+	  equates to<br>
+     
+	  <code>li_Size = ( ( li_Val++ ) * ( li_Val++ ) )</code><br>
+     
+	  Yuk!
+	</p>
+      </li>
+
+      <li>The last tip is not much of a tip really if you are already
+	programming in C but! if you are thinking about starting C you
+	will probably want a book to learn from. And being new to C
+	you will probably ask other people for advice and they will
+	say... buy the K&R book The C programming language.
+
+	<p>Well I have to disagree, working in computing I am
+	  fortunate to have access to lots of books on programming and
+	  if there is a book I want to read I can order it free of
+	  charge. Most people recommend the K&R book as they have not
+	  tried many other books.</p>
+
+	<p>I found the K&R book very tuff going and Iam not new to
+	  programming.  Therefore I would like to take this
+	  opportunity to recommend the best two book out of the 12 I
+	  have at my disposal:</p>
+	
+	<p>As a quick reference: C Quick Reference, by QUE, ISBN
+	  0-88022-372-3 ( about $8 ) Is a compact (154 pages)
+	  reference to the C language and is great for looking up
+	  commands and C syntax.</p>
+
+	<p>As a tutorial book: Using C, by QUE, ISBN 0-88022-571-8 (
+	  about $30 ) Is almost 1000 pages. It is split into 3 books,
+	  1) the tutorial is brilliant with loads of meaning full
+	  examples it start easy and will take you through most of the
+	  advanced stuff. 2) A complete C library reference. 3) An
+	  introduction to C++.</p>
+      </li>
+    </ol>
+
+    <p>Well thats all for this issue I hope to have a full and
+      hopefully useful routine to pick over next issue.</p>
+
+    <hr>
+    <p>Ken Howe can be reached at <a
+	href="mailto:khowe90@entergy.com">khowe90@entergy.com</a></p>
+  </body>
+</html>

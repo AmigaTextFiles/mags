@@ -1,0 +1,279 @@
+<HTML><HEAD>
+    <TITLE>AmZeiger 09/97 - Strings in C</TITLE>
+</HEAD><BODY BACKGROUND="../images/bg.gif">
+<CENTER><H1><U>Strings in C</U></H1><BR>von<BR><A HREF="mailto:C.Jahn@gmx.de">Carsten Jahn</A><BR>
+<FONT=-2>Zusammen mit G.Franz und A.Schlick</FONT></CENTER>
+<P>Im Zuge des <A HREF="../amz0697/iv0697.htm">Interviews</A> der letzten Ausgabe gelang es uns Carsten Jahn,
+einen der Programmierer des Blankerprogrammes Madhouse, f&uuml;r einen
+kleinen Exkurs in die Tiefen der Programmiersprache C zu gewinnen.</P>
+<P>Ob er sich f&uuml;r weitere Themenschwerpunkte Zeit nehmen wird, richtet
+sich nicht zuletzt auch nach den Reaktionen.</P>
+<HR>
+<P><B>In diesem Kurs</B> wollen wir in einem Zwiegespr&auml;ch C f&uuml;r Anf&auml;nger vermitteln.
+Als Ziel soll ein Programm erstellt werden, das eingegebene Texte zentrieren kann. Wir setzen Grundkenntnisse voraus.</P>
+
+<P>Ziel des Kursteils ist es, C nicht systematisch zu erkl&auml;ren, sondern einen
+bestimmten Aspekt zu beleuchten. Man sollte sich also schon mal mit C
+besch&auml;ftigt haben. Trotzdem richtet sich das Thema an Anf&auml;nger.</P>
+
+<P>Die Verwendung von Strings (auch Zeichenketten genannt) in C unterscheidet
+sich von der Verwendung in anderen Programmiersprachen darin, da&szlig; man in C
+genau &uuml;ber die Interna und Zusammenh&auml;nge Bescheid wissen mu&szlig;, sonst kommt
+es zu schwer verst&auml;ndlichen Fehlern im Programm.</P>
+<BR>
+<TABLE BORDER=1>
+<TR BGCOLOR="#FFFFFF">
+    <TH>Frage:</TH>
+    <TD>Womit beginnen wir?</TD>
+</TR>
+<TR BGCOLOR="#DADADA">
+    <TH>Antwort:</TH>
+    <TD><P>Vielleicht sollten wir uns zuerst &uuml;ber das Grundkonzept von Strings in C klar werden. Es gibt n&auml;mlich keins! Stattdessen werden Strings in
+    normalen Arrays (Feldern) abgelegt, Zeichen f&uuml;r Zeichen.</P>
+    <P>Begonnen wird, wie immer bei C-Arrays, beim nullten Index, das Ende
+    des Strings wird mit einem 0-Byte signalisiert.</P></TD>
+</TR>
+<TR BGCOLOR="#FFFFFF">
+    <TH>Frage:</TH>
+    <TD>Was ist denn ein Null-Byte?</TD>
+</TR>
+<TR BGCOLOR="#DADADA">
+    <TH>Antwort:</TH>
+    <TD><P>Weil Computer nur mit Zahlen umgehen k&ouml;nnen, hat man jedem Buchstaben
+    eine Nummer zugewiesen (ASCII-Codierung). Zum Beispiel hat 'A' die
+    Nummer 65.</P>
+    <P>Mit den Nummern hat man aber selten zu tun, weil der Compiler die
+    Umwandlung automatisch vornimmt. &quot;0-Byte&quot; bedeutet einfach nur, da&szlig; die
+    Nummer 0 in das Array eingetragen wird.</P></TD>
+</TR>
+<TR BGCOLOR="#FFFFFF">
+    <TH>Frage:</TH>
+    <TD>Was passiert, wenn man das 0-Byte wegl&auml;&szlig;t?</TD>
+</TR>
+<TR BGCOLOR="#DADADA">
+    <TH>Antwort:</TH>
+    <TD><P>Versucht man beispielsweise, einen solchen String mit <I>printf()</I> (s.u.)
+    auszugegeben, tritt die folgende Situation auf:</P>
+
+    <P><I>printf()</I> gibt so lange Zeichen aus dem Array aus, bis es auf das
+    abschlie&szlig;ende 0-Byte st&ouml;&szlig;t. Wird das vergessen, gibt <I>printf()</I> noch
+    die Dinge hinter dem eigentlichen String aus, also Zeichenm&uuml;ll...
+    solange, bis zuf&auml;llig eine Null im Speicher steht.</P></TD>
+</TR>
+<TR BGCOLOR="#FFFFFF">
+    <TH>Frage:</TH>
+    <TD>Wie erstellt man denn einen String?</TD>
+</TR>
+<TR BGCOLOR="#DADADA">
+    <TH>Antwort:</TH>
+    <TD><P>Es gibt da verschiedene Methoden. Oft f&uuml;llt man den String nicht
+    sofort mit Text, dann geht es so:</P>
+    <P>C> <I>char text[50];                  /* Bsp 1 */</I></P>
+    <P>Jetzt haben wir einen String mit dem Variablennamen &quot;text&quot;. Er darf
+    maximal 50 Zeichen enthalten, abz&uuml;glich des 0-Bytes macht das noch
+    49 Zeichen sinnvollen Text.</P>
+    <P>Wenn man den String gleich vorbelegen m&ouml;chte (im obigen Beispiel ist
+    der Inhalt undefiniert, also wieder Zeichenm&uuml;ll), dann kann man das
+    so tun:</P>
+    <P>C> <I>char text[50] = &quot;Hallo!&quot;;</I></P>
+    <P>Das omin&ouml;se 0-Byte wird dann vom Compiler automatisch erzeugt.</P></TD>
+</TR>
+<TR BGCOLOR="#FFFFFF">
+    <TH>Frage:</TH>
+    <TD>Wie kann der String aus Beispiel 1 gef&uuml;llt werden? </TD>
+</TR>
+<TR BGCOLOR="#DADADA">
+    <TH>Antwort:</TH>
+    <TD>Auf keinen Fall darf man das so wie in Amiga-Basic-Zeiten machen:
+    <P>C> text = &quot;Hallo!&quot;;  /* FALSCH! */</P>
+    <P>Es mu&szlig; stattdessen eine Funktion aus den Linkerbibliotheken benutzt
+    werden, hier strcpy. Damit der Compiler die Funktion erkennt, mu&szlig; man
+    &quot;string.h&quot; includen.</P>
+    <P>C> <I>strcpy( text, &quot;Hallo!&quot; );</I></P>
+    <P>Der Unterschied zwischen der falschen und der richtigen Variante ist
+    dieser: In beiden F&auml;llen wird eine tempor&auml;re Stringvariable (die mit
+    &quot;Hallo&quot; gef&uuml;llt wird) vom Compiler angelegt.</P>
+    <P>Im unteren Beispiel wird ein Zeiger darauf an die <I>strcpy()</I>-Funktion
+    &uuml;bergeben, diese liest den tempor&auml;ren String aus und kopiert seinen
+    Inhalt nach text. Also genau das, was wir wollen.</P>
+    <P>Im oberen Beispiel wird erreicht, da&szlig; text sich nun auf die tempor&auml;re
+    Variable bezieht (er &quot;zeigt&quot; darauf), und nicht mehr auf den eigentlichen
+    (50 Zeichen langen) Speicherbereich.</P>
+    <P>Tempor&auml;re Variablen haben allerdings die Eigenschaft, sofort nach der
+    Ausf&uuml;hrung der Anweisung (i.A. der Programmzeile) Harakiri zu begehen,
+    d.h. sie werden wieder destruiert. Deshalb ist &uuml;ber text jetzt
+    h&ouml;chstwahrscheinlich noch &quot;Hallo!&quot; abrufbar, aber in Wirklichkeit haben wir
+    einen &quot;dangling pointer&quot;, also ein Ding womit wir nichts mehr anfangen
+    sollten.</P>
+    <P>Bei <I>strcpy</I> ist zu beachten, da&szlig; der Quellstring auch in den Zielstring
+    passen mu&szlig;. Gegebenenfalls mu&szlig; man bei der Stringdeklaration mehr
+    Speicherplatz verlangen.</P></TD>
+</TR>
+<TR BGCOLOR="#FFFFFF">
+    <TH>Frage:</TH>
+    <TD>Wenn ich nun sp&auml;ter mal einen gr&ouml;&szlig;eren String brauche, kann ich dann
+    text noch vergr&ouml;&szlig;eren?
+</TD>
+</TR>
+<TR BGCOLOR="#DADADA">
+    <TH>Antwort:</TH>
+    <TD><P>Nein. Da sollte man besser eine neue Variable nehmen. Wenn aber dieses
+    Feature wirklich ben&ouml;tigt wird (zum Beispiel in einem Editor, der es
+    erlauben soll, beliebig lange Zeilen zu editieren) mu&szlig; man auf andere
+    L&ouml;sungen zur&uuml;ckgreifen.</P>
+    <P>Man kann den Speicher, in dem ein String abgelegt wird, auch &quot;per Hand&quot;
+    (mit AllocMem, malloc, new oder Konsorten) allozieren (beim System
+    anfordern). Das ist aber schon was f&uuml;r Fortgeschrittene, und f&uuml;r die
+    meisten F&auml;lle reichen die normalen Strings.</P></TD>
+</TR>
+<TR BGCOLOR="#FFFFFF">
+    <TH>Frage:</TH>
+    <TD>Wollen wir nicht langsam zu einem konkreten Beispiel kommen? Die ganzen
+    strcpys machen mich schon ganz verr&uuml;ckt...
+</TD>
+</TR>
+<TR BGCOLOR="#DADADA">
+    <TH>Antwort:</TH>
+    <TD>Nun gut, hmm &auml;h.  Wie w&auml;rs, wenn wir ein Programm schreiben, das einige
+    Zeilen Benutzereingabe aufnimmt und sie anschlie&szlig;end wieder zentriert
+    im Shellfenster ausgibt?</TD>
+</TR>
+<TR BGCOLOR="#FFFFFF">
+    <TH>Frage:</TH>
+    <TD>Gar keine Frage!</TD>
+</TR>
+<TR BGCOLOR="#DADADA">
+    <TH>Antwort:</TH>
+    <TD> Auf gehts, hier ist das grobe Programmger&uuml;st: </TD>
+</TR>
+</TABLE>
+
+<PRE>
+---8&lt;---
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+
+/* Die Dateien enthalten sog. Prototypen, also Erkl&auml;rungen f&uuml;r den
+Compiler, wie Funktionen wie strcpy aufgerufen werden m&uuml;ssen. Damit
+er pr&uuml;fen kann, ob wir alles richtig programmiert haben. Bei C gibt
+es n&auml;mlich (im Gegensatz zu vielen anderen Sprachen) keine einge-
+bauten Befehle, wie PRINT in Basic. Durch das include wei&szlig; der
+Compiler, da&szlig; es eine Funktion wie printf() &uuml;berhaupt gibt. Und
+verwendet sie. Der Linker stellt dann nach dem Compilieren fest,
+da&szlig; man gar kein printf() definiert hat, und sucht es deshalb in
+den Linker-Bibilotheken, wo er im Fall von printf() auch f&uuml;ndig wird. */
+
+char zeilen[20][70];     /* maximal 20 Zeilen a 80 Zeichen. */
+int zeilenanz;
+
+void eingabe()
+{
+        // das ist noch zu f&uuml;llen...
+}
+
+void ausgabe()
+{
+        // das ebenfalls
+}
+
+void main( )
+{
+        printf(&quot;Sie k&ouml;nnen jetzt maximal 20 Zeilen a 70 Zeichen angeben, wenn Ihnen schon\n&quot;
+                &quot;vorher die Ideen ausgehen, dr&uuml;cken Sie einfach &lt;Return&gt; in einer leeren\n&quot;
+                &quot;Zeile.\n&quot;);
+        eingabe();
+        ausgabe();
+        printf(&quot;Das wars!\n&quot;);
+        // welch ein Musterprogramm!
+
+        /* Was hatte eigentlich das \n oben zu sagen? Nun, <I>printf()</I> und Konsorten
+        k&ouml;nnen noch diverse Steuersequenzen auswerten. Dazu z&auml;hlt \n. \n sorgt
+        f&uuml;r einen Zeilenumbruch im Shellfenster. */
+
+}
+---&gt;8---
+
+nun zur Eingabe:
+
+---8&lt;---
+void eingabe()
+{
+        short cnt;
+
+        for( cnt = 0; cnt &lt; 20; cnt++)
+        {
+                gets( zeilen[cnt] );
+                if( zeilen[cnt][0] == 0 )
+                        break;
+
+                /*
+                 * Mit break wird hier ausgestiegen, wenn eine Leerzeile
+                 * eingegeben wurde. Man bemerke  die Abfrage des 0-Bytes,
+                 * welches am Stringanfang eines leeren Strings steht.
+                 */
+        }
+        zeilenanz = cnt;
+}
+---&gt;8---
+
+nun zur Ausgabe:
+
+---8&lt;---
+void ausgabe()
+{
+        short cnt, laenge, leeranz, leercnt;
+        char ausgabestr[80];
+        for( cnt = 0; cnt &lt; zeilenanz; cnt++ ) {
+                /* L&auml;nge der Zeichenkette feststellen: */
+                laenge = strlen( zeilen[cnt] );
+                /* Wir m&uuml;ssen nun die H&auml;lfte der Differenz der Anzahl
+                der Zeichen des Strings und 70 feststellen! */
+                leeranz = (70-laenge) / 2;
+                /* diese Anzahl von Leerzeichen m&uuml;ssen ausgegeben
+                werden, damit der Text zentriert erscheint. Wir
+                basteln jetzt einen String, der leeranz Leerzeichen
+                und die jeweils eingegebene Zeile enth&auml;lt.*/
+
+                for( leercnt = 0; leercnt &lt; leeranz; leercnt++ ) {
+                        ausgabestr[leercnt] = ' ';
+                }
+                ausgabestr[leercnt] = 0;
+
+                strcat( ausgabestr, zeilen[cnt] );
+                /* strcat f&uuml;gt den String in zeile[cnt] an ausgabestr an,
+                nur zu verwenden bei Strings, in denen man schon ein 0-Byte
+                gesetzt hat.*/
+
+                printf(&quot;%s\n&quot;, ausgabestr );
+        }
+}
+---&gt;8---
+</PRE>
+
+<P>Wir hoffen, dieses kleine Programm hat mehr Probleme im Kopf gel&ouml;st, als
+erzeugt. Und vielleicht noch etwas Problembewu&szlig;tsein geschaffen.</P>
+<P>Denn C geht nicht sonderlich intelligent mit Strings um, der Programmierer
+mu&szlig; immer mitdenken, was er eigentlich will, und welche Anstrengungen der
+Compiler t&auml;tigen m&uuml;&szlig;te, um sein Vorhaben zu erreichen. Jedem sei gesagt,
+da&szlig; der Compiler zwar schon eine Menge macht, aber alle &quot;unselbstverst&auml;ndlichen&quot;
+Anstrengungen bleiben letztlich beim Progger...</P>
+
+<P><U>Anmerkung:</U><BR>
+Da in HTML ISO Entities verwendet werden sollte, kann der oben angegebene
+Sourcecode nicht direkt verwendet werden. Der Sourcecode liegt daf&uuml;r im
+<A HREF="../amz0997/scripts.lha">Lha-Archive</A> dem AmZeiger bei!</P>
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="../kw/wb_tun2.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0997/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../amz0997/uhl.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`97<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>
+

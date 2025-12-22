@@ -1,0 +1,141 @@
+.key target,initial/s
+.bra «
+.ket »
+.def target sys:
+
+; make required commands resident
+resident >NIL: c:copy add pure
+resident >NIL: c:list add pure
+resident >NIL: c:makedir add pure
+resident >NIL: c:search add pure
+resident >NIL: c:type add pure
+
+; build the keymap choice table
+failat 21
+if "«initial»" NOT EQ ""
+    set keysource Extras2.0:
+else
+    set keysource «target»
+
+; check if they have a keymaps directory, if not we'll need to get
+; the extras disk swapped in now.
+    if not exists «target»devs/keymaps
+	makedir >NIL: «target»devs
+	makedir >NIL: «target»devs/keymaps
+        set keysource Extras2.0:
+    endif
+endif
+set keytarget «target»
+;
+echo "*Ec*N                KeyMap Selection"
+echo "*NThis procedure will copy a selected keymap from the"
+echo "Extras disk onto your Workbench disk."
+echo "*N*E[33m*E[1mPlease ensure that you are working with a copy of your"
+echo "Workbench disk.*E[22m*E[28m"
+echo "*NDo you wish to continue ? (1 = Yes / 0 = No) " noline
+unset query
+set >NIL: query ?
+if NOT "$query" EQ "1"
+    if NOT "$query" EQ "y"
+        skip keyexit2
+    endif
+endif
+;
+if EXISTS ${keysource}devs/keymaps
+    list ${keysource}devs/keymaps lformat "%-8n(%c)" >t:key${process}
+    type t:key${process} number to t:akey${process}
+endif
+echo "    0 usa     (American)" >>t:akey${process}
+
+lab keystart
+;
+echo "*Ec*N                Select KeyMap*N"
+;
+unset number
+type t:akey${process}
+echo "*NYour choice (RETURN to exit without choosing) ? " noline
+set >NIL: number ?
+; did they want to just quit ?
+if "$number" EQ "*$number"
+    skip keyexit1
+endif
+;
+; usa keymap is in rom
+if "$number" EQ "0"
+    setenv sys/keyboard usa
+    skip keyend
+endif
+;
+; validity check
+if "$number" GT "9"
+    echo "*NInvalid selection."
+    wait 3 sec
+    skip back keystart
+else
+    if "0" GT "$number"
+        echo "*NInvalid selection."
+        wait 3 sec
+        skip back keystart
+    endif
+endif
+
+;
+; translate the number into the keymap name
+;
+set look string="`echo " $number "`"
+; make sure selection number exists in list
+search >NIL: t:akey${process} $look
+if WARN
+    echo "*NInvalid selection."
+    wait 3
+    skip back keystart
+endif
+
+echo "`search t:akey${process} $look`" first 14 len 4 >env:sys/keyboard
+;
+; must copy selected keymap from keysource to ram: to avoid a potential
+; disk swap
+copy ${keysource}devs/keymaps/${sys/keyboard} ram: com
+
+; make sure the keymap exists
+if not exists ${keytarget}devs/keymaps/${sys/keyboard}
+    if "«initial»" EQ ""
+        echo "Error: ${sys/keyboard} keymap not found."
+        wait 3 sec
+        skip back keystart
+    endif
+    copy ram:${sys/keyboard} ${keytarget}devs/keymaps com
+endif
+
+; delete temporary copy of the keymap
+delete >NIL: ram:${sys/keyboard} quiet
+;
+lab keyend
+
+; set the selected keymap
+sys:system/setmap ${sys/keyboard}
+
+; copy the keymap selection into their preferences archive
+makedir >NIL: ${keytarget}prefs
+makedir >NIL: ${keytarget}prefs/env-archive
+makedir >NIL: ${keytarget}prefs/env-archive/sys
+echo >${keytarget}prefs/env-archive/sys/keyboard ${sys/keyboard}
+
+;
+lab keyexit1
+
+delete >NIL: t:key${process} t:akey${process} quiet
+
+lab keyexit2
+
+resident >NIL: remove copy
+resident >NIL: remove list
+resident >NIL: remove makedir
+resident >NIL: remove search
+resident >NIL: remove type
+
+unset query
+unset look
+unset number
+unset keysource
+unset keytarget

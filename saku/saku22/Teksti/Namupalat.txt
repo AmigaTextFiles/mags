@@ -1,0 +1,834 @@
+2
+1*
+{A                         Namupaloja Sakun kotisivuilta
+{A                         -----------------------------
+
+
+Kev‰‰ll‰ ehdittiin Suomen Amiga-k‰ytt‰j‰t ry:n uusituilla  kotisivuilla  nauttia
+p‰iv‰n namupaloista, arkisin joka p‰iv‰ ilmestyvist‰  pienist‰  Amiga-aiheisista
+ohjelmaesittelyist‰, vinkeist‰ ja uutisista, jo parin kuukauden ajan. Nyt  namu-
+palat ovat kes‰lomalla, mutta palaavat ruutuun taas 1. elokuuta.  Jos  et  p‰‰se
+Internetiin tai et vain ole ehtinyt tutustua namupaloihin, voit nyt n‰in Sakusta
+selata kaikki kev‰‰n namut! 
+
+Namupalat kuvineen ja paljon muuta lˆyd‰t Internetist‰ osoitteesta:
+
+{Bhttp://batman.jytol.fi/~saku/
+
+Tervetuloa!
+
+Namupalat toimitti sek‰ verkkoon ett‰ lehteen Jari Karjalaisen ja  Janne  Pikka-
+raisen kirjoittamasta materiaalista Janne Siren. 
+
+{8     _________________________________________________________________
+
+{A                        Boottaus miellytt‰v‰mm‰ksi
+
+{A                        16.4.97 - Janne Pikkarainen
+
+Koneeseen virta p‰‰lle ja 10 - 20 sekunnin odottelu harmaata ruutua  tuijottaen.
+Tuntuuko tutulta? Kaiken ei tarvitse olla n‰in tyls‰‰. Kerromme vaihe vaiheelta,
+kuinka Workbenchin latautumisen yhteyteen saa helposti liitetty‰ latauskuvan  ja
+taustamusiikin. 
+{DSatunnaisen kuvan lataaminen
+
+K‰yt‰mme esimerkiss‰ SysPic-nimist‰ ohjelmaa. SysPic on  pienikokoinen  ja  osaa
+ladata satunnaisia kuvia. Pura SysPic-paketti ja kopioi  sen  ajettava  tiedosto
+vaikkapa C-hakemistoon. T‰m‰n j‰lkeen tee hakemisto ja kopioi sinne kuvat, jois-
+ta SysPic valitsee k‰ynnistyksen yhteydess‰ satunnaisen kuvan. Nime‰ kuvat  esi-
+merkiksi muotoon bootpic001.iff,  bootpic002.iff  ja  liit‰  startup-sequenceesi
+seuraava rivi SetPatch-komennon j‰lkeen: 
+
+{BC:SysPic S:bootpics/bootpic*.iff RANDMIN=1 RANDMAX=3 SO BF
+
+Muuta hakemistopolut ja tiedostonimet omiasi  vastaaviksi.  RANDMIN-arvo  m‰‰r‰‰
+ensimm‰isen ladattavan kuvan numeron (vaikka bootpic001.iff), RANDMAX puolestaan
+viimeisen mahdollisen numeron (esimerkiksi bootpic003.iff).  SO-parametri  lataa
+Overscan-asetukset jo ennen IPrefsi‰ ja BF (BestFit) -parametri puolestaan ottaa
+kuvalle parhaiten sopivan n‰yttˆtilan k‰yttˆˆn.
+
+T‰m‰n j‰lkeen kopioi SysPicin mukana toimitettava ClosePic-ohjelma WBStartup-ha-
+kemistoosi, ja olet selvitt‰nyt ensimm‰isen vaiheen. 
+
+{DMusiikin liitt‰minen
+
+Taustamusiikin saa n‰ps‰k‰sti vaikkapa HippoPlayeri‰ ja ARexxia apuna  k‰ytt‰en.
+Tee ensin HippoPlayerill‰ modulelista, johon valitset haluamasi modulet ja  tal-
+lenna se esimerkiksi nimell‰ bootprogram. Sitten teemme  Hipon  k‰ynnist‰misest‰
+ja sammuttamisesta huolehtivat ARexx-skriptit. 
+
+
+
+{6                                                                     ---------->
+{DSatunnaisen modulen lataava ARexx-skripti: (esimerkkinimi alku.hip)
+
+{A/* Soita satunnainen module */
+{AAddress Command 'Wait 1 SECS'
+{AAddress 'HIPPOPLAYER'
+{ALoadPrg "S:bootprogram"
+{ARandPlay
+
+{DHipon sammuttava ARexx-skripti: (esimerkkinimi loppu.hip)
+
+{A/* Poistu Hiposta */
+{AAddress Command 'Wait 10 SECS'
+{AAddress 'HIPPOPLAYER'
+{AQuit
+
+Skriptien tekemisen j‰lkeen on  aika  muokata  startup-sequencea.  Sijoita  Set-
+Patch-komennon j‰lkeen seuraavat rivit 
+
+{ARun >NIL: SYS:System/RexxMast
+{ADH0:HippoPlayer/HiP HIDE
+{ARun >NIL: DH0:RexxC/RX DF0:HippoPlayer/ARexx/alku.hip
+
+sek‰ ennen startup-sequencen loppua majailevaa EndCLI-komentoa seuraava:
+
+{ARX >NIL: DH0:HippoPlayer/ARexx/loppu.hip
+
+(Korvaa hakemistopolut ja tiedostonimet omiasi vastaaviksi.)
+
+Jos kaikki meni putkeen, seuraavan boottauksesi pit‰isi sujua huomattavasti  mu-
+kavammissa merkeiss‰. 
+
+{C* SysPic 4.00:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/util/boot/SysPic400.lha
+{C* HippoPlayer 2.38:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/mus/play/hippoplayer.lha
+
+{8     _________________________________________________________________
+
+{A                                 SwazInfo
+
+{A                        17.4.97 - Janne Pikkarainen
+
+SwazInfo p‰ivitt‰‰ Workbenchin ikoneiden info-ikkunan  uuteen  uskoon.  Eritt‰in
+monipuolinen ja hyvin suunniteltu vastine Commodoren omalle versiolle.  Ikoneita
+voi vaihtaa drag-and-drop-periaatteella, tooltypejen  muokkausta  on  parannettu
+huomattavasti ja ulkoasu on huoliteltu. MultiUserFileSystemin k‰ytt‰jille terve-
+tullut uutuus on k‰yttˆoikeuksien muuttaminen hiirt‰ naksuttelemalla. 
+
+{C* SwazInfo 1.8b:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/util/wb/SwazInfo18b.lha
+
+{8     _________________________________________________________________
+
+{A                       Master Control Program (MCP)
+
+{A                        18.4.97 - Janne Pikkarainen
+
+
+Kaikkien aikojen monipuolisin  monitoimi-commodity  vain  paranee  vanhetessaan.
+Sis‰lt‰‰ hillittˆm‰n m‰‰r‰n toimintoja aina GadTools-painikkeiden ulkon‰ˆn muut-
+tamisesta virrans‰‰stˆˆn ja kuvaruuduns‰‰st‰j‰‰n. 
+
+{C* MCP 1.21: ftp://sunsite.doc.ic.ac.uk/pub/aminet/util/cdity/MCP121.lha
+{C* MCP 1.30 beta: http://user.cs.tu-berlin.de/~zerocom/mcp/
+
+{8     _________________________________________________________________
+
+{A                                GIF-Toolkit
+
+{A                        21.4.97 - Jari Karjalainen
+
+GIF-animaatiot pirist‰v‰t kummasti kotisivua. Ellei piirto-ohjelmasi  osaa  tal-
+lentaa kuvallisia luomuksiasi GIF-animaatioksi, kannattaa tutustua ohjelmaan ni-
+melt‰ GIF-Toolkit.
+
+GIF-Toolkitin avulla on helppo koostaa GIF-animaatio. Ei vaikeita, ep‰muistetta-
+via parametreja komennossa, vaan kaikki hoituu hiirell‰ napsauttelemalla. Lataat
+vain ennalta piirt‰m‰si kuvat GIF-Toolkitiin ja muodostat n‰ist‰ GIF-animaation.
+
+GIF-Toolkit k‰ytt‰‰ datatypej‰ kuvien lataamiseen muiden paitsi GIF-kuvien kans-
+sa, joten monenlaiset kuvat k‰yv‰t sellaisenaan. Voit ladata myˆs valmiita  GIF-
+animaatioita sek‰ IFF-animaatioita (ANIM2, ANIM3, ANIM5, ANIM7 ja  ANIM8).  GIF-
+animaatioiden lis‰ksi GIF-Toolkitill‰ voidaan tallentaa myˆs  yksitt‰isi‰  kuvia
+sek‰ GIF- (89a) ett‰ ILBM-muotoon.
+
+GIF-Toolkit on sharewarea, eik‰ sill‰ voi tallentaa  ennen  kuin  se  on  rekis-
+terˆity, mutta ‰l‰ ep‰roi rekisterˆid‰, jos aiot tehd‰ paljonkin GIF-animaatioi-
+ta. Ohjelma on sen arvoinen! 
+
+GIF-Toolkit vaatii MUI 3.6:n tai uudemman.
+
+{C* GIF-Toolkit 1.5.3:
+{C  http://www.sbox.tu-graz.ac.at/home/schupfer/GIF-Toolkit/
+{C  GIFToolkit1_5_3.lha (n. 130 kt)
+{C* GIF-Toolkit -kotisivu:
+{C  http://www.sbox.tu-graz.ac.at/home/schupfer/GIF-Toolkit/
+
+{8     _________________________________________________________________
+
+{A                                 RDB-Salv
+
+{A                        22.4.97 - Jari Karjalainen
+
+Jos levyn RDB (RigidDiskBlock) jostain syyst‰ vioittuu,  ei  levyyn  p‰‰se  en‰‰
+k‰siksi, ja yleens‰ ainoa toivo on alustaa ja osioida  levy  uudelleen.  Ei  mi-
+tenk‰‰n kiva juttu, varsinkaan kun viimeisin  varmuuskopio  levyst‰  on  kenties
+kuukausia tai vuosia vanha.
+
+RDB-Salvin avulla voit ottaa varmuuskopion RDB:st‰ ja  palauttaa  sen  myˆhemmin
+takaisin levylle. Ohjelmalla voidaan myˆs etsi‰ osittain h‰vinnytt‰ tietoa  hal-
+lintalohkosta. RDB-Salv osaa myˆs tutkia koko levyn  ja  laskea  arvot  kaikille
+AmigaDOS-osioille.
+
+Kaikesta t‰st‰ huolimatta ohjelma on helppok‰yttˆinen. Mukana tulee myˆs suomen-
+kieliset catalogit ja ohjeet.
+
+Ohjelma vaatii OS 2.04:n tai uudemman. Vapaasti levitett‰v‰ rekisterˆim‰tˆn ver-
+sio RDB-Salvista toimii puutteellisesti. 
+
+{6                                                                     ---------->
+{C* RDB-Salv 1.1:
+{C  http://wwwipd.ira.uka.de/~moellem/RDB-Salv/ftp/rdbsalv_suomi.lha (277 kt)
+
+{8     _________________________________________________________________
+
+{A                                  ShutAll
+
+{A                        23.4.97 - Jari Karjalainen
+
+Onko sinulle koskaan k‰ynyt niin ik‰v‰sti, ett‰ juuri kun  resetoit  Amigan  tai
+sammutat siit‰ virran, kirjoittaa joku ohjelma levylle? Ja seh‰n taas saa aikaan
+kaikkea ei niin kivaa...
+
+ShutAll-ohjelman avulla edell‰ kerrottu on historiaa. Kun  ShutAll  ajetaan,  se
+lopettaa ja est‰‰ mahdolliset levyoperaatiot,  mink‰  j‰lkeen  voit  turvallisin
+mielin sammuttaa tai resetoida Amigan.
+
+{C* ShutAll 1.01:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/util/cdity/ShutAll_1.01.lha
+{C  (117 kt)
+
+{8     _________________________________________________________________
+
+{A                                 MagicMenu
+
+{A                        24.4.97 - Janne Pikkarainen
+
+Amigan alasvetovalikkojen ulkoasua ja toimivuutta parantava pieni  ohjelma.  Ma-
+gicMenun myˆt‰ valikot avautuvat mille tahansa kohtaa ruutua,  ulkon‰kˆ  muuttuu
+kolmiulotteiseksi eik‰ ruutujen p‰ivitys en‰‰  pys‰hdy  valikkoja  k‰ytett‰ess‰.
+Eritt‰in suositeltava ohjelma. 
+
+{C* MagicMenu 2.15:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/util/wb/MagicMenu2_15.lha
+
+{8     _________________________________________________________________
+
+{A                                 TolleUhr
+
+{A                        25.4.97 - Janne Pikkarainen
+
+Pieni ja n‰pp‰r‰ kello WB-ruudulle. Kokoa, sijaintia ja ulkon‰kˆ‰  voi  vapaasti
+vaihtaa. Myˆs h‰lytyksen ja tasatuntimerkin TolleUhr osaa tarvittaessa. 
+
+{C* TolleUhr 1.6:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/util/time/TolleUhr16.lha
+
+{8     _________________________________________________________________
+
+{A                          CHIP-muisti nopeammaksi
+
+{A                        28.4.97 - Janne Pikkarainen
+
+Blizzard 1260 -kortin omistajat ovat varmasti huomanneet, miten CHIP-muistin no-
+peus on kortin p‰‰ll‰ollessa alhaisempi kuin ilman korttia. Ratkaisuksi  muodos-
+tuu Phase 5:en FTP-osoitteesta (ftp.phase5.de) saatava 060.libraryn p‰ivitys  ja
+sen mukana toimitettava SetCacheMode-ohjelma.
+
+Kopioi SetCacheMode-ohjelma vaikkapa C-hakemistoosi ja lis‰‰ startup-sequenceesi
+seuraava rivi: 
+{ARun >NIL: C:SetCacheMode Address=$000000 Size=$1FFFFF NOCACHE VERBOSE
+
+Seurauksena CHIPin kirjoitusnopeus nousee! T‰ss‰ BusSpeedTest-ohjelman
+tulokset:
+
+{DSetCacheModea ennen:
+
+{9BusSpeedTest 0.19 (mlelstv)Buffer:  262144 Bytes, Alignment: 32768
+{1========================================================================
+{Amemtypeaddr opcycle  calibbandwidth
+{Achip$000D0000  readw 1069.8 nsnormal 1.9 * 10^6 byte/s
+{Achip$000D0000  readl 1069.9 nsnormal 3.7 * 10^6 byte/s
+{Achip$000D0000  readm 1070.1 nsnormal 3.7 * 10^6 byte/s
+{Achip$000D0000  writew1069.7 nsnormal 1.9 * 10^6 byte/s
+{Achip$000D0000  writel1070.5 nsnormal 3.7 * 10^6 byte/s
+{Achip$000D0000  writem1069.7 nsnormal 3.7 * 10^6 byte/s
+
+{DSetCacheModen j‰lkeen:
+
+{9BusSpeedTest 0.19 (mlelstv)Buffer:  262144 Bytes, Alignment: 32768
+{1========================================================================
+{Amemtypeaddr opcycle  calibbandwidth
+{Achip$000D0000  readw 1069.8 nsnormal 1.9 * 10^6 byte/s
+{Achip$000D0000  readl 1070.3 nsnormal 3.7 * 10^6 byte/s
+{Achip$000D0000  readm 1069.6 nsnormal 3.7 * 10^6 byte/s
+{Achip$000D0000  writew 984.3 nsnormal 2.0 * 10^6 byte/s
+{Achip$000D0000  writel 985.6 nsnormal 4.1 * 10^6 byte/s
+{Achip$000D0000  writem 984.1 nsnormal 4.1 * 10^6 byte/s
+
+(Testit suoritettu Workbenchin kautta. N‰yttˆtilana DBLNTSC: High Res  No  Flic-
+ker, 8 v‰ri‰. Ilman Workbenchi‰ tulokset ovat hieman parempia.)
+
+Nopeuden kasvu ei n‰yt‰ testitulosten perusteella kovin hurjalta. Yleist‰ suori-
+tuskyky‰ SetCacheMode kuitenkin parantaa yll‰tt‰v‰n paljon.  Esimerkiksi  Scalan
+monimutkaisimmat tehosteet lopettivat nykimisens‰ ja  Artificial  Peoplen  Clic-
+hes-demon rotaatiozoomeri toimii nyt sulavasti. 
+
+{8     _________________________________________________________________
+
+{A                                 FTPMount
+
+{A                        29.4.97 - Jari Karjalainen
+
+FTPMount on n‰pp‰r‰ ohjelma, joka asentaa FTP:n  osaksi  Amigan  tiedostoj‰rjes-
+telm‰‰ - voit k‰ytt‰‰ FTP:t‰ kuin levyasemaa. Asennus ja k‰yttˆˆnotto  on  help-
+poa. FTPMount tarvitsee AmiTCP:n tai Miamin (testattu Miamilla). 
+
+{C* FTPMount 1.0:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/comm/tcp/FTPMount-1.0.lha (113 kt)
+
+{8     _________________________________________________________________
+
+{A                                 Trashman
+
+{A                        5.5.97 - Jari Karjalainen
+
+Paljon parjatussa Windows 95:ss‰ on ominaisuuksia,  joita  kuitenkin  mielell‰‰n
+n‰kisi Amigassakin. Niinp‰ joitakin niist‰ matkitaan runsaasti, mutta  hyˆdylli-
+simm‰st‰ p‰‰st‰ lienee Wintendon roskakoria mallaava Trashman.
+{6                                                                     ---------->
+Trashmanin ollessa k‰ytˆss‰ poistetut tiedostot eiv‰t poistu levylt‰ vaan  siir-
+tyv‰t Trashcan-hakemistoon. No, t‰ss‰ ei ole sin‰ns‰ mit‰‰n  uutta,  mutta  t‰m‰
+toimii siis kaikilla osioilla ja yhdess‰ ja samassa Trashcan-ikkunassa. Ja  mik‰
+parasta, t‰m‰ toimii muuallakin kuin Workbenchiss‰.
+
+Trashmanille voi myˆs kertoa kohteita, joista poistettuja tiedostoja ei siirret‰
+roskikseen. T‰st‰ on apua esim. jos jokin ohjelma pit‰‰ v‰liaikaisia  tiedostoja
+levyll‰, jolloin niit‰ ei turhaan siirret‰ roskikseen. Lis‰ksi Trashman muistaa,
+mist‰ tiedostot on poistettu, joten se osaa palauttaa ne alkuper‰isille paikoil-
+leen tarvittaessa.
+
+Trashman vaatii OS 3.0:n tai uudemman (OS 3.1:t‰ suositellaan),  reqtools.libra-
+ryn (ei tule mukana) ja progress.gadgetin (tulee mukana).
+
+Asennuksesta sen verran, ett‰ mukana  tulevassa  Installer-scriptiss‰  on  jokin
+virhe, joten joudut asentamaan Trashmanin k‰sin. Se ei onneksi  ole  kovin  vai-
+keaa. 
+
+1. Kopioi itse Trashman-ohjelma SYS:WBStartup-hakemistoon.
+2. Kopioi progress.gadget (Trashman/gadgets/progress.gadget)
+   SYS:Classes/Gadgets/-hakemistoon.
+ 
+{C* Trashman 1.2:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/util/wb/Trashman.lha (75 kt)
+
+
+
+
+
+{6                                                                     ---------->
+
+
+
+{8     _________________________________________________________________
+
+{A                                   Argue
+
+{A                         6.5.97 - Jari Karjalainen
+
+Harmittavatko kryptiset komentoriviparametrit usein  k‰ytt‰m‰ss‰si  Shell-ohjel-
+massa? GUI auttaisi kummasti, mutta mitenk‰s sen saisi, kun ohjelman  tekij‰  ei
+sit‰ tee. No, tee se itse, Arguella.
+
+Arguella voi tehd‰ MUI-GUI:n Shellist‰ ajettaville ohjelmille ja siten myˆs jopa
+omille skripteille. GUI:n tekeminen on Arguella  todella  helppoa.  Riitt‰‰  kun
+laittaa tekstitiedostoon komennon sis‰lt‰m‰t argumentit  ja  kertoo  tarvittavat
+tiedot GUI:n k‰ynnist‰v‰ss‰ ikonissa. Pienell‰ viilauksella lis‰‰t vaikka  bubb-
+le-helpit ym. kivaa. :-)
+
+{C* Argue 1.3:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/util/sys/argue13.lha (174 kt)
+{C* Argue 1.3a (korjauspaketti):
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/util/sys/argue13a.lha (20 kt)
+
+
+
+
+
+
+{6                                                                     ---------->
+
+
+
+{8     _________________________________________________________________
+
+{A                                 SoundBox
+
+{A                         7.5.97 - Jari Karjalainen
+
+SoundBox on n‰pp‰r‰ ohjelma erilaisten ‰‰nitiedostojen formaattien muuttamiseen.
+K‰‰nn‰t vaikka lemppari-IFF-‰‰nesi WAVEksi kotisivullesi. Ohjelma tukee  seuraa-
+via formaatteja: RAW, IFF, VOC, WAVE, AIFF, AIFC, MAUD ja Maestro. Mik‰  tahansa
+n‰ist‰ voidaan muuntaa johonkin toiseen formaateista. 
+
+SoundBox vaatii OS 2.04:n tai uudemman.
+
+{C* SoundBox 2.8b:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/mus/misc/SoundBox.lha (158 kt)
+
+{8     _________________________________________________________________
+
+{A                                 AbGetUrl
+
+{A                         9.5.97 - Jari Karjalainen
+
+Joskus olisi kiva lukea jotain WWW-sivua offlinena. Tietenkin voi tallentaa  ky-
+seisen sivun tiedostoksi, mutta silloin sivulla olisi tietenkin joku mielenkiin-
+toinen linkki, joka ei ole sitten saatavilla. Yksi vaihtoehto on tietenkin  lin-
+jalla k‰yd‰ linkit l‰pi ja lueskella sitten cachen kautta, mutta t‰m‰  on  usein
+liian tyˆl‰st‰.
+AbGetUrlin avulla voi hakea sivun ja sivulla olevat linkit omalle kovalevyllesi.
+Syvyyden jolla linkit otetaan mukaan  voi  itse  tietenkin  s‰‰t‰‰.  T‰m‰  onkin
+t‰rke‰‰, koska AbGetUrl hakee sivujen lis‰ksi muutkin sivuilla olevat linkit eli
+mahdolliset kuvat, pakkaukset yms. 
+
+{C* AbGetUrl 1.60:
+{C  ftp://sunsite.doc.ic.ac.uk/pub/aminet/comm/tcp/AbGetUrl160.lha (18 kt)
+
+{8     _________________________________________________________________
+
+{A                                 ScreenTab
+
+{A                        12.5.97 - Jari Karjalainen
+
+ScreenTab matkii mallikkaasti Windows  3.x:n  Alt+Tabia,  jolla  voi  n‰pp‰r‰sti
+hyp‰t‰ ohjelmasta toiseen. Ohjelma on pakkohankinta varsinkin sellaisille, jotka
+tekev‰t tˆit‰ PC:n parissa ja rentoutuvat sitten kotona Amigan parissa. Aina it-
+sell‰ni ovat PC:n kanssa v‰hentyneet turhat Alt+M-yritykset.  :-)  Auki  olevien
+n‰yttˆjen lis‰ksi ScreenTabilla voi kelata auki olevia  ikkunoita  senhetkisess‰
+julkisessa n‰ytˆss‰.
+
+Toinen  ScreenTabin  matkama  ominaisuus  on  Windows  95:n   Start-painike   ja
+teht‰v‰palkki. Start-painikkeesta aukeaa valikko, josta voit  k‰ynnist‰‰  ohjel-
+mia. SreenTabin mukana tulee muutama hyˆdyllinen plugin-ohjelma, esim.  Commodi-
+ties n‰ytt‰‰ k‰ynniss‰ olevat commodity-ohjelmat  valikossa,  josta  voit  avata
+niiden k‰yttˆliittym‰n, sulkea ne tms.
+
+Teht‰v‰palkissa n‰kyv‰t k‰ynniss‰ olevat ohjelmat (mutta valitettavasti vain  ne
+joilla on julkinen n‰yttˆ auki) ja voit  teht‰v‰palkissa  olevilla  painikkeilla
+vaihtaa n‰ytˆst‰ toiseen.
+Aikaisemmin ScreenTab oli ohjelma, jota en uskaltanut kuin kokeilla sen bugisuu-
+den vuoksi, mutta nyky‰‰n ScreenTab on vakaa ohjelma. Se on k‰ytˆss‰ koko  ajan,
+eik‰ ongelmia ole esiintynyt.
+
+ScreenTab vaatii OS 2.04:n tai uudemman. Asetusohjelma vaatii MUI 3.6:n tai  uu-
+demman, itse ScreenTab ei MUI:ta tarvitse. 
+
+{C* ScreenTab 3.2:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/util/cdity/ScreenTab_3_2.lha
+{C  (303 kt)
+
+{8     _________________________________________________________________
+
+{A                                URLManager
+
+{A                        13.5.97 - Jari Karjalainen
+
+URLManager on n‰pp‰r‰ MUI-GUI:lla varustettu  ohjelma  WWW-selaimien  hotlistien
+hallintaan. L‰hinn‰ k‰ytetyin ominaisuus lienee listojen eri formaatista toiseen
+muuntelu. Voit esim. lis‰t‰ osoitteita ja ryhmi‰,  lajitella  ja  lis‰t‰  toisen
+listan per‰‰n. 
+
+{DTuetut formaatit:
+{AALynx, Lynx
+{AAMosaic, xMosaic
+{AAWeb 1.0 - 1.3, AWeb II, AWeb AddToBookmarks.rexx
+{AIBrowse 1.0 - 1.11
+{AMindwalker
+{ANetscape 3.0, Gold
+{AVoyager 1.0 - 2.0
+
+URLManager vaatii MUI 3.6:n tai uudemman.
+
+{C* URLManager 1.2:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/comm/www/URLManager1_2.lha (74 kt)
+
+{8     _________________________________________________________________
+
+{A                                   Homer
+
+{A                        14.5.97 - Jari Karjalainen
+
+Homer nimens‰ mukaisesti n‰ytt‰‰ Homerin p‰‰n puhumassa mit‰ milloinkin.  Silm‰t
+seuraavat hiiren osoitinta. V‰lill‰ Homer on hyv‰ll‰ tuulella, v‰lill‰ taas huo-
+nommalla, ja kommentit ovat sen mukaisia. Homer on  varmasti  puhdasta  hˆmpp‰‰,
+mutta v‰li‰kˆ t‰ll‰, kun on hauskaa - ainakin hetken aikaa.
+
+Homer  vaatii  OS  3.0:n  tai  uudemman,  swazconfig.libraryn  (tulee   mukana),
+sound.datatypen ja picture.datatypen. 
+
+{C* Homer 1.5:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/util/wb/Homer15.lha (965 kt)
+{C* Homer 1.6 -p‰ivitys:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/util/misc/Homer16u.lha (15 kt)
+
+
+
+
+
+{6                                                                     ---------->
+{8     _________________________________________________________________
+
+{A                                   Lupe
+
+{A                        15.5.97 - Janne Pikkarainen
+
+Lupe 1.8 on pieni ja helposti s‰‰dett‰viss‰ oleva  suurennuslasi  mille  tahansa
+Intuition-ruudulle. Ohjelmasta on hyˆty‰ silm‰lasiensa hukanneiden lis‰ksi  myˆs
+14"-monitorin kautta tarkkoja resoluutioita  silm‰t  sikkurassa  tihrustelevalle
+henkilˆlle - Lupella voi tarkistaa nopeasti, mit‰ siin‰ ikonin  alla  oikeastaan
+lukeekaan.  Tosigurut  revittelev‰t   Lupesta   myˆs   demoefektej‰:   sopivasti
+n‰pert‰m‰ll‰ ja hiirt‰ asemoimalla saadaan samankaltainen "loputon tunneli" kuin
+parin kolmen peilin kanssa leikkiess‰. :-) 
+
+{C* Lupe 1.8: http://sunsite.doc.ic.ac.uk/pub/aminet/util/wb/lupe.lha
+
+{8     _________________________________________________________________
+
+{A                            Screen-In-A-Window
+
+{A                        16.5.97 - Janne Pikkarainen
+
+Todella k‰tev‰ ohjelma, jolla voi seurata ruudun  tapahtumia  toiselle  ruudulle
+avattavasta ikkunasta k‰sin. Voit  vaikkapa  tarkkailla  tiedostojen  imuroinnin
+edistymist‰ samalla kun kirjoitat  viestej‰  teksturilla.  Tarkkailtavan  ruudun
+vaihtaminen  k‰y  helposti  valikosta  hiirell‰  niksauttamalla.   Ruutuvakoilun
+lis‰ksi myˆskin ruudun tapahtumiin osallistuminen sujuu SIWin kautta, sill‰  oh-
+jelma osaa myˆs matkia tarkkailtavan ruudun  gadgettien  toimintaa  ja  v‰litt‰‰
+k‰skyt perille ilman varsinaista ruudun vaihtamista. 
+{6                                                                     ---------->
+{C* SIW 2.1: http://sunsite.doc.ic.ac.uk/pub/aminet/util/misc/SIW.lha
+
+{8     _________________________________________________________________
+
+{A                                 PGPtoGUI
+
+{A                        19.5.97 - Jari Karjalainen
+
+PGPtoGUI on nimens‰ mukaisesti  graafinen  k‰yttˆliittym‰  PGP-salausohjelmalle.
+PGPtoGUI auttaa PGP:t‰ k‰ytt‰m‰‰n heit‰kin, joille eiv‰t PGP:n kenties vaikeasti
+muistettavat komennot muuten aukene. Tosin l‰hesk‰‰n kaikkea ei voi  PGPtoGUIlla
+tehd‰, mutta yleisimm‰t toiminnot ovat mukana. 
+
+PGPtoGUI vaatii OS 2.0:n tai uudemman ja itse PGP:n.
+
+{C* PGPtoGUI 2.0e:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/util/crypt/PGPtoGUIV2.0e.lha
+{C  (36 kt)
+{C* PGP 2.6.3i:
+{C  http://ftp.funet.fi/pub/crypt/cryptography/pgp/amiga/PGPAmiga-2.6.3is.lha
+{C  (416 kt)
+
+{8     _________________________________________________________________
+
+{A                                2000Counter
+
+{A                        20.5.97 - Janne Pikkarainen
+
+Ajantaju heitt‰‰, etk‰ en‰‰ ole varma, kauanko vuosituhannen vaihteeseen on  ai-
+kaa? Ei h‰t‰‰, 2000Counter hoitaa  laskemisen  puolestasi  ja  n‰ytt‰‰  sekunnin
+tarkkuudella, kauanko viel‰ joudut odottamaan, ennen kuin  p‰‰set  ruiskuttamaan
+shampanjaa ymp‰ri seini‰ vuoden 2000 kunniaksi. 
+
+{C* 2000Counter:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/util/time/2000counter.lha
+
+{8     _________________________________________________________________
+
+{A                                 HiDensity
+
+{A                        21.5.97 - Janne Pikkarainen
+ 
+Amiga Technologiesin valmistamissa A1200-koneissa on tunnetusti  DD-levyasemaksi
+jumpperoitu HD-levyasema. Perus-Amiga ei t‰h‰n asti ole osannut hyˆdynt‰‰ HD-le-
+vykkeit‰, mutta HiDensity tekee mahdottomasta totta. Yksi pieni ajuri Devs-hake-
+mistoon, ja AT-A1200:n sis‰inen levyasema osaa formatoida levykkeet per‰ti  1,52
+megatavun kokoisiksi! Ohjelman ensimm‰inen versio on liev‰sti buginen eik‰  aina
+tunnista levykett‰, mutta t‰ytt‰‰ yleens‰ teht‰v‰ns‰ paremmin kuin hyvin. 
+
+{C* HiDensity:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/hard/hack/HiDensity.lha
+
+{8     _________________________________________________________________
+
+{A                                 Activity
+
+{A                        22.5.97 - Janne Pikkarainen
+
+Levityksess‰  on  useita  ohjelmia,  jotka  mittaavat  koneen  suorituskyky‰  ja
+k‰yttˆastetta. Activitykin mittaa suorituskyky‰, muttei  suinkaan  koneen,  vaan
+sen k‰ytt‰j‰n. Ohjelma kirjaa muistiin n‰pp‰imen- ja hiirenpainallukset. Kokeile
+ja kauhistu - saatat yll‰tty‰, kuinka monta  kertaa  p‰iv‰ss‰  loppujen  lopuksi
+n‰pp‰imistˆ‰ naputteletkaan... 
+
+{C* Activity 2.2:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/util/cdity/Activity.lha
+
+{8     _________________________________________________________________
+
+{A                                 EasyPrint
+
+{A                        23.5.97 - Janne Pikkarainen
+
+Easyprint on tulostamisen hallitseva shareware-ohjelma. Tulostettavan kuvan  ko-
+koa ja sijaintia paperilla voi s‰‰t‰‰ portaattomasti. Myˆs tulostusj‰lki on rei-
+lusti parempaa kuin Workbenchin omia ajureita k‰ytt‰m‰ll‰.  Tulosteen  laatu  on
+kiinni vain tulostimesta. Ohjelman rekisterˆiminen maksaa 25 jenkkioravannahkaa.
+Rekisterˆim‰ttˆm‰st‰ versiosta puuttuvat mm. monet kuvien lataamiseen ja tallen-
+tamiseen liittyv‰t toiminnot sek‰ sis‰inen virtuaalimuisti. 
+
+{C* EasyPrint 2.28:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/gfx/misc/EasyPrint.lha
+{C* EasyPrint 2.28 -korjaus (vain rek.):
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/gfx/misc/EasyPrint_Pch.lha
+
+
+
+
+
+{6                                                                     ---------->
+
+{8     _________________________________________________________________
+
+{A                                HotStartup
+
+{A                        26.5.97 - Janne Pikkarainen
+
+Windows 95:n AutoPlay on t‰h‰n saakka puuttunut Amigasta. Ei puutu  en‰‰.  HotS-
+tartup osaa vaikkapa n‰ytt‰‰ levykkeen hakemistolistauksen  tai  laittaa  audio-
+CD:n soimaan heti kun sen laittaa CD-asemaan. 
+
+{C* HotStartup 1.5:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/disk/misc/HotStartup.lha
+
+{8     _________________________________________________________________
+
+{A                                Background
+
+{A                        27.5.97 - Janne Pikkarainen
+
+NickPrefsin ja WBPatternin korvike. Ohjelmalla voi tarvittaessa  asettaa  jokai-
+selle ikkunalle erilaisen  taustakuvan!  Minimivaatimuksena  OS2.04  ja  iffpar-
+se.library. 
+
+{C* Background 2.1:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/util/wb/Background.lha
+
+
+
+{6                                                                     ---------->
+
+{8     _________________________________________________________________
+
+{A                              Image Engineer
+
+{A                        28.5.97 - Janne Pikkarainen
+
+Sharewarea oleva kuvank‰sittelyohjelma, joka sis‰lt‰‰ monia isommissakin  ohjel-
+missa n‰htyj‰ toimintoja. Ohjelma on varsin nopea. Vaatimuksista voi sanoa saman
+kuin muidenkin kuvank‰sittelijˆiden kohdalla: mit‰ enemm‰n koneessa  on  muistia
+ja v‰‰ntˆ‰, sen paremmin Image Engineer koneessa viihtyy. 
+
+{C* Image Engineer 3.41:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/gfx/edit/ImEngV3.41p1.lha,
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/gfx/edit/ImEngV3.41p2.lha
+
+{8     _________________________________________________________________
+
+{A                               WindowWalker
+
+{A                 30.5.97 - Janne Pikkarainen, Janne Siren
+
+Hyˆdytˆnt‰, harmitonta, korutonta, mutta  tavallaan  hauskaa.  WindowWalker  tuo
+Workbench-ruudullesi pikkuruisen miehen, joka k‰velee ja pomppii ikkunalta  toi-
+selle. Halutessasi voit myˆs itse ohjata miekkosta kursorin‰pp‰imill‰. 
+
+{C* WindowWalker 1.1:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/game/gag/windowwalker.lha
+
+{6                                                                     ---------->
+
+{8     _________________________________________________________________
+
+{A                               LotsaBlankers
+
+{A                        2.6.97 - Janne Pikkarainen
+
+GBlankerin k‰ytt‰jien pakkohankinta. Sis‰lt‰‰ viisi uutta n‰ytˆns‰‰st‰j‰‰, jotka
+ovat poikkeuksellisen koreaa silm‰nruokaa. Etenkin  Workbench-ruutua  ymp‰riins‰
+hyˆriv‰, pyˆriv‰ ja v‰‰ntelehtiv‰ suurennuslasi on n‰tti. 
+
+{C* LotsaBlankers 1.04:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/util/blank/LotsaBlankers.lha
+
+{8     _________________________________________________________________
+
+{A                               MultiTool II
+
+{A                        3.6.97 - Janne Pikkarainen
+
+Taivaan lahja erityisesti paljon pakettien kanssa touhuaville  henkilˆille.  Di-
+rectory Opuksen tyylinen, vapaasti muokattavissa oleva ohjelma, jolla  pakettien
+sis‰ltˆ‰ voi tutkia kuin ne olisivat normaaleja hakemistoja ja tiedostoja. Luon-
+nollisesti myˆs normaalien tiedostojen k‰sittely sujuu MultiToolilta  n‰pp‰r‰sti
+- kuvien katsominen tai samplejen soittaminen ei tuota sille tuskaa. Ilmainen. 
+
+{C* MultiTool II 2.2:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/util/dir/mtool22.lha
+
+{6                                                                     ---------->
+
+{8     _________________________________________________________________
+
+{A                                 Phonebill
+
+{A                        4.6.97 - Janne Pikkarainen
+
+Modeemin kanssa touhutessa aikaa ja rahaa menee helposti huomaamatta.  Phonebill
+v‰hent‰‰ puhelinlaskun aiheuttamaa syd‰nkohtausvaaraa  analysoimalla  laskun  jo
+etuk‰teen. Osaa tulkita kaikkien yleisimpien terminaaliohjelmien soittotilastoja
+ja kertoo, paljonko olet kuluttanut verkossa rahaa ja milloin. 
+
+{C* Phonebill 3.5a:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/comm/misc/pbill35a.lha
+
+{8     _________________________________________________________________
+
+{A                                   Agnes
+
+{A                           5.6.97 - Janne Siren
+
+Etsitkˆ Amiga-aiheista tietoa Internetist‰? Eikˆ Alta Vistasta  ollut  apua  tai
+oli v‰h‰n liikaakin? Agnes on erilainen hakupalvelu, se nimitt‰in on keskittynyt
+vain ja ainoastaan Amigaan.
+
+Agnes osaa hakea tietoa mm. Amiga Web Directorysta, uutisryhmist‰, Amiga  Report
+-lehdist‰ ja Aminetista. Ja onhan Agnes monta kertaa sˆpˆmpi kuin kaiken  maail-
+man altavistat! 
+
+{CAgnes: www.cucug.org/agnes.html
+
+{8     _________________________________________________________________
+
+{A                        Amigan kotisivut uudistuvat
+
+{A                           6.6.97 - Janne Siren
+
+Amiga Internationalin t‰h‰n menness‰ n‰kyvin muutos Amiga  Technologiesiin  ver-
+rattuna ovat entist‰ pirte‰mm‰t kotisivut. Sivuilta lˆytyy myˆs  aiempaa  katta-
+vammat luettelot Amiga-yrityksist‰, -tuotteista ja -palveluista. 
+
+{CAmiga International: www.amiga.de
+
+{8     _________________________________________________________________
+
+{A                               Modem-Display
+
+{A                         9.6.97 - Jari Karjalainen
+
+T‰m‰ pieni ohjelma lis‰‰ modeemin merkkivalot Workbenchiin.
+
+{C* Modem-Display 1.1:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/comm/misc/modemd11.lha (43 kt)
+
+
+
+
+
+
+{6                                                                     ---------->
+{8     _________________________________________________________________
+
+{A                               telser.device
+
+{A                        10.6.97 - Jari Karjalainen
+
+Eikˆ tahdo lˆyty‰ hyv‰‰ telnet-ohjelmaa? Kauhistuttaako  Napsaterm?  H‰iritseekˆ
+ulkoisten protokollien kuten esim. Smodemin  puute?  Ratkaisu  voisi  olla  tel-
+ser.device.
+
+Telser.device-modeemisimulaattorin avulla voit k‰ytt‰‰  lempiterminaaliasi  tel-
+net-yhteyksiin, koska terminaaliohjelma luulee toimivansa modeemin  kanssa.  Mo-
+deemin peruskomennot ovat tuettuina.
+
+Telser.device on suhtellisen helppo asentaa, itse tein asennuksen  AmiTCP:n  mu-
+kaan, eli minulla on tarvittavat AmiTCP:n assignit,  jonne  asensin  tarvittavat
+tiedostot. K‰yt‰n kuitenkin Miamia ja hyvin toimii. Testattu sek‰ AmiTCP:n  ett‰
+Miamin kanssa.
+
+Telser.device vaatii OS  2.04:n  tai  uudemman,  AmiTCP  3.0b2:n  tai  uudemman,
+AS225r2:n tai vastaavan (kuten Miamin). 
+
+{C* telser.device 1.40:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/comm/tcp/telser140.lha (251 kt)
+
+
+
+
+
+{6                                                                     ---------->
+
+{8     _________________________________________________________________
+
+{A                                 AlgoMusic
+
+{A                        11.6.97 - Jari Karjalainen
+
+Jos ainaiset samat teknomodisi kuulostavat jo ikivanhoilta ja  olet  kyll‰stynyt
+etsim‰‰n uusia, kokeile AlgoMusicia. AlgoMusic luo ja soittaa joka  kerta  uuden
+ja ennest‰‰n kuulemattoman teknobiisin, joiden taso on laidasta  laitaan  outoja
+nimi‰ myˆten, mutta etp‰h‰n ole kuullut n‰it‰ ennen. ;-) Puutteena voisi mainita
+sen, ettei AlgoMusicin tuotoksia voi tallentaa. Toisaalta jos  tallennus  onnis-
+tuisi, ei AlgoMusicin idea en‰‰ toteutuiskaan. 
+
+AlgoMusic vaatii OS 2.0:n tai uudemman, 512 kt CHIP- ja FAST-muistia, 1,7
+Mt kiintolevytilaa. Prefs-ohjelma vaatii MUI 3:n.
+
+{C* AlgoMusic 2.1:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/mus/misc/AlgoMusic2_1.lha (1.2 Mt)
+{C* AlgoMusic 2.1 -korjaus:
+{C  http://sunsite.doc.ic.ac.uk/pub/aminet/mus/misc/AlgoMusic2_1fi.lha
+{C  (20 kt)
+
+
+
+
+
+
+
+{6                                                                     ---------->
+{8     _________________________________________________________________
+
+{A                       Tiedostoja locationin kautta
+
+{A                        12.6.97 - Jari Karjalainen
+
+Kuvitellaan, ett‰ kaverisi kertoo  t‰ydellisen  osoitteen  jollekin  tiedostolle
+vaikkapa Aminetissa. Ei sinun tarvitse turhaan menn‰ ensiksi Aminetiin ja  hakea
+pakettia siell‰ olevista linkeist‰: sen kuin kirjoitat  osoitteen  WWW-selaimesi
+locationiin, painat shift pohjassa enter ja tiedosto matkaa kotiisi. 
+
+{8     _________________________________________________________________
+
+{A                                    LFS
+
+{A                        13.6.97 - Jari Karjalainen
+
+LFS on ARexx-ohjelma, joka tarkistaa pingill‰ Aminetit ja lopuksi  yhdist‰‰  se-
+laimesi nopeimpaan osoitteeseen. 
+
+{C* LFS 1.0: http://sunsite.doc.ic.ac.uk/pub/aminet/comm/tcp/LFS.lha (39 kt)
+

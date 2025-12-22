@@ -1,0 +1,459 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="Workshops.html"><IMG SRC="../menu/links.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops2.html"><IMG SRC="../menu/rechts.gif" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Workshops
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H1>Workshops / Hintergrundberichte / Buchvorstellungen</H1>
+<H2>1. Workshop: Installation von Debian2.1-Linux - Teil 2 (von Uwe Pannecke)</H2>
+<P>
+&raquo;Willkommen bei den Pinguinen
+</P>
+<P>
+Linux-Installation am Beispiel der Debian 2.1 m68k-Distribution
+</P>
+<P>
+Teil 2 &quot;Ausbau des Systems&quot;
+</P>
+<H3>1. Zugriff auf CD-ROM-Laufwerke und AmigaOS-Partitionen</H3>
+<P>
+Nachdem das Basissystem auf der Festplatte Eures Amigas eingerichtet ist,
+soll es nun an die Vervollst&auml;ndigung des Linux-Systems gehen.
+Als erstes wollen wir dem Linux-System vorhandene CD-ROM-Laufwerke und
+AmigaOS-Partitionen bekannt machen. So wird dann w&auml;hrend der Arbeit unter
+Linux jederzeit ein Zugriff auf selbige Laufwerke/Partitionen m&ouml;glich sein.
+Loggt Euch als &quot;root&quot; ein- und auf geht's.
+</P>
+<P>
+Konstruieren wir ein Beispiel: Der Amiga ist mit zwei SCSI-CD-ROM-
+Laufwerken und mehreren SCSI-Festplatten ausgestattet. Beide CD-ROM-
+Laufwerke und eine AmigaOS-Partition sollen unter Linux zug&auml;nglich sein.
+Die CD-ROMs erscheinen unter Linux als scdx, d.h. in unserem Beispiel als
+scd0 und scd1, die AmigaOS-Partition sei sda4.
+</P>
+<P>
+Um tats&auml;chlich auf die Laufwerke bzw. Partitionen zugreifen zu k&ouml;nnen,
+m&uuml;ssen diese auf ein Verzeichnis gemountet werden. Das Verzeichnis /cdrom
+sollte bereits existieren. &Uuml;berpr&uuml;fen k&ouml;nnt Ihr dies mit einem &quot;ls /&quot;.
+Erscheint in der Ausgabe wider erwarten kein &quot;cdrom&quot;, legt Ihr selbiges mit
+Hilfe des Befehls &quot;mkdir&quot; gemeinsam mit den nachfolgenden Verzeichnisse
+entsprechend unseres konstruierten Beispiels an:
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">mkdir /cdrom&nbsp;</TD><TD VALIGN="TOP">(f&uuml;r das erste CD-ROM-Laufwerk)&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">mkdir /cdrom1&nbsp;</TD><TD VALIGN="TOP">(f&uuml;r das zweite CD-ROM-Laufwerk)&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">mkdir /ados&nbsp;</TD><TD VALIGN="TOP">(f&uuml;r die a_miga dos_partition)&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Sollten die Verzeichnisse schon existieren, wird &quot;mkdir&quot; eine Fehlermeldung
+ausgeben. Im n&auml;chsten Schritt werden in der Datei &quot;fstab&quot; die notwendigen
+Eintragungen vorgenommen. Habt Ihr bereits den &quot;MidnightCommander&quot; (siehe
+Teil 1 des Workshops)  installiert, k&ouml;nnt Ihr den Editor in selbigem
+benutzen. Wenn nicht, wird auch der Standardeditor &quot;vi&quot; in diesem Fall gute
+Dienste leisten.
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Mit &quot;vi /etc/fstab&quot; wird die Datei fstab vom Editor geladen. Nun k&ouml;nnt Ihr&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">die notwendigen Anpassungen vornehmen. Die Bedienung &quot;vi&quot;'s&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">ist etwas&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">gew&ouml;hnungsbed&uuml;rftig. Die f&uuml;r diesen Zweck wichtigsten Kommandos:&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">i - Einf&uuml;gen links vom Cursor&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">I - Einf&uuml;gen am Zeilenanfang&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">x - Zeichen unter Cursor l&ouml;schen&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">o - neue Zeile unter Cursor einf&uuml;gen&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">O - neue Zeile oberhalb Cursor einf&uuml;gen&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">a - Text rechts von Cursor einf&uuml;gen&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD ALIGN="RIGHT" VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Wenn Ihr mit dem Edieren fertig seid, ESC dr&uuml;cken und mit &quot;:w!&quot; die Datei
+speichern und &quot;vi&quot; verlassen. Die Kommandofolge &quot;:q!&quot; veranla&szlig;t &quot;vi&quot;, das
+Programm trotz ge&auml;ndertem Dokument ohne dessen Speicherung zu beenden.
+In die Datei &quot;fstab&quot; f&uuml;gen wir nun entsprechend dem konstruierten Beispiel
+folgende Zeilen ein:
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">/dev/scd0&nbsp;</TD><TD VALIGN="TOP">/cdrom&nbsp;</TD><TD VALIGN="TOP">iso9660&nbsp;</TD><TD VALIGN="TOP">defaults&nbsp;</TD><TD VALIGN="TOP">0&nbsp;</TD><TD VALIGN="TOP">1&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">/dev/scd1&nbsp;</TD><TD VALIGN="TOP">/cdrom1&nbsp;</TD><TD VALIGN="TOP">iso9660&nbsp;</TD><TD VALIGN="TOP">defaults&nbsp;</TD><TD VALIGN="TOP">0&nbsp;</TD><TD VALIGN="TOP">1&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">/dev/sda4&nbsp;</TD><TD VALIGN="TOP">/ados&nbsp;</TD><TD VALIGN="TOP">affs&nbsp;</TD><TD VALIGN="TOP">defaults&nbsp;</TD><TD VALIGN="TOP">0&nbsp;</TD><TD VALIGN="TOP">1&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Nach den Erg&auml;nzungen sollte sich folgendes Bild in &quot;fstab&quot; ergeben:
+</P>
+<P>
+<A HREF="img/Debian-vifstab.png"><IMG SRC="thumb/Debian-vifstab.jpg" WIDTH="120" HEIGHT="40" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Nun m&uuml;ssen die Laufwerke/Partitionen nur noch gemountet werden. Entweder
+per Hand mit dem Befehl &quot;mount /verzeichnisname&quot; oder beim n&auml;chsten Linux-
+Start automatisch durch die Auswertung der &quot;fstab&quot;-Datei.
+</P>
+<P>
+Wenn Ihr in einem gemounteten CD-ROM-Laufwerk eine CD wechseln wollt, m&uuml;sst
+Ihr das Laufwerk vorher mit &quot;umount /cdrom&quot; (bzw. /cdrom1) freigeben.
+Andernfalls wird sich das CD-ROM-Laufwerk weigern, die CD herauszugeben.
+Und nach gewechselter CD mit &quot;mount /cdrom&quot; wieder anmelden.
+</P>
+<H3>2. Online-Hilfe - die Manpages</H3>
+<P>
+Selbstverst&auml;ndlich k&ouml;nnt Ihr f&uuml;r die Installation der nachfolgenden
+Programme das schon im ersten Teil besprochene &quot;dselect&quot; benutzen.
+&quot;dselect&quot; wird alle Abh&auml;ngigkeiten der ausgew&auml;hlten Programmpakete
+ber&uuml;cksichtigen und die notwendigen zus&auml;tzlichen Bibliotheken und Programme
+interaktiv mit dem Nutzer anmahnen und f&uuml;r die Installation zur Verf&uuml;gung
+stellen.
+</P>
+<P>
+<A HREF="img/Debian-dselect.png"><IMG SRC="thumb/Debian-dselect.jpg" WIDTH="120" HEIGHT="66" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Wer sich aber nicht so recht mit diesem Programm anfreunden kann oder
+einfach nur das Linux-System n&auml;her kennenlernen m&ouml;chte, f&uuml;r den soll im
+nachfolgenden die Installation von Hand beschrieben werden.
+</P>
+<P>
+Egal ob Installation von Hand oder teilautomatisiert durch &quot;dselect&quot;, Ihr
+ben&ouml;tigt dazu eine Debian2.1-Distribution, entweder auf CD-ROM oder aus dem
+Internet [3].
+</P>
+<P>
+Folgende Programmpakete (die genauen Versionsbezeichnungen sind der
+Einfachheit halber weggelassen, da trotzdem eine eindeutige Zuordnung
+innerhalb Debian2.1 gew&auml;hrleistet ist) werden ben&ouml;tigt und in der
+angegebenen Reihenfolge installiert:
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Debian-Paket&nbsp;</TD><TD VALIGN="TOP">Verzeichnis&nbsp;</TD></TR>
+<TR><TD COLSPAN="2"><HR></TD></TR>
+<TR><TD VALIGN="TOP">- libdb2&nbsp;</TD><TD VALIGN="TOP">/libs&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- groff&nbsp;</TD><TD VALIGN="TOP">/text&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- man-db&nbsp;</TD><TD VALIGN="TOP">/doc&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Die einzelnen Pakete k&ouml;nnen nun mit Hilfe des Debian-Paketmanagers dpkg dem
+Basis-System hinzugef&uuml;gt werden. Die Syntax lautet, wie bereits in Teil 1
+des Workshops angedeutet, dpkg -iGREB Paketname_mit_Pfad.
+</P>
+<P>
+Sollte ein Programmpaket auf andere Programme oder Programmbibliotheken
+aufbauen, so wird Euch &quot;dpkg&quot; bzw. &quot;dselect&quot; auf diesen Umstand hinweisen.
+Ben&ouml;tigt Ihr Hilfestellung zu einem installierten Programm, k&ouml;nnt Ihr von
+nun an mit &quot;man programmname&quot; die jeweilige Anleitung aufrufen. Versucht es
+doch gleich einmal mit &quot;man man&quot;, der Anleitung zu &quot;man&quot; selbst.
+</P>
+<H3>3. Das X Window System</H3>
+<P>
+Als beinahe Standard f&uuml;r die grafische Benutzeroberfl&auml;che hat sich unter
+Unix das X Window System etabliert. Bereits 1984 wurden in Zusammenarbeit
+vom MIT und der Firma DEC die Wurzeln f&uuml;r das X Window System gelegt. 1987
+wurde von einem auf 12 namhafte Computerhersteller angewachsenen X-
+Konsortium das X Window System in der Version 11, Release 1 verabschiedet.
+In der Zwischenzeit liegt die grafische Benutzeroberfl&auml;che in der Version
+11 Release 6.3, oder kurz X11R6.3 vor und erm&ouml;glicht als standardisierte
+Schnittstelle grafische Anwendungen netzwerkweit und weitgehend unabh&auml;ngig
+von der Hardware.
+</P>
+<P>
+Eine frei verf&uuml;gbare Implementierung des X11-Systems existiert f&uuml;r Linux in
+Form des XFree86-Projekts [1]. Auch hier arbeiten wie an Linux selbst
+Programmierer weltweit an der Weiterentwicklung des X Window System.
+Interessante weiterf&uuml;hrende Informationen zu XFree86 finden sich z.B. unter
+[2].
+</P>
+<P>
+Nun aber zur Installation der Benutzeroberfl&auml;che aus der Debian2.1-
+Distribution.
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Debian-Paket&nbsp;</TD><TD VALIGN="TOP">Verzeichnis&nbsp;</TD></TR>
+<TR><TD COLSPAN="2"><HR></TD></TR>
+<TR><TD VALIGN="TOP">- xfree86-common&nbsp;</TD><TD VALIGN="TOP">/x11&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- zlib1g&nbsp;</TD><TD VALIGN="TOP">/libs&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- xlib6g&nbsp;</TD><TD VALIGN="TOP">/x11&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- xbase-clients&nbsp;</TD><TD VALIGN="TOP">/x11&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- xfonts-base&nbsp;</TD><TD VALIGN="TOP">/x11&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- xfonts-75dpi&nbsp;</TD><TD VALIGN="TOP">/x11&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- xserver-common&nbsp;</TD><TD VALIGN="TOP">/x11&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- xserver-fbdev&nbsp;</TD><TD VALIGN="TOP">/x11&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Zus&auml;tzlich stehen weitere Font-Pakete zur optionalen Verwendung bereit. Ihr
+findet sie im &quot;/x11&quot; Verzeichnis.
+</P>
+<P>
+Das X Window System ben&ouml;tigt unbedingt noch eine &quot;XF86Config&quot; genannte
+Datei, in der wichtige Konfigurationen festgelegt sind. Ihr findet eine
+Besipiel f&uuml;r diese Datei in der Dokumentation zum &quot;xserver-common&quot;-Paket.
+Kopiert diese Beispiel-Datei mit
+&quot;cp /usr/doc/xserver-common/examples/XF86Config.eg /etc/X11/XF86Config&quot;
+an den vorbestimmten Platz. &Auml;nderungen braucht Ihr an dieser Datei zu
+diesem Zeitpunkt nicht vornehmen.
+</P>
+<P>
+Nachdem Ihr alle Pakete installiert habt, k&ouml;nnte das X Window System zwar
+schon funktionieren, aber ohne einen Fenstermanager werdet Ihr nicht
+allzuviel von der grafischen Oberfl&auml;che haben. Also m&uuml;ssen wir als n&auml;chstes
+unbedingt einen solchen Fenstermanager in X11 integrieren. Hier habt Ihr
+die Qual der Wahl. Eine fast schon un&uuml;berschaubare Anzahl veschiedenster
+Manager wirbt um Eure Gunst. Welchen Manager Ihr verwendet, ist u.a. eine
+Frage der vorhandenen Ressourcen und nicht zuletzt zu einem gro&szlig;en Teil
+Geschmackssache.
+</P>
+<P>
+In unserem Beispiel soll der &quot;fvwm&quot;-Fenstermanager zum Einsatz kommen.
+Notwendig sind die nachfolgenden Pakete:
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">Debian-Paket&nbsp;</TD><TD VALIGN="TOP">Verzeichnis&nbsp;</TD></TR>
+<TR><TD COLSPAN="2"><HR></TD></TR>
+<TR><TD VALIGN="TOP">- m4&nbsp;</TD><TD VALIGN="TOP">/interpreters&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- xpm4g&nbsp;</TD><TD VALIGN="TOP">/x11&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">- fvwm1.24&nbsp;</TD><TD VALIGN="TOP">/x11&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+Ihr k&ouml;nnt bei Bedarf auch mehrere Fenstermanager installieren. Welcher als
+aktiver zum Einsatz kommt, legt die Datei &quot;window-managers&quot; im Verzeichnis
+&quot;/etc/X11&quot; fest. In dieser Datei solltet Ihr alle vorhandenen
+Fenstermanager eintragen und k&ouml;nnt jederzeit nach Wunsch den zu
+verwendenden Manager wechseln, indem die jeweils nicht zu benutzenden
+Manager mit einem &quot;#&quot; auskommentiert werden. In unserem Fall laden wir mit
+&quot;vi /etc/X11/window-managers&quot; die Datei und tragen an ihrem Ende die Zeile
+&quot;/usr/bin/X11/fvwm&quot; ein.
+</P>
+<P>
+Sch&ouml;n w&auml;re noch eine M&ouml;glichkeit, &uuml;ber die grafische Oberfl&auml;che dem Linux-
+System individuelle Befehle &uuml;bermitteln zu k&ouml;nnen. Hier bietet sich z.B.
+&quot;xterm&quot; an:
+</P>
+<UL>
+<LI> xterm          (/x11)
+</LI>
+</UL>
+<P>
+&quot;xterm&quot; erm&ouml;glicht &auml;hnlich dem Shell-Fenster unter dem AmigaOS eine CLI-
+gem&auml;&szlig;e Befehlseingabe. So lassen sich alle Operationen genau wie in der
+generischen, nicht-X-gest&uuml;tzten Linux-Console vornehmen.
+</P>
+<P>
+Ein letzter Schritt dient der Einbindung der Amiga-Mouse in das X Window
+System. F&uuml;r diesen Zweck legen wir nachfolgenden symbolischen Link:
+&quot;ln -s /dev/amigamouse /dev/mouse&quot;
+</P>
+<P>
+Endlich k&ouml;nnt Ihr nun das X Window System starten. Gebt das Kommando
+&quot;startx&quot; in die Konsole ein und harrt mit Spannung der Dinge, die auf dem
+Bildschirm geschehen. Nach wenigen Sekunden findet Ihr Euch auf der X11-
+Oberfl&auml;che wieder. Ein Klick auf eine der Maustasten f&ouml;rdert ein
+entsprechend der gedr&uuml;ckten Maustaste mit unterschiedlichem Inhalt
+versehenes PopUp-Men&uuml; des Fenster-Managers zutage.
+</P>
+<P>
+<A HREF="img/Debian-fvwm.png"><IMG SRC="thumb/Debian-fvwm.jpg" WIDTH="68" HEIGHT="96" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Zumindest ein Xterm-Fenster k&ouml;nnt Ihr in der Standard-Einstellung &ouml;ffnen
+und darin weitere Befehle an das System absetzen.
+</P>
+<P>
+Sehr sinnvoll ist der Einsatz einer Drei-Tasten-Maus unter Linux, da alle
+drei Tasten recht intensiv genutzt, dh. von diversen Programmen mit
+Funktionen belegt werden.
+</P>
+<P>
+Um h&auml;ufig benutzte Programme aus dem Fvwm-Popup-Men&uuml; jederzeit aufrufen zu
+k&ouml;nnen, bietet sich eine individuelle Modifikation der &quot;fvwm&quot;-
+Konfigurationsdatei an. Diese Datei k&ouml;nnt Ihr unter
+&quot;/etc/X11/fvwm/system.fvwmrc&quot; finden, in einen Editor laden und den eigenen
+Bed&uuml;rfnissen anpassen. Speichert die Datei als &quot;.fvwmrc&quot; in Eurem &quot;home&quot;-
+Verzeichnis, und schon steht bei jedem X-Start Eure Fvwm-Konfiguration zur
+Verf&uuml;gung.
+</P>
+<P>
+<A HREF="img/Debian-Xscreen.png"><IMG SRC="thumb/Debian-Xscreen.jpg" WIDTH="120" HEIGHT="90" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Apropos X-Start: Auch hier stehen dem Linuxer verschiedene Wege offen. Wer
+keinerlei Kontakt mehr mit der textorientierten Linux-Konsole haben m&ouml;chte,
+kann mit der Installation von &quot;xdm&quot; schon in der Boot-Phase das X-Window-
+System starten. Ich bevorzuge jedoch das Einloggen in die Konsole und die
+Eingabe von &quot;startx&quot;. So kann auch bei kaputt-experimentiertem X-Window-
+System immer noch Linux problemlos gebootet werden...
+</P>
+<H3>4. Boot-Selector</H3>
+<P>
+Eine von vielen M&ouml;glichkeiten, die allt&auml;gliche Boot-Zeremonie etwas komfor-
+tabler zu gestalten, bietet das nachfolgende ARexx-Script.
+</P>
+<PRE>
+/*
+** $VER: AmigaStart.rexx 1.1 (18.07.99) Uwe Pannecke
+**
+**  ARexx script f&uuml;r Auswahl Start AmigaOS &lt;-&gt; Linux in 800x600 oder 1024x768
+**
+**  (C) 1999 Uwe Pannecke
+*/
+
+IF ~show(libraries,&quot;rexxreqtools.library&quot;) THEN
+ CALL AddLib(&quot;rexxreqtools.library&quot;, 0, -30, 0)
+
+NL='0a'x     /* Zeilenumbruch */
+
+Auswahl=rtezrequest(&quot;   Amiga Boot-Selection&quot; ||NL NL|| &quot;&copy; 1999  Uwe Pannecke&quot;,&quot;AmigaOS|Linux 1024x768|Linux 800x600&quot;)
+
+    select
+
+       WHEN Auswahl = 1 THEN CALL AmigaOS
+       WHEN Auswahl = 2 THEN CALL Linux1024
+       OTHERWISE CALL Linux800
+
+
+/* -----Start von Linux unter 800x600---- */
+
+Linux800:
+
+BefehlA=&quot;SYS:C/amiboot-5.6 -k SYS:C/vmlinux.gz root=/dev/sda3 ro video=retz3:800x600&quot;
+
+ADDRESS command BefehlA
+
+EXIT
+
+/* -----Start von Linux unter 1024x768---- */
+
+Linux1024:
+
+BefehlB=&quot;SYS:C/amiboot-5.6 -k SYS:C/vmlinux.gz root=/dev/sda3 ro video=retz3:1024x768&quot;
+
+ADDRESS command BefehlB
+
+EXIT
+
+/* -------Start von AmigaOS--------- */
+
+AmigaOS:
+
+EXIT
+
+/* -- ENDE ---- */
+</PRE>
+<P>
+Wenn Ihr selbiges z.B. in das Verzeichnis S: kopiert und in der &quot;startup-
+sequence&quot; NACH dem Befehl &quot;rexxmast &gt;NIL:&quot; mit &quot;rx SYS:S/AmigaStart&quot;
+einbindet, wird Euer Amiga bei jedem Systemstart eine Auswahl des zu
+bootenden Betriebssystems anbieten.
+</P>
+<P>
+<A HREF="img/Debian-Boot.png"><IMG SRC="thumb/Debian-Boot.jpg" WIDTH="120" HEIGHT="43" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Voraussetzung f&uuml;r die erfolgreiche Abarbeitung des ARexx-Scripts sind neben
+einem laufenden ARexx-Interpreter die ReqTools- [4] und RexxReqTools-
+Bibliotheken [5].
+</P>
+<H3>5. Trouble-Shooting</H3>
+<H4>5.1 Unter Linux</H4>
+<P>
+Sollte unter Linux mit irgendeinem Programm ein Problem auftauchen, so l&auml;&szlig;t
+sich das betreffende (&uuml;ber die Konsole gestartete) Programm mit CTRL-C im
+allgemeinen problemlos beenden.
+</P>
+<P>
+Es kann u.a. aus oben genannten Gr&uuml;nden auch sehr sinnvoll sein, weitere
+virtuelle Konsolen zu &ouml;ffnen. Da Linux multiuser- und multitaskingf&auml;hig
+ist, stellt dies keine Schwierigkeit dar. Mit der Tastenkombination &quot;ALT +
+F1 (wobei F1 bis F6 m&ouml;glich sind)&quot; k&ouml;nnen bis zu sechs zus&auml;tzliche
+virtuelle Konsolen im Textmodus gestartet werden. Wenn Ihr von X11 auf die
+Textkonsole zur&uuml;ckkehren wollt, ohne X11 zu verlassen, k&ouml;nnt Ihr dies mit
+&quot;CTRL + ALT + F1 (bis F6)&quot; bewerkstelligen. Mit &quot;ALT + F7&quot; steht Euch
+jederzeit die R&uuml;ckkehr zum laufenden X Window System offen.
+</P>
+<P>
+Wollt Ihr zu weiteren Debian-Paketen (xyz.deb) Informationen zum Inhalt,
+ohne vorher das Paket installieren zu wollen, k&ouml;nnen mit
+&quot;dpkg --info paketname_mit_pfad&quot; Details zum Paket abgefragt werden.
+</P>
+<H4>5.2 Unter AmigaOS</H4>
+<P>
+Als bei der Nutzung des installierten Debian2.1-Basissystems ein Kernel mit
+RetinaBLT-Unterst&uuml;tzung eingesetzt werden sollte, schien dieser Kernel die
+Retina nicht ansteuern zu wollen. Wurde der Kernel (2.2.6) nach gebootetem
+AmigaOS von der Workbench unter CyberGFX mit &quot;amigoot&quot; gestartet, blieb der
+Retina-Screen trotz im Kernel vorhandener Retina-Unterst&uuml;tzung schwarz.
+Abhilfe brachte ein Start ohne &quot;startup-sequence&quot;, was aber sehr unbequem
+ist, da dann die Retina noch nicht aktiviert und somit ein zweiter Monitor
+bzw. ein Monitorumschalter f&uuml;r die Darstellung des Boot-Men&uuml;s notwendig
+wird.
+</P>
+<P>
+Wesentlich komfortabler, da mit einem Monitor weitergearbeitet werden kann,
+ist der Aufruf von &quot;amiboot&quot; zu einem fr&uuml;hen Zeitpunkt der &quot;startup-
+sequence&quot;-Abarbeitung, da dann der beschriebene Effekt unter CyberGFX nicht
+auftritt. F&uuml;r diese Zwecke l&auml;&szlig;t sich das schon beschriebene ARexx-Script
+(siehe Punkt 4. Boot-Selector) einsetzen.
+</P>
+<H3>6. Literatur</H3>
+<P>
+Im Internet und auf diversen CD-ROM existieren eine schier un&uuml;berschaubare
+Menge an kostenlos erh&auml;ltlichen Dokumentationen zu Linux. Stellvertretend
+seien an dieser Stelle die in deutscher Sprache vorliegenden &quot;Das
+Linuxhandbuch&quot; von Sebastian Hetze u.a. [6] und die &quot;Linux Einf&uuml;hrung&quot; von
+Thomas Ermer [7] genannt. Ein guter Einstieg auf dem Weg in die Linux-Welt
+findet sich auf [8].
+</P>
+<H3>7. Ausblick</H3>
+<P>
+In der n&auml;chsten AmigaAktuell-Ausgabe sollen im dritten Teil dieses
+Workshops u.a
+</P>
+<UL>
+<LI> interessante Softwarepakete
+</LI>
+<BR><LI> das Anlegen von zus&auml;tzlichen Benutzern
+</LI>
+<BR><LI> das Archivieren und Sichern von Dateien
+</LI>
+</UL>
+<P>
+vorgestellt werden.
+</P>
+<P>
+[1] <A HREF="http://www.XFree86.Org/FAQ" TARGET="_TOP">http://www.XFree86.Org/FAQ</A><BR>
+[2] XFree86-HOWTO, SuSE 6.2, CD-ROM Disk 1<BR>
+[3] ftp://ftp.debian.org/debian/dists/slink/main/binary-m68k<BR>
+[4] im Aminet unter util/libs/ReqToolsUsr.lha<BR>
+[5] im Aminet unter util/rexx/RexxReqTools1_3.lha<BR>
+[6] ftp://ftp.suse.com/pub/suse/i386/6.2/docu/Books/Linuxhandbuch.dvi<BR>
+[7] <A HREF="http://rtol.de/holda/linux/linux.ps.gz" TARGET="_TOP">http://rtol.de/holda/linux/linux.ps.gz</A><BR>
+[8] <A HREF="http://www.heise.de/ct/99/15/162/" TARGET="_TOP">http://www.heise.de/ct/99/15/162/</A><BR>
+</P>
+<P>
+Uwe Pannecke &lt;<A HREF="mailto:Uwe.Pannecke@t-online.de">Uwe.Pannecke@t-online.de</A>&gt;
+</P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops.html"><IMG SRC="../menu/pfeil_links.gif" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+<A HREF="Workshops2.html"><IMG SRC="../menu/pfeil_rechts.gif" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

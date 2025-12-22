@@ -1,0 +1,599 @@
+<html>
+<head>
+  <title>Workshops / Hintergrundberichte</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="forum8.html">PREV</a> | <a href="workshops2.html">NEXT</a>
+<hr>
+<pre>
+
+Workshops / Hintergrundberichte
+-------------------------------
+
+1. ARexx-Kurs - Teil 4 (von Heiko Kuschel)
+
+&raquo;ARexx-Kurs: &Uuml;bersicht
+
+1. Einf&uuml;hrung in ARexx
+    - Wie funktionierts?
+    - Was brauche ich?
+    - Installation
+    - ein erstes kleines Programm
+    - Ein- und Ausgabe
+    - do...end
+
+2. Programmstruktur und Ansteuerung von anderen Programmen
+    - if
+    - do...end
+    - address
+    - Tracing
+
+3. Ein- und Ausgabe; Funktionen
+    - Ein- und Ausgabe
+    - Stringfunktionen
+    - mathematische Funktionen
+    - Konvertierungsfunktionen
+    - Bitmanipulation
+
+4. komplexere Programmstrukturen
+    - Operatoren
+    - Procedure
+    - Libraries
+    - sonstiges
+
+5. Beispiele f&uuml;r die Vernetzung von Programmen
+    - Wordworth
+    - GoldEd
+    - Database Professional
+    - YAM
+    - Miami
+    - usw.
+
+&Auml;nderungen vorbehalten. Spezielle W&uuml;nsche werden, wenn m&ouml;glich, gerne 
+aufgenommen.&laquo;
+
+
+&raquo;4. Programmstrukturen und Systemfunktionen
+4.0. Vorbemerkungen
+Hier wiederhole ich f&uuml;r Quereinsteiger noch einmal einen Teil der
+Vorbemerkungen, die ich zum ganzen Kurs gemacht habe.
+
+Der Kurs wird als reine Text-Datei angefertigt, da auch Amiga aktuell u.a. 
+in ASCII-Form verschickt wird. Um den Text etwas zu gliedern, habe ich 
+daher ein paar &quot;Textmarker&quot; eingef&uuml;gt.
+
+********** unterteilt einzelne Abschnitte
+
+__________ bezeichnet Beginn und Ende eines ARexx-Programms. Die Striche 
+geh&ouml;ren nicht zum Programm!
+ARexx-Befehle werden in diesem Kurs immer GROSS geschrieben, obwohl das
+eigentlich nicht n&ouml;tig ist. Auf diese Weise kann man sie aber leichter 
+erkennen.
+
+Ich hoffe, da&szlig; diese Regelung den Kurs etwas leserlicher macht.
+
+Wenn Ihr spezielle Fragen habt, etwas nicht verstanden habt oder Anregungen 
+und Ideen f&uuml;r weitere Kursteile habt, k&ouml;nnt Ihr euch gerne an mich wenden.
+Ich selbst benutze folgende ARexx-f&auml;hige Programme und kann daher auf deren
+Programmierung kurz eingehen, wenn das gew&uuml;nscht wird:
+Wordworth, GoldEd, Database Professional, YAM, Miami, Voyager, TurboCalc.
+
+Hier meine Kontaktadresse:
+
+Heiko Kuschel
+Lehmgrubenweg 13
+97280 Remlingen
+E-Mail: <a href="mailto:hk0006@wuerzburg.baynet.de">hk0006@wuerzburg.baynet.de</a>
+
+Und jetzt... viel Spa&szlig; mit ARexx!
+
+****************************************************
+4.1. Operatoren
+Ein schwierig klingendes Wort f&uuml;r eine Sache, die wir zum Teil schon ganz
+selbstverst&auml;ndlich angewendet haben. Operatoren sind einfach die Zeichen, 
+die zwei Variablen oder sonstige Ausdr&uuml;cke auf irgendeine Art verkn&uuml;pfen. 
+Also z.B. ein simples +. Das Problem ist nur: Wie sollen diese Operatoren 
+abgearbeitet werden, wenn mehrere in einem Ausdruck vorhanden sind? Aus 
+Mathe kennst Du sicher noch &quot;Punkt vor Strich&quot;: Erst mal und geteilt durch, 
+dann plus und minus. In ARexx gibt es eine ganze Priorit&auml;tenliste der 
+Operatoren, und auch hier gibt es welche, die wie Plus und Minus die 
+gleiche Priorit&auml;t haben. Diese Liste sieht folgenderma&szlig;en aus:
+
+Operator    Pri.    Beschreibung
+~           8       logisches &quot;nicht&quot;
++           8       als Pr&auml;fix zur Konvertierung
+-           8       Pr&auml;fix
+**          7       Potenzierung 2**6 meint &quot;2 hoch 6&quot;
+*           6       Multiplikation
+%           6       ganzzahlige Division
+/           6       Division
+//          6       Rest der Division
+-           5       Subtraktion
++           5       Addition
+Leerz.      4       Verkettung mit Leerzeichen
+||          4       direkte Verkettung
+~==         3       absolut ungleich
+==          3       absolut gleich
+~=          3       ungleich
+=           3       gleich
+&#062;=          3       gr&ouml;&szlig;er/gleich
+&#062;           3       gr&ouml;&szlig;er
+&#060;=          3       kleiner/gleich
+&#060;           3       kleiner
+&amp;           2       logisches UND
+|           1       logisches ODER
+&amp;&amp;          1       logisches exklusiv ODER
+
+Ich denke, es sollte kein Problem sein, diese Liste anzuwenden. Besonders
+interessant finde ich, da&szlig; es gleich extra Operatoren f&uuml;r eine ganzzahlige 
+Division gibt, ebenso wie f&uuml;r den Rest bei einer solchen Operation.
+
+****************************************************
+4.2. Programmstruktur
+Bis jetzt haben wir nur Programme geschrieben, die mehr oder weniger von 
+oben nach unten abgearbeitet wurden. Je komplexer Programme werden, desto 
+wichtiger ist es aber, auch noch &Uuml;berblick zu behalten. Deshalb gibt es in 
+so gut wie allen Programmiersprachen die M&ouml;glichkeit, ein Programm in 
+Unterabschnitte aufzuteilen, die dann (z.B. &uuml;ber einen aussagekr&auml;ftigen 
+Namen) aufgerufen werden.
+Das Hauptprogramm ist dann oft nur noch dazu da, die Unterprogramme in der
+richtigen Reihenfolge aufzurufen.
+
+Der erste daf&uuml;r notwendige Befehl lautet CALL.
+CALL kann auf verschiedene Arten verwendet werden:
+
+1. Aufruf einer ARexx-Funktion. Das Ergebnis wird in RESULT abgelegt
+--------------------------------
+CALL OPEN(Dateiname usw.)
+ECHO RESULT
+--------------------------------
+ist gleichbedeutend mit
+--------------------------------
+Ergebnis=OPEN(Dateiname usw.)
+ECHO Ergebnis
+--------------------------------
+
+2. Aufruf externer ARexx-Programme
+Andere ARexx-Programme k&ouml;nnen mit CALL &quot;rexx:MeinProg.rexx&quot; gestartet 
+werden.
+
+3. Mit CALL kann in ein Unterprogramm verzweigt werden.
+Das ist jetzt der Punkt, der f&uuml;r uns im Moment am interessantesten ist. Die
+Unterprogramme werden alle mit Namen versehen. Dieser Name wird einfach in 
+die erste Zeile einer Unterroutine geschrieben und ein Doppelpunkt 
+angeh&auml;ngt. Die letzte Zeile der Unterroutine enth&auml;lt dann ein RETURN (Kehre 
+zur&uuml;ck). Nochmal ein Beispiel mit &quot;HelloWorld&quot; gef&auml;llig?
+--------------------------------
+/* Hello World Version 1.6.*/
+
+CALL Fensteroeffnen
+CALL FrageundAntwort
+EXIT
+
+Fensteroeffnen:
+Erfolg=OPEN(Fenster,'CON:20/20/620/100/Hello World 1.6./CLOSE',R)
+IF ~Erfolg THEN ECHO &quot;Fehler!&quot;
+RETURN
+
+FrageundAntwort:
+DO WHILE Eingabe~=&quot;Ende&quot;
+  Erfolg=WRITELN(Fenster,&quot;Gib was ein!&quot;)
+  Eingabe=READLN(Fenster)
+  Erfolg=WRITELN(Fenster,&quot;Du hast &quot;||Eingabe||&quot; eingegeben.&quot;)
+END
+RETURN
+--------------------------------
+
+Beachte, wieviel k&uuml;rzer und damit &uuml;bersichtlicher selbst bei diesem Mini-
+Programm das Hauptprogramm geworden ist!
+
+&Uuml;brigens: So ganz nebenbei habe ich hier den Befehl EXIT eingef&uuml;gt. Er 
+&#008;beendet das ARexx-Skript. Soll das Skript an das aufrufende Programm einen 
+Wert zur&uuml;ckgeben, kann man den auch definieren, z.B. EXIT 10. Wenn ein 
+Skript einfach irgendwo aufh&ouml;rt und kein Befehl mehr nachfolgt, sieht der 
+Interpreter das als EXIT 0 an. Der R&uuml;ckgabewert, der normalerweise f&uuml;r 
+Fehlermeldungen benutzt wird, ist dann 0.
+
+Jetzt w&auml;re es nat&uuml;rlich noch sch&ouml;n, wenn man sich bei der Erstellung der
+Unterprogramme nicht immer darum k&uuml;mmern m&uuml;&szlig;te, welche Variablen im 
+Hauptprogramm oder in anderen Unterprogrammen bereits verwendet wurden. 
+Dann ist es z.B. sehr leicht m&ouml;glich, einzelne Programmteile in anderen 
+Skripten wiederzuverwerten, ohne irgend etwas daran ver&auml;ndern zu m&uuml;ssen. 
+Und nat&uuml;rlich ist auch das m&ouml;glich. Neben der einfachen Form von 
+Unterprogrammen, wie wir sie gerade eingef&uuml;hrt haben, gibt es auch noch 
+sogenannte Procedures, die v&ouml;llig unabh&auml;ngig vom Hauptprogramm arbeiten. 
+Variablen im Hauptprogramm werden nicht ver&auml;ndert, au&szlig;er man sagt es
+ausdr&uuml;cklich. So eine Procedure wird durch den Befehl PROCEDURE definiert. 
+Sie endet mit dem Befehl RETURN, bei dem noch angegeben werden kann, ob der 
+Wert einer Variable in RESULT abgelegt werden soll.
+
+--------------------------------
+/* Hello World Version 1.7.*/
+
+CALL Fensteroeffnen
+CALL FrageundAntwort
+EXIT
+
+Fensteroeffnen:
+Erfolg=OPEN(Fenster,'CON:20/20/620/100/Hello World 1.6./CLOSE',R)
+IF ~Erfolg THEN ECHO &quot;Fehler!&quot;
+RETURN
+
+FrageundAntwort:
+DO WHILE Result~=&quot;Ende&quot;
+  CALL Eingabefrage
+  CALL Ausgabe
+END
+RETURN
+
+Eingabefrage:
+ Erfolg=WRITELN(Fenster,&quot;Gib was ein!&quot;)
+RETURN
+
+Ausgabe: PROCEDURE
+ Eingabe=READLN(Fenster)
+ Erfolg=WRITELN(Fenster,&quot;Du hast &quot;||Eingabe||&quot; eingegeben.&quot;)
+RETURN Eingabe
+--------------------------------
+
+Die Variable Eingabe existiert nur noch in der Prozedur Ausgabe! Versuche 
+einmal herauszufinden, was diese Variable innerhalb des Hauptprogramms f&uuml;r 
+einen Wert enth&auml;lt!
+(Noch nicht benutzte Variablen enthalten ihren eigenen Namen in 
+Gro&szlig;schrift... nur so als kleiner Hinweis.)
+Hinter PROCEDURE kann man nun auch noch angeben, welche Variablen aus dem
+Hauptprogramm im Unterprogramm doch bekannt sein sollen.
+Das sieht dann z.B. so aus:
+Unterprogramm: PROCEDURE EXPOSE Variable Nocheine Unddiedritte Undsoweiter
+
+An dieser Stelle m&ouml;chte ich nun noch einen Befehl nachtragen, der 
+eigentlich schon ein wenig fr&uuml;her sinnvoll gewesen w&auml;re. Aber auch hier 
+kann er gute Dienste leisten. Wenn nun abh&auml;ngig von dem, was der Benutzer 
+eingeben will, verschiedene Dinge ausgef&uuml;hrt werden sollen, dann kann man 
+daf&uuml;r nat&uuml;rlich lauter einzelne IF...THEN-Abfragen machen. Aber was tun, 
+wenn ich 20 solcher Abfragen habe, und als letztes will ich eine Aktion f&uuml;r 
+alles, was noch nicht extra abgefragt wurde?
+Also z.B.: Wenn der Benutzer &quot;ich&quot; eingegeben hat, schreibe &quot;Hallo Heiko!&quot;. 
+Wenn der Benutzer &quot;Schafkopf&quot; eingegeben hat, schreibe &quot;Wenz&quot;, usw. Und 
+wenn er gar nichts von den Sachen eingibt, sondern was ganz anderes, dann 
+schreibe &quot;Wie kreativ! :-)&quot;
+Daf&uuml;r gibt es den Befehl SELECT...END. Das schaut dann folgenderma&szlig;en aus:
+--------------------------------
+SELECT
+    WHEN Eingabe=&quot;ich&quot; THEN DO
+        Erfolg=WRITELN(Fenster,&quot;Hallo Heiko!&quot;)
+        END
+    WHEN Eingabe=&quot;Schafkopf&quot; THEN DO
+        Erfolg=WRITELN(Fenster,&quot;Wenz!&quot;)
+        END
+    OTHERWISE DO
+        Erfolg=WRITELN(Fenster,&quot;Wie kreativ!&quot;)
+        END
+END
+--------------------------------
+Die Angabe von OTHERWISE ist notwendig, sonst gibt's eine Fehlermeldung!
+
+****************************************************
+4.3. Systemfunktionen
+
+Die Systemfunktionen geben weitgehende Kontrolle &uuml;ber computerinterne 
+Dinge. Sie werden wie alle Funktionen in ARexx entweder aufgerufen mit 
+Ergebnis=Funktion(), oder aber, wie wir in diesem Kursteil gesehen haben, 
+mit CALL Funktion(). Vorsicht! Manche sind schon sehr speziell, Du solltest 
+wissen, was Du damit anstellst.
+
+ADDLIB(Name,Priorit&auml;t[,Offset,Version])
+Hiermit lassen sich externe Bibliotheken (Libraries) in ARexx einbinden, 
+die weitere Befehle zur Verf&uuml;gung stellen. Solche Bibliotheken befinden 
+sich normalerweise im Verzeichnis LIBS: und haben die Endung .library. F&uuml;r 
+ARexx sind leider meistens spezielle Abwandlungen dieser Libraries n&ouml;tig. 
+Im Aminet gibt es aber eine ganze Reihe sehr guter Libraries, z.B. 
+rexxtricks.library, rexxsupport.library, rexxreqtools.library und andere. 
+Wie diese im einzelnen arbeiten, kann ich hier kaum erkl&auml;ren, das w&uuml;rde zu 
+weit f&uuml;hren. Die Befehle, die die Libraries zur Verf&uuml;gung stellen, sind 
+normalerweise gut dokumentiert. ARexx schaut dann bei Befehlen, die 
+unbekannt sind, zun&auml;chst einmal in den angemeldeten Bibliotheken nach, ob 
+dort der entsprechende Befehl zu finden ist. Erst dann wird versucht, &uuml;ber 
+den ARexx-Port ein Programm zu finden, das diesen Befehl versteht.
+Die Priorit&auml;t gibt an, in welcher Reihenfolge in den Bibliotheken gesucht 
+werden soll. Hoher Wert meint zuerst suchen. G&uuml;ltig sind Werte zwischen 100 
+und -100. Offset ist die Einsprungadresse f&uuml;r die QUERY-Funktion der 
+Bibliothek. Ist normalerweise -30 und mu&szlig; angegeben werden, damit alles 
+funktioniert. Mit Version kann noch eine Versionsnummer der Bibliothek 
+angegeben werden. Ist die Version der gefundenen Bibliothek kleiner, wird 
+sie nicht akzeptiert.
+Ein Beispiel, f&uuml;r das Du nat&uuml;rlich die rexxreqtools.library installiert 
+haben mu&szlig;t:
+
+--------------------------------
+IF ~SHOW(&quot;L&quot;,rexxreqtools.library) THEN DO
+CALL ADDLIB(&quot;rexxreqtools.library&quot;, 0, -30, 0)
+END
+gadtxt= &quot;_Weiter|_Cancel&quot;
+Eingabe = rtgetstring(&quot; &quot;,&quot;Bitte einen Text eingeben:&quot;,&quot;Hello World 
+1.8.&quot;,gadtxt)
+KnopfGedr&uuml;ckt=rtresult
+--------------------------------
+... oder in unser Hello World eingebaut, das mittlerweile gigantische 
+Ausma&szlig;e annimmt:
+
+--------------------------------
+/* Hello World Version 1.8.*/
+IF ~SHOW(&quot;L&quot;,rexxreqtools.library) THEN DO
+  CALL ADDLIB(&quot;rexxreqtools.library&quot;, 0, -30, 0)
+END
+gadtxt= &quot;_Weiter|_Cancel&quot;
+CALL Fensteroeffnen
+CALL FrageundAntwort
+EXIT
+
+Fensteroeffnen:
+Erfolg=OPEN(Fenster,'CON:20/20/620/100/Hello World 1.8./CLOSE',R)
+IF ~Erfolg THEN ECHO &quot;Fehler!&quot;
+RETURN
+
+FrageundAntwort:
+DO WHILE (Eingabe~=&quot;Ende&quot;)&amp;(KnopfGedrueckt~=&quot;0&quot;)
+  Eingabe = rtgetstring(&quot;&quot;,&quot;Bitte einen Text eingeben:&quot;,&quot;Hello World 
+1.8.&quot;,gadtxt)
+  KnopfGedrueckt=rtresult
+  Erfolg=WRITELN(Fenster,&quot;Du hast &quot;||Eingabe||&quot; eingegeben.&quot;)
+END
+RETURN
+--------------------------------
+Ich m&ouml;chte hier darauf verzichten, rexxreqtools zu erkl&auml;ren. Schau Dir 
+dieses kleine Beispiel und die zu rexxreqtools geh&ouml;rige Anleitung an und 
+probiere ein wenig herum damit.
+
+Jetzt geht's erst mal weiter mit den Systemfunktionen:
+ADDRESS()
+ergibt den Namen des ARexx-Ports, an den im Moment die externen Befehle 
+geschickt werden. Oft sinnvoll am Anfang eines Programms. Die einzige 
+M&ouml;glichkeit, um z.B. bei einem aus Wordworth gestarteten Programm zu 
+erfahren, wie denn nun der ARexx-Port tats&auml;chlich hei&szlig;t (Wordworth.1, 
+Wordworth.2 usw.).
+
+DATE(Option[,Datum,I|S])
+Gibt die aktuelle Zeit als Zeichenkette zur&uuml;ck. Diese kann weitgehend durch
+Optionen ver&auml;ndert werden (auf I|S komme ich gleich zu sprechen).
+Diese M&ouml;glichkeiten gibt es, wobei T f&uuml;r Tag, M f&uuml;r Monat und J f&uuml;r Jahr 
+steht:
+Century      Tage seit Beginn des Jahrhunderts
+Days         Tage seit Beginn des Jahres
+European     TT/MM/JJ
+Internal     Systemtage (seit dem 1.1.1978)
+Julian       JJTTT (Tage seit Beginn des Jahres)
+Month        englischer Monatsname
+Normal       TT MMM JJJJ
+Ordered      JJ/MM/TT
+Sorted       JJJJMMTT
+USA          MM/TT/JJ
+Weekday      der Wochentag
+
+Es reicht jeweils der erste Buchstabe als Angabe.
+
+Durch Angabe des I oder S kann ein Datum, das im Internal- oder Sorted-
+Format vorliegt, in jedes beliebige andere umgewandelt werden:
+SAY DATE(&quot;E&quot;,19960428,&quot;S&quot;)
+Ein winziges Beispiel: Ein kleines Programm, das ich einmal t&auml;glich 
+automatisch aufrufen lie&szlig; und das mir den aktuellen Stand meiner Hausarbeit 
+auf die Diskette Hausarbeit_BAK: kopierte, und zwar jedesmal in ein neues 
+Verzeichnis, das als Namen das aktuelle Datum hatte:
+--------------------------------
+/*Sicherheitskopie f&uuml;r Hausarbeit*/
+Address Command
+Datum=DATE(&quot;Sorted&quot;)
+makedir &quot;Hausarbeit_BAK:&quot;Datum
+copy &quot;Text:BT-III/Texte/(Hausarbeit|Literaturverzeichnis).TXT 
+Hausarbeit_BAK:&quot;Datum
+--------------------------------
+
+ERRORTEXT()
+Gibt eine kurze Beschreibung zu jeder Fehlernummer aus, die in ARexx 
+auftreten kann.
+
+EXPORT(Addresse[,String,L&auml;nge,F&uuml;llzeichen])
+Hiermit kann der Inhalt eines String an eine 4-Byte-Adresse geschrieben 
+werden. Der Speicher mu&szlig; vorher reserviert werden! (Siehe GETSPACE)
+
+FREESPACE([Addresse,L&auml;nge])
+Gibt die mit GETSPACE reservierten Speicherbereiche wieder frei. Bei 
+Verwendung der Argumente arbeitet die Funktion nicht ganz fehlerfrei. Sie 
+wird am Ende des Programms sowieso ausgef&uuml;hrt, also vielleicht einfach 
+weglassen, wenn Du nicht gerade 180 MB Speicher reserviert hast. Und wenn, 
+dann besser ohne die Argumente, denn FREESPACE wei&szlig;, welcher Speicher ihm 
+geh&ouml;rt.
+
+GETCLIP(Name)
+Liest eine Zeichenkette aus dem Clipboard.
+
+GETSPACE(L&auml;nge)
+Gibt einen Zeiger auf einen freien Speicherbereich zur&uuml;ck.
+
+HASH(String)
+Gibt den Hashwert des &uuml;bergebenen Strings zur&uuml;ck. Das ist so eine Art 
+Pr&uuml;fsumme: Alle ASCII-Werte werden addiert, und das unterste Byte der Summe 
+zur&uuml;ckgegeben.
+
+IMPORT(Adresse[,L&auml;nge])
+Liest Daten aus einem Speicherbereich. Ohne Angabe einer L&auml;nge wird bis zum
+n&auml;chsten &quot;00&quot;x gelesen.
+
+PRAGMA(Option[,Wert])
+Damit kann man einige Einstellungen des Programms ver&auml;ndern bzw. abfragen. 
+Folgende Optionen sind m&ouml;glich (es reicht wieder die Angabe des ersten 
+Buchstabens):
+ Directory  gibt das aktuelle Verzeichnis des Programms zur&uuml;ck.
+ ID         Zeiger auf die TaskControlBlock-Struktur
+ Priority   Damit kann dem Proze&szlig; eine andere TaskPriority gegeben werden.
+            Vorsicht: REXXMAST hat 4! Nicht h&ouml;her gehen!
+            Werte zwischen -128 und 127 sind theoretisch m&ouml;glich, normal    
+            ist der Bereich von etwa -5 bis +3.
+ Window     Damit kann der WindowPointer des Tasks ver&auml;ndert werden. F&uuml;r    
+            &quot;Wert&quot; k&ouml;nnen die Schl&uuml;sselworte &quot;Null&quot; oder &quot;Workbench&quot;        
+            stehen.
+ *          Der in Wert angegebene logische Name wird als aktueller *-      
+            Console-Handler eingestellt.
+
+REMLIB()
+Entfernt eine Library wieder.
+
+SETCLIP(Name[,Wert])
+Setzt einen Eintrag in der Clipliste. Ohne Angabe eines Wertes wird der 
+Eintrag gel&ouml;scht. Der R&uuml;ckgabewert ist boolsch (0 oder 1).
+
+SHOW(Option[,Name,Trennzeichen])
+Option mu&szlig; angegeben werden. Es gibt die folgenden M&ouml;glichkeiten:
+  Clip      : alle Eintr&auml;ge in der Clip-Liste
+  Files     : eine Liste der offenen logischen Dateinamen
+  Internal  : die interne Port-Liste
+  Libraries : die ge&ouml;ffneten Bibliotheken
+  Ports     : die allgemeinen PublicMessagePorts, zu denen auch die
+              ARexx-Ports geh&ouml;ren.
+Es reicht jeweils die Angabe des ersten Buchstaben.
+
+Wird ein Name angegeben, dann &auml;ndert SHOW() seine Funktion. Es gibt 1 
+zur&uuml;ck, wenn der unter Name angegebene Port gefunden wurde, und 0, wenn er 
+nicht gefunden wurde.
+Beispiele im zweiten Kursteil unter 2.3.2
+
+SOURCELINE([Zeile])
+Liefert ohne Wertangabe die Zahl aller Zeilen im aktuellen Skript. Mit 
+Angabe einer Nummer liefert es einen String, in dem die Zeile mit der 
+entsprechenden Nummer steht.
+
+STORAGE(Addresse[,String,L&auml;nge,F&uuml;llzeichen])
+Schreibt den angegebenen String direkt in den Speicher. Ganz ohne Parameter
+&uuml;bergibt die Funktion den freien Systemspeicher.
+
+SYMBOL(Name)
+Damit kann getestet werden, ob es sich bei Name um ein g&uuml;ltiges ARexx-
+Symbol (z.B. eine Variable) handelt. Folgende R&uuml;ckgabewerte sind m&ouml;glich:
+BAD     war nichts: kein ARexx-Symbol.
+LIT     es handelt sich um ein uninitialisiertes Symbol (eine Variable, der  
+        noch kein Wert zugewiesen wurde).
+VAR     Eine Variable, der ein Wert zugewiesen wurde.
+
+TIME([Option])
+&Auml;hnlich wie DATE(), nur f&uuml;r die Uhrzeit. Folgende Optionen gibt es:
+Civil     [h]h:mmxx (xx meint am oder pm)
+Elapsed   Sekunden und Hundertstelsekunden seit der letzten Abfrage
+Hours     Stunden seit Mitternacht
+Minutes   Minuten seit Mitternacht
+Normal    hh:mm:ss
+Reset     wie Elapsed, l&ouml;scht aber danach den Timer.
+Seconds   Sekunden seit Mitternacht
+
+TRACE(Option)
+Gibt die aktuelle Trace-Einstellung zur&uuml;ck oder &auml;ndert je nach Option diese
+Einstellung.
+
+VALUE(Name)
+&#008;Gibt den Inhalt einer Variablen zur&uuml;ck. Das ist dann n&ouml;tig, wenn der 
+Variablenname selbst eine Variable ist:
+a=&quot;Hoppla, ist das kompliziert&quot;
+b=&quot;a&quot;
+SAY VALUE(a)
+SAY VALUE(&quot;a&quot;)
+SAY VALUE(b)
+
+****************************************************
+4.4. Ein paar Tips am Rande
+Hier m&ouml;chte ich noch schnell ein paar Tips loswerden, die dem einen oder 
+der anderen von Euch vielleicht helfen k&ouml;nnen.
+
+4.4.1. Start mit Piktogramm
+Ein Piktogramm f&uuml;r ein ARexx-Skript ist mit den entsprechenden Programmen 
+schnell erstellt. Es sollte vom Typ &quot;Projekt&quot; sein und als Standardprogramm 
+einfach RX eingetragen haben. Dann steht einem Start per Doppelklick nicht 
+mehr viel im Weg (au&szlig;er vielleicht Programmfehlern...)
+
+4.4.2. Start aus AmigaGuide
+<u>hier</u> gibt einen Link mit dem Wort &quot;hier&quot;. Ein Klick 
+darauf startet das Skript &quot;hier.rexx&quot;. Allerdings mu&szlig;t Du f&uuml;r Ausgabe von 
+Daten selber sorgen. ECHO funktioniert nicht so einfach. Aber Du hast ja 
+inzwischen gelernt, wie man Fenster &ouml;ffnet usw.
+
+4.4.3. Anf&uuml;hrungszeichen
+Anf&uuml;hrungszeichen sind eine heikle Geschichte in ARexx. Es gibt die zwei 
+Arten ' (Alt-&auml;) und &quot;. Beide sind v&ouml;llig gleichbedeutend. Bei der 
+Interpretation wird immer das &auml;u&szlig;erste Paar weggenommen. Aus &quot;'&quot; wird ' und 
+umgekehrt. Und aus &quot;Name&quot; wird Name, was f&uuml;r ARexx ein g&uuml;ltiges Symbol 
+(eine Variable!) ist! Im Endeffekt hilft hier nur 'rumprobieren und vor 
+allem Tracen. Wenn was nicht funktioniert, mach mal noch ein paar 
+Anf&uuml;hrungszeichen au&szlig;enherum. Beachte au&szlig;erdem Gro&szlig;- und Kleinschreibung! 
+Au&szlig;erhalb von Anf&uuml;hrungszeichen macht ARexx so ziemlich alles
+GROSS.
+
+4.4.4. MUIRexx
+MUIRexx ist ein Programm, das eine Schnittstelle zwischen ARexx und MUI 
+(Magic User Interface) bildet. Es ist sehr leistungsf&auml;hig. Ich bin selber 
+im Moment noch dabei, es zu verstehen, und hoffe, da&szlig; ich n&auml;chsten Monat 
+ein kleines Programm damit pr&auml;sentieren kann. Probiert's mal aus! Ebenfalls 
+im Aminet erh&auml;ltlich, genauso wie MUI.
+
+4.4.5. Wordworth finden
+Das ist gar nicht so einfach, denn jedes Fenster &ouml;ffnet einen eigenen Port! 
+Es gibt zwar auch noch den Port mit dem Namen WordworthLives, was 
+wahrscheinlich bedeuten soll: Wenn dieser Port existiert, dann ist auch 
+Wordworth aktiv. Aber sicher bin ich mir da nicht. Meine L&ouml;sung ist nicht 
+sehr elegant, das mu&szlig; ich zugeben. Aber sie funktioniert:
+
+--------------------------------
+DO Num = 1 to 20
+        WwPort = &quot;WORDWORTH.&quot; || Num
+        IF SHOW(PORTS, WwPort) THEN DO
+                Address Value WwPort
+                leave Num
+        end
+end
+if num=21 then do
+    echo &quot;Wordworth nicht gefunden! Programm endet.&quot;
+    exit
+    end
+--------------------------------
+
+So, das waren nun fast alle ARexx-Befehle, die es gibt. Im n&auml;chsten und 
+letzten Kursteil werde ich einige wenige Befehle noch nachtragen und vor 
+allem ein paar kleine Beispiele daf&uuml;r geben, was mit ARexx alles m&ouml;glich 
+ist. Wer daf&uuml;r Ideen oder fertige Skripte hat: Ich bin f&uuml;r Vorschl&auml;ge und 
+Unterst&uuml;tzung offen!
+Ein kurzes pers&ouml;nliches Wort an diejenigen, die im Lauf des letzten Monats 
+an mich geschrieben haben: Leider war ich im April sehr wenig zu Hause und 
+hatte dann sehr viel zu tun, so da&szlig; ich noch nicht dazu gekommen bin, auf 
+alles zu antworten. Ich werde aber alles noch beantworten! Vielen Dank f&uuml;r 
+Eure Geduld.
+
+
+****************************************************
+4.5. Zusammenfassung der neuen Befehle
+
+ADDLIB(Name,Priorit&auml;t[,Offset,Version])
+ADDRESS()
+CALL
+DATE(Option[,Datum,I|S])
+ERRORTEXT()
+EXIT
+EXPORT(Addresse[,String,L&auml;nge,F&uuml;llzeichen])
+FREESPACE([Addresse,L&auml;nge])
+GETCLIP(Name)
+GETSPACE(L&auml;nge)
+HASH(String)
+IMPORT(Adresse[,L&auml;nge])
+PRAGMA(Option[,Wert])
+PROCEDURE (EXPOSE)
+REMLIB()
+RETURN
+SETCLIP(Name[,Wert])
+SHOW(Option[,Name,Trennzeichen])
+SOURCELINE([Zeile])
+STORAGE(Addresse[,String,L&auml;nge,F&uuml;llzeichen])
+SYMBOL(Name)
+TIME([Option])
+TRACE(Option)
+VALUE(Name)                                                               &laquo;
+</pre>
+</body>
+</html>

@@ -1,0 +1,151 @@
+' ---- Variables Init ---- 
+
+' Ntsc test
+YMID=128-28*(Ntsc=True)
+
+' Lens paramenter
+DIST=500 : ZOM=250
+
+' Number of loops
+NL=500
+
+' Init coords  
+Restore _DATA_POINTS
+Read NP
+Dim XP(NP),YP(NP),ZP(NP)
+Dim XP2(NP),YP2(NP),ZP2(NP)
+Dim X(4),Y(4),Z(4)
+For I=1 To NP
+   Read XP(I),YP(I),ZP(I)
+Next I
+
+Restore _DATA_FACES
+Read NF
+Dim P(NF,4)
+For I=1 To NF
+   For J=1 To 4
+      Read P(I,J)
+   Next J
+Next I
+
+' ---- Screen Init ----
+
+Screen Open 0,320,YMID*2,16,Lowres
+Flash Off : Curs Off : Hide : Cls 0
+For I=0 To 15 : Colour I,I*$111 : Next I
+
+Double Buffer 
+Autoback 0
+Degree 
+
+' ---- Main Loop ----
+
+Timer=0
+For N=1 To NL
+   
+   Cls 0
+   
+   ' Increment rotation angles
+   Add TETA,1,0 To 359
+   Add PHI,2,0 To 359
+   
+   ' Precalculation of COSs and SINs  
+   ' ( *256 to stay in integer mode (faster!))    
+   CPHI=Cos(PHI)*256
+   SPHI=Sin(PHI)*256
+   CTETA=Cos(TETA)*100
+   STETA=Sin(TETA)*256
+   
+   
+   ' Calculation of rotated 3D coords of A,B,C,D of all points  
+   ' ( /256 to bring back COS and SIN beetween 0->1)    
+   ' Rotation (X-Z with PHI) & rotation (X-Y with TETA) 
+   For I=1 To NP
+      XP2(I)=(XP(I)*CPHI+ZP(I)*SPHI)/256
+      ZP2(I)=(ZP(I)*CPHI-XP(I)*SPHI)/256
+      YP2(I)=(YP(I)*CTETA-XP2(I)*STETA)/256
+      XP2(I)=(XP2(I)*CTETA+YP(I)*STETA)/256
+   Next I
+   
+   For I=1 To NF
+      
+      ' Calculation of AB vector 
+      X1=XP2(P(I,2))-XP2(P(I,1))
+      Y1=YP2(P(I,2))-YP2(P(I,1))
+      Z1=ZP2(P(I,2))-ZP2(P(I,1))
+      
+      ' Calculaton of AC vector
+      X2=XP2(P(I,3))-XP2(P(I,1))
+      Y2=YP2(P(I,3))-YP2(P(I,1))
+      Z2=ZP2(P(I,3))-ZP2(P(I,1))
+      
+      ' Calculation of PV vector = AB^AC   
+      PVX=Y1*Z2-Z1*Y2
+      PVY=Z1*X2-X1*Z2
+      PVZ=X1*Y2-Y1*X2
+      
+      ' Calculation of ENL scalair product PV.AB   
+      ' (proportionnal with Enlightment of a Face) 
+      ENL=PVX*XP2(P(I,1))+PVY*YP2(P(I,1))+PVZ*(ZP2(P(I,1))+DIST)
+      
+      ' Positive ENL means that the face is hidden 
+      If ENL<0
+         
+         ' Bring back ENL from 0 to 15 for use with Ink 
+         ENL=-ENL*16
+         ENL=ENL/(Sqr(PVX^2+PVY^2+PVZ^2))
+         ENL=ENL/(Sqr(X(1)^2+Y(1)^2+(Z(1)+DIST)^2))
+         If ENL>=15 : ENL=15 : End If 
+         
+         ' Calculation of screen coords of A,B,C,D    
+         For J=1 To 4
+            X(J)=160+(XP2(P(I,J))*ZOM)/(DIST+ZP2(P(I,J)))
+            Y(J)=YMID+(YP2(P(I,J))*ZOM)/(DIST+ZP2(P(I,J)))
+         Next J
+         
+         ' Draw Faces!
+         Ink ENL
+         Polygon X(1),Y(1) To X(2),Y(2) To X(3),Y(3) To X(4),Y(4)
+         
+      End If 
+   Next I
+   Screen Swap 
+   Wait Vbl 
+Next N
+
+' ---- Cube Data ----  
+
+_DATA_POINTS:
+Data 8
+
+Data -100,-100,-100
+Data 100,-100,-100
+Data 100,100,-100
+Data -100,100,-100
+
+Data -100,-100,100
+Data 100,-100,100
+Data 100,100,100
+Data -100,100,100
+
+'       5----------6                     
+'      /.         /|             
+'     / .        / |                 
+'    1----------2  |                         
+'    |  .       |  |                 
+'    |          |  |               
+'    |  8 . . . |. 7               
+'    | .        | /                    
+'    |.         |/                   
+'    4----------3              
+'                            
+
+_DATA_FACES:
+Data 6
+Data 1,4,3,2
+Data 1,2,6,5
+Data 3,4,8,7
+Data 5,6,7,8
+Data 1,5,8,4
+Data 2,3,7,6
+@

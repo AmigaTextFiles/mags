@@ -1,0 +1,482 @@
+{center}
+{p}
+{subhead}{bold}The AIO C Tutorial - Part 1, introduction to the C language for non-C programmers{nobold}{def}
+{pp}{left}
+By Paul Harvey (paul@aioworld.com)
+{pp}
+{bold}Introduction{nobold}
+{pp}
+This is a quick introduction to programming in C on the Amiga - these first articles actually won't
+contain much Amiga specific stuff. For a quick intro on using the freely available vbcc compiler
+which can be found in /dev/c/ on aminet, please read the article "Using vbcc" also in this issue. It
+covers some basics about the compiling process as well. Please keep in mind I'm actually no
+expert on coding for the miggy; if you are already an experienced C programmer on other
+platforms, then you
+won't need this first tutorial. If you are already an experienced Amiga C programmer, then this
+whole series of tutorials won't be of much value to you. That said, if you want to start learning C,
+I hope you find this first tutorial helpful! By the end of these articles, I aim to have covered:
+{pp}
+- the concepts of coding in C, aimed at people who are already familiar with programming in
+other languages{p}
+- lots of console stuff (CLI programs){p}
+- some use of MUI{p}
+- some use of the SDL and RTG graphics (that should work with AGA){p}
+{pp}
+Most people are afraid of the C language, and before I knew better, I was no exception. I had
+always heard it was hard and scary.. in practice, it's not. C - and most other macro level
+languages - are all similar at a basic level.
+{pp}
+To the best of my ability, I have endeavored to make the information in these tutorials as
+accurate as possible. However, some of it may be slightly off track, or completely wrong. If you
+disagree with something I've presented, please tell me about it - I'm probably wrong! I do not
+pretend I am a C guru, or even that I am experienced enough to qualify teaching others - but
+here goes!
+{pp}
+{bold}NOTE:{nobold} the source code supplied with this issue of AIO, which is presented in the
+examples of this tutorial, will give compiler warnings with vbcc. Whilst it is
+{bold}extremely{nobold} bad practice to just ignore compiler warnings, I had originally written these short programs off the top of my head, for a different compiler that does
+not give the same warnings as vbcc. You will always see the warning "main does not return int".
+This can be fixed, if you prefer, by changing the main() declaration from:
+{pp}{fixed}
+void main(void)
+{{
+  <program code>
+  ...
+  <program code>
+  return;
+}}
+{def}{pp}
+To this:
+{pp}{fixed}
+int main(void)
+{{
+  <program code>
+  ...
+  <program code>
+  return 0;
+}}
+{def}{pp}
+I apologise for this confusion. For now, I hope you find this tutorial useful in some way. Any
+comments or questions you may have are appreciated. Enjoy!
+{pp}
+{italic}Editor's Note: The C sources for all provided examples can be
+found each in their own files in the directory "AIOIssue53/C_sources".{noitalic}
+{pp}
+{bold}1.0{nobold} - Important points to remember about C in comparison to other languages{p}
+{bold}1.1{nobold} - Hello world{p}
+{bold}1.2{nobold} - Basic structure of a C program{p}
+{bold}1.2.0{nobold} - #include{p}
+{bold}1.2.1{nobold} - About functions{p}
+{bold}1.2.2{nobold} - Declaring functions{p}
+{bold}1.2.3{nobold} - Returning from functions{p}
+{bold}1.3{nobold} - Declaring variables{p}
+{bold}1.3.0{nobold} - Standard C variable types{p}
+{bold}1.3.1{nobold} - Declaring a simple variable{p}
+{bold}1.3.2{nobold} - Type casting{p}
+{bold}1.3.3{nobold} - Scope{p}
+{bold}1.4{nobold} - C Syntax{p}
+{bold}1.4.0{nobold} - A word about white space{p}
+{bold}1.4.1{nobold} - C likes to evaluate{p}
+{bold}1.4.2{nobold} - To assign or to evaluate{p}
+{bold}1.4.3{nobold} - A word about boolean expressions{p}
+{bold}1.4.4{nobold} - Evaluation operators{p}
+{bold}1.4.5{nobold} - Assignment operators{p}
+{bold}1.4.6{nobold} - Working with parenthesis: taking control of evaluation{p}
+{bold}1.4.7{nobold} - Working with curly braces: taking control of your code{p}
+{bold}1.5{nobold} - Program flow{p}
+{bold}1.5.0{nobold} - if{p}
+{bold}1.5.1{nobold} - while{p}
+{bold}1.5.2{nobold} - do... while{p}
+{bold}1.5.3{nobold} - for{p}
+{bold}1.5.4{nobold} - switch{p}
+{bold}1.6{nobold} - printf(){p}
+{bold}1.7{nobold} - scanf(){p}
+{pp}
+{bold}1.0 - Important points to remember about C in comparison to other languages:{nobold}
+{pp}
+- C is CASE SENSITIVE. 'I' and 'i' can be two different variable names. Remember that. Always.
+Enough said.
+{pp}
+- C has a separate operator for assignment and evaluation. That is, for setting a variable i equal to
+5, we would use the '=' assignment operator. It may help to read this symbol NOT as "equals"
+but as "becomes". If we wanted to evaluate if something is actually equal to something else, we
+would use the '==' operator, for example, checking *if* i is equal to 5. See further on, 1.4.2,
+"To assign or to evaluate".
+{pp}
+- When dealing with an expression that is being evaluated as boolean (true/false), an expression is
+regarded as "true" if it evaluates to a non-zero value, and "false" if it is equal to zero. See further
+on, 1.4.3, "A word about boolean expressions".
+{pp}
+- C always has a main() function. When a C program is first run, execution begins at the 
+beginning of main() and goes from there.
+{pp}
+- C has keywords/symbols that are context sensitive: For example, the ampersand "&" can have
+arithmetic, logical, bitwise, or variable referencing meaning. If you see a symbol being used in a
+weird way, perhaps it's because you don't understand the context that it's being used in.
+{pp}
+- C is easier to debug, read, and maintain if your indenting is 100%. ALWAYS INDENT 
+CORRECTLY. I don't know of a "standard" indenting style, and the examples in this tutorial don't 
+follow my own indenting habits, but the bottom line is be CONSISTENT.
+{pp}
+- C is a compiled language, as opposed to interpreted. That means your program code is
+translated directly into native machine code that your computer/OS understands without any
+external support. Although C interpreters exist, the main advantages of using C is that it can give
+very good (i.e.. efficient) compiled native machine code, when coded properly. This means it can
+use less memory, run faster, and take less time to load in general, when compared to for
+example, interpreted versions of BASIC. There are other compiled languages, including Pascal,
+cobol, fortran, SHEEP (in AmigaDE), and some BASIC variants.
+{pp}
+- C is a common language. Everyone seems to use it. AmigaOS, Windows 9x, Linux, etc. are 
+written in C. That doesn't mean it's the best, be-all, end-all language; there are lots of benefits
+using a specific language to solve a specific problem, when mainstream languages get clumsy.
+But it does mean C is very mature. It's fairly safe to say that if you can't find a C compiler for a 
+given CPU & architecture, then there probably aren't any other kinds of compilers for it either,
+except perhaps for it's own assembly language.
+{pp}
+- C is still extremely popular even though C++ has been around for years. C++ is not just a
+"simple" extension of the C language; it is a whole new way of programming; that is, Object 
+Oriented programming. If you ever intend to use C++, I recommend you DONT learn C first.
+Though you can write C programs in C++, you are missing out on the real benefits of OO 
+programming. That said, OO programs in C++ do have extra overhead. For simple things, 
+especially low-level stuff, C still has it's place.
+{pp}
+- ANSI C is source portable. This means you can take ANSI C source code, and compile it on a 
+different OS/architecture and it will (in theory) compile OK. In practice, this is not true. Firstly, 
+many compilers allow you to deviate from the ANSI standards and take advantage of proprietary 
+features of a specific compiler, which makes your code non-ANSI compliant. Secondly, some
+computer architectures, like the brain-damaged x86 clones, by definition, make it impossible to 
+make serious ANSI compliant programs, because of the crazy, retarded segmented memory 
+scheme it uses. To it's credit, the x86 isn't alone out there when it comes to using equally 
+whacked memory addressing schemes.. and there are ways of making it easy(er) to work with 
+segmented memory architectures.
+{pp}
+- Because C was designed to create highly efficient binaries, you do end up having to deal with 
+memory "directly". By directly I mean you do have to be aware of how memory works - but C 
+does give you enough abstraction from the hardware so you don't have to know *exactly* how it
+works, and, you can maintain a certain level of portability (to a certain degree). Many other 
+languages dont' focus as much on, or even allow, direct working with memory, but C allows you 
+to do some very powerful things with this that would otherwise be impossible or messy. This is 
+the most "scary" part of C and can cause quite a lot of confusion, but once you've got your head 
+around the basics of working with memory, it all suddenly starts making sense...
+{pp}
+{bold}1.1 - Hello world{nobold}
+{pp}
+So let's dive in to an example. In these tutorials, I'll put a [begin example.c] line before example 
+code and a [end example.c] to end it. You should be able to find example.c in the AIO archive, 
+where "example" is the name of the file, followed by the .c extension. A simple "Hello world" 
+program in C is perhaps a good place to start:
+{pp}{fixed}
+[begin 1.1_helloworld.c]
+#include <stdio.h>
+
+/* This is a comment for a simple program. Comments begin with a slash-star then ended with a 
+star-slash combination, like this comment is. Everything inside a comment block is ignored 
+completely by the compiler. */
+
+void main(void)
+{{
+  printf("Hello world!");
+  return;
+}}
+[end 1.1_helloworld.c]
+{def}{pp}
+Not so scary.. or is it? Why the #include line? What's this void business, and what's with the 
+return statement?
+{pp}
+{bold}1.2 - Basic structure of a C program{nobold}
+{pp}
+{bold}1.2.0 - #include{nobold}
+{pp}
+Whilst it is possible to write programs that don't use the #include statement, includes actually 
+make our lives easier.
+{pp}
+- A line beginning with a hash (#) symbol is a "compiler directive", or what's known as a pre-
+processor statement. It isn't actual C code and C syntax does not apply. It's a command we give 
+directly to the compiler. In this case, the command is "include" and it does exactly that - includes 
+an external file into your source code. When you give the command to compile your whole 
+program, the compiler will insert the contents of the file indicated into your source at the point 
+where #include is called.
+{pp}
+It is necessary that compiler directives are at the *beginning* of your program, before any actual 
+code. Remember, we are giving the compiler commands to do certain things to our source code 
+before compiling, so we can't call these commands halfway through our program.
+{pp}
+You can make your own include files. Since includes are actually C source files themselves, you 
+could break up your program into different files to make it more readable, if it is a really big 
+program.
+{pp}
+However, please note that you *do not* put *actual* program code straight into headers. 
+Headers usually contain definitions rather than actual code. More about this in a future tutorial.
+{pp}
+There are two main ways of including files. In the hello world program, we've said:
+{pp}
+{fixed}#include <stdio.h>{def}
+{pp}
+which is fine, but are the greater/less than signs important? Yes, they are. A filename enclosed in 
+these brackets gives the compiler information about exactly where on your hard drive this file 
+lives. In this case, stdio.h stands for "standard input/output header file". The file is one of a set of 
+standard includes that your compiler would most likely already have when you first install it, so 
+the compiler knows to search in it's library of standard header files because of the greater/less 
+than brackets. If you wanted to include your own header file, you would use double quotes, and 
+a path to where it lives on your HDD. For example:
+{pp}
+{fixed}#include "work:myincludes/myspecialheader.h"{def}
+{pp}
+You don't always have to give a full drive:path string, you could just as easily give a path relative 
+to where you are compiling from. Note that on the wintel platform, you would have to do this:
+{pp}
+{fixed}#include "c:\\myincludes\\myspecialheader.h"{def}
+{pp}
+Note the double slash. This is necessary because the '\' character is actually an escape code in C; 
+to get a '\' character itself, you use the double slash combination '\\'. See section 1.6, "printf()" 
+for more about escape codes.
+{pp}
+If you don't #include anything, your program can't really do much. This is similar to other 
+compiled languages, such as Pascal, where you would have to put "uses crt" in order to do much 
+on screen. In fact, in C, we can't even read input from the keyboard or write to the screen at all 
+(easily). So we have to "compile in" extra support to do these things, using the #include 
+command to include standard ANSI functions as we need them. stdio.h contains a set of ANSI 
+functions that allow you to read input from the keyboard, write to the screen, and work with files. 
+One of the functions in stdio.h is printf(), which prints a string to the screen, as demonstrated by 
+the hello world program. There are many other useful ANSI includes that give your program 
+access to handy pre-written functions. Such headers are math.h, string.h and mem.h. These 
+headers give you maths support with various constants (such as PI and 'e'), as well as trigonometry 
+functions. string.h gives you the ability to search within strings, copy them, split them up, etc. 
+mem.h gives you the ability to use ANSI memory functions to work with memory.
+{pp}
+{bold}1.2.1 - About functions{nobold}
+{pp}
+C is a functional language. You create your own functions as you need them, to break up an 
+algorithm into smaller, manageable chunks. It's a bit like making your own set of tools to solve a 
+problem, then the main part of the program has to use these tools (functions) to get the job 
+done.
+{pp}
+C has the mentality that functions ALWAYS are given parameters (input variables) and ALWAYS 
+return a value. In practice, this may not be the case - you might have a function that doesn't take 
+any parameters, or doesn't return a value, or both. To get around this, you are allowed to return 
+a special type called "void", and/or take void as a parameter.
+{pp}
+C ALWAYS has a main() function. The beginning of main is where execution in your program 
+starts. If you have no code in your main function, nothing will happen, no matter how many 
+other functions you may have. main() can take parameters, but it depends on your compiler/OS as 
+to what these parameters are and how you use them. Typically, parameters passed to main() are 
+parameters passed to your program at the command line. main() can also return a value, which 
+can be used as an error code. For now, we will assume main() gets passed void and returns void, 
+to keep things simple.
+{pp}
+{bold}1.2.2 - Declaring functions{nobold}
+{pp}
+Let's expand our hello world program, to say "It's raining today." after the greeting message. We 
+can do it with a function. Let's call this new function rainmessage(). And for the sake of example, 
+we will make it return the integer value 5. First we have to declare the function - that is, define 
+what it returns, what it accepts as parameters, and the name of the function.
+{pp}
+Function declarations take this generic form:
+{pp}
+{fixed}<return type> function_name(<[param1 type] param1_name>, <[param2 type] param2_name>..., <[paramN type] paramN_name>){def}
+{pp}
+rainmessage() could be declared as:
+{pp}
+{fixed}int rainmessage(void) {{}}
+^               ^
+Returns an int. Takes void as it's only parameter.
+{def}{pp}
+The curly braces are shown here to make this line a valid line of C code. By now you've probably 
+guessed curly braces signify the beginning "{{" and the end "}}" of a code block. In this 
+example, 
+the curly braces following the function declaration encapsulate code associated with the function 
+rainmessage().
+{pp}
+Simple enough.
+{pp}
+Usually you would have to give a variable in the parameter list a name. In this case, because it's 
+void, we don't need a name (as there is no real variable in the parameter list). To have 
+rainmessage take a variable called paramval of type int, as well as return an int value, the 
+declaration would look like:
+{pp}
+{fixed}int rainmessage(int paramval) {{}}{def}
+{pp}
+A function can take many variables in it's parameter list. All can be of different types, even 
+complex types that are made up of more types themselves (called structures, we won't go into 
+them yet). However, there are restrictions on what a function can return. Firstly, a function can 
+only return a single value. And it can only return specific types - namely, only the standard types 
+that come with the C language, or a special variable called a pointer (explained in a future 
+tutorial). For now, all this doesn't worry us... here's the rest of rainmessage():
+{pp}{fixed}
+int rainmessage(void)
+{{
+  printf("It's raining today.\n");
+  return 5;
+}}
+{def}{pp}
+It looks similar to the original main() function. Note the '\n' escape sequence at the end of 
+the string. This is actually interpreted as one character, not two. The character translates to the 
+ASCII new line control code. This forces the cursor to be moved to the beginning of a new line, 
+so that the next printf() call will begin writing on a new line. For more about escape codes and 
+printf(), see 1.6, printf(). Also, the return statement is actually returning something that isn't void - according
+ to our function declaration, the value of the int being returned will be decimal 5.
+{pp}
+Let's put this into use:
+{pp}{fixed}
+[begin 1.2.2_helloworld.c]
+#include <stdio.h>
+
+int rainmessage(void)
+{{
+  printf("It's raining today.\n");
+  return 5;
+}}
+
+void main(void)
+{{
+  printf("Hello world!\n");
+  printf("rainmessage() returned: %i.\n", rainmessage());
+  return;
+}}
+[end 1.2.2_helloworld.c]
+{def}{pp}
+There are two new things in the example above. The first line of main() contains the statement:
+{pp}
+{fixed}int i;{def}
+{pp}
+For now, just accept that this creates a variable called 'i' and makes it of type int (integer). For 
+more about declaring variables, see 1.3.1, Declaring simple variables.
+{pp}
+In the last printf() statement, we have '%i' in the output string. For now, just accept that '%' is 
+an escape code and 'i' is the character being interpreted. This particular sequence prints the 
+variable listed after the output string parameter of printf(), as an integer value in decimal to the 
+screen, at the point where '%i' is put in the string. i.e.. printf()'s first parameter is the output 
+string as normal, the second parameter is a variable to be printed, which is printed in the string 
+where '%i' appears. For more about escape codes and printf(), see 1.6, printf().
+{pp}
+One other thing you should note is the fact that we put our new function, rainmessage(), {bold}before{nobold} main.
+This is necessary, because you can't use a function before it has been declared in your code. This is how you would
+program in Pascal; apparently the idea was that, if you are trying to use a function before it's been declared, you
+are doing something conceptually wrong. C programs on the other hand, usually don't even try to have a "correct"
+order of functions. Usually C programmers use whats known as function prototypes, which are basically the first line
+of a normal function, but without any code attached to it; and rather than have actual variable names in the
+parameter list, only their types are listed. For each function in the program, a corresponding prototype appears
+above main(). Then you can have all your functions below main() - which at first glance seems to defeat the purpose
+of the "top down" programming method!
+{pp}
+For now, we will not use prototypes, to keep things simple.
+{pp}
+As you probably already know, programmers are notoriously lazy. One side effect of this on C is 
+that, if a function has just one void parameter, then we don't actually need to pass void, or 
+define it. Most compilers can deal with this and *assume* we're meaning void, but I'm not sure 
+if that's strictly ANSI compliant. As always, letting the compiler assume things for you can get you 
+into trouble, but this is one thing that is generally safe, if your compiler allows it. So, here is a 
+similar program, without passing/defining void in the parameter list:
+{pp}{fixed}
+[begin 1.2.2_helloworld_b.c]
+#include <stdio.h>
+
+void rainmessage()
+{{
+  printf("It's raining today.\n");
+  return;
+}}
+
+void main()
+{{
+  printf("Hello world!\n");
+  rainmessage();
+  return;
+}}
+[end 1.2.2_helloworld_b.c]
+{def}{pp}
+{bold}1.2.3 - Returning from functions{nobold}
+{pp}
+You've probably noticed that the return keyword appears at the end of all the example functions 
+so far, and you've probably guessed it defines the point at where a function "drops out", or 
+returns execution back to where it was called. In C, the code for a function can technically have 
+the return keyword mentioned more than once - that is, return is not restricted to being used 
+only as the very last statement - it can be used anywhere in your code. As a side note, if a 
+function returns void, like all our examples so far, some compilers will let you leave out return 
+entirely; the compiler assumes the function "returns" when it hits the closing brace of that 
+function. However, being an ex-pascal coder myself, the whole concept of using the return 
+keyword halfway through a function is awkward, and I can't help feeling it could get things into 
+a tangle. For instance, it could make code harder to debug, as well as opening up the possibility 
+of leaving loose ends such as open files that are never closed, allocated memory that is never 
+freed up, etc. and other problems associated with exiting a function without "tidying up".
+{pp}
+For this reason I recommend using if or while blocks in conjunction with abort/exit flags if there is 
+a need to drop out of a function early, as well as keeping that return statement at the end of the 
+function.
+{pp}
+{bold}1.3 - Declaring variables{nobold}
+{pp}
+{bold}1.3.0 - Standard C variable types{nobold}
+{pp}
+To understand declaring variables, you have to understand the standard C variable types. In 
+theory, these types are just names given to a an arbitrary way of using an arbitrary sized chunk of 
+memory. The actual amount of memory allocated to each type depends on your platform, and 
+compiler. This will ultimately influence the way these variables behave. 
+{pp}
+With vbcc on the Amiga m68k platform, the following types have these arrangements:{p}{fixed}
+Type name     | No. bits | Least value   | to  Largest value
+--------------+----------+---------------+------------------
+unsigned char   8 bits     0               to  255
+char            8 bits     -128            to  127
+short int       16 bits    -32,768         to  32,767
+unsigned int    32 bits    0               to  4,294,967,295
+int             32 bits    -2,147,483,648  to  2,147,483,647
+unsigned long   32 bits    0               to  4,294,967,295
+enum            16 bits    -2,147,483,648  to  2,147,483,647
+long            32 bits    -2,147,483,648  to  2,147,483,647
+float           32 bits    3.4 x 10-38     to  3.4 x 10+38
+double          64 bits    1.7 x 10-308    to  1.7 x 10+308
+long double     64 bits    1.7 x 10-308    to  1.7 x 10+308
+{def}{pp}
+With Borland C/C++ 5 on Win32 platform, the following types have these 
+arrangements:{p}{fixed}
+Type name     | No. bits | Least value   | to  Largest value
+--------------+----------+---------------+------------------
+unsigned char   8 bits     0               to  255
+char            8 bits     -128            to  127
+short int       16 bits    -32,768         to  32,767
+unsigned int    32 bits    0               to  4,294,967,295
+int             32 bits    -2,147,483,648  to  2,147,483,647
+unsigned long   32 bits    0               to  4,294,967,295
+enum            16 bits    -2,147,483,648  to  2,147,483,647
+long            32 bits    -2,147,483,648  to  2,147,483,647
+float           32 bits    3.4 x 10-38     to  3.4 x 10+38
+double          64 bits    1.7 x 10-308    to  1.7 x 10+308
+long double     80 bits    3.4 x 10-4932   to  1.1 x 10+4932
+{def}{pp}
+The integer types hold integer values. That is, whole numbers; signed integers can hold negative 
+and positive values, unsigned integers can not. The float and double types can hold large real 
+numbers with fractional parts, up to the precision indicated in the tables above.
+{pp}
+If your code must be portable and it is important to verify a variable has enough 
+resolution/range, or you wish to do memory allocation at run-time, the sizeof() function can be 
+used to find how many bytes in memory is allocated for a variable.
+{pp}
+Example:
+{pp}{fixed}
+[begin 1.3.0_varsizes.c]
+#include <stdio.h> /* must include stdio.h for sizeof() */
+/* you may need to include stddef.h or similar to use size_t type */
+/* if this fails, make i_size a normal int */
+
+void main(void)
+{{
+  int i = 0;
+  size_t i_size = 0;
+  
+  i_size = sizeof(i);
+  printf("i_size takes up %i bytes in memory.\n", i_size); /* printf() is covered towards the end of 
+this tutorial. For now, just accept that this line will print the value of i_size as an integer (hence 
+the 'i' in '%i'). */
+
+  return;
+}}
+[end 1.3.0_varsizes.c]
+{def}{pp}
+The value of i_size should become equal to how many bytes i consumes in memory (the return 
+value of sizeof()). On my Amiga with vbcc, it appears to be 4 bytes. With the Borland C 5/Win32
+environment, this would also be 4 bytes.
+{pp}
+{PP}
+{link fe5}Link To Part 2{end}
+{pp}

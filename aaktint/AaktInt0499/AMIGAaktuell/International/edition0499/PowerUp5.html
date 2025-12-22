@@ -1,0 +1,123 @@
+<HTML>
+<HEAD>
+<TITLE>PowerUp-to-date</TITLE>
+</HEAD>
+<BODY BGCOLOR=#FFFFFF TEXT=#000000 LINK=#0000AA ALINK=#000066 VLINK=#000066>
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="PowerUp4.html"><IMG SRC="../menu/links.gif" BORDER="0" WIDTH="15" HEIGHT="15"></A>
+<A HREF="PowerUp.html"><IMG SRC="../menu/hoch.gif" BORDER="0" WIDTH="15" HEIGHT="15"></A>
+<A HREF="PowerUp6.html"><IMG SRC="../menu/rechts.gif" BORDER="0" WIDTH="15" HEIGHT="15"></A>
+<font color="#FFFFFF">
+PowerUp-to-date
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H1>PowerUp-to-date</H1>
+<H2>5. Changes of the Escena-G3 boards / delivery will be delayed</H2>
+<P>
+</P>
+
+<B><FONT COLOR="#FF0000" FACE="Arial, Helvetica">»Technical Details</FONT></B><P>
+
+<FONT SIZE="2"  FACE="Arial, Helvetica">
+	One of the most important tasks was the design of the memory interface. Its speed is currently derived from a bus
+	clock of 66MHz. The actual bandwidth may be higher or lower according to the actual board clock.<P>
+	
+	The bus interface is designed to provide a bus bandwidth of 427 MB/s. This can be achieved for cachable (memory)
+	accesses. Non-cachable accesses are performed as single accesses and reduce the bandwidth to 267 MB/s during transfer.
+	The memory bandwidth can decrease to 217 MB/s (88 MB/s non-cachable), but this should only occur during blocking.
+	However PPC address arbitration has a minimum duration of 3 cycles. Thus one-precessor-memory-only-single-accesses
+	can deliver only a maximum data rate of 178 MB/s. Remember that little difference between bandwidth and data rate.
+	This is not relevant for bursts, since they have a length of five cycles, transferring 32 Bytes.<P>
+	
+	Since the data rate requested by the PPC is normally lower than the provided bandwidth, there is idle time left
+	on the bus allowing to intermix accesses of a second processor or the DMA-Controller. This depends heavily upon
+	the application. Tasks only moving data around consume more bandwidth than for example ray tracers. <P>
+	
+	This high bandwidth is achieved by implementing an extensively used address-pipeline. The PPC supports a separate
+	arbitration of the address and data bus, so that (memory) cycles requiring latency don't occupy the busses through
+	waitstates. Transfer requests are stored in the address pipeline and a command microcode is generated. Only if
+	the data bus was idle the address pipeline is bypassed and the request forwarded directly to the following circuitry.<P>
+	
+	SDRAMs can provide a maximum bandwidth of 533 MB/s, but since they are DRAMS internally, they need some time to
+	present/accept data. The cycles needed for this is called latency. In order not to occupy the data bus until a
+	command completes, the data bus prediction unit pre-calculates this latency with the information gathered from
+	the microcode, thus predicting when the data bus will become idle. The (four) memory controller schedules the memory
+	commands according to this information. This board provides four memory banks (two DIMM slots), so blocking should
+	not appear too often.<P>
+
+	The PowerPC board directly resides on the Zorro bus. This grants a fast connection to graphic cards and SCSI-controllers
+	on this bus without having to pass the (Fat/&quot;Super&quot;-) Buster bottleneck. So the bandwidth is determined
+	by the Zorro backplane and the participating devices only. This board only supports Zorro-III protocol since only
+	this provides an accurate speed using DMA and burst mode. Zorro-II shows it's big limitation especially when tranferring
+	graphic data. This is surely not the last word about Zorro-II, but there's nothing more to say for now. <P>
+	
+	There is no way to support EDO or FPM DRAMs any more. At first it would destroy all advantages of the pipelining
+	concept, on the other hand the DIMMs necessary for the SDRAM are not previously used by any Amiga, so that no large-capacity
+	EDO-DIMM should be wasted.<P>
+</FONT>
+<HR SIZE=1 BORDER="0" width="100%">
+<A NAME="changes">
+
+<B><FONT SIZE="3" COLOR="#FF0000" FACE="Arial, Helvetica">Changes</FONT></B><P>
+
+<FONT SIZE="2"  FACE="Arial, Helvetica">
+
+    Originally the design consisted of a central controller chip, which managed 
+	the CPU and memory control on one side and on the other it had a direct ZorroIII
+	 interface.<P>
+	 
+	The specifications on CPU/memory side did not change. On the interface side the 
+	Zorro interface has been exchanged by a full-featured PCI Master/Slave(Target) 
+	interface.<P>
+	
+	So this device is comparable to a 'North Bridge' of a PC chip set, of course with
+	respect to the PowerPC/Amiga environment.<P>
+	
+	The Zorro interface now resides on an additional device, the PCI-Zorro Bridge. This 
+	interface also can operate in Master and Slave modes.<P>
+	
+	Since PCI is a low latency bus, this architecture does not incur
+	significant performance decreases (compared to direct ZorroIII interface). This is 
+	being supported by on-chip buffers.<P>
+
+    Thus the bandwidth on the 32-bit, 33MHz PCI bus is estimated to reach 96 MB/s.<P>
+</FONT>
+
+<B><FONT SIZE="3" COLOR="#FF0000" FACE="Arial, Helvetica">Benefits</FONT></B><P>
+<FONT SIZE="2"  FACE="Arial, Helvetica">
+
+This quite basical change now offers two substantial advantages.<P>
+
+First, using a connector, it is now possible to attach a card with off-the-shelf
+PCI devices. Such devices feature for example SCSI, graphics and USB.<P>
+
+On a board being seated in a Zorro Slot, 'real' PCI slots cannot be provided due
+to mechanical reasons. But since it will only one connector it should be possible to
+mount more than one device onto one card. Which parts should be chosen
+for this will still remain to be decided.<P>
+
+Second, the additional chip (the PCI-Zorro bridge) now offers the pin resources 
+that missed before when considering a ZorroII implementation. Through the 
+PCI interface that has been described above it will even make more sense to
+run a processor card in a ZorroII slot as before.<P>
+
+By this, it should get feasible to run the Brainstormer card within an A2000. But due to the 
+wide variety of A2000 accelerator boards it can not be estimated by now if compatibility issues
+(especially on DMA Transfers) can lead to occasional limitations.«<P>
+</FONT>
+
+(Source: ESCENA)
+ 
+
+
+
+<P ALIGN="RIGHT">
+<A HREF="PowerUp4.html"><IMG SRC="../menu/pfeil_links.gif" BORDER="0" WIDTH="20" HEIGHT="20"></A>
+<A HREF="PowerUp6.html"><IMG SRC="../menu/pfeil_rechts.gif" BORDER="0" WIDTH="20" HEIGHT="20"></A>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="Workshops.html" onMouseOver="status='Workshops (Index)' return true;" onMouseOut="status='' return true;"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15"></A>
+<A HREF="Workshops.html" onMouseOver="status='Workshops (Index)' return true;" onMouseOut="status='' return true;"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15"></A>
+<A HREF="Workshops2.html" onMouseOver="status='Workshops (page 2)' return true;" onMouseOut="status='' return true;"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15"></A>
+<font color="#FFFFFF">
+Workshops
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H1>Workshops / Background reports / Book introductions</H1>
+<H2>1. Workshop: TCP/IP between Amiga and Windows9x-PC (by Uwe Pannecke)</H2>
+<P><B>&raquo;Again a network</B></P>
+<P>
+TCP/IP between Amiga and Windows9x-PC
+</P>
+<H3>1. Why this?</H3>
+<P>
+As a reaction to my article about the serial connection of two computers [1] in the last issue of AmigaAktuell, some user asked me to write another one about the TCP/IP connection of an Amiga with a Windows9x computer through a Nullmodem cable.
+Well, here it is.
+</P>
+<P>
+With the PPP (Point to Point Protocol), you can create a network between two or more computers where you can access resources of other computer in this network just like if you would work directly on said computer. PPP is the basis for TCP/IP, the Transmission Control Protocol/Internet Protocol, a method used worldwide to network computers. Basically, you can connect computers with different operating systems to a network with this protocol.
+So the Amiga can serve a web or ftp server for the Win9x, Mac or Linux computer; you can play network games without phone costs, or you can remote control other computers through a telnet connection.
+
+</P>
+<P>
+This workshop describes step by step the setup of a TCP/IP connection between an Amiga and a Windows9x computer.
+</P>
+<H3>2. Hardware</H3>
+<P>
+You will need a so called nullmodem cable for the serial port, as described in [1]. You can get a suitable cable at most bigger department (computer) stores. Make sure you really buy a nullmodem cable for serial connection. This must be stated explicitly on the package. Since those cable have 9 pin connectors in most cases, but the Amiga has a 25 pin interface, you will also need an 9/25 pin adapter. If you are going to use an interface card like the MultifaceCard, you will most likely have a 9 pin connector an this card and spare the adapter.</P>
+<H3>3. Software</H3>
+<H4>3.1 The Amiga side</H4>
+<P>
+On the Amiga side, we will use the widespread TCP/IP stack Miami[2] from Holger Kruse. But of course other stacks like AmiTCP will work as well.
+</P>
+<P><B>3.1.1 Interface</B></P>
+<P>
+After starting Miami without a config file, select the config page &quot;Interface&quot;.
+</P>
+<P>
+The &quot;Interface type&quot; should be set either to &quot;built-in serial (PPP/CSLIP) or (when you are using a interface card) &quot;serial driver (PPP/CSLIP)&quot;. When you choose the latter, you will have to enter the correct driver name and port number as well. In our case we will use the second serial port of a MultiFaceCard III, so the settings are &quot;Driver&quot; &quot;duart.device&quot; and &quot;unit&quot; &quot;1&quot;. The &quot;Speed&quot; should match the other side, the faster it is, the higher the transfer rate will be. But the internal serial of the Amiga can hardly manage anything above &quot;57600&quot;, even with a fast CPU. The only real solution is a interface card like the aforementioned MultiFaceCard.
+</P>
+<P>
+&quot;Use CD&quot; should be inactive (not checkmarked), the &quot;Protocol&quot; set to &quot;asyncPPP&quot;, &quot;Flow control&quot; to &quot;RTS/CTS&quot;, &quot;EOF-Mode&quot; to &quot;auto&quot; and &quot;Serial mode&quot; to &quot;8N1&quot;.
+</P>
+<P>
+Next thing is to make sure that each computer is properly identified in the network. For this purpose we will assign IP-IDs, the address(es) of the computer in the network. Usually, this is done with a four part number combination like 125.164.111.125. Because each computer (in the Internet) has to have a unique number, you can cause some confusion if you use arbitrary numbers and connect you network to the internet. Because of this, RFC 1597 has defined three address field for intern usage. These fields are:
+</P>
+<BR>
+<TABLE CELLPADDING="0" CELLSPACING="0">
+<TR><TD VALIGN="TOP">the Class A-Net&nbsp;</TD><TD VALIGN="TOP">10.0.0.0&nbsp;</TD><TD VALIGN="TOP">to&nbsp;</TD><TD VALIGN="TOP">10.255.255.255&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">the Class B-Net&nbsp;</TD><TD VALIGN="TOP">172.16.0.&nbsp;</TD><TD VALIGN="TOP">to&nbsp;</TD><TD VALIGN="TOP">172.31.255.255&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">the Class A-Net&nbsp;</TD><TD VALIGN="TOP">192.168.0.0&nbsp;</TD><TD VALIGN="TOP">to&nbsp;</TD><TD VALIGN="TOP">192.168.255.255&nbsp;</TD></TR>
+<TR><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD><TD VALIGN="TOP">&nbsp;</TD></TR>
+</TABLE>
+<P>
+We will use a Class C-Net and give the Amiga the IP-ID 192.168.1.2 while the Windows-PC get 192.168.1.3 (192.168.1.1 is reserved for a Linux computer). Of course you can use other IP-IDs for your network. Now we set the &quot;IP-Type&quot; in Miami to &quot;static&quot;, the &quot;IP address&quot; is set to the IP address of the computer Miami is running on, &quot;192.168.1.2&quot;. &quot;Multicasts&quot; is set to &quot;disabled&quot;, the MTU is set &quot;552&quot;, following an advice from Holger Kruse for interface speeds of more than 19200. The &quot;do&quot; option control Miami behavior at inactivity. If it is set to &quot;nothing&quot;, Miami will remain quiet. With &quot;ICMP ping&quot; after &quot;9&quot; minutes, the other side is &quot;pinged&quot; every 9 minutes and activity is simulated. This can make sense to prevent the automatic disconnection from the other side after (mostly 10 minutes of) inactivity.
+</P>
+<P>
+<A HREF="img/MiamiSchnittstelle.png"><IMG SRC="thumb/MiamiSchnittstelle.jpg" WIDTH="120" HEIGHT="69" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P><B>3.1.2 PPP</B></P>
+<P>
+In the PPP section, the area &quot;PAP/CHAP&quot; remains without anything activated, &quot;callback&quot; is set to &quot;none&quot;, &quot;VJC&quot; gets a checkmark, &quot;ACCM&quot; is set to &quot;a0000&quot;, &quot;Get DNS from IPCP&quot; is unchecked, the &quot;Escape&quot; field remains empty, and &quot;TermReq before hangup&quot; is activated. &quot;Quick reconnect&quot; is set to &quot;disabled&quot;.
+</P>
+<P><B>3.1.3 Database</B></P>
+<P>
+In the database mode, select &quot;hosts&quot; and add the Amiga as well as the other computers is the network with the button &quot;New&quot;. The Amiga could be called &quot;amiga&quot;, with the IP address 192.168.1.2, the second one could be the Linux computer, called &quot;linux&quot; with 192.168.1.1, and finally the Windows9x PC, called &quot;windows&quot; with the ID 192.168.1.3.
+
+</P>
+<P>
+<A HREF="img/MiamiDbRechner.png"><IMG SRC="thumb/MiamiDbRechner.jpg" WIDTH="120" HEIGHT="65" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P><B>3.1.4 TCP/IP</B></P>
+<P>
+In this window we remove the mark from &quot;dynamic&quot; under &quot;Hostname&quot;, and enter the name for our computer in the text field, in our case &quot;amiga&quot;. Set &quot;Use ICMP&quot; to on, &quot;DHCP&quot;, &quot;verify DNS servers&quot; and &quot;Fake IP&quot; to off. &quot;T/TCP&quot; isn't strictly required, but will speed up the connection if the other side supports it. &quot;Auto add domain&quot;, &quot;Down when offline&quot; and &quot;ping flood protection&quot; remain unchecked.
+</P>
+<P><B>3.1.5 Modem</B></P>
+<P>
+This part is the quickest. Just enable &quot;Nullmodem&quot; here and Miami know that we want to use a nullmodem connection and no AT commands will be sent - there is no modem involved, after all.
+Now Miami is set up for a TCP/IP connection over a nullmodem cable.
+</P>
+<H4>3.2 The Win9.x side</H4>
+<P><B>3.2.1 Setting up the nullmodems</B></P>
+<P>
+Open the Control Panel. Now double click on the icon &quot;Modems&quot;. Choose &quot;Add&quot; and bypass the automatic detection. Now you will get a huge list of available modems. If you don't find an entry &quot;Generic NULL Modem&quot;, you can ignore this list and load a driver with the &quot;Diskette...&quot; button.
+But where to get this driver?
+From Aminet, of course. :)
+</P>
+<P>
+In [3], Raphael Kiekow Hickenbrick, describes detailed in English how to setup an TCP/IP connection over the serial port between Amiga and Windows9x. Some parts of this workshop have been inspired by his text.
+</P>
+<P>
+Besides this description, you find the required nullmodem driver (mdmcisco.inf) for Winodws9 inside the LHA archive.
+</P>
+<P>
+Copy this file into any directory of the Win9x PC and select this file in the file requester that opens after clicking on &quot;Diskette...&quot;. Then you will be asked about the serial port (COM) to be used with the nullmodem. Select the right one. In our case, the cable is connected to the second port, so COM 2 is the right choice. Windows9x will now install the nullmodem and take a little timeout for this. Then click &quot;Finish&quot; to complete the installation.
+</P>
+<P>
+The &quot;Properties&quot; of the nullmodem must be set to the right parameters. In our case the would be the serial port COM 2, the maximum speed of 115200 (this has to be the same value as on the other side). Under &quot;Settings&quot;, choose 8 data bits, no parity, and 1 stop bit.
+</P>
+<P>
+Under &quot;Advanced&quot;, we have to activate the &quot;Hardware handshaking (RTS/CTS)&quot;.
+</P>
+<P><B>3.2.2 Configuration of the network</B></P>
+<P>
+On the Windows desktop, open &quot;My Computer&quot; and then &quot;Dial up Network&quot;. Then &quot;Create New Connection&quot;. Choose a suitable name for the computer to be connected with, e.g. AMIGA.
+</P>
+<P>
+<A HREF="img/WinNullmodem.png"><IMG SRC="thumb/WinNullmodem.jpg" WIDTH="120" HEIGHT="84" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+As device, choose the &quot;Generic NULL Modem&quot; and select &quot;Configure...&quot; to make sure that all option are correct. Click on &quot;Next&quot; and enter &quot;0&quot; as phone number. One more click on &quot;Next&quot; and the new connection AMIGA is created.
+</P>
+<P>
+Now, for a change, right click o the AMIGA icon and choose &quot;Properties&quot; in the popup menu. Disable &quot;Use dialing code&quot;.
+Then set the &quot;Type of server&quot; to &quot;PPP: Internet, WindowsNT Server, Windows98&quot;. Remove all checkboxes except &quot;TCP/IP&quot;
+on this page. Then click on &quot;TCP/IP-Settings...&quot;. And define the IP address for the Windows PC, In our case, this is 192.168.1.3.
+</P>
+<P>
+Furthermore, you should have activated &quot;Get Nameserver addresses from server&quot; and disabled &quot;IP-Header compression&quot; and &quot;Use Standard-Gateway in Remote-Network&quot;. Now click &quot;OK&quot;.
+</P>
+<P>
+<A HREF="img/WinTCPIP.png"><IMG SRC="thumb/WinTCPIP.jpg" WIDTH="118" HEIGHT="96" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+In the &quot;Windows&quot; directory, you will find a file called &quot;hosts&quot;. Open it with a text editor and you will see an entry
+127.0.0.1 localhost
+Now add the other computers with it IP addresses. In our case, this would be
+192.168.1.2 amiga
+192.168.1.3 windows
+Now save the file with the same name.
+</P>
+<H3>4. Connecting</H3>
+<H4>4.1 Amiga</H4>
+<P>
+Run Miami and click on &quot;Online&quot;. Miami now waits for the other side.
+</P>
+<H4>4.2 Windows9.x</H4>
+<P>
+When Miami is running, double click on the AMIGA icon in the &quot;Dial up-Network&quot; to call up our configuration. Now click on &quot;Connect&quot;.
+</P>
+<P>
+In the lower part of the Miami window, you should now read &quot;Hello&quot;. To make the connection permanent, click on &quot;Send break (f8)&quot;.
+</P>
+<P>
+Within a few moments, the TCP/IP connection between the Amiga and Win9x is established.
+</P>
+<H3>5. Applications</H3>
+<P>
+For some time now, my Amiga serves as web- and ftp-server for a Linux- as well as for a Windows9x computer. Of course the Amiga can also access Windows9x- or Linux-servers as a client. Often you can find useful software in Aminet.
+</P>
+<P>
+Remote controlling a networked computer via telnet is quickly and easily down, provided you have the suitable software.
+</P>
+<P>
+The interface speed use in this article, lets you play Dxxm,
+</P>
+<P>
+<A HREF="img/DoomAmigaLinux.png"><IMG SRC="thumb/DoomAmigaLinux.jpg" WIDTH="120" HEIGHT="75" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+and was also sufficient for strategy games like FreeCiv.
+</P>
+[1] Building a network with AmigaOS and Linux<BR>
+[2] in Aminet at /comm/tcp/Miami32b-xx.lha<BR>
+[3] in Aminet at /comm/tcp/NullTCP.lha<BR>
+<P><B>Uwe Pannecke &lt;<A HREF="mailto:Uwe.Pannecke@t-online.de">Uwe.Pannecke@t-online.de</A>&gt;&laquo;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops.html" onMouseOver="status='Workshops (Index)' return true;" onMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20"></A>
+<A HREF="Workshops2.html" onMouseOver="status='Workshops (page 2)' return true;" onMouseOut="status='' return true;"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20"></A>
+</P>
+</BODY>
+</HTML>

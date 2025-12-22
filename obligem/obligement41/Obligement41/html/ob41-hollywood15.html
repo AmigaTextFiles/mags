@@ -1,0 +1,325 @@
+<html>
+ <head>
+  <title>Hollywood 1.5</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="14,85,74,105" href="../index.html" alt="Intro">
+  <area shape="rect" coords="90,85,184,105" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="200,85,302,105" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="318,85,430,105" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="442,85,512,105" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="526,85,630,105" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="648,85,746,105" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#113333" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Test de Hollywood 1.5 et Malibu </font>par&nbsp;<a href="mailto:Pixel-Art@wanadoo.fr">Jean-Yves&nbsp;Auger</a></div><br><br><br>
+
+<font size="+1" color="#ccbb33">Hollywood 1.0</font><br><br>
+
+Ce logiciel allemand est la suite logique est bien plus aboutie de Rainboot, qui servait et sert
+encore à afficher une présentation (animée et sonorisée) pendant la séquence de démarrage des Amiga AGA.
+Cette nouvelle version revue et corrigée, va encore plus loin car elle intègre désormais un langage
+de programmation qui s'apparente à du langage C sans la notion de pointeur mais compilable quand même.
+Si bien que le but de ce logiciel a complètement changé et ressemble de plus en plus à Scala
+(présentations multimédia), mais sans l'interface graphique de ce célèbre logiciel (ou pas encore).<br><br>
+
+On y retrouve tous les types d'effets vidéos&nbsp;:<br>
+
+<ul>
+<li>Balayages droite/gauche, volets, fondu, etc.
+<li>Lecture des brosses animées, modules Protracker, sons 8SVX.
+<li>Polices Intellifont.
+</ul>
+
+<font size="+1" color="#ccbb33">Le matériel requis</font><br><br>
+
+Amiga Classic / Pegasos<br>
+Amiga OS 3.9 / MorphOS 1.x<br>
+Carte graphique conseillée (sinon prenez Scala MM400)<br>
+32 Mo de Ram (plus si vous pouvez)<br><br>
+
+Et aussi (selon les goûts)&nbsp;:<br><br>
+
+MUI 3.8 (pour la seule GUI de ce logiciel).<br>
+Tous les datatypes possibles (son, images, etc.).<br>
+AHI V4 (Pegasos notamment pour la gestion du son).<br>
+L'ensemble truetype engine si vous voulez mettre des polices TrueType.<br><br>
+
+Hollywood est vendu directement sur le site <a href="http://www.airsoftsoftwair.com/" target="_blank">
+www.airsoftwair.com</a>.<br><br>
+
+L'auteur&nbsp;:<br><br>
+
+Andreas Falkenhahn<br>
+An der Trift 2<br>
+36132 Eiterfeld-Arzell<br>
+Germany<br><br>
+
+Email&nbsp;: <a href="mailto:andreas.falkenhahn@gmx.de">andreas.falkenhahn@gmx.de</a>.<br><br>
+
+<font size="+1" color="#ccbb33">Le logiciel</font><br><br>
+
+Il y a principalement un programme exécutable accompagné d'une petite interface très sommaire
+(pour tester ses scripts), régler les paramètres et compiler.
+À cela s'ajoute une documentation en anglais très complète et des exemples faciles à comprendre.
+Le tout dans un cédérom avec une jaquette en "niveau de gris".<br><br>
+
+<font size="+1" color="#ccbb33">Le langage</font><br><br>
+
+Voici un petit exemple qui fait apparaître une image, un bouton par dessus, et si l'on clique sur le bouton, TVPaint est lancé.<br><br>
+
+---------------------------------------------------------------<br>
+/* test de la version du logiciel */<br>
+%HOLLYWOOD   = 1/0<br><br>
+
+/* Définition du fond ou des fonds&nbsp;: */<br>
+%DISPLAYSIZE = 400/100<br>
+%BGPIC(1)    = "TVPaint.iff"<br><br>
+
+/* définition des brosses (les fichiers avec la couleur transparente) */<br>
+%BRUSH(1)    = TRANSPARENTCOLOR/$BEBEBE/"Buttons_Selector.iff"<br>
+%BRUSH(2)    = TRANSPARENTCOLOR/$BEBEBE/"Buttons_Selector-2.iff"<br><br>
+
+/* définition des zones sensibles à la souris */<br>
+%BUTTON(1)   = 200/50/235/85<br><br>
+
+/* Sons */<br><br>
+
+/* Execution du code */<br>
+%CODE<br><br>
+
+/* Introduction  */ affichage des éléments<br>
+DisplayBgpic(1)<br>
+DisplayBrush(1,200,50)<br><br>
+
+/* Programme principal */<br>
+While(quit=FALSE)<br>
+ WaitEvent<br>
+Wend<br>
+End<br><br>
+
+/* ------- */ test de la position de la souris et action en conséquence<br>
+label(ONBUTTONOVER1)<br>
+  DisplayBrushPart(2,0,0,200,50,35,33)<br>
+WhileMouseOn<br>
+   DisplayBrushPart(1,0,0,200,50,35,33)<br>
+Return<br>
+End<br><br>
+
+/* ------- */ test du clic de la souris et action en conséquence<br>
+label(ONBUTTONCLICK1)<br>
+run("tvpaint")<br>
+---------------------------------------------------------------
+<br><br>
+
+Pour les initiés, cela se comprend assez bien&nbsp;:<br><br>
+
+On déclare&nbsp;:<br><br>
+
+- Une fenêtre&nbsp;: elle pourra être sans bord, sur le Workbench, etc.<br>
+- Les objets&nbsp;: les fonds, brosses, animation, sons, etc. selon les datatypes sur votre Amiga.<br>
+- Les zones sensibles (pour les clics de souris).<br><br>
+
+Puis le code&nbsp;:<br><br>
+
+L'affichage ou disparition des dessins, brosses, etc.<br>
+Une boucle de test d'un événement (un clic de souris par exemple).<br>
+Des sous-programmes qui agissent en fonction de la position de la souris, le clic, etc.<br><br>
+
+<font size="+1" color="#ccbb33">La compilation</font><br><br>
+
+C'est, en effet, tout l'intérêt de ce logiciel car il propose en standard, un compilateur qui rassemble
+tous les éléments de votre script ainsi que la partie exécution. Le fichier est volumineux mais c'est
+pratique car il ne nécessite "presque" rien d'autre (les polices ne sont pas intégrées ainsi que certaines
+libraries usuelles communes à beaucoup de programme).<br><br>
+
+Il intègre aussi une gestion du type d'affichage&nbsp;:<br><br>
+
+Lors de la création du script, pas de soucis du mode d'écran ni AGA, ni RTG, etc. Tout se fait dans une
+fenêtre Workbench. Lors de la compilation, idem, mais c'est lors du lancement du script auto-exécutable
+qu'il suffit de rajouter des arguments/tooltypes&nbsp;:<br><br>
+
+WINDOW&nbsp;: sur le Workbench ou non.<br>
+BORDERLESS&nbsp;: sans les bords de la fenêtre.<br>
+MODEID&nbsp;: pour le mode d'écran.<br><br>
+
+<div align="center">
+<img src="../gfx/hollywood15-settings.jpg" border="0" width="308" height="363" alt="Hollywood Settings"><br><br>
+</div>
+
+Si bien que ce même script marche sur tous les Amiga. Il suffit simplement de&nbsp;:<br><br>
+
+- ne pas utiliser plus de 256 couleurs à la fois (pour les Amiga en AGA).<br>
+- ne pas prendre des tailles trop grandes (au delà de 800x600 sur un Amiga classic).<br><br>
+
+Exemple&nbsp;: Script WINDOW BORDERLESS MODEID 167940 <- PAL haute résolution<br><br>
+
+Concrètement, Obligement (version Scala) pourrait parfaitement fonctionner grâce à ce logiciel car le
+compilateur inclut la version Amiga 68k et MorphOS. Il suffit simplement d'avoir l'OS correspondant
+lors de la compilation.<br><br>
+
+Malheureusement, il n'y a pas d'interface de création de ces scripts&nbsp;: il faut les faire à la main et c'est
+bien dommage car cela risque d'effrayer pas mal d'amigaïstes habitués à Scala notamment.
+Heureusement, la version d'Hollywood 1.5 avec le module Malibu (compatible Scala) peut vous aider.<br><br>
+
+<font size="+1" color="#ccbb33">Hollywood 1.5</font><br><br>
+
+Cette nouvelle version n'apporte pas de grands changements par rapport à la version initiale d'Hollywood,
+si ce n'est le module Malibu qui présente un grand intérêt puisqu'il permet de récupérer à 99% les scripts
+de Scala (la version MM400 et Infochannel précisément), pour ensuite les rejouer via le player Hollywood
+et surtout (le grand reproche fait à Scala à l'époque), les exécuter sous la forme d'un seul fichier
+contenant&nbsp;:<br><br>
+
+- Les images (inclus comme fond dans Scala, pas les brosses, ni les animations).<br>
+- Le player (200 ko minimum).<br>
+- Les effets (90% des effets de Scala MM400).<br><br>
+
+Seules les polices de caractères, les librairies, les brosses, les sons et les modules restent externes.<br><br>
+
+<font size="+1" color="#ccbb33">L'interface de présentation</font><br><br>
+
+Elle est très sommaire car elle se résume à une photo d'Hollywood avec quelques boutons&nbsp;:<br><br>
+
+<div align="center">
+<img src="../gfx/hollywood15-menu.jpg" border="0" width="550" height="228" alt="Hollywood Menu"><br><br>
+</div>
+
+Display : lit les scripts (Scala et Hollywood).<br>
+Compile : :)
+Plugs in : infos et réglages des modules externes dont celui de Malibu.<br>
+Settings : réglages d'Hollywood que l'on retrouve dans les tooltypes.<br>
+Help : documentation en Anglais au format Guide (l'auteur est Allemand).<br>
+About : !<br>
+Exit : !<br><br>
+
+Le compilateur n'a pas changé et la GUI d'écriture des scripts est toujours absente. Vous pouvez
+utiliser Scala pour ça, ce qui évite de très longues manipulations et corrections dans les scripts
+mais Scala ne fonctionne qu'en PAL (pas de carte graphique). Il vous faudra donc tout taper à la main
+et c'est un sérieux frein à l'utilisation de ce logiciel.<br><br>
+
+<font size="+1" color="#ccbb33">Malibu</font><br><br>
+
+C'est un module externe à Hollywood, complètement transparent pour l'utilisateur, qui traduit 99% des
+scripts Scala en commande Hollywood. Il n'y absolument rien à faire de spécial, c'est lors du test
+du script et de la compilation que cette "traduction" s'opère.<br><br>
+
+Vous y retrouvez la plupart des effets de Scala (la synchro-son est variable selon la vitesse de votre
+matériel) les polices sont restituées (pas encore lissées) ainsi que les couleurs, les brosses animées
+et effets d'ombre portée.<br><br>
+
+Attention, du fait de la carte graphique et de la conversion, la vitesse d'exécution du script compilé,
+ne sera pas la méme que la version originale Scala (c'est un petit peu plus lent même sur un 060).
+Un essai avec Obligement n°7 (sans l'animation qui pose problème), donne un exécutable de 400 ko.<br><br>
+
+Voici des petits exemples concrets d'utilisation d'Hollywood&nbsp;:<br><br>
+
+<b>Exemple 1&nbsp;:</b> Vous faites souvent de la conversion au format PDF or la commande Ghostscript est longue&nbsp;:<br><br>
+
+----------------------------------------------<br>
+Stack 40000<br>
+Ghostscript:GS -dNOPAUSE -sDEVICE=pdfwrite -sPAPERSIZE=a4 -dCompatibilityLevel=1.2 -dBATCH -sOutputFile="prog||".pdf" prog)<br>
+----------------------------------------------<br><br>
+
+Alors dans ce cas, ça vaut le coup de taper quelques lignes&nbsp;:<br><br>
+
+Voici le descriptif des tâches à programmer&nbsp;:<br><br>
+
+- Un sélectionneur de fichier qui demande la source du fichier à convertir.<br>
+- Un autre sélectionneur pour indiquer la destination du fichier PDF.<br>
+- Un bouton OK pour valider le tout.<br>
+- Un dessin en fond et une petite musique.<br><br>
+
+Le tout dans une fenêtre centrée sur le Workbench sans bord.<br><br>
+
+Le temps de mise en place est d'une heure au plus. L'équivalent en C, surtout quand on y connaît pas
+grand chose, est plus difficile&nbsp;!<br><br>
+
+<b>Exemple 2&nbsp;:</b> Ejection du tiroir de votre lecteur de cédérom sur l'unité IDE en esclave (unit 1).<br>
+(voir le <a href="../bonus/hollywoodexemple.lha">programme compilé</a>)<br><br>
+
+----------------------------------------------<br>
+%bgpic(1)="cdrom-in"<br>
+%code<br>
+run("sys:c/wbfront")<br>
+wait(50)<br>
+run("sys:c/ejecttool scsi.device 1 toggle")<br>
+wait(100)<br>
+----------------------------------------------<br><br>
+
+Ces cinq lignes affichent une fenêtre avec en fond, un dessin, le tout sur le Workbench et agit sur le
+cédérom&nbsp;: 173 octets&nbsp;!<br><br>
+
+<font size="+1" color="#ccbb33">Conclusion</font><br><br>
+
+Hollywood est un bon logiciel qui se démarque de Scala par le fait qu'il soit compatible à la fois sur Amiga
+Classic (OCS, ECS, AGA et RTG) et sur MorphOS. De plus, c'est compilable (enfin&nbsp;!) car, à l'époque, Scala Inc
+vous obligeait à acheter une licence pour chaque présentation, d'où des coûts prohibitifs. On notera aussi
+un autre bon point&nbsp;: la compatibilité à 99% avec Scala (la synchro image/son est difficile à régler mais dans
+l'ensemble c'est bien). Par contre, sans GUI, cela restreint l'accès, voire rebutera certains amigaïstes. L'auteur
+est bien conscient de ce manque mais c'est sans doute la partie la plus longue à programmer. Enfin, côté vitesse,
+un 060 avec carte graphique est "juste" pour jouer les anciens scripts Scala.<br><br><br>
+
+
+<table width="100%" cellspacing="0" cellpadding="10" bgcolor="#113333" border="1">
+ <tr>
+  <td><br>
+   <div align="center"><font size="+1" color="#ccbb33">FICHE RECAPITULATIVE</font></div><br><br>
+    Nom&nbsp;: Hollywood 1.5/Malibu.<br>
+    Développeurs&nbsp;: Airsoft Software.<br>
+    Genre&nbsp;: Création multimédia.<br>
+    Date&nbsp;: 2003<br>
+    Configuration minimale&nbsp;: OCS, 68020, 4 Mo de Ram.<br>
+    Configuration souhaitée&nbsp;: Carte graphique, 68060 ou PowerPC, 16 Mo de Ram.<br>
+    Prix&nbsp;: 49 Euros<br><br>
+
+    NOTE&nbsp;: 7/10<br><br>
+
+    <b>Points forts&nbsp;:</b><br><br>
+
+    - C'est compilable<br>
+    - Grandement compatible avec Scala<br>
+    - Compatible Amiga Classic et MorphOS<br><br>
+
+   <b>Points faibles&nbsp;:</b><br><br>
+
+    - La synchronisation son/image pour certains scripts Scala<br>
+    - Pas de GUI<br><br>
+
+  </td>
+ </tr>
+</table>
+
+<br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

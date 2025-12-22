@@ -1,0 +1,151 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+3. Workshop: AFPL Ghostscript 6.50 - Teil 2 (von Uwe Pannecke)
+
+Crash-Kurs durch die Ghostscript-Untiefen
+
+
+1. Der Zug der (Amiga-) Zeit
+
+Obwohl am Ende des ersten Teils in der Februarausgabe 2002 bereits f&uuml;r das 
+nachfolgende M&auml;rz-Magazin dieses Jahres angek&uuml;ndigt, lie&szlig; die 
+Fertigstellung der Fortsetzung doch noch einige Monate auf sich warten. 
+Damit reiht sich dieser Workshop in das allgemeine Gebaren rund um den 
+Amiga nahtlos ein und geh&ouml;rt dennoch trotz seiner dreimonatigen Versp&auml;tung 
+zu den blitzschnellen Ver&ouml;ffentlichungen auf dem Amiga-Markt... Damit genug 
+der Rechtfertigungsversuche. 
+Tauchen wir lieber ein in die kryptische, aber dennoch interessante 
+Ghostscript-Welt. Wie bereits im ersten Teil, muss auch f&uuml;r alle 
+nachfolgenden Ausf&uuml;hrungen als Versuchskaninchen wieder das Amiga-Release 2 
+des Interpreters von R&uuml;diger Hanke [1] herhalten. Wir gehen deshalb davon 
+aus, Ghostscript entsprechend des ersten Teiles installiert in eurem Amiga-
+System vorzufinden.
+
+
+2. Jammertal
+
+So leistungsf&auml;hig der freie Postscript-Interpreter auch ist, so spr&ouml;de 
+zeigt er sich in der Bedienung. Keine grafische Oberfl&auml;che verw&ouml;hnt den 
+Amiganer, Ghostscript besteht auf Tuchf&uuml;hlung, beinahe hautengen Kontakt 
+&uuml;ber die Kommandozeile. Auch wenn dem Maus-Fetischisten bei dieser Aussicht 
+die Haare zu Berge stehen sollten, kann so doch die Shell wieder einmal 
+ihre Daseinsberechtigung unter Beweis stellen. Und dem Amiganer bietet sich 
+eine gute Gelegenheit, mit dem Traktieren der Tastatur zumindest kurzzeitig 
+Ablenkung finden und seinen Geist &uuml;ber das Jammertal der aktuellen Amiga-
+Situation erheben zu k&ouml;nnen.
+
+
+3. Geborgen in der Muschel
+
+Auch wenn wir den gesamten zweiten Teil des Workshops in der Shell 
+verbringen, l&auml;sst sich mit dem dargelegten am Ende des Kurses (vielleicht 
+noch in diesem Jahr ;) ) recht einfach eine mausgesteuerte Bedienung des 
+Interpreters selbst zusammenbasteln.
+Doch jetzt ab in die sch&uuml;tzende H&uuml;lle der Shell:
+
+
+3.1 Geisterbeschw&ouml;rung
+
+Mit "CD Ghostscript:" landen wir umgehend im Heimatverzeichnis des 
+Postscript-Interpreters. Bevor wir den dienstbaren Geist aus seiner Flasche 
+entlassen, m&uuml;ssen wir ihm ausreichend Bewegungsfreiheit verschaffen. Die 
+Kommandofolge "Stack 200000" setzt den Stapelspeicher auf die erforderliche 
+H&ouml;he und beugt unvermittelten Abst&uuml;rzen des Programms vor. Wir bitten 
+Ghostscript mit "gs --help", sich uns vorzustellen. 
+
+Screenshot:
+<IMG SRC="../extra/gs650II_help.png" ALT="Screenshot">
+
+Neben seinem Namen, der Version und seinen Sch&ouml;pfern verr&auml;t uns der 
+Interpreter einiges &uuml;ber seine Bedienung, indem er uns die prinzipiellen 
+Aufrufoptionen mitteilt. Anschlie&szlig;end kann er es sich nicht verkneifen, mit 
+seinen erstaunlichen F&auml;higkeiten zu protzen, und teilt uns unter "Available 
+devices" die ihm zur Verf&uuml;gung stehenden 'Ger&auml;te' oder Treiber f&uuml;r die 
+Manipulation der Postscript- oder PDF-Dateien mit.
+
+Eine wichtige Information steckt im unteren Drittel der Fensterausgabe: Mit 
+den Angaben hinter "Search path" informiert uns das Programm, wo es nach 
+Initialisierungsdateien und Schriften f&uuml;r die Interpretation der 
+&uuml;bergebenen Dateien suchen wird. In der Standard-Installation wird 
+Ghostscript die passenden Daten in den Verzeichnissen "Ghostscript:lib"
+und "Ghostscript:fonts" finden. Solltet ihr zus&auml;tzliche Schriften oder 
+spezielle Initialisierungsdateien in separaten Verzeichnissen abgelegt 
+haben (oder sp&auml;ter einmal ablegen), k&ouml;nnt ihr mit "SetEnv GS_LIB 
+Pfadangabe(n)" diese dem Interpreter bekannt machen.
+
+
+3.2 Dokumentenschau
+
+Eine zentrale Aufgabe Ghostscripts ist die Pr&auml;sentation von Postscript- und 
+PDF-Dateien. Wollt ihr als Ausgabeger&auml;t den Workbench-Bildschirm nutzen, 
+reicht es v&ouml;llig aus, dem Programm lediglich den Dateinamen einschlie&szlig;lich 
+komplettem Pfad zu &uuml;bergeben. Im "Examples"-Verzeichnis finden wir eine 
+Reihe gut geeigneter Dateien f&uuml;r unsere Tests. 
+Die Eingabe "gs examples/tiger.ps" pr&auml;sentiert nach kurzer Zeit den 
+wohlbekannten Tigerkopf in einem Workbench-Fenster. 
+
+Wird wie im gerade angef&uuml;hrten Fall kein Device explizit an Ghostscript 
+&uuml;bermittelt, verwendet das Programm das "amiga"-Ger&auml;t und damit die 
+Workbench als Ausgabemedium. Das gleiche Ergebnis h&auml;tte die Eingabe 
+"gs sDEVICE=amiga examples/tiger.ps" verursacht. Und mit letzterem wird 
+auch der Weg aufgezeigt, alle weiteren unterst&uuml;tzen Ausgabeger&auml;te 
+einzubinden. So sorgt etwa "gs sDEVICE=amiga_custom examples/tiger.ps" f&uuml;r 
+die Nutzung eines eigenen Bildschirms, der &uuml;ber einen Bildschirm-Requester 
+aus der vorhandenen Palette ausgew&auml;hlt werden kann.
+
+Screenshot:
+<IMG SRC="../extra/gs650II_req.png" ALT="Screenshot">
+
+Wollt ihr bei der Bildschirmausgabe die Gr&ouml;&szlig;e des Fensters definieren, 
+stehen euch die Optionen "-dDEVICEWIDTH=Wert1" f&uuml;r die Bildschirmbreite und 
+"-dDEVICEHEIGHT=Wert2" f&uuml;r die Bildschirmh&ouml;he zur Verf&uuml;gung. Alternativ 
+kann der Schreibfaule auch "-gWert1xWert2" verwenden. Mit "gs sDEVICE=amiga 
+-dDEVICEHEIGHT=640 -dDEVICEWIDTH=480 examples/tiger.ps" etwa ist die 
+maximale Fenstergr&ouml;&szlig;e auf der Workbench mit 640x480 Pixel festgelegt.
+Da die Seitengr&ouml;&szlig;e im Dokument nicht automatisch an die Fenstergr&ouml;&szlig;e 
+angepasst wird, ist bei Beschr&auml;nkung der Fenstergr&ouml;&szlig;e in vielen F&auml;llen nur 
+noch ein Teil des Seiteninhalts zu sehen. Dem k&ouml;nnt ihr in diesem und 
+&auml;hnlich gelagerten F&auml;llen mit einer Vorgabe zur darzustellenden Aufl&ouml;sung 
+begegnen. Die Option "-dDEVICEXRESOLUTION=WertX" legt die horizontale 
+Ger&auml;teaufl&ouml;sung und "-dDEVICEYRESOLUTION=WertY" entsprechend die vertikale 
+Aufl&ouml;sung fest. Wieder haben Schreibfaule Gl&uuml;ck: Die Optionen lassen sich 
+mit "-rWertXxWertY" deutlich abgek&uuml;rzt gleichberechtigt verwenden. 
+Wird lediglich mit einem Wert die Aufl&ouml;sung bestimmt, bleiben auf jeden 
+Fall die Proportionen der urspr&uuml;nglichen Seite erhalten. 
+
+Screenshot:
+<IMG SRC="../extra/gs650II_view.png" ALT="Screenshot">
+
+Mit entsprechend gew&auml;hlten Werten k&ouml;nnt ihr nat&uuml;rlich auch die 
+Seitenproportionen nach euren W&uuml;nschen beinahe beliebig verzerren. Dies 
+gilt gleicherma&szlig;en f&uuml;r die Druckausgabe.
+Apropos Druckausgabe: Wer die Datei lieber Schwarz auf Wei&szlig; oder gar farbig 
+in den H&auml;nden halten m&ouml;chte, kann aus einer ganzen Reihe von Druckger&auml;ten 
+ausw&auml;hlen. Da w&auml;re zuallererst das Device "amiga_printer" zu nennen, das 
+f&uuml;r eine Ausgabe &uuml;ber den eingestellten Workbench-Druckertreiber zust&auml;ndig 
+ist. Dar&uuml;ber hinaus stehen diverse Laser- und Deskjet-Treiber als 
+dienstbare Ger&auml;tetreiber parat. Und alle Turboprint-Freunde werden sich 
+&uuml;ber einen eigens f&uuml;r das Druckprogramm mitgelieferten Treiber 
+einschlie&szlig;lich Dokumentation freuen.
+
+
+4. Eine endlose Geschichte
+
+Im n&auml;chsten Teil, diesmal tats&auml;chlich auch in der n&auml;chsten AMIGA-aktuell-
+Ausgabe, wenden wir uns u.a. den Konvertierungsm&ouml;glichkeiten des 
+Interpreters zu.
+
+[1] im Aminet unter /gfx/conv/GS650-xxx.lha
+
+Uwe Pannecke &lt;Uwe.Pannecke@t-online.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

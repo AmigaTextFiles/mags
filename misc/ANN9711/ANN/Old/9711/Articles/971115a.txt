@@ -1,0 +1,94 @@
+From: worc0223@sable.ox.ac.uk (Ben Hutchings)
+Newsgroups: comp.sys.amiga.misc
+Subject: Re: A4000 CDROM
+Date: 13 Nov 1997 00:54:30 GMT
+Organization: Not organised
+Message-ID: <64dj46$6q8$1@news.ox.ac.uk>
+References: <879308320.13598@dejanews.com>
+NNTP-Posting-Host: sable.ox.ac.uk
+Lines: 83
+Path: 195.95.96.10!news.unisource.be!News.Amsterdam.UnisourceCS!amsterdam.news.unisource.nl!gate.news.unisource.nl!bullseye.news.demon.net!demon!dispose.news.demon.net!demon!baron.netcom.net.uk!netcom.net.uk!server3.netnews.ja.net!news.ox.ac.uk!sable.ox.ac.uk!worc0223
+
+In article <879308320.13598@dejanews.com>,  <cms5@gpu.srv.ualberta.ca> wrote:
+>  I'm trying to put an IDE cd-rom drive into an A4000, but i'm not having
+>much luck.  I have my IDE HD set up as Master and the IDE Cd-rom drive
+>set up as slave.  When I get into workbench and put in a CD, the CD will
+>not show up on the WB screen(I have moved the CD-rom Driver into the
+>Expansion drawer and rebooted).  Obviously I must be missing something!
+
+Yes, you are.  The "CD-ROM driver" in the "Storage/DOSDrivers" drawer is
+not actually a driver - that drawer name is rather misleading.  You need
+to get hold of a replacement driver for the IDE bus that can handle
+CD-ROM drives as well as hard drives.  There are two commercial products
+available which provide this - IDEfix97 and the "Plug'n'Play ATAPI
+CD-ROM" driver.  IDEfix97 also supports some other newer IDE features
+needed to make use of an IDE Zip drive.  You could also get the beta v43
+IDE driver from Amiga International's FTP site - which is what I did.
+This requires OS 3.1 and needs a little fiddling with your
+startup-sequence, so it's not for the faint-hearted; however, since you
+have already opened up and fiddled around with the internals of your
+A4000 I think you are not one of them.
+
+Aaargh!  I just checked and ftp.amiga.de seems to be screwed up.  It
+looks like AI's ISP (Welfen-Netz) has been moving things around and
+currently www.amiga.de = amiga.amiga.de is providing FTP service for
+some PC supplier while ftp.amiga.de has no public FTP service at all!
+I did a little investigation:
+
+These are the two hosts in the amiga.de domain:
+
+amiga.amiga.de (alias www.amiga.de) has address 194.112.110.240.  The
+machine that actually corresponds to this address is normally called
+rs-main.welfen-netz.com and has address 194.112.110.1.  It is running
+Windows NT and NT's standard FTP service.  The route from here
+(ox.ac.uk) to amiga.amiga.de goes through AT&T lines and then through
+Cybernet AG's lines.
+
+amiga2.amiga.de (alias ftp.amiga.de) has address 194.231.42.152.  The
+machine that actually corresponds to this address is normally called
+www4.mediaserve.de and has address 194.231.42.253.  It is running UNIX
+and wu-ftpd.  The route from here to amiga2.amiga.de goes through AT&T
+lines and then through DPN's lines.  It seems to me that its name record
+is entirely incorrect.
+
+The name servers for amiga.de are rs-main.welfen-netz.com (the ISP's
+main (or only?) machine, it seems) and ns.cybernet-ag.net (the upstream
+provider's name server).  Since I'm currently in the situation of
+dealing with one ISP maintaining name records and another looking after
+the actual addresses myself, I can see how these sorts of things can
+happen.  But it doesn't look good at all.
+
+Now, watch me try out their mail server:
+
+Trying 194.112.110.6...
+Connected to isdn.welfen-netz.com.
+Escape character is '^]'.
+220 MERCUR SMTP-Server (v2.10) for Windows NT ready at Thu, 13 Nov 97
+01:33:32 +0100
+vrfy ptysch@amiga.de
+250 User not local; will forward to <ptysch@aol.com>
+vrfy HFritsches@amiga.de
+250 User not local; will forward to <hfritsches@aol.com>
+vrfy nicogo@amiga.de
+250 User not local; will forward to <nicogo@aol.com>
+vrfy kraemer@amiga.de
+250  <kraemer@amiga.de>
+vrfy steep@amiga.de
+250  <steep@amiga.de>
+vrfy webmaster@amiga.de
+250  <webmaster@amiga.de>
+vrfy postmaster@amiga.de
+550 Recipient not here
+quit
+221 163.1.2.4 closing connection
+
+The failure to accept mail to postmaster@amiga.de is a serious breach of
+Internet standards!  The other information might be of use... I would
+assume the AOL accounts exist to allow easy access from around the
+world, which tells us which of the staff are chained to their desks... ;-)
+
+I guess it's time to mail the webmaster then...
+-- 
+Ben Hutchings, M&CS student | ICOAmiga http://www.netreach.net/~fleecy/icoa/
+email/finger m95bwh@ecs.ox.ac.uk | homepage http://users.ox.ac.uk/~worc0223/
+"This .sig sucks!" "Shut up Beavis! It gets cool in a minute."

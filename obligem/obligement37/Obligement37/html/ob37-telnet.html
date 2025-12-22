@@ -1,0 +1,246 @@
+<html>
+ <head>
+  <title>Labo : Telnet et e-mail</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="5,1,756,80" href="http://obligement.free.fr">
+  <area shape="rect" coords="11,87,74,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="88,87,184,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="200,87,302,105" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="316,87,432,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="442,87,512,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="526,87,630,105" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="648,87,746,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#113333" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Labo : Telnet et e-mail </font>par&nbsp;<a href="mailto:bigdan@migazone.com">Arnaud&nbsp;Danassié</a></div><br><br><br>
+
+Vous ne le savez peut-être pas, mais si vous utilisez YAM, vous êtes des veinards :
+non seulement les virus de type "vers outlook" vous laissent de marbre (et vous ne
+polluez pas la boite aux lettres de vos contacts) mais en plus vous pouvez effacer
+vos mails directement sur le serveur ;-) Les pauvres windaubistes abreuvés à
+l'Outlouk sont généralement condamnés à utiliser Telnet pour ce genre d'opérations
+alors qu'il leur suffirait de désinstaller le bestiaud et d'installer un vrai 
+mailer digne de ce nom (Pegasus Mail ou Eudora Pro par exemple).<br><br>
+
+<font size="+1" color="#ccbb33">Telnet CéKoiDonc&nbsp;?</font><br><br>
+
+Telnet est tout simplement l'un des moyens d'envoyer des commandes sur une 
+machine distante. Typiquement, cela peut être des commandes shell (Unix, Linux, 
+etc.) ou si l'on s'adresse à un port particulier (21 pour le FTP, 110 pour le 
+POP, etc.) à envoyer des commandes à un serveur pour lui faire exécuter telles 
+ou telles opérations (relever un email, effacer un fichier en FTP, etc..).<br><br>
+
+Dans cet article, nous vous expliquerons comment lire ou effacer vos emails
+sur votre POP. C'est ni plus ni moins les commandes que YAM ou Simplemail 
+envoient à votre serveur POP (bravo, vous venez de mettre les mains dans le 
+cambouis).<br><br>
+
+Ceci pourra toujours vous servir que vous ayez un Amiga, un Mac, un PDA, une 
+grosse station Sun en passant par n'importe quel PC sous Windows ou Linux...
+Sur Amiga "classic" nous avons des clients Telnet corrects (MiamiTelnet fourni
+avec MiamiDX, AmTelnetII, DCTelnet, etc.) mais parfois un peu limités en 
+version démo notamment pour faire du SSH (connexion telnet sécurisée).<br><br>
+
+N'oublions pas qu'aux origines, Arpanet, l'un des ancètres de l'internet actuel, 
+a été justement conçu (par les militaires américains et rapidement par les
+universitaires de l'époque post-soixante huitarde) de manière à pouvoir reposer
+sur des machines et des OS complètement hétérogènes (tout le contraire de la 
+politique Wintel qui verrouille l'information par tous les moyens possibles et 
+cherche à imposer son matériel et son logiciel propriétaire).<br><br>
+
+Cette politique d'ouverture et de partage du savoir est justement l'un des 
+piliers qui a permis au net de supporter le nombre d'utilisateurs en croissance 
+exponentielle ces dernières années et toujours plus gourmands en bande-passante...
+(et les abus genre spam, virus "pour neuneus", etc... n'arrangent rien bien évidemment).<br><br>
+
+<font size="+1" color="#ccbb33">RFC KesKeCestCeTruc&nbsp;?</font><br><br>
+
+RFC pour Request For Comments ou l'une clé du monde libre. Très simplement, c'est 
+la documentation (en Anglais) qui décrit les normes et protocoles (règles de 
+communications) utilisés par Internet&nbsp;:&nbsp;les premiers RFC datent de 1969...
+Comme quoi les NTIC ne sont plus "nouvelles" puisque certaines ont plus de 30 ans&nbsp;!
+Le RFC N°959 par exemple décrit le File Transfert Protocol (FTP) en long et en
+large, etc.<br><br>
+
+Tout programmeur potentiel de mailer, client ou serveur FTP, etc. y trouve toutes
+les informations de base en texte (ou RTF, etc.) pour savoir ce qu'il peut
+implanter dans son programme. C'est l'accès à cette masse de documentation qui
+permet aujourd'hui à des OS complétement différents d'avoir des utilitaires qui
+communiquent entre eux sans trop de problèmes puisque les protocoles sont communs&nbsp;!
+Le format d'image PNG (prononcez "ping") est décrit dans la RFC N°2083 par exemple.<br><br>
+
+Ci-dessous un ou deux URLs "fiables" où consulter des RFC :<br><br>
+
+<a href="http://www.rfc-editor.org">http://www.rfc-editor.org</a> par exemple ou <a href="http://www.rfc-editeur.org">http://www.rfc-editeur.org</a> pour la VF
+des principaux RFCs (merci à Nicolas Jourdan et aux autres traducteurs).<br><br>
+
+Le RFC qui nous intéresse pour relever nos mails est donc le N°1939 (POP3) mais
+on pourrait aussi utiliser le RFC N°2060 (IMAP) encore plus puissant (pratique
+pour classer vos mails directement sur le serveur) ou on pourrait lire le RFC
+N°821 (SMTP, voir aussi le 2821) pour savoir comment envoyer un email en telnet ;)
+Le protocole Telnet en lui même est aussi décrit dans le RFC N°854&nbsp;!<br><br>
+
+<font size="+1" color="#ccbb33">Procédure pour relever un email via telnet (Pop)</font><br><br>
+
+Nous utiliserons un compte email Free fictif (en fait ce compte est cloturé,
+inutile d'essayer de lire des mails sur ce compte donc ;-) C'est le même principe
+quelque soit votre provider&nbsp;!<br><br>
+
+Login:&nbsp;<b>artbas</b><br>
+password:&nbsp;<b>string</b><br>
+<b>pop.free.fr</b>&nbsp;(port <b>110</b>)<br><br>
+
+Sous Linux ou un shell, un simple "telnet pop.free.fr:110" suffit pour se 
+connecter sur le pop de Free. Si vous utilisez un client graphique (voir grab),
+il faudra renseigner les quelques champs demandés.<br><br>
+
+La lecture du RFC 1939 nous donne donc quelques commandes utilisables sur un POP.<br><br>
+
+- <b>USER</b> et <b>PASS</b> servent à s'identifier sur le serveur POP.<br><br>
+
+- <b>STAT</b> renvoie le nombre de mails et le nombre d'octets qu'ils occupent sur le serveur.<br><br>
+
+- <b>LIST</b> renvoie les numéros d'emails et leurs tailles en octets.<br><br>
+
+- <b>RETR n</b> affiche le mail numéro "n" à l'écran (RETR 7 par exemple).<br><br>
+
+- <b>DELE n</b> marque le message pour l'effacement (DELE 3 par exemple, il ne sera en fait
+réellement effacé qu'à la cloture de la session avec la commande QUIT).<br><br>
+
+- <b>TOP n x</b> affiche les entêtes du mail numéro n et les x premières lignes du mail
+en question (exemple&nbsp;:&nbsp;TOP 2 0 pour avoir l'entête du mail N°2 ou TOP 27 10 pour
+avoir les 10 premières lignes du mail N°27).<br><br> 
+
+- <b>QUIT</b> sert à se déconnecter proprement du pop.<br><br>
+
+<font size="+1" color="#ccbb33">Exemple d'une session telnet classique (commentée).</font><br><br>
+
+Les lignes commencant par S: représentent les messages du serveur. Celles 
+commencant par C: sont celles du client telnet (ce que vous tapez "à l'aveugle"
+donc). Les messages de confirmations (+OK) ou d'erreurs (-ERR) sont généralement
+suivi d'un message d'explication qui varie suivant les serveurs...<br><br>
+
+<b>telnet pop.free.fr 110</b><br><br>
+
+S: <i>+OK <12595.1039292011@pop2-1.free.fr></i><br><br>
+
+Ok on est connecté sur le pop de Free<br><br>
+
+C: <b>USER artbas</b><br>
+S: <i>+OK</i><br>
+C: <b>PASS string</b><br>
+S: <i>+OK</i><br><br>
+
+On est logué sous le compte artbas<br><br>
+
+C: <b>STAT</b><br>
+S: <i>+OK 5 405560</i><br><br>
+
+Il y a 5 messages en attente pour le compte artbas@free.fr pour un total de
+405 560 octets.<br><br>
+
+C: <b>LIST</b><br>
+S: +OK<br>
+S: <i>1 3499</i><br>
+S: <i>2 2205</i><br>
+S: <i>3 3528</i><br>
+S: <i>4 36612</i><br>
+S: <i>5 359716</i><br>
+S: <i>.</i><br><br>
+
+On a donc cinq mails numérotés de 1 à 5 avec leurs tailles respectives.<br><br>
+
+C: <b>TOP 2 10</b><br><br>
+
+Nous renvoie l'entête du mail N°2 et les dix premières lignes.<br><br>
+
+C: <b>RETR 2</b><br><br>
+
+Nous renvoie tous le mail N°2 (entête et corps du mail).<br><br>
+
+C: <b>DELE 3</b><br>
+S: <i>+OK</i><br>
+
+Marque le message numéro 3 pour l'effacer.<br><br>
+
+C: <b>DELE 6</b><br>
+S: <i>-ERR</i><br><br>
+
+Le serveur nous renvoie une erreur car il n'y a pas de message N°6.<br><br>
+
+C: <b>QUIT</b><br><br>
+
+Et on quitte proprement le pop de Free (déconnexion).<br><br>
+
+<font size="+1" color="#ccbb33">Envoi de mails via telnet (smtp.free.fr, port 25)</font><br><br>
+
+On peut aussi envoyer des mails via telnet... Ci dessous l'exemple d'une 
+session minimale côté client (chaque ligne se termine par entrée).<br><br>
+
+<b>telnet smtp.free.fr 25</b><br><br>
+
+<b>EHLO artbas</b><br><br>
+
+(ou l'ancienne notation <b>HELO artbas</b> toujours valable&nbsp;:&nbsp;on signale ainsi au SMTP
+qui on est).<br><br>
+
+<b>MAIL FROM:artbas@free.fr</b><br>
+<b>RCPT TO:obligement@free.fr</b><br><br>
+
+On précise l'expéditeur et le destinataire.<br><br>
+
+<b>DATA<br>
+salut Daff<br>
+un petit exemple de mail<br>
+bidon pour te dire qu'Edmond<br>
+le Mouton code comme un mouflon<br>
+.</b><br><br>
+
+On saisit le corps du mail. Le point final suivi d'un retour ligne sert à signaler
+la fin du corps du message (texte du message). Le serveur renvoie un message du
+type "<i>+OK queued xxxyyy</i>" pour signaler l'envoi du mail. Rien de bien sorcier ;-D<br><br>
+
+Les petits malins se servent de telnet pour forger un e-mail (en mettant MAIL
+FROM:bill@microsoft.com ou un autre e-mail bidon par exemple)&nbsp;:&nbsp;honte à eux... 
+Ils devraient bien se douter que cette technique archaïque ne suffit pas elle 
+seule à masquer leur identité et qu'avec un peu de temps on peut retrouver leur
+identité réelle (je vous renvoie sur le site de la <a href="http://www.cnil.fr">CNIL</a> et 
+sur les sites de chasse anti-spammers comme spamcop, antispam.net, etc.).<br><br><br>
+
+
+En espérant que ces quelques exemples auront servis à quelques uns d'entre vous
+pour tester les possibilités de telnet.<br><br>
+
+Bonus&nbsp;:&nbsp;RFCs à consulter les jours de pluie&nbsp;:&nbsp;RFC N°1149 et 2549.<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

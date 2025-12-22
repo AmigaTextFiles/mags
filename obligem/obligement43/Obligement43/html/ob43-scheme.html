@@ -1,0 +1,269 @@
+<html>
+ <head>
+  <title>Introduction à Scheme</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Programmation&nbsp;: Introduction à Scheme </font>par&nbsp;<a href="mailto:damien.guichard@wanadoo.fr">Damien&nbsp;Guichard</a></div><br><br><br>
+
+<font size="+1" color="#ccbb33">Scheme, ça fonctionne - Partie 1</font><br><br>
+
+<font size="+1" color="#ccbb33">Présentation du langage Scheme</font><br><br>
+
+Le langage Scheme (prononcez "Skim") a été inventé en 1975 au MIT par Guy Lewis Steele Jr. et Gerald Jay Sussman.
+Scheme est particulièrement adapté au calcul symbolique, à l'intelligence artificielle, à la recherche en informatique
+théorique, tout en étant facile d'apprentissage et agréable pour le débutant en programmation.
+Scheme est un dialecte du langage Lisp, sa syntaxe est donc totalement parenthésée, pas de mots clés, tout commence
+par un "(" et tout finit par un ")". Enfin et c'est probablement le plus important, Scheme privilégie la valeur sur
+l'action, le quoi sur le comment, le calcul sur la commande. Scheme est le langage idéal si votre projet calcule
+beaucoup, mais éventuellement, ne fait rien ou presque rien.<br><br>
+
+<font size="+1" color="#ccbb33">Installation</font><br><br>
+
+Le premier Scheme sur Amiga était Scheme.lha (60921 octets) en juillet 1988. Et il est encore d'actualité aujourd'hui.
+Sinon il y a aussi "SIOD.lha", "scm.lha" et "UMBScheme212.lha", tous disponibles sur <a href="http://www.aminet.net" target="_blank">Aminet</a>
+dans le répertoire /Dev/Lang.<br><br>
+
+Après décompression de l'archive, lancez l'exécutable, une invite apparaît où vous pouvez entrer une expression que Scheme
+évaluera. Cette expression est forcément en notation préfixe (opérateur en 1er, opérandes ensuite), et complètement
+parenthésée, pour calculer 1 + 2 ça donne&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+:=> (+ 1 2)<br>
+3
+</font></td></tr></table>
+<br>
+
+L'invite peut être différente de ":=>" mais normalement le système répond toujours 3.
+Le mieux c'est d'exécuter Scheme dans un Shell KingCON.
+Pour tester les programmes-exemples il suffit de les copier-coller.<br><br>
+
+<font size="+1" color="#ccbb33">Au commencement</font><br><br>
+
+Au commencement il y a la déclaration, elle se fait avec "define"&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+:=> (define one 1)<br>
+one
+</font></td></tr></table>
+<br>
+
+On peut vérifier que "one" vaut bien 1&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+:=> one<br>
+1
+</font></td></tr></table>
+<br>
+
+"one" est bien une variable, on peut lui affecter une autre valeur à l'aide de "set!"&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+:=> (set! one 2)
+</font></td></tr></table>
+<br>
+
+Désormais "one" vaut 2.<br><br>
+
+On peut aussi déclarer des fonctions, ainsi&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+:=> (define (succ a) (+ a 1) )
+</font></td></tr></table>
+<br>
+
+Déclare la fonction "succ" qui attend un argument "a" et renvoie a+1.<br>
+Ensuite l'application de fonction se fait comme d'habitude, en notation préfixe&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+:=> (succ one)<br>
+3
+</font></td></tr></table>
+<br>
+
+Une autre possibilité indispensable est l'alternative, c'est la fonction "if"
+qui renvoie son 2ème argument si le premier est vrai, ou renvoie son 3ème si le premier est faux.
+Exemple, le "minimum de a et b" c'est "a" si "a" est plus petit que "b", et c'est "b" dans le cas contraire&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">  ;; fonction minimum
+  (define (min a b)
+    (if (< a b)
+      a
+      b
+    )
+  )</font></pre>
+</font></td></tr></table>
+<br>
+
+Remarquez bien la façon dont les parenthèses sont alignées sur la même colonne, c'est primordial pour la lisibilité.
+Le point-virgule introduit simplement un commentaire.<br><br>
+
+<font size="+1" color="#ccbb33">Le raisonnement</font><br><br>
+
+Heureusement, l'intérêt de Scheme est de fournir une approche systématique pour des calculs beaucoup plus poussés.
+Par exemple il y a 7 marches d'escalier devant l'allée de mon immeuble, mais combien de façon ai-je donc de les monter&nbsp;?<br><br>
+
+Je peux monter 1 marche.<br>
+Je peux monter 2 marches et même 3 marches à la fois.<br>
+Mais je ne peux pas monter 4 marches en une seule emjambée.<br><br>
+
+L'astuce c'est que si j'ai déjà monté "n" marches alors il me reste (- 7 n) marches à monter.
+Donc la première enjambée laisse au choix 6, 5 ou 4 marches à monter.
+Donc le nombre de façons de monter 7 marches c'est le nombre de façons d'en monter 6 plus celui d'en monter 5 plus celui d'en monter 4.
+En généralisant le nombre de façons de monter "m" marches c'est le nombre de façons d'en monter (- m 1) plus celui d'en monter (- m 2)
+plus celui d'en monter (- m 3).
+Ça c'est pour les cas compliqués, pour les cas simples c'est plus facile, à l'évidence il n'y a qu'une façon de monter 1 marche,
+2 d'en monter 2 et 4 d'en monter 3.<br><br>
+
+Ce qui donne&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+<pre><font size="-1">  (define (ways m)                ;; nombre de façons de monter
+    (define res 0)
+    (if (=  m 1) (set! res 1))    ;; 1 marche
+    (if (=  m 2) (set! res 2))    ;; 2 marches
+    (if (=  m 3) (set! res 4))    ;; 3 marches
+    (if (>= m 4)                  ;; 4 marches ou plus
+      (set! res
+        (+ (+
+          (ways (- m 1))          ;; m - 1 marches
+          (ways (- m 2)))         ;; m - 2 marches
+          (ways (- m 3))          ;; m - 3 marches
+        )
+      )
+    )
+    res
+  )</font></pre>
+</font></td></tr></table>
+<br>
+
+"res" est simplement une variable qui contient le résultat.
+Copiez-collez la fonction, et la réponse tant attendue est&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+:=> (ways 7)<br>
+44
+</font></td></tr></table>
+<br>
+
+Soit 44 façons de monter 7 marches.<br><br>
+
+<font size="+1" color="#ccbb33">Le déroulement</font><br><br>
+
+La fonction suivante répète "n" fois le block "commands".<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+<pre><font size="-1">  (define (repeat n commands)
+    (if (> n 0)
+      (begin
+        (commands)
+        (repeat (- n 1) commands)
+      )
+    )
+  )</font></pre>
+</font></td></tr></table>
+<br>
+
+Maintenant considérons la serie (ways m), visiblement le dernier terme de cette série est la somme des 3 précédents.
+Nous pouvons donc initialiser 3 variables pour les 3 premières marches, et ensuite boucler jusqu'à la m-ième marche.<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+<pre><font size="-1">  (define (ways m)
+    (define a 1)
+    (define b 2)
+    (define c 4)
+    (define d 0)
+    (define (body)
+      (set! d (+ (+ a b) c))
+      (set! a b)
+      (set! b c)
+      (set! c d)
+    )
+    (repeat (- m 1) body)
+    a
+  )</font></pre>
+</font></td></tr></table>
+<br>
+
+Le "repeat" effectue la boucle désirée.<br>
+Le résultat renvoyé est la dernière expression c'est-à-dire "a".<br><br>
+
+Maintenant que vous êtes curieux vous voulez savoir combien de façons de monter les 1665 marches de la tour Eiffel&nbsp;?
+La réponse précise, même sur un simple Amiga 500, avec UMB-Scheme&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%">
+<tr><td><font color="#000000" size="-1">
+==> (ways 1665)<br>
+270 773 945 474 168 507 366 030 491 331 797 860 998 916 440 277 318 033 085 605 558 227 070 373 433 640 351 632 118 239 429 189 762 538 068 697 145 470 791 366 337 590 212 958 277 117 276 452 112 047 140 005 766 715 744 374 303 716 851 050 049 510 524 848 528 224 380 670 234 481 418 384 182 660 852 282 558 063 573 941 768 154 836 383 150 537 499 569 375 964 262 766 789 131 423 105 692 669 101 899 159 757 352 882 021 997 935 344 411 258 659 448 468 823 147 628 451 733 084 325 501 040 808 298 026 042 870 670 083 623 692 080 825 713 465 449 377 419 946 454 031 884 706 619 237 642 689
+</font></td></tr></table>
+<br>
+
+Eh oui&nbsp;! Si vous aviez gagné cette somme à la loterie, vous pourriez acheter une fusée pour Alpha du Centaure, et à la bourse
+d'Alpha du Centaure vous achèteriez tout l'or de la voie-lactée et assez de briques lego pour construire l'étoile-noire
+grandeur nature. Et pour être sûr d'avoir du soleil, vous offririez 1 milliard d'Euros pour chaque grain de sable de Saint-Tropez.
+Et encore là j'ai que des idées de radin... Mais je m'égare.<br><br>
+
+<font size="+1" color="#ccbb33">Pour aller plus loin</font><br><br>
+
+Après les fonctions pourquoi pas les données&nbsp;? En attendant un prochain article, voici deux bons textes d'introduction à Scheme&nbsp;:<br><br>
+
+<a href="http://mitpress.mit.edu/sicp/" target="_blank">mitpress.mit.edu/sicp/</a>.<br>
+<a href="http://www.scheme.com/tspl2d/index.html" target="_blank">www.scheme.com/tspl2d/index.html</a>.<br><br>
+
+Plus de docs sur Scheme&nbsp;:<br><br>
+
+<a href="http://www.schemers.org/" target="_blank">www.schemers.org/</a>.<br>
+<a href="http://www.cs.indiana.edu/scheme-repository/home.html" target="_blank">www.cs.indiana.edu/scheme-repository/home.html</a>.<br>
+<a href="http://www.swiss.ai.mit.edu/projects/scheme/" target="_blank">www.swiss.ai.mit.edu/projects/scheme/</a>.<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

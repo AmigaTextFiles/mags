@@ -1,0 +1,509 @@
+1
+1
+1 AddSpace.IFF 0 20
+2 AddTexture.IFF 420 0
+3 GaussianEdge.IFF 0 96
+4 LogoTexture.IFF 0 20
+5 Merge.IFF 0 20
+6 PrimColors.IFF 0 20
+7 Rotate.IFF 0 20
+8 RunHook.IFF 0 20
+9 Shadow.IFF 0 20
+10 Signature.IFF 0 20
+11 UnkRegion.IFF 440 18
+11 VisualAnim.IFF 0 128
+12 VisualBorder.IFF 0 20
+13 VisualLogo.IFF 0 20
+14 VisualSurface.IFF 0 20
+15 VisualTextureB_1.IFF 0 20*
+
+{3                               Visual Engineering
+{3                               ------------------
+ 
+{2                               Risto Mäki-Petäys
+ 
+ 
+{2ARexx-tuki on korvaamaton etu grafiikkaohjelmissa. Sen avulla  saa  suhteellisen
+{2helposti korvattua ohjelman omien toimintojen puutteita. Näppäränä kokonaisuute-
+{2na toimii Marko Seppäsen Image Engineeriin tekemä  lisäpaketti  Visual  Enginee-
+{2ring. Paketti sisältää yli 30 itse tehtyjä "rutiinia".
+ 
+{2Marko itse kuvasi pakettiaan seuraavilla sanoilla: "Joskus alkuaikoina  kehitte-
+{2lin VE-skriptejä nettisivuja varten. Joidenkin yritysten WWW-sivustot eivät oli-
+{2si koskaan syntyneetkään ilman näitä skriptejä, varsinkaan ilman  Visual  Borde-
+{2ria. Kaikki kuvankäsittely tapahtuu  24-bittisenä  väri-  tai  8-bittisenä  har-
+{2maasävynä, joten ei näiden käyttö  nettigrafiikkaan  rajoitu.  Voit  suunnitella
+{2kannet esim. varmuuskopio-CD:lle, lisätä oman logon jokaiseen  animaatioruutuun,
+{2muokata valmista kuvaa ja printata sen T-paitaan,  renderoida  16-värisen  väri-
+{2liu'un, jota voit käyttää Birdiessä saadaksesi Windowsin tapaista ilmettä  ikku-
+{2noihin... onhan niitä käyttökohteita. Jos jokin skripti on jollain tavalla vial-
+{2linen tai puutteellinen, niin kannattaa  kertoa  siitä  minulle.  Bugit  korjaan
+{2yleensä heti ja ehdotukset uusiksi skripteiksi tai  vanhojen  parannukseksi  hy-
+{2villä perusteluilla tuottavat tulosta varsin nopeasti."
+ 
+ 
+
+
+
+{F                                                                     ---------->
+{1AddSpace
+{1--------
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{AVisual Engineering sisältää kaksi melkein toistensa kaltaista kuvan rajoja  laa-
+{Ajentavaa toimintoa, AddSpace ja AddSpaceB. Näistä AddSpace laajentaa reunoja jo-
+{Aka puolelta, AddSpaceB vain yhdestä suunnasta. Ylimääräisen alueen  pituus  sekä
+{Aalla oleva väri (valkoinen, musta  tai  alaoikealla  olevan  pikselin  väri)  on
+{Amääriteltävissä, AddSpaceB:ssa myös suunta.
+ 
+ 
+
+
+
+{1                                                                     ---------->
+{7AddTexture
+{7----------
+ 
+AddTexture vastaa muuten AddSpacea,  mutta   raja-
+alue täytetään käyttäjän valitsemalla pinnoitteel-
+la. Määriteltävinä ominaisuuksina ovat  rajan  pi-
+tuus sekä pinnoite.
+ 
+ 
+{7BatchProcess
+{7------------
+ 
+BatchProcess suorittaa  valitun   Image   Engineer
+-makron kaikkiin Directory Opus  Magellanin  hake-
+mistolistauksesta valittuihin tiedostoihin. Tämä kuitenkin vaatii ainakin  tois-
+taiseksi skriptin käsinsäätöä käytettävän rutiinin ja sen  arvojen  suhteen. Oh-
+jeet kuitenkin selostavat toimenpiteen kattavasti. Pienellä vaivalla makron  saa
+toimimaan myös muissa ARexx-portin omaavissa tiedostonhallintaohjelmissa.
+ 
+ 
+{7CloseAll, SaveAll ja SaveIT
+{7---------------------------
+ 
+CloseAll sulkee kaikki avoinna olevat projektit kyselemättä sen  kummempia.  Sa-
+veAll tallentaa kaikki projektit yhteen  hakemistoon  samankaltaisilla  nimillä.
+SaveIT tallentaa avoinna olevan projektin 24-bittisessä muodossa, joka kerta uu-
+della nimellä, jotta vanhat tallennukset säilyisivät tallessa. Tämä toiminto  on
+hyvä laittaa pikanäppäimen kohdalle, jolloin se toimii  monitasoisen  kumoa-toi-
+minnon tavoin, mutta työt ovat tallessa kaatumisen tai  sähkökatkoksen  jälkeen-
+kin.
+{FCropEdge
+{F--------
+ 
+{DCropEdge on varsin yksinkertainen toiminto: se rajaa kuvan  mahdollisimman  pie-
+{Dneksi  poistamalla  tyhjän   ulkoreunan.   Sen   lisäksi   reunoilta   leikataan
+{Dylimääräinen pikselin leveä reunus pois, koska esimerkiksi videolta  kaapatuissa
+{Dkuvissa on yleensä sotkua reunuksissa. Taustan väri on vapaa.
+ 
+ 
+{FGaussianEdge ja -Feather
+{F------------------------
+ 
+
+
+
+
+
+
+
+
+{DGaussianEdge sekä -Feather sumentavat valkealla  pohjalla  olevan  mustan  kuvan
+{Dreunoja. Toiminto tunnetaan alan kielellä nimellä antialiasing. Toiminnolla  voi
+{Dmuotoa pienentää tai suurentaa, toimii vain mustaan kuvaan  valkealla  pohjalla.
+{DGaussianEdgella mustan alueen kannattaa olla  keskivahvuudella  vähintään  kaksi
+{Dpikseliä paksua, jotta se ei häviäisi. Asetuksina löytyy sumennuksen leveys sekä
+{Dvoimakkuus. GaussianFeatherissa ei ole säätöjä ollenkaan, ja sillä häviävät alle
+{Dkolme pikseliä paksut linjat. Se toimii myös värillisillä kuvilla. Molemmat toi-
+{Dminnot sopivat mm. mustekynävaikutelman lisäämiseen käsin kirjoitettuun tekstiin
+{Dja karkeareunaisen paksun tekstin pehmentämiseen.
+ 
+LogoTexture
+-----------
+ 
+
+
+
+
+
+
+
+
+LogoTexture lisää valkealla pohjalla olevaan
+mustaan tekstiin   käyttäjän   määrittelemän
+pinnoitteen. Pinnoite  lisätään  tiling-tek-
+niikalla, eli sen kannattaa  olla   saumaton
+tai vähintään saman kokoinen  kuin   tekstin
+sisältävä kuva.
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+{1                                                                     ---------->
+{7Merge
+{7-----
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Monesti tulee tarve liittää kuvia yhteen  vierek-
+käin tai päällekkäin, mutta ohjelmistosta ei löy-
+dy siihen suoraa toimintoa ja täytyy tehdä se kä-
+sin tai kiertämällä toisten  toimintojen  kautta.
+Visual Engineering sisältää huomattavasti helpom-
+man keinon toteuttaa yhdistäminen.  Kuvat voidaan
+myös laittaa näkymään toistensa  päälle,  jolloin
+valkoinen näkyy läpi.
+ 
+ 
+
+
+
+{1                                                                     ---------->
+PrimaryColors
+-------------
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+{FPrimarycolors-toiminto  ensin  tekee  kuvasta  mustavalkoisen  ja  sen   jälkeen
+{Fvärittää sen halutulla sävyllä. Välissä voidaan myös venyttää  kontrasti  äärim-
+{Fmilleen, mikä korostaa kuvan ilmettä ja tuo enemmän esiin yksityiskohtia.  Väri-
+{Fvaihtoehdot ovat kirkkaanpunainen, keltainen, vihreä,  turkoosi,  tummansininen,
+{Fvioletti, vaaleansininen, tummanvihreä, vaaleanruskea,  tummanpunainen,  oranssi
+{Fja haalea pinkki.
+ 
+ 
+Resize400x400
+-------------
+ 
+{FResize400x400 leikkaa  nimensä  mukaisen  alueen  pikseleissä  kuvan  vasemmasta
+{Fyläreunasta ja hävittää kuvan loppuosan. Soveltuu Visual  Textureitten  testauk-
+{Fseen.
+Rotate
+------
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{8Visual Engineeringin Rotate vastaa Image Engineerin  vastaavaa  toimintoa  sillä
+{8erolla, että kuvan tausta on valkoinen. Toiminnosta on etua esimerkiksi silloin,
+{8jos kuvien reunojen pitää olla läpinäkyvät, ja itse kuva on tumma.  Parannuksena
+{8voisi vielä olla säädettävä taustaväri.
+ 
+ 
+
+
+
+{1                                                                     ---------->
+RunHook
+-------
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+RunHook-toiminnosta on käyttöä vain ImageFX:n  omistajille.  Se  lähettää  kuvan
+ImageFX:n, ajaa siinä valitun hookin ja palauttaa kuvan  käsiteltynä  ImageEngi-
+neeriin.
+ 
+ 
+
+
+
+
+
+
+
+
+{1                                                                     ---------->
+Shadow
+------
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Ehkä useimmin WWW-ympäristössä nähty efekti lienee kuvan  varjostus  valkoisella
+pohjalla. Muut näkemäni toiminnon sovellukset ovat olleet tosin kaupallisia. Pe-
+rusvarjostuksen (rectangle, kuvassa vasemmalla) lisäksi toiminto  sisältää  seu-
+raavat efektit: normal, grey antialias, color antialias (kuvassa oikealla), out-
+line, lowpass ja transparency. Varjostuksen  suunta,  terävyys,  väli  ympärillä
+sekä vahvuus on myös säädettävissä. Uuden version etuna ovat toiminnot grey  an-
+tialias ja color antialias, jotka löytävät pehmennettyjen reunojenkin  varsinai-
+set reunat.
+ 
+ 
+
+{F                                                                     ---------->
+Signature
+---------
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{5Jos ainainen kuvien signeeraus laiskistuttaa, saa oman puumerkkinsä lisättyä ku-
+{5vaan automaattisesti Signature-toiminnolla. Liittämismetodeina  on  valittavissa
+{5Alpha, Max, Min, Mix50, Mix50Genlock ja Multiply. Sen lisäksi pitää säätää  sig-
+{5neerauksen sijainti vaaka- ja pystysuorassa suunnassa ja hienosäätö  tarvittaes-
+{5sa. Loppu hoituu automaattisesti.
+ 
+
+
+
+ 
+
+
+{1                                                                     ---------->
+UnknownRegion
+-------------
+ 
+UnknownRegion lisää  rajatulle  alueelle  aaltomaisen
+pinnoitteen. Aallon vaihetta ja pituutta  ei  kuiten-
+kaan voi säätää. Tekijän mukaan toimintoa  pyydettiin
+henkilöitten  kasvojen   epäselventämiseksi   jollain
+muulla kuin mosaiikkiefektillä.
+ 
+ 
+
+
+
+
+
+
+                           VisualAnim
+                           ----------
+ 
+                           Visual Engineeringin ainoa animaatiotoiminto, Visual-
+                           Anim, luo yhden kuvan pohjalta animaatioita.  Toimin-
+                           toja löytyy kolme, kupla (bulge),  aaltoilu  (ripple)
+                           ja kierto (twirl). Jokaisessa voi asettaa  animaation
+                           pituudeksi 8, 12, 18 tai 24 kuvaa. Bulgella  valitta-
+                           vat ominaisuudet ovat tyyppi (boom, rubber, in, out),
+                           efektin vahvuus ja säde. Ripplella ominaisuudet  ovat
+                           tyyppi (Simple, SimpleC, Boom, BoomC, Ripple, Swirl),
+                           amplitudi ja aallonpituus.  Twirlillä  ne  taas  ovat
+                           Swing, Swing2, ShakeIt ja ShakeIt2.  Jostain   syystä
+                           twirl ei toiminut testatessani.
+VisualBorderDemo
+----------------
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VisualBorder sovittaa kuvan reunat Shadowin tavoin valkealle  pohjalle.  Varjos-
+tuksen sijaan toiminto häivyttää osan reunoista.  Demoversiossa  on  vain  kaksi
+toimintoa, Gradient ja RoundEdge, joista ensimmäinen tekee nappulamaisen valais-
+tusefektin reunoihin ja jälkimmäinen (kuvassa) pyöristää kulmia.
+ 
+ 
+
+
+
+
+
+
+{1                                                                     ---------->
+VisualLogoDemo
+--------------
+ 
+
+
+
+
+
+
+
+
+VisualLogon tarkoituksena on tehdä mustasta kuvasta valkoisella pohjalla syvyys-
+vaikutelman muodostavia logoja. Kuvan esimerkissä musta teksti valkoisella taus-
+talla muuttui krominkaltaiseksi vahvalla varjostuksella. Säätöinä löytyy efektin
+tyyppi (demoversiossa vain raised ja strong), tila ympärillä ja tyyli,  kiiltävä
+(shiny) ja hahmotelma (outlined). Rekisteröity versio olisi erittäin hyödyllinen
+tyyliteltyjä html-sivuja tehtäessä.
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+{F                                                                     ---------->
+VisualSurface
+-------------
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Jotkut kuvat ovat sellaisenaan hieman tylsän näköisiä. VisualSurface lisää  nii-
+hin pinnoitevaikutelman. Valittavana ominaisuutena on tyyppi  (noise  tai  maxi-
+mum).
+ 
+ 
+
+
+
+
+
+
+
+
+{1                                                                     ---------->
+{3VisualTexture
+{3-------------
+ 
+
+
+
+
+
+
+
+
+
+
+VisualTexturen ideana on uudistaa vanhoja (saumattomia) pinnoitteita.  Sain  sa-
+tunnaisesti kokeilemalla pari menettelevää tulosta (kuvassa). Ohjeet  eivät  ol-
+leet hirveän kuvaavia. VisualTexture2:ssa voi valita sumennuksen vahvuuden, tyy-
+lin, heijastuksen ja tyypin.
+ 
+ 
+{3Zoom14
+{3------
+ 
+Zoom14 muuttaa kuvasuhteen 1:4:n. Toiminto on kätevä pikanäppäimestä haettuna.
+ 
+ 
+Image Engineerin etuna muihin vastaaviin ohjelmiin  on  hinta,  35  Yhdysvaltain
+dollaria eli vajaat 200 markkaa. Vastaavasti ImageFX maksaa vajaat 2000  mk,  ja
+ainakin versio 3 on erittäin epävakaa. Image Engineer puolestaan kärsii  piirto-
+toiminnoissa ja olisin kaivannut kumoamistoimintoa, mutta hintaansa nähden se on
+varsin mainio paketti.
+{2Marko Seppänen on tehnyt yksinoikeudella tähän Sakuun myös lyhyen  esittelyjutun
+{2Visual Engineering -skripteistä ja niiden käytöstä. 
+
+{2Visual Engineering -kotisivu:
+{2http://wwnet.fi/users/smarko/visual/
+ 
+{2Image Engineer -kotisivu:
+{2http://www.amigaworld.com/support/imageengineer/
+ 
+{2Marko Seppänen:
+{2marko.seppanen@wwnet.fi

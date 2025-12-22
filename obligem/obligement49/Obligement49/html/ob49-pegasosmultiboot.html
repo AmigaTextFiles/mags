@@ -1,0 +1,185 @@
+<html>
+ <head>
+  <title>Créer un multiboot sur Pegasos</title>
+  <meta name="author" CONTENT="David Brunet et l'équipe d'Obligement - obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+</a>
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr" alt="Obligement">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table summary="" align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr valign="top">
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table summary="" align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique&nbsp;: créer un multiboot sur Pegasos </font>par&nbsp;<a href="mailto:niffo@free.fr">Nicolas Gressard</a></div><br><br><br>
+
+
+<font color="#ccbb33" size="+1">Introduction</font><br><br>
+
+Dans cet article, nous allons voir de quelle mani&egrave;re il est
+possible de cr&eacute;er un menu dans l'OpenFirmware du Pegasos de
+fa&ccedil;on &agrave; permettre de d&eacute;marrer facilement
+diff&eacute;rentes configurations sans avoir &agrave; entrer de longues
+et r&eacute;barbatives lignes de commandes.<br><br>
+
+Ce travail sera exécuté via un petit outil du nom de BootCreator, disponible
+sur <a href="http://www.tbs-software.com/morgoth/projects.html">www.tbs-software.com/morgoth/projects.html</a>. 
+Je n'ai personnellement test&eacute; BootCreator que sur Pegasos 2, mais plusieurs personnes
+l'utilisent avec succ&egrave;s sur Pegasos 1 m&ecirc;me si la
+fonctionnalit&eacute;&nbsp; "timeout" ne semble pas fonctionner en
+raison de sa version du firmware. BootCreator existe en version MorphOS
+et Linux. La proc&eacute;dure d&eacute;crite ici concerne la version
+MorphOS, mais elle est strictement identique sous Linux.<br><br>
+
+A noter qu'il n'est pas obligatoire d'avoir plusieurs systèmes
+d'exploitation pour utiliser BootCreator (lancer uniquement
+MorphOS mais avec différentes options est possible).<br><br>
+
+<font color="#ccbb33" size="+1">Alors, BootCreator, comment &ccedil;a marche&nbsp;? (® Michel Chevalet)</font><br><br>
+
+Le firmware du Pegasos est "scriptable" en langage Forth. Ceci signifie
+qu'il dispose d'un interpr&eacute;teur Forth int&eacute;gr&eacute; qui
+permet d'ex&eacute;cuter des programmes directement en son sein. C'est
+cette fonctionnalit&eacute; qui va nous permettre de cr&eacute;er un
+menu de d&eacute;marrage. Comme le Forth n'est pas un langage
+particuli&egrave;rement &eacute;vident &agrave; dig&eacute;rer, sans
+doute d'ailleurs parce qu'il n'est pas tr&egrave;s courant de le
+rencontrer, nous allons confier la r&eacute;daction dudit script
+&agrave; un programme&nbsp;: BootCreator.<br><br>
+
+BootCreator est une "moulinette" en ligne de commande qui va
+transformer un fichier de configuration contenant tous les
+param&egrave;tres du menu que l'on souhaite cr&eacute;er en un script Forth directement
+exploitable par le firmware.<br><br>
+
+Une
+fois l'archive d&eacute;compress&eacute;e, vous &ecirc;tes en
+possession d'un ex&eacute;cutable "bootcreator" et d'un exemple de
+fichier de configuration situ&eacute; dans le r&eacute;pertoire
+"examples" nomm&eacute; "example.bc". Ce dernier est le fichier de
+configuration qu'il faudra passer en param&egrave;tre &agrave;
+l'exécutable afin de g&eacute;n&eacute;rer le script en Forth. Editez
+ce fichier avec n'importe quel &eacute;diteur de texte et voici ce que
+vous voyez&nbsp;:<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+#<br>
+# Example description file for bootcreator 1.1<br>
+#<br>
+<br>
+[VERSION]<br>
+1<br>
+<br>
+[TITLE]<br>
+Boot Menu<br>
+<br>
+[SETTINGS]<br>
+AbortOnKey = false<br>
+Timeout&nbsp;&nbsp;&nbsp; = 9<br>
+Default&nbsp;&nbsp;&nbsp; = 1&nbsp;&nbsp;&nbsp;<br>
+<br>
+[SECTION]<br>
+Local HD -&gt; Morphos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Normal)<br>
+ide:0 boot2.img ramdebug edebugflags="logkprintf"<br>
+<br>
+[SECTION]<br>
+Local HD -&gt; Morphos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Debug)<br>
+ide:0 boot2.img ramdebug edebugflags="logextended logkprintf
+permmemtrack memtrack"<br>
+<br>
+[SECTION]<br>
+Local HD -&gt; Linux 2.6.8&nbsp; (Normal)<br>
+ide:0 linux-2.6.8.img video=radeonfb:1024x768@70 root=/dev/hda5<br>
+</font>
+</td></tr>
+</table>
+<br>
+
+- La section [VERSION] doit contenir "1" pour un Pegasos 2 et "0" pour un Pegasos 1.<br><br>
+
+- La section [TITLE] contient le texte que vous voulez voir
+affich&eacute; au dessus de votre menu.<br><br>
+
+- La section [SETTINGS] contient trois valeurs qui parlent d'elles
+m&ecirc;mes&nbsp;:<br>
+
+<ul>
+<li>AbortOnKey = false/true (abandonne si une touche est enfonc&eacute;e)
+<li>Timeout = x (attend x secondes avant de lancer le choix par d&eacute;faut)
+<li>Default = x (d&eacute;termine le choix par d&eacute;faut)
+</ul>
+
+- Les sections [SECTION] contiennent chacune un couple de valeurs d&eacute;terminant une
+ligne de choix dans le menu.<br><br>
+
+Pour chaque section [SECTION], la premi&egrave;re ligne
+d&eacute;termine le contenu de la ligne qui sera affich&eacute;e dans
+le menu et la seconde ligne contient exactement ce que vous auriez
+tap&eacute; en ligne de commande dans l'openfirmware.<br><br>
+
+Une fois ce fichier modifi&eacute;, g&eacute;n&eacute;rez le script
+Forth avec la ligne de commande suivante&nbsp;:<br><br>
+
+bootcreator examples/example.bc bootmenu<br><br>
+
+Ceci va avoir pour
+cons&eacute;quence de cr&eacute;er le fichier "bootmenu" que vous
+pouvez toujours &eacute;diter si vous souhaitez voir &agrave; quoi
+ressemble le programme Forth r&eacute;sultant. Afin que le firmware
+puisse acc&eacute;der au fichier Forth, il convient de le mettre sur
+une partition d'un type qu'il est capable de lire. La partition FFS
+contenant votre noyau MorphOS est sans doute la plus adapt&eacute;e.<br><br>
+
+La derni&egrave;re chose &agrave; faire, est de modifier la variable
+"boot-file" du firmware de fa&ccedil;on &agrave; ce qu'il exécute le
+menu au lieu de lancer directement tel ou tel noyau MorphOS ou Linux.
+Pour cela, utilisez la commande suivante dans le firmware (en supposant que la variable "boot-device"
+d&eacute;signe d&eacute;j&agrave; la bonne partition) :<br><br>
+
+setenv boot-file bootmenu<br><br>
+
+<font color="#ccbb33" size="+1">Résultat</font><br><br>
+
+Lors de votre prochain démarrage, votre Pegasos présentera un menu de ce type :<br><br>
+
+<div align="center">
+<img alt="BootCreator" src="../gfx/bootcreator.jpg" height="195" width="423"><br><br>
+</div>
+
+Si vous avez fait une erreur dans le paramétrage du menu, pas de panique,
+il est toujours possible de reprendre la main dans le 
+firmware et de démarrer manuellement sur la partition MorphOS ou sur un cédé.<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

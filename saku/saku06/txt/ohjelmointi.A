@@ -1,0 +1,176 @@
+9
+1
+*
+{2Amigan ohjelmoinnista ∑ Tomi Jaskari 26.4.1994
+{6l‰hdeteos: "Programmer's Guide to the Amiga" ∑ Robert A. Peck
+{6oikolukija: Kimmo Mustonen
+
+{5Mit‰ Amiga-ohjelmoija tarvitsee
+
+Taidot ja ohjelmistot, joita Amiga-ohjelmoinnissasi tulet tarvitsemaan,
+ovat paljolti riipuvaisia siit‰, millaista sovellusohjelmaa olet
+kehitt‰m‰ss‰. Saatat esimerkiksi olla laatimassa upeasti soivaa ja
+v‰rik‰st‰ ohjelmaa, joka hyˆdynt‰‰ Amigassa valmiiksi olevia ‰‰ni- ja
+grafiikkaominaisuuksia, jolloin sinun tulee tiet‰‰, miten laadit
+tietorakenteet kuville ja ‰‰nin‰ytteille, sek‰ miten avaat tarvittavat
+kirjastot ja mit‰ kutsuja tarvitset mihinkin tarkoitukseen.
+
+Tai haluat mahdollisesti k‰ytt‰‰ moniajoa todella hyv‰ksesi, ehk‰p‰
+tulostaen tiedoston kirjoittimelle samalla korjaillessasi toista tiedostoa
+ja siin‰ ohella viel‰ tausta-ajona ladata s‰hkˆpostia koneeseesi jostain
+maailmalta. T‰h‰n tarvitset tietoa moniajosta tai v‰himm‰isvaatimuksena
+sinun tulee tiet‰‰, miten pyyd‰t AmigaDossia aloittamaan uuden erillisen
+prosessin sinua varten.
+
+Yleist‰en sinun pit‰isi tuntea komentotulkin eli CLIn toiminta ja
+moniajoytimen EXECin toiminta niiden systeemiohjelmistojen lis‰ksi, joita
+sovelluksesi ohjelmoiminen vaatii, koskapa jokainen sovellus vaatii pienen
+m‰‰r‰n kirjanpitotyˆt‰ ennen kuin voit k‰ytt‰‰ grafiikkaa tai mit‰ tahansa
+muuta systeemifunktiota Amigan kirjastoista.
+
+{5Funktiokirjastot
+
+Kirjasto (library) on kokoelma funktioita, jotka liittyv‰t toisiinsa
+jollakin tavoin. Amigan suunnittelijat ker‰siv‰t toisiinsa liittyv‰t
+funktiot kirjastoihin varmistaakseen, ett‰ yht‰ Kickstart-versiota varten
+kirjoitetut ohjelmat olisivat mahdollisimman yhteensopivia myˆs uudemmissa
+Amigoissa. Mahdollistaakseen t‰m‰n yhteensopivuuden suunnittelijoiden oli
+varmistettava, ett‰ ohjelman koodista pystyisi aina lˆyt‰m‰‰n systeemin
+funktiot vaikka k‰yttˆj‰rjestelm‰ olisi sitten muuttunut versiosta X
+versioon Y.
+
+[ T‰lt‰ pohjalta on hyv‰ l‰hte‰ siirt‰m‰‰n Amigan k‰yttˆj‰rjestelm‰‰
+Kickstartteineen aivan uuteen tietokonearkkitehtuuriin. ]
+
+Saavuttaakseen t‰m‰n yhteensopivuustavoitteen suunnittelijat m‰‰ritteliv‰t
+tietorakenteen, joka muiden asioiden lis‰ksi sis‰lt‰‰ taulukon
+hyppyk‰skyist‰ ja funktioiden osoitteista seuraavasti:
+
+{5         HYPPY funktioon N
+{5         ... ...
+{5         HYPPY funktioon 3
+{5         HYPPY funktioon 2
+{5         HYPPY funktioon 1
+{5 LibBase <kirjaston alkuosoite muistissa>
+{5         <tietorakenteen loppuosa>
+
+Kun kytket Amigaasi virran, eri systeemikirjastot etsit‰‰n
+Kickstart-muistista ja tehd‰‰n niiden osoitteista kutsutaulukko
+RAM-muistiin, jossa taulukkoa voidaan tarpeen vaatiessa myˆhemmin muuttaa.
+
+Systeemin k‰ynnistyess‰ kirjastot voidaan sijoittaa vapaasti muistissa
+mihin tahansa osoitteeseen. Siksip‰ koodisi tulee m‰‰ritell‰ tietty
+muuttujanimi - kirjaston perusosoitin (the library base address), jonka
+avulla voit sitten kutsua tietyn systeemikirjaston funktioita.
+
+
+{5Avauskoodiesimerkki
+
+Pieni esimerkki siit‰ miten osoitetaan intuition-kirjastoa, miss‰
+IntuitionBase on perusosoitin Intuition-kirjastoon:
+
+{5 #include "exec/types.h"
+{5 #include "intuition/intuition.h"
+{5 #include "intuition/intuitionbase.h"
+
+{5 struct Intuitionbase *Intuitionbase;  /* must be global */
+{5 extern struct Library *OpenLibrary();
+
+{5 main()
+{5 {
+{5 Intuitionbase = (struct IntuitionBase *)
+{5                 OpenLibrary("intuition.library",0);
+{5 if (IntuitionBase = = 0)
+{5 {
+{5   printf("Intuition won't open!\n");
+{5 }
+{5 /* more program material */
+
+
+
+{5Linkkeri liitt‰‰ ohjelmaasi koodia..
+
+K‰‰nt‰ess‰si ohjelman linkkeri yhdist‰‰ sen tiedostoon Amiga.lib, jossa on
+tarvittavat liitynn‰t funktiokirjastoihin ohjelmaasi varten. Kun kutsut
+kirjaston funktiota tapahtuu Amiga.libin toimesta seuraavaa:
+
+∑ rekisterit talletaan, jotta funktion palatessa niiden arvot
+  voidaan palauttaa
+∑ ladataan rekisteriin sen kirjaston perusosoitin, jossa funktio sijaitsee
+∑ asettaa rekistereihin tarvittavat kutsuparametrit
+∑ hyp‰t‰‰n perusosoittimen ja tietyn funktion paikan kertovan siirtym‰arvon
+  eli offsetin avulla varsinaisen funktion koodiin
+∑ palauttaa rekistereihin niiden arvot ennen funktiokutsua
+∑ antaa tarvittaessa paluuarvon
+
+Jos jostain syyst‰ ep‰onnistut funktion kirjaston nimen julkistamisessa,
+linkkeri kertoo sinulle suunnilleen seuraavasti:
+
+{5 _<someLibBase> undefined
+
+Jos saat kirjaston perusosoittimen muuttujan julkistettua, mutta
+ep‰onnistut avaamiskutsussa ja silti yrit‰t k‰ytt‰‰ kyseisen kirjaston
+funktioita, ohjelmasi kaatuu.
+
+Jos onnistut sek‰ m‰‰rittelem‰‰n kirjaston perusosoitteen, ett‰ avaamaan
+sen pit‰isi kirjastofunktioiden osoittamisen sujua sen j‰lkeen hienosti.
+Amiga ROM Kernel Manuaalin A-liitteess‰ luetellaan perusosoittimien ja
+kirjastojen nimet, joihin ne yhdistet‰‰n. Jos unohdat niin Amiga-linkkeri
+kyll‰ kertoo mitk‰ kirjastot pit‰‰ julkaista ja avata.
+
+K‰ynnistyskoodi, jonka olet liitt‰nyt linkkerill‰ ohjelmaasi, avaa
+automaattisesti exec.libraryn ja dos.libraryn. N‰in voit kutsua AmigaDOSin
+ja EXECin funktioita avaamatta niit‰ erikseen omassa ohjelmassasi.
+
+{5C-ohjelmointi
+
+Amigalle on useita C-k‰‰nt‰ji‰, joista paras kaupallinen on ehdottomasti
+SAS 6.50 C(++) ja paras shareware k‰‰nt‰j‰ lienee Matt Dillonin DICE.
+Lis‰ksi on ainakin GNU-projektin C-k‰‰nt‰j‰, joka on yhteensopiva mutta
+hidas saamieni tietojen mukaan. N‰ist‰ ainakin kaksi ensin mainittua
+sis‰lt‰v‰t t‰yden tuen Amigan m‰‰rittelytiedostoille eli niin sanotuille
+include-fileille. Lis‰ksi systeemin k‰ytt‰m‰t tietorakenteet on helppo
+m‰‰ritell‰ C-kielell‰, ja suurin osuus Amigan k‰yttˆj‰rjestelm‰st‰ on sit‰
+paitsi k‰‰nnetty C-l‰hdekoodista.
+
+Kun k‰yt‰t C:t‰, Pascalia tai mit‰ tahansa muuta korkean tason
+ohjelmointikielt‰, tulet yhdist‰m‰‰n korkean tason koodisi funktioihin,
+jotka mukauttavat k‰ytt‰m‰si kielen parametrinv‰litystavat Amigan
+systeemikoodiin k‰ytt‰m‰‰n parametrinv‰litystapaan.
+
+{5Assembler-ohjelmointi
+
+Jos k‰yt‰t assemblykoodia kutsuaksesi systeemin funktioita, sinun tulisi
+ensin tuntea Amigan k‰yttˆtavat 68000 rekistereille; ensinn‰kin rekisterit
+D0, D1, A0 ja A1 ovat aina vapaasti k‰ytˆss‰ eli toisin sanoen mik‰ tahansa
+systeemifunktio saattaa muuttaa niiden arvoa palauttamatta alkuper‰ist‰.
+Kaikkien muiden rekistereiden sis‰llˆt systeemi tallettaa ja palauttaa
+pinon avulla. Eli paljon aliohjelmakutsuja k‰ytt‰v‰ ohjelma tarvitsee ison
+pinon!
+
+Funktiot, jotka palauttavat jonkin arvon, palauttavat sen rekisteriss‰ D0.
+Jos funktiosi pit‰‰ palauttaa useampi arvo, tulee sinun suunnitella koodisi
+palauttamaan osoite tietorakenteeseen, joka sis‰lt‰‰ taulukon tuloksista.
+
+
+{5SysBase ja Stack Pointer
+
+Motoralan mikroprosessorisarjan MC680x0 osoiterekistereist‰ kaksi on
+Amigassa varattu erikoisk‰yttˆˆn:
+
+A6-rekisteri‰ ei koskaan k‰ytet‰ parametrien v‰litt‰miseen. A6 on nimetty
+SysBaseksi. Se sis‰lt‰‰ osoitteen systeemifunktioden vektoritaulukkoon,
+joka puolestaan sis‰lt‰‰ voimassa olevat osoitteet muihin funtioihin.
+Funktiota kutsuttaessa, keskusyksikkˆ siirtyy suorittamaan funktiota t‰st‰
+vektoritaulukosta saamansa osoitteen kautta, joten ohjelmoija voi
+halutessaan muuttaa vektoritaulukon sis‰lt‰mi‰ systeemifunktioiden
+osoitteita eri tarkoituksia varten. Esimerkiksi funktioiden toimintaa
+voidaan tehostaa tai lis‰t‰ analysointi- ja/tai profilointikoodia ohjelman
+suorituksen tarkempaa tutkimista varten. T‰m‰ on vain Amigaa koskeva
+piirre.
+
+Toinen erikoisesti kohdeltava rekisteri on A7; se on samalla SP eli Stack
+Pointer, jonka avulla osoitetaan pinoon talletettua dataa. T‰m‰ koskee
+kaikkia MC680x0 sarjaan pohjautuvia tietokoneita.
+
+{6 - TMJJ -- t‰n‰‰n mietin jumalattomia juonia -

@@ -1,0 +1,305 @@
+--------- START OF FORWARDED MESSAGE ---------
+
+From System ....: Internet
+From Conference : de.comp.sys.amiga.misc
+MessageID ......: <334A7A35.6D29@fmi.uni-passau.de>
+Originally from : Martin Ramsch <ramsch@fmi.uni-passau.de>
+Subject ........: Parallelport-Zip am Amiga, Stand 08.04. [lang, aber gut!]
+
+[Crossposting zu den Amiga-(Hardware-)GABELNs
+   de.comp.sys.amiga.misc        (deutsches Usenet),
+   fido.ger.amiga                (Fidonet),
+   maus.sys.amiga                (Maus-Netz),
+   z-netz.rechner.amiga.hardware (Z-Netz).
+ Per E-Mail auch an ein paar, die sich aktiv an der Diskussion beteiligt haben/.
+]
+
+Hallo,
+
+diese Zusammenfassung ist für alle die gedacht, die gerne die
+Parallelport-Version des Iomegas Zip-Drive auch am Amiga betreiben
+würden.
+
+Nebenbei: Die SCSI-Version ist zwar schneller und läßt sich auch
+problemlos verwenden, aber es gibt ja auch 'ne Menge Leute wie mich,
+die - aus welchen Gründen auch immer - bereits ein Parallel-Zip haben
+und das jetzt auch gerne am Amiga anschließen würden (natürlich so,
+daß es auch funktioniert ;-).
+
+
+So wie ich das überblicke, sind die Probleme:
+
+1) Wir müssten herausfinden, wie die Treibersoftware von Iomega den
+   Parallelport am PC genau benutzt, also welche Signalleitungen wie
+   verwendet werden und wie die Kommunikation auf unterster Ebene
+   läuft.
+
+2) Wir müssten ein Lösung finden, dieses Kommunikationsprotokoll am
+   Amiga nachzubilden.
+   Da der Amiga-Parallelport evtl. nicht alle nötigen Signale hat
+   bzw. erzeugen kann, heißt das auf der Hardwareseite:
+   - den Parallelport passend ändern
+   - auf eine I/O-Karte mit passendem zusätzlichen Parallelport
+     ausweichen
+   - fehlende Signalleitungen mit Hilfe eines Adapters von woanders
+     "ausleihen" (serieller Port, Joystick, Maus, ...)
+   - oder 'ne andere gute Idee ;-)
+   Und auf der Softwareseite braucht's dann noch einen passenden
+   Treiber dazu.
+
+3) Apropos Treiber:  schließlich und endlich bräuchte man dann
+   natürlich das ganze systemkonform als AmigaOS-Device oder ähnlich
+   programmiert ...
+
+4) Praktische Durchführung! :-)
+
+
+Jetzt, was ich dazu bisher weiß:
+
+
+1a) Dokumentation
+-----------------
+Es gibt bisher keine öffentlich zugängliche Dokumentation direkt
+von Iomega.  Mehrere Leute haben wohl schon erfolglos an Iomega
+geschrieben, aber bekamen keine Antwort oder wurden vertröstet.
+
+ABER: Ebsche Hermesmann <Ebsche@amigo.ping.de> schrieb, daß es von
+Iomega etwa 100 DIN A4-Seiten umfassende technische Informationen mit
+allen technischen Details gibt:
+
+> Iomega in Deutschland: 0761 450 40
+>                 Mailbox: 0761 450 4444
+> 
+> Vielleicht kriegt man da ja
+> 
+> Zip 100 Removable Disk Drive
+> Technical Information
+> April 1995
+> EN144300
+> 
+> Auf Seite 1 steht: The information in this manual is provided for use
+> by original manufacturers (OEMs) and value added distributors/resellers
+> (VADs/VARs), and for Iomega internal use.
+> 
+> Es sollte also von jedem (größeren) Iomega Vertreiber erhältlich sein.
+> Ich hab' meins von .... uups :)
+
+Wenn wir die in die Hände kriegen können, wäre schon mal _viel_
+gewonnen.  (Ebsche, wie sieht das eigentlich bei Dir aus?
+Kannst/darfst Du die Doku weitergeben?)
+
+
+1b) Linux-Treiber
+-----------------
+
+Grant R. Guenther <grant@torque.net> hat einen Linux-Treiber fuer das
+Parallelport-Zip entwickelt, indem er die Datenleitungen im Betrieb
+analysiert hat und dann einen Treiber passend nachgebaut hat.  Im
+Grunde ein Hack, aber einer der recht gut funktioniert.
+
+Die C-Sourcen sind auf Grants FTP-Server
+<URL: ftp://gear.torque.net/pub/ >
+und koennte man als Vorlage fuer Amiga-Treiber verwenden.
+(Siehe auch <URL: http://www.torque.net/linux-pp.html >.)
+
+Eventuell hat Grant auch weitere Infos?  Müßte man mal nachfragen ...
+
+Auf jeden Fall sollte es möglich sein, herauszulesen, wie PPA-3
+funktioniert.  Und die Ebene drunter (IEEE 1284) ist schon gut
+dokumentiert:
+
+
+1c) Gesammelte Infos
+--------------------
+* Das Parallelport-Zip ist intern eigentlich ein SCSI-Laufwerk, aber
+  ohne die nötige Hardware für den SCSI-Bus.  Es wird daher vom PC aus
+  wie eine SCSI-Festplatte angesprochen.  Iomega verwendet einen
+  speziellen ASPI-Treiber, der die SCSI-Befehle mit dem PPA-3-
+  Protokoll über den Parallelport and das Zip-Drive weiterreicht.
+
+  Infos zu ASPI siehe <URL: http://www.adaptec.com/support/dev.html >.
+
+  PPA-3 ist eine Iomega-Eigenentwicklung ohne frei verfügbare
+  Dokumentation. "PPA-3" ist auch der Name eines SCSI-Hostadapters zum
+  Anstecken an den PC-Parallelport, den Iomega früher mal verkauft
+  hat.  Ein verwandtes aktuelles Produkt ist der Jaz-Traveller, der
+  anscheinend auch das gleiche Protokoll am Parallelport fährt.
+
+* Der Parallelport am Zip-Drive (also die Buchse, die mit dem Rechner
+  verbunden wird), scheint ein Parallelport gemaess IEEE 1284 zu sein,
+  da er sich auf die verschiedenenen Uebertragungsarten Compatibility-
+  Mode (=Centronics), Nibble-Mode (=4bit, uni-direktional), Byte-Mode
+  (=8bit, bi-dir), EPP-Mode in den beiden Spielarten EPP 1.7 und EPP
+  1.9 und ECP-Mode einstellen kann.  (Es gibt ja auf der PC-Seite die
+  entspechenden ILM-Dateien, die diese diversen Modi nutzen je nach auf
+  der PC-Seite vorhandenen Parallelport-Hardware ...)
+
+  Gute Infos zum IEEE 1284-Parallelport liefert
+  <URL: http://www.fapo.com/ieee1284.htm >.
+
+  Dort sind auch fuer alle Uebertragungsarten schoene Signaldiagramme,
+  aus denen man genau ablesen kann, welche Signalleitungen auf welche
+  Art benutzt werden!
+
+  Fuer den Nibble-Mode werden demnach die einzelnen Leitungen so
+  benutzt (siehe <URL: http://www.fapo.com/nibble.htm >):
+
+  /==========+===========+======+==========================================\
+  |SPP Signal|Nibble Mode|In/Out|Description -- Signal usage when in Nibble|
+  |          |     Name  |      |               Mode data transfer         |
+  |==========+===========+======+==========================================|
+  |nSTROBE   |  nSTROBE  |  Out |Not used for reverse data transfer        |
+  |          |           |      |Host nibble mode handshake signal. Set low|
+  |----------+-----------+------+------------------------------------------|
+  |nAUTOFEED | HostBusy  |  Out |to indicate host is ready for nibble. Set |
+  |          |           |      |high to indicate nibble has been received.|
+  |----------+-----------+------+------------------------------------------|
+  |nSELECTIN |1284Active |  Out |Set high when host is in a 1284 transfer  |
+  |          |           |      |mode.                                     |
+  |----------+-----------+------+------------------------------------------|
+  |nINIT     |   nINIT   |  Out |Not used for reverse data transfer        |
+  |----------+-----------+------+------------------------------------------|
+  |nACK      |  PtrClk   |  In  |Set low to indicate valid nibble data, set|
+  |          |           |      |high in response to HostBusy going high.  |
+  |----------+-----------+------+------------------------------------------|
+  |BUSY      |  PtrBusy  |  In  |Used for Data bit 3, then 7               |
+  |----------+-----------+------+------------------------------------------|
+  |PE        |AckDataReq |  In  |Used for Data bit 2, then 6               |
+  |----------+-----------+------+------------------------------------------|
+  |SELECT    |   Xflag   |  In  |Used for Data bit 1, then 5               |
+  |----------+-----------+------+------------------------------------------|
+  |nERROR    |nDataAvail |  In  |Used for Data bit 0, then 4               |
+  |----------+-----------+------+------------------------------------------|
+  |DATA[8:1] | Not Used  |      |                                          |
+  \----------+-----------+------+------------------------------------------/
+
+* Ein weiterer Ueberblick ueber die Parallelport-Leitungen gemaess IEEE 1284:
+   <URL: http://inss1.etec.uni-karlsruhe.de/~dl5bct/rfc/ieee1284.html >
+
+
+2a) Parallelport des Amiga und Nibble-Mode
+------------------------------------------
+
+Ich weiß leider nicht genau, welche Signale am Amiga wie zur Verfügung
+stehen, aber das folgende habe ich aus anderen Postings heraus.
+
+Volker Remuss <remuss@cs.tu-berlin.de> hatte einen Artikel von Trevor
+Unrau aus urspruenglich der Newsgroup comp.sys.amiga.hardware zitiert:
+
+> "So how does a product like LapLink or a parallel port hard drive
+> work on a PC's parallel port? This port has 5 input-only Control
+> signal lines which are wired to a port register in the PC's I/O
+> memory map. This means these lines can be used for inputting data, 5
+> bits at a time (rather inefficient, but it works). So to communicate
+> to a hard drive, you output data on the 8 Data lines, and input on
+> the 5 Control lines. This might have also worked on the Amiga,
+> except the Control signals are not all wired to input registers in
+> the Amiga. In fact, one of them, the ERROR signal, is not connected
+> to anything (the Amiga uses a combination of other signals to
+> determine an error condition from the port). Also, the ACKnowledge
+> signal is wired to a special pin of the 8520 chip which generates
+> interrupts, so this can't be used for data input. With these two
+> signal lines unusable, it renders the connected device (hard drive)
+> unusable, and thus the reason we don't see PC parallel port devices
+> working on the Amiga."
+> 
+> "As a side note, it is theoretically possible to insert a device
+> between the Amiga parallel port and the desired external peripheral
+> (say, a modified Null Modem), which would re-route the missing
+> Control signals to another port, like a joystick port or the serial
+> port (through some voltage-correction circuitry). Practically
+> speaking, though, it means the loss of another useful port, and
+> would make for some bizarre coding in the required driver."
+
+Und Martin Endres <endres@work.de> (Hi, Namensvetter ;-) schrieb:
+> Man kann aber vom RS232-Port die fehlenden Pins abgreifen . Dazu
+> muss dann allerdings pro Pin ein RS232-TTL eingesetzt werden. Dann
+> gehts.
+
+Martin Gierich <uj3w@rzstud1.rz.uni-karlsruhe.de> schrieb auch:
+> Es fehlen zwei Ein/Ausgabeleitungen. Die koennte man von anderen
+> Ports nehmen (Joystick, Disk, Seriell) oder per Multiplex simulieren
+> (einfache Schaltung).
+[...]
+> [...] ich nehme an, dass es [das Zip-Drive] auch TTL-SIgnale
+> verkraftet, so dass keine externe Hardware (ausser dem simplen
+> Adapter zum Joyport) noetig waere [...]
+
+
+Ich habe noch eine weitere etwas ausgefallene Idee, bei der man keine
+zusaetzlichen "externen" Leitungen anzapfen braucht:
+
+Der Nibble-Mode nutzt keine der acht Datenleitungen!  Koennte man
+nicht also mit Hilfe eines Adapters einfach die Datenleitung, die beim
+Amiga ja eh bidirektional sind, fuer die benoetigten Signale nutzen?
+Damit die Richtung vom Rechner zum Zip-Driver im normalen
+Centronics-Mode auch noch geht, muesste dieser Adapter automatisch
+umschalten oder durch eine nun freigewordene Leitung geschaltet
+werden.
+
+
+2b) Parallelport des Amiga
+--------------------------
+
+Christoph M. Dahlen <chdahlen@stefanie.prima.ruhr.de> schrieb:
+> > Ok, aber es müßte doch möglich sein, diese Hardwareprobleme
+> > mittels einer geeigneten Software zu kompensieren, oder?
+> 
+> Ein Entwickler von MacroSystems ausserte mal die Vermutung, dass die
+> Sache mit dem Nachruesten der CIAs im Amiga gegessen sein sollte.
+
+Und der Mensch soll "Edwin" heissen.
+
+Ich hab' keine Ahnung, ob da was dran ist, aber man sollte dem auch
+mal nachgehen.
+
+
+3.) System-konforme Implementierung
+-----------------------------------
+
+Tja, da hab' ich null Ahnung ...
+Aber da gibt's ja hoffentlich fittere Leute. ;-)
+
+
+4.) Praktische Durchführung
+---------------------------
+
+- Erstmal sollten wir (bzw. andere, die sich besser als ich auskennen)
+  prüfen, ob das alles, was ich geschrieben habe, überhaupt so richtig
+  ist.
+
+- Wenn ja müßten wir schaun, wie wir das Problem mit den fehlenden
+  bzw. nicht passend nutzbaren Leitungen beim Amiga am besten lösen
+  können.
+  Wichtig ist dabei nicht nur die technisch beste Lösung (im Sinn von
+  schnellster Übertragung oder so), sondern auch, ob die Sache
+  bezahlbar bleibt:  billig muß es sein ;-)
+
+- Zur Koordination und um bessere Erfahrungen und Wissen untereinander
+  austauschen zu können, wäre wahrscheinlich eine Mailing-Liste ganz
+  nützlich.  Ich selber habe noch keine Mailinglisten-SOftware
+  installiert, könnte das aber bei Bedarf machen.
+
+- Es kann gut sein, daß sich gerade die fähigen Leute, die das
+  Know-How zur Lösung hätten, denken, der ganze Entwicklungs- und
+  Programmieraufwand lohne sich nicht.
+  (Klar, die meisten Profis werden eh SCSI im Rechner haben ... ;-)
+
+  Ich glaube aber, daß es viele wie mich gibt, die sehr gerne das
+  Parallel-Zip am Amiga nutzen würden.
+
+  Deshalb könnten wir uns auch finanziell zusammentun, um so eine Art
+  kleinen Lohn für die Arbeit anbieten zu können.
+
+  Oder das Ergebnis als Shareware anbieten und jeder Nutzer _zahlt_
+  dann auch seinen Anteil.
+
+
+Uff, das war's.  Lange Mail, zugegeben.
+Aber dafür schon fast mit FAQ-Charaker! ;-)
+
+Ciao,
+  Martin Ramsch <m.ramsch@ieee.org>
+
+---------- END OF FORWARDED MESSAGE ----------
+

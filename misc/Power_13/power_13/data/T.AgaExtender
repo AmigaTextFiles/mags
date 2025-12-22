@@ -1,0 +1,99 @@
+·
+ ¹F.AgaExtender³
+ °
+
+
+
+
+»
+
+
+                                    Írta:
+    ¾  Fabio Bizetti, via Fra Giarranta 62/c, 93100 Caltanissettaa, Italy
+             tel/fax: +39 934 27220 / email: bizetti«mbox.vol.it½
+
+          (c) copyright 1996 by Fabio Bizetti. All rights reserved.¼
+
+ Ezt  a  tervet  a  célból  indítottuk be, hogy drasztikusan megemeljük az AGA
+Amigák  teljesítményét  (elképzelhetõ  OCS/ECS-en  is),  biztosítva ezen gépek
+jövõjét  nagyon kis befektetéssel mind anyagi, mind technikai szempontból.
+ Az  Amiga  naponta  veszít  maradék piacából is, behatárolt hardware-e miatt.
+Berakhatjuk a leggyorsabb processzorokat, a video/audio hardware nem bõvíthetõ
+olcsón.   Manapság  a  "multimédia" versenyben az ¾Amigának valami forradalmian
+újra van szüksége,¼ de egy új, nem kompatibilis gép csak rontana a helyzeten...
+Sem  a  Graffiti, sem az AGX nem segít sokat, hiszen csak emulálnak egy X-módú
+VGA    képernyõt,    de   olyan   kicsi   a   sávszélességük,   hogy   csaknem
+használhatatlanok.
+ Azzal  a  problémával  kell  szembenéznünk, hogy a CPU->AGA sávszélesség igen
+kicsi,  ha  bonyolult  chunky  képeket  használó programokat futtatunk, de nem
+igazán tudunk AGA+ rendszert felállítani a következõ okok miatt:
+
+ - Sokba kerül, és sok idõt venne igénybe az elkészítése.
+ - Az összes eddigi Amiga mehetne a szemétbe, mert valószínû, hogy nem lehetne
+upgrade-et csinálni.  Hja SMD.
+ - Ha nem software kompatibilis, a dolog bukásra van ítélve.
+
+ A  játékok  és  multimédia  alkalmazások azok, amik megmenthetik a gépet, sõt
+kiemelhetik az átlagos mezõnybõl.
+ Tehát  hiába tennénk be a leggyorsabb PPC-t egy 1200-asba, mert nem segíti ki
+az audio/video rendszer alapvetõ hiányosságait.
+ A megoldás létezik, csak az Amigát fejlesztõk hallgassanak egy kicsit rám.
+ Custom   chipet   lehet  napjainkban  csinálni,  és  kell  is.   A  Commodore
+megcsinálta az Akiko-t, meg még más interface-chipeket is, de ezek nem emelték
+igazán  a  gép  teljesítményét.  Napjainkban könnyedén lehet a Denise/Lisa-nál
+bonyolultabb  chipet  is csinálni, és az AgaEXTENDER is elkészíthetõ 1996-ban.
+Sok  más  platformra  készülnek  ennél  bonyolultabb  chipek  is,  és  ez  még
+egyszerûsíthetõ  is,  ha  esetleg  hiányoznának a források a megvalósításához.
+½(Akkor  neki sem kell állni - félmegoldásra nincs szükség, van abból épp elég.
+DOC)¼
+ Jól ismerem az Amiga felépítését, a hardware-ét, és jó codernek tartom magam.
+Íme a tervem:
+ Az  AgaEXTENDER  egy,  az Amiga RGB-portjához csatlakoztatható készülék, amit
+akár a késõbbi Amigák alaplapjára lehetne integrálni.
+ Az  AgaEXTENDER munkaciklusa a sorbázisú, (line-buffer), tehát sokkal olcsóbb
+mint  egy frame-buffer.  A meghajtását a 28 MHz-es AGA órajel biztosítja, amit
+belül   56 MHz-re  dupláz,  tehét  scandoublerként  használható  PAL  és  NTSC
+üzemmódban.
+
+ Rövid leírása a következõ:
+
+ -  Chipmem->RGBport  sávszélessége  >22Mbyte/s,  ami pl.  a következõ módokat
+teszi lehetõvé:
+
+ a)  24  bit  RGB  (R,  G,  B  byte  bázisú,  3  bitplane-ra lebontva) 512*290
+PAL/DBLPAL vagy 512*580 PAL interlace (overscan is lehet)
+
+ b)  24  bit  ARGB  (longword  bázisú)  384*290  PAL/DBLPAL  vagy  384*580 PAL
+interlace (overscan is lehet), sõt elérhetõ 768*580 hardware aliasing-gal.
+
+ c)  15  bit  (word  bázisú)  1024*290  PAL/DBLPAL vagy 512*580 PAL interlaced
+(overscan is lehet)
+
+ d)   YUV  (8+8+8,  bitplane  bázisú)  512*290  PAL/DBLPAL  vagy  512*580  PAL
+interlaced (overscan is lehet)
+
+ e)  YUV  (6+5+5, word bázisú) 1024*290 PAL/DBLPAL vagy 512*580 PAL interlaced
+(overscan is lehet)
+
+ f) 8 bit (klasszikus chunky üzemmód) 512*290 + 4 playfield
+
+ g) 16 bit (YUV vagy chunky üzemmód) 256*290 + 4playfield
+
+ h) 8 bites chunky mód az OS-hoz, 768*600 31Khz 50 Hz
+
+ A  playfield-ek zoomolhatók.  Teljes hardwarescroll támogatás.  Sok más video
+üzemmód, teljesen programozható (csak jó coder kell hozzá).
+
+ - Teljesen OS kompatibilis (egymásra húzható AGA/AgaEXTENDER screen-ek)
+ - A hardware programozhatóságát 256 regiszter biztosítja.
+ - HiRes-copper fejlett trükkökhöz.
+ - Gyors MPEG/JPEG képlejátszás a beépített YUV converter által.
+ -  16 bites 3D audio nagyon magas freqvenciáig 4+4+4+4 (vagy több) csatornán.
+(Az üres keretbe rejtve.)
+ - Scan doubler.  Nincs sávszélesség csökkenés, mint DBLPAL/DBLNTSC-ben
+ - Nagyon gyors transzparencia effektusok.
+ - Függõleges és vízszintes antialiasing.
+ -  Teljesen  programozható  felbontások,  akár playfield-enként különbözõk is
+lehetnek.
+
+                                   ½ "megmagyarította": DOC¼

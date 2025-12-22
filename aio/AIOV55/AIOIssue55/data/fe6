@@ -1,0 +1,302 @@
+{backimage bg.iff}
+{center}
+{subhead}{bold}The AIO C Tutorial - Part 2, introduction to arrays in C, for non-C programmers{nobold}{def}{p}
+Article by Paul Harvey (paul@aioworld.com)
+{left}
+{pp}
+{bold}Introduction{nobold}
+{pp}
+I had set out to make this tutorial much shorter than part 1; after all, all I've covered is arrays. However it's turned out there is much to write about arrays. 
+These articles were supposed to be "quick" tutorials, but have turned out to be long-winded; on the bright side, there shouldn't be too many holes. If you have 
+any feedback, like, for instance, you found you do/don't have the patience to cope with my inability to explain things efficiently, I would appreciate any 
+comments you have.
+{pp}
+This time, hopefully by the end of this tutorial you will have gained some very important knowledge that will allow you to start doing some useful coding for 
+yourselves in C. If you are starting out with C and haven't yet read Part 1 of this series of articles, take a look at AIO_C_tutorial_1.lha in this issue, or download 
+AIO issue 54 to view it with it's original formatting.  Current examples you'll find in this issue's root directory under
+"AIOIssue55/examples/".
+{pp}
+These articles are an introduction to programming in C on the Amiga - these first articles actually won t contain much Amiga specific stuff. For a quick intro on 
+using the freely available vbcc compiler which can be found in /dev/c/ on aminet, please read the article "Using vbcc" in issue 54 or view the article in 
+AIO_C_tutorial_1.lha also in this issue. It covers some basics about the compiling process as well. Please keep in mind I m actually no expert on coding for the 
+miggy; if you are already an experienced C programmer, then you won't need this second tutorial. If you are already an experienced Amiga C programmer, 
+then this whole series of tutorials won't be of much value to you. That said, if you want to start (or continue, if you've read the part 1) learning C, I hope you 
+find these tutorials helpful! By the end of these articles, I aim to have covered:
+{pp}
+- the concepts of coding in C, aimed at people who are already familiar with programming in other languages{p}
+- lots of console stuff (CLI programs){p}
+- some use of MUI{p}
+- some use of the SDL and RTG graphics (that should work with AGA){p}
+{pp}
+To the best of my ability, I have endeavored to make the information in these tutorials as accurate as possible. However, some of it may be slightly off track, or 
+completely wrong. If you disagree with something I've presented, please tell me about it - I'm probably wrong! I do not pretend I am a C guru, or even that I 
+am experienced enough to qualify teaching others - but here goes!
+{pp}
+2.0 - Memory{p}
+2.1 - Arrays{p}
+2.1.1 - Defining arrays{p}
+2.2.1 - Ideas for a hand-made array{p}
+2.2.2 - The life of a hand-made array{p}
+2.3 - Pointers{p}
+2.4 - Getting memory, and getting rid of it{p}
+2.5 - A hand-made array is born{p}
+2.6 - An array is a pointer is a.. string?{p}
+{pp}
+{bold}2.0 - Memory{nobold}
+{pp}
+C is renowned for it's ability to manipulate memory at quite a low level in an "elegant" way. A lot of programmers these days detest such meddling and prefer 
+a good deal of abstraction (Java purists?), and even write off C as an "ugly" language for this reason, along with not being a proper Object Oriented language. 
+But when C was first being devised in the 70s, two things were on the minds of people involved - efficiency, and portability. Efficiency came first. Compiling 
+"large" programs was time consuming; and small changes meant recompiling. One way of reducing the amount of time used for compiling is allowing sections 
+of the program to be compiled separately, then linked later on. If a small change is made, unchanged parts that have already been compiled before can be 
+linked together along with the recompiled parts that were recently changed. This is another advantage of C over traditional Pascal.
+{pp}
+Other ways to reduce compile times and increase efficiency, included working "directly" with memory. By writing your code in such a way that it's obvious what 
+is happening with memory and how it is organised, the compiler can take your word for it and do exactly what you want. This gives a lot of freedom and can 
+be quite powerful, but at the same time can be very dangerous and intimidating for beginners. As a beginner, you WILL cause your Amiga to crash in weird 
+and wonderful ways. In other compiled languages such as Pascal and especially interpreted languages like BASIC, it's almost impossible to bring down the 
+system even intentionally because you usually never deal with memory directly. The compiler/interpreter takes care of it all for you. In C, however, it is possible 
+to accidently read past the end of arrays, write over memory locations you shouldn't, create memory leaks when memory is never de-allocated, and worst of all, 
+your code may still seem to work.
+{pp}
+So it's important to understand memory.
+{pp}
+Points to remember about memory and C, and memory in general:
+{pp}
+{bold}1{nobold}. We're talking about system RAM. The memory your computer uses to think with.
+{pp}
+{bold}2{nobold}. In OSes that have virtual memory, there is usually no distinction between physical RAM and virtual memory that uses a hard disk to store your 
+data when swapped out. In fact, it's usually not possible. If your system has 64MB real RAM free and 128MB of free swap space, your program will be able to 
+work with 196MB of total "memory". In most VMM OSes, the programmer has no say whether their application gets real RAM or not. Obviously memory that is 
+allocated to your program must be moved into real RAM at some point for the CPU to do anything to it, but it's entirely in control of the operating system as 
+to what programs/data gets swapped in and out. We can expect AmigaOS4.0's VMM system to be light years better than the current VMM hacks available for 
+OS3.x on Aminet. To be fair, some of these hacks have had a lot of thought and effort put into them - some even make attempts at encouraging developers to 
+write their code in ways that are system friendly, thus making special use of the author's VMM solution. But a real VMM system should be transparent.
+{pp}
+{bold}3{nobold}. We will assume for the moment that memory is all linear and continuous. In reality, on the Amiga, you will have chip memory which has it's 
+own address range, and a chunk of 32 bit fast memory. If you have 16 bit memory in your system (eg. on a ZII board) it will also have it's own address space. 
+The memory addresses for these three separate chunks of memory don't get put neatly next to each other. Which is why it's not straightforward to, for example, 
+write code that will load a 16MB anim into RAM even if your system has 15MB 32 bit and 2MB chip free, because that continuous chunk of data, the anim - 
+has to be spread across two different memory address ranges. And it's also why, even when you do have 16MB total memory free, you may STILL not be able 
+to load it because that 16MB could be made up of 10MB here, 2MB there, and 4MB somewhere else but with other data spread in between.
+{pp}
+With x86, where the average wintel box has 128MB - 256MB of RAM, it's all in 64KB chunks. But we're working with the 68k Amiga, and lucky for us it uses 
+the Motorola 68k CPU which has "linear addressing".
+{pp}
+In practice, there is actually different types of memory available to a programmer, even if the memory is all linear and continuous.
+{pp}
+. The stack - is managed by the compiler. Local variables, variables passed by value to a function, variables declared inside a pair of braces - are automatically 
+created and destroyed by the compiler. There is no need to manually create, or destroy these variables. However, when the variables go out of scope, they are 
+destroyed. Generally stack space is limited.
+{pp}
+. The Heap - is used by the programmer. It's generic memory that can be used as the programmer pleases. Can be used for small variables but generally used 
+for larger amounts of data, and/or collections of data. The programmer must write code to manually allocate memory on the heap, and free it up again when 
+finished. Variables on the heap can exist outside of the immediate scope and is used for more permanent data that needs to be used by more than one function. 
+Generally the heap is as big as however much memory the system has available.
+{pp}
+{bold}4{nobold}. Every "word" of memory has an address. As far as I know a "word" can be a generic term that is used to refer to a collection of bits, but the 
+exact number of bits varies between CPUs. For instance, on the 16F series PICmicro microcontrollers, which are essentially 8 bit devices (ie. their CPU instruction 
+set deals with 8 bit operations), a "word" in program memory (it's ROM, as opposed to it's RAM) is 14 bits. And on the Commodore 64 with it's 8 bit 6510 
+CPU, all of it's memory (IIRC, it's been a while!) is addressed a byte at a time, so there was no need to talk about "words" unless you were dealing with data 
+that was grouped in two or more bytes. For instance, to use (unsigned) numbers larger than 256, you would have to use two bytes. This pair of bytes could be 
+referred to collectively as a "word". AFAIK, however, the 6502 instruction set was unable to cope with anything more than single bytes at a time, so the 
+programmer had to write their own multi-byte add/subtract routines.
+{pp}
+{bold}5{nobold}. For now, think of memory as a big row of pigeon holes. All the holes are neatly placed next to each other in a big line. Each of the holes are 
+numbered - the numbers start at 0000, and go up in ones, so the next one after 0000 is 0001, and so on. And of course, each of the holes hold a value. And 
+they will ALWAYS hold a value; there is no such thing as an address that holds nothing, unless of course you're trying to access RAM you don't have! It has to 
+be a valid number, even if it's zero, or in the case of non-existent memory, possibly something random.
+{pp}
+NB: Sometimes, especially with microcontrollers, there are some addresses that are read-only - any writes to these addresses are ignored (or perhaps something 
+horrible happens; good design shouldn't let this happen, however). There can also be write-only addresses, where attempts to read them return irrelevant or 
+nonsense values (ie. all bits are 0, or perhaps 1s, or something random).
+{pp}
+{bold}6{nobold}. Almost everyone uses hexadecimal when dealing with memory. Why? First you have to understand that the decimal, base-10 number system 
+that most of us humans love to use makes sense to us, but not to machines. Really, 10 is an arbitrary number of digits. Does a pile of silicon logic gates really 
+care that some species of mammal happens to have a total of 8 fingers and two opposable thumbs? Incidently, other number systems have existed throughout 
+the ages - IIRC, Babylonians were base 20 and the Mayans were base 60, or it could have been the other way..
+{pp}
+Everyone knows that computers work with 1s and 0s. It's the two states a logic gate can be fed, and the same two states a logic gate can output to another 
+gate. So why not use binary? Well, it's possible - but 32 digits are required for a 32-bit memory address. So a more compact form is needed. So, why not use 
+decimal here? Try converting 32 bits to/from decimal a few times and you will see why: the placement of the digits in binary does not neatly fit with decimal 
+number columns. Eg. Binary has a 1s column, a 2s column, 4s, 8s, etc. but decimal goes 1s, 10s, 100s, and so on.
+{pp}
+It would seem that the next logical step would be to use a base 8 system. That means familiar digits can be utilised by excluding the 8 & 9. In fact, this system 
+is known as octal and was fairly popular in the pioneering days of computing. A 10 in octal would be a decimal 8 (a 1 in the 8s column, 0 in the 1s column). A 
+20 in decimal would be 24 in octal (2*8 + 4). This system fits neatly into binary - a long string of binary digits can be broken up into groups of three and each 
+group converted to a signal octal digit.
+{pp}
+But that wasn't enough. Data was always in 8, 16, or 32 bits which aren't multiples of 3, but are multiples of 4, so hexadecimal was adopted. Hex uses 16 
+digits (0-9, A-F) so that each HEX digit neatly represents 4 bits. 10 in decimal is A in HEX; 111 in hex is 273 in decimal (1*16^2 + 1*16 + 1). In C, a hex number is 
+usually denoted by the prifix '0x' (zero then lower case 'x'), eg. 0x0C8F.
+{pp}
+So, a 32 bit address can be divided by four 8 times, so it takes just 8 hex digits to represent 32 bits. 32 bits is 4GB of address space, but I don't' believe the 
+68000, 68020 and the 68030 had the full 32 address lines on the chip, more like 24 (16MB).
+{pp}
+{bold}6{nobold}. Generally, from the CPU's point of view, RAM is used for two main purposes - holding program code that the CPU steps through and executes, 
+and holding data that the CPU can manipulate, but never actually executes. On the Amiga as with most desktop PCs, the same memory does both.
+{pp}
+For instance, here is a mock up of some machine code that an imaginary CPU may execute:
+{pp}{fixed}
+ADDRESS  INSTRUCTION
+----------------------
+00       Jump to subroutine at address F0
+
+...
+
+C0
+C1
+C2
+
+...
+
+F0       store value 48 to address C0
+F3       store value 41 to address C1
+F6       store value 51 to address C2  // At this point, the three address locations from C0 onwards spell "HAL" in ASCII
+F9       increment value at C0
+FB       increment value at C1
+FD       increment value at C2         // Now it says "IBM" in ASCII
+FF       return
+{def}{pp}
+Note the addresses between each instruction are not 1 byte apart. My mock up CPU requires three parameters for a store operation - one byte for the store 
+instruction itself, a value parameter and an address parameter. And with increment, it needs a byte for the op code and a byte for the address.
+{pp}
+In this example, the address 00, and F0 - FF contains instructions that the CPU executes. However, C0 to C2 contains actual data that the CPU has manipulated 
+but never executes. The point here is that both the program and the data are in the same linear address space.
+{pp}
+{bold}2.1 - Arrays{nobold}
+{pp}
+An array is basically a sort of container. We know containers are useful - we use them almost every day. Containers can hold a bunch of pens, ice cream, or in 
+the case of a shipping container, other smaller containers.
+{pp}
+This analogy isn't quite perfect though. With a container that holds pens, we could put a pair of scissors in there as well. And a rubber band. That doesn't quite 
+work with simple arrays. Arrays in C, in their simplest form, can only be a container for a specific type of data. For example, an array of int. But it's still very 
+useful.
+{pp}
+Let's say you got hold of the secret video tapes of the next 10 draws for the lotto. You have a list of winning lotto numbers for the next 10 draws. You really, 
+really want to keep them and decide that since you are not running windows, and your local power company is highly reliable (weather and peak usage 
+permitting), the best way to store them is obviously an array in RAM. Of course, people are trying to tell you that a file on hard disk (preferably their hard disk) 
+would be more suitable but in any case simply writing them on paper is out of the question.
+{pp}
+So far, using just the knowledge from the Part 1 tutorial, we have to create 10 separate variables. Here's an example:
+{pp}{fixed}
+[begin 2.1_lotto_messy.c]
+#include <stdio.h>
+
+int main(void)
+{{
+  long int secret0, secret1, secret2, secret3, secret4, secret5, secret6, secret7, secret8, secret9;
+  int i = 0;
+
+  printf("Enter secret number 0: ");
+  scanf("%i", &secret0);
+  printf("Enter secret number 1: ");
+  scanf("%i", &secret1);
+  printf("Enter secret number 2: ");
+  scanf("%i", &secret2);
+  printf("Enter secret number 3: ");
+  scanf("%i", &secret3);
+  printf("Enter secret number 4: ");
+  scanf("%i", &secret4);
+  printf("Enter secret number 5: ");
+  scanf("%i", &secret5);
+  printf("Enter secret number 6: ");
+  scanf("%i", &secret6);
+  printf("Enter secret number 7: ");
+  scanf("%i", &secret7);
+  printf("Enter secret number 8: ");
+  scanf("%i", &secret8);
+  printf("Enter secret number 9: ");
+  scanf("%i", &secret9);
+
+  printf("All done. The numbers were:\n");
+  printf("0: %i\n", secret0);
+  printf("1: %i\n", secret1);
+  printf("2: %i\n", secret2);
+  printf("3: %i\n", secret3);
+  printf("4: %i\n", secret4);
+  printf("5: %i\n", secret5);
+  printf("6: %i\n", secret6);
+  printf("7: %i\n", secret7);
+  printf("8: %i\n", secret8);
+  printf("9: %i\n", secret9);
+
+  return 0;
+}}
+[end 2.1_lotto_messy.c]
+{def}{pp}
+Quite laborious, isn't it? Remember that scanf() requires an ADDRESS, rather than the contents of a variable. If the ampersand is ignored, the value of the 
+variable is being passed to scanf, rather than the address, and scanf() has no way of modifying the variable. It will also cause your computer to crash; if the 
+variable held the value 5, scanf() will try to shove user input into address 5, which is probably not the desired destination...
+{pp}
+{bold}2.1.1 - Defining arrays{nobold}
+{pp}
+There is actually a few ways to define an array. You can choose to define the array - the number of elements it will hold, and the size of those elements - at 
+compile time. That's where you hard-code the array's parameters. Which is fine for the moment, perhaps a bit restrictive, but even then there is a few different 
+ways of going about it.
+{pp}
+You could define an array with the following syntax:{p}
+{fixed}<type> array_name[<number of elements>];{def}
+{pp}
+This will instruct the compiler to create a program that, when run, asks the OS for a chunk of RAM big enough to hold <number of elements> elements of 
+type <type>. That's it. Nothing more. It's really just doing simple multiplication to calculate the amount of memory needed, allocating it, and associating it 
+with the identifier array_name.
+{pp}
+To write a value to an individual element, you could use the following syntax:
+{pp}
+{fixed}array_name[<element #>] = <value>;{def}
+{pp}
+and to read a value from an individual element into a variable x, you could use:
+{pp}
+{fixed}x = array_name[<element #>];{def}
+{pp}
+There is much more to explain, but lets dive into an example:
+{pp}{fixed}
+[begin 2.1.1_lotto_simple.c]
+#include <stdio.h>
+
+int main(void)
+{{
+  long int secret[10];
+  int i = 0;
+
+  for (i = 0; i <= 9; i++)                          /* GOTCHA!!! Arrays _ALWAYS_ start at element 0. Always. */
+  {{
+    printf("\nEnter secret number #%i: ", i);
+    scanf("%i", &secret[i]);
+  }}
+  printf("All done. The secret numbers were:\n");
+  for (i = 0; i <= 9; i++) printf("\n#%i: %i", i, secret[i]);
+
+  return 0;
+}}
+[end 2.1.1_lotto_simple.c]
+{def}{pp}
+As you can see, this code is much more efficient, and easier to maintain than lotto_messy.c. Notice the comment about the first element of an array always 
+being element 0. This is very important. In this case we wanted to hold 10 numbers, but take a close look at the array deceleration near the top: {pp}
+{fixed}  long int secret[10];{def}
+{pp}
+which is an array of 10 - or is it? Including element 0, isn't there 11 "spaces" in the array for 11 numbers, including 0? No. Consider an array declared in the 
+following manner: 
+{pp}
+{fixed}  long int secret[0];{def}
+{pp}
+How many elements can be held in this array? None. The number in brackets when declaring an array dictates the *number of elements* that can be stored. 
+Yet, when reading the array, element 0 is the first element and in 2.1.1_lotto_simple.c, the array only goes up to element 9 even though it can hold 10 
+elements. This fact can be quite confusing to beginners, especially Pascalers who could make arrays start at 55 if they wanted to. Humans seem to like to start 
+counting at 1 rather than 0, but this will become clearer with experience.
+{pp}
+{bold}2.2.1 - Ideas for a hand-made array{nobold}
+{pp}
+Could we, mere programmers, do this array definition business ourselves without the compiler's help? Certainly the multiplication is easy. Remembering sizeof() 
+from Part 1, use the formula:
+{pp}
+{fixed}memsize = ( sizeof(<type>) * <number of elements> );  /* memsize becomes the amount of memory required for the array, in bytes */{def}
+{pp}
+So the number of bytes needed is known. Assuming a chunk of this memory can be allocated somehow, how could it be referred to later when it is actually 
+needed? How does one use a chunk of memory? And how to use different locations inside it?
+{pp}
+{pp}
+{link fe7}Onto page 2{end}
+{pp}
+

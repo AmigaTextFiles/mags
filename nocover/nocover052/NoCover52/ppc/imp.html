@@ -1,0 +1,112 @@
+<html>
+<head>
+  <title>MagicSNs PowerPC ASM Coding Tutorial</title>
+  <meta name="Generator" content="GuideML V1.5">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="first.html">PREV</a> | <a href="bcmp.html">NEXT</a>
+<hr>
+<pre>
+
+<b> Important Things </b>
+
+The PPC has the following registers (Note: On 32 Bit PPCs like the
+603e or the 604e r0-r31 are only 32 Bit, and 64 Bit commands are
+not available !!!) I listed only the Usermode registers. If you need the Supervisor
+mode registers, have a look at Motorola Documentation. But with the given Coding
+Systems on PowerUP, you normally don't have to handle the Supervisor mode registers
+yourselves.
+
+f0-f31     : 64 Bit Wide FPU-Registers
+cr         : Condition Register
+fpscr      : Floating Point Condition and Control Register
+xer        : 32 Bit Wide Another Condition Register
+lr         : 32 Bit Wide Link Register
+ctr        : 32 Bit Wide Counter Register
+r0-r31     : 64 Bit Wide General Purpose Registers (32 Bit on current PowerUP)
+tbl        : Time Base Register
+tbu        : Time Base Register
+
+The rename Buffers are used, if the Destination of one command is the source of another
+command, for optimization purposes. The xer contains the carry and overflow bits.
+The lr contains the branch destination and the return address, when appropriate (for
+branch and link instructions). The ctr is decremented and tested automatically as
+result of branch and counter operations. The Timebase registers can be read by userlevel
+software, but written only by supervisorlevel software.
+
+The condition register is split into 8 4-bit parts, named cr0-cr7. For each crn,
+the bits are defined as follows:
+
+0 LT &quot;less than&quot;
+1 GT &quot;greater than&quot;
+2 EQ &quot;equal&quot;
+3 SO &quot;sum overflow&quot;
+
+Normally you use cr0 to store this information, but you can also use other CRs. You
+should be aware, that, if you use the below specified . Notation, all Integer Commands
+update cr0 according to the result of the operations, and all FPU Commands update the
+cr1 with the current setting of the FEX/FX/VX/OX Bits like described in the sections
+about the FPU Exceptions and the FPSCR. Also the o Notation (also described below)
+modifies (for Integer Commands) the SO Bit of cr0, and (for FPU Commands) the OX
+Bit of cr1. Asides from that you are completely free to use whatever crn you want
+for your comparisions and other cr-using operations. Usually you simply use cr0,
+though...
+
+Read more about this at <a href="fpscr.html">FPSCR and XER</a>.
+
+Concerning the condition fields cr0-cr7 and concerning XER, it has to be noted, that
+some commands have special &quot;modes&quot;. If an o is appended to the command name, it reacts
+on &quot;sum overflow&quot; and &quot;overflow&quot; by setting the SO and OV Bits in the XER to the correct value.
+If a . is appended to the command name, it updates Bits 0-3 of cr0 for Integer-Commands
+or Bits 0-3 of cr1 for FPU-Commands (to the corresponding bits in the FPSCR). Like outlined
+above, this would be LT/GT/EQ/SO in case of an Integer command, but FEX/FX/VX/OX for
+FPU-commands (which have a totally different meaning). Always remember, that the . or
+o Notation are not supported by ALL commands. This might sound VERY complicated now to
+you: Well, those . and o notations are additional features, in normal code you usually
+don't have to use them.
+
+Examples:
+
+add   r6,r7,r8
+addo  r6,r7,r8
+add.  r6,r7,r8
+addo. r6,r7,r8
+
+This is not possible for all commands, and some commands do not support all modes.
+
+Some commands additionally have a 32 and a 64 Bit modes. Also it should be noted, that
+the current PPC CPUs used on Amiga PPC Boards (PPC 603e and 604e) are 32 Bit CPUs, they
+do *not* have the 64 Bit commands. Also they do not have the 64 Bit versions that are
+available for some commands (like ldx for example).
+
+All these things are notified in the command descriptions. Always have a close look in
+the description, though, if it only supports the . notation or also the o-notation.
+Some commands only support the . notation, but not the o-notation.
+
+Please consider: All commands using 64 Bit Command width (d) only exist on 64 Bit
+Implementations. This means: NOT ON POWERUP !!! There might be 64 Bit versions of
+PowerUP or other PPC Boards for the Amiga in the future, though.
+
+On PowerUP, the PowerPC *always* runs in Big-Endian mode (like you are used to from
+the 68k) !!!
+
+Also always note: The Bit numbering on PPC is just the other way round like on 68k !!!
+On PPC Bit 0 is the Bit to the left, while this is the Bit to the right on 68k !!!
+
+Also, there are some important things about register usage:
+
+* r0 has a special meaning. Do not use it, if you do not know EXACTLY what you do.
+* r1 is the stack pointer
+* r2 is used for Global Variable Stuff
+* r3 is the Library Base Pointer (like a6 on 68k !!!)
+* r13 is the local stack pointer
+* If you change r13-r31, you have to restore the old values
+* Never forget to do the Stackframe with prolog/epilog
+* Never forget the executable command
+* Function-Parameters are transferred on r4-r10 (and possible the stack also)
+* When there is talk about macros, the macros in powerpc/ppcmacros.i are meant
+
+</pre>
+</body>
+</html>

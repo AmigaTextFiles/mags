@@ -1,0 +1,115 @@
+; $VER: 1.06 (29.03.96)
+; $NAME: HousePool Startup Script
+;
+FailAt 21
+Echo "HousePool Ausgabe 06 - April/Mai wird gestartet..."
+Echo "Bitte warten..."
+;
+Echo "Führe Zuweisung (Assign) aus !"
+Assign HousePool_06: "" PATH
+Assign Libs: HousePool_06:Libs ADD
+ If NOT EXISTS t:
+  MakeDir RAM:t
+  Assign t: RAM:t
+ EndIf
+Cd HousePool_06:
+;
+Echo "Variablen werden gesetzt !"
+Version >NIL: exec.library 39
+ If WARN
+   SetEnv PicViewer "PPShow"
+   SetEnv AnimView  "PPShow"
+   SetEnv GuideView "ShowGuide"
+   SetEnv MEDPlay   "omp"
+   SetEnv MODPlay   "PowerPlayer"
+ Else
+   SetEnv PicViewer "Multiview"
+   SetEnv AnimView  "PPShow"
+   Version >NIL: exec.library 40
+    If WARN
+      Skip OS30
+    Else
+      SetEnv AnimView "Multiview"
+    EndIf
+
+   Lab OS30
+   SetEnv GuideView "Multiview"
+   SetEnv MEDPlay   "omp"
+   SetEnv MODPlay   "PowerPlayer"
+ EndIf
+;
+Echo "Anzeiger/Abspieler                Gewähltes Programm"
+Echo "- Bilder                         " $PicViewer
+Echo "- Animationen                    " $AnimView
+Echo "- AmigaGuide                     " $GuideView
+Echo "- Sound-Module (MOD,OMED,...)    " $MODPlay $MEDPlay
+Echo "*NVoreinstellungen für Anzeige/Abspiel-Programme getroffen !"
+Ask "Möchten Sie diese verändern ? (y/n)"
+ If WARN
+   Lab Benutzer
+   Echo "*NAnzeiger/Abspieler                Gewähltes Programm"
+   Echo "- Bilder                         " $PicViewer
+    Echo NoLine "Ihre Wahl : "
+    Set >NIL: PicView ?
+   Echo "- Animationen                    " $AnimView
+    Echo NoLine "Ihre Wahl : "
+    Set >NIL: AnimView ?
+   Echo "- AmigaGuide                     " $GuideView
+    Echo NoLine "Ihre Wahl : "
+    Set >NIL: GuideView ?
+   Echo "- Sound-Module (MOD,OMED,...)    " $MODPlay $MEDPlay
+    Echo NoLine "Ihre Wahl : "
+    Set >NIL: MODPlay ?
+
+   Echo "*NOk. Prüfen Sie bitte, ob Ihre Angaben korrekt sind.*N"
+   Echo "Anzeiger/Abspieler                Gewähltes Programm"
+   Echo "- Bilder                         " $PicViewer
+   Echo "- Animationen                    " $AnimView
+   Echo "- AmigaGuide                     " $GuideView
+   Echo "- Sound-Module (MOD,OMED,...)    " $MODPlay
+   Ask "Angaben korrekt ?"
+    If WARN
+      SetEnv MEDPlay " "
+      SetEnv MEDPlay $MODPlay
+      Skip StartHP
+    Else
+      Skip Benutzer BACK
+    EndIf
+ Else
+   Echo "Verwende Voreinstellungen !"
+ EndIf
+;
+Lab StartHP
+Echo $AnimView  >t:StartHPAnim "HousePool_06:HP_06-Bilder/HousePool.anim"
+Echo $MEDPlay   >t:StartTheme  "HousePool_06:HP_06-Songs/MMD1.HP-Anthem_RMX window"
+Echo $GuideView >t:StartGuide  "HousePool_06:HousePool_06.guide"
+;
+Echo $MEDPlay   >t:StartSong2  "HousePool_06:HP_06-Songs/MMD1.N.-rgy window"
+Echo $MODPlay   >t:StartSong3  "HousePool_06:HP_06-Songs/MOD.Orientation window"
+Echo $MODPlay   >t:StartPlayer " window"
+;
+Echo "Fertig ! Lade Hauptteil !"
+Run >NIL: execute t:StartHPAnim
+Run >NIL: execute t:StartTheme
+Wait 3 secs
+Execute t:StartGuide
+;
+Echo "Bis bald !"
+Echo "Entferne Zuweisung und Variablen..."
+Assign Libs: HousePool_06:Libs REMOVE
+Assign HousePool_06: REMOVE
+;
+Delete >NIL: t:StartHPAnim
+Delete >NIL: t:StartTheme
+Delete >NIL: t:StartGuide
+Delete >NIL: t:StartSong2
+Delete >NIL: t:StartSong3
+;
+UnSet PicViewer
+UnSet AnimView
+UnSet GuideView
+UnSet MODPlay
+UnSet MEDPlay
+;
+; © 1995-96 by Carsten Marmulla
+; HousePool® Media International / HousePool Magazine

@@ -1,0 +1,342 @@
+5
+1*
+
+{3                  TechnoBBS, virittelevän sysopin purkkisofta
+{3                  -------------------------------------------
+
+                                  Sami Klemola
+
+
+TechnoBBS on Ville-Pertti Keinosen kirjoittama vielä beta-asteella oleva purkki-
+softa, joka on ennennäkemättömän helposti muunneltavissa täysin  yksilölliseksi.
+Ohjelmiston toimintaa ohjataan rexx-ohjelmilla sekä TechnoBBS:n omalla  menukie-
+lellä. Tässä artikkelissa tutustutan lukijan yleisesti  TechnoBBS:n  ominaisuuk-
+siin ja annan ohjeet purkin perustamiseksi. Tämä artikkeli on hyvä jatko esimer-
+kiksi MikroBitissä taannoin julkaistuun juttuun purkin  perustamisesta.  Jutusta
+tuli aika tekninen, ja käytän myös englannin kielestä peräisin  olevia  termejä,
+joten hyvä tekniikan tuntemus on eduksi. Nämä eivät ole missään nimessä  täydel-
+liset ohjeet, vaan on syytä lukea myös TechnoBBS:n mukana tulevat ohjeet.
+
+TechnoBBS on sharewarea, ja sen rekisteröimismaksu on artikkelia kirjoitettaessa
+350 markkaa. Erillistä rekisteröidyn käyttäjän versiota ohjelmasta ei ole,  vaan
+rekisteröityessään käyttäjä saa nk. keyfilen, jonka lukiessaan TBBS tietää, että
+käyttäjä on rekisteröinyt sen eikä enää temppuile. Ilman keyfileä nimittäin puo-
+let yhteydenottoyrityksistä estetään, mutta  muuten  rekisteröimätön  versio  on
+täydellinen. Muutama viikko sitten julkaistiin TechnoBBS:n uusin  versio,  0.93,
+joka sisältää taas aimo tukun uusia ominaisuuksia.
+
+Tässä vaiheessa on kuitenkin vielä syytä harkita asiaa uudelleen. Oletko todella
+halukas perustamaan purkin? Tiedätkö, mihin oikein olet alkamassa? Purkinpito ei
+ole järkevän ihmisen touhua! Ensin sinulta kuluu valtavasti  aikaa  järjestelmän
+hiomiseen, mahdollisesti myös lompakkosi ohenee jonkin verran sen  mukaan,  tar-
+vitsetko nopeamman modeemin tai oman linjan,  minimivaatimukset  kun  nykyaikana
+purkille melkein ovat 14400 BPS -modeemi ja ympärivuorokautinen aukiolo.
+
+Kun vihdoinkin saat purkkisi linjoille, kukaan ei soita! Voi mennä viikkoja, en-
+nen kuin sinulla on purkissasi kolme käyttäjää. Purkkeja on Suomessa tuhansia ja
+taas tuhansia, eikä niihin kaikkiin riitä käyttäjiä. Tavallista peruspurkkia  ei
+ainakaan kannata perustaa, vaan uuden purkin on ehdottomasti erikoistuttava  jo-
+honkin tiettyyn aihepiiriin, joka on sysopille tuttu. Näin sinulla on edes  jon-
+kinlaiset mahdollisuudet  selvitä.  Mikäli  olet  kuitenkin  vakaasti  päättänyt
+yrittää, etkä tästä pahemmin pelästynyt, toivotan sinulle onnea matkaan,  alkaen
+ensimmäisestä etapista, ohjelmiston valitsemisesta.
+
+Mikäli unelmoit purkista, joka on juuri sellainen kuin haluat, on TechnoBBS  va-
+lintasi. Vain viestieditori ja -lukija ovat  kiinteitä.  Kaikki  muut  toiminnot
+ovat vapaasti uudelleenohjelmoitavissa. Voit tehdä omia valikoita ja  kirjoittaa
+omia komentoja. TBBS:n mukana tulee kaksi offliner-ohjelmaa, jotka  mahdollista-
+vat QWK- ja WWF-etälukijoiden käytön. Uudessa versiossa onnistuu myös tiedoston-
+siirto kumpaankin suuntaan yhtä aikaa. TechnoBBS tukee periaatteessa rajattomas-
+ti kieliä, merkistöjä, protokollia ja vaikka mitä! Laitteistolta vaaditaan tosin
+aika paljon.  A500/2000  pyörittää  kyllä  TBBS:ää,  mutta  hitaasti.  Vähintään
+68020-prosessori olisi suotava, ja 030:lla TBBS jo lentää! Käyttöjärjestelmän on
+oltava vähintään 2.04, kovalevy on aivan ehdoton (pienikin riittää)  ja  muistia
+on syytä olla ainakin neljä megatavua (kahdellakin pyörii, mutta juuri muuta  ei
+voi tehdä). Rexx-tulkki kuuluu käyttöjärjestelmään, mutta mikäli et ole sitä en-
+nen käyttänyt, on se muistettava käynnistää. RexxMaster kannattaa aktivoida aina
+startupissa.
+
+
+
+
+
+
+{3TechnoBBS:n osat ja toiminta
+{3----------------------------
+
+TechnoBBS koostuu useasta ohjelmasta, joista osa on tärkeitä toiminnan  kannalta
+ja osa ulkoisia apuohjelmia. Tärkein ohjelma on TechCon, joka on koko  ohjelmis-
+ton keskus. Kaikki TechnoBBS:n funktiokutsut kulkevat sen  kautta.  Se  sisältää
+myös käyttöliittymän, jonka avulla sysop voi ohjata purkin toimintaa.  Varsinai-
+nen purkkiohjelma on nimeltään TechnoBBS, ja se ajetaan jokaiselle nodelle erik-
+seen noden aktivoituessa. Se kannattaakin ladata muistiin  residentiksi,  mikäli
+ajat monilinjaista purkkia. TechnoBBS-ohjelma ei tee mitään! Se on vain komento-
+ja funktiopalvelija, joka jää odottamaan syötettä jostakin. Kun node aktivoituu,
+on TechnoBBS:n lisäksi ajettava jokin muu ohjelma, joka tekee jotain. Normaalis-
+ti se on Rexx-kielinen login-ohjelma.
+
+Ohjelmiston mukana tulee BBSLogOn.rexx, joka  yleensä  hoitaa  myös  TechnoBBS:n
+käynnistämisen ja aktivoinnin. Sen jälkeen se kysyy käyttäjältä nimeä ja salasa-
+naa ja hoitaa kaikki tarpeelliset toimenpiteet, jotka loginiin  kuuluvat.  Tämän
+jälkeen ajetaan TechMenu, joka on kolmas tärkeä  TechnoBBS:n  ohjelma.  Se  ajaa
+preprosessoituja menuskriptejä eli kysyy käyttäjältä komentoa ja  ajaa  asianmu-
+kaisen menukoodin. Ohjelmistoon kuuluu myös  kääntäjä,  TechMenuComp,  ja  alku-
+peräiset menukoodit tulevat mukana, joten jokainen voi helposti muutella  komen-
+tojen toimintaa sekä kirjoittaa omia komentoja. Lopuksi ajetaan vielä  mahdolli-
+sesti BBSGoodbye.rexx, joka vain tulostaa lopputekstit. Kaiken tämän hoitaa  sk-
+ripti nimeltä RunNode, joka ottaa parametrikseen ajettavan noden numeron, konso-
+lilta yhteyttä otettaessa 0.
+
+Modeemilinjalle tarvitaan vielä vastausohjelma, jollainen myös tulee mukana.  Se
+on kuvaavasti nimeltään Answer. Valitettavasti ainakin minulla Answer  pitää  10
+sekuntia taukoa ennen TechnoBBS:n ajamista ja kaatuileekin. Kirjoitin  itselleni
+paremman vastausohjelman nimeltä StarTech. Se avaa oman ikkunan, josta voi  seu-
+rata  yhteyksien  muodostumista.  Ohjelman  kolmosversio   julkaistaneen   näinä
+päivinä. Sitäkin kannattaa etsiä purkeista. Toinen vaihtoehto on ajaa nk. maile-
+ri, mutta mikäli purkkisi ei kuulu  mihinkään  verkkoon,  ei  siinä  ole  oikein
+järkeä. Maileri on ohjelma, joka vaihtaa viestit toisten verkossa olevien  purk-
+kien kanssa.
+
+Seuraavasta taulukosta on nähtävissä,  mitä  hakemistoja  TechnoBBS:ään  kuuluu.
+Nämä hakemistot tulee löytyä BBS:-nimisestä loogisesta asemasta. Kun purat pake-
+tin ja ajat Install-ohjelman, se huolehtii ohjelman asentamisesta ja myös  aset-
+taa kaikki tarvittavat viittaukset ja  kopioi  tiedostot  oikeisiin  paikkoihin.
+Parhaiten pääset selville TBBS:n hakemistorakenteesta tutkimalla, mitä  hakemis-
+toissa on.
+
+      *Text (dir)        Purkin tekstit, esim. login-logo
+       String (dir)      Kielitiedostot, erikieliset TechnoBBS:n tekstit
+       Scripts (dir)     AmigaDOS-skriptit
+      *Rexx (dir)        ARexx-ohjelmat
+       Menu (dir)        Menukoodit
+      *MAIL (dir)        Viestikanta
+       Docs (dir)        Dokumentointi, TechnoBBS.guide
+       CharSetSrc (dir)  Merkistöjen lähdehakemisto
+       CharSet (dir)     Merkistöt
+      *Cfg (dir)         TechnoBBS:n konfiguraatiot
+       Bin (dir)         TechnoBBS:n ohjelmat
+       Logs (dir)        Lokitiedostot
+       Util (dir)        Apuohjelmat
+      *User (dir)        Käyttäjätiedot
+      *Files (dir)       Tiedostoalueet
+
+Ainakin minun saamassani uudessa 0.93-paketissa on virhe: siellä ei ole Logs-ha-
+kemistoa ollenkaan, vaan Logs-niminen tyhjä  tiedosto!  Tuhoa  tiedosto  ja  tee
+päähakemistoon (BBS:) samanniminen hakemisto. Tämä virhe on kuitenkin ilmeisesti
+vain osassa paketeista tai sitten vain omassani. String-hakemisto on käytännössä
+tarpeeton, koska TechnoBBS ei tue tällä  hetkellä  kuin  englantia.  Varsinaiset
+viestialueet ovat hakemistossa MAIL/MsgDat. Files-hakemistossa ovat purkin  tie-
+dostoalueet konfiguraatioineen. Sinun täytyy tehdä  muutoksia  ainakin  tähdellä
+merkittyjen hakemistojen sisältämiin tiedostoihin.  Rexx-ohjelmien  muuttelu  ei
+ole pakollista, mutta pidemmän  päälle  erittäin  hyödyllistä.  Joudut  tekemään
+Cfg-hakemistoon omat asetuksesi, Files- ja MAIL-hakemistoihin  omat  viesti-  ja
+tiedostoaluerakenteesi, User-hakemistoon omat käyttäjäluokkasi  sekä  Text-hake-
+mistoon omat tekstisi.
+
+
+{3Ohjelmiston käyttöönotto
+{3------------------------
+
+Kun olet asentanut ohjelmiston, voit kokeilla sitä. Ensin voit joutua  kuitenkin
+resetoimaan koneesi. Paketin mukana tulee Ville-Pertti Keinosen  Overscan  BBS:n
+konfiguraatio aina teksteistä viesti- ja tiedostoalueisiin. Ensiksi sinun täytyy
+käynnistää softa, mihin on nyt oma komento, RunBBS. Tämän jälkeen voit  kirjoit-
+tautua sisään komennolla RunNode 0. Sinulle pitäisi avautua ruutu, jolle  ilmes-
+tyvät hetken kuluttua purkkisi  alkutekstit.  Sitten  voitkin  loggautua  uutena
+käyttäjänä purkkiisi. Mikäli näin ei tapahdu, katso,  että  Cfg/BBS0.Cfg:ssä  ei
+ole NoWindow:ta tai OpenIconified:ia. Voit joutua yrittämään muutaman  kerran  -
+muistathan, että rekisteröimätön TechnoBBS hylkää puolet soittajista!  Kun  olet
+aikasi tutkinut systeemiä, on aika aloittaa customointi ja oman purkkisi  raken-
+taminen. Seuraavassa on lyhyt kuvaus siitä, mitä täytyy tehdä. Tarkemmat  ohjeet
+löytyvät kappaleesta "Asetusten määrittäminen".
+
+Ensiksi sinun kannattaa antaa itsellesi sysopin oikeudet. Käynnistä käyttäjäedi-
+tori TechUserEd antaen sille oma nimesi.  Sitten  paina  avautuvasta  ikkunasta,
+jossa  näet  tietosi,  Preset  ja  valitse  listasta   Sysop.acc.   Tavallisille
+käyttäjille tehdään samoin, mutta heille ladataan tietysti Normal.acc, mikäli et
+halua kaikilla olevan sysopin oikeudet purkissasi! Et välttämättä ole aivan tyy-
+tyväinen alkuperäisiin käyttäjäluokkiin (Normal, GigaNet,  SysOp...)  ja  niiden
+oikeustasoihin, joten niitäkin voit joutua muuttamaan. Lähemmin näihin tutustum-
+me myöhemmin tässä artikkelissa.
+
+Seuraavaksi kannattaa laittaa purkin asetukset kuntoon. Koko järjestelmään  vai-
+kuttavat asetukset ovat tiedostossa Cfg/TechCon.Cfg, jonka lisäksi on jokaiselle
+nodelle oma konfiguraatio, Cfg/BBSn.Cfg, jossa n on noden numero.  Lisäksi  Cfg-
+hakemistossa on asetustiedosto TechQWK:lle  ja  TechWWF:lle,  jotka  ovat  Tech-
+noBBS:n offliner-ohjelmat. Myös TechMailille, joka on TechnoBBS:n  "Fidonet-tos-
+seri" eli verkkoviestinvaihto-ohjelma,  on  asetukset.  Events-niminen  tiedosto
+sisältää tiettynä ajankohtana  ajettavia  komentoja.  TechCon:ssa  on  myös  nk.
+cron-toiminto, eli se ajaa halutut komennot tiettynä aikana. Tätä  toimintoa  en
+kuitenkaan tässä käsittele, koska on olemassa paljon parempia varsinaisia  cron-
+ohjelmia kuten CyberCron.
+
+TechConin ja TechnoBBS:n (BBSn.Cfg) asetustiedostoihin ei yleensä tarvita paljon
+muutoksia. Lähinnä riittää, kun vaihtaa sysopin nimen ja muuta pientä. Oletukse-
+na nollanodelle avautuu oma ikkuna, mutta  modeeminodelle  (1)  ei.  Jos  haluat
+päästä näkemään, mitä käyttäjäsi tekee, voit avata ikkunan TechCon:sta painamal-
+la "Use Window" tai laittaa asetuksiin "Window", jolloin  ikkuna  avautuu  auto-
+maattisesti. Hitaissa 68000-pohjaisissa koneissa  (A500/2000)  ikkuna  kuitenkin
+hidastaa purkin toimintaa huomattavasti, joten ikkuna  kannattaa  pitää  kiinni.
+Lisäksi offlinereiden asetuksiin täytyy muuttaa purkin tiedot. Muuten  valmiilla
+asetuksilla pärjää hyvin.
+
+Seuraavaksi ovat vuorossa viesti- ja tiedostoalueet.  Valmiit  alueet  kannattaa
+tuhota kokonaan pois ja aloittaa aivan alusta. Viestialueet  jakautuvat  SIG:ei-
+hin, ryhmiin, jotka määritellään tiedostossa nimeltä Sig.Dat.  Jokaiselle  vies-
+tialueelle tarvitaan msga?.dat, jossa ? korvataan alueen numerolla. Tämä tiedos-
+to sisältää alueen kuvauksen mukaanlukien oikeustasot, joita tarvitaan  erilais-
+ten toimintojen suorittamiseen alueella. Tiedostoalueet  kuvataan  filearea.dat-
+tiedostoilla, jotka sisältävät vastaavat tiedot. Kaikki Files-hakemiston  aliha-
+kemistot tulkitaan viestialueiksi,  mikäli  niissä  on  tämä  tiedosto.  Lisäksi
+alueella voi olla areasort.dat, joka sisältää luettelon sen hakemiston  alihake-
+mistoista, joissa se on. Näin  alueet  tulevat  valintakomennolla  aina  samassa
+järjestyksessä. Kun vielä muuttelet Text-hakemiston tiedostot  haluamasilaisiksi
+ja laitat oman purkkisi nimen joka paikkaan,  jossa  niin  kehotetaan  tekemään,
+olet loppusuoralla.
+
+
+{3Asetusten määrittäminen
+{3-----------------------
+
+TechnoBBS:n asetukset ovat levällään  joka  puolella.  Merkittävimmät  asetukset
+ovat  Cfg-hakemistossa,  mutta  tiedosto-  ja  viestialueiden  määrittelyt  ovat
+MAIL/MsgDat- ja Files-hakemistoissa ja käyttäjäluokat  User/Preset-hakemistossa.
+Cfg-hakemiston asetuksia en enää käsittele, niitä ei juurikaan tarvitse muuttaa,
+ja edellisessä kappaleessa tulivat jo pääkohdat mainittuakin. Tärkeää  on  luoda
+purkkiisi  sopivat  käyttäjäluokat.   Tämä   tulee   aloittaa   suunnittelemalla
+käyttäjien jako käyttäjäryhmiin sekä  niille  annettavat  oikeudet.  Seuraavassa
+taulukossa on User/Preset/#?.acc -tiedoston kuvaus selityksineen:
+
+  AccessLevel     Access-taso, numero, esim. 10 normaali, 1000 sysop
+  FreeBytes       Tavut, jotka annetaan eteen
+  FreeFiles       Tiedosto-lukumäärä, joka annetaan eteen
+  ByteRatio       Tavusuhde
+  FileRatio       Tiedosto-lukumäärä -suhde
+  TimePerDay      Aikaraja vuorokaudessa
+  TimePerCall     Suurin sallittu soiton kesto
+  CallsPerDay     Suurin sallittu soittojen lukumäärä vuorokautta kohti
+  MaxTimeBank     Käyttäjän suurin sallittu aikatalletus
+  Mask            Nk. mask-bitit, määrittelevät oikeuksia (ks. alla)
+
+Jotkin näistä vaativat vielä hieman selvennystä. Käyttäjän oikeudet määritellään
+kahdella arvolla, Accessilla ja Maskilla. Access on  luku  (yleensä  5-1000)  ja
+Mask on 32-bittinen bittimaski. Kaikki toimenpiteet on suojattu jommallakummalla
+tai kummallakin tavalla. Käyttäjällä täytyy olla jonkin toiminnon suorittaakseen
+esimerkiksi Access-taso vähintään 10 tai maskista esimerkiksi bitti 0 päällä tai
+molemmat. Käyttäjäryhmiä voidaan muodostaa esimerkiksi (kuten minun  purkissani)
+asettamalla kaikille amigisteille maskista bitti 0, jolloin  Amigan  viesti-  ja
+tiedostoalueille pääsee vain, jos käyttäjällä on maskissaan bitti 0 päällä.
+
+ByteRatio ja FileRatio määräävät Upload/Download-suhteen. ByteRatio kertoo tavu-
+jen suhteen ja FileRatio tiedostojen lukumäärien suhteen. FreeBytes ja FreeFiles
+antavat mahdollisuuden antaa  käyttäjälle  jonkin  verran  vapaata  imuoikeutta.
+Omassa purkissani esimerkiksi kaikille annetaan 30 tiedostoa  ja  yksi  megatavu
+eteen. Amigistit saavat kaksi megatavua... Käyttäjä saa uutta  imuoikeutta  upa-
+tessaan ratioiden mukaan.
+
+Viestialueet jaetaan ryhmiin (SIG), jotka määritellään Sig.Dat-nimisessä tiedos-
+tossa. Se sisältää yhden tai useamman seuraavanlaisen määrittelyn, joista jokai-
+nen päätetään @-merkkiin:
+
+  Name            Viestialueryhmän nimi, esim. Yleiset alueet
+  AccessRequired  Access-taso, jolla ryhmän alueille pääsee
+  MaskRequired    Mask-bitit, joiden tulee olla päällä, jotta tänne pääsee
+  AreaList        Luettelo alueista, jotka kuuluvat tähän ryhmään
+
+Jokaista viestialuetta varten tarvitaan lisäksi seuraavanlainen  tiedosto,  joka
+kulkee nimellä msga?.dat:
+
+  Name                    Viestialueen nimi, esim. Juttelu
+  Type                    Tyyppi (0 Netmail, 1 Echo, 2 Private, 3 Public)
+  LowMsg                  Ensimmäisen viestin numero (alustettaessa 0)
+  HighMsg                 Viimeisen viestin numero (alustettaessa 0)
+  MsgFile                 Varsinaisen viestitiedoston nimi (tähänkin 0)
+  MinAccessForUse         Minimitaso, jolla alueelle pääsee
+  MinAccessForRead        Minimitaso, jolla voi lukea alueen viestejä
+  MinAccessForWrite       Minimitaso, jolla voi kirjoittaa viestejä tänne
+  MinAccessForSysop       Minimitaso, jolla saa sysop-oikeuden alueelle
+  MaskRequiredForAccess   Maskibitit, joilla alueelle pääsee
+  MaskRequiredForReading  Maskibitit, joilla voi lukea alueen viestejä
+  MaskRequiredForWriting  Maskibitit, joilla voi kirjoittaa viestejä tänne
+  MaskRequiredForSysop    Maskibitit, joilla saa sysop-oikeuden alueelle
+  EchoTag                 Verkkoalueen tag
+  HiWater Mark            Aseta tämä nollaksi alustettaessa
+  Flag                    Verkkoalueen lippu
+
+Tyyppi määrittää alueen joko netmail-alueeksi, verkkoalueeksi, yksityiseksi pos-
+tialueeksi tai julkiseksi paikalliseksi alueeksi. Viestialueiden pääsyä rajoite-
+taan sekä access-tasoilla että  mask-biteillä.  Kummankin  pitää  täsmätä,  että
+käyttäjä saa esim. lukea viestin tai yleensä päästä alueelle. Käytännössä  aina-
+kin saman ryhmän alueilla nämä kaikki arvot ovat samoja. Kolmesta viimeisestä ei
+tarvitse huolehtia.
+
+Tiedostoalueet kuvataan filearea.dat-nimisissä  tiedostoisssa,  jollainen  tulee
+löytyä jokaisesta Files-hakemiston alihakemistosta, joka on tarkoitettu  tiedos-
+toalueeksi:
+
+  Name                        Tiedostoalueen nimi
+  MinAccessForUse             Minimitaso, jolla alueelle pääsee
+  MinAccessForUpload          Minimitaso, jolla saa laittaa tiedoston alueelle
+  MinAccessForDownload        Minimitaso, jolla saa ottaa tiedoston alueelt
+  MaskRequiredForAccess       Maskibitit, joilla alueelle pääsee
+  MaskRequiredForUploading    Maskibitit, joilla saa laittaa tiedoston alueelle
+  MaskRequiredForDownloading  Maskibitit, joilla saa ottaa tiedoston alueelta
+
+Lisäksi tämän perässä voi tulla vielä lisämääreitä. Plusmerkillä  alkavat  rivit
+määrittävät vapaasti imettävät tiedostot. Miinusmerkki rivin  alussa  ilmoittaa,
+että alueelle ei saa laittaa tiedostoja ollenkaan. Tämä tulee kyseeseen  lähinnä
+päähakemistossa tai järjestelmähakemistossa, johon vain sysop laittaa tiedostoja
+kuten purkkilistoja tai tiedostolistauksia.
+
+Viesti- ja tiedostoalueiden määrityksissä voi olla lisäksi tähdellä alkavia  ri-
+vejä, jotka ohjaavat ulkoisten apuohjelmien  toimintaa.  Esimerkiksi  tiedostoa-
+lueella voi olla uudelleenohjaus eli *->polku, jolloin tiedostoalueen  tiedostot
+ovatkin tuolla rivillä määrätyssä hakemistossa. Tämä  on  kätevää,  kun  järjes-
+telmässä on esimerkiksi CD-asema,  joka  halutaan  purkin  viestialueille.  Myös
+tämän hakemiston alihakemistot haetaan uudesta paikasta.
+
+
+{3Purkin virittäminen
+{3-------------------
+
+Kun purkkisi on pystyssä, asetukset kunnossa ja tiedosto- ja viestialueet konfi-
+guroitu, työ vasta alkaa! Nyt sinun pitää kirjoittaa kaikki rexx-ohjelmat ja me-
+nukoodit uusiksi! No, ei aivan sentään, mutta muutokset ovat  aiheellisia,  jot-
+teivät kaikki purkit ole toistensa kopioita.  Ensimmäinen  tärkeä  muutos  tulee
+MainMenun Status-komentoon. Käyttäjien access-tasojen ja mask-bittien  kuvaukset
+tulee muuttaa omiasi vastaaviksi. Muita pakollisia muutoksia ei ole, mutta  sik-
+sihän niitä ei tehdäkään, vaan siksi, että se on hauskaa!
+
+TechnoBBS:n mukana tulee erittäin kattava dokumentointi. Ohjeissa on kaikki mah-
+dollinen aina purkin asetuksista rexx-funktioiden yksityiskohtaiseen kuvaukseen.
+Ohjeet lukemalla viisastuu todella paljon, ja moni asia selviää samalla kokeile-
+malla. TechnoBBS on todella monipuolinen purkkisofta ja  hintaansa  nähden  upea
+(esimerkiksi eräs PC:n monilinjainen purkkisofta maksaa 2500 markkaa).  Sen  oh-
+jelmoinnista on kuitenkin jäänyt hieman hajamielinen  vaikutelma.  Enforcer  ni-
+mittäin antaa kasapäin hittejä TechnoBBS:stä! Niitä tulee  toimintoja  suoritet-
+taessa rykelmittäin ja syötettä kirjoitettaessa yksi  per  jokainen  kirjoitettu
+merkki! TechnoBBS:n bugit ovat kuitenkin pieniä, ja se kaatuu hyvin harvoin. Ai-
+nakin vanhemmat versiot kyllä kaatuvat joskus, mutta  uudemmat  lienevät  hieman
+stabiilimpia. Noista Enforcer-hiteistäkin olisi kyllä hyvä päästä eroon.
+
+
+{3Loppusanat
+{3----------
+
+Mikäli kiinnostusta TechnoBBS:ään on, seuraavassa Sakussa käsittelen varsinaista
+customointia eli omien rexx-ohjelmien ja komentojen  ohjelmointia,  mutta  minun
+täytyy kuitenkin saada tietää, onko kiinnostusta, joten kirjoitelkaapa toimituk-
+seen.
+
+Nyt kun olet ihastunut TechnoBBS:ään ja haluat  heti  päästä  sitä  kokeilemaan,
+voit alkajaisiksi käydä jossakin Techno-purkissa  katsomassa,  millainen  se  on
+käyttäjän kannalta. Kaikki edellisen Sakun organisaatiosivulla luetellut  purkit
+ovat TechnoBBS-purkkeja lukuunottamatta Sonataa, jossa  ohjelmistona  on  Dialog
+Pro. GigaBox pyörii niin ikään sysopin omalla Giga-BBS:llä. Näissä kaikissa pur-
+keissa pitäisi myös olla TechnoBBS imettävänä.  Parasta  lienee  soittaa  Ville-
+Pertti Keinosen omaan purkkiin, Overscan BBS:ään, joka on auki 24h.  Sieltä  saa
+myös tukea purkin perustamisessa ja TechnoBBS:n asentamisessa. Voit  ottaa  myös
+suoraan yhteyttä Telemediaan, joka versiosta 0.93 alkaen omistaa TechnoBBS:n oi-
+keudet ja hoitaa rekisteröinnit. TechnoBBS:n asentamisessa ja purkin  perustami-
+sessa saa apua myös artikkelin kirjoittajalta. Yhteyttä kannattaa ottaa purkkini
+kautta tai postitse. Eikä sitten muuta kuin vielä kerran menestystä purkillesi!

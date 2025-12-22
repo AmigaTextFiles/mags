@@ -1,0 +1,294 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>AMIGA TIMES 01/98 - Workshops</title>
+</head>
+
+<body background="../images/bg.gif" bgcolor="#C0C0C0"
+text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000"
+bgproperties="fixed">
+
+<h2><a name="wie">Wie werden ESC-Sequencen eingesetzt ?</a></h2>
+
+<p>Nun bleibt noch die Frage zu klären wie die ESC-Sequencen
+eingesetzt werden. Hierzu möchte ich Euch einige Beispiele
+liefern: </p>
+
+<h3>1. Eine reine ECHO Ausgabe:</h3>
+
+<p><em>Echo &quot; Hallo User, Schön dich zu sehen.&quot;</em></p>
+
+<p>Kann folgendermaßen verändert werden: </p>
+
+<p><em>Echo &quot; *e[47m*e[34mHallo *e[4mUser*e[0m*e[47m*e34m,
+Schön dich zu sehen.*e[0m&quot;</em> </p>
+
+<p>Alles unklar ? </p>
+
+<p>Ist mir schon klar, aber welcher Befehl was macht, steht in
+einem anderen Kapitel. Hier möchte ich Euch nur zeigen das es
+wichtig ist das alle ESC-Sequencen innerhalb der Gänsefüße
+stehen. </p>
+
+<p>Übrigens wird bei diesem Beispiel erst die Hintergrund Farbe
+verändert, danach die Schriftfarbe. Als nächstes wird das Wort
+User unterstrichen, dann alle werte auf Normal zurückgesetzt.
+Als nächstes wieder Hintergrund, Schriftfarbe und am Ende wieder
+alle werte auf Normal, vielleicht soll der nächste Text ja
+anders aussehen. </p>
+
+<h3>2. Eine ASK Anweisung:</h3>
+
+<p><em>Echo &quot; *e[36mSoll ich die dumme Frage Überschreiben
+?*e[0m&quot;</em><br>
+<em>Echo &quot; *e[37mWenn nicht überspringe ich 8
+Zeilen.*e[0m&quot;</em><br>
+<em>ASK &quot; *e[34mY*e[0mes oder *e[34mN*e[0mo möglich !&quot;</em><br>
+<em>IF WARN</em><br>
+<em>Echo &quot; *eM*e[33mDu hast es so gewollt !!!*e[0m&quot;</em><br>
+<em>ELSE</em><br>
+<em>Echo &quot; *e[8E*e[33mDu hast es so gewollt !!!*e[0m&quot;</em><br>
+<em>ENDIF</em></p>
+
+<p>Zum enträtseln auch noch ein paar kleine Worte : </p>
+
+<p>Zuerst werden mal wieder Schriftfarben gesetzt, und am Ende
+der Zeile wird alles wieder auf Normal gesetzt. Bei der ASK
+Anweisung ist es genauso, aber hier bezieht sich das setzen der
+Schriftfarben nur auf einzelne Buchstaben ( Y und N ). In der
+Echo Anweisung die nach WARN aufgerufen wird, wird est mal dafür
+gesorgt das die Letzte Zeile überschrieben wird und das der Text
+der erscheint Farbig ist. Wie immer wird auch hier am Ende der
+Zeile alles wieder auf normal gesetzt obwohl dieses nicht nötig
+wäre wenn nur die Option Überschreiben gewählt worden währe (
+was für en doofer Satz !!! ) Die Echo Anweisung nach Else sieht
+nicht anders aus, nur das hier die Option Zeilen Überspringen
+statt Zeile überschreiben gewählt wurde. </p>
+
+<p>Euch fallen beim Herumexperimentieren sicherlich noch mehr
+Möglichkeiten ein um Texte optisch besser als bisher zu
+gestalten oder Scriptabläufe auch für´s Auge interresant zu
+machen.</p>
+
+<hr>
+
+<h2><a name="welche">Welche Möglichkeiten habe ich mit
+ESC-Sequencen ?</a></h2>
+
+<p>Hier eine kleine Auflistung wie ihr diverse Texte in Scripts
+interessanter gestalten könnt. </p>
+<div align="left">
+
+<table border="0" cellspacing="1">
+    <tr>
+        <td valign="top" nowrap><strong>*eD</strong></td>
+        <td valign="top">Leerzeile nach dieser Zeile. Das heißt
+        natürlich das die Nächste Zeile Frei bleibt, und erst
+        wieder die Übernächste beschrieben wird. Im grunde
+        genommen der selbe Effekt wie *N*N.</td>
+    </tr>
+    <tr>
+        <td nowrap>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><strong>*eM</strong></td>
+        <td valign="top">Diese Zeile überschreiben. Geht an den
+        Anfang der Zeile zurück und überschreibt diese mit dem
+        nachfolgenden Text. Sehr schön bei diversen ASK-Abfragen
+        innerhalb eines Scripts.</td>
+    </tr>
+    <tr>
+        <td nowrap>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><strong>*e[3m</strong></td>
+        <td valign="top">Folgender Text in Kursivschrift
+        (Schrägschrift, bei manchen Zeichensätzen sehr
+        undeutlich).</td>
+    </tr>
+    <tr>
+        <td nowrap>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[4m</strong></td>
+        <td>Folgender Text wird unterstrichen </td>
+    </tr>
+    <tr>
+        <td nowrap>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[1m</strong></td>
+        <td>Folgender Text wird Fett geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[30m</strong></td>
+        <td>Folgender Text wird Farbig geschrieben </td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[31m</strong></td>
+        <td>Folgender Text wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[32m</strong></td>
+        <td>Folgender Text wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[33m</strong></td>
+        <td>Folgender Text wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[34m</strong></td>
+        <td>Folgender Text wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[35m</strong></td>
+        <td>Folgender Text wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[36m</strong></td>
+        <td>Folgender Text wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[37m</strong></td>
+        <td>Folgender Text wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[38m</strong></td>
+        <td>Folgender Text wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><strong>*e[39m</strong></td>
+        <td valign="top">Folgender Text wird Farbig geschrieben
+        Die Farbgebung des Textes ist abhängig von den
+        Einstellungen die Du bei deinem System vorgenommen hast,
+        selbst bei acht Farben können drei davon die selbe
+        Farbgebung haben.</td>
+    </tr>
+    <tr>
+        <td nowrap>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[40m</strong></td>
+        <td>Folgender Texthintergrund wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[41m</strong></td>
+        <td>Folgender Texthintergrund wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[42m</strong></td>
+        <td>Folgender Texthintergrund wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[43m</strong></td>
+        <td>Folgender Texthintergrund wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[44m</strong></td>
+        <td>Folgender Texthintergrund wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[45m</strong></td>
+        <td>Folgender Texthintergrund wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[46m</strong></td>
+        <td>Folgender Texthintergrund wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[47m</strong></td>
+        <td>Folgender Texthintergrund wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[48m</strong></td>
+        <td>Folgender Texthintergrund wird Farbig geschrieben</td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><strong>*e[49m</strong></td>
+        <td valign="top">Folgender Texthintergrund wird Farbig
+        geschrieben Die Farbgebung des Texthintergrundes ist
+        abhängig von den Einstellungen die Du bei deinem System
+        vorgenommen hast, selbst bei acht Farben können drei
+        davon die selbe Farbgebung haben. Desweiteren ist die
+        Hintergrundfarbe identisch mit der Textfarbe bei gleicher
+        Endzahl ! ( z.B. *e[34m = Text Blau *e[43m = Hintergrund
+        Blau ).</td>
+    </tr>
+    <tr>
+        <td nowrap>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td nowrap><strong>*e[4F</strong></td>
+        <td>Folgende Textzeile erscheint zwei Zeilen über der
+        aktuellen !!!</td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><strong>*e[5F</strong></td>
+        <td valign="top">Folgende Textzeile erscheint drei Zeilen
+        über der aktuellen !!! Dieses läßt sich beliebig
+        fortsetzen !!! Alle Zeilen die hier standen werden
+        automatisch überschrieben. Kann sehr interresant
+        aussehen wenn man geschickt mit Echo, ASK und Wait
+        umgeht, ein einsetzen dieser ESC-Sequenz erfordert
+        allerdings schon etwas übung, geschick und vor allem
+        geduld. Ich gebe zu, das ich dazu auch nicht besonders
+        viel Lust habe.</td>
+    </tr>
+    <tr>
+        <td nowrap>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><strong>*e[nE</strong></td>
+        <td valign="top">Folgende Textzeile erscheint (
+        n=beliebige Zahl ) n Zeilen unter der aktuellen Zeile.
+        Dieses ist besonders interresant wenn größere sprünge
+        gemacht werden sollen. Der gesammte Script bleibt
+        außerdem übersichtlicher. Mann stelle sich mal vor:
+        Echo &quot;Was hast Du gesagt
+        ?*N*N*N*N*N*N*N*N*N*N*N*N&quot; oder: Echo &quot;Was hast
+        Du gesagt ?*e[12E&quot; und nun sag selbst was Dir lieber
+        ist.</td>
+    </tr>
+    <tr>
+        <td nowrap>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><strong>*e[0m</strong></td>
+        <td valign="top">Folgende Schrift in Normalschrift. Alle
+        vorgenommenen Änderungen an der Schrift (Schriftstiel,
+        Farbe, Hintergrund...) werden rückgängig gemacht.</td>
+    </tr>
+</table>
+</div>
+
+<p align="right"><em>-rs- </em></p>
+
+<table border="0" width="100%">
+    <tr>
+        <td align="center"><a href="wshop02a.htm" target="main"><img
+        src="../images/back2.gif" alt="Zurück" align="left"
+        border="0" hspace="0" width="32" height="32"></a></td>
+        <td align="right"><a href="inhfr04.htm" target="_top"><img
+        src="../images/next2.gif" alt="Weiter" align="right"
+        border="0" hspace="0" width="32" height="32"></a></td>
+    </tr>
+</table>
+
+<hr>
+</body>
+</html>

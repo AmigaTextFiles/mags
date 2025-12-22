@@ -1,0 +1,255 @@
+<HTML>
+<HEAD>
+<TITLE>
+Инсталляция MorphOS
+</TITLE>
+<meta http-equiv="content-type" content="text/html; charset=windows-1251">
+<BODY LINK="green" VLINK="green" ALINK="white" TEXT="white" bgcolor=black BACKGROUND="../GFX/fonm.gif">
+</HEAD>
+<CENTER>
+<H2><IMG SRC="../GFX/edu.gif"><FONT COLOR="yellow"><b>Инсталляция MorphOS</b></FONT><IMG SRC="../GFX/edu.gif"></H2><BR>
+
+<table border="1" cellpadding="4" cellspacing="0" width="85%" bordercolorlight="#5091F3" bordercolordark="#000000">
+<tr bgcolor=black><td>
+<table border="0" width="100%"><tr bgcolor=black>
+<td align="right"><FONT COLOR="green">Автор Juergen Lucas<BR>Перевод -=\AmiF1Team/=-</FONT></td>
+</tr></table>
+</td></tr>
+<tr bgcolor=black>
+<td background="../GFX/fon.gif">
+Данная статья поможет вам инсталлировать операционную систему MorphOS/Pegasos на чистый IDE винчестер,
+статья написана по материалам сайта: <a href="http://www.morphos-news.de/">morphos-news.de</a><BR><BR>
+<font color="yellow">1. Вступление</font><BR><BR>
+Для начала нам понадобится стандартный 80-пиновый IDE-шлейф, с помощью которого мы и подключаем наш
+винчестер к материнской плате Pegasos. Затем производим непосредственно включение питания; сразу после
+запуска, на экране монитора мы увидим что-то вроде этого - а именно Smart Firmware экран.<BR><BR>
+
+  <table cellpadding="5" width="100%" border="0" cellspacing="0">
+   <tr>
+    <td bgcolor="#000000">
+    <font color="#ffffff"><b><code>
+    133-P19700-002 64M DDR 200M/250E<br>
+    <br>
+    Welcome to SmartFirmware(tm) for bplan Pegasos version 0.1b107 (20020919142323)<br>
+    SmartFirmware(tm) Copyright 1996-2001 by CodeGen, Inc.<br>
+    All Rights Reserved.<br>
+    Pegasos BIOS Extensions Copyright 2001-2002 by bplan GmbH.<br>
+    All Rights Reserved.<br>
+    ok _
+    </code></b></font>
+    </td>
+   </tr>
+  </table><br>
+
+Данная надпись означает, что запуск системы прошёл нормально - кроме того, первая строка характеризует
+собой информацию относительно подключенной графической карте, как мы видим в данном случае это Radeon 9000 с 64MB DDR памяти.
+Тест системы прошёл успешно и мы готовы приступить к основной части нашего действа.<BR><BR>
+<font color="yellow">2. Загрузка с CD</font><BR><BR>
+
+  <table cellpadding="5" width="100%" border="0" cellspacing="0">
+   <tr>
+    <td width="355" bgcolor="#000000" valign="top">
+    <font color="#ffffff"><b><code>
+    ok ls /pci/ide/cd<br>
+    ...<br>
+    ok _
+    </code></b></font>
+    </td>
+    <td width="10"></td>
+    <td width="355" bgcolor="#000000" valign="top">
+    <font color="#ffffff"><b><code>
+    ok boot /pci/ide/cd boot.img<br>
+    ...<br>
+    </code></b></font>
+    </td>
+   </tr>
+  </table><br>
+  
+Вставляем CD с операционной системой MorphOS и набираем в командной строке <font color="yellow">"ls /pci/ide/cd"</font>;
+также в данной строке в зависимости от вашего монитора можно подрегулировать размер шрифта,
+с помощью функциональных клавиш <font color="yellow">(F9) - уменьшение, (F6) - увеличение</font>; после проделанной операции
+вам откроется список файлов, находим в нём файл <font color="yellow">"boot.img"</font> и производим его запуск с помощью
+набора следующей команды <font color="yellow">"boot /pci/ide/cd boot.img"</font>, после чего нам откроется <font color="yellow">GUI MorphOS - Ambient.</font><BR><BR>
+<font color="yellow">3. Инсталлирование винчестера</font><BR><BR>
+Заходим двойным нажатием кнопки мыши на иконку <font color="yellow">CD</font> и переходим в каталог <font color="yellow">"Tools"</font>, где
+производим запуск программы <font color="yellow">"SCSIconfig"</font>. Данной утилитой мы произведём разбитие нашего винчестера
+на разделы. Итак, в предлагаемом списке <font color="yellow">"SCSI Controller"</font> выбираем <font color="yellow">"ide.device"</font>, после нажатия
+с левой стороны мы увидим открытие двух устройств <font color="yellow">"SCSI Drives"</font>; первое из них будет наш <font color="yellow">HDD</font>, а
+второе соответственно <font color="yellow">CD-привод</font>. Прописываем номер <font color="yellow">"Unit"</font> винчестера <font color="yellow">"0"</font> - это понадобится нам в будущем.
+Затем выбираем винчестер и переходим в раздел <font color="yellow">"Partition"</font>, нажимая соответствующую кнопку. Перед
+нами предстаёт список разделов винчестера <font color="yellow">"Partition List"</font>. Если ваш <font color="yellow">HDD</font> новый, то разделов не будет,
+а если таковые распознались, то удаляем их путём пометки и нажатия кнопки <font color="yellow">«Delete»</font>. И создаём два новых
+раздела:<BR><BR>
+
+
+<table width="100%" cellspacing="1" cellpadding="4" border="1">
+ <tr>
+  <td bgcolor="black" width="50%"><b>Раздел 0 (Partition 0)</b></td>
+  <td bgcolor="black" width="50%"><b>Раздел 1 (Partition 1)</b></td>
+ </tr>
+ <tr>
+  <td bgcolor="black" valign="top">                              
+   <ul>
+    <li>Создаём нажатием кнопки <font color="yellow">«Add»</font>
+    <li>Даём имя разделу <font color="yellow">"bi0"</font>
+    <li>Рассматриваем на примере, поэтому пусть он у нас будет 20MB
+    <li>Ставим файловую систему <font color="yellow">"FFS"</font>, так как загрузочный раздел должен быть исключительно в FFS и
+помечаем его как загружаемый, ставя пометку в <font color="yellow">"Boot"</font> поле
+    <li>Переставляем маску с значения <font color="yellow">"0xffffffff"</font> на <font color="yellow">"0xfffffffe"</font>, тут пожалуйста без ошибок
+    <li>Выставляем метку в поле <font color="yellow">"Mount"</font>
+    <li>И нажимаем <font color="yellow">«OK»</font>
+   </ul>
+  </td>
+  <td bgcolor="black" valign="top">                              
+   <ul>
+    <li>Создаём нажатием кнопки <font color="yellow">«Add»</font>
+    <li>Даём имя разделу <font color="yellow">"DH0"</font>
+    <li>Рассматриваем на примере, поэтому пусть он у нас будет 512MB
+    <li>Выставляем файловую систему <font color="yellow">"SFS"</font>
+    <li>Переставляем маску с значения <font color="yellow">"0xffffffff"</font> на <font color="yellow">"0xfffffffe"</font>, тут пожалуйста без ошибок
+    <li>Помечаем его как загружаемый, ставя пометку в <font color="yellow">"Boot"</font> поле
+    <li>Выставляем метку в поле <font color="yellow">"Mount"</font>
+    <li>Выставляем буфер <font color="yellow">"Buffers"</font> раздела <font color="yellow">600</font>
+    <li>И нажимаем <font color="yellow">«OK»</font>
+   </ul>
+  </td>
+ </tr>
+</table>
+<BR>
+<CENTER><a href="../GFX/scsicfg_b.png" target="mainFrame"><IMG SRC="../GFX/scsicfg_b.png" border=0 alt="SCSI Config" WIDTH="262" HEIGHT="130"></a></center><BR><BR>
+В окне списка разделов <font color="yellow">"Partition List"</font> мы закончили, нажимаем <font color="yellow">«OK»</font>. Возвращаемся в основное
+<font color="yellow">"SCSIconfig"</font> окно и записываем все изменения на <font color="yellow">HDD</font> путём нажимания на кнопку <font color="yellow">«Save Changes».</font>
+Всё подтверждаем, нажимая два раза на <font color="yellow">«OK»</font> и выходим из программы кнопкой <font color="yellow">«Quit».</font> Пришло время перезагрузить
+систему.<BR><BR>
+После перезагрузки набираем следующее <font color="yellow">"ls /pci/ide/disk@0,0"</font> в командной строке <font color="yellow">SmartFirmware.</font>
+Данной командой мы проверяем действительность нашей разбивки винчестера на разделы. Первый
+<font color="yellow">"0"</font> означает канал установлен <font color="yellow">"Channel 0"</font>, а второй, что это устройство <font color="yellow">Master.</font> Если же вы, случайно
+установили ранее номер <font color="yellow">"Unit"</font> устройства не <font color="yellow">"0"</font>, то советуем это исправить. Производим проверку
+всех <font color="yellow">"Unit"</font> набирая соответственно для них (этого можно и не делать):<BR>
+
+ <ul>
+  <li>Unit 0 == <font color="yellow">/pci/ide/disk@0,0</font> [channel0,master]
+  <li>Unit 1 == <font color="yellow">/pci/ide/disk@0,1</font> [channel0,slave]
+  <li>Unit 2 == <font color="yellow">/pci/ide/disk@1,0</font> [channel1,master]
+  <li>Unit 3 == <font color="yellow">/pci/ide/disk@1,1</font> [channel1,slave]
+ </ul>
+
+После проведённой команды мы убедились, что всё нормально:<BR><BR>
+
+ <table cellpadding="5" width="100%" border="0" cellspacing="0">
+  <tr>
+   <td bgcolor="#000000">
+   <font color="#ffffff"><b><code>
+   ok ls  /pci/ide/disk@0,0<br>
+   RDB patition 0 &lt;FFS&gt; : &lt;bi0&gt; (0x444F5301)<br>
+   RDB patition 1 &lt;SFS&gt; : &lt;DH0&gt; (0x53465300)<br>
+   ok _
+   </code></b></font>
+   </td>
+  </tr>
+ </table><BR>
+
+Теперь производим перезагрузку системы с CD.<BR><BR>
+<font color="yellow">4. Форматирование разделов</font><BR><BR>
+Теперь пришло время провести форматирование ранее созданных нами разделов <font color="yellow">HDD.</font> Выбираем в меню <font color="yellow">"Utilities"</font> раздел
+<font color="yellow">"Format Disk..."</font> - затем выбираем раздел для форматирования и даём ему имя в строке <font color="yellow">"Label"</font>, нажимаем кнопку <font color="yellow">«Format».</font>
+Логичнее давать имена, например: <font color="yellow">"System"</font> под раздел <font color="yellow">DH0</font> и <font color="yellow">"Booting"</font> под <font color="yellow">bi0.</font> Когда процесс форматирования для обоих разделов
+завершится, выходим нажатием кнопки <font color="yellow">«Close».</font><BR><BR>
+<CENTER><a href="../GFX/format_b.png" target="mainFrame"><IMG SRC="../GFX/format_b.png" border=0 alt="Format" WIDTH="200" HEIGHT="65"></a></center><BR><BR>
+<font color="yellow">5. Копирование MorphOS на наш HDD</font><BR><BR>
+Далее производим копирование всех файлов операционной системы посредством <font color="yellow">Shell</font> окна, в меню экрана
+<font color="yellow">"Ambient"</font> находим <font color="yellow">"Newshell"</font> или нажимаем комбинацию <font color="yellow">[ramiga]+[n].</font> И производим набор следующих команд:<BR>
+<UL>
+<LI><font color="yellow">"copy cd0: dh0: all"</font>
+<LI><font color="yellow">"copy env:sys/def_disk.info dh0:"</font>
+<LI><font color="yellow">"copy dh0:boot.img bi0: move"</font>
+</UL>
+<CENTER><a href="../GFX/newshell_b.png" target="mainFrame"><IMG SRC="../GFX/newshell_b.png" border=0 alt="New Shell" WIDTH="200" HEIGHT="90"></a></center><BR><BR>
+Первой командной строкой мы производим копирование всего содержимого <font color="yellow">CD</font> на наш <font color="yellow">HDD</font> в раздел <font color="yellow">DH0.</font>
+Далее копируем и присваиваем нашему винчестеру иконку, а третьей строкой мы переносим загрузчик
+в раздел <font color="yellow">"bi0"</font>, так как MorphOS производит начальную загрузку системы только с данного раздела.<BR><BR>
+<font color="yellow">6. Загрузка с HDD</font><BR><BR>
+Наконец-то мы запускаемся с <font color="yellow">HDD</font>, вытаскиваем <font color="yellow">CD MorphOSBoot</font> и перезапускаем наш <font color="yellow">Pegasos</font> кнопкой <font color="yellow">RESET</font> или
+зайдя в раздел <font color="yellow">"Shutdown"</font> меню <font color="yellow">"Ambient"</font> экрана и уже там нажать <font color="yellow">«Reboot».</font> Возвращаемся в <font color="yellow">OpenFirmware,</font>
+пишем <font color="yellow">"boot /pci/ide/disk@0,0:0 boot.img".</font> Повнимательнее, теперь три параметра - третий означает
+номер загрузочного раздела.<BR><BR>
+
+
+  <table cellpadding="5" width="100%" border="0" cellspacing="0">
+   <tr>
+    <td bgcolor="#000000">
+    <font color="#ffffff"><b><code>
+    ok ls  /pci/ide/disk@0,0:0<br>
+    boot.img &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1422588 Bytes<br>
+    1 File(s) &nbsp; 0 Dir(s)<br>
+    ok _
+    </code></b></font>
+    </td>
+   </tr>
+  </table><BR>
+
+Так раздел <font color="yellow">(Partition 0)</font> имеет уже файловую систему <font color="yellow">FFS</font> и файл <font color="yellow">"boot.img".</font> Проверим ещё раз, написав
+<font color="yellow">"ls /pci/ide/disk@0,0:0".</font> Если всё верно, Pegasos загрузит нам оболочку <font color="yellow">Ambient.</font><BR><BR>
+<font color="yellow">7. Автозагрузка</font><BR><BR>
+Итак, реализовываем данную функцию, опять же в командной строке OpenFirmware:<BR>
+<UL>
+<LI><font color="yellow">"setenv boot-file boot.img ramdebug"</font>
+<LI><font color="yellow">"setenv boot-device /pci/ide/disk@0,0:0"</font> <- проверка HDD "Unit"!
+<LI><font color="yellow">"setenv auto-boot-timeout 3000"</font> <- автозагрузка через 3 секунды
+<LI><font color="yellow">"setenv auto-boot? true"</font>
+</UL>
+Указанный параметр <font color="yellow">"ramdebug"</font> в первой строке, производит пересылку данной команды в память системы, что просто
+необходимо для повышения скорости вашей системы. Если вы не хотите использовать автозагрузку, просто нажмите
+<font color="yellow">[Esc]</font> во время загрузки. Для отключения данной функции существует параметр <font color="yellow">"setenv auto-boot? false".</font><BR><BR>
+
+  <table cellpadding="5" width="100%" border="0" cellspacing="0">
+   <tr>
+    <td bgcolor="#000000">
+    <font color="#ffffff"><b><code>
+    ok printenv<br>
+    ...<br>
+    ok _
+    </code></b></font>
+    </td>
+   </tr>
+  </table><BR>
+
+Для проверки переменных окружения набираем <font color="yellow">"printenv".</font> Теперь производим запуск <font color="yellow">MorphOS</font> прописыванием <font color="yellow">"boot".</font>
+Теперь при дальнейшем включении Pegasos операционная система будет запускаться автоматически.<BR><BR>
+<font color="yellow">8. Возможные проблемы</font><BR><BR>
+<font color="yellow">Не могу записать CD (MakeCD) в стандарте ISO Image</FONT><BR><BR>
+Данный формат ISO в MakeCD представлен как "Audio"; вероятно вы пользуетесь старой версией данной утилиты - обновите её,
+обратившись на сайт http://makecd.core.de (Twister)<BR><BR>
+<font color="yellow">После прописывания строки "boot /pci/ide/cd boot.img" мне выдаётся сообщение "boot.img not found",
+вследствие чего загрузка не идёт</FONT><BR><BR>
+Для начала убедитесь в наличии файла "boot.img", набрав команду "ls /pci/ide/cd", если вместо него присутствует другой, например
+"boot.img;1", то запуск его будет осуществляться "boot /pci/ide/cd boot.img;1". Ещё данная проблема может возникать из-за
+некорректности CD-RW диска при записи ISO<BR><BR>
+<font color="yellow">SmartFirmware не видит один или двух разделов HDD</font><BR><BR>
+Убедитесь в правильности номера "Unit" устройства, проверьте IDE-кабель, а также возможно вы что-то пропустили в процессе самой инсталляции<BR><BR>
+<font color="yellow">Когда я загружаюсь с HDD, мне выдаётся сообщение "The Filesystem is not supported", что файловая система не поддерживается</font><BR><BR>
+Возможно, что вы использовали этот винчестер до этого на PC с перемычкой на MRB (Master Boot Record), что и привело к ошибке. Для устранения этого
+вам понадобится запустить программу "HDWrite" она находится в директории "SYS:Tools/debug". Всё, что вам надо -
+прописать файловую систему и затем в каталоге "Mossys:c/" запустить 800-байтную программу "reboot".
+Одним словом наберите "HDwrite ide.device <unit> MOSSYS:c/reboot 0" - естественно вместо <unit> поставьте свой номер "Unit" устройства,
+в большинстве случаев это "0".<BR><BR>
+<font color="yellow">Во время загрузки системы с HDD, винчестер останавливается после загрузки "boot.img" в Smart Firmware без всякого уведомления об ошибке</font><BR><BR>
+После загрузки файла "boot.img" система старается запуститься с загрузочного (bootable) раздела.
+Данная ошибка возникает, если вы создали больше одного загрузочного раздела. Убедитесь в том, что DH0
+инсталлирован как загрузочный. Если вы хотите время от времени запускаться с другого раздела, отличного от DH0,
+для этого существует параметр "bootdevice". Для этого надо прописать следующее, например: "boot /pci/ide/disk@0,0:0 boot.img bootdevice=dh1"<BR><BR>
+<font color="yellow">Загрузка прекращается после появления логотипа MorphOS</font><BR><BR>
+Данное происходит при подключении сразу двух видео-карт, например одна в разъём AGP, а вторая в PCI -
+данная комбинация недопустима. MorphOS работает одновременно только с одной видео-картой.<BR><BR>
+<font color="yellow">В системе напрочь отсутствует звук</font><BR><BR>
+Если вы не слышите звука, то запустите программу "Pegasosmixer" (находящуюся в каталоге WBStartup) и просто сохраните настройки.
+Также "Pegasosmixer" можно вызвать комбинацией клавиш [ctrl]+[ralt]+[p].
+</td></tr>
+</table>
+</td>
+</tr>
+</table><br>
+
+</CENTER>
+</BODY>
+</HTML>

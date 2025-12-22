@@ -1,0 +1,999 @@
+5
+1*
+
+{3                        C-ohjelmointikurssi - Osa 4
+{3                        ---------------------------
+
+                           Ville-Pertti Keinonen
+
+
+Jälleen kerran kurssin osien välille jäi tarpeettoman pitkä väli. Toivotta-
+vasti kurssin tässä vaiheessa kaikki kurssia seuranneet pystyvät jo kuiten-
+kin hyödyntämään aiemmissa osissa läpi käytyjä  asioita  ja  ottamaan  itse
+selvää enemmän standarditoiminnoista, joita ei tässä  valitettavasti  käydä
+kuitenkaan enempää läpi, vaikka näin oli alunperin tarkoitus  tehdä.  Kuten
+kolmannessa osassa mainittiin, useimpien kääntäjien  mukana  tulee  ohjeita
+näiden toimintojen käyttöä varten.
+
+
+{3Tiedon käsittelytekniikkaa
+{3--------------------------
+
+Yksi asioista, joita ohjelmoijien tulisi oppia voidakseen hyödyntää  tieto-
+konettaan tehokkaasti on se, miten ohjelmissa tulisi käsitellä tietoa.  Sen
+tietäminen, miten muuttujia, tiedostoja ja muistia  voidaan  käsitellä,  ei
+sinänsä riitä; on myös osattava ohjelmaa käytännössä kirjoittaessa päättää,
+millaisessa  muodossa  ja  missä  ohjelman   käsittelemät   tiedot   tulisi
+säilyttää.
+
+Kaikki ohjelmat käsittelevät tietoa, riippumatta siitä, mikä niiden  varsi-
+nainen tarkoitus on. Silloin, kun itse tiedon käsittely ei  ole  pääasiana,
+on tiedon määrä useimmiten  suhteellisen  pieni,  eikä  tieto  sinänsä  ole
+oleellista muuta kuin ohjelman  ajon  aikana.  Tällöin  tietoa  säilytetään
+yleensä koneen muistissa. (Useilla ohjelmilla tosin on asetustietoja, joita
+tallennetaan massamuistiin.) Useimpien interaktiivisten ohjelmien runko-osa
+on  tällainen.  Jos  otamme  esimerkiksi  terminaaliohjelman,  sen   täytyy
+säilyttää mm. seuraavista asioista tietoja  (suuri  osa  näistä  on  yleis-
+tettävissä muihinkiin ohjelmiin):
+
+- Käyttöliittymä (avoinna olevat ikkunat, niiden sisältö),  tarkempi  muoto
+riippuu yleensä käyttöjärjestelmästä.
+
+- Laitteen ohjaus- ja  puskurointitiedot  (käyttöjärjestelmästä  riippuvia,
+kuten edellisessä kohdassa).
+
+- Käyttäjän asetukset (modeemiasetukset,  hakemistopolut,  "puhelinmuistio"
+yms.). Ajon aikana nämä ovat muistissa, muulloin niitä säilytetään  kovale-
+vyllä.
+
+- Terminaaliemulaation tila (aivan yksinkertaiset asiat, kuten kursorin si-
+jainti, nykyinen piirtoväri yms.), mikäli se hoidetaan itse. (Amigassa voi-
+daan vaihtoehtoisesti käyttää esimerkiksi laitetta  "console.device",  jol-
+loin itse tarvitsee huolehtia  ainoastaan  tiedon  välityksestä  laitteiden
+välillä.)
+
+- Ohjelman tila. (Yksinkertaisimmillaan tämä riippuu  siitä,  missä  kohtaa
+ohjelmaa prosessorin suoritus kulkee, mutta mikäli  ohjelman  on  tarkoitus
+antaa käyttäjän tehdä useita asioita  "samanaikaisesti"  -  mitä  kutsutaan
+usein virheellisesti "sisäiseksi moniajoksi" -  täytyy  ohjelman  "tietää",
+mitä se on tekemässä.)
+
+Näiden tietojen yksinkertaisuuden ansiosta useimmat niistä ovat hyvin  hel-
+posti säilytettäviä, koska niiden määrä on vakio. Riippuen toteutustavasta,
+käytetään lähinnä puhelinnumerolistaa sekä mahdollisesti ohjelman tila-  ja
+käyttöliittymätietoja varten linkattuja listoja, joista lisää hetken kulut-
+tua.
+
+Sellaisissa ohjelmissa tai ohjelman osissa, joiden varsinaisena  tarkoituk-
+sena on käsitellä suurempia määriä tietoa, voidaan tieto säilyttää kokonaan
+muistissa, kokonaan  levyllä  tiedostossa  (ainoastaan  välittömästi  käsi-
+teltävä tiedon yksikkö on muistissa, kuten kurssin edellisen osan  esimerk-
+kiohjelmassa) tai osittain  kummassakin.  Yksi  oleellisimmista  tekijöistä
+tässä on ero sen välillä, millaisessa muodossa tieto on levyllä ja muistis-
+sa. Kurssin edellisen osan esimerkkiohjelmassa tieto oli täsmälleen samassa
+muodossa molemmissa, mikä ei kuitenkaan aina ole hyvä. Yleensä silloin, kun
+muistissa voi olla vaihteleva määrä  tietoa,  tietoon  liittyy  osoittimia,
+joita ei voida tallentaa levylle, koska samat tiedot eivät päädy  aina  sa-
+moihin osoitteisiin.  (Poikkeuksena  ovat  vanhanaikaisemmat  järjestelmät,
+jotka eivät moniaja ja joissa ohjelmat ja tiedot ladataan yleensä  kiintei-
+siin osoitteisiin.) Vaihtelevaa tietomäärää säilytetään yleensä linkatuissa
+listoissa. Linkattu lista tarkoittaa sitä, että yhdessä tiedon yksikössä on
+osoitin seuraavaan (ja mahdollisesti edelliseen, joka  mahdollistaa  alkion
+poistamisen kahden muun alkion välistä käymättä listaa läpi siihen  kohtaan
+asti). 
+
+/*
+ * Esimerkkiohjelma linkattujen listojen käytöstä ja tiedon
+ * lataamisesta/tallentamisesta. Ohjelma on hieman rivieditorin
+ * kaltainen, mutta yksinkertaisempi ja selkeäkäyttöisempi.
+ * Suuremman rivimäärän käsittelemisessä tällainen on myös hidas.
+ */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+/*
+ * Linkatussa listassa käytettävä structure-tyyppi. Koska emme
+ * löydä alkioita muilla tavoin kuin yksinkertaisen linkin
+ * kautta, emme tarvitse osoittimia molempiin suuntiin, koska
+ * poistossa joudutaan käymään listaa läpi jo poistettavan
+ * alkion löytämistä varten.
+ */
+
+struct node {
+  struct node *next; /* Osoitin seuraavaan alkioon. */
+  char *string; /* Osoitin merkkijonoon, joka on alkion sisältö. */
+};
+
+/*
+ * Osoittimet listan ensimmäiseen ja viimeiseen alkioon.
+ * Osoitin ensimmäiseen edustaa periaatteessa koko listaa,
+ * osoitin viimeiseen ainoastaan nopeuttaa alkioiden
+ * lisäämistä listan loppuun. Huomaa, että molemmat ovat
+ * ohjelman ajoa aloitettaessa arvoltaan NULL.
+ */
+
+struct node *firstnode, *lastnode;
+
+/* Ohjelman osien prototyypit. */
+
+struct node *getnodenr(int);
+struct node *addnode(struct node *, const char *);
+void freelist(void);
+void listall(void);
+void printnode(void);
+void removenode(void);
+void findtext(void);
+void enternew(void);
+void savelist(void);
+void insertfile(void);
+
+/* Makro, jolla voidaan hypätä yli rivinvaihto stdin:stä. */
+
+#define skiplf() \
+  do { \
+    int c; \
+    if ((c = getc(stdin)) != '\n') \
+      ungetc(c, stdin); \
+  } while (0)
+
+int main(int ac, char **av)
+{{
+  /*
+   * Ohjelmassa on yksinkertaisuuden vuoksi samankaltainen
+   * tehoton käyttöliittymä kuin edellisen osan
+   * esimerkkiohjelmassa.
+   */
+
+  for (;;) {
+    char cmd[2];
+
+    puts("\nValitse toiminto:\n");
+    puts("l  luettele (tulosta) kaikki rivit");
+    puts("t  tulosta rivi");
+    puts("p  poista rivi");
+    puts("e  etsi tekstiä");
+    puts("k  kirjoita uusi rivi");
+    puts("y  tyhjennä rivimuisti");
+    puts("a  tallenna tiedostoon");
+    puts("i  lisää tiedoston sisältö rivimuistiin");
+    puts("u  poistu (ulos) ohjelmasta\n");
+
+    scanf("%1s", cmd);
+
+    switch (cmd[0]) {
+      case 'L':
+      case 'l':
+        listall();
+        break;
+      case 'T':
+      case 't':
+        printnode();
+        break;
+      case 'P':
+      case 'p':
+        removenode();
+        break;
+      case 'E':
+      case 'e':
+        findtext();
+        break;
+      case 'K':
+      case 'k':
+        enternew();
+        break;
+      case 'Y':
+      case 'y':
+        freelist();
+        puts("\nRivimuisti tyhjennetty");
+        break;
+      case 'A':
+      case 'a':
+        savelist();
+        break;
+      case 'I':
+      case 'i':
+        insertfile();
+        break;
+      case 'U':
+      case 'u':
+        freelist();
+        return 0;
+      default:
+        printf("\nTuntematon toiminto '%c'\n", cmd[0]);
+        break;
+    }
+  }
+
+  return 0;
+}
+
+/* Alkion etsintä rivinumeron perusteella. */
+
+struct node *getnodenr(int n)
+{{
+  /*
+   * Muka osoitin edellistä ensimmäiseen alkioon. Koska kenttä
+   * "next" sijaitsee structuren alussa, se voidaan muka lukea
+   * tällaisen osoittimen kautta. Rivinumero nolla palauttaa
+   * tällöin tämän osoittimen, jota voidaan käyttää esimerkiksi
+   * rivien poistamisen yhteydessä.
+   */
+  struct node *p = (struct node *)&firstnode;
+
+  while (n--) {
+    if (!(p = p->next))
+      break;
+  }
+
+  return p;
+}
+
+/*
+ * Alkion lisäämistoiminto. Parametreiksi annetaan osoitin
+ * edelliseen alkioon ja merkkijono, joka tulee uuden alkion
+ * tietosisällöksi.
+ */
+
+struct node *addnode(struct node *prev, const char *string)
+{{
+  struct node *node;
+
+  /* Varataan ensin muistista uusi alkio. */
+
+  if (node = malloc(sizeof *node)) {
+    /*
+     * Varataan muistista kopio merkkijonosta edustamaan
+     * tietosisältöä.
+     */
+
+    if (node->string = strdup(string)) {
+      /*
+       * Lisätään uusi alkio edellisen perään tai listan
+       * alkuun, mikäli edellinen on NULL-osoitin.
+       */
+
+      if (prev) {
+        node->next = prev->next;
+        prev->next = node;
+      } else {
+        node->next = NULL;
+        firstnode = node;
+      }
+
+      /*
+       * Mikäli alkio lisättiin listan viimeisen alkion
+       * perään, on se nyt viimeinen listassa. Jos lista
+       * on tyhjä, niin sekä prev että lastnode ovat NULL,
+       * joten tämä toimii siinäkin tapauksessa.
+       */
+
+      if (prev == lastnode)
+        lastnode = node;
+
+      /*
+       * Palataan tässä aliohjelmasta, sillä loppuosa on
+       * tarkoitettu ajettavaksi siinä tapauksessa, että
+       * muistin varaaminen epäonnistui. Palautetaan
+       * osoitin uuteen alkioon.
+       */
+
+      return node;
+    }
+
+    free(node);
+  }
+
+  printf("Varoitus: Uutta alkiota ei voitu luoda\n");
+
+  return NULL;
+}
+
+/* Aliohjelma, joka vapauttaa koko listan. */
+
+void freelist(void)
+{{
+  struct node *node, *next;
+
+  for (node = firstnode; node; node = next) {
+    next = node->next;
+    free(node);
+  }
+
+  firstnode = NULL;
+  lastnode = NULL;
+}
+
+void listall(void)
+{{
+  struct node *node;
+  int n;
+
+  puts("\nMuistissa olevat rivit:\n");
+
+  for (n = 1, node = firstnode; node; ++n, node = node->next)
+    printf("%d: %s\n", n, node->string);
+}
+
+void printnode(void)
+{{
+  struct node *node = NULL;
+  int n;
+
+  puts("\nAnna tulostettavan rivin numero");
+  scanf("%d", &n);
+
+  if (n)
+    node = getnodenr(n);
+
+  if (node)
+    printf("\n%d: %s\n", n, node->string);
+  else
+    printf("\nRiviä numero %d ei ole.\n", n);
+}
+
+void removenode(void)
+{{
+  struct node *p = NULL, *node;
+  int n;
+
+  puts("\nAnna poistettavan rivin numero");
+  scanf("%d", &n);
+
+  if (n)
+    p = getnodenr(n - 1);
+
+  /*
+   * p osoittaa edelliseen, joten sillä täytyy olla kenttänä
+   * myös osoitin seuraavaan.
+   */
+
+  if (p && (node = p->next)) {
+
+    p->next = node->next;
+
+    /* Jos node oli viimeinen, se on nyt p. */
+
+    if (node == lastnode)
+      lastnode = p;
+
+    free(node->string);
+    free(node);
+  } else
+    printf("\nRiviä numero %d ei ole.\n", n);
+}
+
+void findtext(void)
+{{
+  struct node *node;
+  int n, found = 0;
+  size_t len, slen;
+  char buf[256];
+  char *s;
+
+  puts("\nAnna etsittävä merkkijono");
+  skiplf();
+  gets(buf);
+
+  len = strlen(buf);
+
+  if (len && buf[len - 1] == '\n')
+    --len;
+
+  /* Ei etsitä tyhjää merkkijonoa. */
+
+  if (!len)
+    return;
+
+  /* Käytetään hyvin yksinkertaista etsintämenetelmää. */
+
+  for (n = 1, node = firstnode; node; ++n, node = node->next) {
+    s = node->string;
+    slen = strlen(s);
+
+    while (*s && slen-- >= len) {
+      if (!strnicmp(buf, s++, len)) {
+        ++found;
+        printf("%d: %s\n", n, node->string);
+        break;
+      }
+    }
+  }
+
+  printf("\nMerkkijono löytyi %d riviltä.\n", found);
+}
+
+/* Uuden rivin lisäämistoiminto. */
+
+void enternew(void)
+{{
+  char buf[256];
+  size_t i;
+
+  puts("\nKirjoita uusi rivi");
+  skiplf();
+  gets(buf);
+
+  i = strlen(buf);
+
+  if (i && buf[i - 1] == '\n')
+    --i;
+
+  buf[i] = '\0';
+
+  addnode(lastnode, buf);
+}
+
+/* Rivimuistin tallentamistoiminto. */
+
+void savelist(void)
+{{
+  struct node *node;
+  char filename[32];
+  FILE *fp;
+  int i;
+
+  puts("\nAnna tiedoston nimi, johon tallennetaan");
+  scanf("%31s", filename);
+
+  if (fp = fopen(filename, "w")) {
+    for (i = 0, node = firstnode; node; ++i, node = node->next)
+      fprintf(fp, "%s\n", node->string);
+    fclose(fp);
+    printf("\nTiedostoon kirjoitettiin %d riviä\n", i);
+  } else
+    printf("\nTiedostoa \"%s\" ei voitu luoda\n", filename);
+}
+
+/* Tiedoston lisääminen. */
+
+void insertfile(void)
+{{
+  char filename[32];
+  struct node *p;
+  char buf[256];
+  FILE *fp;
+  int n, i;
+
+  puts("\nAnna lisättävän tiedoston nimi");
+  scanf("%31s", filename);
+
+  puts("\nAnna rivinumero, jonka perään lisätään");
+  scanf("%d", &n);
+
+  p = getnodenr(n);
+
+  if (p) {
+    if (fp = fopen(filename, "r")) {
+      for (i = 0; fgets(buf, sizeof buf, fp); ) {
+        char *s = buf + strlen(buf) - 1;
+
+        if (*s == '\n')
+          *s-- = '\0';
+
+        /* Tyhjiä rivejä ei lisätä. */
+
+        if (s == buf)
+          continue;
+
+        /* Jos lisääminen epäonnistuu, lopetetaan. */
+
+        if (!(p = addnode(p, buf)))
+          break;
+
+        ++i;
+      }
+
+      fclose(fp);
+
+      printf("Tiedostosta lisättiin %d riviä.\n", i);
+    }
+  } else
+    printf("\nRiviä %d ei ole.\n", n);
+}
+
+Ohjelman pitäisi muiden esimerkkiohjelmien tavoin kääntyä melkein millä ta-
+hansa kääntäjällä. Käyttö lienee varsin selvää.
+
+Edellinen ohjelma  oli  esimerkkinä  interaktiivisista  ohjelmista,  joilla
+käyttäjä voi käsitellä tietoa. Usein ohjelmat saattavat prosessoida  suuren
+määrän tietoa säännönmukaisesti, ilman käyttäjän vaikutusta asiaan. Tällai-
+nen on esimerkiksi C-kääntäjä. Tämäntyyppisissä ohjelmissa on tiedon käsit-
+telyn nopeus erityisen tärkeää ja sen vuoksi käytetään erityisiä tekniikoi-
+ta, joilla voidaan  nopeuttaa  toimintaa  yksinkertaisempaan  toteutusmene-
+telmään verrattuna.
+
+Hyvä esimerkki tällaisesta nopeutustekniikasta  on  listojen  "hashaaminen"
+(en tiedä oikeata suomenkielistä  termiä)  eli  se,  että  lista  joistakin
+asioista jaetaan useampaan listaan jonkin sellaisen perusteella, joka jakaa
+ne melko tasaisesti näihin listoihin ja nopeuttaa  etsintää  mahdollisimman
+paljon. C-kääntäjässä tällaista  käytetään  mm.  symbolien  säilyttämiseen.
+Listan numero (hash-arvo) voidaan laskea esimerkiksi symbolin  nimen  merk-
+kien ASCII-arvojen summasta. Suoraan ensimmäisen merkin  käyttäminen  hash-
+arvona ei olisi kovin tehokasta, koska arvot eivät olisi tasaisia ja  merk-
+kijonojen vertailu pääsisi aina hiukan pitemmälle merkkijonossa kuin täysin
+erilaisen tapauksessa. Yksinkertaistettuna symbolitoiminnot  voisivat  olla
+esimerkiksi seuraavanlaisia (tässä puuttuvat symbolien varsinaiset tiedot):
+
+/*
+ * Käytetään kahden potenssia hash-taulukon kokona, jotta
+ * voitaisiin käyttää nopeaa '&'-toimintoa laskennassa.
+ */
+
+#define SYMHASH 256
+
+struct symbol {
+  struct symbol *next;
+  /*
+   * Varaamalla symbolin tunnuksen (nimen) suoraan alkion
+   * perään säästytään useammalta muistinvarauskutsulta.
+   */
+  char id[1];
+};
+
+struct symbol symtab[SYMHASH];
+
+int calchash(const char *s)
+{{
+  int h = 0, c;
+
+  while (c = (unsigned char)*s++)
+    h += c;
+
+  return h & (SYMHASH - 1);
+}
+
+struct symbol *addsym(const char *id)
+{{
+  struct symbol *sym;
+  int h = calchash(id);
+
+  sym = getmem(sizeof *sym + strlen(id));
+
+  strcpy(sym->id, id);
+
+  sym->next = symtab[h];
+  symtab[h] = sym;
+
+  return sym;
+}
+
+struct symbol *getsym(const char *id)
+{{
+  struct symbol *sym;
+  int h = calchash(id);
+
+  for (sym = symtab[h]; sym; sym = sym->next) {
+    if (!strcmp(sym->id, id))
+      break;
+  }
+
+  return sym;
+}
+
+/*
+ * Muistin varaamiseen käytetään normaalia malloc():ia
+ * nopeampaa ja suurella määrällä varauksia vähemmän
+ * muistia kuluttavaa toimintoa, joka lisäksi poistuu
+ * ohjelmasta, mikäli varaus epäonnistuu.
+ */
+
+char *memptr;
+size_t memleft;
+
+#define CHUNKSIZE 65536
+
+void *getmem(size_t bytes)
+{{
+  void *p;
+
+  /* Varmistetaan, että tavumäärä on parillinen. */
+
+  bytes = (bytes + 1) & ~1;
+
+  if (bytes > CHUNKSIZE)
+    abort();
+
+  /* Jos ei nykyisestä lohkosta ole jäljellä tarpeeksi,
+     varataan uusi ja unohdetaan nykyinen. */
+
+  if (memleft < bytes) {
+    if (!(memptr = malloc(CHUNKSIZE)))
+      abort();
+    memleft = CHUNKSIZE;
+  }
+
+  /* Annetaan muistilohkon seuraavat "bytes" tavua. */
+
+  p = memptr;
+  memptr += bytes;
+  memleft -= bytes;
+
+  return p;
+}
+
+Oikeassa ohjelmassa olisi symboleilla varmasti muutakin tietoa, ja getmem()
+saattaisi muistaa varaamansa lohkot, jotta ne voitaisiin vapauttaa  sitten,
+kun symbolitaulukon nykyistä sisältöä ei enää tarvita. C-kääntäjän  tapauk-
+sessa symbolitaulukkoja olisi lisäksi useampia, koska jokaisen  ohjelmaloh-
+kon sisällä voi olla  paikallisia  symboleita.  Jokaiselle  lohkolle  olisi
+tällöin myös omat listansa muistilohkoja, joista  varattaisiin  kaikki  sen
+lohkon paikalliset tiedot. Käytettyjen tekniikoiden toiminnan pitäisi  kui-
+tenkin selvitä ylläolevista esimerkkitoiminnoista.
+
+
+{3Käännöksen vaiheet, C-kääntäjän toiminta
+{3----------------------------------------
+
+Kuten aiemmissa osissa on mainittu, C-ohjelma käännetään useassa vaiheessa.
+Näiden vaiheiden samoin kuin C-kääntäjän toiminnan  tietäminen  on  hyödyl-
+listä. Vaiheet on tässä selostettu lyhyesti  sellaisina,  kuin  ne  yleensä
+ovat - monet kääntäjät saattavat kuitenkin yhdistää näitä vaiheita tai mah-
+dollisesti jakaa niitä edelleen. Sisäisesti kaikki kääntäjät toimivat  kui-
+tenkin ainakin käännöksen alkuvaiheissa suurin piirtein samalla tavoin.
+
+Ensimmäinen vaihe käännöksessä on esikäsittely, jonka  ohjaamiseen  käytet-
+tyjä komentoja ja sen suorittamia asioita käsiteltiin pääpiirteiltään kurs-
+sin toisessa osassa. Esikäsittelijäohjelma on  standardilta  nimitykseltään
+"cpp" (luultavasti tulee sanoista "C preprocessor"), joissakin  kääntäjissä
+tämä saattaa  olla  muunnettuna  (esimerkiksi  DICE:n  "cpp"  on  nimeltään
+"dcpp"). Joskus tämä vaihe saatetaan ajaa manuaalisesti (yleensä tosin etu-
+liittymän option avulla), jos käsittelyä käytetään vaikka  muiden  tekstien
+kuin C-lähdekoodien käsittelemiseen. (Esimerkiksi "Makefile"-tiedostojen ja
+assemblysorsien käsittely on yleistä Unix-systeemeissä.)
+
+Esikäännösvaiheessa C-sorsa käydään nopeasti läpi. Ainoastaan  '#'-merkillä
+alkavat rivit tulkitaan, kaikki muu ainoastaan selataan  läpi  siten,  että
+kommentit poistetaan ja korvataan tyhjällä ja itse koodisisältö käydään si-
+ten  läpi,  että  se  eritellään  yhtenäisiksi  sanoiksi,  joista  symbolin
+näköisiä sanoja verrataan makrolistaan ja tarpeen vaatiessa korvataan  sym-
+bolia vastaavalla makrolla. Lopputuloksena on yleensä  alkuperäistä  sorsaa
+pitempi (include-tiedostojen ansiosta, jotka luetaan suoraan mukaan sorsaan
+siihen kohtaan, missä #include-rivi oli) tiedosto, jossa ei ole kommentteja
+eikä yleensä muita '#'-rivejä kuin #line-rivejä, jotka kertovat seuraavalle
+käännösvaiheelle missä mennään, jotta virheiden  kohdat  voidaan  ilmoittaa
+oikein. Vaihdellen kääntäjän mukaan, saatetaan käyttää muitakin '#'-rivejä;
+DICE jättää mm. #pragma-komennot ja lisää mahdollisen nopeutetun  esikäsit-
+telyoption yhteydessä viitteen valmiiksi puolikäännettyyn tiedostoon.  Ami-
+gan kääntäjissä tämä on yleistä, koska Amigan käyttöjärjestelmän  toiminto-
+jen hyödyntämistä varten tarvitsee kohtuuttoman suuren määrän  include-tie-
+dostoja, joiden tulkinta kestää kauan.
+
+Seuraava käännöksen vaihe on yleensä varsinainen kääntäminen, joka  koostuu
+itsessään useammista vaiheista. Tämän vaiheen hoitaa yleensä  "cc1"-niminen
+ohjelma (DICE:n vastaava on "dc1"), jota ei juuri missään  yhteydessä  tar-
+vitse ajaa manuaalisesti.
+
+Varsinaisen käännöksen ensimmäinen vaihe  koostuu  kahdesta  "kerroksesta",
+leksikaalisesta analyysistä ja koodin parseauksesta. Leksikaalinen analyysi
+lukee esikäsiteltyä tiedostoa ja jakaa sitä  leksikaalisiin  elementteihin.
+Näiden elementtien välillä voi olla vapaasti välejä ja tyhjiä rivejä, jotka
+eivät itsessään kuulu näihin elementteihin, koska ne eivät tarkoita mitään;
+tämän ansiota on C-kielen vapaamuotoisuus. Tämä vaihe  käännöksestä  saate-
+taan usein hoitaa automaattisesti generoidulla "lekserillä". (Näitä voidaan
+generoida mm. ohjelmilla lex ja flex.)
+
+Leksikaalisen analyysin elementit annetaan eteenpäin parserille, joka  tul-
+kitsee niiden merkityksen (lekseri ei yleensä  havaitse  virheitä  ohjelman
+muodossa, sen sijaan parseri havaitsee heti, jos elementeistä  ei  kokonai-
+suutena muodostu mitään järkevää) ja rakentaa sen perusteella muistiin sym-
+bolitaulukoita,  tyyppimääritelmiä  ja  väliaikaisia   rakenteita,   joista
+myöhemmin generoidaan itse koodi. Koodia voi periaatteessa  generoida  mel-
+kein suoraan parserista, mutta tällöin optimointimahdollisuudet jäävät var-
+sin rajalliseksi. Vanha Aztec C vaikutti generoivan  koodia  melkein  tällä
+tavoin, nykyisistä kääntäjistä  DICE  vaikuttaa  sen  tuottamasta  koodista
+päätellen miltei näin yksinkertaiselta. Parserit  generoidaan  usein  auto-
+maattisesti mm. yacc-, byacc- ja bison-ohjelmilla.
+
+Kääntäjästä riippuen voi vaihdella suuresti,  miten  monen  vaiheen  kautta
+varsinainen koodi tuotetaan. Optimoivissa kääntäjissä yleensä näitä vaihei-
+ta on paljon ja ne kestävät aikansa ja vievät paljon muistia, koska  ohjel-
+man jokin osa on kokonaisuudessaan muistissa, kun sitä käsitellään. GNU C:n
+tapauksessa koodia tuotetaan yksi funktio kerralla, joten itse  lähdekoodi-
+tiedoston koko ei juurikaan vaikuta muistinkulutukseen.
+
+Ohjelmointikielten kääntämisen tarkemmasta toteutuksesta kiinnostuneiden on
+syytä hankkia käsiinsä flex ja bison (molemmat tulevat GNU C:n  mukana)  ja
+lukea näiden ohjeet.
+
+Varsinaisen käännöksen lopputuloksena on yleensä assemblykielinen lähdekoo-
+ditiedosto, jotkut kääntäjät tosin saattavat tuottaa suoraan objektikoodia.
+Useimpien kääntäjien etuliittymässä on mahdollisuus  käännöksen  lopettami-
+seen tässä vaiheessa, jolloin tuotettua  assemblykoodia  voi  tutkia  itse.
+Jotkut ohjelmat saattavat myös muutella koodia tässä vaiheessa. (Itse  tein
+aikoinaan DICE:en  ulkoisen  optimointilisävaiheen,  joka  muokkasi  koodia
+tässä vaiheessa.)
+
+Seuraava vaihe on assemblysorsan kääntäminen objektikoodiksi. Tämä on nopea
+vaihe, sillä erityisesti C-kääntäjän tuottama assemblerkoodi  on  jo  hyvin
+samankaltaista itse  ajettavan  koodin  kanssa.  Eri  C-kääntäjien  assemb-
+lerkääntäjät  vaihtelevat  hyvin  paljon.  DICE:n  "das"   on   normaalista
+kääntäjästä pelkistetty versio, joka osaa vain  tarkoitukseen  tarpeelliset
+asiat. Sen sijaan GNU C:n assemblerkääntäjä "as" on erittäin  monipuolinen,
+vaikkakaan se ei muistuta syntaksiltaan Amigan kääntäjiä, sillä se  käyttää
+mielestäni parempaa MIT-syntaksia Amigalla tavanomaisemman Motorola-syntak-
+sin sijaan.  Se  tukee  tosin  osittain  myös  Motorola-syntaksia.  Assemb-
+lerkäännöksen tuloksena olevien objektikooditiedostojen päätteenä on  ".o".
+Nämä objektikooditiedostot sisältävät periaatteessa valmista ajettavaa koo-
+dia, mutta ne sisältävät symboliviitteitä, joita ei ole vielä  paikannettu.
+koska kyseiset symbolit sijaitsevat eri objektitiedostoissa  tai  mahdolli-
+sesti linkattavissa funktiokirjastoissa. Objektikooditiedostoja voidaan jo-
+ko kerätä yhteen funktiokirjastoiksi tai linkata ajettaviksi ohjelmiksi.
+
+Linkkaamisvaiheessa useampia objektikooditiedostoja sekä  funktiokirjastoja
+(standardit C-toiminnot sijaitsevat  tällaisessa)  yhdistetään  ajettavaksi
+ohjelmaksi.  Ero  objektikooditiedostojen  ja  kirjastojen   käsittelemisen
+välillä on se, että objektikooditiedostot sisällytetään yleensä kaikki  oh-
+jelmaan, mutta kirjastoista valitaan ainoastaan ne kohdat (entiset objekti-
+kooditiedostot), jotka sisältävät sellaisia symboleita, joihin on viitteitä
+itse ohjelman objektikooditiedostoissa. Linkkaamiseen käytetty  ohjelma  on
+yleiseltä nimeltään "ld" (DICE:n linkkerin nimi on "dlink").
+
+Normaalisti etuliittymä hoitaa nämä kaikki vaiheet  tai  valikoidusti  vain
+tarpeelliset vaiheet. Yleensä etuliittymä tunnistaa sille parametreina  an-
+nettujen ohjelmien muodot niiden päätteistä ja ajaa ne  tarpeellisten  vai-
+heiden läpi. Etuliittymälle voidaan antaa  myös  optioita,  jotka  kertovat
+sille, mihin vaiheeseen asti olisi  käännettävä.  Tyypillisesti  suurempien
+ohjelmien tapauksessa C-sorsat käännetään ensin objektikoodiksi, ja  sitten
+annetaan joko etuliittymälle tai suoraan linkkerille kerralla kaikki objek-
+tikoodit, jotta niistä linkattaisiin ajettava ohjelma.
+
+
+{3Suuren projektin kasassapito
+{3----------------------------
+
+Edellä kerrottuja tietoja voidaan  hyödyntää  erityisesti  suuria  ohjelmia
+tehdessä. Tässä on muutamia vihjeitä siitä, mitä kannattaa tehdä jos ohjel-
+ma on vähänkin suurempi kuin ei mitään tai koostuu useista ohjelmista.
+
+Aina kannattaa jakaa  ohjelmat  useisiin  lähdekooditiedostoihin.  Ohjelman
+käyttämät makrot ja tyyppimäärittelyt kannattaa tehdä include-tiedostoihin,
+jotka liitetään #include-rivien avulla eri  lähdekooditiedostoihin.  Lähde-
+kooditiedostot kannattaa jakaa loogisesti siten, että tiedoston nimi kuvaa,
+minkätyyppisiä funktioita se sisältää. (Lähdekooditiedostojen niminä  saat-
+taisi olla esimerkiksi "main.c", "init.c", "window.c", "arexx.c" jne.)  Ja-
+kamalla loogisesti toiminnot tiedostoihin  päätyvät  globaaliset  muuttujat
+usein oikeisiin tiedostoihin siten, että jotakin muuttujaa käyttävät  funk-
+tiot ovat samassa tiedostossa. Sellaiset muuttujat, joita tarvitaan  useam-
+missa lähdekooditiedostossa, täytyy tietysti muissa kuin  määrittelytiedos-
+tossa määritellä "extern":ksi. Usein on hyvä ratkaisu laittaa tällaiset ex-
+tern-määrittelyt sekä funktioprototyypit johonkin include-tiedostoon.
+
+Ohjelmille kannattaa aina antaa versionumerot. (Näitä ei tarvinne  selittää
+sen enempää, koska kaikki ovat varmasti nähneet niitä  muissa  ohjelmissa.)
+Versionumero sekä kaikki merkkijonot, jotka sisältävät sen, kannattaa lait-
+taa yhteen lähdekooditiedostoon, joka on nopea kääntää mikäli se ei sisällä
+muuta. Kehittyneempää ohjelmien versioiden seuraamista varten  on  olemassa
+valmiita ohjelmia, jotka pitävät lukua lähdekoodikohtaisista versioista  ja
+kaikista koodille tehdyistä muutoksista. Tällainen on esimerkiksi RCS  (Re-
+vision Control System), josta lötyy Amigalle portattu hieman muuteltu  ver-
+sio HWGRCS tai jonka voi GNU  C:llä  kääntää  itse.  (Alkuperäinen  paketti
+löytyy useimmista ftp-siteistä /pub/gnu-hakemistosta, nykyinen taitaa  olla
+rcs-5.7.tar.gz.)
+
+RCS:lle on myös käyttöä helpottava ja muita ominaisuuksia lisäävä  CVS-etu-
+liittymä (Concurrent Versions System), jonka versiosta 1.3 löytyy  Amigalle
+portattu  versio.  Nykyinen  versio  on  tosin  jo  1.6,  paketin  nimi  on
+cvs-1.6.tar.gz. Molemmista näistä ohjelmista on erityisesti silloin hyötyä,
+kun samaa ohjelmaa kehittävät useat ihmiset yhdessä. (Silloin niitä on  to-
+sin parempi käyttää Unix-systeemeissä, koska Amiga ei  tue  suoraan  useita
+käyttäjiä.) Amigalle tehtyihin ohjelmiin kannattaa laittaa  myös  sellainen
+versionumero, jonka Amigan  "version"-komento  osaa  lukea.  Riittää,  että
+laittaa johonkin kohtaan ohjelmaa merkkijonon (jolla itse ohjelman ei  tar-
+vitse  välttämättä  tehdä  mitään)  muodossa  "$VER:  ohjelma  versionumero
+(päivämäärä)", jossa päivämäärä on muodossa päivä.kuukausi.vuosi.  Jossakin
+ohjelmassa voisi olla esimerkiksi:
+
+const char versionstr[] = { "$VER: myprogram 1.2 (10.6.95)" };
+
+Tällaisia versiomerkkijonoja osaa ainakin HWGRCS pitää yllä  automaattises-
+ti. Niiden automaattista päivitykstä varten voi myös kirjoittaa esimerkiksi
+awk-ohjelmia. (gawk, eli GNU awk tulee GNU C:n mukana ja on varsin  hyödyl-
+linen monessa muussakin - sen käyttö  kannattaa  opetella  erityisesti  jos
+käyttää (vaikka ei ohjelmoisikaan) Amigan lisäksi Unix-järjestelmiä.)
+
+Yksi hyödyllisimmistä ohjelmista, joita C-kääntäjien  kanssa  miltei  poik-
+keuksetta tulee, on make-apuohjelma (DICE:n make on tietysti "dmake").  Sen
+käyttö kannattaa ehdottomasti opetella,  koska  pitemmän  päälle  ohjelmien
+kääntäminen manuaalisesti on todella tuskastuttavaa, jos ohjelmaa  tehdessä
+ja korjatessa sitä joutuu kääntämään useaan kertaan. (Yleensä ohjelmia jou-
+tuu kääntämään hyvin usein.) Kun  kirjoittaa  ohjelman  kääntämistä  varten
+"Makefile"-tiedoston (tarkempaa tietoa tästä  saa  kääntäjän  make-ohjelman
+ohjeista), voi koko ohjelman kääntämisen suorittaa yksinkertaisesti  komen-
+nolla "make". Lisäetuna make kääntää ainoastaan  ne  ohjelman  osat,  jotka
+ovat muuttuneet; mikäli objektikooditiedoston päivämäärä  on  uudempi  kuin
+lähdekoodin, sitä ei tarvitse kääntää uudelleen. "Makefile"-tiedostoon  voi
+laittaa myös muita automaattisia toimintoja, kuten komentoja versionumeroi-
+den päivittämiseen.
+
+
+
+
+{3C-laajennuksia
+{3--------------
+
+Tässä osassa on lueteltuna joitakin C-kielen laajennuksia, joita  tietyissä
+kääntäjissä on. Näistä löytyy lisää tietoa kääntäjien  ohjeista,  tässä  on
+vain mainittuna pari hyödyllistä laajennusta,  joita  saattaisi  olla  hyvä
+opetella käyttämään.
+
+{3DICE C
+
+DICE:ssä on ylimääräinen  automaattinen  esikääntäjämakro,  __COMMODORE_DA-
+TE__, joka korvautuu merkkijonolla, joka on nykyinen päivämäärä  yllämaini-
+tussa "$VER:"-merkkijonojen vaatimassa muodossa.
+
+DICE:n  funktiomäärittelyissä  voi  määrätä   suoraan   rekisterit,   joita
+käytetään parametrien välittämiseen. Rekisteri määritellään muodossa  __re-
+kisteri, eli esimerkiksi __D0 tai __A0.
+
+DICE:n  funktiomäärittelyissä  voi  käyttää  __autoinit-   ja   __autoexit-
+lisämääreitä, joiden avulla funktio saadaan ajettua automaattisesti  ohjel-
+man käynnistys/poistumisvaiheessa. Näistä on erityisesti  hyötyä  linkatta-
+vien funktiokirjastojen yhteydessä.
+
+{3GNU C
+
+GCC:n switch()-rakenteessa voidaan case-kohtiin antaa jokin lukuväli  lait-
+tamalla vakioiden väliin "...", esimerkiksi "case 0 ...  9:"  toteutuu  ar-
+voille nollasta yhdeksään.
+
+GCC:ssä on erittäin tehokas (koska se ei rajoita  pahasti  kääntäjän  opti-
+mointeja),  vaikkakin  hieman  vaikeakäyttöinen   inline-assembly-toiminto,
+__asm__(), jolla voidaan laittaa suoraan C-lähdekoodin  sekaan  assemblyko-
+mentoja. Tästä voi olla hyötyä käytettäessä  hyvin  matalatasoisia  operaa-
+tioita (kuten pino-osoittimen muuttelua tai MMU:n ohjausta)  tai  erityisiä
+toimintaa nopeuttavia komentoja, joita C-kääntäjä ei osaa  suoraan  tuottaa
+(kuten "bfffo"). Sillä voidaan myös pakottaa muuttujia haluttuihin rekiste-
+reihin yms.
+
+
+{3Bugien etsintä
+{3--------------
+
+Mitä suurempi ohjelma, sitä varmempaa on, että siinä on bugeja  (ohjelmoin-
+tivirheitä). Bugien etsintä ja korjaaminen on erittäin  tärkeä  osa  ohjel-
+mointia, joissakin tapauksissa siihen saattaa mennä  moninkertaisesti  niin
+paljon aikaa kuin itse ohjelmakoodin  kirjoittamiseen  -  erityisesti,  jos
+kirjoittaa ohjelman kerralla ennenkuin kokeilee sitä.
+
+Bugit ilmenevät yleensä kahdella tavalla: ohjelma ei tee mitä  sen  pitäisi
+tai tekee jotain jota sen ei pitäisi tehdä - yleensä kaatuu tai kaataa koko
+koneen. Jälkimmäiset bugit ovat yleensä erityisen vakavia ja vaikeita  kor-
+jata, erityisesti kun Amigan kaltaisessa suojaamattomassa ympäristössä  oh-
+jelma voi sotkea muita ohjelmia ja sekoittaa  siten  koko  koneen  erittäin
+helposti. Koneen tahalliseen kaatamiseen riittää  vaikka  seuraavannäköinen
+lause:
+
+*(void **)4 = 0;
+
+Ylläoleva nollaa muistiosoitteen 4, jonka  pitäisi  osoittaa  exec.libraryn
+kantaosoitteeseen, joka ei ole nolla. Tietysti tahallinen koneen kaataminen
+on aina helppoa - se onnistuu jopa suojatuissa ympäristöissä,  ainakin  jos
+on "root"-käyttäjä: joskus kokeilin huvikseni Linuxissa shell-komentoa "yes
+>/dev/kmem", ja kaatuihan se - mutta Amigassa voi sotkea  muistia  helposti
+vahingossakin, jos jokin osoitin ei osoitakaan oikeaan osoitteeseen.
+
+Sellaiset bugit, jotka ilmenevät säännönmukaisesti aina tietyssä tilantees-
+sa, ovat yleensä helposti korjattavissa olevia. Tarvitsee ainoastaan  etsiä
+bugin kohta, jonka voi yleensä päätellä suunnilleen jo siitä, mitä  ohjelma
+oli sekoamisen hetkellä tekemässä. Tarkemman kohdan voi löytää  esimerkiksi
+siten, että laittaa ohjelman tulostamaan  vähän  väliä  ilmoituksia  siitä,
+missä kohtaa ohjelmaa mennään. Myös  muuttujien  arvon  tulostus  voi  olla
+hyödyllistä, sillä niistä usein näkee, mikä on  pielessä,  erityisesti  jos
+vika on jossain kohdassa ennen bugin ilmenemiskohtaa. Tämän menetelmän  op-
+pii parhaiten kokemuksen myötä. Vähitellen bugeja oppii  myös  "arvaamaan";
+parhaimmillaan ohjelman kaatuessa ohjelmoija päättelee  lähdekoodia  katso-
+matta, missä vika on, tai jopa arvaa, missä luultavasti on vikaa ennen kuin
+edes kokeilee ohjelmaa.
+
+Vaikka aina voidaan systemaattisesti etsiä bugeja edellämainitulla tavalla,
+ei se kuitenkaan yleensä ole  helppoa.  Joskus  bugeja  ei  tunnu  löytävän
+millään: voi esimerkiksi nähdä, että muuttujalla on aivan väärä arvo, mutta
+ei välttämättä ole kovinkaan selvää, mistä se on peräisin. Bugien  etsintää
+helpottavat huomattavasti  tähän  tarkoitukseen  suunnitellut  apuohjelmat,
+joita löytyy runsaasti ilmaisohjelmina. Amigalla yleisimpiä ovat  Enforcer,
+joka vahtii ohjelman osoittamia muistiosoitteita  (se  tosin  vaatii  MMU:n
+toimiakseen!) ja Mungwall, joka vahtii muistinvarauksia.  Uudempi  tulokas,
+jota voi käyttää Enforcerin sijasta, vaikka koneessa ei  olisi  MMU:ta,  on
+Apurify, josta löytyy versiot DICE:lle ja GNU C:lle (gcc:n nykyisen version
+(2.7.0) mukaana tulee Apurify). Näiden ja muiden debuggaustyökalujen käyttö
+selviää tietysti ohjeista.
+
+
+{3Amigan käyttöjärjestelmä
+{3------------------------
+
+Tässä kurssissa on käsitelty C-kieltä pääasiassa yleisesti, mutta  useimmat
+varmasti haluavat myös oppia hyödyntämään Amigan käyttöjärjestelmää. Amigan
+käyttöjärjestelmän hyödyntämistä ei tässä varsinaisesti käsitellä, osittain
+siksi,  etten  henkilökohtaisesti  pidä  siitä,  miten  C-kieltä  on  siinä
+väärinkäytetty, mutta kerron kuitenkin, mitä sitä varten olisi opeteltava.
+
+Amigan käyttöjärjestelmän toiminnot löytyvät erilaisista  kirjastoista  (ei
+pidä sekoittaa linkattaviin funktiokirjastoihin), jotka sisältävät valtavan
+määrän funktioita. Amigan käyttöjärjestelmän hyödyntämiseksi täytyy opetel-
+la käyttämään näitä  funktioita  ja  niihin  liittyviä  structure-tyyppejä.
+Näistä löytyy hiukan tietoa Amigan include-tiedostoista ja enemmän ns. "au-
+todoc"-tiedostoista, jotka on saatavilla elektronisessa muodossa native de-
+veloper kitin mukana. Painettua tietoa löytyy kirjasarjasta Amiga ROM  Ker-
+nel Reference Manual, jossa on autodocit ja paljon muuta tietoa Amigan  oh-
+jelmoinnista esimerkkeineen.
+
+Lopuksi liitän mukaan esimerkiksi hieman siistityn (ulkomuodon  siistimisen
+lisäksi on lisätty mm. onnistumisen tarkistukset ja mahdollisuus keskeyttää
+laskenta) version ensimmäisestä varsinaisesta  C-ohjelmastani.  Se  piirtää
+Mandelbrotin joukon hyödyntäen Amigan käyttöjärjestelmää. (Tämä  on  yksin-
+kertaisin mahdollinen ohjelma tähän tarkoitukseen, eikä ole  erityisen  no-
+pea, ainakaan ilman FPU:ta.) Ohjelman laskentaosuus pohjautui  muistaakseni
+vastaavaan BASIC-ohjelmaan. Kannattaa huomata, että ohjelma on vanha, suun-
+niteltu toimimaan Amigan käyttöjärjestelmän versiolla 1.3 eikä ole  muuten-
+kaan kovin joustava. 
+
+#include <stdlib.h>
+
+#include <exec/types.h>
+#include <intuition/intuition.h>
+
+#include <proto/exec.h>
+#include <proto/intuition.h>
+#include <proto/graphics.h>
+
+const struct NewScreen newscr = {
+  0, 0, 320, 256, 5, 0, 1,
+  CUSTOMSCREEN, NULL, NULL, NULL, NULL
+};
+
+struct NewWindow newwin = {
+  0, 0, 320, 256, 0, 1, IDCMP_VANILLAKEY,
+  SIMPLE_REFRESH | ACTIVATE | BORDERLESS | RMBTRAP,
+  NULL, NULL, NULL, NULL, NULL, 0, 0, 320, 256, CUSTOMSCREEN
+};
+
+const unsigned short colors[] = {
+  0x000, 0x058, 0x04a, 0x03c, 0x00f, 0x20f, 0x60e, 0x80d,
+  0xa0a, 0xf00, 0xf20, 0xf50, 0xf80, 0xfa0, 0xfc0, 0xff0,
+  0xef0, 0xdf0, 0xcf0, 0xbf0, 0xaf0, 0x9f0, 0x8f0, 0x7f0,
+  0x6e1, 0x4b3, 0x2a4, 0x095, 0x085, 0x076, 0x066, 0x067
+};
+
+int
+main(int ac, char **av)
+{{
+  float xp, yp, y, x, X, Y, nx = -3, xx = 1.5, ny = -1.5, dv, xy;
+  struct RastPort *rp;
+  struct Screen *scr;
+  struct Window *win;
+  long wmask;
+  int i;
+
+  if (scr = OpenScreen(&newscr)) {
+    LoadRGB4(&scr->ViewPort, colors, 32);
+    newwin.Screen = scr;
+    if (win = OpenWindow(&newwin)) {
+      rp = win->RPort;
+      wmask = 1 << win->UserPort->mp_SigBit;
+      xy = ny + (256 * (dv = (xx - nx) / 320));
+      for (Y = ny; Y <= xy && !(SetSignal(0, 0) & wmask); Y += dv) {
+        for (X = nx; X <= xx; X += dv) {
+          x = y = xp = yp = i = 0;
+          while (xp + yp <= 4 && i < 64) {
+            y = 2 * x * y + Y;
+            xp = (x = xp - yp + X) * x;
+            yp = y * y;
+            ++i;
+          }
+          SetAPen(rp, ((i < 64) ? i % 32 : 0));
+          WritePixel(rp, (long)((X - nx) / dv), (long)((Y - ny) / dv));
+        }
+      }
+      Wait(wmask);
+      while (GetMsg(win->UserPort))
+        ;
+      CloseWindow(win);
+    }
+    CloseScreen(scr);
+  }
+  return 0;
+}

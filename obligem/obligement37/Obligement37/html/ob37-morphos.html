@@ -1,0 +1,913 @@
+<html>
+ <head>
+  <title>Caractéristiques de MorphOS</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="5,1,756,80" href="http://obligement.free.fr">
+  <area shape="rect" coords="11,87,74,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="88,87,184,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="200,87,302,105" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="316,87,432,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="442,87,512,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="526,87,630,105" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="648,87,746,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#113333" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Caractéristiques de MorphOS </font></div><br><br><br>
+
+
+<font size="+1" color="#ccbb33">MorphOS Full Features List, v1.2, 12/12/02 by the MorphOS team.</font><br><br>
+
+- MorphOS Features at a glance<br>
+- Core OS<br>
+- OS Components<br>
+- 3D Graphics Support<br>
+- Applications / Utilities<br>
+- Miscellaneous<br>
+- Pegasos specific software<br>
+- Appendix<br>
+- Contact and Additional Information<br><br>
+
+<font size="+1" color="#ccbb33">MorphOS Features at a glance:</font><br><br>
+
+- Native PowerPC Operating System<br>
+- Supports Pegasos and Amigas fitted with PowerUP cards<br>
+- Runs Native PPC and Amiga OS RTG Applications<br>
+- 68K JIT compiler runs applications at up to 75% of native PPC speed<br>
+- Hardware 3D support (3dfx, 3DLabs, SiS + more to come)<br>
+- New Ambient Desktop with 32 bit colour support<br>
+- Fully Skinnable user interface<br>
+- MUI Object Orientated GUI Toolkit<br>
+- Media Player (Frogger)<br>
+- Multi-threaded Image viewer (MysticView)<br>
+- Web browser (Voyager)<br>
+- PDF viewer (APDF)<br>
+- Supports an extensive range of Printers (TurboPrint v7)<br>
+- TCP/IP Stack for networking.<br>
+- Built in Software Development Kit<br>
+- AHI Audio<br>
+- USB Support<br>
+- Multiple 64 bit File systems supported including FFS2 & SFS<br><br>
+
+<font size="+1" color="#ccbb33">Core OS</font><br><br>
+
+<b>Quark - State of the Art micro-kernel designed for:</b><br><br>
+
+High Super/Usermode switch speed<br>
+Low interrupt latency<br>
+IntThread and Int PCode abstraction<br>
+Memory protection<br>
+Symmetrical multi processing (SMP)<br>
+Task/Thread and Clan/Chief model<br>
+Resource tracking<br>
+Asynchronous message system<br>
+Virtual memory (optional)<br>
+Recursive Memory Management<br>
+Distributed computing<br>
+No access to Kernel structures<br>
+Clean design with an elegant API<br><br>
+
+<b>HAL - The Hardware Abstraction Layer</b><br><br>
+
+Makes MorphOS hardware independent, through the following points:<br><br>
+
+Determines the CPU types, the number of CPUs and clock speed.<br>
+Scans the ABox Zorro I/O ports for Zorro-II and Zorro-III cards and configures them.<br>
+Finds local hardware (CVisionPPC, SymbiosPPC, PCI bus)<br>
+Creates a resource map for the Quark microkernel.<br>
+Starts the kernel resource.<br><br>
+
+<b>Q-Box</b><br><br>
+
+Exception Server<br>
+Master-Clan Server<br>
+Address Server<br>
+Config Server, using the resource map built by the HAL<br>
+CPUTime Server <br><br>
+
+<b>A-Box</b><br><br>
+
+ABox is a multithreaded application running as a Quark process with its own memory space.
+It contains a PowerPC native heavily extended reimplementation of the OS known from your Commodore A500, A1000, A1500, A2000, A3000, A3500, A3500T, A4000 and A4000T systems.<br><br>
+ 
+<b>A-BOX Components</b><br><br>
+
+Static 680x0 emulator<br><br>
+
+It emulates 680x0 instructions. All 68881 and 68882 opcodes are supported too.
+The most used FPU instructions are replaced with emulation opcodes easier to decode.  Some unused features are not emulated.
+All in all, the emulator is twice as fast as one without these special methods.<br><br>
+
+<b>Trance - Just In Time 68k compiler (JIT)</b><br><br>
+
+Trance translates 68k program code to native PPC code. Translated code is kept in memory, so when running same code again, translated code can be run directly.<br><br>
+
+Several optimizations are performed during the translation. This allows to get incredible performances never achieved with other current JIT technology implementations. Multiple 68k instructions are combined to single PPC instruction, non needed parts of code are removed 
+Etc.<br><br>
+
+Typically, 68k applications running with JIT get least 50% of native PPC speed and up to 75%.
+For example the native PPC rc5 decoder "dnetc_ppc -bench rc5" does 755kkeys/sec, and emulated 68k version  "dnetc_68k -bench rc5" does 542kkeys/sec. (csppc 604e/233)<br><br>
+
+Even the slowest BlizzardPPC/603e is able to run 68k applications faster than any existing 68060.<br><br>
+
+Condition code flow analysis which allows us to remove expensive CCR calculations when not needed.<br><br>
+
+"Transput-bound" and "Compute-bound" tasks are handled differently:<br><br>
+
+- Compute-bound tasks run in fully translated mode. Trance is called from the task context to translate next sequence of code, then execution jumps to that translated code.<br>
+- Transput-bound tasks spend most of their time waiting for user input or some other signal. It's important that when signal a arrives, code execution starts immediately, without having to wait for code to get translated first. So, if translated code is not available, the code is run using normal "static" emulation. These emulated functions are profiled to see which are used most often, then those functions are translated later when the system is idle.<br>
+- The main point of this arrangement is not to add any delays or latency to the system.<br><br>
+
+<b>PowerPC Compatibility Libraries</b><br><br>
+
+ppc.library - PowerUP compatibility layer<br>
+WOSEmu - WarpUP compatibility layer<br><br>
+
+<b>Exec</b><br><br>
+
+Mixed mode allowing 68k and PPC code running in the same task. No exception and no task-switch to go from one mode to the other one.<br><br>
+
+- Task memory pool<br>
+- Better multithreading support<br>
+- SystemV ABI support, using fpu registers for system functions is possible<br>
+- New functions to get and set tasks states (stack, priority...).<br>
+- New functions for better memory handling <br>
+- New hook and query functions to internal exec lists<br><br>
+
+<b>graphics.library</b><br><br>
+
+- RTG<br>
+- New functions for alpha blending, <br>
+- Special visual effects (used by Ambient...) <br>
+- True colour<br>
+- Extended draw primitives.<br><br>
+
+<b>diskfont.library</b><br><br>
+
+Anti-aliased fonts in development.<br><br>
+
+<b>FreeType2 - Vector fonts library</b><br><br>
+
+Supports Type0, Type1, Type42, TrueType, and OpenType fonts.<br>
+Anti-aliasing support.<br><br>
+
+<b>Datatypes</b><br><br>
+
+Datatypes are a means of allowing programs to handle different data formats without having to directly support them themselves.<br><br>
+
+Currently supported:<br><br>
+
+- JFIF-JPEG<br>
+- PNG<br>
+- IFF-ILBM<br>
+- BMP<br>
+- GIF<br>
+- PCX<br>
+- PBM<br>
+- Icons<br>
+- Text<br>
+- Binary<br><br>
+
+More in development.<br><br>
+
+<b>Shell and Console</b><br><br>
+
+Improved resident commands<br>
+- If: New switch NOREQ/S, hides possible requesters (IF EXISTS foobar: NOREQ)<br>
+- Path: Support for multi assign ADD/REMOVE.<br>
+- Resident: DEFER/S, program is made resident when first used<br>
+- SetEnv: SAVE/S option to permanently save variable in ENVARC:<br>
+Support for #! un*x style script execution<br>
+Unlimited buffer lengths (command line, variable expansion, quote expansion), no fixed limits<br>
+Configurable WShell compatibility features<br>
+Fully configurable menus, toolbar, and key shortcuts<br>
+On the fly MorphOS->un*x path transformation, if needed<br>
+Configurable tab-completion for commands/files/dirs<br>
+Review buffer with scrollbar (like KingCON)<br>
+Powerful Multi pages mode:<br>
+- Several shells can run in the same window console.<br>
+- Graphical button to switch between them or create new ones.<br>
+Shell can be detached and reattached to another console.<br><br>
+
+<b>Filesystems</b><br><br>
+
+FastFileSystemII, fully compatible to FastFileSystem<br>
+SmartFilesystem<br>
+Other filesystems (like PFS3) run emulated<br>
+Lowlevel Graphical tools for FFS and SFS (Salvage, Fix in place for damaged volumes, etc...)<br>
+See Appendix for details.<br><br>
+
+<b>CDDrive - CDROM filesystem</b><br><br>
+
+ISO9660<br>
+Multisession<br>
+Rockridge<br>
+Joliet<br><br>
+
+<b>CyberGraphX RTG compatibility</b><br><br>
+
+Ability to use old CyberGraphX v4 drivers (on PowerUP hardware).<br><br>
+
+<b>Intuition user interface</b><br><br>
+
+Fully skin able GUI, using different bitmap for each element<br>
+Shipped with several skins<br>
+Opaque Window moving<br>
+Window Iconification<br>
+Off-screen Windows<br>
+screennotify.library<br>
+etc...<br><br>
+
+<b>Ambient - Powerful MorphOS Desktop</b><br><br>
+
+MUI based<br>
+Fully asynchronous, multi-threaded design, you are never blocked<br>
+Does not require icon.library<br>
+Built-in original icons support<br>
+Built-in newicon support<br>
+Built-in OS 3.5 Glowicon support<br>
+New true-colour PNG 32bits icon format, with alpha channel support for transparency<br>
+Fast icon caching system<br>
+File notification<br>
+True-colour rendering (no pen allocations)<br>
+Support for deficons<br>
+64-bit arithmetic to handle big storage devices<br>
+Localized<br>
+ARexx port (optional)<br>
+Built-in disk formatting<br>
+Visual effects: transparency, blurring, colour imposing, alpha channels.<br>
+Built-in wbstart.library<br><br>
+
+<b>New Preferences System</b><br><br>
+
+Highly flexible shared class system.<br>
+Possible to embed in MUI applications.<br>
+All system preferences can be edited in a single MUI tool.<br>
+Or run as a standalone component.<br><br>
+
+<b>AHI v6</b> - The Standard Audio Library<br><br>
+
+<b>AmiTCP v5 - TCP/IP protocol stack</b><br><br>
+
+Friendlier logging system with global filter etc.<br>
+Cache for name server replies<br>
+Sana-II 2.0 support (with DMA buffers extension)<br>
+Full PPPoE support for Cable and ADSL<br>
+Full BOOTP support<br>
+Packet filtering<br>
+Access control for server programs<br>
+Automatic BOOTP configuration utility<br>
+Standard network tools (ping, traceroute, resolve, finger, netstat, etc...)<br>
+Telnet client<br>
+RSH client<br>
+Fully controllable through ARexx<br>
+User Manual<br><br>
+
+<b>InstallerNG</b><br><br>
+
+A lot of new useful functions and tooltypes<br>
+Plug-in system to use other GUI toolkits (MUI, etc...)<br><br>
+
+<b>MUI - Object Oriented GUI Toolkit</b><br><br>
+
+Adjustable bubble help sizes and look and floating bubble mode<br>
+Separate preferences for MUI settings and external MCCs. Speeds up start-up time<br>
+"Jump Screen" menu function to quickly move your application to another screen<br>
+Improved mouse movements in virtual groups<br>
+New menu system. Configurable and can be embedded in windows<br>
+Support for wheel mice<br>
+Now uses video memory whenever possible to improve performance<br>
+Large speedups and optimizations everywhere<br><br>
+
+<b>MagicASL</b> - Nice MUI Requesters<br><br>
+
+<b>3D Graphics Support</b><br><br>
+
+Rave3D - Low level 3D Graphic Drivers (v1.6 implementation)<br><br>
+
+Rave is a low level 3D driver API. Its design has been discussed and defined by major key graphic companies like ATI.<br>
+The MorphOS version is implementing most of it and is adding some extensions like automatic and transparent double buffering,
+ZBuffer access... It is completely integrated with the 2D drivers system.<br><br>
+
+Features of the Driver API:<br>
+- Vertex array<br>
+- Global states<br>
+- Multi-Texturing<br>
+- Fogging<br>
+- OpenGL blending modes<br>
+- Antialiasing<br>
+- Compressed textures<br>
+- Trilinear texture filtering<br>
+- Mipmapping<br>
+- Texture memory access<br>
+- Textures can be bound on a screen bitmap<br>
+- Deep Z buffering (greater or equal to 24bits per pixel)<br>
+- Scaled draw context<br>
+- Fully extensible via tags, including the addition of functions.<br>
+- Complete blackbox design.<br><br>
+
+Hardware Drivers:<br>
+- 3dfx Voodoo3 (Avenger)<br>
+- SIS 6326<br>
+- 3DLabs/TI Permedia2 and 2v<br>
+- CVisionPPC (Permedia2)<br>
+- BVisionPPC (Permedia2)<br><br>
+
+<b>Jungl</b><br><br>
+
+Highlevel 3D Graphics Library, (compatible with the OpenGL 1.4 API) <br><br>
+
+<b>Goa</b> - Full Warp3D emulation<br><br>
+
+<b>Working games include:</b><br><br>
+
+Wipeout<br>
+Heretic2<br>
+Payback<br>
+GLQuake<br>
+ADescent<br>
+Etc.<br><br>
+
+<font size="+1" color="#ccbb33">Applications / Utilities</font><br><br>
+
+<b>Frogger - Media Player</b><br><br>
+
+Audio and Video Player<br>
+DVD and VideoCD playback<br>
+Intelligent frame skipping<br>
+AREXX interface<br>
+Configurable keyboard shortcuts<br>
+Overlay support<br><br>
+
+<b>MysticView - Modern picture viewer</b><br><br>
+
+Smooth automatic scaling<br>
+Very user friendly with a nice toolbar and some intelligent choices<br>
+Integrated in the desktop, it's possible to drag'n drop pictures and directories<br>
+Elegant list management<br>
+Asynchronous, modular and completely multithreaded<br>
+Picture caching for maximum performances<br>
+Highly configurable<br><br>
+
+<b>Voyager - Fastest Web Broswer</b><br><br>
+
+HTTP/1.1 connection keepalive, content negotiation and resume support<br>
+FTP connects keepalive and resume support<br>
+SSLv2, SSLv3 and TLSv1 encryption support, with up to 168 bit keys<br>
+'Javascript' (ECMA-Script) scripting support<br>
+LowLevel Plugin API supporting embedded objects (PDF, Flash, etc...)<br>
+Fully user-controllable GUI with custom control panel placement, configurable navigation and fastlink buttons.<br>
+Macromedia Shockwave Flash compatible Player<br>
+Versatile Bookmarking system utilizing ContactManager<br>
+Internal web page editing with HTML tag highlighting<br>
+Internal GIF, JPG, PNG, XBM decoding<br><br>
+
+<b>APDF v3</b><br><br>
+
+Displays PDF 1.4 files.<br>
+Type0, Type1, Type1C, Type3, Type42, TrueType, OpenType fonts support.<br>
+True anti-aliasing of all graphics.<br>
+Asynchronous graphics rendering.<br>
+Asynchronous file I/O, with linearization support.<br>
+Asian languages support.<br>
+Supports transparent and rotated pictures.<br>
+Progressive display mode.<br>
+View as many pages and documents as you want at once.<br>
+Partial PDF forms support.<br>
+Supports password protected files.<br>
+Full-screen mode.<br><br>
+
+<b>TurboPrint v7</b><br><br>
+
+16 million colours output (24bits printer.device)<br>
+TrueMatch colour management: Vibrant colours & finest dithering<br>
+Very intelligent, no need for complex setup.<br>
+It's still possible to fine tune brightness, sharpness, contrast, saturation, etc...<br>
+Intuitive preferences editor.<br>
+Transparent Printer Spooler. Print jobs are processed in the background.<br>
+Powerful Graphics Publisher Compose any pictures and texts, like with a DTP package.<br>
+Hard copy function, to print MorphOS screens.<br>
+Integrated Ghostscript interface for compatibility with every Postscript printer.<br><br>
+
+See Appendix for full list of supported Printers.<br><br>
+
+<b>SimpleMail</b><br><br>
+
+Email program.<br><br>
+
+<b>Graphical MorphOS Boot Menu</b><br><br>
+
+Boot volume selection<br>
+Volume Disabling<br>
+Full control over SCSI settings<br>
+ - Synchronous / Asynchronous<br>
+ - Reselection<br>
+ - Timings<br><br>
+
+<b>Software Development Kit</b><br><br>
+
+GNU GCC, also free VBCC exists<br>
+Complete set of includes<br><br>
+
+<b>Disk Wizard</b><br><br>
+
+Disk Salvaging tools and other utilities.<br>
+See Appendix for details.<br><br>
+
+<b>Birdie Shoot - Fun Action Game</b><br><br>
+
+Unique BI (bird intelligence) routines - birds try to escape your crosshair.<br>
+Kill-O-Meter for additional bonus points.<br>
+Highly detailed graphics. <br>
+Many funny animations and sound effects.<br>
+Over half a dozen types of birds (ducks, chicken, doves, storks etc.).<br>
+4 levels in different settings (Jungle, Sea, Forrest, Arctic).<br>
+Hidden extras.<br>
+Shoot birds and extras multiple times for bigger scores.<br>
+Tournament mode for up to 4 players. <br>
+Multi-language support.<br>
+Optional window mode.<br><br>
+
+<b>Contributions - Many thanks to their authors</b><br><br>
+
+- Dynamite<br>
+- Soliton<br>
+- LZX<br>
+- MAME<br>
+- ATC<br>
+- OrangeFTPd<br>
+- MorphVNC<br>
+- Microdot2<br>
+- AmTelnet<br>
+- AmIRC<br>
+- NetInfo<br>
+- Quake 2 (Executable only)<br><br>
+
+<font size="+1" color="#ccbb33">Miscellaneous</font><br><br>
+
+<b>In Development:</b><br><br>
+
+Full built in Prometheus (by Matay) support<br><br>
+
+Hardware driver for Jungl<br><br>
+
+Overlay support for Radeon<br><br>
+
+Moving CybergraphX code into graphics.library.<br>
+When finished, CybergraphX will just be a wrapper on the top of graphics.library.<br><br>
+
+ARexx reimplementation<br><br>
+
+<b>Planned / Starting Development:</b><br><br>
+
+Firewire stack<br><br>
+
+Openfirmware<br>
+USB UHCI driver<br><br>
+
+Jungl<br>
+A GLUT implementation.<br><br>
+
+2D driver<br>
+A builtin generic VESA driver<br><br>
+
+3D driver<br>
+ATI Radeon (various)<br>
+3dfx Voodoo5 (VSA-100)<br>
+3dfx Voodoo4 (VSA-100)<br>
+SIS 305<br><br>
+
+CDDrive<br>
+UDF support for DVD<br><br>
+
+AmiTCP<br>
+DHCP support<br><br>
+
+Wireless network card drivers<br><br>
+
+Bluetooth support<br><br>
+
+IRDA support<br><br>
+
+New Input API<br>
+PS/2 Mouse<br>
+USB Mouse<br>
+USB Joystick<br>
+USB Joypad<br>
+USB Wheel<br>
+PC joystick<br>
+Etc.<br><br>
+
+QT Toolkit port<br><br>
+
+Java Virtual Machine<br><br>
+
+Etc...<br><br>
+
+<font size="+1" color="#ccbb33">Pegasos specific software</font><br><br>
+
+SmartFirmware - Industrial OpenFirmware IEEE 1275-1994 implementation<br><br>
+
+Forth engine interpreter.<br>
+Support for PCI/AGP cards using Forth BootRom<br>
+Support for PCI/AGP cards using x86 BIOS, through a x86 emulator<br>
+Support for standard RDB and MBR partition table styles<br>
+Support for FFS, SFS, AFS, PFS, PFS2, PFS3 filesystems. The Operating System can boot from anywhere.<br>
+Complete control over:<br>
+- Boot device (hard drive, cdrom, network, etc...)<br>
+- Autoboot functionality<br>
+- Input device (keyboard, serial terminal, etc...)<br>
+- Display resolution<br>
+- etc.<br><br>
+
+
+<b>Operating Systems supported on Pegasos</b><br><br>
+
+MorphOS<br>
+Linux (Debian, SUSE)<br>
+MacOS9 and MacOS X, (via Linux/MacOnLinux)<br><br>
+
+In Development<br>
+NetBSD <br>
+Gentoo Linux<br><br>
+
+Under discussion<br>
+OpenBSD<br>
+Mandrake Linux<br>
+BeOS-PPC (via Linux/MacOnLinux)<br>
+OpenBeOS (not in immediate future)<br><br>
+
+<font size="+1" color="#ccbb33">Appendix</font><br><br>
+
+- Supported Hardware<br>
+- TurboPrint Supported printers:<br>
+- Frogger Supported Media Types<br>
+- Filesystems<br>
+- Poseidon - Complete USB protocol stack<br><br>
+
+<b>Hardware we currently support</b><br><br>
+
+Pegasos (G3 and G4)<br>
+DCE/Phase5 CyberstormPPC (PowerPC 604e)<br>
+DCE/Phase5 BlizzardPPC (PowerPC 603e)<br><br>
+
+<b>PCI Bus boards</b><br><br>
+
+DCE GRex4000<br>
+DCE GRex1200<br>
+Matay Prometheus (Matay is currently working on it with us)<br><br>
+
+<b>Graphic boards (2D)</b><br><br>
+
+ATI Radeon 9000 Pro (RV250)<br>
+ATI Radeon 8500LE  (R200)<br>
+ATI Radeon 7500    (RV200)<br>
+ATI Radeon 7200    (R100)<br>
+ATI Radeon 7000VE  (RV100)<br>
+3dfx Voodoo5 5500 (VSA-100)<br>
+3dfx Voodoo4 4500 (VSA-100)<br>
+3dfx Voodoo3 3500 (Avenger)<br>
+3dfx Voodoo3 3000 (Avenger)<br>
+3dfx Voodoo3 2000 (Avenger)<br>
+SiS 305<br>
+SiS 300<br>
+SiS 6326<br>
+3DLabs/TI Permedia2<br>
+3DLabs/TI Permedia2v<br>
+DCE/Phase5 CVisionPPC<br>
+DCE/Phase5 BVisionPPC<br><br>
+
+<b>Visionary, modern support for TV/Video cards</b><br><br>
+
+Visionary is a "remote control" program with a skinable GUI.<br>
+His modular internal design allows the support for a wide variety of chipsets.<br><br>
+
+Brooktree BT848<br>
+Brooktree BT878<br>
+Brooktree BT879<br>
+Conexant Fusion 878a<br>
+Conexant Fusion 879<br>
+Microtune Tuner<br>
+Philips Tuner<br>
+Temic Tuner (Only the newer ones)<br>
+more...<br><br>
+
+<b>Sound drivers</b><br><br>
+
+Pegasos onboard AC97 sound chip (Sigmatel STAC 9766)<br>
+Terratec 128iPCI (ESS Solo-1)<br>
+Terratec 512i digital (FM801)<br>
+Vivanco (FM801)<br><br>
+
+<b>Network drivers</b><br><br>
+
+Realtek RTL8201 10/100MBit, (Phyceiver, like found on the Pegasos)<br>
+Realtek RTL8139C 10/100MBit<br>
+Realtek RTL8029AS 10MBit<br>
+VillageTronic Ariadne2 10MBit<br>
+IndividualComputing XSurf 10MBit<br>
+PCMCIA CNet NICs (A1200 PCMCIA slot only)<br><br>
+
+<b>SCSI</b><br><br>
+
+Symbios 89x (+ current models)<br>
+Symbios 810, 815, 825, 875<br>
+Symbios 710, 770<br>
+Symbios 770 SCSI, like found on CyberstormPPC and BlizzardPPC<br>
+DKB A4091<br>
+Commodore A4000T on board SCSI<br><br>
+
+<b>IDE</b><br><br>
+
+Pegasos onboard IDE ATA100 controler (VIA8231)<br>
+Commodore A1200/A4000 internal controler<br>
+generic PCI cards<br><br>
+
+<b>Poseidon - Complete USB protocol stack</b><br><br>
+
+See below for details<br><br>
+
+<b>TurboPrint Supported printers:</b><br><br>
+
+Brother<br>
+Brother_24-Pin, Brother_9-Pin<br><br>
+
+Canon<br>
+Canon_BJ, Canon_BJC70, Canon_BJC210, Canon_BJC240, Canon_BJC250, Canon_BJC600, Canon_BJC600e, Canon_BJC610, Canon_BJC620, Canon_BJC800, Canon_BJC1000, Canon_BJC2000, (Canon_BJC2100 via Canon_BJC2000 driver), Canon_BJC3000, Canon_BJC4000, Canon_BJC4100, Canon_BJC4200, Canon_BJC4300, Canon_BJC4400, Canon_BJC6000, Canon_BJC6100, Canon_BJC6200, Canon_BJC6500, Canon_BJC7000, Canon_BJC7100, Canon_BJC8200, Canon_LBP, Canon_PJ1080A, Canon_S400, Canon_S450, Canon_S4500, Canon_S500, Canon_S600, Canon_S630, Canon_S800, Canon_S6300<br><br>
+
+Citizen<br>
+Citizen_120D+, Citizen_120D, Citizen_PRINTiva600C, Citizen_PRINTiva700C, Citizen_Swift24,240, Citizen_Swift9<br><br>
+
+Epson<br>
+Epson_EX,FX,LX, Epson_LQ,SQ, Epson_Stylus, Epson_Stylus820, Epson_StylusIIs, Epson_StylusPro(XL), Epson_StylusC60, Epson_StylusC70, Epson_StylusC80, Epson_StylusColour, Epson_StylusColour200, Epson_StylusColour300, Epson_StylusColour400, Epson_StylusColour440, Epson_StylusColour460, Epson_StylusColour500, Epson_StylusColour600, Epson_StylusColour640, Epson_StylusColour660, Epson_StylusColour670, Epson_StylusColour680, Epson_StylusColour740, Epson_StylusColour760, Epson_StylusColour800, Epson_StylusColour850, Epson_StylusColour860, Epson_StylusColour880, Epson_StylusColour900, Epson_StylusColour980, Epson_StylusColour1520, Epson_StylusColour3000, Epson_StylusColourII, Epson_StylusColourIIs, Epson_StylusPhoto, Epson_StylusPhoto700, Epson_StylusPhoto750, Epson_StylusPhoto790, Epson_StylusPhoto810, Epson_StylusPhoto870, Epson_StylusPhotoEX, Epson_StylusPhoto1200, Epson_StylusPhoto1270, Epson_StylusPhoto1290.<br><br>
+
+HP<br>
+HP_ColourLaserJet5, HP_DeskJet, HP_Deskjet1100C, HP_Deskjet1120C, HP_DeskJet1200, HP_DeskJet400C, HP_DeskJet500,  HP_DeskJet500C, HP_DeskJet520, HP_DeskJet540C, HP_DeskJet550C, HP_DeskJet560C, HP_DeskJet600C, (HP_DeskJet610, 640: via HP_DeskJet694 driver), HP_DeskJet660C HP_DeskJet670-674C, HP_DeskJet690-694C, HP_DeskJet810C, HP_DeskJet812C, HP_DeskJet815C, HP_DeskJet830C, HP_DeskJet832C, HP_DeskJet840C, HP_DeskJet850C, HP_DeskJet870C, HP_DeskJet880C, HP_DeskJet882C, HP_DeskJet890C, HP_DeskJet895C, HP_Deskjet920C, HP_Deskjet930C, HP_Deskjet940C, HP_Deskjet950C, (HP_DeskJet959C via HP_DeskJet950C driver), HP_Deskjet960C, HP_Deskjet970C, HP_DeskJet98xC, HP_DeskJet99xC, HP_LaserJet2, HP_LaserJet3, HP_LaserJet4, HP_LaserJet4L, HP_LaserJet5series, HP_LaserJet6series, HP_PaintJet,PaintJetXL, HP_PaintJet300XL.<br><br>
+
+Facit_B3450, Fujitsu_DL-1100<br>
+Lexmark_ExecJetIIc, Nec_Pinwriter, Oki_ML-38x, Oki_ML-39x, Panasonic_KX-P1124, Panasonic_KX-P1540, Seikosha_24-Pin, Seikosha_9-Pin, Seikosha_SL-80AI, Seikosha_SL-80IP,<br><br>
+
+Star<br>
+Star_9-Pin, Star_LC,XB-24, Star_LC-10, Star_SJ144<br><br>
+
+Other printers are supported through emulation modes.<br><br>
+
+<b>Frogger Supported Media Types:</b><br><br>
+
+- Standalone MPEG Audio Layer I/II/II<br>
+- XA (PSX Audio)<br>
+- STR (PSX Video)<br>
+- Windows Media (AVI)<br>
+- RealMedia/RealAudio (.rm/.ra)<br>
+- MPEG Video (Including VideoCD/CDI playback)<br>
+- RoQ (ID Games movie format)<br>
+- Advanced Streaming Format (ASF/WMV)<br>
+- QuickTime movies (MOV/QT)<br>
+- mp4 movies (extended QuickTime)<br>
+- OGG<br>
+- FLI/FLC movies<br>
+- WAV (windows audio)<br><br>
+
+Supported Video codecs:<br>
+AVI/QT/ASF/OGG<br>
+- DIVX (M$ Mpeg-4) v1, v2, v3<br>
+- Angel Potion MPEG-4<br>
+- Radius Cinepak<br>
+- OpenDivx/Divx4.x/Divx5.x<br>
+- Windows Media Video 7<br>
+- ISO MPEG-4<br>
+- XVID MPEG-4<br>
+- CCITT H.263<br>
+- Intel I.263<br>
+- Several MPEG 'I Frame only' video codecs.<br>
+- Sorenson Video (SVQ1)<br>
+- Motion JPEG (MPJA, MJPB, Photo JPEG, Rainbow Runner, and other jpeg based codecs)<br>
+- 3ivx Mpeg-4<br>
+- Intel Indeo 3/4/5 (Requires xanim codecs)<br>
+- Intel RAW YUV (Requires xanim codecs)<br><br>
+
+- RM<br>
+- RV10<br>
+- RV20 (RealVideo G2)<br>
+- RV30 (RealVideo 8)<br><br>
+
+- STR<br>
+- PSX Video v2 & v3<br><br>
+
+- MPEG<br>
+- MPEG-1 and MPEG-2<br><br>
+
+- RoQ<br>
+- RoQ Video<br><br>
+
+Supported audio codecs:<br>
+AVI/QT/ASF/OGG/WAV<br>
+- MPEG Audio Layer I/II/III<br>
+- DVIADPCM<br>
+- MSADPCM<br>
+- IMA4<br>
+- GSM 6.10<br>
+- PCM<br>
+- TWOS/SOWT<br>
+- a-Law<br>
+- u-Law<br>
+- MSN Audio<br>
+- MACE 3:1/6:1<br>
+- Vorbis<br>
+- WMA 1/2<br><br>
+
+- RM/RA<br>
+- RealAudio 1.0<br>
+- RealAudio 2.0<br><br>
+
+- STR<br>
+- XA Audio<br><br>
+
+- MPEG<br>
+- MPEG Audio Layer I/II/III<br><br>
+
+- RoQ<br>
+- RoQ Audio<br><br>
+
+<b>Filesystems</b><br><br>
+
+<b>FFS2 FastFileSystem2, fully compatible to FastFileSystem</b><br><br>
+
+- Data integrity is a priority. All structures are tested for compliance and errors.<br>
+- Completely reentrant.<br>
+- Multithreaded design; attempts are made to schedule all file system operations fairly and evenly. This means that reads, writes, directory scanning and all other file system operations can take place seemingly in parallel with no client tying up the file system for extended periods of time.<br>
+- Hard links and soft links supported.<br>
+- 'Smart' block allocation system which tries to distribute the contents of directories evenly across the media and which attempts to allocate large numbers of data blocks consecutively.<br>
+- Integrated block caching with LRU cache management. Only file system data structures are cached -- no caching is performed on data blocks (the exception are OFS data blocks, which are in fact cached).<br>
+- Support for removable media; this includes the option to remove a medium from one drive, insert it into another and to keep working with it.<br>
+- Support for media larger than 4GBytes, provided that the underlying device driver supports the NSD or TD64 command extensions.<br>
+- Support for variable block sizes, i.e. a block can be a multiple of the basic sector size (512 bytes, 1024 bytes, 2048 bytes per block, etc.).<br>
+- Support for sector sizes beyond the traditional 512 bytes.<br>
+- Block memory alignment ('mask') requirements permitted beyond the traditional 2, 4 and 8 bytes.<br>
+- Drive motor stays enabled as long as the file system is busy; when the motor is switched off, it is always safe to remove the disk.<br>
+- Changes to directory contents are propagated up the entire file system hierarchy; the original file system would only update the parent directory.<br>
+- All file system types and variants implemented up to and including DCFS (1993) are supported: original file system (OFS), fast file system (FFS), international OFS, international FFS, directory caching OFS and directory caching FFS.<br>
+- Directory scanning code should not be vulnerable to directory entries getting removed while the same directory is still being scanned.<br>
+- Support for owner/group IDs attached to files and directories.<br>
+- Complex and sophisticated error reporting code; unfortunately, to be compatible with the original file system implementation, only a lowly subset of the error indications can be displayed.<br>
+- Support for multiple readers and writers which access the same file. Concurrent readers and writers are supported as well, with special treatment to avoid collisions.<br>
+- File read and write accesses are clustered if they refer to blocks placed consecutively on the medium.<br>
+- Support for record locking.<br>
+- Support for file notification that even extends to linked objects (change the 'original' object, and notification requests attached to links to it will be satisfied).<br>
+- Support for ExAll() style directory scanning.<br>
+- Setting the size of a file to an arbitrary size (truncation or 'growing') supported.<br>
+- Formatting the media, setting up the file system's data structures supported. This includes support for serializing the file system.<br>
+- Built-in file system validator.<br>
+- Long file name support (names can be up to 107 characters in size) in the DOS\6 and DOS\7 variants.<br><br>
+
+<b>SFS SmartFilesystem</b><br><br>
+
+- Fast reading of directories.<br>
+- Fast seeking, even in extremely large files.<br>
+- Blocksizes of 512 bytes up to 32768 bytes (32 kB) are supported.<br>
+- Supports large partitions. The limit is about 2000 GB, but it can be more depending on the blocksize.<br>
+- Support for partitions larger than 4 GB or partitions located (partially) beyond the 4 GB barrier on your drive.<br>
+- There is support for New Style Devices (NSD) which support 64 bit access, the 64-bit trackdisk commands and SCSI direct.<br>
+- The length of file and directory names is internally limited only by blocksize.Limitations in the original dos.library however will reduce the effective length of file and directory names to about 100 characters.<br>
+- The size of a file in bytes is limited to slightly less than 4 GB. Because of limitations in original dos.library we will however probably not allow files larger than 2 GB, to avoid potential problems.<br>
+- Modifying data on your disk is very safe.  Even if your system is resetted, has crashed or experienced a powerloss than your disk will not be corrupted and will not require long validation procedures before you will be able to use it again.  In the worst case you will only lose the last few modifications made to the disk.  See Safe writing for detailed information on how this works.<br>
+- To be able to ensure that your disk never gets corrupted we use an internal caching system which keeps track of modifications before writing them to disk. This cache has the additional benefit that creating and copying files can be a lot faster, especially if the drive used isn't very fast (ZIP & floppy drives for example).<br>
+- There is a built-in low-level read-ahead cache system which tries to speed up small disk accesses.  This cache has as a primary purpose to speed up directory reading but also works very well to speed up files read by applications which use small buffers.<br>
+- Disk space is used very efficiently<br>
+- Supports notification and Examine All.<br>
+- Supports Soft links (hard links are not supported for now).<br>
+- Using the SFSformat command you can format your SFS partition with case sensitive or case insensitive file and directory names. Default is case insensitive (like FFS).<br>
+- There is a special directory which contains the last few files which were deleted. See deldir.<br>
+- Other file systems such as PFS3 run under emulation.<br><br>
+
+<b>Disk Wizard</b><br><br>
+
+Check: Checks the integrity of a partition and reports errors found.<br>
+Supported filesystems: FFS2 and SFS3.<br><br>
+
+Repair: Checks the integrity of a partition and repairs errors found by removing faulty files and directories.<br>
+Supported filesystems: FFS2-NoDC.<br><br>
+
+Salvage: Data recovery by copy. Scans a (partially destroyed) partition for files still intact, displays the found files/dirs and copies everything selected by the user, including the directory tree as far as possible, to a different partition.<br>
+Supported filesystems: FFS2, SFS2 and SFS3.<br><br>
+
+Undelete: Scans a partition for deleted files and undeletes the selected files/dirs.<br>
+Supported filesystems: FFS2-NoDC.<br><br>
+
+Unformat: Undoes a 'quick' formatting of a partition.<br>
+Supported filesystems: FFS2-NoDC.<br><br>
+
+Optimize: Optimizes the filesystem structure of a partition for faster access and/or defragments fragmented files.<br>
+Supported filesystems: FFS2, SFS3 version 1.84 or higher by using it's defragment feature.<br><br>
+
+Find Paritions: Scans a whole hard disk, for example a hard disk with a destroyed RDB (partition table), for lost partitions and outputs a mountlist which can be used to directly mount the lost partitions or to recreate the RDB using a HD partitioning tool.<br>
+Supported filesystems: FFS2, SFS2 and SFS3.<br><br>
+
+Convert: Converts FFS2 partitions from the formats Intl.FFS and DirCacheFFS to the new LongNameFFS format.<br>
+Intl.OFS and DirCacheOFS to LongNameOFS.<br>
+Converting plain OFS/FFS (not Intl. nor DirCache) format partitions to LongNameOFS/FFS format is not supported.<br><br>
+
+<b>Poseidon - Complete USB protocol stack</b><br><br>
+
+Features:<br>
+Hardware layer abstraction through a standard MorphOS device.<br>
+Automatic binding without requiring user interaction:<br>
+Real Plug'n'Play.<br>
+Class driver architecture supporting both interface or device bindings.<br>
+Support for application bindings for third party non-class applications (webcams, scanners, etc.).<br>
+USB devices can be plugged off or in at any time.<br>
+Class drivers can have a configuration GUI.<br><br>
+
+Class Drivers:<br>
+Hubs: external hubs with extra downstream hubs are supported.<br>
+BootMouse: three button mouse support.<br>
+BootKeyboard: standard USB keyboard. Configuration GUI available.<br>
+Printer: support for all unidirectional and bidirectional printers, aswell as USB to centronics adapters.<br>
+MassStorage: supporting harddisks, flash card or multislot memory readers, some digital cameras and other devices conforming to the mass storage USB standard.<br>
+AutoMounting of FAT and RDB partitions provided.<br>
+Booting off media is possible.<br>
+CDCACM: Driver for standard USB modems complying to the CDC ACM standard.<br>
+SerialPL2303: support for the USB->serial converter manufactured by Prolific.<br>
+HID: Driver for all kinds of input devices as mice (with scroll wheel), tablets, keyboards (with extra key support), etc. with very flexible GUI allowing to configure everything.<br>
+RawWrap: Simple device wrapper to allow third party programs operate with standard CMD_READ/CMD_WRITE commands on an USB interface. Allows the operation of BetaScan via the usbraw.device.<br><br>
+
+Hardware Drivers:<br>
+Highway Zorro II USB board driver<br>
+Subway Clockport driver<br>
+Pegasos onboard chipset driver<br>
+GRex UHCI driver<br>
+generic OHCI PCI board driver in preparation<br>
+Spider USB driver available, done by a third party<br>
+ Thylacine Zorro II USB driver available as alpha version, done by a third party<br><br>
+
+Package:<br>
+Comes with a complete MUI-based graphical user interface for configuration called Trident.<br>
+Shell tools for stack setup included.<br>
+Program for reading out images from STV680 based webcams included, as well as a driver for VHI Studio for these cameras.<br>
+Both English and German installation script and manuals available.<br><br>
+
+Technical:<br>
+Stack can be started and removed at any time.<br>
+Multithreaded design - each USB hardware and class instance is started asynchronously.<br>
+No internal structures are exposed - the stack is a black box that heavily uses TagLists. This allows to change or extend internals without breaking compatibility.<br>
+All structures are dynamic, no fixed size arrays.<br>
+Supports both synchronous and asynchronous IO.<br><br>
+
+Third party software support for Poseidon so far:<br>
+- IOSpirit (Felix Schwarz): fxScan (USB Scanners), VHI-Studio (DigiCams)<br>
+- Vesalia/Andreas Günther: ScanQuix (USB Scanners)<br>
+- Svend Daugaard Pedersen: BetaScan (USB Scanners)<br>
+- IrseeSoft: TurboPrint<br><br>
+
+
+<font size="+1" color="#ccbb33">Contact and Additional Information</font><br><br>
+
+News & Links:<br>
+<a href="http://www.morphos-news.com">http://www.morphos-news.com</a><br><br>
+
+Pegasos Hardware details:<br>
+<a href="http://www.pegasosppc.com">http://www.pegasosppc.com</a><br><br>
+
+Contact:<br>
+<a href="mailto:nicholas@thendic-france.com">nicolas@thendic-france.com</a><br><br>
+
+
+While we have taken great care to ensure the accuracy of this document it may still contain errors.
+Please report any errors to <a href="mailto:nicholas@thendic-france.com">nicolas@thendic-france.com</a><br>
+
+v1.2 (c) Thendic-France SARL  December 2002<br>
+All terms and names used in this white paper are trademarks and property of their respective owners.<br><br><br>
+
+
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="ob37-actualite.html">Retour à l'article Actualité</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>

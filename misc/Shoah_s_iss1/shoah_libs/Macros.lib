@@ -1,0 +1,463 @@
+;	  _______  ___                    ___        _______
+;	 /°-     \/. /    _____   ____   / ./       /°-     \
+;	 \   \___//  \___/°    \_/°   \_/   \___    \   \___/
+;	_/\__    \      ~\_  /\  \  /\ ~\      °\_ _/\__    \
+;	\\       /   /\   /  \/. /  \/   \ //\   / \\       /
+;	 \______/\__/  \_/\_____/\____/\_/_/  \_/ o \______/ Issue 1
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+								  *+*+*+
+;*+*+*+	Macro's							  *+*+*+
+;*+*+*+								  *+*+*+
+;*+*+*+	Version		23/12/94				  *+*+*+
+;*+*+*+								  *+*+*+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Mulu_10
+;*+*+*+ USE    :- Multiply a data register (d0-d6) by 10, in 20 cycles.
+;*+*+*+ NOTES  :- Can not use d7
+;*+*+*+ USEAGE :- Mulu_10	d5 	:- Multiply contents of d5 by 10
+Mulu_10		MACRO
+
+		move	\1,d7
+		add	\1,\1
+		add 	\1,\1
+		add 	d7,\1
+		add 	\1,\1
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Mulu_8
+;*+*+*+ USE    :- Multiply a data register (d0-d7) by 8
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Mulu_8	d5 	:- Multiply contents of d5 by 8
+Mulu_8		MACRO
+
+		lsl	#3,\1
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Mulu_4
+;*+*+*+ USE    :- Multiply a data register (d0-d7) by 4
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Mulu_4	d5 	:- Multiply contents of d5 by 4
+Mulu_4		MACRO
+
+		add	\1,\1
+		add 	\1,\1
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Mulu_2
+;*+*+*+ USE    :- Multiply a data register (d0-d7) by 2
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Mulu_2		d5 	:- Multiply contents of d5 by 2
+Mulu_2		MACRO
+
+		add	\1,\1
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- IRQ_Set
+;*+*+*+ USE    :- Sets up a VBlank IRQ
+;*+*+*+ NOTES  :- Needs a5 to point to $dff000, kills a0,a1
+;*+*+*+ USEAGE :- IRQ_Set	"Interrupt"
+IRQ_Set		MACRO
+
+		lea	SystemSave,a0
+		move.l	VectorBase(a0),a0
+		move	#%0111111111111111,$9c(a5) ;Clear irq requests
+		move	#%0111111111111111,$9a(a5) ;turn off all interupts !!
+		lea	\1,a1			;Turn on level 3 irq ( VB )
+		move.l	a1,$6c(a0)
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- IRQ_On
+;*+*+*+ USE    :- Turns on the VBlank IRQ
+;*+*+*+ NOTES  :- Needs a5 to point to $dff000
+;*+*+*+ USEAGE :- IRQ_On
+IRQ_On		MACRO
+
+		move	#$c020,$9a(a5)		;Enable vbl
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- IRQ_Off
+;*+*+*+ USE    :- Turns off the VBlank IRQ
+;*+*+*+ NOTES  :- Needs a5 to point to $dff000
+;*+*+*+ USEAGE :- IRQ_Off
+IRQ_Off		MACRO
+
+		move	#%0111111111111111,$9c(a5) ;Clear irq requests
+		move	#%0111111111111111,$9a(a5) ;turn off all interupts !!
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- VBlank
+;*+*+*+ USE    :- Wait for the vertical blanking gap
+;*+*+*+ NOTES  :- Needs a5 to point to $dff000, d0 is corrupted
+;*+*+*+ USEAGE :- VBlank
+VBlank		MACRO
+
+.Vblank\@
+		move.l	4(a5),d0
+		and.l	#$1ff00,d0
+		cmp.l	#$00100,d0
+		bne.s	.Vblank\@
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Delay
+;*+*+*+ USE    :- Use as a Delay loop
+;*+*+*+ NOTES  :- Can not use d7,d5, a5 must point to the hardware
+;*+*+*+ USEAGE :- Delay		#$xxxx 	:- Wait for contents of #$xxxx
+Delay		MACRO
+
+		move	\1,d5
+		lea	$dff000,a5
+.x\@
+		Vblank
+		dbra	d5,.x\@			;Decrement the delay value
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Anti_Freeze
+;*+*+*+ USE    :- Used to stop any Action Replay ripping !
+;*+*+*+ NOTES  :- Needs  oldw dc.b 0 to be somewhere in the code
+;*+*+*+ USEAGE :- Anti_Freeze
+Anti_Freeze	MACRO
+
+.loop\@
+		move.b  $bfe801,d0		;Action Replay rip protection
+		lea     oldw,a0
+		cmp.b   (a0),d0
+		beq.s	.loop\@
+		move.b  d0,(a0)
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Fire_button
+;*+*+*+ USE    :- Easier way to scan the fire button ( Port 2 )
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Fire_button	"label"
+Fire_button	MACRO
+
+		tst.b	$bfe001
+		bpl.s	.fire
+		bra	\1
+.fire
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Mouse_button
+;*+*+*+ USE    :- Easier way to scan the left mouse button
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Mouse_button	"label"
+Mouse_button	MACRO
+
+		btst	#6,$bfe001
+		bne	\1
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Mouse_Rbutton
+;*+*+*+ USE    :- Easier way to scan the right mouse button
+;*+*+*+ NOTES  :- Needs a5 set to $dff000
+;*+*+*+ USEAGE :- Mouse_Rbutton	"label"
+Mouse_Rbutton	MACRO
+
+		btst	#$0a,$16(a5)
+		bne	\1
+
+		ENDM
+
+		
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Blitter_Wait
+;*+*+*+ USE    :- Waits for the blitter to finish his job
+;*+*+*+ NOTES  :- Needs a5 to point to $dff000
+;*+*+*+ USEAGE :- Blitter_Wait
+Blitter_Wait	MACRO
+
+.Blitter_wait\@
+		btst	#6,$02(a5)
+		bne.s	.blitter_wait\@
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Blitter_A
+;*+*+*+ USE    :- Loads the blitter A source
+;*+*+*+ NOTES  :- Needs a5 to point to $dff000
+;*+*+*+ USEAGE :- Blitter_A	Ax	:- Load this address register
+Blitter_A	MACRO
+
+		move.l	\1,$50(a5)
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Blitter_B
+;*+*+*+ USE    :- Loads the blitter B source
+;*+*+*+ NOTES  :- Needs a5 to point to $dff000
+;*+*+*+ USEAGE :- Blitter_B	Ax	:- Load this address register
+Blitter_B	MACRO
+
+		move.l	\1,$4c(a5)
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Blitter_C
+;*+*+*+ USE    :- Loads the blitter C Destination
+;*+*+*+ NOTES  :- Needs a5 to point to $dff000
+;*+*+*+ USEAGE :- Blitter_C	Ax	:- Load this address register
+Blitter_C	MACRO
+
+		move.l	\1,$48(a5)
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Blitter_D
+;*+*+*+ USE    :- Loads the blitter D destination
+;*+*+*+ NOTES  :- Needs a5 to point to $dff000
+;*+*+*+ USEAGE :- Blitter_D	Ax	:- Load this address register
+Blitter_D	MACRO
+
+		move.l	\1,$54(a5)
+
+		ENDM
+		
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Blit_Size
+;*+*+*+ USE    :- Loads the blitter size, ie triggers the blitter
+;*+*+*+ NOTES  :- Needs a5 to point to $dff000
+;*+*+*+ USEAGE :- Blit_Size	Dx	:- Load this data register
+Blit_Size	MACRO
+
+		move	\1,$58(a5)
+
+		ENDM
+		
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Raster
+;*+*+*+ USE    :- Changes the screen colour, for debugging
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Raster	#$xxxx	:- Set this colour
+Raster		MACRO
+
+		move	\1,$df0180
+
+		ENDM
+		
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Open_Dos
+;*+*+*+ USE    :- Opens the Dos library
+;*+*+*+ NOTES  :- Needs labels(a3), dosname.b, dosbase.l
+;*+*+*+ USEAGE :- Open_Dos
+Open_Dos	MACRO
+
+		move.l	4,a6			;Open the Dos library
+		lea	dosname-labels(a3),a1
+		moveq.l	#$00,d0
+		jsr	-408(a6)		;LVO OpenLib
+		move.l	d0,dosbase-labels(a3)
+		tst.l	d0			;Check for error
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Open_File
+;*+*+*+ USE    :- Opens a disk file for I/O
+;*+*+*+ NOTES  :- Needs filehd.l to be defined
+;*+*+*+ USEAGE :- Open_Dos	#filename
+Open_File	MACRO
+
+		move.l	d0,a6			;Open file
+		move.l	#1005,d2		;Mode old
+		move.l	\1,d1
+		jsr	-30(a6)			;LVO Open
+		move.l	d0,filehd-labels(a3)
+		move.l	d0,d1			;Store this for the read call
+		tst.l	d0
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Read_File
+;*+*+*+ USE    :- Simple Dos "Read" call
+;*+*+*+ NOTES  :- needs Open_Dos, Open_file to have been called & labels(a3)
+;*+*+*+ USEAGE :- Read_File
+Read_File	MACRO
+
+		move.l	dosbase-labels(a3),a6
+		jsr	-42(a6)			;LVO Read
+		tst.l	d0
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Close_File
+;*+*+*+ USE    :- Closes a disk file
+;*+*+*+ NOTES  :- Needs filehd.l, dosbase.l & labels(a3)
+;*+*+*+ USEAGE :- Close_File
+Close_File	MACRO
+
+.x\@
+		move.l	dosbase-labels(a3),a6
+		move.l	filehd-labels(a3),d1
+		jsr	-36(a6)			;LVO Close
+		tst.l	d0
+		beq.s	.x\@
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Close_Dos
+;*+*+*+ USE    :- Closes the Dos library
+;*+*+*+ NOTES  :- Needs labels(a3), dosbase.l
+;*+*+*+ USEAGE :- Close_Dos
+Close_Dos	MACRO
+
+		move.l	4,a6			;Close the Dos library
+		move.l	dosbase-labels(a3),a1
+		jsr	-414(a6)		;LVO Closelib
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Kill_Drives
+;*+*+*+ USE    :- Turns off the drive moter
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Kill_Drives
+Kill_Drives	MACRO
+
+		or.b	#$f8,$bfd100
+		and.b	#$87,$bfd100
+		or.b	#$f8,$bfd100
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Kill_LED
+;*+*+*+ USE    :- Turns off the LED ( Sound Filter )
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Kill_LED
+Kill_LED	MACRO
+
+		bset	#1,$bfe001
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Restore_LED
+;*+*+*+ USE    :- Turns the LED back on
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Restore_LED
+Restore_LED	MACRO
+
+		bclr	#1,$bfe001
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Alloc_Mem
+;*+*+*+ USE    :- Gets the OS to reserve memory
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Alloc_Mem	#size.l,pointer
+Alloc_Mem	MACRO
+
+		move.l	\1,d0
+		moveq.l	#1,d1		;Public
+		move.l	4,a6
+		jsr	-$c6(a6)	;LVO AllocMem
+		move.l	d0,\2
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Alloc_ChipMem
+;*+*+*+ USE    :- Gets the OS to reserve some Chip memory
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Alloc_ChipMem	#size.l,pointer
+Alloc_ChipMem	MACRO
+
+		move.l	\1,d0
+		moveq.l	#2,d1		;Chip mem only, please Mr.OS
+		move.l	4,a6
+		jsr	-$c6(a6)	;LVO AllocMem
+		move.l	d0,\2
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Free_Mem
+;*+*+*+ USE    :- Gets the OS to free up memory
+;*+*+*+ NOTES  :- None
+;*+*+*+ USEAGE :- Free_Mem	#size.l,pointer
+Free_Mem	MACRO
+
+		move.l	\1,d0
+		move.l	\2,a1
+		move.l	4,a6
+		jsr	-$d2(a6)	;LVO FreeMem
+
+		ENDM
+
+;*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*
+;*+*+*+
+;*+*+*+ NAME   :- Copper_Set
+;*+*+*+ USE    :- Sets up the copperlist, then triggers it
+;*+*+*+ NOTES  :- Needs $dff000 in a5
+;*+*+*+ USEAGE :- Copper_Set	"CopperList"	:- Name of copperlist
+Copper_Set	MACRO
+
+		move.l  #\1,$80(a5)
+		move.w	#0,$88(a5)
+
+		ENDM
+

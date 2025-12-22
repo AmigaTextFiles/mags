@@ -1,0 +1,159 @@
+--------- START OF FORWARDED MESSAGE ---------
+
+From System ....: Internet
+From Conference : comp.sys.amiga.misc
+MessageID ......: <3364d6e4.37750973@news.jersey.net>
+Originally from : Dave Haynie <dhaynie@jersey.net> <609836306>
+Subject ........: Re: The new Amiga. Is it really coming soon ?
+
+On Mon, 28 Apr 1997 01:28:59 GMT, colin@leprechaun.com.au (Colin Ward)
+wrote:
+
+>>Have you ever used a Picasso or CybergraphicX card on Zorro III? If
+>>not, you have not a single basis for your claims beyond "religion". If
+>>so, imagine that about 5x-25x faster, to start with.
+
+>  I meant from a programmer's point of view rather than a users. 
+
+A programmer should see the contents of the graphics.library and/or
+intuition.library autodocs. Why would anyone invest time in banging
+the Amiga chips anymore. Ok, maybe for fun, but it's wasted time for
+anything commercial at this point. 
+
+>  No, I havn't seen a CyberGraphX card, but I have a CyberVision64/3D on
+>order, which is supposed to arrive at my local Amiga dealer in a couple of
+>days.  It'll be a *huge* upgrade, but what about things like draggable
+>hardware screens?  Isn't this one of the most usable features of the Amiga?
+
+No, it's one of the least useful. Sure, it's "cool", because PCs don't
+do it. And it's a fairly useful crutch for things like palette menus
+when you're running on existing Amiga systems, but that vanishes when
+you have 24-bit graphics possible on every system. Screens are quite
+useful, true. You get those on any Amiga RTG system, the BeOS, etc.
+They're just as fast to the user, only not draggable. Realize that
+even screen dragging when resolutions are mixed is only possible
+because of the Amiga's limitation that pixels only run at 35ns (or
+multiples of that). When you have 8ns pixels on one screen, and 125ns
+pixels on another, there's a pixel clock PLL involved, with an
+inherent resynch time between modes, not something that can happen on
+a line-by-line basis. So draggable screens don't even thrive in a
+flexible, modern system. 
+
+>I guess that with generic hardware you could still have screens, but just
+>not be draggable.  Without this, it would be a major downer.  You're
+>probably familiar with the Cygnus Editor, Amiga-N, Compile, Test, Amiga-M
+>sequence?  :-)
+
+That doesn't involve dragging screens. And actually, since I've been
+running my A3000 with an 1180x900 screen for the past six years, I
+don't have separate screens for editor and workplace when I'm
+developing code; I get to see everything on the same screen. Separate
+screens are good for other things, like maybe I want a 1024x768x8
+screen for PageStream at the same time I'm doing all kind of other
+stuff on the main screen. Screens are great. Sliding screens are just
+eye candy, they're not necessary. Some of the RTG schemes provide them
+anyway; certainly possible, as long as you stick to one pixel clock. 
+
+>>Hey, there was a time when hardware banging was a requirement. It made
+>>perfect sense on the C64. It was a bad, bad idea on the Amiga of the
+>>80's, but clearly, no one had really given much thought to the idea of
+>
+>  NO.  The Amiga of the 80's did *not* have the power for generic, OS
+>friendly games.  Not if you wanted to *really* push it.  
+
+You're entirely confused about Game APIs; I'm not talking about
+everything going through graphics.library here, or running with
+Intuition, or on Workbench. You can set any kind of requirements for
+the HW and SW necessary and still have workable, very low-level
+abstractions. So your game API can hand you a bitmap to bang on to
+your heat's content, no need for WritePixel(). But the point is, the
+means to get the kind of bitmap, at the resolution you want, is
+abstracted. 
+
+Basically, when you look at a high-level RTG type solution, you have
+abstractions for both data and control functions, maybe some fairly
+fancy ones. This takes some overhead you'd rather not spend on a game.
+When you define the datatypes available, and abstract just the control
+functions, you're going to lose very little performance, and still be
+very portable to other hardware. Sure, not arbitrary hardware; if your
+program asked for a 640x400x4 planar screen, and it wasn't available,
+you would either fail or have to deal with some other kind of display
+in your program. But this would work fine on any VGA/SVGA type
+graphics card, even though it might actually have to run in 640x480.
+
+Also, as hardware improves, it's fairly easy to addess some of these
+"physical" requirements in software. UAE is the ultimate example of
+this: it's emulating, very slowly, the register model of the Amiga,
+control and data. The control factor here is the real killer; it has
+to emulate precise interactions between registers, since there's no
+higher level "statement of intent" available. 
+
+With a game API abstracting most of the important control functions,
+most Amiga games would be running at full, or better, speed in
+emulation today on any modern computer, with plenty of CPU time left
+over. Most of them would run on Amiga RTG boards too. Sure, a few
+things would break -- some games are going to count on the time
+various things take, and break when that changes. This is why AA
+systems boot up in an ECS-style bus mode, running 16-bit video fetches
+--- simply going faster will break some things. One of the reasons AAA
+could never be 100% compatible.  
+
+>Could you imagine
+>Swiv, Turrican or Lionheart, system friendly on an A500, and still running
+>at 50 fps with all that action?  No way!  
+
+Absolutely. The fact I can, and you can't, means we're each working
+were we should be. I found the kind of folks we had at Commodore
+thrived on "impossible" problems; and in fact, the only time I ever
+tell people something's impossible is to get them fired up to prove me
+wrong. 
+
+> I tried using system
+>routines for my supposedly system friendly map editor, but not even
+>Commodore's *own* source for placing bobs with graphics.library would work
+>without crashing the system.  So I ended up having to write directly to the
+>screen.
+
+The graphics.library never pretended to be a game API. And like I
+said, there's nothing wrong with writing to the screen, it's banging
+the chips to get you that screen, rather than calling an appropriate
+screen-building function, that's the problem. 
+
+I said the Amiga's approach was very, very wrong. No, they didn't have
+a workable alternative back then, or real RTG, etc. That was the
+problem; I'm not blaming the game writers, who had no other choice.
+I'm stating that, with enough research on the problem, it could have
+been done right, in 1985, in 1990, it doesn't matter when -- you put
+the new APIs in place, new games run them, and in a year or two
+nobody's all that broken hearted that old stuff doesn't run on new
+hardware, especially when the new stuff always will. 
+
+>  I wouldn't say that no one is using or understanding the AGA/ECS chipset!
+>I mean maybe not in these newsgroups, but then these newsgroups are
+>inhabited by a different breed of people.  The hardware hitting people
+>aren't here.  If nobody understands or uses it any more why is it that
+>every time I check for new stuff on Aminet there are more hardware hitting
+>games/demos than I can possibly download?
+
+Because you have kids there, hacking their systems. Maybe a few
+adults, too; but the point being, this is coming from AmiNet. Free
+stuff doesn't need to worry about working at all, in a commercial
+sense, much less next week or next year. That's not to say there isn't
+good code out there, but it's not built with commercial concerns. Real
+game people are writing for other machines, probably PCs and game
+consoles, for the most part. On the PCs, they have a game API from
+Microsoft. It's not the best possible, but it does the job, The BeOS
+has this notion, too. Even Apple was working on something like it, but
+apparently that's fallen victim to their latest cutbacks. 
+
+In the last days, Commodore was working on this stuff, which as it
+turns out was still way ahead of others. Things like lowlevel.library,
+sfx.library, etc. were headed in the right direction for this,
+unfortunately too late in the game to really make the difference. 
+
+
+Dave Haynie      V.P. Hardware Engineering    PIOS Computer
+haynie@pios.de     "...no RISC, no fun"
+
+---------- END OF FORWARDED MESSAGE ----------
+

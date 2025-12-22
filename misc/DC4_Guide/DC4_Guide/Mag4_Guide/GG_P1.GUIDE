@@ -1,0 +1,71 @@
+@database GG_p1.html
+@remark Converted with HTML2Guide ©1997 Mark Harman
+@wordwrap
+
+@node MAIN "GG_p1.html"
+@{"b"}Work in Progress...@{"ub"} 
+	@{"i"}Part One@{"ui"}  
+
+This is the first part of a series where I tell you about a game I've been working on over the last few months. It's still in early stages, so this first part will explain what I've done up to now (about June '97).  
+
+The game is written in AMOSPro, together with the OS DevKit extension (more on that later), but don't worry if you don't use AMOS - I won't be covering the actual language used, but more the way I've approached writing the game. Maybe non-coders will find it interesting to read also...  
+
+Before I get carried away, if there are any readers working on projects who want to do a similar thing like this, then please write in! Whether it's a game, or something else like a picture, animation or piece of music.  
+
+Right, the game is basically a godgame, borrowing elements from MegaloMania, Civilization, Sim City, Settlers, Breed96 and maybe even Battle Isle. It's currently set in the future, on an alien planet, where you fight against another race for supremacy. The basic idea is that you build up your base / city by constructing different buildings (as in Sim City), and then build up an army to attack the computer player doing the same thing. Check out the @{" " link "DC4_Guide1:Mag4_Guide/GG_SCREENSHOTS.GUIDE/MAIN"} screenshots to see what I mean. At the moment, I have no name, just the rather unoriginal working title 'GodGame'. (If you have any ideas, please write!)  
+
+I began sometime in August of '96, working with AMOSPro alone. Ah yes, the OSDevKit is a rather cool extension giving you full access to the operating system - it's used for this diskmag (and I reviewed it in issue 2 of DC). Although it was around August that I got it, for now, GodGame was AMOS only.  
+
+I chose a hires 640x256 screen to work in, as I wanted a decent resolution for text. But without AGA, that meant only 16 colours. Oh well... I started throwing together the interface, using the excellent Dialog Procedures (make writing fake-OS interfaces really easy with AMOS). DPaint was used to create some early graphics - a 'ground' square, and buildings for 'Living Area', 'Farm', and a few others. For now, I forgot the computer player, and made it so the player could use the interface to build up his base.  
+
+Next, I made everything 'operate'. That is, people were born in Living Areas, Farms grew food, people ate food, Mines mined resources, which were turn into 'units' by Factories. Later, these 'units' would be actual military units, but for now, they were just another number. I didn't really work on this at this stage, I just bunged it in so it kind of worked - I'll get to the problems in a mo.  
+
+One thing I wanted to do with this program was to make the source code as modular as possible, so every main routine was made an individual Procedure. It's certainly more modular than any of my previous creations!  
+
+By now it was September, and I put GodGame to one side. You see this very diskmag was occupying me, what with writing loads of articles for issue 2, and creating early versions of the diskmag viewer 'Vision'. In doing so, I learnt a lot about using the OS DevKit extension. If I have one criticism, it is that there isn't enough documentation. It is a lot harder than standard AMOS coding, but I fell with better documentation, it could be a lot better (I mean, all you get is an AmigaGuide which is little more than a reference guide - and not in the best of English, I might add. I thought this was a commercial product!)  
+
+But anyway, the point was I was thinking how GodGame could benefit from being written to run under the OS. Firstly - AGA! No more 16 colours, 256 as standard. I could use proper AmigaOS gadgets without faking lookalikes (although I realise a game doesn't really need to bother with them). I could use datatypes to load graphics in GIF or PNG format, rather than space wasting IFFs. I could make use of additional programs such as Animation players, rather than doing it with AMOS, or flicking back and forwards between Workbench and AMOS rather awkwardly. I could use ASL requesters. I could run the program in loads of different screen modes - in fact any supported by AGA, Monitors, even graphics cards.  
+
+As you can see, I was eager to do the conversion, and finally in March '97, I did it. It wasnt to difficult - I just duplicated bits of source code, converting the copies so that they did the same, but under the OS, and both procedures were run. This was because other Procedures not yet converted might refer to something done on the AMOS screen. So eventually, I had the game on both an intuition screen, and the AMOS screen - it was quite weird using Amiga+A to flip between to very similar, though subtly different versions of my game! Then I removed all the old AMOS-screen code, and I was done.  
+
+As time progressed into April, I worked on how the 'economy' operated. I described a few paragraphs ago how I had set up the basic economy, with food, people, resources, etc. But there's the problem of what to set all the different 'rates'. That is, what should the birth rate be, how many people should a farm provide food for? How many people can live in one Living Area? Okay, these may be arbitary choices, but I soon discovered more serious problems. Consider the population - let's say you start with 100 people, and each Living Area can hold 200 people. So the population grows slowly (let's say 5% per turn), and after a while you need a new Living Area (of course, some people are used to make food, mine, etc, so they can't, er, procreate). But as anyone who knows about exponential growth will tell you, what starts off as veryslow growth, will after a time become very rapid. Eventually, I was spending all my time building new Living Areas to hold the 100 or more people being born every turn!  
+
+So I had a little think. There are various ways to get around this, but I realised that all sorts of things (population, technology, resources/output) are exponential in growth. But us human players prefer to keep things 'linear', that is, always growing at the same, steady rate.  
+
+Well first of all, the growth rate could be turned down so that this situation was less likely to happen, unless the player was doing nothing else with his people  (in which case he would surely lose). I had it set up high for testing purposes.  
+
+But the best way I though was to make use of technology. I stole the idea from Megalomania of Technology Levels, rather than specific discoveries. Mine was even more general, in that you had 'Research Units' which slowly advanced you up the levels. And... when you advance a tech. level, all the Living Areas are updated to hold some more people. Of course, more people need more food, so the farms become more productive (as you might expect), as well as more productive mines, factories, etc. But... 
+    	
+    Let's say you need 1000 'research' points to go from Level 1 to Level 2, then you need an @{"i"}extra@{"ui"} 2000 points to go to Level 3, another 3000 to get to Level 4, and so on. This is because as the game progress, you will be producing research points at a faster rate, so we don't want you whizzing up the later levels really fast, remember, I want it to remain linear development. 
+    	
+    With new technology, you Research Units do @{"b"}not@{"ub"} become more productive. If you think about it, this would just again mean you advance faster and faster as time goes on, but I wanted the different Levels to represent roughly equal periods of development in @{"i"}time@{"ui"}.  
+
+I am intending to make use of technology more later on, for example, Military Units which requires a certain Tech. Level to make. Of course, I have to be careful - this game is already set in the future, and in the short period, you wouldn't expect a great advance in technology at all - not like Civilisation covering 6000 years! But I think Technology adds to the playability, which is what counts, even if it doesn't fit the current storyline (I can always change it, to make it fit).  
+
+Incidentally, you may have noticed how often I am borrowing ideas from other games, in fact I gave a list at the start of various 'inspirations'. I don't think this is wrong - it is rare for a game to be truely original, and any godgame is certainly going to have difficulties being original. But at least I can draw on existing ideas, add a few of my own, and hopefully come up with something worth playing in its own right.  
+
+Anyway, on with the game. I worked on it on and off over the next few months. Now I had the economy working, I began work on the computer player. Basically, every turn, there was a subroutine which assessed the situation, and built new buildings accordingly. Then I made it so you could build and deploy military units. This is where I had a few problems.  
+
+At first, I made it so units appeared on the game screen, and they could be moved around, and made to attack, but I didn't like this. It was awkward having the player control every movement. So  then I made it so units remained in buildings, and were then given orders to attack a specific place. Another advantage is that doing computer attacks are now easier!  
+
+At the moment, the attacks are worked out instantly. Later, I will make it so there is a time delay, as units have to travel from your bases to the attack location. This will deter the player from sending all his units into battle, as some will need to be kept back for defence. I may even display the units on the map as they move (rather like in Settlers), if I can be bothered! One thing I have already implemented is that each unit has a specific range, so you can't attack too far.  
+
+In the attack, units attack each other, then units attack any enemy buildings, and then the enemy buildings attack the attacking units (if you see what I mean). So although the attackers have the advantage that they can destroy enemy buildings, they are at a disadvantage as the buildings will attack them (let me explain, I imagine having guns and other defences mounted on buildings, not that a factory will get up and start beating up a tank...)  
+
+Of course, different units have different attack and defence values, as do different buildings. Buildings have energy points - when they become zero, they are destroyed. You can't repair buildings yet.  
+
+As far as the game goes, that's as far as I've got, although there are other things I've done. For example, every 'turn', there are subroutines to update everything, including the CPU player. But the game isn't supposed to be turn based, it is meant to be 'real-time' based. This meant there was an annoying pause every so often. So I put all the routines for the interface into one subroutine, and then at various points in these 'end-of-turn' subroutines, this routine was called, so that meant you could use the interface while the computer was deciding its move, or whatever. Okay, there was still a minor pause now and again, but it was a lot better!  
+
+I also added a 'World Map' window, which displayed the entire game area, along with buildings, and you could use it to move around rather than slowly scrolling.  
+
+And other things, like adding the screen mode requester, a font requester, and playing the music with OctaMED Player, controlling it from the game with ARexx (like in DoubleClick).  
+
+I have taken a bit of a break, recently, but hopefully, I'll get back to it, and give you an update in issue 5!  
+
+Also, I was wondering if there are any graphics artists out there who fancy working on this game? It's a shame having Hires AGA graphics when I make a right mess of the graphics! If you're interested, then please write to me, Mark. I can't guaruntee any money of course, as I don't know what will come of this game, it may end up as just PD in the end, but don't let that put you off! Also, is there anyone who wants to become beta testers for this? Please write also (NB, current sys requirements [I think] are 2MB RAM, hard disk, AGA).  
+
+@{"b"}Mark@{"ub"}   
+ 
+ 
+@endnode
+

@@ -1,0 +1,290 @@
+\T
+
+================================
+ --> TEST DE PRO FILE SYSTEM 3 par Laurent Belloni
+================================
+
+~                Pro File System 3, le systeme de fichiers ultime ?
+
+
+~   Introduction
+   Tout le monde connait l'OFS (A500) ou le FFS (A1200>), les fameux syst_mes de
+fichiers "basics" de l'Amiga.
+
+   Bien qu'_tant plus rapide que l'OFS, le FFS n'en n'a pas moins garder l'_norme
+inconv_nient d'un manque de fiabilit_ ou de s_curit_.
+
+   Qui n'a en effet jamais eu de probl_mes de d_validation suite a par exemple un
+plantage de la machine en plein milieu d'une _criture sur le disque dur ? Cela
+occasionne des attentes de revalidation tr_s longues (surtout que plus grosses sont
+les partitions, plus de temps cela durait)... et encore... les revalidations ne
+s'effectant pas toujours, ce fut un plantage total et une perte de donn_es (ou de la
+partition toute enti_re !) qui pendaient au nez.
+
+   Puis arriva l'AFS (Ami File System), qui lui g_rait bien mieux cela en _vitant ces
+d_validations/revalidations, tout en permettant des acc_s plus rapide au disque dur
+(lecture/_criture). Mais malheureusement, l'AFS ne permetait pas de l'utiliser sur une
+partition bootable.
+
+ö
+
+\T
+
+   L'apparition du Pro File Systeme (PFS) ne fut qu'en fait l'am_lioration et grosso
+modo l'aboutissement de l'AFS.
+
+   Le PFS premi_re _dition autorise tous cela : d_validation impossible, installable
+sur une partition bootable, des performances accrues du disque dur, une ergonomie
+stup_fiante (il efface un fichier de 500 Mo en a peine 2 secondes !), une
+compatibilit_ totale avec le FFS, mais... car il y a un mais : il est impossible
+d'utiliser des programmes tels que DiskSalv ou Quaterback Tools afin de, par exemple
+r_cup_rer des fichiers effac_ par m_gardes... (en raison de la vieillesse de ces
+programmes et aussi parce qu'ils n'ont jamais su s'adapt_ au PFS).
+
+   Le PFS (en tous cas pour sa version 2) a alors inclut le principe du .DELDIR. Il
+ne s'agit ni plus ni moins d'une sorte de r_pertoire invisible et totalement
+transparent aux yeux de l'utilisateur qui "conservait" la trentaine de derniers
+fichiers effac_s ou _cras_s. Et oui, il _tait possible de r_cup_rer une ancienne 
+version d'un fichier r_-ecrit plusieurs fois. Mais voila, cela se limitait seulement
+aux 30 ou 31 derniers fichiers, ce qui dans la pratique est tr_s insuffisant.
+
+   Vient alors le PFS dans sa version 3 qui en plus de mieux g_rer cela, am_liore
+encore tous les points pr_cedement cit_s. Voyons donc donc cela de plus pr_s.
+
+~   Les capacit_s du PFS3 en details
+
+ ^ Des performances elev_es :
+
+   Pour toutes les op_rations de disques, celles ci sont excellentes : que ce soit
+
+ö
+
+\T
+
+pour la lecture/_criture de fichiers, le lecture de r_pertoires, l'effacement, etc...
+le PFS3 d_tient le record du monde de rapidit_. Pour exemple, le chargement de mon
+Dopus5 met 20 % moins de temps ! par rapport au PFS2 (chronom_tre a l'appui) et il
+n'est pas rare d'avoir des performances (visibles) double voir m_me triple par rapport
+au FFS... et ce dans la pratique. Dans la th_orie, une acc_l_ration de 500 % peut
+_tre possible par rapport au FFS.
+
+ ^ Une validit_ permanente des volumes :
+
+   M_me en abusant avec plusieurs lectures et _critures simultan_es, le fait de rebooter
+ou _teindre la machine en plein milieu de ces op_rations n'affectera en rien la
+validit_ des volumes. Et aucune perte de fichiers n'est a d_plorer !
+
+ ^ Acc_s en parall_le sans perte de performance :
+
+   Avec le FFS, lors de plusieurs op_rations en m_me temps, un fort ralentissement se
+fait sentir. Dans les m_me conditions, avec le PFS3 cela se fait bien moins ressentir
+_tant donn_ la meilleure gestion des transferts. Bien sur cela d_pend _galement de la
+taille des buffers que l'on aloue au(x) volume(s), mais qu'on se le dise : le PFS3 g_re
+bien mieux cela que le FFS.
+
+ ^ Une compatibilit_ avec l'AmigaDOS totale :
+
+   Hormis quelque uns (DiskSalv, ou une application s'attendant a trouver du FFS), tout
+autre programme (c'est a dire dans 99,999 % des cas) utilisant le syst_me de fichier
+pour l'acc_s au disque fonctionnera normalement.
+
+ö
+
+\T
+
+ ^ R_cup_ration ais_e de fichiers effac_s : 
+
+   Ici intervient le fameux principe du .DELDIR expliqu_ pr_cedement, sauf que avec le
+PFS3, c'est jusqu'a 992 fichiers _ffac_s ou _cras_s qu'il est possible de "r_cup_rer"
+ou de "d_seffacer"... et ce de mani_re tr_s simple sans l'utilisation d'un programme
+sp_cifique: il suffit de copier les fichiers choisis pr_sents dans ce .DELDIR (qui
+ce trouve a la racine de chaque partition, "H0:.Deldir" par exemple). Attention ! :
+Quand je pr_cise "r_cup_ration ais_e", c'est dans le cas ou l'on a a r_cup_rer quelques
+fichiers... car si l'on efface par m_guarde 1 r_pertoire comprenant lui m_me plusieurs
+sous-r_pertoires, comprenant eux m_mes plusieurs sous-r_pertoires, etc... la m_thode
+.DELDIR vous permettera bien sur de tous r_cup_rer (dans la limite de 992 fichiers)
+mais... sans l'agencement de ces r_pertoires/sous-r_pertoires. C'est donc une v_ritable
+gal_re de tous remettre a l'_tat original. Je dirais que malgr_s la tr_s grande
+fiabilit_ de ce .DELDIR, il n'offre pas les capacit_s tel qu'un Disksalv pourrait
+offrir. C'est la l'un des seuls "point noir" du PFS3.
+
+ ^ Utilisable sur des unit_s de grandes capacit_s :
+
+   La limite des disques ou partitions est fix_e a 104 GigaOctets ! Autant dire qu'il
+n'y a pas de limite, car qui a de nos jours un dur de plus de 100 Go ?, hein?).
+
+ ^ Gestion de la longueur des noms de fichiers :
+
+   Sous PFS3, les noms de fichiers peuvent contenir jusqu'a 107 caract_res. Une
+commande CLI fournie permet de faire un r_glage pr_cis et personnalis_ de la longueur
+maximale des noms de fichiers, et ce pour chaque volume. Avec en plus une extr_me
+
+ö
+
+\T
+
+facilit_: "SetFNsize H0: 68" ... et hop, c'est maxi 68 ..rien de plus simple.
+
+ ^ Exploitation du mat_riel :
+
+   La m_moire... ce systeme de fichiers en utilise tr_s peu pour son fonctionnement
+...minimal en tous cas... et pour am_liorer les performances du PFS il suffit
+d'augmenter les buffers qui sont alou_s aux partitions. De plus, le PFS3 prend
+avantage de la puissance du processeur pr_sent dans votre ordinateur, ainsi plus il
+est puissant et plus sa fr_quence d'horloge est grande, plus les performances de
+PFS3 s'en trouveront am_lior_es. Attention, seules sont disponibles des versions
+sp_cialement compil_es pour processeurs 68k. Point de support sp_cifique pour les PPC
+pour l'instant... c'est assez dommage, bien qu'annonc_ pour le futur.
+
+ ^ Bogues or not bogues
+
+   Selon les cr_ateurs, quelques bugs ont _t_ supprim_s depuis la version 2 qui
+_tait en fait la release 17.3 du PFS et sachant que cette version 3 est en fait la
+18.3 il apparait logique que des bugs ont _t_ effectivement enlev_. Par contre, la
+question que se pose est : En reste t'il dans cette nouvelle monture ? Apparement non
+(vu que je n'ai eu aucun probl_me en presque 1 mois d'utilisation), mais myst_re total
+tous de m_me...
+
+   Voila pour ce qui concerne le cot_ technique de la chose... mais qu'en est t'il de
+l'installation de ce PFS3 sur vos volumes ou partitions ?
+
+ö
+
+\T
+
+~   Installation du logiciel
+   Au d_part, rien de plus simple : il suffit de suivre la m_thode d'installation des
+fichiers n_cessaire au PFS grace a "l'installer" de Commodore, puis de lancer
+l'HdToolBox du Workbench ou alors l'HDinstTOOLS qui est fournit sur le c_d_ de PFS3.
+Ce dernier choix n'affecte en rien l'installation du Pro File System sur vos volumes,
+mais il est mieux d'utiliser le logiciel fournis plutot que celui du Workbench car
+il offre plus de possibilit_s (comme directement formater une partition).
+
+   D_ja, ce dernier est enti_rement en Allemand !, car le c_d_ de PFS3 que j'ai recu
+est une "Deutsche Version" et apparement seule cette version est disponible chez tous
+bons revendeurs. Je pr_cise qu'il est possible d'attribuer la langue anglaise a
+l'outil "HDinstTOOLS" simplement en mettant LANGUAGE=english dans les types d'outils
+de son icone. Et comme l'on parle de localisation, il est a noter que lors de
+l'installation du logiciel PFS3, celui ci fournit la documentation (fichier Guide,
+tr_s explicite de surcroit) en Allemand aussi... mais qu'une version compl_te du Guide
+en francais est pr_sent sur le c_d_. Voici pour PFS3, comment d_tourner le probl_me
+de language que l'on rencontre malheureusement assez souvent avec les logiciels pour
+l'Amiga. Enfin, bref...
+
+ ^ Mettre le PFS3 sur un volume :
+
+   Si vous partez de volumes vierges de toutes donn_es ou de disque dur non partitionner,
+rien de plus simple... il suffit de bien lire la documentation, vous pouvez pas vous
+plantez. Par contre, pour transformer des partitions utilisant le FFS, il est
+n_cessaire de faire une sauvegarde COMPLETE avant d'op_rer le passage FFS -> PFS3...
+Je tenais a le pr_ciser, car sinon c'est toutes vos donn_es qui passent a la trappe.
+
+ö
+
+\T
+
+Pour le passage de l'AFS au PFS3, il parait que cela est faisable mais n'ayant
+aucunement pu tester cette possibilit_, c'est une info a prendre entre guillemets ou
+a confirmer.
+
+ ^ Quelques petits inconv_nients :
+
+   Comme chaque bon cot_ a son revers de m_daille, sachez que l'on perd grosso modo 8 %
+de capacit_ de stockage par rapport au FFS : une partition de 1000 Mo en FFS finira
+ainsi a tr_s exactement 928 Mo en PFS3... mais au vu de sa stabilit_ et de ces
+performances, c'est vraiment un inconv_nient n_gligable !
+
+   Si toutefois un probl_me apparait sur un volume utilisant le PFS, celui ci le g_re
+avec brio : il vous pr_vient ! Ainsi, une seule fois j'ai eu un message d'erreur :
+"Tentative d'_criture hors de la partition" (en Allemand !). Je tiens a pr_ciser qu'il
+suffit et qu'il est NECESSAIRE d'effectuer un simple reboot pour que tous rentre en
+ordre (ne surtout pas confirmer en cliquant sur le OK affich_ lors de l'erreur... cela
+ruinerait votre partition a l'_tat "NoDos". En fait, j'ai eu ce probl_me (cliquage sur
+OK) avec le PFS2 !, et savoir si cette version 3 _vite cette catastrophe, je ne peux
+le dire car je n'ai pas pris le risque de perdre les quelques 500 Mo de donn_es
+pr_sentes sur la partition ou les fichiers relatifs a la maquette de Planet sont
+pr_sents !
+
+ ^ Les petits + agr_able :
+
+   Un DiskDoctor est pr_sent dans le package de PFS3, enfin ! Son but ? Analyser les
+partitions utilisant le PFS et/ou les r_parer ! (un peu a la mani_re des fonctions
+
+ö
+
+\T
+
+
+
+
+"Analyse" et "Repair" de DiskSalv) Vous dire si PFSdoctor (c'est son nom ;) est
+efficace m'est impossible car a ce jour j'ai toujours pas eu le moindre probl_me
+grave n_cessitant une r_paration par ce biais. Par contre point de possibilit_ a
+l'aide de ce logiciel, de r_cup_rer des fichiers effac_s (la seule m_thode restant
+le .deldir). De plus, il est possible a l'aide de HDinstTools de sauvegard_ dans un
+fichier l'_tat du "Rigid Disk Block" du disque dur... tr_s utile lorsqu'il arrive que
+votre Amiga ne trouve plus aucune partition. Bref, c'est en quelque sorte une s_curit_
+au cas ou ca arrive.
+
+
+
+~   Conclusion
+   Il est clair que le PFS3 est un tr_s bon syst_me de fichiers, voir surement le
+meilleur disponible sur plateforme Amiga ou sur toutes autres machines !... car il
+est rapide, increvable, fiable (j'ai tous fait pour pouvoir d_montrer le contraire,
+mais rien a faire : ca tiens la route !). Relisez encore une fois le chapitre
+"Les capacit_s du PFS3" si vous n'en n'_tes pas encore convaincus. Et bien que
+travaillant en "tache de fond", une fois qu'on le poss_de l'on se demande vraiment
+comment l'on a fait pour s'en pass_ ! Le point n_gatif reste pour le .deldir qui,
+bien qu'_tant tr_s efficace, est assez chiant a utiliser (d_sol_, y'a pas d'autres
+facons de le dire :)
+
+ö
+
+\T
+
+
+
+   Pour conclure, je ne dirais qu'une seule chose : pour exploiter et s_curiser au maximum
+ses donn_es, le PFS3 est surement le syst_me de fichiers indispensable, et en ayant
+tout de m_me une vraie sauvegarde sur un autre support (un c_d_-RW par exemple) l'on est
+vraiment a l'abris de toute surprise...
+
+   Attention, ni l'auteur de cette prose, ni le fanzine, s'enguagons sur la totale
+fiabilit_ du PFS3. Et nous serions en rien responsable d'eventuels dommages du
+a l'utilisation de ce logiciel.
+
+Disponible chez tous bon revendeur pour environ 350 FF tous de m_me.
+
+
+~   Annexe
+   Bien que n'ayant developp_ dans cet article uniquement les capacit_s du PFS3 sur
+disque dur, elles offrent les m_mes avantages sur d'autre supports, car il est bien
+sur possible de l'utiliser simplement sur une simple (r_p_tition de mots) disquette
+DD ou HD Amiga, ainsi que sur d'autres supports tels que sur cartouche Zip... en
+utilisant simplement (encore ! :) une mounlist sp_cifique... (point non v_rifi_ et
+non test_).
+
+ö
+
+\T
+
+                                  FICHE RECAPITULATIVE
+                                  =====================
+
+
+Nom : Pro File System 3
+
+D_veloppeurs : Greed Development
+
+Genre : syst_me de fichier
+
+Date : 1999
+
+Configuration requise : un c_d_rom et un support a formater en PFS 3 :-)
+
+Prix : 350 frs environ
+
+Note : 95 %
+
+ö

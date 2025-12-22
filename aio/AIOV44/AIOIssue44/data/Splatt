@@ -1,0 +1,94 @@
+{backimage bg.iff}
+{bold}The Question{nobold}
+{pp}
+{pp}
+Hello,
+{pp}
+I was wondering if AIO or readers know much about the different models of
+A1200s.  As I have 2 and they both seem to have different downfalls.
+One has a wierd AGA chipset, which won't allow me to view dblPAL or modes
+like that, that are used for SVGA monitors etc..  And the other has a
+serial port that cannot connect above 56Kbps or it will just get constant
+errors.  I haven't got the first one with me at the moment, but the other
+model is 1.4.D.
+{pp}
+Just wondering if there was actually a model of the A1200 made, that works
+100% :)
+{pp}
+Also, clock ports seem to differ from model to model.
+{pp}
+Cyas later, thanks in advance for any help.
+{pp}
+-Splatt
+{pp}
+{pp}
+{bold}The Answer{nobold}
+{pp}
+{pp}   
+Hello Splatt,
+{pp}
+The A1200 Hardware guide by Chris Appleton says this about A1200 mainboard revisions:
+"Two main revisions of the A1200 motherboard were produced, Rev 1D and Rev 2B. They only 
+differed in the type of RAM chips used for the Chip RAM. There was quite a shortage of RAM 
+chips, and so measures were taken to ensure that production could keep going whatever chips 
+were available. One took 8 bit RAM, while the other took 16 bit and production was switched 
+depending on what was available."
+{pp}
+Both boards, with Budgie Rev 01 or 02, can be modified to be "perfect". Strangely, it's the Rev 
+1D.4 board that needs the least dramatic modifications, with just a few parts requiring removal, 
+while the others need extra pull up resistors and a resisitor change.
+{pp}
+As for the DblPal problems, remember you must have a 31khz VGA capable display in order to 
+use it. Actually, I've read somewhere that DblPal doesn't actually produce 31khz exactly, but most 
+SVGA monitors should be tolerent. Your already aware of this though, so all I can say is I have a 
+1D.1 A1200 myself, and it *used* to run DblPal (everything, in fact) fine. But one day it all went 
+up in smoke.. an hour of soldering hook up wire in place of vaporised PCB tracks later, I was able 
+to get the thing to boot, with crippled Paula, no IDE, and that unnerving smell of burnt 
+components.
+{pp}
+It simply refuses to display DblPal or DblNTSC correctly, even though all my other screen modes 
+work fine... perhaps we share a faulty part of the AGA chipset? I'd say there is some discrete 
+component somewhere (ie. a line driver, multiplexer, etc. and not one of the AGA chips) that is 
+causing the trouble.
+{pp}
+The serial port problems are common to anyone that is using the chipset serial port. If the 
+problem is limmited to only one of your Amigas, I think you will find it will be the slower of the 
+two. The problem is that, when the first Amiga guys were supposed to be designing the ultimate 
+games machine in the early 80s, not much thought went into a decent serial port. As a result, it 
+has just a single byte buffer between the Amiga and the outside world. This wouldn't matter, if 
+you were talking about the baud rates of 9600 and 14400 for which it was designed for, but 
+typical 56kbps and most 33.6kbps modems have a maximum DTE (modem-computer) speed of 
+115200bps. Note that this is different to your "connection" speed, ie. modem <-> ISP.
+{pp}
+With just one byte for the buffer on the serial port, the computer must read, store, and clear the 
+buffer before any new data comes in. The computer is doing this for every single byte... that 
+means, at 115200 bits per second, the buffer must be cleared 14400 (115200/8) times every 
+second. That's a lot of work, and it eats a lot of your CPU time, compared to a clone PC's serial 
+port. Worse still, if your computer can't keep up with it, or your doing too much with your 
+computer (Miami recommends you don't use 256 AGA cols. on a 030 system at high baud rates), 
+you will lose data. If this data loss occurs during internet TCP/IP packet transceiving, then the 
+packet can be sent again and again until it gets through. If it happens during negotiation with 
+your modem however, then the modem will refuse to even dial your ISP.
+{pp}
+The solution? Clock it back to 57600 or 38400! The amount of CPU time wasted on that serial 
+port will be dropped significantly, and you won't lose a lot of internet speed, if you take into 
+account the fact your ISP never runs at 100% bandwidth, and phone lines usually restrict your 
+connection speed to something less than 56kbps anyway. Or, you could buy a serial port add-on, 
+such as an IOBlix, surf squirrel etc. for A1200, or for the big boxes, Zorro 2 boards such as the 
+Multiface III or GVP I/O cards. These have much more intelligent UARTs, with bigger buffers, and 
+will reduce the load off your CPU so it can do something worthwhile.
+{pp}
+As for the clock port headers, it seems that early boards had all the pins for P9B(1-40) whilst the 
+majority just have pins 19-40. The reason, according to the A1200 Hardware Guide, is due to 
+Commdore's initial indecision as to whether the A1200 should have 2MB chip memory, as it does 
+now, or just release it with 1MB, and produce a 1MB piggyback expansion later. Pins 1-40 of 
+P9A, near the top of the board, and the first 18 pins of P9B are associated with this purpose, and 
+aren't needed for a battery backed real time clock after all. Luckily, we all know it as a clock 
+header, not memory expansion. The A1200 Hardware guide also has this to say about the clock 
+header:
+{pp}
+"This header demonstrates Commodore's finest quality control - motherboards were shipped with 
+the header on the wrong side of the port, the header twice the size, or no header at all."
+{pp}
+- Paul
+{pp}

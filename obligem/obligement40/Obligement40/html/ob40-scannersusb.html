@@ -1,0 +1,109 @@
+<html>
+ <head>
+  <title>Hardware&nbsp;: scanners en USB</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#113333" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">Hardware&nbsp;: scanners en USB </font>par&nbsp;<a href="mailto:guy.maysonnave@freesbee.fr">Guy&nbsp;Maysonnave</a></div><br><br><br>
+
+USB, ce standard que je ne considérais pas comme tel car inutilisable jusqu'à récemment sur Amiga et surtout très mal
+supporté par mon PC sous-winifié cuvée 98. Voici donc ce bus porté au stade d'impérial grâce à la pile magique nommé
+Poseidon. Cette dernière réconciliera tout le monde puisqu'elle supporte la plupart des solutions hardware USB pour
+Amiga et compatibles. Voilà que s'offre à nous un grand choix de périphériques en tout genre, reste à voir ceux qui
+sont reconnus car, comme souvent, la question qui se pose c'est&nbsp;: "Y'a t'il un pilote dans mon OS&nbsp;?". Le sujet est vaste.
+Le présent article concerne l'utilisation d'un scanner USB testé avec un Pegasos sous MorphOS 1.4. Les logiciels
+nécessaires, ainsi que des scanners compatibles, des cartes USB et des Pegasos sont disponibles chez <a href="http://www.aps.fr" target="_blank">APS</a>.<br><br>
+
+<font size="+1" color="#ccbb33">Pilote</font><br><br>
+
+Pour Amiga, il faut acquérir le logiciel IOUSB de <a href="http://www.iospirit.de" target="_blank">IOSpirit</a>.
+Ce dernier est un ensemble comprenant un device et un pilote pour les scanners USB d'Epson. Une liste de scanners
+compatibles est disponible sur le site d'IOSpirit. Pour MorphOS, seul le pilote EpsonUSB est nécessaire, ce dernier
+est fourni gratuitement avec FxScan_Lite sur le FTP ou le cédé "SuperBundle". Pour ma part, j'ai testé un Epson 1200U
+et 1660 Photo qui ont bien fonctionné ainsi qu'un Epson 610 qui n'est pas supporté par le pilote.
+Une autre possibilité est d'utiliser le logiciel ScanQuixUSB qui, actuellement, supporte trois modèles USB&nbsp;:
+Hewlett-Packard 2200C, Epson Perfection 1250U/1250U-Photo et Umax Astra 5400/5450.<br><br>
+
+<font size="+1" color="#ccbb33">Device</font><br><br>
+
+Le device fourni avec IOUSB (iousbscanner.device) est prévu seulement pour AmigaOS. Pour MorphOS c'est la
+"rawwrap.class" qu'il faut configurer dans les préférences système (System settings)&nbsp;:<br><br>
+
+- Dans USB, onglet "Classes", sélectionnez "rawwrap.class" et appuyez sur "configure".<br>
+- Activer l'option "Bind to vendor/unknow interfaces", allez dans le deuxième onglet.<br>
+- Mettre Default usbraw.device unit&nbsp;: 0.<br>
+Cocher "Exclusive access".<br>
+Out nak timeout&nbsp;: 20000 ms.<br>
+In nak timeout&nbsp;: 20000 ms.<br>
+In buffer mode&nbsp;: no buffering.<br>
+Buffer size&nbsp;: 36 kb.<br>
+Cocher "Short reads terminate".<br><br>
+
+<div align="center">
+<img src="../gfx/scannersusb-rawwrap.jpg" border="0" width="481" height="247" alt="Configuration dans les préférences de l'USB"><br><br>
+</div>
+
+<font size="+1" color="#ccbb33">Logiciels pour scanner</font><br><br>
+
+Avec IOUSB vous pourrez utiliser soit BetaScan (logiciel gratuit sur Aminet), soit FxScan d'IOSpirit qui offre
+l'avantage de disposer d'outils de retouche d'images. Voici comment configurer FxScan ou FxScan_Lite&nbsp;:<br><br>
+
+- Choisir le système "BetaScan".<br>
+- Pour "scannerdriver", choisir "EpsonUSB" fourni avec IOUSB et FxScan_Lite.<br>
+Je l'ai placé dans le répertoire "scanners" de FxScan, mais le tout est d'indiquer le bon chemin.<br>
+- Pour le device sous MorphOS, entrer "usbraw.device". Ce device est placé en mémoire par Poseidon. Il faut le
+saisir au clavier. Sous AmigaOS, il faut utiliser le device de IOUSB, "Devs:iousbscanner.device".<br>
+- Pour Unit, ne vous inquiétez pas si aucun device n'est présent dans la liste, laissé la première (0).<br><br>
+
+<font size="+1" color="#ccbb33">Utilisation</font><br><br>
+
+Avec un Pegasos G3/600 MHz sous MorphOS, l'Epson 1660 Photo est vraiment très rapide&nbsp;: 15 secondes pour une page A4 à 150 DPI.
+Le résultat est quasiment parfait à tout les niveaux (couleur, luminosité,...). Avec l'intégration de TurboPrint
+dans MorphOS 1.4 et l'utilisation de GraphicPublisher (68K) pour contrôler la mise en page, on peux envisager
+des reproductions de très bonnes qualités. Un bémol cependant car le pilote EpsonUSB ne permet pas l'utilisation
+de l'éclairage supérieur du 1660 Photo pour scanner des transparents (négatif photo,...). Pourtant, cette option
+est présente dans FxScan et BetaScan. Felix Schwarz (IOSpirit) m'a indiqué que le code de base est présent dans
+le pilote EpsonUSB mais non encore fonctionnel. A suivre donc...<br><br><br>
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>
+
+

@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META NAME="AUTHOR" CONTENT="Thomas Nawroth">
+<META NAME="DESCRIPTION" CONTENT="Ein Computer-Magazin von 1984">
+<TITLE>Happy Computer</TITLE>
+</HEAD>
+<BODY bgcolor="#fffff4" background="Images/mm_hc18b.gif">
+<TABLE border="0" cellpadding="8">
+      <TR>
+        <TD>
+         <CENTER><IMG SRC="Images/mm_hc18a.gif">
+         <BR><I>Folge 18</I></CENTER><BR>
+<H1 ALIGN="CENTER">Noch mehr Joy ohne Stick</H1>
+
+Die Simulation eines Joysticks auf der TI-Tastatur hat ein großes Echo gefunden.
+
+Viele Leser fanden die Joystick-Routine, die wir in Happy Computer 7 unter dem Titel "Auch ohne Stick viel Joy" vorstellten, viel zu träge und umständlich. Etliche machten sich daran, das kurze Listing zu verbessern. Lesen Sie drei wirkungsvolle Lösungen, die uns die Leser zugeschickt haben.
+
+Vorschlag 1
+
+Die abgedruckte Routine benötigt acht Tasten um sämtliche Joystick-Rückmeldungen zu simulieren. Einfacher ist es, nur vier Tasten zu belegen. Mann kann die Abfrage links, rechts beziehungsweise nach oben und unten, inklusive der Diagonalwerte durch Mischen erzeugen. In ähnlicher Weise funktioniert auch ein Joystick.
+Durch einfaches Umschalten der Tastenmodi 1 und 2 kann die Tastatur des TI99/4A geteilt werden. Ich benutze dazu die Tasten "Z" für links, "X" für rechts, ";" für unten und "/" für oben. Das Kommando "links oben" wird dann durch gleichzeitiges Betätigen der "Z" und "/" Tasten bewerkstelligt. Diese Lösung ist sicherlich einfacher, als wenn man mit acht Tasten arbeiten müßte.
+Speziell beim Spielen kommt es auf eine möglichst schnelleJoystick-Abfrage an. Das in Ausgabe 7 abgedruckte Programm dürfte für schnelle Spiele zu langsam sein. Mehrfache "IF THEN"-Abfragen sollte man deshalb vermeiden. Schnell hintereinander auszuführende Befehle sollte man des weiteren in einer oder möglichst wenigen Programmzeilen unterbringen.
+Tatsächlich kann man in Extended Basich das gesamte Unterprogramm zur Joystick-Abfrage in einer einzigen Programmzeile unterbringen. Das sähe dann so aus:
+5000 SUB JOYST(1,X,Y)::CALL KEY(1,K,S)::X=4*((K=15)-(K=0))::CALL KEY(2,K,S)::Y=4*((K=17)-(K=16))::SUBEND
+Man muß dann in der obigen Programmzeile, bei jedem Aufruf das "O" des "CALLJOYST(1,X,Y)" in eine Null umwandeln. So wie die Programmzeile oben abgedruckt ist, leistet sie in etwa so viel wie die Joystickabfrage aus der Happy-Computer Ausgabe 7. Es soll nicht verschwiegen werden, daß das von mir vorgestellte Unterprogramm um etliches schneller ist.
+Zu einem guten Programmstil gehört weiterhin, daß man entweder die Tastatur oder die Joysticks als Eingabemedium verwendet Am einfachsten ist es, wenn man zum Programmstart nach der gewünschten Art der Steuerung fragt. Die gewählte Option könnte dann in einer Variablen "JOY" abgespeichert werden, die normalerweise den Wert "0" enthält. Bevorzugt man die Fernbedienung, könnte die Variable den Wert "-1" annehmen. Die entsprechende Programmänderung könnte dann so aussehen:
+
+10 DISPLAY AT(23,1)BEEP:"WILLST DU EINEN JOYSTICK":"VERWENDEN?"
+11 CALL KEY(3,K,S)::IF S=0 THEN 11 ELSE JOY=(K=74)
+..
+..
+5000 SUB JOYST(JOY,X,Y)::IF JOY THEN CALL JOYST(1,X,Y)::SUBEXIT
+5010 CALL KEY(1,K,S)::X=4*((K=15)-(K=0))::CALL KEY(2,K,S)::Y=4*((K=17)-(K=16))::SUBEND
+
+So ist das Programm schon wesentlich komfortabler, aber immer noch nicht perfekt. Ein gutes Programm sollte benutzerfreundlich sein. Bekanntlich ist der TI99/4A für den Anschluß von zwei Joysticks ausgerüstet. Jetzt könnte man es natürlich dem Benutzer überlassen welchen Joystick er verwenden möchte. Ich verfahre dann folgendermaßen. Durch Betätigung des entsprechenden Feuerknopfes kann der Benutzer selber wählen welchen Joystick er verwenden möchte.
+.
+.
+.
+
+<HR><BR>
+In der n&auml;chsten NoCover gibt es 
+         </TD>
+        </TR>
+</TABLE>
+<BR><BR>
+<TABLE ALIGN="CENTER" border="3">
+<TR bgcolor="#ffffff">
+<TD><A HREF=mailto:"thomasnawroth@web.de">Thomas Nawroth</A></TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>

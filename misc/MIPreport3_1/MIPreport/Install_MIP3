@@ -1,0 +1,99 @@
+; $VER: Install_M.I.P.report #3 by Wincle/VRT v2.0 (26.8.98) Lame Code & Design
+
+(
+
+
+(procedure testcomp
+  (set procesor (database "cpu"))
+(set frek (database "vblank"))
+(set chip (database "graphics-mem"))
+(set total (database "total-mem"))
+)
+
+(procedure getcurrentversion name
+  ( (set vernum (getversion name (resident)))
+    (set ver (/ vernum 65536))
+    (set rev (- vernum (* ver 65536)))
+  )
+)
+
+(procedure copymip
+ (
+    (copyfiles (source "mip1.dat") (dest @default-dest))
+    (copyfiles (source "mip2.dat") (dest @default-dest))
+    (copyfiles (source "engine.dat") (dest @default-dest))
+    (copyfiles (source "mip.index") (dest @default-dest))
+    (copyfiles (source "mip3") (dest @default-dest))
+    (copyfiles (source "mipreport") (dest @default-dest))
+    (copyfiles (source "readme") (dest @default-dest))
+    (copyfiles (source "miptro") (dest @default-dest))
+    (copyfiles (source "prefs") (dest @default-dest))
+    (copyfiles (source "mipprefs") (dest @default-dest))
+    (copyfiles (source "m.i.p.prefs") (dest @default-dest))
+    (copyfiles (source "mipfonts/") (dest (tackon @default-dest "MIPfonts")) (ALL) )
+    (copyfiles (source "Bonus/") (dest (tackon @default-dest "BONUS")) (ALL) )
+
+    (copyfiles (source "icony/prefs.info") (dest @default-dest))
+    (copyfiles (source "icony/mip3.info") (dest @default-dest))
+    (copyfiles (source "icony/miptro.info") (dest @default-dest))
+    (copyfiles (source "icony/readme.info") (dest @default-dest))
+    (copyfiles (source "icony/Bonus.info") (dest @default-dest) (newname "BonUs.info"))
+    (copyfiles (source "icony/appicon.info") (dest (tackon @default-dest "app")) (newname "appicon.info"))
+ )
+)
+
+(procedure askmwb
+(
+(getcurrentversion "intuition.library")
+
+(if (>= ver 40) (set text "OS 3.1 ...Hmmmm")
+(if (< ver 39)  (set text "OS 2.04 ?!?, What's up?"))
+(set text "OS 3.0 , macht niX")
+)
+
+(testcomp)
+
+    (set MWB
+	(askchoice
+	    (prompt "\n" text "\n Procesor:  " procesor "        VBlank:   " frek "    \n Chip RAM:  " chip "     Fast RAM:  " (- total chip) "\n\nDo you wanna install the Special Icon Set?\n")
+
+	    (help (cat "\n\n  Fuck the best we are the rest\n\n")
+	    )
+            (choices "YeS! I do" "No, I do")
+	    (default 0)
+        )
+     )
+)
+)
+
+
+(welcome "M.I.P Installer\nMonkey Island Party\nPhoto Edition\n\nM.I.P. report #3   © Vertical Syndicate '98")
+(if (= @user-level 0) (abort "\n\nLAMER MODE\n\n :)")
+ (if (= @user-level 1) (abort "\n\nBoMb MODE\n\n "))
+)
+(set @user-level 2)
+(set @app-name "MIP #3")
+
+;  ( (set insver (getversion "c:installer" ))
+;    (message insver)
+;  )
+
+    (testcomp)
+    (askmwb)
+; HDD
+ (
+   (set @default-dest
+    (askdir (prompt "Select the directory to install MIPpreport #3")
+	    (help @askdir-help)
+	    (default @default-dest)
+    )
+   )
+    (makedir (tackon @default-dest "MIP3"))
+    (copyfiles (source "icony/MIP3drawer.info")(dest @default-dest) (newname "MIP3.info"))
+    (set @default-dest (tackon @default-dest "mip3"))
+    (copymip)
+
+
+(exit "\n\n\nMip Report has just been installed on your\n grandmother with the special Old Icons set.\n" (quiet))
+
+))

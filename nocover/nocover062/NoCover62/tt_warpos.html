@@ -1,0 +1,151 @@
+<HTML>
+<HEAD>
+<TITLE> WarpOS-Konfiguration </TITLE>
+</HEAD>
+<BODY BACKGROUND=htmlbg.png TEXT=black link=blue alink=red bgcolor=white>
+
+<P><CENTER><H1> WarpOS-Konfiguration </H1></CENTER> </P>
+<P>
+Schon w&auml;hrend der Installation von WarpOs V14 lassen sich
+einige Einstellungen vornehmen. Da es einige aber schon installiert
+haben, erkl&auml;re ich im folgenden nur wie man es &auml;ndern
+kann, wenn es fertig installiert ist. Es ist zwar auch gut
+von Sam Jordan im zugeh&ouml;rigen Guide erkl&auml;rt, aber
+ich m&ouml;chte hier etwas genauer darauf eingehen.</P>
+<P>
+Folgender Artikel basiert (au&szlig;er auf meinen Erfahrungen) im
+wesentlichen auf dem WarpOS.guide von Sam Jordan und auf E-Mails,
+die ich von Sam Jordan erhielt. <BR>
+Sam Jordan ist der Programmierer von WarpOS und leistet erstklassigen
+Support!
+</P>
+<P>
+<A HREF=#env> Setzen von Env-Variablen  </A><BR>
+<A HREF=#alert> Alertfile und Crashfile </A><BR>
+<A HREF=#board> BoardType               </A><BR>
+<A HREF=#debug> Debug                   </A><BR>
+<A HREF=#early> Earlyterm               </A><BR>
+<A HREF=#gfx> GfxAddr und Force         </A><BR>
+<A HREF=#hide> HideWarning              </A><BR>
+<A HREF=#mem> MemProt                   </A><BR>
+<A HREF=#noppc> NoPPC                   </A><BR>
+<A HREF=#terminator> Terminator         </A><BR>
+</P>
+<P>
+<A NAME=env>
+<H2>Setzen von Env-Variablen</H2> </A><BR>
+Die Voreinstellungen sind als Env-Variablen im Verzeichnis
+<CODE>ENVARC:PowerPC </CODE> gespeichert. Um diese zu &auml;ndern
+solltet ihr ein Shell-Fenster &ouml;ffnen. <BR>
+Damit das Arbeiten bequemer wird, tippt ein: <BR>
+<CODE>CD ENVARC:PowerPC </CODE> <BR>
+Wenn ihr nun <CODE> LIST </CODE> eintippt, m&uuml;sste folgendes
+erscheinen:
+<PRE>
+Verzeichnis von "Workbench:Prefs/Env-Archive/powerpc" am Heute      10:21
+alertfile                   66 --arwed  14-Feb-99  14:45   
+crashfile                   75 --arwed  12-Feb-99  14:14   
+debug                        1 --arwed  24-Jan-99  11:45   
+earlyterm                    1 --arwed  24-Jan-99  11:46   
+force                        1 ---rwed  20-Feb-99  13:03   
+gfxaddr                      1 ---rwed  20-Feb-99  13:25   
+hidewarning                  1 --arwed  24-Jan-99  11:46   
+memprot                      1 ---rwed  20-Feb-99  12:59   
+noppc                        1 --arwed  24-Jan-99  11:46   
+terminator                   1 --arwed  11-Feb-99  18:03   
+10 Dateien - 0 Verzeichnisse - 0 Links - 20 Blöcke - 149 Bytes
+Benutzt 23041536 Bytes  -  Frei 1213952 Bytes
+</PRE>
+Was in den einzelnen Dateien steht, lasst ihr euch am besten
+mit <CODE> TYPE </CODE> anzeigen.<BR>
+Wenn ihr eine Variable &auml;ndern wollt, so funktioniert das
+am besten mit dem Befehl <CODE> SETENV </CODE>. Bei diesem Befehl
+m&uuml;sst ihr immer den kompletten Pfad eingeben, da er
+standardm&auml;&szlig;ig nicht im aktuellen Verzeichnis speichert
+sondern in ENV: .</P>
+<P>
+<H4>Beispiel:</H4><BR>
+Ihr wollt die Variable debug &auml;ndern. <BR>
+<IMG SRC=wosshell.png WIDTH=641 HEIGHT=261 ALT=Shell-Fenster> </P>
+<P>
+<H2>Die Bedeutung der Variablen</H2></P>
+<P><A NAME=alert>
+<H3>Alertfile und Crashfile </H3><BR></A>
+Diese Variablen geben an, wohin die Systemnachrichten (Alertfile)
+und die Ausgabe bei Abst&uuml;rzen (Crashfile) geleitet werden
+sollen. Gebt ihr Dateinamen an, werden sie in dieser Datei
+gespeichert. Aber sinnvoller ist es, wenn ihr es auf <CODE>
+CON: ... </CODE> stehen lasst. Die Ausgabe geschieht dann statt in
+einer Datei in einem Fenster. Wie ihr das Fenster &auml;ndern
+k&ouml;nnt ist gut im DOS-Handbuch bei dem Befehl <CITE> Newshell
+</CITE> erkl&auml;rt. Deshalb nur soviel: <BR>
+CON:Links/Oben/Breite/H&ouml;he/Titel/Optionen</P>
+<P><A NAME=board>
+<H3>BoardType</H3><BR></A>
+Diese Variable gibt es bei der Version 14 nicht mehr. WarpOS
+erkennt nun selbst&auml;ndig, welches PPC-Board eingebaut ist.
+</P>
+<P> <A NAME=debug>
+<H3>Debug</H3><BR></A>
+Hiermit steuert ihr die Debugging-Ausgabe. Sie geschieht wie bei
+ROMWack auch &uuml;ber die serielle Schnittstelle. Wer jetzt nur
+Bahnhof versteht, sollte den Wert dieser Variablen bei 0 belassen.
+Wer die Infos will, kann ihn auch auf Werte von 1 bis 3 setzen.
+Wer an der seriellen Schnittstelle kein Terminal h&auml;ngen hat,
+kann sich die Ausgabe auch mit <CITE>Sushi, Decon, Sushimi </CITE>
+oder <CITE>MungFriend </CITE>ausgeben lassen.</P>
+<P><A NAME=early>
+<H3>Earlyterm</H3></A><BR>
+Wenn ihr Probleme mit Programmen wie <CITE>WShell </CITE>habt, setzt sie
+auf 1 . Ansonsten lasst sie auf 0. </P>
+<P><A NAME=gfx>
+<H3>GfxAddr und Force </H3><BR>
+Lasst ihr Force auf 0, so ermittelt WarpOS die Anfangs-Adresse eures
+Grafikspeichers automatisch. Gibt es Probleme, so m&uuml;sst ihr
+Force auf 1 setzten und den Wert bei GfxAddr eintragen. Probleme soll
+es wohl bei BlizzardVision und CyberVision geben. Die Adresse dieser
+Boards lautet: <CODE> $e0000000 </CODE> <BR>
+Ist keine Grafikkarte vorhanden, lautet die Adresse <CODE>$00000000
+</CODE> oder einfach 0 .</P>
+<P><A NAME=hide>
+<H3>HideWarning</H3>
+Wenn euch das Requester nervt, dass anzeigt dass die ppc.library
+erst entfernt werden muss, k&ouml;nnt ihr diese Variable auf 1
+setzen. </P>
+<P><A NAME=mem>
+<H3>MemProt</H3></A><BR>
+Diese Variable erm&ouml;glicht gesch&uuml;tzten Speicher, wenn sie
+auf 1 gesetzt wird. Dies funktioniert jedoch nur, wenn das Programm
+auch gesch&uuml;tzten Speicher alloziert. Welche Programme dieses
+Feature unterst&uuml;tzen wei&szlig; ich leider nicht. Gibt es
+&uuml;berhaupt ein Programm, dass Speicherschutz unterst&uuml;tzt???
+Diese Variable auf 1 zu setzen kann Probleme bereiten, weshalb man
+diese Variable auf 0 lassen sollte (Empfehlung von Sam Jordan).
+</P>
+<P><A NAME=noppc>
+<H3>NoPPC</H3></A><BR>
+Habt ihr WarpOS installiert aber gar keinen PPC-Prozessor eingebaut,
+so m&uuml;sst ihr diese Variable auf 1 setzen. Dadurch funktionieren
+alle Programme, die versuchen die powerpc.library zu &ouml;ffnen aber
+gar keinen PPC-Prozessor ben&ouml;tigen. </P>
+<P><A NAME=terminator>
+<H3>Terminator</H3></A><BR>
+Ist diese Variable auf 0 gesetzt, so kann WarpOS nicht hochgefahren
+werden wenn die ppc.library aktiv ist. <BR>
+Wollt ihr Version 45 der ppc.library entfernen um WarpOS hochfahren zu
+k&ouml;nnen, so m&uuml;sst ihr die Variable auf 1 setzen. <BR>
+Habt ihr Version 46 installiert, so muss zum Entfernen der ppc.library
+der Wert auf 2 gesetzt werden.
+</P><P ALIGN=RIGHT>
+<A HREF="mitglieder/steffens.html">
+<IMG SRC=umo.gif WIDTH=84 HEIGHT=41 BORDER=0 ALT="UMO - Thomas Steffens"> </RIGHT>
+</A> </P>
+<P>
+<HR>
+<CENTER>
+<A HREF="NoCover.html"><IMG BORDER=0 SRC="l_hauptinhalt.jpg" width=639 height=99></A>
+</CENTER>
+</P>
+</BODY>
+</HTML>
+

@@ -1,0 +1,397 @@
+{backimage bg.iff}
+{center}
+{subhead}AIO Exclusive- Port Access{def}{p}
+Article by Barry Walker
+{left}
+{pp}
+{italic}Editor's Note:  Brry Walker has kindly submitted his article and
+source code to AIO on how to access the parrallel port and games port
+using very simple BASIC basic.  It was originally written in 1992 and
+modified over the years.  He is ONLY letting AIO have it and will not be
+putting it on Aminet.  Enjoy...{noitalic}
+{pp}
+{pp}
+{fixed}
+============================================================================
+{def}
+{p}
+{pp}
+{center}
+FOR AIO ONLY.{p}
+{pp}
+{left}
+{fixed}
+----------------------------------------------------------------------------
+{def}
+{pp}
+{pp}
+{center}
+Parallel And Games Port Access Using BASIC Only.{p}
+------------------------------------------------{p}
+{pp}
+{left}
+{bold}Requirements:-{nobold}{p}
+--------------{p}
+{pp}
+1) Standard A500, A500+, A600, A1200 only.{p}
+2) AmigaBASIC for WorkBench 1.3x or less.
+{pp}
+{fixed}
+----------------------------------------------------------------------------
+{def}
+{p}
+{pp}
+{bold}Some Optional Basic Compilers:-{nobold}{p}
+-------------------------------{p}
+{pp}
+From AMINET:-{p}
+    ACE Basic Compiler, (optional).        FREEWARE.{p}
+    Cursor Basic Compiler, (optional).     SHAREWARE.{p}
+{pp}
+From HiSoft:-{p}
+    HiSoft Basic, (HBasic2), (optional).   COMMERCIAL.{p}
+{pp}
+For these compilers to work read the relevant documentation that comes
+with the them. The source code works with ALL of the above.
+{pp}
+An Ancient WorkBench Basic Interpreter:-{p}
+    ABasiC Basic Interpreter.              VERY EARLY WORKBENCH{pp}
+    Some modification to the source code WILL be required for them to work.
+{pp}
+Other Basic Interpreters/Compilers:-{p}
+    I have NO idea whether the source will work with other dialects of
+BASIC, perhaps someone will let me know.
+{pp}
+{pp}
+{fixed}
+============================================================================
+
+                                IMPORTANT:-
+                                -----------
+
+
+    The Legal Stuff:-
+    -----------------
+
+    These programs are the copyright of (C)1996 Barry Walker with all
+    rights reserved.
+    They are freeware and no profit will be made from them, also all of
+    the files must remain unaltered and intact including this one.
+    The author is not responsible for any damage to, or loss of, or
+    failure of equipment or data caused in any way by the use of these
+    programs.
+
+----------------------------------------------------------------------------
+{def}
+{pp}
+{bold}Testing Evaluation:-{nobold}{p}
+--------------------
+{pp}
+All projects were tested on an A500 with various memory configurations,
+the same A500 switched to 1MB Chip Ram and emulating WB2 using
+the A500+ emulator, an A600 with various memory configurations,
+the same A600 emulating WB3 with various memory configurations,
+an A1200 with various memory configurations.
+{pp}
+{fixed}
+============================================================================
+{def}{pp}
+{pp}
+{bold}Introduction:-{nobold}{p}
+--------------{pp}
+The listing below was my means of finding out practically how the
+~Parallel Port~ and the ~Games Port~ worked. Reading technical journals
+about the hardware is one thing, but doing practical checks is something
+else entirely.
+{pp}
+In the ~hard/hack~ drawer of AMINET are my ~TestGear4?.lha~ archives
+which is a fully Calibrated Oscilloscope, (see the archive for the full
+specification). If you have built this or have access to a commercial
+Oscilloscope then this IS required to see what is going on.
+{pp}
+If you do NOT have access to an Oscilloscope then you will just have
+to trust this text.
+{pp}
+I wrote the coding in what I call ~BABY BASIC~.....
+{pp}
+That is:-{p}
+---------{pp}
+{fixed}
+  1) All of the statements are done line by line. There are NO multiple
+     statements per line.
+  2) There are NO machine code calls at all.
+  3) There are NO special function calls at all.
+  4) Only the default libraries are used.
+  5) All hardware access is done by PEEKs and POKEs as required.
+  6) The statment ~LET~ is used for simplicity.
+  7) The original coding had line numbers instead of labels because I
+     liked ~Sinclair Spectrum Basic~ so much. It has long since gone.
+  8) By 1996 I realised that the AMIGA was NOT going to change any more
+     so I knew that I could access the hardware directly and it would
+     always work on the required machines.
+  9) These are, (all STANDARD machines), A500, A500+, A600 and A1200.
+ 10) The original coding was done using AmigaBASIC Interpreter on an A500
+     using WorkBench 1.32.
+{def}
+{pp}
+{pp}
+{bold}How The Program Works:-{nobold}{p}
+-----------------------{pp}
+I will use the ~REM~ statement with ~LINE 1~ written inside of it as
+the start. As can be seen this source code will work WITHOUT modification
+under ~AmigaBASIC Interpreter, Cursor Basic and HiSoft Basic Compilers.
+Going on to LINE 17 where ~LET~ statements set up various string and
+numerical variables. The next set of variables set up the addresses that
+are to be accessed and following that, the values of those addresses are
+stored for future use. At LINE 47 the ~CLS~ statement starts the basic
+setup screen. This then enters the simple keyboard loop at LINE 74.
+{pp}
+{bold}The Keyboard Commands:-{nobold}{p}
+-----------------------[pp}
+It is assumed that ~AmigaBASIC Interpreter~ and ~WorkBench 1.3x~ are
+running on a standard AMIGA A500. Pins 2 to 9 inclusive of the parallel
+port are the data lines, bit 0 is pin 2... bit 7 is pin 9.
+{pp}
+{fixed}
+  1) ~w~ or ~W~... This writes 8 bit data from 0 to 255 to the parallel
+     port. When viewed on an Oscilloscope bit 0 is toggled at about twice
+     per second. Bit 1 at about once per second, bit 2 at about once every
+     two seconds and so on... The ~STROBE~, (~DRDY~), line is clocked
+     automatically by the system and it does NOT wait for an ~ACK~ to work.
+  2) ~r~ or ~R~... This reads 8 bit data from the parallel port. Using a
+     1 KilOhm resistor short any one of the pins, (2 to 9), to ground.
+     This will be displayed as a number on the screen. This is very useful
+     for slow A-D Conversion. Again the ~STROBE~, (~DRDY~), line is clocked
+     automatically by the system and it does NOT wait for an ~ACK~ to work.
+  3) ~g~... This will read the state of pin 6 of the games port. Using a
+     small length of wire short pins 6 and 8 of the games port together.
+     This will be displayed as a changing number on the screen.
+  4) ~G~... This writes a continuous series of ~1~s and ~0~s to pin 6 of
+     the games port. This generates a slow continuous SQUARE WAVE at pin 6
+     of the games port and can easily be viewed using an Oscilloscope.
+  5) ~l~ or ~L~... This turns the power light ON/UP or DOWN/OFF and also
+     enables or disables the audio filter circuit.
+{def}
+{pp}
+This gives easy access to some of the user hardware that is NOT usually
+easily accessible. You do not need to know ~C~, ~C++~, ~Assembler~,
+~Pascal~, etc... etc... to get more out of your AMIGA. The one big
+drawback with ~BASIC~ however is SPEED. It can be tediously SSLLLOOOWW.
+{pp}
+You may modify this code as much as you like but be VERY VERY careful.
+DO consult hardware manuals to find correct addresses and usages of the
+hardware registers. DO NOT blindly POKE and PEEK these registers until
+you know what they do.
+{pp}
+{pp}
+{fixed}
+----------------------------------------------------------------------------
+
+REM ************************      LINE 1      ******************************
+REM
+REM Parallel Port and Games Port access using STANDARD BASIC only.
+REM
+REM (C)1996 B.Walker, (G0LCU).
+REM
+REM Checked against AmigaBASIC Interpreter, Cursor Basic Compiler,
+REM and HiSoft Basic Compiler. Some modifications may be required for the
+REM ancient ABasiC Intepreter of Pre-Workbench 1.3x.
+REM
+REM This is ready for AmigaBASIC Interpreter, Cursor Basic Compiler,
+REM and Hisoft Basic Compiler.
+REM
+REM ************************************************************************
+
+REM Set up any string variables. This is LINE 16.
+  LET a$="(C)2001 B.Walker, G0LCU."
+REM Set up any numerical variables.
+  LET n=0
+  LET byteval=0
+
+REM ~CIAA~ address for register ~pra~.
+  LET pra=12574721
+REM ~CIAA~ address for register ~prb~.
+  LET prb=12574977
+REM ~CIAA~ address for direction of port ~pra~, (1=OUTPUT).
+  LET ddra=12575233
+REM ~CIAA~ address for direction of port ~prb~, (1=OUTPUT).
+  LET ddrb=12575489
+
+REM Store single byte values of these addresses for future use.
+  LET valpra=PEEK(pra)
+  LET valprb=PEEK(prb)
+  LET valddra=PEEK(ddra)
+  LET valddrb=PEEK(ddrb)
+REM Bit 0 of port ~ddra~ DO NOT CHANGE...
+REM Bit 1 of port ~ddra~ switches the ~LED~ ON or OFF, (1=ON).
+REM Bits 2 to 5 inclusive of port ~ddra~ DO NOT CHANGE...
+REM Bits 6 and 7 of port ~ddra~ alter PIN 6 of the mouse/games ports, (1=OUTPUT).
+REM Port ~ddrb~ controls the parallel port, all bits, (1=OUTPUT).
+  LET newvalpra=valpra
+  IF newvalpra>=128 THEN LET newvalpra=newvalpra-128
+  LET newvalddra=valddra
+  IF newvalddra>=128 THEN LET newvalddra=newvalddra-128
+
+REM Initial copyright line. This is LINE 46.
+  CLS
+  COLOR 1,0
+  LOCATE 1,28
+  PRINT a$
+  GOTO start1:
+
+REM Simple setup screen. This is LINE 53.
+start:
+  CLS
+start1:
+  LOCATE 4,10
+  PRINT "Press ~w~ or ~W~ for writing data bytes to the parallel port."
+  LOCATE 6,10
+  PRINT "Press ~r~ or ~R~ for reading data bytes from the parallel port."
+  LOCATE 8,10
+  PRINT "Press ~g~ to read from PIN 6 of the games port only."
+  LOCATE 10,10
+  PRINT "Press ~G~ to write to PIN 6 of the games port only."
+  LOCATE 12,10
+  PRINT "Press ~l~ to turn the power light UP or ON."
+  LOCATE 14,10
+  PRINT "Press ~L~ to turn the power light DOWN or OFF."
+  LOCATE 16,10
+  PRINT "Press ~q~ or ~Q~ to quit."
+
+REM This is the main loop. This is LINE 72.
+mainloop:
+  LET a$=INKEY$
+  IF a$="w" OR a$="W" THEN GOTO parallelwrite:
+  IF a$="r" OR a$="R" THEN GOTO parallelread:
+  IF a$="G" THEN GOTO gamesportwrite:
+  IF a$="g" THEN GOTO gamesportread:
+  IF a$="l" THEN GOSUB lightup:
+  IF a$="L" THEN GOSUB lightdown:
+  IF a$="q" OR a$="Q" THEN GOTO getout:
+  GOTO mainloop:
+
+REM Write byte values to the parallel port. This is LINE 84.
+parallelwrite:
+  CLS
+  LET n=0
+REM Set all bits to outputs.
+  POKE ddrb,255
+loop1:
+  POKE prb,n
+  LET byteval=PEEK(prb)
+  LOCATE 10,19
+  PRINT "Decimal value at the parallel port is";byteval;CHR$(8);".   "
+  LOCATE 12,26
+  PRINT "Press ~SPACE BAR~ to exit."
+  LET a$=INKEY$
+  IF a$=" " THEN GOTO start:
+  LET n=n+1
+  IF n>255 THEN LET n=0
+  GOTO loop1:
+
+REM Read byte values from the parallel port.
+parallelread:
+  CLS
+REM Set all bits to inputs.
+  POKE ddrb,0
+loop2:
+  LET byteval=PEEK(prb)
+  LOCATE 10,19
+  PRINT "Decimal value at the parallel port is";byteval;CHR$(8);".   "
+  LOCATE 12,26
+  PRINT "Press ~SPACE BAR~ to exit."
+  LET a$=INKEY$
+  IF a$=" " THEN GOTO start:
+  GOTO loop2:
+
+REM Write ~1~s and ~0~s to PIN 6 of the games port.
+gamesportwrite:
+  CLS
+REM Force bit 7 of ~pra~ as an output.
+  POKE ddra,(newvalddra+128)
+REM Set bit 7 of ~pra~ to a value ~1~.
+loop3:
+  POKE pra,(newvalpra+128)
+  LET n=PEEK(pra)
+  LOCATE 8,19
+  PRINT "Value should be greater than ~127~:-";n;CHR$(8);".   "
+REM Set bit 7 of ~pra~ to a value ~0~.
+  POKE pra,newvalpra
+  LET n=PEEK(pra)
+  LOCATE 10,21
+  PRINT "Value should be less than ~128~:-";n;CHR$(8);".   "
+  LOCATE 12,26
+  PRINT "Press ~SPACE BAR~ to exit."
+  LET a$=INKEY$
+  IF a$=" " THEN GOTO start:
+  GOTO loop3:
+
+REM Read the state of PIN 6 of the games port.
+gamesportread:
+  CLS
+  POKE pra,valpra
+  POKE ddra,valddra
+loop4:
+  LET n=PEEK(pra)
+  LOCATE 10,9
+  PRINT "Less than ~128~ when PIN 6 of the games port pulled LOW:-";n;CHR$(8);".   "
+  LOCATE 12,26
+  PRINT "Press ~SPACE BAR~ to exit."
+  LET a$=INKEY$
+  IF a$=" " THEN GOTO start:
+  GOTO loop4:
+
+REM Turn the POWER light UP or ON.
+lightup:
+  POKE ddra,valddra
+  POKE pra,252
+  RETURN
+
+REM Turn the POWER light DOWN or OFF.
+lightdown:
+  POKE ddra,valddra
+  POKE pra,254
+  RETURN
+
+REM Exit routine.
+REM Reset all of the ports back to their original state.
+getout:
+  POKE pra,valpra
+  POKE prb,valprb
+  POKE ddra,valddra
+  POKE ddrb,valddrb
+  END
+
+----------------------------------------------------------------------------
+{def}
+{pp}
+If you found this of interest please send an Email to:-{p}
+                          wisecracker@tesco.net{pp}
+
+Thank You...
+{pp}
+{pp}
+{bold}Acknowledgements:-{nobold}{p}
+------------------{pp}
+First of all many thanks to my wife Tricia who allows me to spend
+many hours on my computers.
+{pp}
+And finally to anyone else who I may have neglected or forgotten.
+{pp}
+{pp}
+Mr Barry Walker,{p}
+70 King George Road,{p}
+Loughborough,{p}
+Leicestershire,{p}
+LE11 2PA,{p}
+England.
+{pp}
+Email to:-{p}
+    wisecracker@tesco.net{pp}
+BYE.....
+{pp}
+{italic}Additional Editor's Note:  In the directory 
+"AIOIssue60/PortAccess.srcs/" you will find two versions of this same 
+above source code, one for use with the ACE complier, the other as shown 
+above for HiSoft Basic, Cursor Basic, and Amiga Basic.{noitalic}
+{pp}

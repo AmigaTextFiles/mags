@@ -1,0 +1,76 @@
+SYSPIC  ; <- script identifier
+
+;**
+;**  $VER: Amiga2.script 1.2
+;**  Demo script for SysPic 4.00
+;**
+;**  written by Grzegorz Calkowski
+;**
+
+; Options section
+
+; picture - note, we could use random selection here!
+Pics/amigalogo.ilbm
+; IFF-8SVX sample
+sound /SoundFiles/MidnightBluesTheme.8svx
+; we wanna fades (fade out to black)
+fadein 12 fadeout 12
+red 0 green 0 blue 0
+; realtime clock (with shadow)
+clock 520/10/7/digital.font/25/1/2
+; other options
+filter off vc delay 10
+
+;
+; Init section
+; here we load fonts we'll use
+;
+INIT:
+font 1 syspic.font 23
+font 2 syspic.font 13
+
+;
+; Main section
+;
+
+MAIN:
+show                            ; show (fade) the picture NOW !
+
+wait 100
+setfont 1
+setapen 12
+typerate 13
+textxy 164 220 "Multimedia Workstation"
+
+wait 100
+setfont 2
+setapen 1
+typerate 1
+center on
+textxy 0 300 "PRUEFE SYSTEM KONFIGURATION..."
+center off
+wait 180
+typerate 3
+gotoxy 170 330
+rightmargin 450
+text "Prozessor:" "MC%pr" cr
+text "Coprozessor:" "MC%cp" cr
+text "Grafikchip:" "%cs" cr
+text "Chip memory:" "%TCM" cr
+text "Fast memory:" "%TFM" cr
+text "Kickstart:" "OS 3.9 BB 2   (45.57)"cr
+text "Workbench:" "OS 3.9 BB 2      (45.3)"cr
+wait 50
+setapen 14
+textxy 200 460 "OS 3.9 BB 2  wird geladen... "
+
+;
+; Exit section
+;
+; NOTE: all settings (pens, font) remain valid!
+;
+
+EXIT:
+text "OS 3.9 BB 2  geladen."
+wait 60
+fade

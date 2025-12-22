@@ -1,0 +1,640 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 09/98 - Installer-Kurs Befehls&uuml;bersicht</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>&Uuml;bersicht &uuml;ber die Befehle des dritten Kursteils</H1></DIV>
+
+<PRE>
+
+<I>Anmerkung:</I> Parameter, die mit (Pflichtparameter) gekennzeichnet sind, sind
+           unbedingt anzugeben. Fehlen sie, verweigert der Installer die
+           Ausf&uuml;hrung des Scripts.
+
+<B>allgemeines</B>
+
+<B><A NAME="CAT">(CAT )</A></B>
+
+ <I>Schablone:</I>   (cat &lt;String&gt; [&lt;String&gt; ...])
+
+ <I>Funktion:</I>  Verkn&uuml;pft alle angegebenen Strings miteinander.
+
+ <I>Bemerkung:</I> (CAT ) kann auch dazu benutzt werden, um INTEGER-Variablen
+                     in solche vom Typ STRING zu wandeln:
+
+                     (set &lt;string-var&gt; (cat &lt;integer-var))
+
+                     Dar&uuml;ber hinaus kann (CAT ) verwendet werden, um einer
+                     Prozedur einen R&uuml;ckgabewert zuzuordnen, so da&szlig; diese wie
+                     eine Funktion behandelt werden kann.
+                     Ich gehe darauf genauer in einem der noch folgenden
+                     Kursteile ein.
+
+ <I>Beispiel:</I>  (cat &quot;Am&quot; &quot;Zeiger&quot;) ;liefert &quot;AmZeiger&quot;
+
+
+<B>Dateimanipulation</B>
+
+
+<B><A NAME="MAKEDIR">(MAKEDIR )</A></B>
+
+ <I>Schablone:</I>   (makedir &lt;Pfad+Name&gt; &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  Erzeugen eines neuen Verzeichnisses mit dem angegebenen
+            Namen.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+            (infos) - Bei Angabe wird zu dem Verzeichnis ein Icon erzeugt.
+            (confirm) - Bei Angabe wird der User aufgefordert, das Anlegen des
+                        Verzeichnisses zu best&auml;tigen.
+            (safe) - Wird dieser Parameter angegeben, so wird das Verzeichnis auch
+                     erstellt, wenn sich der Installer im PRETEND-Modus befindet.
+
+ <I>R&uuml;ckgabe:</I>  Es wird ein boolescher Erfolgswert zur&uuml;ckgegeben, 1 steht
+            f&uuml;r das Gelingen der Funktion, 0 f&uuml;r ein Scheitern.
+
+ <I>Bemerkung:</I> Seit Version 42.9 des Installers versucht dieser, alle
+            nicht vorhandenen Verzeichnisse, die in der Pfadangabe auftauchen,
+            mitzuerzeugen.
+
+            Existiert das angegebene Verzeichnis schon, f&uuml;hrt dies @{u}nicht@{uu} zu
+            einem Fehler.
+
+ <I>Beispiel:</I>  (makedir &quot;ram:TestDir&quot;)
+
+
+<B><A NAME="COPYFILES">(COPYFILES )</A></B>
+
+ <I>Schablone:</I>   (copyfiles &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  Kopiert eine oder mehrere Dateien. W&auml;hrend des
+           Kopiervorgangs wird dabei ein Fortschrittsbalken angezeigt, der
+           sich mit Hilfe des (nogauge)-Parameters auch unterdr&uuml;cken l&auml;&szlig;t.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der
+                              Installer von ihm m&ouml;chte. Wird nur angezeigt, falls
+                              (confirm) angegeben wird.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (source &lt;Pfad+Name&gt;) - Pfad und Name des Quell-Verzeichnisses oder
+                                   der Quelldatei.
+                                   (Pflichtparameter)
+            (dest &lt;Pfad&gt;) - Pfad des Zielverzeichnisses. Existiert dieses
+                            nicht, wird es automatisch angelegt.
+                            (Pflichtparameter)
+            (newname) - Ist als Quelle eine Datei angegeben, so kann diese mit
+                        Hilfe dieses Parameters gleichzeitig umbenannt werden.
+            (choices &lt;Quelle1&gt; [&lt;Quelle2&gt; ...]) - Es kann eine Liste von
+                                                  Dateien oder Verzeichnissen,
+                                                  die kopiert werden sollen,
+                                                  angegeben werden.
+
+            (all) - Bei Angabe werden alle Dateien oder Unterverzeichnisse des
+                    angegebenen Quellverzeichnisses kopiert.
+            (pattern &lt;pattern&gt;) - Alle Verzeichnisse und Dateien im
+                                  Quellverzeichnis, die dem angegebenen Pattern
+                                  entsprechen, werden kopiert.
+            (files) - Bei Angabe dieses Parameters werden nur Dateien, keine
+                      Verzeichnisse kopiert.
+            (infos) - Falls angegeben, werden die Icons der zu kopierenden
+                      Dateien mitkopiert.
+            (noposition) - Freigeben der Positionswerte der mitkopierten Icons.
+            (fonts) - Unterdr&uuml;ckt das Anzeigen von .font-Dateien, die im
+                      Quellverzeichnis gefunden werden. Alle .font-Dateien, die
+                      zu einem Verzeichnis passen, das kopiert wird, werden
+                      aber dennoch mitkopiert.
+            (nogauge) - Das Anzeigen des Statusbalkens wird unterdr&uuml;ckt.
+            (confirm [&lt;User-Level&gt;]) - Falls angegeben, wird dem User eine Tafel
+                                       pr&auml;sentiert, auf der alle zu kopierenden
+                                       Dateien und Verzeichnisse mit einem
+                                       Checkmark versehen aufgelistet sind. Er
+                                       hat dann die M&ouml;glichkeit, auszuw&auml;hlen,
+                                       welche tats&auml;chlich kopiert werden sollen.
+                                       &lt;User-Level&gt; gibt dabei an, ab welchem
+                                       User-Level die Tafel pr&auml;sentiert werden
+                                       soll, m&ouml;glich sind 1 f&uuml;r AVERAGE und 2
+                                       f&uuml;r EXPERT. 2 ist Voreinstellung.
+            (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+            (compression) - Sofern die Quelldateien mit dem Un*x &quot;compress&quot;
+                            LZW Algorithmus Version 3.0 oder besser komprimiert
+                            wurden, werden sie w&auml;hrend des Kopiervorgangs
+                            automatisch entpackt. Kompression mit mehr als 13
+                            Bits verbraucht viel Speicher beim Entpacken. Die
+                            maximale unterst&uuml;tzte Anzahl ist 16, wobei fast
+                            500KB Speicher ben&ouml;tigt wird. Ber&uuml;cksichtigen Sie
+                            dies bei Ihrer Entscheidung bez&uuml;glich der
+                            Kompressionsrate.
+                            WARNUNG: Die Implementation der Kompressionsunter-
+                                     st&uuml;tzung ist immernoch in einem sehr
+                                     experimentellen Alpha-Stadium. Bitte
+                                     verwenden sie dies nur probehalber und
+                                     nicht in Ver&ouml;ffentlichungen Ihrer
+                                     Produkte.
+            (optional &lt;option&gt; [&lt;option&gt; ...]) - Wird sp&auml;ter behandelt.
+            (delopts &lt;option&gt; [&lt;option&gt; ...]) - Wird sp&auml;ter behandelt.
+
+ <I>R&uuml;ckgabe:</I> Bei Erfolg der Operation wird das Zielverzeichnis
+                    zur&uuml;ckgegeben. Dies kann n&uuml;tzlich sein, weil der User
+                    bei Angabe von (confirm) die M&ouml;glichkeit hat, selbiges
+                    zu &auml;ndern.
+
+ <I>Beispiel:</I>  (copyfiles
+             (prompt &quot;Erzeuge Backup der Startup-Sequence...&quot;)
+             (help @copyfiles-help)
+             (source &quot;S:Startup-Sequence&quot;)
+             (dest &quot;S:&quot;)
+             (newname &quot;Startup-Sequence.bak&quot;)
+             (confirm)
+            )
+
+
+<B><A NAME="COPYLIB">COPYLIB</A></B>
+
+ <I>Schablone:</I>   (copylib &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  Kopiert eine einzelne Datei und &uuml;berpr&uuml;ft dabei sowohl
+                     seine Version, als auch die Version einer gleichnamigen
+                     Datei im Zielverzeichnis, sofern vorhanden. Ist die
+                     Versionsnummer der Quelldatei h&ouml;her als die des Ziels,
+                     so wird die Zieldatei ersetzt.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu
+                              dieser Funktion, der dem User sagen soll, was der
+                              Installer von ihm m&ouml;chte. Wird nur bei Angabe von
+                              (confirm) angezeigt.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (source &lt;Pfad+Name&gt;) - Pfad und Name der Quelldatei.
+                                   (Pflichtparameter)
+            (dest &lt;Pfad&gt;) - Pfad des Zielverzeichnisses. Existiert dieses
+                            nicht, wird es automatisch angelegt.
+                            (Pflichtparameter)
+            (infos) - Falls angegeben, wird das Icon der zu kopierenden
+                      Datei mitkopiert.
+            (noposition) - Freigeben der Positionswerte des mitkopierten Icons.
+            (nogauge) - Das Anzeigen des Statusbalkens wird unterdr&uuml;ckt.
+            (confirm [&lt;User-Level&gt;]) - Falls angegeben, werden dem User die
+                                       Versionsnummern der Dateien angezeigt
+                                       und er kann entscheiden, wie weiter
+                                       verfahren werden soll.
+                                       &lt;User-Level&gt; gibt dabei an, ab welchem
+                                       User-Level die Tafel pr&auml;sentiert werden
+                                       soll, m&ouml;glich sind 1 f&uuml;r AVERAGE und 2
+                                       f&uuml;r EXPERT. 2 ist Voreinstellung.
+                                       Im EXPERT-Modus ist der User in der
+                                       Lage, eine neuere Datei durch eine
+                                       &auml;ltere zu ersetzen.
+            (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+            (compression) - Sofern die Quelldateien mit dem Un*x &quot;compress&quot;
+                            LZW Algorithmus Version 3.0 oder besser komprimiert
+                            wurden, werden sie w&auml;hrend des Kopiervorgangs
+                            automatisch entpackt. Kompression mit mehr als 13
+                            Bits verbraucht viel Speicher beim Entpacken. Die
+                            maximale unterst&uuml;tzte Anzahl ist 16, wobei fast
+                            500KB Speicher ben&ouml;tigt wird. Ber&uuml;cksichtigen Sie
+                            dies bei Ihrer Entscheidung bez&uuml;glich der
+                            Kompressionsrate.
+                            WARNUNG: Die Implementation der Kompressionsunter-
+                                     st&uuml;tzung ist immernoch in einem sehr
+                                     experimentellen Alpha-Stadium. Bitte
+                                     verwenden sie dies nur probehalber und
+                                     nicht in Ver&ouml;ffentlichungen Ihrer
+                                     Produkte.
+            (optional &lt;option&gt; [&lt;option&gt; ...]) - Wird sp&auml;ter behandelt.
+            (delopts &lt;option&gt; [&lt;option&gt; ...]) - Wird sp&auml;ter behandelt.
+
+ <I>Bemerkung:</I> (COPYLIB ) erzeugt fehlende Verzeichnisse im Zielpfad
+                     nur bis zu einer Ebene. Ist der Zielpfad z.B.
+                     &quot;Work:INet&quot;, existiert &quot;INet&quot; aber noch nicht, so wird
+                     es erzeugt, ist er aber &quot;Work:INet/Browser&quot; und
+                     existieren weder &quot;INet&quot; noch &quot;Browser&quot;, so schl&auml;gt die
+                     Operation fehl.
+
+ <I>Beispiel:</I>  (copylib
+             (prompt &quot;Installiere ReqTools.library&quot;)
+             (help @copylib-help)
+             (source (TACKON @icon &quot;libs/reqtools.library&quot;))
+             (dest &quot;LIBS:&quot;)
+             (confirm)
+            )
+
+
+<B><A NAME="RENAME">(RENAME )</A></B>
+
+ <I>Schablone:</I>   (rename &lt;alter Name&gt; &lt;neuer Name&gt; &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  &Auml;ndert den Namen der Datei &lt;alter Name&gt; in &lt;neuer Name&gt;.
+            Es mu&szlig; sich dabei jeweils um vollst&auml;ndige Pfadangaben
+            handeln.
+
+ <I>R&uuml;ckgabe:</I>  Es wird ein boolescher Erfolgswert zur&uuml;ckgegeben, 1 steht
+            f&uuml;r das Gelingen der Funktion, 0 f&uuml;r ein Scheitern.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+            (confirm [&lt;User-Level&gt;]) - Falls angegeben, wird der User vor
+                                       dem Umbenennen um Best&auml;tigung gebeten.
+                                       &lt;User-Level&gt; gibt dabei an, ab welchem
+                                       User-Level die Tafel pr&auml;sentiert werden
+                                       soll, m&ouml;glich sind 1 f&uuml;r AVERAGE und 2
+                                       f&uuml;r EXPERT.
+            (disk) - Aktiviert das Umbenennen von Datentr&auml;gern. Hierbei ist
+                     nur in &lt;alter Name&gt; ein Doppelpunkt anzugeben.
+            (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+
+ <I>Beispiel:</I>  (rename &quot;SYS:&quot; &quot;System&quot;
+                      (prompt &quot;Der Systemdatentr&auml;ger wird in \&quot;System\&quot; umbenannt.&quot;)
+                      (help &quot;Keine Hilfe verf&uuml;gbar.&quot;)
+                      (disk)
+                      (confirm)
+                     )
+
+
+<B><A NAME="DELETE">(DELETE )</A></B>
+
+ <I>Schablone:</I>   (delete &lt;Datei&gt; &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  L&ouml;scht die &lt;Datei&gt;.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+            (confirm [&lt;User-Level&gt;]) - Falls angegeben, wird der User um
+                                       Best&auml;tigung gebeten.
+                                       &lt;User-Level&gt; gibt dabei an, ab welchem
+                                       User-Level die Tafel pr&auml;sentiert werden
+                                       soll, m&ouml;glich sind 1 f&uuml;r AVERAGE und 2
+                                       f&uuml;r EXPERT.
+            (infos) - Das zur Datei geh&ouml;rende Icon wird ebenfalls gel&ouml;scht.
+                      Benutzen Sie diesen Parameter nicht in Verbindung mit
+                      (all).
+            (all) - Bei Angabe werden alle zum Pattern passenden Unter-
+                    verzeichnisse mit durchsucht.
+            (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+
+ <I>Bemerkung:</I> Eine schreibgesch&uuml;tzte Datei gilt auch als l&ouml;schgesch&uuml;tzt.
+
+            Seit Installer V42.9 k&ouml;nnen ein AmigaDOS-Pattern und der
+            (all)-Parameter angegeben werden.
+            Benutzen Sie diese Funktion bitte mit Sorgfalt, da der User keine
+            M&ouml;glichkeit hat, w&auml;hrend des Vorgangs einzugreifen und es un-
+            vorhergesehene Folgen haben kann, gr&ouml;&szlig;ere Datenmengen auf einmal
+            zu l&ouml;schen.
+
+ <I>Beispiel:</I>  (delete &quot;ram:t/#?&quot; (all) (confirm 1))
+
+
+<B><A NAME="PROTECT">(PROTECT )</A></B>
+
+ <I>Schablone:</I>   (protect &lt;Datei&gt; [&lt;P-Flags&gt;] [&lt;D-Maske&gt;] &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  Liefert den Protection-Status (Falls nur &lt;Datei&gt; angegeben
+            wird.) oder setzt ihn. Die Protection-Bits k&ouml;nnen auf zwei
+            Arten gesetzt werden, als String (z.B. &quot;+rgr -wgw +e -dgd&quot;)
+            oder numerisch (z.B. 5). Mittels der String-Methode k&ouml;nnen
+            einzelne Bits beeinflu&szlig;t werden, w&auml;hrend die numerische Variante
+            stets alle Flags betrifft.
+
+            In der Dezimal-Maske werden die Bits wie folgt repr&auml;sentiert.
+
+             Flag  Bit-Nummer  Dezimalwert     Die Dezimal-Maske entsteht nun
+                                               aus der Addition der D-Werte
+              d        1           1           f&uuml;r die einzelnen Bits.
+              e        2           2           Dabei ist darauf zu achten, da&szlig;
+              w        3           4           bei den ersten 4 Bits der Wert
+              r        4           8           zu addieren ist, wenn das Flag
+                                              inaktiv, bei den letzten 4,
+              a        5          16           wenn es gesetzt sein soll.
+              p        6          32
+              s        7          64
+              h        8         128
+
+            Z.B. repr&auml;sentiert die Zahl 66 die Kombination -s--rw-d, die f&uuml;r
+            Scriptdateien typisch ist. Betrachten wir die ersten vier Bits
+            (von rechts), so stellen wir fest, da&szlig; Bit 1,3 und 4 gesetzt sind,
+            also nur Bit 2 <I>inaktiv</I>. Bit 2 wird durch den Wert 2 repr&auml;sentiert.
+            Nun betrachten wir die letzten vier Bits, von denen nur Bit 7
+            <I>gesetzt</I> ist, das durch den Wert 64 gekennzeichnet ist.
+            Wir addieren also 2 + 64 = 66.
+
+ <I>Parameter:</I> (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+
+ <I>R&uuml;ckgabe:</I>  Werden die Protection-Bits nur abgefragt, so liefert die
+            Funktion diese als Dezimal-Maske, es sei denn ein Fehler tritt
+            auf, dann wird -1 zur&uuml;ckgegeben.
+            Andernfalls repr&auml;sentiert 1 ein Gelingen, 0 ein Scheitern.
+
+ <I>Bemerkung:</I> Es k&ouml;nnen auch &quot;g&quot;- und &quot;o&quot;-Flags f&uuml;r Group und Other
+            gesetzt werden.
+
+            Bitte meiden Sie das &quot;h&quot;-Flag, es hat keine Funktion und
+            k&ouml;nnte vielleich in der weiteren Entwicklung des AmigaOS
+            eine Rolle spielen.
+
+ <I>Beispiel:</I>  (protect &quot;S:Startup-Sequence&quot; &quot;+s&quot;)
+
+
+<B><A NAME="TOOLTYPE">(TOOLTYPE )</A></B>
+
+ <I>Schablone:</I>   (tooltype &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  Erm&ouml;glicht das Ver&auml;ndern der Daten eines Icons wie
+            Tooltypes, Position u.a.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+            (dest &lt;Pfad+Name&gt;) - Pfad und Name des zu modifizierenden Icons.
+                                 Ein Anh&auml;ngen von &quot;.info&quot; ist nicht n&ouml;tig.
+                                 (Pflichtparameter)
+            (settooltype &lt;Tooltype&gt; [&lt;Inhalt&gt;]) - Setzt einen neuen
+                                                  Tooltype oder &auml;ndert den
+                                                  Inhalt eines alten.
+                                                  Wird &lt;Inhalt&gt; weggelassen,
+                                                  so wird der Tooltype
+                                                  gel&ouml;scht.
+                                                  Um einen Tooltype ohne
+                                                  Inhalt einzuf&uuml;gen, ist als
+                                                  Inhalt einfach &quot;&quot; anzugeben.
+            (setdefaulttool &lt;Default-Tool&gt;) - Setzt das Default-Tool f&uuml;r
+                                              ein Projekt-Icon.
+            (setstack &lt;Stack&gt;) - Setzt die Gr&ouml;&szlig;e des Stacks.
+            (noposition) - Gibt die Positionierung des Icons frei.
+            (setposition &lt;x&gt; &lt;y&gt;) - Existiert erst seit Installer V42.12.
+                                    Setzt die x und y-Koordinaten des Icons.
+            (swapcolors) - Vertauscht die Farben des Icons, wie es unter OS1.x
+                           geschah, wenn ein Icon angeklickt wurde. Diese
+                           Funktion ist veraltet und sollte nicht mehr benutzt
+                           werden.
+            (confirm [&lt;User-Level&gt;]) - Falls angegeben, wird der User um
+                                       Best&auml;tigung gebeten.
+                                       &lt;User-Level&gt; gibt dabei an, ab welchem
+                                       User-Level die Tafel pr&auml;sentiert werden
+                                       soll, m&ouml;glich sind 1 f&uuml;r AVERAGE und 2
+                                       f&uuml;r EXPERT.
+            (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+
+ <I>Bemerkung:</I> Der Befehl (TOOLTYPE ) ist vor allem in Verbindung mit
+            der Funktion (ICONINFO ) sinnvoll, mit der die
+            entsprechenden Informationen abgefragt werden k&ouml;nnen.
+            Sie wird im n&auml;chsten Kursteil behandelt.
+
+ <I>Beispiel:</I>  (tooltype (dest &quot;SYS:Utilities/Installer&quot;) (noposition))
+
+
+<B><A NAME="TEXTFILE">(TEXTFILE )</A></B>
+
+ <I>Schablone:</I>   (textfile &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  Erzeugt eine Textdatei, wobei auch bereits existierende
+            Textdateien eingebunden werden k&ouml;nnen.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+            (dest &lt;Pfad+Name&gt;) - Pfad und Name der zu erstellenden Textdatei.
+                                 (Pflichtparameter)
+            (append &lt;String&gt;) - Der &lt;String&gt; wird an die Textdatei angeh&auml;ngt.
+            (include &lt;Pfad+Name&gt;) - Die Textdatei &lt;Pfad+Name&gt; wird an die
+                                    zu erstellende Textdatei angeh&auml;ngt.
+                                    Existiert sie nicht, wird sie als leere
+                                    Datei behandelt und ignoriert.
+            (confirm [&lt;User-Level&gt;]) - Falls angegeben, wird der User um
+                                       Best&auml;tigung gebeten.
+                                       &lt;User-Level&gt; gibt dabei an, ab welchem
+                                       User-Level die Tafel pr&auml;sentiert werden
+                                       soll, m&ouml;glich sind 1 f&uuml;r AVERAGE und 2
+                                       f&uuml;r EXPERT.
+            (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+
+ <I>Bemerkung:</I> Die Funktion kann vor allem zur Erzeugung von Scripts,
+            ARexx-Programmen und Konfigurationsdateien n&uuml;tzlich sein.
+            Denkbar ist aber auch die Erstellung eines Installer-
+            Scripts mit Hilfe dieser Funktion, das dann von selbigem
+            ausgef&uuml;hrt werden kann.
+
+            Existiert die unter (dest ) angegebene Datei bereits, so
+            wird sie &uuml;berschrieben, allerdings erst, nachdem sie mit
+            (include ) ausgelesen wurde, falls angegeben. Auf diese
+            Weise lassen sich auch bestehende Dateien modifizieren,
+            ohne da&szlig; eine weitere Datei angelegt werden mu&szlig;.
+
+ <I>Beispiel:</I>  (textfile (dest &quot;RAM:Helloworld.txt&quot;) (append &quot;Hallo.&quot;))
+
+
+<B><A NAME="STARTUP">(STARTUP )</A></B>
+
+ <I>Schablone:</I>   (startup &lt;Applikation&gt; &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  F&uuml;gt einen oder mehrere Eintr&auml;ge in die User-Startup ein.
+            Die Eintr&auml;ge werden dabei zwischen zwei Zeilen, die den
+            bei &lt;Applikation&gt; angegebenen Eintrag enthalten,
+            gruppiert. Existieren schon Eintr&auml;ge f&uuml;r diese
+            Applikation, so werden sie komplett ersetzt.
+            Seien Sie daf&uuml;r sorgf&auml;ltig bei der Wahl dieser Angabe.
+            Sollte in der Startup-Sequence kein Aufruf f&uuml;r die
+            User-Startup gefunden werden k&ouml;nnen, so wird dieser auf
+            sehr User-freundliche Art eingef&uuml;gt.
+            Im AVERAGE- und EXPERT-Modus wird vor der Modifikation um
+            Best&auml;tigung gebeten, im NOVICE-Modus geschieht dies nur
+            in Verbindung mit dem (confirm)-Parameter.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (command &lt;Kommando-Zeile&gt;) - Hiermit wird eine AmigaDOS-Befehls-
+                                         zeile spezifiziert, die eingef&uuml;gt
+                                         werden soll.
+                                         Es k&ouml;nnen beliebig viele
+                                         (command )-Eintr&auml;ge angegeben werden.
+            (confirm) - Falls angegeben, wird auch der Novice-User um
+                        Best&auml;tigung gebeten.
+
+ <I>Bemerkung:</I> Der Installer sucht zun&auml;chst im Scriptverzeichnis des
+            Systemdatentr&auml;gers, erst wenn die User-Startup dort nicht
+            gefunden werden kann, wird im S:-Assign gesucht.
+
+ <I>Beispiel:</I>  (startup &quot;DEVS-Assign&quot; (command &quot;assign DEVS: SYS:Devs&quot;))
+
+
+<B><A NAME="MAKEASSIGN">(MAKEASSIGN )</A></B>
+
+ <I>Schablone:</I>   (makeassign &lt;Assign&gt; [&lt;Pfad&gt;] &lt;Parameter&gt;)
+
+ <I>Funktion:</I>  Assignt &lt;Assign&gt; zu &lt;Pfad&gt;. Wird &lt;Pfad&gt; nicht angegeben,
+            so wird das &lt;Assign&gt; freigegeben.
+            &lt;Assign&gt; ist ohne Doppelpunkt anzugeben.
+
+ <I>Parameter:</I> (safe) - Funktion auch im PRETEND-Modus ausf&uuml;hren.
+
+ <I>Beispiel:</I>  (makeassign &quot;DEVS&quot; &quot;SYS:Devs&quot; (safe))
+
+
+
+<B>Befehle zur Pfadnamen-Verwaltung</B>
+
+
+<B><A NAME="TACKON">(TACKON )</A></B>
+
+ <I>Schablone:</I>   (tackon &lt;Pfad&gt; &lt;Datei&gt;)
+
+ <I>Funktion:</I>  Verbindet &lt;Pfad&gt; und &lt;Datei&gt; zu einer vollst&auml;ndigen Pfadangabe,
+             wobei automatisch auf die Richtige Handhabe von &quot;/&quot; und &quot;:&quot;
+             geachtet wird.
+
+ <I>Beispiel:</I>  (tackon &quot;SYS:S&quot; &quot;User-Startup&quot;) ;liefert &quot;SYS:S/User-Startup&quot;
+
+
+<B><A NAME="PATHONLY">(PATHONLY )</A></B>
+
+ <I>Schablone:</I>   (pathonly &lt;Pfad+Name)
+
+ <I>Funktion:</I>  Splittet &lt;Pfad+Name&gt; und gibt nur den Pfad zur&uuml;ck.
+
+ <I>Beispiel:</I>  (pathonly &quot;S:User-Startup&quot;) ;liefert &quot;S:&quot;
+
+
+<B><A NAME="FILEONLY">(FILEONLY )</A></B>
+
+ <I>Schablone:</I>   (fileonly &lt;Pfad+Name)
+
+ <I>Funktion:</I>  Splittet &lt;Pfad+Name&gt; und gibt nur den Dateinamen zur&uuml;ck.
+
+ <I>Beispiel:</I>  (fileonly &quot;S:User-Startup&quot;) ;liefert &quot;User-Startup&quot;
+
+
+<B><A NAME="EXPANDPATH">(EXPANDPATH )</A></B>
+
+ <I>Schablone:</I>   (expandpath &lt;Pfad&gt;)
+
+ <I>Funktion:</I>  Ein in verk&uuml;rzter Form angegebener Pfad wird auf eine vollst&auml;ndige
+            Form erweitert zur&uuml;ckgegeben.
+
+ <I>Beispiel:</I>  (expandpath &quot;S:User-Startup&quot;) ;liefert z.B. &quot;System:S/User-Startup&quot;
+
+
+
+<B>dateibezogene Strukturbefehle</B>
+
+
+<B><A NAME="FOREACH">(FOREACH )</A></B>
+
+ <I>Schablone:</I>   (foreach &lt;Pfad&gt; &lt;Pattern&gt; &lt;Statement&gt;)
+
+ <I>Funktion:</I>  F&uuml;r jede Datei, die in &lt;Pfad&gt; gefunden wird und f&uuml;r zu &lt;Pattern&gt;
+            pa&szlig;t, wird Statement einmal ausgef&uuml;hrt. Nat&uuml;rlich kann Statement
+            auch eine in Klammern gefa&szlig;te Gruppe von Statements sein.
+            Die Variablen @each-name und @each-type enthalten den Dateinamen
+            und DOS-Objekt-Typ der jeweilig aktuellen Datei.
+
+ <I>Bemerkung:</I> Der DOS-Objekt-Typ ist ein Wert, den man in fib_DirEntryType
+            finden kann. Negative Werte repr&auml;sentieren Dateien, positive
+            Verzeichnisse.
+
+ <I>Beispiel:</I>  (foreach
+             (askdir
+              (prompt &quot;Welches Verzeichnis soll aufgelistet werden?&quot;)
+              (help @askdir-help)
+              (default &quot;S:&quot;)
+             )
+             &quot;#?&quot;
+             (textfile
+              (dest &quot;ram:dir.asc&quot;)
+              (include &quot;ram:dir.asc&quot;)
+              (append (cat @each-name &quot;, &quot; @each-type &quot;\n&quot;))
+             )
+            )
+            ;In der Datei &quot;Ram:dir.asc&quot; wird der Inhalt eines vom User
+            ;auszuw&auml;hlenden Verzeichnisses (mind. AVERAGE-Modus benutzen)
+            ;nach dem Schema &quot;Dateiname, DOS-Objekt-Typ&quot; aufgelistet.
+            ;Dieses kurze Beispiel kann genutzt werden, um herauszufinden,
+            ;welche Art von Datei welchen DOS-Objekt-Typ liefert.
+
+
+<B><A NAME="EXISTS">(EXISTS )</A></B>
+
+ <I>Schablone:</I>   (exists &lt;Pfad+Name&gt; [(noreq)])
+
+ <I>Funktion:</I>  Gibt 0 zur&uuml;ck, falls &lt;Pfad+Name&gt; nicht existiert,
+            1, wenn es sich um eine Datei handelt und 2 bei einem Verzeichnis.
+            Bei Angabe von (noreq) wird das Anzeigen eines Requesters, der
+            nach einem im Pfad angegebenen Laufwerk, das nicht gefunden werden
+            kann, fragt, unterdr&uuml;ckt. Der R&uuml;ckgabewert ist dann 0.
+            Dies kann sehr n&uuml;tzlich sein, um das Vorhandensein von
+            Datentr&auml;gern, logischen Laufwerken und Assigns zu pr&uuml;fen.
+
+ <I>Beispiel:</I>  (if (exists &quot;S:UserStartup&quot;)
+             (message &quot;User-Startup gefunden.&quot; (all))
+             (message &quot;UserStartup nicht gefunden.&quot; (all))
+            )
+
+
+<B><A NAME="EARLIER">(EARLIER )</A></B>
+
+ <I>Schablone:</I>   (earlier &lt;Datei 1&gt; &lt;Datei 2&gt;)
+
+ <I>Funktion:</I>  Gibt 1 zur&uuml;ck, falls Datei 1 fr&uuml;her erstellt wurde, als
+                     Datei 2, sonst 0.
+
+ <I>Bemerkung:</I> Falls Sie einen DOS-Befehl haben, der es erm&ouml;glicht, den
+                     Datumseintrag einer Datei zu modifizieren, k&ouml;nnen Sie mit
+                     diesem Befehl auch pr&uuml;fen, ob eine Datei &auml;lter als ein
+                     bestimmtes Datum ist, indem Sie eine tempor&auml;re Datei mit
+                     dem fraglichen Datumseintrag erstellen.
+
+ <I>Beispiel:</I>  (if (earlier &quot;S:Startup-Sequence&quot; &quot;S:User-Startup&quot;)
+             (message &quot;Alles klar.&quot; (all))
+             (message &quot;Au Weia. ;-)&quot; (all))
+            )
+
+
+<B><A NAME="PATMATCH">(PATMATCH )</A></B>
+
+ <I>Schablone:</I>   (patmatch &lt;Pattern&gt; &lt;String&gt;)
+
+ <I>Funktion:</I>  Pr&uuml;ft, ob ein String einem AmigaDOS-Pattern entspricht.
+                     Falls ja, wird 1 (TRUE) zur&uuml;ckgegeben, sonst 0 (FALSE).
+
+ <I>Beispiel:</I>  (if
+             (patmatch
+              &quot;#?a#?&quot;
+              (askstring
+               (prompt &quot;Bitte zu pr&uuml;fenden String eingeben.&quot;)
+               (help @askstring-help)
+               (default &quot;String eingeben...&quot;)
+              )
+             )
+             (message &quot;In Ihrem String war ein \&quot;a\&quot; vorhanden.&quot; (all))
+             (message &quot;Kein \&quot;a\&quot; im String gefunden.&quot; (all))
+            )
+
+</PRE>
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9809inst.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0998/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../mmx/9809mmx.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy; `98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

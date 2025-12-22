@@ -1,0 +1,642 @@
+<html>
+<head>
+  <title>Domination</title>
+  <meta name="Generator" content="GuideML V1.6">
+  <meta http-equiv="Content-Type" content="text/html">
+</head>
+<body>
+<a href="main.html">CONTENTS</a> | <a href="index.html">INDEX</a> | <a href="fe4.html">PREV</a> | <a href="ad1.html">NEXT</a>
+<hr>
+<pre>
+
+<font color="#ffffff"> Domination - Diary of a game part II<font color="#000000">
+
+AIO NOTE : Unfortunally we are having problems getting the pictures
+to display when clicked on, the pictures stated in this diary can be
+found in the Screenshots directory of the AIO archive.
+
+                         ___
+                         / /__ __ &middot;__ __ __ &middot;__ __
+                        /_//_////// //-/ / //_// /
+                           <b><font color="#ffffff">The Diary of a Game<font color="#000000"></b>
+
+                        By Jamie Solomons of Amiga1
+
+                                <b>Part  Two</b>
+
+
+ <b><u>Introduction</b></u>
+
+ You might not have heard much for a while but Domination is still going
+ strong. Our deadline for the game is christmas (it may change but not if we
+ can help it). If the game is not freeware (likely), there will hopefully be
+ a special offer for AIO readers. We'll probably approach one of those new
+ software development companies that have appeared such as Vulcan Software.
+
+ This is part two of the diary and it's pretty large to keep up with all the
+ developments since part 1 back in May. If you haven't read part one then
+ you can still download issue #12, or any other issue from the official AIO
+ homepage:
+
+                   <b><a href="http://www.amiga1.demon.co.uk/aio/index.htm">www.amiga1.demon.co.uk/aio/index.htm</a></b>
+
+
+ <b><u>JUNE</b></u>
+ Due to my exams, Domination might suffer a bit in terms of the amount of
+ time I am able to devote to it. This will change next month though, when
+ they are all over
+
+
+ <b><u>Oooops!</b></u>
+ I made a silly mistake after finishing the first part of the diary. I
+ accidentally overwrote my latest version of Dom. It was just before I was
+ going to make a backup as well. I lost quite a large chunk and I had quite
+ a bit of catching up to do.
+
+
+ <b><u>What Exactly Did You Lose Then?</b></u>
+ I lost a load of coding for the Military Catalogue Menu. Here is a copy of
+ the menu structure in the game so you can see where it lies:
+
+
+       +-&#062;Data Menu
+       |
+       +-&#062;Trades Menu
+       |
+       +-&#062;Government Menu
+       |                   +--&#062;Military Database Menu
+       +-&#062;Help Menu        |
+       |                   |   +-----------------------+
+       +-&#062;Military Menu&#062;---+--&#062;|Military Catalogue Menu|
+  Base |                   |   +-----------------------+
+  Bar--+-&#062;Mining Menu      |
+       |                   |
+       +-&#062;Research Menu    |
+       |                   |
+       +-&#062;Fleet Menu&#060;------+
+       |
+       +-&#062;Finance Menu
+       |
+       +-&#062;Option Menu
+
+ I haven't done much for the Military Menu yet. All the program does for it
+ at the moment is draw it and set up the buttons (make them clickable) so
+ you can access the Military Catalogue Menu, Military Database Menu and take
+ a shortcut to the Fleet Menu.
+
+
+ <b><u>Military Catalogue Menu - What's that then?</b></u>
+ The Military Catalogue Menu enables you to construct ships, space
+ stations, and anything else that I care to add. I have started coding it
+ to let you construct ships and I had nearly finished it when I made the
+ mistake. I will take you through all the steps in creating this menu.    
+
+
+ <b><u>Creating the Military Catalogue Menu - A Step by Step Guide</b></u>
+ These are the steps that I take in creating the menu:
+
+ 1. Load up DPaintIV AGA.
+    As Dom does not use AGA, I have to disable it before making any
+    graphics for it because the palette in DPaint is automatically set to
+    8-bit (0 to 255) for the RGB settings.                                     
+
+ 2. Draw the menu.
+    It's also a good idea to save a version of the picture that is labelled
+    for reference purposes. Click <u> here </u> to see the menu design and
+    <u> here </u> to see the menu with some example data on it.
+
+    I will just spend some time to explain the menu in detail. The ship
+    list on the left consists of 16 ships that you can equip however you
+    want. This list of ships can be scrolled using the scroll bar on the
+    right hand side of the list and each ship has its own little 9x9 icon
+    to symbolise it. After you construct a ship you can select how many to
+    build using the quantity buttons below the ship list. When you done,
+    you simply click on the buy button and construction begins. The large
+    box to the right of the ship list contains a large &quot;green print&quot; of the
+    selected ship. The dotted green boxes on this picture are bays. You can
+    put one item in a bay and you have different bays for different types of
+    items. The different types of bays are:
+
+    Weapons, Shields, Sensory (or spy) equipment, Star Drives, Colonisation
+    Equipment (Terraformers ect.) and Accessories (for things like
+    transporters, cloaking devices, ect).
+
+    Also displayed in this box is the cost for the ship (without any items
+    equipped), the maximum capacity of the vessel, and its maximum velocity.
+
+    You might recognise the ship in my picture as one from K240. I assure
+    you that this is only temporary and I will eventually draw my own
+    ships when I get enough time.
+
+    To the right of this display is the place where you select the items
+    that you want to equip. This is achieved with a tab system to select
+    the type of item that you wish to select. When the tab is changed, all
+    the items of that type that you have are displayed in the box below
+    the tab buttons. To equip your ship, you simply drag and drop the item
+    onto your ship. You are most likely thinking, &quot;won't the ship get
+    rather cluttered with all those bays and items&quot;. Yes it would but when
+    you click on, say, the tab to display the shields, the only bays that
+    are displayed on the ship display are those for shields. This avoids
+    cluttering.
+
+    The number of bays that the selected ship has available for different
+    types of equipment is shown near the bottom of the menu. Below that is
+    a two line description of the ship.
+
+    After the menu has been designed you can proceed to the next step:
+
+ 3. Code the drawing.
+    This is the tedious part. You have to make the program actually &quot;draw&quot;
+    the menu. You could load in the menu from disk of store it with the
+    program but this is a waste of memory and disk space when you could
+    spend an hour making the program draw it. To do this you need to use
+    AMOS Pro's drawing commands and have DPaint open in order to keep
+    flicking over to get coordinates, colours, ect. You can check to see if
+    you have made any mistakes by running the program, saving the display
+    and loading it into DPaint's spare screen. Then simply flick between
+    what the display is supposed to look like and the display that the
+    program produced to see where you made mistakes by using the &quot;j&quot; key to
+    just to the other screen and back.
+
+ 4. Code the mouse zones.
+    These are areas on the menu that interact with the mouse. They are
+    defined with a simple command for each zone:
+
+    <b>Set Zone </b>number,x1,y1 <b>To</b> x2,y2
+
+    You can use these zones to make buttons, sliders, or whatever you want.
+    To get the coordinates just use DPaint.
+
+ 5. Code the interface.
+    This is the biggest part. It is also the part of my coding that I lost.
+    As I write this diary, I will do the coding for Domination as I go.
+
+ It is best not to do part 3 until you have the whole menu up and running
+ smoothly. To begin with it is best to just make the program load in an IFF
+ picture and place the mouse zones on that. I'm speaking from experience
+ when I say this. Many a time I have made an ultra fast, compact drawing
+ procedure for a menu only to find that I want to make changes to its
+ design.
+
+ I have recently made some changes to the military catalogue menu. The
+ information for the selected item used to be text based. Mark and I have
+ changed it into a more graphical display. Click <u> here </u> to see what I mean.
+ I think it looks a lot better now and it's easier to look at and get
+ information from. It's lucky I haven't made the program draw the menu yet
+ or I wouldn't have been able to change it as easily.
+
+ The military catalogue menu is coming along quite nicely. I have coded
+ the drag and drop routines and they work beautifully. I showed the working
+ product to Mark and he was very impressed seeing as I created the code from
+ scratch and It was not based on any other code. You can even cancel the
+ dragging by clicking the right mouse button. What happens to the object
+ depends on where it is dragged from.
+
+  +------------------------------+---------------------------------------+
+  | Place object is dragged from | Effect of clicking right mouse button |
+  +------------------------------+---------------------------------------+
+  |    Object display box        |        Disappears from pointer        |
+  |                              |                                       |
+  |        Ship bay box          |       Reappears in ship bay box       |
+  +------------------------------+---------------------------------------+
+
+ I have completely finished the button routines. The buttons work just like
+ intuition buttons with cancelling and the like. I have nearly finished
+ coding the slider bars. The vertical slider bar procedure is completely
+ finished although I am still tweaking at it. The horizontal slider bar is
+ nearly finished and that's what I'm working on right now. The tabs work
+ wonderfully and I've not had any trouble with them. There is still a lot of
+ work left to do on this menu but once it's done I hope it will be bug free
+ and fluid.
+
+
+ <b><u>JULY</b></u>
+ What a month! The Amiga1 team has really gone for it. It is the most we
+ have ever done in one go. My exams have finished and I am free to work on
+ the game as much as I want. There is so much work still to do but if we can
+ keep up the pace we would be doing very well. Mark has had more time to
+ help me this month and ship building is complete at last and we have just
+ started the ship control routines which let you give commands to your
+ ships. Once we have finished that we will design the fleet menu so you can
+ put ships into fleets. Once you can setup fleets we need to let you give
+ the fleets commands. First a bit of game design...
+
+
+ <b><u>Colonisation</b></u>
+
+ Some ships can be equipped with colony equipment (i.e. terraformers). These
+ ships can then be sent to systems that have planets you wish to inhabit.
+ The idea of being able to expand your civilisation was originally going to
+ be the idea behind the game but it is no longer the central focus. Now we
+ have decided that there will be set scenarios like in Sim City. This means
+ that we can make expansions for the game as time goes on. No longer will
+ you complete a game and let that be the end of it. Just install the
+ expansion scenario(s) and play a different mission or 20! This is our plan
+ and at this point in time it looks very possible.
+
+ Ships with colony equipment can set up both military bases and
+ colonies. The type of equipment equipped determines the types of planet
+ that can be inhabited. A simple citybuilder could construct a colony on an
+ Earth-like planet but not on a gas giant. By citybuilder I do not mean that
+ the ship builds the colony, it means that the ship has a special chip
+ embedded in its core system that allows it to coordinate the building of
+ the city by communicating with the community that was transported to the
+ planet.
+
+ 
+ <b><u>Races</b></u>
+
+ We have though a little about the some of the races you might encounter in
+ Domination. This topic has not been pursued to a great extent as we are
+ concentrating mostly on the game's mechanics at the moment. Only when the
+ user interface is complete and bugtested can we really begin to spill our
+ imagination (and we can't wait!!). All of us at Amiga1 are into Star Trek
+ and Mark and I have recently been watching the borg episodes of Star Trek -
+ Voyager. This has made me want to incorporate a race that assimilates
+ technology from other races. Due to the amount of technology that it has
+ already assimilated when you first encounter the race means that it will be
+ a fearful adversary. Some races are friendly and you may be able to trade
+ with some of them and possibly end up with new equipment to embed into
+ future ship designs (that was not a hint! ;)
+
+
+ <b><u>Cheat Modes</b></u>
+
+ We have thought of a couple of cheat modes. The first lets you have all
+ the equipment for your ships that you could possibly gain in the game (this
+ should be a very difficult cheat either to work out or activate because
+ getting enhanced equipment in the game is a difficult task at the best of
+ times). The other reflects our interest in science fiction. The cheat gives
+ you new ships like the Enterprise (Star Trek), Star Bug (Red Dwarf),
+ Saratoga (Space Above and Beyond) etc. This is a very unlikely cheat mode
+ due to breaches of copyright (I would have to look into this). Ok, now back
+ to the making of the game.
+
+
+ <b><u>Base Tabs</b></u>
+
+ The tabs on the base bar have not all been drawn yet. Some have been
+ planned to display certain features but at this moment in time only four
+ out of the eight have been drawn and only three of those four have been
+ fully coded. I have not before stated what the tabs are, so you can see
+ in this <u> picture </u>.
+
+
+ <b><u>Recent Development</b></u>
+ A lot has been done to Domination recently. I hope I havn't missed
+ anything.
+
+ .&#062; Added a nice &quot;ACCESSING&quot; picture to the beginning of the game to show
+    when it is loading.
+
+ .&#062; Made the map screen scroll. There are three speeds of scrolling. The 
+    fastest is achieved by using the directional buttons on the basebar. The
+    medium speed is achieved by moving the pointer to the edge of map
+    screen. If you want slow, precise scrolling you simply hold down the
+    right mouse button when moving the map.
+
+ .&#062; Slightly redesigned the fleet tab on the base bar. See <u> BaseTab </u>
+    picture for details.
+
+ .&#062; Added a useful procedure that I found on a CU Amiga CD. When you press
+    the help key, a white bar appears at the bottom of the screen giving you
+    information about the mouse pointer position, current mouse zone and
+    colour under the pointer. I have expanded the procedure to allow me to
+    view the hardware coordinates of the mouse pointer and snapshot screens
+    to view in DPaint. The procedure (before my modifications) is included
+    in this archive called &quot;ScreenInfo.AMOS&quot; and is by Steve Bennett.
+
+ .&#062; Slightly redesigned the base bar to make it look a little better. We
+    have made the letter display larger by changing its bulky buttons for a
+    pretty slider bar. This also gave us space to add an extra speed button.
+
+    Speed button summary:   (Real Time = Game Time)
+    +--------+------------------+
+    | Button |   Clock Speed    |
+    +--------+------------------+
+    |    1   |     Paused       |
+    |    2   |  1 sec = 1 hour  |
+    |    3   | 1 sec = 12 hours |
+    |    4   |  1 sec = 1 day   |  &#060;- New button
+    +--------+------------------+
+
+    We also changed the money display. The display was very small before due
+    to the options button to the right of it. We got rid of the help button
+    and put the options button in its place. I think we might now use the
+    help button on the keyboard to display a help bar (like the programmer's
+    help bar mentioned earlier) to show what a button does or what a window
+    displays when the mouse pointer is moved over it.
+
+    The money display would before display 1000 credits as 1K (K being
+    1000). Now that we have the space it now displays the real value (1000).
+    This means it is more accurate because the number before was rounded to
+    the nearest denomination.
+
+ .&#062; Redesigned military menu (tab1). Tab 1 is the only tab on the military
+    menu that is finished. That is the ship building. We have slightly
+    redesigned the look and &quot;feel&quot; of this menu and it looks a bit better.
+    <u> New Military Tab </u>
+
+ .&#062; Designed and programmed the ship building system. The ships are
+    constructed in orders. A new order is set up every time you click on
+    the buy button on the military catalogue. If you build a large order of
+    ships at the same time, they will be constructed slightly faster (batch
+    production rather than job production - sorry, I took GCSE Business
+    Studies :). When an order is complete you are informed via the message
+    bar.
+
+ .&#062; Coded the 8th tab on the base bar (unassigned ship command). This allows
+    you to send commands to ships that have not been assigned to fleets.
+    They cannot do everything that fleets can do though.
+
+    +-------------+--------+------------+
+    |   Command   | Fleets | Sole Ships |
+    +-------------+--------+------------+
+    | Goto System |   Yes  |     Yes    |
+    | Colonise    |   Yes  |     Yes    |
+    | Spy         |   Yes  |     Yes    |
+    | Geo. Survey |   Yes  |     Yes    |
+    | Attack      |   Yes  |     No     |
+    | Defend      |   Yes  |     No     |
+    | Patrol      |   Yes  |     No     |
+    | Rendezvous  |   Yes  |     No     |
+    +-------------+--------+------------+
+
+ .&#062; Designed the different classes of planets and their systems. There are
+    10 different planet classes but this may increase if we come up with any
+    more. Mark drew the graphics for them in DPaint. They are quite good.
+    <u> Planets and their classes </u>
+    You are welcome to see if you can do better. If I like yours more then I
+    will use then instead (please use the same palette).
+
+ .&#062; Completed base tab 7. When you click the select destination button on
+    tab 8, tab 7 flicks to the front and the message &quot;Select target...&quot;
+    appears. You can then either click on a system or on a planet. When you
+    have selected a destination for you ship(s), tab 8 flicks bach into view
+    with the selected destination in the target box. If it was a planet then
+    the image next to the destination box will be green. If it was another
+    system then the image will be yellow. The four buttons above the
+    destination box only work if they are appropriate to the selected
+    destination (I might grey them out if they're not). You can't colonise a
+    star for example.
+
+ .&#062; Made a little blitz proggie. The AMOS bob editor kept screwing up banks
+    that contained objects with different number of colours so I had to find
+    another editor and see if that would work. The one I found works fine. I
+    can't tell you what it is because I can't afford to register it at the
+    moment. Once I have registered it I will let you know what it's called
+    and where to get it from.
+
+    The editor is compiled and cannot be called from the editor so I have to
+    call it from workbench. I made a little blitz program that makes a
+    single button in a window that when I click loads up the editor. It
+    makes it a lot easier when I keep going back to the editor.
+
+ .&#062; Code reduction. Mark went over the coding for the communications window.
+    He reduced it from about 60 lines to 4! It's a lot smoother!
+
+ .&#062; Begun work on the intro sequence. It looks quite good so far. When it is
+    finished it will house the main menu for Domination.
+
+
+ <b><u>The Options Menu</b></u>
+
+ We have decided that we are going to leave the options menu until last.
+ One option that I know needs to go in there is one that lets you disable
+ the scrolling of the map when you move the mouse pointer to the bottom
+ of the visible screen (i.e. bottom of the base bar). At the moment you can
+ scroll the map screen down by positioning the pointer at either the top of
+ the base bar or the bottom. The top has a slight delay to allow you to move
+ over the scroll area when moving from the basebar to the map. The bottom
+ scroll area might be annoying for some players (it annoys me sometimes).
+
+
+ <b><u>Space?</b></u>
+
+ We are trying to make the best use of space in the user interface (excuse
+ the pun :). This is why we are using tabs so much. It stops the display
+ getting cluttered and allows us to get a lot more information into the same
+ area. The tabs on the base bar means that we can get eight tines the amount
+ of information into just the left hand corner of it.
+
+ We noticed that the military catalogue was rather compact but we noticed
+ that the part that shows you the number of each bay type the selected ship
+ has is a little wasteful. We could move the icons closer together and make
+ them left justified. This would allow use to use the area to the right of
+ them for something else. There is nothing that we can put in there yet so
+ we won't alter our drawing until there is.
+
+
+ <b><u>Getting Arround</b></u>
+
+ Here's a bit of game plot:
+
+ All ships in Domination use a military technology called quantum
+ tunnelling. This is achieved by opening small wormholes in the fabric of
+ space just large enough for the ship to enter. These small wormholes only
+ travel a short distance in comparison to the size of the galaxy but in
+ for of interstellar travel in the local quadrant they prove invaluable
+ allowing travel of 20 light years in under a week.
+
+ Ships in transit cannot be sent new commands until they reach a system
+ containing a military outpost. If you send a ship to a system without a
+ military outpost, you have no way of communicating with it. When the
+ ship's supplies begin to run low, it will return. The reason is that
+ your race has not yet been able to successfully transmit signals through
+ the wormholes. All attempts so far have failed. Until this problem is
+ fixed - you cannot communicate with your ships once they have left the
+ system. (This is not because we cannot program it. It is just to make the
+ game more interesting. You may be able to research into the technology
+ later in the game).
+
+
+ <b><u>The Research Menu</b></u>
+
+ The research menu is accessable from the base bar and enables you to
+ expand your existing technology and invent new ones. You begin with the
+ best equipment in the military available to you. There are many other
+ accessories that can be equipped to a space vessel but you only buy from
+ the military due to security breaches. The maximum number of items per
+ equipment type is currently eight but I am thinking of increasing this.
+
+
+ <b><u>Ship Construction</b></u>
+
+ When you construct a ship, where does it begin? This is something we had to
+ think about. We came to the decision that you can select, via a tab in the
+ military menu, which military outpost (be it on a planet or a space
+ station) your ships are constructed at.
+
+
+ <b><u>Ship Plee</b></u>
+
+ We need some ships drawn for the military catalogue menu. If you want to
+ have a go then draw one in the box provided in the picture below and send
+ it to Chris (Brown) at the address shown below. If I like it then I will
+ put it in the game. In total I need 16 ships. You don't have to draw 16 if
+ you don't want to. If 16 people send in a ship each and I like them all,
+ there will be enough. Feel free to draw as many as you like as they would
+ all be appreciated (Chris Seward might even show them in AIO if I ask him
+ nicely!).
+
+ <u> Ship Construction </u>  The file is named &quot;Dom8.Iff&quot; and is in the
+                       screenshots directory of the AIO archive.
+
+ N.B. Everything that can't be seen from the outside of the ship should be
+      drawn in the darker green.
+
+
+ <b><u>What's to do next?</b></u>
+
+ The next thing to do is the system display on the 7th tab on the basebar so
+ we can select planets and start coding the colonisation routines. I think
+ this will be quite enjoyable compared to coding the ship building. However,
+ we might do the fleet menu next, allowing you to put your unassigned ships
+ into fleets. This would make the next step to be able to command the
+ fleets. The colonising routines and the fleet command routines are linked
+ due to the fact that there must be a military outpost in the system
+ (achieved by colonising).
+
+
+ <b><u>THE END</b></u>
+ <i>You are now up to date with all the developments of this month.</i>
+ We are working very hard at the moment and the diary this relects this.
+ In about three weeks Mark will be on holiday so he can help increase the
+ pace even more but in the meantime I have to put in most of the work
+ myself (as usual :).
+
+
+ <b><u>August (up to the 15th)</b></u>
+ This month has been has been my personal favourite as far as Domination
+ goes. We have introduced random seeds, completed the introduction
+ sequence, started the main menu, and many other things.
+
+
+ <b><u>Mok up</b></u>
+ <u> Here </u> is a picture of the Domination screen as it looks at the present
+ time.
+
+
+ <b><u>Made up your mind yet?</b></u>
+ We have come to a decision about whether or not to let the player control
+ ships within systems. We have decided that there is no need. The
+ interplanetary drives that are fitted to your ships as standard are
+ efficient enough to give any ship in a system access to every planet
+ within it. It's enough hassle moving individual ships between systems
+ unless they are in a fleet.
+
+ This decission means that the button on base tab 1 is no longer needed. I
+ have disabled it but before I remove it from the display I need something
+ to do in its place and we have no ideas at the moment.
+
+
+ <b><u>Recent Developments</b></u>
+ Here they are in a list form to make it easier:
+
+ .&#062; We have done the system display tab and it fully works. It is the
+    second fully completed tab.
+
+ .&#062; The fleet short-cut on the military menu is not used. I will wait to
+    see if I can think of anything to replace it. If not I will remove it
+    and make the military strength bar longer.
+
+ .&#062; We have designed the fleet control menu. It has quite a lot of buttons
+    on it and will hopefully have drag 'n dropping of ships. The only part
+    of the interface that has been coded so far is the listview of the ships
+    at your system (only available if a military outpost is in the system).
+    Fleets can only be made if there is a military outpost in the system.
+    <u> Fleet Control Menu </u>
+
+ .&#062; Made system flags. These can be used for various things. So far we have
+    used the to set whether of not a system has been explored. To explore a
+    system you simply send a ship or fleet there. If a system has not been
+    explored, the message is displayed on the system display tab on the base
+    bar.
+
+    +----------------------------------------------------------------------+
+    | +--+--+--+--+--+--+--+--++-+-+-+-+  +-----+ +----+ +---+---+---+---+ |
+    | |__|__|__|__|__|__|  |__||_|_|_|_|  +-----+ +----+ |   |   |   |   | |
+    | | _____________________ | +----------------------+ +---+---+---+---+ |
+    | ||                    || |                      | |   |   |   |   | |
+    | ||p  SYSTEM UNEXPLORED || |                      | +---+---+---+---+ |
+    | ||/____________________|| |                      | |               | |
+    | +-----------------------+ +----------------------+ +---------------+ |
+    +----------------------------------------------------------------------+
+
+ .&#062; We have done the ship movement routines. You can now send a ship to
+    another system! When it gets there, you can see the system. I think we
+    need to make it so that you have to wait for your ship to return first.
+
+ .&#062; We have now completed the intro sequence and made a main menu for Dom.
+    Here it is:
+
+                           +=----------------=+
+              =============+    START GAME    +=============
+                  ^        +=----------------=+
+                  |
+                               CONFIGURATION
+     Animated selection bar            
+                               DISK OPTIONS
+
+                                 CREDITS
+
+
+                              EXIT FROM D.I.N.
+
+
+    I'm not going to tell you in what way the bar animates. You'll have to
+    wait and see!
+
+ .&#062; Made random seed system. This is my favourite development this month.
+    I games like worms you can enter a string and get a level depending on
+    the string. This is called a random seed. To explain how it works I
+    need to explain computer generated numbers.
+
+    Did you know that random numbers generated by a computer are not
+    actually random? In fact they follow a set pattern. Games like worms
+    make use of this be telling the computer where in the sequence to start
+    the pattern. this starting position is determined by the string that you
+    type in (which is converted into numbers). This is why you get the same
+    level every time you use the same string.
+
+    In AMOS this is achieved using the <b>randomize</b> command. The number
+    following the command is where in the sequence to start the random
+    numbers. Those out there that have any version of amos can try the
+    following:
+
+         <b>Randomize</b> 1 : <b>Print Rnd</b>(-10)
+
+    Every time you run the program you will get the same answer. I don't
+    know why you need the minus (-) sign in from of the 10. If you don't
+    use it then AMOS ignores the randomize, strange.
+
+    Domination now allows you to enter a sector I.D.. This is a number and
+    is simply used after the Randomize command. This means that all future
+    Rnd commands, as long as they contain a '-', will be the same if you
+    use the same sector I.D.. This means that the sector will be the same,
+    the system names will be the same and the types of number of planets
+    within each system will be the same. This ends when it comes to random
+    events, they are random.
+
+ .&#062; I have gone through some of the coding removing old stuff that's no
+    longer needed. You'ld be surprised how much you can delete. I've been
+    careful not to delete anything important though.
+
+ .&#062; Mark suggested reducing the height of the menu title bars. I did, and
+    they look a lot better. Take a look at a menu with the new bar:
+    <u> Military Catalogue Menu </u>
+
+
+ <b><u>The next step</b></u>
+ The next step is the fleet control menu. That will be a lot of work. I'll
+ be back next month with how it went.
+
+ <i>By Jamie Solomons of the Amiga1 team.</i>
+
+
+ Contact us at: <b><a href="mailto:chris@amiga1.demon.co.uk">chris@amiga1.demon.co.uk</a></b>
+
+    <a href="main.html"> Main Menu </a> <a href="arti.html"> Articles Menu </a>
+</pre>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<html>
+ <head>
+  <title>Imprimer du PDF avec GhostScript 8</title>
+  <meta name="author" CONTENT="David Brunet obligement@free.fr">
+ </head>
+
+<body bgcolor="#000000" text="#cccccc" link="#cccc33" vlink="#aaaa22" alink="#cccccc" marginheight="0" marginwidth="0" topmargin="5" leftmargin="0">
+
+<a name="top">
+
+<map name="ObMap">
+  <area shape="rect" coords="0,0,760,82" href="http://obligement.free.fr">
+  <area shape="rect" coords="8,87,62,104" href="../index.html" alt="Intro">
+  <area shape="rect" coords="80,87,168,104" href="edito.html" alt="Editorial">
+  <area shape="rect" coords="186,87,278,104" href="apropos.html" alt="A Propos">
+  <area shape="rect" coords="296,87,399,104" href="sommaire.html" alt="Sommaire">
+  <area shape="rect" coords="414,87,473,104" href="quizz.html" alt="Quizz">
+  <area shape="rect" coords="491,87,589,104" href="musiques.html" alt="Musiques">
+  <area shape="rect" coords="607,87,648,104" href="pub.html" alt="Pub">
+  <area shape="rect" coords="666,87,756,104" href="archives.html" alt="Archives">
+</map>
+
+<table align="center" valign="top" width="760" height="100%" background="../gfx/fondsommaire.jpg" bgcolor="#112233" cellspacing="0" cellpadding="0">
+ <tr>
+  <td align="center">
+   <img src="../gfx/oblogo.jpg" ismap usemap="#ObMap" border="0" height="108" width="760" alt="Obligement">
+
+   <br><br><br>
+   <table align="center" width="75%">
+    <tr>
+     <td>
+
+<div align="center"><font size="+3">En pratique&nbsp;: imprimer du PDF avec Ghostscript 8 </font>par&nbsp;<a href="mailto:Pixel-Art@wanadoo.fr">Jean-Yves&nbsp;Auger</a></div><br><br><br>
+
+Avec Ghostscript 6.50, APDF décodait très mal les PDF et leur impression fonctionnait rarement. Mais cela
+a changé avec la version 8 de Ghostscript qui sait décoder les PDF (plus d'exception) et les imprime (c'est rapide en plus).<br><br>
+
+Attention tout de même car Ghostscript 8 vient avec son lot de surprises : il n'y a pas d'installation (tout se fait à la main),
+il n'y a aucune explication claire (comme d'habitude) ce qui engendrera des heures de réglages.<br><br>
+
+<font size="+1" color="#ccbb33">L'installation</font><br><br>
+
+Allez sur le site <a href="http://www.whoosh777.pwp.blueyonder.co.uk" target="_blank">http://www.whoosh777.pwp.blueyonder.co.uk</a>
+et prenez les archives du programme (gs813release020fpu.lha ou gs813release020nofpu.lha selon si vous avez ou non une FPU),
+les libs (gs813lib.lha), les fontes (gs813fonts.lha), les ressources (gs813resource.lha) et la documentation (gs813doc.lha - facultative).<br><br>
+
+Créez ensuite un répertoire (GS813) et décompressez-y toutes les archives. Faites enfin des Assign comme suit :<br><br>
+
+assign GS813: "HD1:gs813" (NDLR : HD1: est un exemple ici)<br>
+assign GS8Data: "HD1:gs813/lib"<br>
+assign GS8Fonts: "HD1:gs813/fonts"<br>
+assign GS813Resource: "HD1:gs813/resource"<br><br>
+
+Rebootez et c'est tout.<br><br>
+
+<font size="+1" color="#ccbb33">L'impression</font><br><br>
+
+Créez un fichier PDF puis tapez la ligne suivante sous un CLI :<br><br>
+
+set print 1<br>
+set window 0<br>
+stack 200000<br>
+GS813:bin/gs -sDEVICE=tp8 -g2480x3366 -r300 -dFirstPage=001 -dLastPage=999 -dBATCH -dNOPAUSE -q et le nom du fichier PDF<br><br>
+
+Les chiffres 2480 et 3366 expriment la taille d'une page A4 en 300 DPi (bonne qualité d'impression) sur une imprimante HP Lj 5L,
+si vous voulez ajuster selon votre imprimante voici la base du calcul :<br><br>
+
+Largeur : 21 cm / 2.54 pouces x 300 dpi = 2480.<br>
+Longueur : 28.5 cm / 2.54 pouces x 300 dpi = 3366 (c'est un peu moins haut qu'une page A4 à cause du type d'imprimante :
+HP LJ 5L avec 1.6 cm de marge obligatoire en haut).<br><br>
+
+Pour augmenter la qualité, changer le 300 par 600.
+
+Une fois la ligne de commande entrée, vous aurez, après quelques secondes, l'impression de toutes les pages.<br><br>
+
+<font size="+1" color="#ccbb33">La visualisation</font><br><br>
+
+La ligne de commande change :<br><br>
+
+set print 0<br>
+set window 1<br>
+stack 200000<br>
+GS813:bin/gs -sDEVICE=whoosh24 -r72 -dFirstPage=001 -dLastPage=999 -dBATCH -dNOPAUSE -q et le nom du fichier PDF<br><br>
+
+Toutes ces manipulations sont contournables par un programme avec GUI en AREXX : GS8Gui (sur Aminet), mais il faudra tout
+de méme Ghostscript 8.x (logique), MUI (indispendable) et RxMui (utile pour plein de raisons, surtout celle de ne plus
+taper une commande à la main ou presque).<br><br>
+
+Tout ceci est en ARexx, vous n'aurez pas de mal à transposer la ligne de commande pour imprimer depuis DOpus,
+FinalWriter, PageStream ou tous les programmes ARexx en fait.<br><br>
+
+Voici un exemple RXMui (PDFPrint.rexx) pour imprimer depuis un gestionnaire de fichier (DOpus, Filemaster, etc.),
+il suffit de taper à la main ou via un programme : "rxs PDFPrint + nom du fichier PDF".<br><br>
+
+<table border="1" bgcolor="#c0c0c0" width="100%"><tr><td><font color="#000000" size="-1">
+<pre><font size="-1">/********************************************/
+/* $VER: PDF printer via Ghostscript 8, version 1.0
+- www.Pixel-Art.fr.st */
+
+parse arg global.source
+
+l="rmh.library";if ~show("L",l) then;if ~addlib(l,0,-30) then exit
+if AddLibrary("rxmui.library")~=0 then exit
+
+call CreateApp
+call HandleApp
+/* never reached */
+/******************************************/
+HandleApp: procedure expose global.
+
+    ctrl_c=2**12
+    do forever
+
+ call NewHandle("app","h",ctrl_c)
+ if and(h.signals,ctrl_c)>0 then exit
+ select
+     when h.event="QUIT" then exit
+     otherwise interpret h.event
+ end
+    end
+    /* never reached */
+/******************************************/
+CreateApp: procedure expose global.
+
+    app.Title="PopaslExample"
+    app.Base="usb"
+    app.SubWindow="win"
+     win.ID="MAIN"
+     win.Title="PDF Printer"
+     win.Contents="MGROUP"
+
+     mgroup.0="ctrlg"
+       ctrlg.class="group"
+       ctrlg.frame="group"
+       ctrlg.Columns=1
+
+     mgroup.0="popf"
+  popf.class="group"
+  popf.0=Button("texte","Cliquez ici pour lancer l'impression")
+
+     res=NewObj("APPLICATION","APP")
+     call set("win","open",1)
+
+     call Notify("win","CloseRequest",1,"app","ReturnID","quit")
+     call Notify("texte","pressed","0","app","return","call PDF()")
+
+return
+/******************************************/
+PDF: procedure expose global.
+
+   call set("texte","contents","En cours...")
+
+   Open(fiche,"T:Tmp",'Write')
+      WriteLN(fiche,"SET print 1")
+      WriteLN(fiche,"SET window 0")
+      WriteLN(fiche,"stack 200000")
+      WriteLN(fiche,"GS813:bin/gs -sDEVICE=tp8 -g2480x3366 -r300
+-dFirstPage=001 -dLastPage=999 -dBATCH -dNOPAUSE -q "||global.source)
+   Close(fiche)
+
+   address command 'Execute T:Tmp'
+
+   call set("texte","contents","Impression en cours")
+
+   exit
+
+return
+
+/******************************************/
+</font></pre>
+</td></tr></table>
+
+<br><br><br>
+
+
+
+
+<div align="center"><a href="#top">Retour en haut</a> | <a href="sommaire.html">Retour au sommaire</a></div><br><br> 
+
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+
+</body>
+</html>
+

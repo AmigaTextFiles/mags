@@ -1,0 +1,30 @@
+(set #dirname @app-name)
+(set #copying "Kopioin tiedostoja...")
+(set #destdir-prompt (cat "Valitse hakemisto jonne luon uuden hakemiston nimellä '" #dirname "'."))
+
+(set @default-dest
+	(askdir
+		(prompt #destdir-prompt)
+		(help @askdir-help)
+		(default @default-dest)
+	)
+)
+
+(set @default-dest	(tackon @default-dest #dirname))
+
+(makedir @default-dest (infos))
+
+(working #copying)
+(copyfiles
+	(source "")
+	(dest   @default-dest)
+	(pattern "#?")
+)
+
+(complete 100)
+
+(run "Saku"
+	(prompt "\nLopuksi käynnistän levykelehden...")
+	(confirm)
+	(help "")
+)

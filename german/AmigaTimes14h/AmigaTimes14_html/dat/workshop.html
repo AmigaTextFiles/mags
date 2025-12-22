@@ -1,0 +1,176 @@
+<HTML>
+<HEAD>
+<!DOCTYPE HTML PUBLIC "-//IETF//DD HTML 3.0//EN">
+<META NAME="author" CONTENT="Mario Nitschke / HTML-Konvertierung Sven Kahlbrock">
+<META NAME="description" CONTENT="AMIGA TIMES - Deutsches AMIGA Fun und Info Magazin">
+<META NAME="keywords" CONTENT="Amiga,Information,Spiele,deutsch,Tips">
+<TITLE>AMIGA TIMES - Fun &amp; Talk / Rubriken / Workshop - lokales Netzwerk</TITLE>
+</HEAD>
+
+<BODY background=../pic/bg.gif TEXT="#000080" BGCOLOR="#FFFFFF" LINK="#EE0000" VLINK="#EE0000" ALINK="#FF0000">
+<center><table width=90%><tr><td>
+<br>
+<font size="4"><center>Lokales Netzwerk mit Miami und Samba!</font></center>
+<br><br>
+Wie man ein Lokales Netzwerk mit Miami und Samba zwischen Amiga und PC einrichtet.
+<br>
+<ul>F&uuml;r diesen Workshop wird folgende Soft- und Hardware ben&ouml;tigt:
+<li>eine Netzwerkkarte (z.B. X-Surf)</li>
+<li>Miami oder MiamiDeluxe</li>
+<li>Samba (im Aminet) und Samba DosDriver (Amiga Samba Homepage)</li>
+<li>Amiga und PC mit (je einer) Netzwerkkarte</li>
+</ul>
+<br>
+Man kann nat&uuml;rlich auch nur Amiga`s auf diese Art und Weise vernetzen, 
+aber daf&uuml;r gibt es eigentlich auch andere L&ouml;sungen.
+<br><br>
+Als erstes installieren Sie Samba, dazu entpacken Sie das Samba-Archiv 
+auf Ihre Ram Disk. Nun erstellen Sie ein Samba Verzeichnis auf Ihrer 
+Festplatte, zum Beispiel &quot;Work:Samba&quot; und anschlie&szlig;end kopieren Sie die
+Verzeichnisse &quot;bin,lib,log,private&quot; und &quot;swat&quot; aus dem Verzeichnis
+&quot;ram:samba/bin&quot; in das Verzeichnis &quot;Work:samba&quot;. 
+Jetzt fehlen nur noch ein paar Assign`s in der User-startup Sequence.
+Starten Sie also einen ASCII Editor und laden Sie in diesen die User-Startup Sequence
+Datei (zu finden unter &quot;SYS:S/&quot;). Jetzt f&uuml;gen Sie folgende Zeilen am Ende der
+Datei ein:<br>
+<br>
+<font color="red">assign AmiTcp: &quot;Work:Miami&quot; (oder wo sich Miami befindet)<br>
+assign Samba: &quot;Work:Samba&quot;<br>
+Path Samba:bin add<br></font>
+<br>
+Als n&auml;chsten Schritt starten Sie &quot;MiamiInit&quot;, um die Netzwerkkarte zu konfigurieren.
+Hier w&auml;hlen Sie nun den Eintrag &quot;Ethernet, Kabel-/ADSL -Modem&quot; und
+schalten &quot;Internet&quot; und &quot;DNS&quot; aus.
+Danach w&auml;hlen Sie Ihre Netzwerkkarte aus, sollte diese nicht in der Liste
+stehen (z.B X-Surf) nutzen Sie die Option &quot;---other---&quot;.
+<br><br>
+Nun geben Sie den Device Namen ein, zum Beispiel f&uuml;r die X-Surf Karte
+&quot;networks/x-surf.device&quot;.
+Nach einem Augenblick werden sie nach der IP-Adresse gefragt,
+geben Sie hier die Nummer &quot;192.168.1.1&quot; ein. Sollte ein anderer Rechner im 
+Netzwerk bereits diese Nummer nutzen, w&auml;hlen Sie bitte eine andere Nummer, von
+192.168.1.1 bis 192.168.1.256 ist alles m&ouml;glich.
+<br></td></tr></table><br>
+<center><img src="../pic/workshop0.jpg"></center>
+<br><table width="90%" align="center"><tr><td>
+Danach kommt die Subnet-Maske im Allgemeinen sollte die jetzt schon stimmen 
+(255.255.255.0).
+<br><br>
+Jetzt fragt MiamiInit nach dem Gateway, in diesem Workshop ist das der PC 
+mit der Nummer &quot;192.168.1.2&quot;. Sie k&ouml;nnen nat&uuml;rlich auch die Nummer eines 
+anderen Rechners im lokalen Netzwerk ausw&auml;hlen.
+<br><br>
+Jetzt geben Sie noch den Hostnamen ein, in diesem Workshop &quot;amiga4000&quot;, 
+auch hier sind andere Varianten m&ouml;glich.
+<br><br>
+So das war`s mit MiamiInit, wie Sie sehen, gibt es einige Variablen.
+<br></td></tr></table><br>
+<center><img src="../pic/workshop1.jpg"></center>
+<br><table width="90%" align="center"><tr><td>
+Aber ab jetzt werde ich nicht mehr darauf hinweisen, dass Sie auch 
+anderes eingeben k&ouml;nnen, denn &auml;ndert man irgendwo eine Nummer oder 
+einen Namen, muss man ihn &uuml;berall &auml;ndern. Beachten Sie dies unbedingt!
+<br><br>
+So jetzt kommt Miami dran, nach dem Sie die &quot;MiamiInit.config&quot; geladen 
+haben, m&uuml;ssen Sie in der Datenbank folgende Einstellungen vornehmen.
+<br></td></tr></table><br>
+<table width="100%" align="center" border="1" bgcolor="#eeeecc">
+<tr><td align="left" colspan="8"><b>Dienste (service):</b></td></Tr>
+<tr><td>Name:</td><td>netbios-ssn</td><td>ID:</td><td>139</td><td>Protocol:</td><td>tcp</td><td>Aliases:</td><td>Samba-Network</td></tr>
+<tr><td>Name:</td><td>netbios-ns</td><td>ID:</td><td>137</td><td>Protocol:</td><td>udp</td><td>Aliases:</td><td>Samba-Network</td></tr>
+<tr><td>Name:</td><td>netbios-dgm</td><td>ID:</td><td>138</td><td>Protocol:</td><td>udp</td><td>Aliases:</td><td>Samba-Network</td></tr>
+<tr><td>Name:</td><td>swat</td><td>ID:</td><td>901</td><td>Protocol:</td><td>tcp</td><td>Aliases:</td><td>Samba-Network</td></tr></table>
+<br><br>
+<table width="100%" align="center" border="1" bgcolor="#eeeecc">
+<tr><td align="left" colspan="6"><b>Rechner (hosts):</b></td></Tr>
+<tr><td>IP address</td><td>192.168.1.1</td><td>Name:</td><td>amiga4000</td><td>Aliases:</td><td>amiga4000</td></tr>
+<tr><td>IP address</td><td>192.168.1.2</td><td>Name:</td><td>Pentium</td><td>Aliases:</td><td>Pentium</td></tr>
+<tr><td colspan="6">Hier m&uuml;ssen alle Rechner die im Lokalen Netzwerk vorhanden sind eingetragen werden.</td></tr></table>
+<br><br>
+<table align="center" border="1" bgcolor="#eeeecc">
+<tr><td align="left" colspan="16"><b>InetD:</b></td></Tr>
+<tr><td><font size="1">Service:</td><td><font size="1">netbios-ssn</td><td><font size="1">Socket:</td><td><font size="1">stream</td><td><font size="1">Protocol:</td><td><font size="1">tcp</td><td><font size="1">Wait:</td><td><font size="1">nowait</td><td><font size="1">User:</td><td><font size="1">root</td><td><font size="1">Server:</td><td><font size="1">samba:bin/smbd</td><td><font size="1">Name:</td><td><font size="1">smbd</td><td></td><td></td></tr>
+<tr><td><font size="1">Service:</td><td><font size="1">netbios-ns</td><td><font size="1">Socket:</td><td><font size="1">dgram</td><td><font size="1">Protocol:</td><td><font size="1">udp</td><td><font size="1">Wait:</td><td><font size="1">wait</td><td><font size="1">User:</td><td><font size="1">root</td><td><font size="1">Server:</td><td><font size="1">samba:bin/nmbd</td><td><font size="1">Name:</td><td><font size="1">nmbd</td><td><font size="1">Args:</td><td><font size="1">-n amiga4000</td></tr>
+<tr><td><font size="1">Service:</td><td><font size="1">swat</td><td><font size="1">Socket:</td><td><font size="1">stream</td><td><font size="1">Portocol:</td><td><font size="1">tcp</td><td><font size="1">Wait:</td><td><font size="1">nowait</td><td><font size="1">User:</td><td><font size="1">root</td><td><font size="1">Server:</td><td><font size="1">samba:bin/swat</td><td><font size="1">Name:</td><td><font size="1">swat</td><td><font size="1">Args:</td><td><font size="1">-a</td></tr></table>
+<br><br>
+<table align="center" border="1" bgcolor="#eeeecc">
+<tr><td align="left" colspan="12"><b>Anwender (User)</b></td></Tr>
+<tr><td><font size="1">User Name:</td><td><font size="1">pcguest</td><td><font size="1">Userid:</td><td><font size="1">100</td><td><font size="1">Groupid:</td><td><font size="1">100</td><td><font size="1">Realname:</td><td><font size="1">Sambaguest</td><td><font size="1">Homedir:</td><td><font size="1">SYS:</td><td><font size="1">Shell:</td><td><font size="1">NewShell</td></tr></table>
+<br>
+<br><table width="90%" align="center"><tr><td>
+Kommen wir jetzt zu Samba, genauergesagt zum Config-file von Samba (samba:lib/smb.conf).
+<br><br>
+Der Standard Config-file, der im &quot;Lib&quot; Verzeichnis vorhanden ist, passt im Allgemeinen
+schon so wie er ist, jedoch bis auf den Eintrag &quot;Workgroup = Global&quot;, hier ist noch
+&quot;Workgroup = mygroup&quot; angegeben.
+<br><br>
+Der Windows Standard ist dagegen &quot;Workgroup = Workgroup&quot;. Das sollten Sie &auml;ndern, 
+oder Sie m&uuml;ssen beim PC &quot;Workgroup&quot; in &quot;mygroup&quot; ab&auml;ndern, oder so wie Sie es m&ouml;chten,
+wichtig dabei ist nur, das auf beiden Seiten das gleiche steht!
+Den Rest k&ouml;nnen Sie erst einmal so lassen, denn das alles hier zu beschreiben
+w&uuml;rde den Rahmen spr&auml;ngen. 
+<br><br>
+Wie geht es weiter?<br>
+Sie m&uuml;ssen den Samba DosDriver entpacken und den SMB-Handler nach &quot;L:&quot; kopieren 
+und den DosDriver nach &quot;Storage/DosDrivers&quot;, bzw. in ein extra angelegtes Verzeichniss.
+Beachten Sie, dass der DosDriver nicht in &quot;DEVS/DosDrivers&quot; kopiert werden darf, da
+Miami nicht startet wenn die Workbench gebootet!
+<br><br>
+<font color="red">Der Driver muss aber noch ge&auml;ndert werden:<br>
+Handler = L:SMB-Handler<br>
+Stacksize = 40000<br>
+Priority = 5<br>
+GlobVec = -1<br>
+Mount = 1<br>
+Startup = &quot;C=\:192.168.1.2C MH=amiga4000 W=Workgroup U=pcguest&quot;<br></font>
+<br><br>
+Das war es nun mit den Einstellungen auf dem Amiga. Kommen wir nun zu dem PC.
+<br><br>
+&Ouml;ffnen Sie die Netzwerkeinstellung und schauen Sie nach, ob in den Konfigurationen
+folgende Eintragungen vorhanden sind:<br>
+<ul><li>Client f&uuml;r Mircrosoft-Netzwerke</li>
+<li>Ihre Netzwerkarte</li>
+<li>TCP/IP</li>
+<li>Datei- und Druckerfreigabe f&uuml;r Microsoft-Netzwerke</li></ul>
+<br>
+sollte etwas fehlen m&uuml;ssen Sie es dazuinstallieren.
+<br><br>
+<table width="90%" align="center" border="1" bgcolor="#eeeecc">
+<tr><td align="left" colspan="2"><b>Unter Identifikation ist:</b></td></Tr>
+<tr><td>der Name:</td><td>Pentium </td></tr>
+<tr><td>und Workgroup:</td><td>Workgroup</td></tr></table><br>
+<br>
+Nun &ouml;ffnen Sie TCP/IP in &quot;Konfiguration&quot; und gehen Sie dort auf folgende Men&uuml;s:
+<br>
+<ul>IP-Adresse
+ <li>IP-Adresse festlegen wird aktiviert und dann die IP-Adresse eingeben
+(192.168.1.2 und die Subnet Mask ist 255.255.255.0)</li>
+</ul>
+<ul>Gateway
+ <li>geben Sie in &quot;Neuer Gateway&quot; 192.168.1.1 ein und dr&uuml;cken dann auf Hinzuf&uuml;gen.</li>
+</ul>
+<ul>Bindung
+ <li>hier muss vor &quot;Datei&quot; und &quot;Client&quot; ein Hacken sein bzw. gesetzt werden.</li>
+</ul>
+<br></td></tr></table><br>
+<center><img src="../pic/workshop2.jpg"></center>
+<br><table width="90%" align="center"><tr><td>
+So das war`s auch mit den Netzwerkeinstellungen beim PC, jetzt m&uuml;ssen Sie nur 
+noch das Laufwerk freigeben. Dazu &ouml;ffnen Sie den Explorer (&quot;Shift&quot; dr&uuml;cken und 
+doppelklick auf den Arbeitplatz). W&auml;hlen Sie dort das Laufwerk &quot;c:&quot; aus und 
+&ouml;ffnen Sie das erste Men&uuml; und w&auml;hlen anschlie&szlig;end &quot;Freigabe&quot;.
+<br></td></tr></table><br>
+<center><img src="../pic/workshop3.jpg"></center>
+<br><table width="90%" align="center"><tr><td>
+Es &ouml;ffnet sich automatisch ein Fenster und hier aktivieren Sie die &quot;Freigabe&quot;,
+dabei wird aber kein Password ben&ouml;tigt. 
+<br><br>
+So das war alles, nun sollte das Netzwerk l&auml;ufen und Sie k&ouml;nnen Daten von beiden 
+Rechnern austauschen und weiternutzen! Viel Spass dabei!
+<br><br>
+</td>
+</tr>
+</table>
+
+</BODY>
+</HTML>

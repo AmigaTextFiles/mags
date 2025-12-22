@@ -1,0 +1,507 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 06/98 - Installer-Kurs Befehls&uuml;bersicht</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>&Uuml;bersicht &uuml;ber die Befehle des zweiten Kursteils</H1>von<BR><A HREF="mailto:A.Wyrwa@BBrandes.in-brb.de">Andr&#233; Wyrwa</A></DIV>
+
+<P><I>Anmerkung:</I> Parameter, die mit (Pflichtparameter) gekennzeichnet sind, sind
+unbedingt anzugeben. Fehlen sie, verweigert der Installer die Ausf&uuml;hrung des Scripts.</P>
+
+<H2>allgemeines, Control-Statements</H2>
+
+<PRE>
+<B><A NAME="SET">(SET )</A></B>
+
+ <I>Schablone:</I>   (set &lt;variable&gt; &lt;inhalt&gt; [&lt;variable&gt; &lt;inhalt&gt; ...])
+
+ <I>Funktion:</I>  Das (SET )-Statement weist der Variablen &lt;variable&gt; den Wert
+                     &lt;inhalt&gt; zu. Existiert die Variable noch nicht, so wird sie
+                     erstellt (deklariert). Es k&ouml;nnen auch mehrere Variablen
+                     durch ein (SET )-Statements auf einmal belegt werden.
+
+ <I>R&uuml;ckgabe:</I>  (SET ) liefert den zuvor enthaltenen Inhalt der Variablen.
+
+ <I>Bemerkung:</I> Das (SET )-Statement kann auch dazu benutzt werden, Variablen
+            vom Typ STRING in solche vom Typ INTEGER zu wandeln:
+
+            (set &lt;integer-var&gt; (+ &lt;string-var&gt;))
+
+            Um diese Konvertierung umgekehrt auszuf&uuml;hren, benutzt man (CAT ).
+
+<B><A NAME="IF">(IF )</A></B>
+
+ <I>Schablone:</I>   (if &lt;Bedingung&gt; &lt;wahr-Anweisung&gt; &lt;falsch-Anweisung&gt;)
+
+ <I>Funktion:</I>  (IF ) &uuml;berpr&uuml;ft die Bedingung auf ihren Wahrheitswert
+            und f&uuml;hrt entsprechend des Ergebnisses entweder die
+            wahr-Anweisung oder die falsch-Anweisung aus.
+
+ <I>Bemerkung:</I> Nat&uuml;rlich k&ouml;nnen dies auch Anweisungsbl&ouml;cke sein.
+
+ <I>Beispiel:</I>  (if (= #i 1) (message &quot;#i ist 1&quot;) (message &quot;#i ist nicht 1&quot;))
+
+<B><A NAME="SELECT">(SELECT )</A></B>
+
+ <I>Schablone:</I>   (select &lt;n&gt; &lt;Anweisung 0&gt; &lt;Anweisung 1&gt; ...)
+
+ <I>Funktion:</I>  (SELECT ) f&uuml;hrt nur die n-te Anweisung aus.
+
+ <I>Beispiel:</I>  (select #auswahl
+             (message &quot;#auswahl war 0&quot;)
+             (message &quot;#auswahl war 1&quot;)
+             (message &quot;#auswahl war 2&quot;)
+             ...
+            )
+
+<B><A NAME="WHILE">(WHILE )</A></B>
+
+ <I>Schablone:</I>   (while &lt;Bedingung&gt; &lt;Anweisung&gt; ...)
+
+ <I>Funktion:</I>  Die Anweisung wird in einer Schleife immer wieder ausgef&uuml;hrt,
+            solange die &lt;Bedingung&gt; wahr ist.
+
+ <I>Bemerkung:</I> Es kann nat&uuml;rlich ein ganzer Anweisungsblock f&uuml;r &lt;Anweisung&gt;
+            eingesetzt werden.
+
+ <I>Beispiel:</I>  (while (&lt; #i 10)
+             (
+              (message &quot;Die Schleife wird zum &quot; #i &quot;-ten Mal durchlaufen.&quot;)
+              (set #i (+ #i 1))
+             )
+            )
+
+<B><A NAME="UNTIL">(UNTIL )</A></B>
+
+ <I>Schablone:</I>   (until &lt;Bedingung&gt; &lt;Anweisung&gt; ...)
+
+ <I>Funktion:</I>  Die Anweisung wird in einer Schleife solange immer wieder
+            ausgef&uuml;hrt, bis die Bedingung wahr wird.
+
+ <I>Beispiel:</I>  (until (= #i 10)
+             (
+              (message &quot;Die Schleife wird zum &quot; #i &quot;-ten Mal durchlaufen.&quot;)
+              (set #i (+ #i 1))
+             )
+            )
+
+
+<H2>Kommunikation mit dem User</H2>
+
+<B><A NAME="MESSAGE">(MESSAGE )</A></B>
+
+ <I>Schablone:</I>   (message &lt;string&gt; [&lt;string&gt; ... &lt;parameter&gt;])
+
+ <I>Funktion:</I>  Ausgabe von Strings.
+
+ <I>Parameter:</I> (all) - Normalerweise wird die Ausf&uuml;hrung von (MESSAGE )
+                             im NOVICE-Modus unterdr&uuml;ckt. Mit diesem Parameter
+                             kann dies verhindert werden.
+
+ <I>Beispiel:</I>  (message &quot;Diesen Text sehen alle User.&quot; (all))
+
+<B>(ASKDIR )</B>
+
+ <I>Schablone:</I>   (askdir &lt;parameter&gt;)
+
+ <I>Funktion:</I>  Der User wird mittels eines Requesters nach einem Verzeichnis
+            gefragt. Er hat dabei auch die M&ouml;glichkeit, neue Verzeichnisse
+            anzulegen.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (default &lt;Pfad&gt;) - Dient zur Angabe eines Vorgabe-Verzeichnisses, welches
+                               dann im Auswahl-Requester eingestellt ist, wenn dieser
+                               dem User pr&auml;sentiert wird.
+            (newpath) - Erlaubt die Angabe von Pfaden, die (noch) nicht existieren.
+            (disk) - Bei Angabe dieses Parameters wird dem User bei Erscheinen der
+                     (ASKDIR )-Seite die Laufwerksliste pr&auml;sentiert.
+            (assigns) - Sofern angegeben, akzeptiert (ASKDIR ) auch die Angabe von
+                        Assigns.
+
+ <I>Beispiel:</I>  (askdir
+             (prompt &quot;Wohin soll xyz installiert werden?&quot;)
+             (help @askdir-help)
+             (default &quot;SYS:&quot;)
+            )
+
+<B>(ASKFILE )</B>
+
+ <I>Schablone:</I>   (askfile &lt;parameter&gt;)
+
+ <I>Funktion:</I>  Fragt den User nach einer Datei, wobei ein Requester zur
+            Verf&uuml;gung gestellt wird.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (default &lt;Pfad&gt;) - Dient zur Angabe eines Vorgabe-Pfades, welcher dann
+                               im Auswahl-Requester eingestellt ist, wenn dieser
+                               dem User pr&auml;sentiert wird. Es kann ein Verzeichnis-
+                               oder ein Dateipfad angegeben werden.
+            (newpath) - Erlaubt die Angabe von Pfaden, die (noch) nicht existieren.
+            (disk) - Bei Angabe dieses Parameters wird dem User bei Erscheinen der
+                     (ASKFILE )-Seite die Laufwerksliste pr&auml;sentiert.
+
+ <I>Beispiel:</I>  (askfile
+             (prompt &quot;Wo und unter welchem Namen soll das Protokoll &quot;
+                     &quot;angelegt werden?&quot;)
+             (help @askfile-help)
+             (default &quot;S:&quot;)
+             (newpath)
+            )
+
+<B>(ASKSTRING )</B>
+
+ <I>Schablone:</I>   (askstring &lt;parameter&gt;)
+
+ <I>Funktion:</I>  Pr&auml;sentiert dem User ein Stringeingabefeld.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (default &lt;String&gt;) - Dient zur Angabe eines Vorgabe-Strings, der bei
+                                 Ausf&uuml;hrung der Funktion in dem String-Eingabe-Feld
+                                 steht und vom User bearbeitet werden kann.
+
+ <I>Beispiel:</I>  (askstring
+             (prompt &quot;Bitte geben Sie Ihren Namen ein.&quot;)
+             (help @askstring-help)
+             (default &quot;Vorname Nachname&quot;)
+            )
+
+<B>(ASKNUMBER )</B>
+
+ <I>Schablone:</I>   (asknumber &lt;parameter&gt;)
+
+ <I>Funktion:</I>  Fordert den User auf, eine Integer-Zahl einzugeben.
+            Dabei kann ein zul&auml;ssiges Intervall angegeben werden, das
+            dem User angezeigt wird und innerhalb dessen seine Eingabe
+            liegen mu&szlig;. Wird kein Intervall angegeben, so sind alle
+            positiven Zahlen zul&auml;ssig. Wird allerdings ein negativer
+            Default-Wert angegeben, so wird das Intervall entsprechend
+            bis zu diesem Wert ausgedehnt.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der
+                              Installer von ihm m&ouml;chte.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (range &lt;Minimum&gt; &lt;Maximum&gt;) - Definiert den g&uuml;ltigen Eingabebereich.
+            (default &lt;Vorgabe&gt;) - Ein Vorgabe-Wert kann angegeben werden.
+
+ <I>Beispiel:</I>  (asknumber
+             (prompt &quot;Welches Unit des serial.device soll verwendet werden?&quot;)
+             (help @asknumber-help)
+             (range 0 9)
+             (default 0)
+            )
+
+<B>(ASKCHOICE )</B>
+
+ <I>Schablone:</I>   (askchoice &lt;parameter&gt;)
+
+ <I>Funktion:</I>  Stellt den User vor die Auswahl eines von bis zu 32
+            Punkten, die &uuml;ber Radio-Buttons vorgenommen wird.
+            Das Ergebnis wird in Form der Nummer des gew&auml;hlten
+            Eintrags zur&uuml;ckgegeben, wobei dem ersten Eintrag der
+            Wert 0 zugewiesen ist.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (choices &lt;Eintrag 0&gt; &lt;Eintrag 1&gt; ...) - Hier werden die Auswahlpunkte
+                                                    angegeben.
+                                                    (Pflichtparameter)
+            (default &lt;Vorgabe&gt;) - Es kann eine Wahl voreingestellt werden.
+                                  &lt;Vorgabe&gt; mu&szlig; hier die Nummer des Eintrags
+                                  (beginnend mit 0) sein.
+
+ <I>Bemerkung:</I> Seit der Version 42.6 des Installers werden als Choices
+            angegebene leere Strings nicht mehr angezeigt. Dieses
+            Feature ist sehr praktisch, um die Auswahllisten flexibel
+            zu gestalten.
+
+            &Auml;ltere Versionen des Installers stellten alle Displays
+            mit Non-Proportional-Fonts dar. Da einige Nutzer diese
+            Darstellungsweise bei Auswahllisten auch weiterhin
+            ben&ouml;tigen, werden solche Listen auch weiterhin
+            non-proportional dargestellt. Durch das Einf&uuml;gen der
+            Escape-Sequence `&quot;&lt;ESC&gt;[2p&quot;' l&auml;&szlig;t sich dies allerdings
+            &auml;ndern.
+
+ <I>Beispiel:</I>  (askchoice
+             (prompt &quot;Welchen Rechnertyp besitzen Sie?&quot;)
+             (help @askchoice-help)
+             (choices &quot;A500&quot; &quot;A600&quot; &quot;A1200&quot; &quot;A2000&quot; &quot;A3000&quot; &quot;A4000&quot;)
+             (default 2)
+            )
+
+<B>(ASKOPTIONS )</B>
+
+ <I>Schablone:</I>   (askoptions &lt;parameter&gt;)
+
+ <I>Funktion:</I>  Der User kann aus einer Liste von bis zu 32 Punkten, die
+                     mit Checkmark-Gadgets versehen ist, eine Auswahl treffen.
+                     Die Wahl wird dabei in Form einer Bitmaske zur&uuml;ckgegeben,
+                     wobei das (von rechts) erste Bit den ersten Eintrag
+                     repr&auml;sentiert.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (choices &lt;Eintrag 0&gt; &lt;Eintrag 1&gt; ...) - Definition der Auswahl-Punkte.
+                                                    (Pflichtparameter)
+            (default &lt;Vorgabe&gt;) - Es kann eine Auswahl voreingestellt werden.
+                                  &lt;Vorgabe&gt; mu&szlig; hier eine Bitmaske sein, die aber
+                                  nicht unbedingt in bin&auml;rer Form angegeben werden
+                                  mu&szlig;. (siehe Bemerkung)
+
+ <I>Bemerkung:</I> Zur Auswertung des Ergebnisses:
+             - Das Ergebnis ist eine Bitmaske und kann also z.B. die
+               Form %0010011 haben. Hier h&auml;tte die Liste 7 Choices
+               gehabt und der User h&auml;tte den ersten, zweiten und f&uuml;nften
+               angekreuzt. Gem&auml;&szlig; der Umrechnung in Dezimalzahlen ist
+               dieses Ergebnis identisch mit dem Wert
+                          2^0 + 2^1 + 2^4 = 1 + 2 + 16 = 19.
+             - Eine recht komfortable M&ouml;glichkeit der Auswertung, bei
+               der man sich nicht mit den Bitmasken selbst befassen mu&szlig;,
+               bietet die Funktion (IN ).
+
+            Seit der Version 42.6 des Installers werden als Choices
+            angegebene leere Strings nicht mehr angezeigt. Dieses
+            Feature ist sehr praktisch, um die Auswahllisten flexibel
+            zu gestalten.
+
+            &Auml;ltere Versionen des Installers stellten alle Displays
+            mit Non-Proportional-Fonts dar. Da einige Nutzer diese
+            Darstellungsweise bei Auswahllisten auch weiterhin
+            ben&ouml;tigen, werden solche Listen auch weiterhin
+            non-proportional dargestellt. Durch das Einf&uuml;gen der
+            Escape-Sequence `&quot;&lt;ESC&gt;[2p&quot;' l&auml;&szlig;t sich dies allerdings
+            &auml;ndern.
+
+ <I>Beispiel:</I>  (askoptions
+                      (prompt &quot;&Uuml;ber welche Periferie-Ger&auml;te verf&uuml;gen Sie?&quot;)
+                      (help @askoptions-help)
+                      (choices &quot;Drucker&quot; &quot;Scanner&quot; &quot;Modem&quot; &quot;CD-Rom&quot;)
+                      (default %1101) ; = Drucker, Modem und CD-Rom
+                     )
+
+<B>(ASKBOOL )</B>
+
+ <I>Schablone:</I>   (askbool &lt;parameter&gt;)
+
+ <I>Funktion:</I>  Der User hat die Wahl zwischen zwei M&ouml;glichkeiten,
+            die &quot;Ja&quot; und &quot;Nein&quot; sind, falls dies nicht durch den
+            Choice-Parameter ge&auml;ndert wird. Das Ergebnis ist 1 bei
+            Anwahl von &quot;Ja&quot; und 0 bei &quot;Nein&quot;.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (choices &lt;Ja-Ersatz&gt; &lt;Nein-Ersatz&gt;) - Hiermit k&ouml;nnen alternative Strings
+                                                  f&uuml;r Ja- und Nein-Button definiert
+                                                  werden.
+            (default &lt;Vorgabe&gt;) - Es kann eine Voreinstellung (0 oder 1) angegeben
+                                  werden. (Sie spielt im NOVICE-Modus eine Rolle.)
+
+ <I>Bemerkung:</I> Der Installer ordnet den Wahrheitswerten die Werte 0 und 1 zu.
+                     0 steht dabei f&uuml;r FALSE und 1 f&uuml;r TRUE.
+
+ <I>Beispiel:</I>  (askbool
+             (prompt &quot;Soll die User-Startup angepa&szlig;t werden?&quot;)
+             (help @askbool-help)
+             (default 1)
+            )
+
+<B>(ASKDISK )</B>
+
+ <I>Schablone:</I>   (askdisk &lt;parameter&gt;)
+
+ <I>Funktion:</I>  (ASKDISK ) stellt eine benutzerfreundliche M&ouml;glichkeit dar,
+            um das Einlegen eines Datentr&auml;gers zu bitten. Die Funktion
+            wird solange nicht beendet, bis der User den Datentr&auml;ger
+            eingelegt hat oder aber den Abbruch-Button bet&auml;tigt.
+
+ <I>Parameter:</I> (prompt &lt;Text&gt;) - Spezifiziert den einleitenden &lt;Text&gt; zu dieser
+                              Funktion, der dem User sagen soll, was der Installer
+                              von ihm m&ouml;chte.
+                              (Pflichtparameter)
+            (help &lt;Hilfstext&gt;) - Definiert den &lt;Hilfstext&gt; zu der Funktion.
+                                 (Pflichtparameter)
+            (dest &lt;Datentr&auml;gername&gt;) - Dient hier zur Angabe des Namens des
+                                       einzulegenden Datentr&auml;gers.
+                                       (Pflichtparameter)
+            (newname &lt;Label&gt;) - Mit diesem Parameter l&auml;&szlig;t sich hier dem eingelegten
+                                Datentr&auml;ger das Assign &lt;Label&gt;: zuweisen.
+            (disk) - Bei Angabe dieses Parameters wird dem User bei Erscheinen der
+                     (ASKDISK )-Seite die Laufwerksliste pr&auml;sentiert.
+            (assigns) - Sofern angegeben, akzeptiert (ASKDISK ) auch Assigns.
+
+ <I>Bemerkung:</I> &lt;Datentr&auml;gername&gt; und &lt;Label&gt; sind ohne `:' anzugeben.
+
+ <I>Beispiel:</I>  (askdisk
+             (prompt &quot;Bitte den Datentr&auml;ger \&quot;xyz\&quot; einlegen.&quot;)
+             (help @askdisk-help)
+             (dest &quot;xyz&quot;)
+            )
+
+
+<H2>Funktionen zur Bitmanipulation</H2>
+
+<B>(IN )</B>
+
+ <I>Schablone:</I>   (in &lt;Wert&gt; &lt;Bit-Nummer 1&gt; ...)
+
+ <I>Funktion:</I>  &Uuml;berpr&uuml;ft, ob das &lt;Bit-Nummer x&gt;-te Bit in &lt;Wert&gt; gesetzt ist
+            und &uuml;bergibt eine Bitmaske der Bits, bei denen dieser Test
+            positiv ausfiel. Stimmt kein Bit &uuml;berein, wird also 0 zur&uuml;ck-
+            gegeben.
+
+ <I>Bemerkung:</I> Mit Hilfe dieser Funktion l&auml;&szlig;t sich zum Beispiel das Ergebnis
+            von (ASKCHOICE ) komfortabel auswerten.
+
+ <I>Beispiel:</I>  #wahl enthalte das Ergebnis von (ASKCHOICE )
+
+              (if (in #wahl 0) (message &quot;Option 0 wahr angekreuzt.&quot;))
+              (if (in #wahl 1) (message &quot;Option 1 wahr angekreuzt.&quot;))
+              (if (in #wahl 2) (message &quot;Option 2 wahr angekreuzt.&quot;))
+              ...
+
+<H2>logische Funktionen</H2>
+
+<B>(AND )</B>
+
+ <I>Schablone:</I>   (and &lt;Bedingung 1&gt; &lt;Bedingung 2&gt;)
+
+ <I>Funktion:</I>  Logisches UND zwischen &lt;Bedingung 1&gt; und &lt;Bedingung 2&gt;.
+
+ <I>Bemerkung:</I> Der Installer ordnet den Wahrheitswerten die Werte 0 und 1 zu.
+                     0 steht dabei f&uuml;r FALSE und 1 f&uuml;r TRUE. Dabei gelten allerdings
+                     alle Werte ungleich 0 als TRUE.
+
+ <I>Beispiel:</I>  (and (= #i #y) (- #i 1)) ; liefert 1 f&uuml;r #i = #y und #i &gt; 1.
+
+<B>(OR )</B>
+
+ <I>Schablone:</I>   (or &lt;Bedingung 1&gt; &lt;Bedingung 2&gt;)
+
+ <I>Funktion:</I>  Logisches ODER zwischen &lt;Bedingung 1&gt; und &lt;Bedingung 2&gt;.
+
+ <I>Bemerkung:</I> Der Installer ordnet den Wahrheitswerten die Werte 0 und 1 zu.
+                     0 steht dabei f&uuml;r FALSE und 1 f&uuml;r TRUE. Dabei gelten allerdings
+                     alle Werte ungleich 0 als TRUE.
+
+ <I>Beispiel:</I>  (or (= #i #y) (&lt; #i 9)) ; liefert 1 f&uuml;r #i = #y oder #i &lt; 9.
+
+<B>(XOR )</B>
+
+ <I>Schablone:</I>   (xor &lt;Bedingung 1&gt; &lt;Bedingung 2&gt;)
+
+ <I>Funktion:</I>  Logisches ausschlie&szlig;endes ODER zwischen &lt;Bedingung 1&gt; und
+                     &lt;Bedingung 2&gt;.
+
+ <I>Bemerkung:</I> Der Installer ordnet den Wahrheitswerten die Werte 0 und 1 zu.
+                     0 steht dabei f&uuml;r FALSE und 1 f&uuml;r TRUE. Dabei gelten allerdings
+                     alle Werte ungleich 0 als TRUE.
+
+ <I>Beispiel:</I>  (xor (= #i #y) (&lt; #i 9)) ; liefert 1 f&uuml;r #i = #y, sofern #i &gt;8
+                                              ; und f&uuml;r #i &lt;&gt; #y, sofern #i &lt; 9.
+
+<B>(NOT )</B>
+
+ <I>Schablone:</I>   (not &lt;Bedingung&gt;)
+
+ <I>Funktion:</I>  Logische Negation von &lt;Bedingung&gt;.
+
+ <I>Bemerkung:</I> Der Installer ordnet den Wahrheitswerten die Werte 0 und 1 zu.
+                     0 steht dabei f&uuml;r FALSE und 1 f&uuml;r TRUE. Dabei gelten allerdings
+                     alle Werte ungleich 0 als TRUE.
+
+ <I>Beispiel:</I>  (not (= #i #y)) ; liefert 1 f&uuml;r #i &lt;&gt; #y und 0 f&uuml;r #i = #y.
+
+
+<H2>mathematische Funktionen</H2>
+
+<B>(+ )</B>
+
+ <I>Schablone:</I>   (+ &lt;Wert 1&gt; [&lt;Wert 2&gt; ...])
+
+ <I>Funktion:</I>  Bildet die Summe der Werte.
+
+ <I>Bemerkung:</I> Bei Angabe nur eines Wertes wird 0 addiert. Dies kann zur
+                     Konvertierung von STRING zu INTEGER verwendet werden, siehe
+                     dazu (SET ).
+
+ <I>Beispiel:</I>  (+ 1 8 6 5)
+
+<B>(- )</B>
+
+ <I>Schablone:</I>   (- &lt;Wert 1&gt; &lt;Wert 2&gt;)
+
+ <I>Funktion:</I>  Bildet die Differenz von Wert 1 und 2, wobei Wert 2 von Wert
+                     1 subtrahiert wird.
+
+ <I>Beispiel:</I>  (- 7 5)
+
+<B>(* )</B>
+
+ <I>Schablone:</I>   (* &lt;Wert 1&gt; [&lt;Wert 2&gt; ...])
+
+ <I>Funktion:</I>  Bildet das Produkt der Werte.
+
+ <I>Beispiel:</I>  (* 2 6 4)
+
+<B>(/ )</B>
+
+ <I>Schablone:</I>   (* &lt;Wert 1&gt; &lt;Wert 2&gt;)
+
+ <I>Funktion:</I>  Bildet den Quotienten der Werte, wobei der erste durch den
+                     zweiten dividiert wird. Es handelt sich um eine Division mit
+                     Rest.
+
+ <I>Bemerkung:</I> Der Rest kann ermittelt werden, indem das Ergebnis mit dem
+                     Divisor multipliziert wird und dieses Produkt von Wert 1
+                     subtrahiert wird.
+
+ <I>Beispiel:</I>  (set #Ergebnis (/ 9 4)) ; = 2
+                     (set #Rest (- 9 (* 4 #Ergebnis))) ; = 1
+
+</PRE>
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9806inst.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0698/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="../mmx/9806mmx.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

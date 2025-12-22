@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Workshops</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000AA" ALINK="#000066" VLINK="#000066">
+<TABLE width="100%" border="0" cellpadding="3" cellspacing="0">
+<tr>
+<td bgcolor="#000000">
+<A HREF="Workshops.html"><IMG SRC="../menu/links.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&lt;&lt;"></A>
+<A HREF="Workshops.html"><IMG SRC="../menu/hoch.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="Inhalt"></A>
+<A HREF="Workshops2.html"><IMG SRC="../menu/rechts.png" BORDER="0" WIDTH="15" HEIGHT="15" ALT="&gt;&gt;"></A>
+<font color="#FFFFFF">
+Workshops
+</font>
+</TD></tr>
+</TABLE>
+<BR>
+<H1>Workshops / Hintergrundberichte / Buchvorstellungen</H1>
+<H2>1. Workshop: Virtual Network Computing - Teil 3 (von Uwe Pannecke)</H2>
+<P><B>Der Herr der Fernbedienung - Teil 3</B></P>
+<P><B>Ein Telnet-Daemon auf dem Amiga</B></P>
+<H3>1. Noch ein Server</H3>
+<P>
+Im VNCS-Beitrag der letzten AMIGA-aktuell-Ausgabe durfte der Amiga als
+Server fungieren und seine Software grafisch dem Intranet, und wenn es sein
+soll, weltweiten Zugriff durch mit ihm verbundene Rechner &ouml;ffnen.
+Voraussetzung war ein mit RAM und MHz gut ausgestatteter Amiga. Doch wie
+nachfolgend zu lesen und sehen ist, kann der Amiga auch mit wesentlich
+bescheideneren Ausstattung &uuml;ber eine TCP/IP-Verbindung ferngesteuert
+werden, wenn auch der Komfort f&uuml;r den mausverw&ouml;hnten Amiganer ebenfalls
+deutlich geringer ist.
+</P>
+<P>
+In diesem Beitrag soll das altehrw&uuml;rdige Telnet im Mittelpunkt stehen.
+Clienten f&uuml;r die Fernsteuerung fremder Rechner sind zuhauf im Aminet zu
+finden und ohne gro&szlig;en Installationsaufwand nutzbar. Das dies auch f&uuml;r eine
+Telnet-Daemonen auf dem Amiga gilt, soll nachfolgend gezeigt werden.
+</P>
+<H3>2. Systemvoraussetzungen</H3>
+<P>
+Dem Amiga soll das Programmpaket &quot;Telnetd 2.0&quot; [1] von Peter Simons und
+Steve Holland als Implantat zu neuen M&ouml;glichkeiten verhelfen. Die Anspr&uuml;che
+des Telnet-Daemonen sind recht bescheiden: Euer Amiga muss lediglich mit
+einem TCP/IP-Stack ausgestattet sein, wobei Telnetd eigentlich f&uuml;r die
+Zusammenarbeit mit AmiTCP konzipiert wurde. Nachfolgend wird aber gezeigt,
+dass &quot;Telnetd&quot; ebenso problemlos mit Miami harmoniert.
+</P>
+<H3>3. Installation</H3>
+<P>
+Ist das LHA-Archiv aus dem Aminet heruntergeladen oder der Aminet-CD 15
+entnommen und entpackt, findet Ihr im Verzeichnis &quot;telnetd-2.0&quot; mehrerer
+Unterverzeichnisse.
+</P>
+<P>
+<A HREF="img/telnet_dir.png"><IMG SRC="thumb/telnet_dir.jpg" WIDTH="120" HEIGHT="83" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Alle Daten aus den Verzeichnissen &quot;c&quot;, &quot;devs&quot; und &quot;s&quot; werden in die
+gleichnamigen Schubladen der System-Partition kopiert. Anschlie&szlig;end wird
+die Schublade &quot;serv&quot; in das Miami-Verzeichnis kopiert und die Telnetd-
+Anleitung an eine Stelle Eurer Wahl.
+</P>
+<P>
+Damit ist die Installation auch schon abgeschlossen.
+</P>
+<H3>4. Miami-Konfiguration</H3>
+<H4>4.1 InetD</H4>
+<P>
+Ist Miami gestartet, wird im Datenbank-Modul der Eintrag InetD aufgerufen.
+F&uuml;gt dort den nachfolgenden Eintrag hinzu: Unter Dienst &quot;telnet&quot;, bei
+Socket &quot;stream&quot;, bei Protokoll &quot;TCP&quot;, unter Warten &quot;nowait&quot;, Anwender wird
+mit &quot;root&quot; versehen, Server erh&auml;lt den Eintrag &quot;Miami:/serv/telnetd&quot; und
+Name kann leer bleiben.
+</P>
+<P>
+<A HREF="img/telnet_miami1.png"><IMG SRC="thumb/telnet_miami1.jpg" WIDTH="120" HEIGHT="43" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<H4>4.2 Anwender</H4>
+<P>
+Der sich sp&auml;ter auf dem Amiga einloggende Anwender wird im gleichen
+Datenbank-Modul unter dem Konfigurationsabschnitt 'Anwender' den Telnet-
+Server bekannt gemacht. Wahrscheinlich sind auch schon einige Nutzer aus
+vorheriger Konfiguration des TCP/IP-Stacks vorhanden. Egal, alle
+potentiellen Telnet-User, die Zugriff auf den Amiga erlangen wollen,
+brauchen ein Passwort und eine Shell, da s&auml;mtliche Telnet-Kommunikation
+&uuml;ber eben diese Shell erfolgt.
+</P>
+<P>
+Unser Beispiel-User soll &quot;uwep&quot; heissen und erh&auml;lt ein Passwort sowie unter
+'Shell' den Eintrag &quot;*NewShell * from s:remote-startup&quot;, so da&szlig; nach
+erfolgreichem Einloggen auch die Daten-Ausgabe auf dem Remote-Rechner
+erfolgt.
+</P>
+<P>
+<A HREF="img/telnet_miami2.png"><IMG SRC="thumb/telnet_miami2.jpg" WIDTH="120" HEIGHT="38" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Damit ist die Konfiguration komplett und abgeschlossen. Nachdem selbige
+unter einem aussagekr&auml;ftigen Namen abgespeichert wurde, ist es Zeit, Miami
+in den Online-Zustand zu versetzen.
+</P>
+<H3>5. Einsatz des Servers</H3>
+<P>
+Ab sofort k&ouml;nnen sich alle in Miami definierten User in den Amiga einloggen
+und diesen nach Wunsch manipulieren. Das wollen wir nat&uuml;rlich gleich einmal
+ausprobieren. Beinahe jedes Betriebssystem stellt einen Telnet-Clienten zur
+Verf&uuml;gung. Unter Linux wird die Verbindung aufgenommen, indem Ihr z.B. in
+einem XTerm-Fenster &quot;telnet Rechnername&quot; oder &quot;telnet Rechner-IP-ID&quot; mit
+Enter best&auml;tigt, wobei nat&uuml;rlich f&uuml;r Rechnername und IP-ID die zuvor
+festgelegten Daten einzutragen sind. Der f&uuml;r diesen Betrag als
+Versuchskaninchen fungierende Amiga ist im lokalen Netzwerk unter dem Namen
+&quot;amiga.xwing.de&quot; oder &uuml;ber die IP-ID &quot;192.168.0.2&quot; erreichbar.
+</P>
+<P>
+<A HREF="img/telnet_linux.png"><IMG SRC="thumb/telnet_linux.jpg" WIDTH="120" HEIGHT="62" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<P>
+Unter Windows k&ouml;nnt Ihr Euch entsprechend mit Hilfe der MS-DOS-
+Eingabeaufforderung und gleichlautender Befehlssyntax einloggen. Umgehend
+wird ein Login-Name und anschlie&szlig;end das Passwort abgefordert. Sind die
+Eingaben korrekt gewesen, findet man sich in einer Shell auf dem Amiga
+wieder.
+</P>
+<P>
+Auf dem Amiga selbst ist das Einloggen ebenfalls zu beobachten, denn Miami
+protokolliert in seinem Log-Fenster die Verbindungsaufnahme.
+</P>
+<P>
+<A HREF="img/telnet_miami3.png"><IMG SRC="thumb/telnet_miami3.jpg" WIDTH="120" HEIGHT="19" ALT="Screenshot"  BORDER="0"></A>
+</P>
+<H3>6. Sicherheit</H3>
+<P>
+So einfach sich auch die Installation und der Einsatz des Telnet-Daemonen
+zeigt, so m&uuml;sst Ihr Euch unbedingt im Klaren sein, dass alle Daten &uuml;ber die
+Telnet-Verbindung im unverschl&uuml;sseltem Zustand &uuml;bertragen werden. Dies gilt
+demzufolge auch f&uuml;r sensible Daten wie Passw&ouml;rter.
+</P>
+<P>
+Im Intranet erscheint dies noch akzeptabel. Soll der Amiga &uuml;ber eine
+Internetverbindung gesteuert werden, ist Telnet ein nicht zu
+untersch&auml;tzendes Sicherheitsrisiko. In diesen F&auml;llen bietet SSH die weitaus
+sichere, weil verschl&uuml;sselte Daten-&Uuml;bertragung.
+</P>
+<P>
+Au&szlig;erdem solltet Ihr immer im Hinterkopf behalten, dass der Amiga ein
+Single-User-Betriebssystem ist. Jeder &uuml;ber Telnet oder andere Dienste
+eingeloggte User kann ohne gro&szlig;en Aufwand geh&ouml;rigen Unfug treiben. Mit dem
+MultiUser-Filessystem [2] von Geert Uytterhoeven ist zumindest
+letztgenanntes Problem, wenn auch mit einigem Aufwand, l&ouml;sbar.
+</P>
+[1] im Aminet unter <A HREF="http://de.aminet.net/pub/aminet/comm/tcp/telnetd2_0.lha">/comm/tcp/telnetd2_0.lha</A><BR>
+[2] im Aminet unter <A HREF="http://de.aminet.net/aminetbin/find?util+misc+MultiUser+.lha">/util/misc/MultiUser**.lha</A><BR>
+<P><B>Uwe Pannecke &lt;<A HREF="mailto:Uwe.Pannecke@t-online.de">Uwe.Pannecke@t-online.de</A>&gt;</B></P>
+<P ALIGN="RIGHT">
+<A HREF="Workshops.html"><IMG SRC="../menu/pfeil_links.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&lt;&lt;"></A>
+ <A HREF="Workshops2.html"><IMG SRC="../menu/pfeil_rechts.png" BORDER="0" WIDTH="20" HEIGHT="20" ALT="&gt;&gt;"></A>
+</P>
+</BODY>
+</HTML>

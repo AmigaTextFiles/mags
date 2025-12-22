@@ -1,0 +1,99 @@
+2
+1*
+{A        Järjestelmäohjelmoinnin alkeiskurssi - Osa 6: Loppuyhteenveto
+{A        -------------------------------------------------------------
+
+{8                                  Sami Klemola
+
+  
+Ohjelmointikurssimme on saapunut tiensä päähän.  Tämä  on  viimeinen  osa.  Otan
+käsittelyyn asiat, jotka olen aikaisemmissa osissa lykännyt,  ja  päätän  kaikki
+päät. Artikkelini ovat aina olleet yli 10 kilotavun mittaisia, mutta  tämä  vii-
+meinen juttuni tekee poikkeuksen. Käyn vain  läpi  nopeasti  asiat,  jotka  ovat
+jääneet roikkumaan. Aiemmin mainitsemani laiteohjaimen tekeminen  ei  kuulu  al-
+keiskurssin piiriin, vaan  se  jää  edistyneen  järjestelmäohjelmoinnin  kurssin
+asiaksi. Sellaista tosin ei näillä näkymillä ole tulossa. 
+
+{DKirjasimet
+
+Kurssin kolmososassa sivusin ikkunoita käsitellessäni kirjasimia. Nyt on vuoros-
+sa hieman lähempi tutustuminen aiheeseen. Kirjasindatahan säilytetään Fonts:-ha-
+kemistossa, joka tavallisesti on SYS:Fonts. Hakemistossa on jokaista  kirjasinta
+varten alihakemisto, jossa omissa tiedostoissaan sijaitsee  raaka  kirjasindata.
+Päähakemistossa on jokaista kirjasinta varten tiedosto, jossa se kuvaillaan.
+
+Kirjasimia on kahdentyyppisiä, kiinteälevyisiä ja proportionaalisia. Järjestelmä
+käyttää useimpiin tarkoituksiin kiinteälevyisiä kirjasimia, mutta omat  ohjelmat
+voivat hyödyntää kirjasimia, joissa kirjaimet ovat erilevyisiä. Levyltä kirjasi-
+mia voi ladata diskfont.libraryn funktioilla sekä tiedustella, millaisia  kirja-
+simia on saatavilla.
+
+
+{6                                                                     ---------->
+Muistissa olevan kirjasimen voi avata  graphics.libraryn  OpenFont()-funktiolla.
+Se asetetaan käyttöön funktiolla SetFont() ja suljetaan lopuksi funktiolla  Clo-
+seFont(). Jos käytät levyllä olevaa kirjasinta esimerkiksi ikkunassa,  se  pitää
+avata ensin OpenDiskFont():lla ennen kuin ikkuna voidaan avata. 
+
+{DHakemistot
+
+Edellisestä osasta jäivät yli hakemistot. Niiden käsittely on tehokasta ja help-
+poa. Tässä yhteenveto dos.libraryn hakemistofunktioista: 
+
+{Block = CreateDir("<nimi>")
+
+Luo nykyiseen hakemistoon alihakemiston, jonka nimi  annetaan  parametrinä.  Pa-
+lauttaa lukon uuteen hakemistoon. 
+
+{Bold = CurrentDir(lock)
+
+Asettaa parametrinä annettuun lukkoon liittyvän hakemiston  nykyiseksi  hakemis-
+toksi (CD). Palauttaa edellisen nykyisen hakemiston lukon. Jos se  on  systeemin
+CD, pistä lukko talteen ja palauta se CD:ksi ennen poistumista ohjelmasta.  Muu-
+ten tulee outoja ilmiöitä, kun ruudulla lukee muuta ja CD onkin ihan  toisaalla.
+Kutsu vain lopuksi CurrentDir():iä sen ensimmäisellä kerralla palauttama osoite.
+
+{Bplock = ParentDir(lock)
+
+Parametrinä annetaan tiedoston tai hakemiston lukko ja  takaisin  saadaan  lukko
+sen äitihakemistoon (parent). Jos tätä funktiota kutsuu  juurella,  saa  nollan.
+Nollalukko tarkoittaa käytännössä kaikkien asemien äitiä, sitä asemaa, jolta ko-
+ne on bootattu. Nolla on siis - toisin kuin monessa muussa -  hyväksyttävä  arvo
+lukolle. 
+{BGetCurrentDirName(buffer,length)
+
+Varaa puskuri ja anna sen osoite ja pituus parametreinä. Kutsun  jälkeen  pusku-
+rista löytyy nykyisen hakemiston  nimi.  Lukkoa  ei  siis  tarvita  tätä  kutsua
+käytettäessä. Hakemiston nimi kopioidaan prosessin CLI-struktuurista.  Jos  sitä
+ei ole, kutsu ei toimi. 
+
+{Block = GetProgramDir()
+
+Palauttaa lukon hakemistoon, josta ohjelmakoodi ladattiin. Tämän funktion avulla
+voit löytää ohjelman yhteydessä sijaitsevan asetustiedoston tai vastaavan.  Anna
+lukko CurrentDir():lle, niin voit avata tiedostoja ohjelmahakemistosta. GetProg-
+ramDir():n palauttamaa lukkoa ei tule avata. Vastaava SetProgramDir()-funktio on
+olemassa. Se asettaa ohjelman lukon. 
+
+{Block = Lock(name,mode)
+
+Lukitsee tiedoston tai hakemiston. Anna parametrinä kohteen nimi ja halutun  lu-
+kon moodi. Moodeja on kaksi, jaettu ja poissulkeva. 
+
+{Bdlock = DupLock(lock)
+
+Kahdentaa annetun lukon. Saat siis  toisen  lukon  samaan  kohteeseen.  Kumpikin
+pitää lopuksi vapauttaa. Alkuperäisen lukon täytyy olla  jaettu  (shared).  Dup-
+LockFromFH() antaa jaetun lukon tiedoston kahvasta. 
+
+{BUnLock(lock)
+
+Avaa lukon. Vapauttaa lukitun tiedoston tai hakemiston.
+
+{DLoppusanat
+
+Kas niin. Siinä se. Kurssi päättyy tähän. Lisätietoa ja  lisää  ohjelmointioppia
+saat autodocs-tiedostoista ja ROM Kernel Reference  -kirjoista.  Bokseista  saat
+paljon lähdekoodia opiskeltavaksi. Minä kiitän  seurasta  ja  toivotan  kaikille
+näkemiin.
+

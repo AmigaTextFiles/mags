@@ -1,0 +1,355 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>AMIGA TIMES 01/98 - Workshops</title>
+<base target="main">
+</head>
+
+<body background="../images/bg.gif" bgcolor="#C0C0C0"
+text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000"
+bgproperties="fixed">
+
+<h1>Assemblerkurs - Teil 3</h1>
+
+<p>(c) 1998 by Enrico Bauermeister </p>
+
+<h2>Thema</h2>
+
+<p>Am Anfang werden wir wir uns ein paar grafische Effekte
+anschauen. Danach kommen wir zum Thema Hardware-Sprites. </p>
+
+<h2>Grafische Effekte</h2>
+
+<h3>Grafiken schrumpfen</h3>
+
+<p>Wir haben ja im letzen Kursteil schon die Modulowerte
+besprochen. Wenn ihr nicht mehr wisst worum es geht, schaut euch
+nochmal Teil 2 an. Wenn wir die Modulowerte nun ändern, können
+wir interessante Effekte erzielen. Stellt euch vor wir nehmen bei
+einer horizontalen Auflösung von 320 Punkten einen Modulowert
+von 80: der Copper zeichnet also die erste Zeile des Bildes,
+überspringt die zweite, zeichnet die dritte... und immer so
+weiter. Das Ergebnis ist ein Bild in der halben Größe. Schaut
+euch diesen <a href="listing10.htm" name="marke1">Beispiel-Quelltext</a>
+einmal an. </p>
+
+<h3>Grafiken schmelzen</h3>
+
+<p>Die Modulowerte können positiv oder negativ sein. Wenn wir
+z.B. einen Wert von -40 nehmen, wird der Copper die erste Zeile
+lesen, sie anzeigen, 40 Byte zurück gehen, und wieder die erste
+Zeile lesen und anzeigen. Das Ganze wird solange fortgeführt bis
+der ganze Screen voll ist. <a href="listing11.htm" name="marke2">Hier</a>
+seht ihr einen Beispiel-Quelltext für den Schmelzeffekt, wie er
+in vielen Demos zu sehen ist. </p>
+
+<h3>Grafiken spiegeln</h3>
+
+<p>Nehmen wir nun einen Modulowert von -80, so liest der Copper
+eine Zeile, stellt sie dar, geht zwei Zeilen zurück und stellt
+diese dann dar. Das Ergebis ist ein Bild das auf Kopf angezeit
+wird. Mit dieser Möglichkeit kann man ganz leicht Grafiken
+spiegeln. Schaut euch diesen <a href="listing12.htm"
+name="marke3">Quelltext</a> an, um zu sehen wie das in der Praxis
+funktioniert. </p>
+
+<p>Nun könnt ihr ja noch selber ein wenig rumexperimentieren.
+Probiert einfach solange rum, bis ihr einen interessanten Effekt
+gefunden habt. Wie gesagt, mit den Modulo läßt sich eine Menge
+anstellen. </p>
+
+<h2>Hardware-Sprites</h2>
+
+<p>Kommen wir nun zu etwas völlig Anderen: den Hardware-Sprites.
+Um es gleich am Anfang loszuwerden, ich werde hier nur Sprites
+unter OCS/ECS-Chips erklären. Unter AA-Chips haben sich die
+Sprites zum positiven geändert und sind um einiges
+leistungsfähiger. </p>
+
+<h3>Was sind Sprites</h3>
+
+<p>Sprites sind grafische Objekte die sich unabhängig von den
+Bitplanes bewegen lassen. Ihre Größe ist auf eine Breite von
+max. 16 Punkten beschränkt, ihre Höhe hingegen ist beliebig und
+nur durch die Bildschirmgröße begrenzt. Die Auflösung von
+Sprites ist immer LoRes, auch wenn der Screen in HiRes ist. Für
+jedes Sprite gibt es zwei Register zur Verwaltung (eins fürs
+LowWord und eins fürs HiWord). Insgesamt sind es 16, zwei für
+jedes Sprite ergibt 8. Es können also max. 8 Sprites dargestellt
+werden (wie man doch mehr darstellen kann, werde ich später
+erklären). Nutzt man alle 8 Sprites, hat jedes Sprite max. 4
+Farben, wobei zwei Sprites ein Paar sind (Sprite 0 und 1, Sprite
+2 und 3, ...) und jeweils die selben Farben haben. Verknüpft man
+Sprites miteinander, so ergeben sich max. 16 Farben bei max. 4
+Sprites. Der Mauszeiger der Workbench ist ebenfalls ein Sprite,
+nämlich Sprite 0. </p>
+
+<h3>Definieren von Sprites</h3>
+
+<p>Um nun ein Sprite zu erstellen, muß man sein Aussehen
+definieren, seine Größe, Farben und Position auf dem
+Bildschirm. Fangen wie mit dem Aussehen an. Der einfachste Weg
+ist, ihr malt mit einem Malprogramm euer Sprite. Ihr müßt nur
+darauf achten, daß ihr als Auflösung LoRes wählt und 4 Farben
+einstellt. Außerdem darf euer Sprite nur max. 16 Punkte breit
+sein. Wenn ihr mit malen fertig seit, schneidet euer Sprite aus
+und speichert es als Brush ab (wie das geht steht im Handbuch von
+eurem Malprogramm). Wer jetzt nicht malen möchte, kann auch das
+Sprite &quot;<a href="../images/sprite.iff">sprite.iff</a>&quot;
+nehmen, was diesem Kurs beiliegt. Startet nun ArtPRO. Wählt
+UNIVERSAL an, für das Format zum Laden. Als Speicherformat nehmt
+ihr SPRITE. Nehmt folgende Einstellungen für das Format Sprite
+(über &quot;Config&quot; einstellbar): </p>
+<div align="center"><center>
+
+<table border="0" cellspacing="1">
+    <tr>
+        <td><div align="center"><center><table border="1"
+        cellspacing="1">
+            <tr>
+                <th colspan="2">Save Format</th>
+            </tr>
+            <tr>
+                <td>Output:</td>
+                <td>Source</td>
+            </tr>
+            <tr>
+                <td>Ctrl. Words:</td>
+                <td>None</td>
+            </tr>
+            <tr>
+                <td>Colors:</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>Width:</td>
+                <td>16</td>
+            </tr>
+            <tr>
+                <td>Labels:</td>
+                <td>None</td>
+            </tr>
+        </table>
+        </center></div></td>
+        <td><div align="center"><center><table border="1"
+        cellspacing="1">
+            <tr>
+                <th valign="top" colspan="2">Source Format</th>
+            </tr>
+            <tr>
+                <td valign="top">Language:</td>
+                <td valign="top">Asm</td>
+            </tr>
+            <tr>
+                <td valign="top">Width:</td>
+                <td valign="top">Words</td>
+            </tr>
+            <tr>
+                <td valign="top">Indent Tabs:</td>
+                <td valign="top">2</td>
+            </tr>
+            <tr>
+                <td valign="top">Line entries:</td>
+                <td valign="top">2</td>
+            </tr>
+            <tr>
+                <td valign="top">&nbsp;</td>
+                <td valign="top">&nbsp;</td>
+            </tr>
+        </table>
+        </center></div></td>
+    </tr>
+</table>
+</center></div>
+
+<p>Nun könnt ihr euer Sprite konvertieren. Anschließend
+speichert ihr die Palette des Sprites ab. Wie das nochmal geht
+steht in Teil 2 dieses Kurses. Nun wollen wir den Rest des
+Sprites definieren. Schauen wir uns zuerst den Aufbau eines
+Sprites an: </p>
+
+<pre>&lt;------------- 16 Bit ------------&gt;
++---------------------------------+
+|          VSTART, HSTART         |
++---------------------------------+
+|       VSTOP,control bits        |
++---------------------------------+
+                ||
+                 /
+        Aussehen des Sprites
+                 /                ||
++---------------------------------+
+| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
++---------------------------------+
+| 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 |
++---------------------------------+
+</pre>
+
+<p>Im ersten Byte, VSTART dort kommt die vertikale Position des
+Sprites rein. Im zweiten Byte HSTART die horizontale Position. In
+VSTOP wird die vertikale Endposition eingetragen. Sie berechnet
+sich wie folgt: </p>
+
+<p><strong>VSTOP = VSTART + Spritehöhe</strong> </p>
+
+<p>Das nächste Byte dient dazu um einige Spezialeigenschaften
+des Sprite einzustellen. Vorerst lassen wie dieses aber auf NULL.
+Als nächstes folgen unsere Spritedaten, die wir mit ArtPRO
+erstellt haben. Die letzen vier Bytes dieser Spritestruktur sind
+immer NULL, sie kennzeichnen das Ende eines Sprites. Eine
+Besonderheit gibt es aber dennoch: HSTART verstellt das Sprite
+jeweils um 2 Punkte. Geben wir also z.B. $31 ein, gelangt unser
+Sprite auf $32. Es sind also nur Zweierschritte möglich. Wie wir
+das ändern können, werden wie später besprechen. Wie wir bei
+der horizontalen Position über $FF hinaus kommen (also unter
+Zeile 256) werden wir ebenfalls später sehen. </p>
+
+<h3>Anzeigen von Sprites</h3>
+
+<p>Um ein Sprite nun auf dem Bildschirm anzuzeigen, müssen wir
+die Adresse eines Sprites bzw. der Struktur in die Copperliste
+eintragen. Dazu gibt es wie bei den Bitplanes Register, die in
+die Copperliste eingetragen werden. Wir müssen anschließend nur
+noch die richtigen Adressen der Sprites in diese Register
+eintragen. Hier noch eine Übersicht über die Register: </p>
+<div align="left">
+
+<table border="0" cellspacing="1">
+    <tr>
+        <td>SPR0PTH ($dff120) und SPR0PTL ($dff122) für Sprite 0</td>
+    </tr>
+    <tr>
+        <td>SPR1PTH ($dff124) und SPR1PTL ($dff126) für Sprite 1</td>
+    </tr>
+    <tr>
+        <td>SPR2PTH ($dff128) und SPR2PTL ($dff12a) für Sprite 2</td>
+    </tr>
+    <tr>
+        <td>SPR3PTH ($dff12c) und SPR3PTL ($dff12e) für Sprite 3</td>
+    </tr>
+    <tr>
+        <td>SPR4PTH ($dff130) und SPR4PTL ($dff132) für Sprite 4</td>
+    </tr>
+    <tr>
+        <td>SPR5PTH ($dff134) und SPR5PTL ($dff136) für Sprite 5</td>
+    </tr>
+    <tr>
+        <td>SPR6PTH ($dff138) und SPR6PTL ($dff13a) für Sprite 6</td>
+    </tr>
+    <tr>
+        <td>SPR7PTH ($dff13c) und SPR7PTL ($dff13e) für Sprite 7</td>
+    </tr>
+</table>
+</div>
+
+<p>Schaut euch <a href="listing13.htm" name="marke4">dieses</a>
+Listing an, um zu sehen wie ein Sprite dargestellt wird. </p>
+
+<h3>Bewegen von Sprites</h3>
+
+<p>So ein Sprite sieht ja ganz lustig aus, bloß in Bewegung
+sieht sowas noch viel schöner aus. Tja, wie bewegt man nun ein
+Sprite? Ganz einfach, wir verändern ständig die Position des
+Sprites, indem wir direkt auf VSTART, HSTART und VSTOP
+zugreiffen. In diesem <a href="listing14.htm" name="marke5">Beispiel</a>
+wird ein Sprite horizontal bewegt, indem HSTART ständig
+geändert wird. </p>
+
+<p>Hier mal eine Bemerkung am Rande. Es gibt verschiedene
+Möglichkeiten sein Demo/Intro zeitlich abzustimmen. Entweder
+über dem VBLANK (vertical blanking interupt), dem CIA oder über
+direktes Abfragen der Rasterstrahlposition. Wie wir mit dem
+VBLANK arbeiten, werden wie später noch lernen. Wie das mit dem
+CIA geht, kann ich leider auch nicht sagen. Für das direkte
+Abfragen des Rasterstrahls benutze ich zwei verschiedene
+Möglichkeiten: </p>
+
+<h4>1. Möglichkeit</h4>
+
+<pre>
+;pruefen ob wir schon an Zeile 255 angekommen sind
+;-------------------------------------------------
+pruefe:
+ cmpi.b  #$ff,$dff006
+ bne.s   pruefe
+
+;Hier können nun alle Routinen aufgerufen werden,
+;die jede 1/50 Sekunde ausgeführt werden sollen.
+;-----------------------------------------------
+; || 
+; / 
+
+; / ;   || 
+
+;pruefen on wir noch auf Zeile 255 sind, und auf Zeile 0 warten
+;--------------------------------------------------------------
+warte:
+ cmpi.b #$ff,$dff006
+ beq.s  warte
+
+;Linke Maustaste gedrueckt ?
+;---------------------------
+ btst   #6,$bfe001
+ bne.s  pruefe
+</pre>
+
+<h4>2. Möglichkeit</h4>
+
+<pre>
+;Warten auf Rasterstrahl (eine 1/50 Sekunde)
+;-------------------------------------------
+wait:
+ move.l $dff004,d0
+ and.l  #$fff00,d0
+ cmp.l  #$00003000,d0
+ bne.s  wait
+
+;Hier können nun alle Routinen aufgerufen werden,
+;die jede 1/50 Sekunde ausgeführt werden sollen.
+;-----------------------------------------------
+; ||
+; / 
+
+; / ; ||
+
+;Linke Maustaste gedrückt ?
+;--------------------------
+ btst   #6,$bfe001
+ bne.s  wait
+</pre>
+
+<p>Die zweite Möglichkeit ist viel schneller. Will man sein
+Demo/Intro nicht so schnell haben, kann man die erste
+Möglichkeit benutzen. Ändert doch mal &quot;listing14.asm&quot;
+so um, daß Möglichkeit 2 genutzt wird. Ihr werdet sehen, daß
+sich das Sprite viel zu schnell bewegt. Welche Methode ihr nutzt,
+müßt ihr dann selber entscheiden. </p>
+
+<hr width="25%">
+
+<p>Leider muß ich euch jetzt mitteilen, daß dieser Kursteil
+schon zu Ende ist. Aus Zeitmangel in den letzen zwei Monaten war
+es mir leider nicht möglich mehr Zeit für diesen Kurs zu
+opfern. Ich hoffe ihr seid mit jetzt nich böse. Das nächste Mal
+werden wir mit den Sprites fortfahren. Also schönes Coden dann,
+und bis demnächst. </p>
+
+<p align="right"><em>-eb-</em></p>
+
+<table border="0" width="100%">
+    <tr>
+        <td align="center"><a href="inh03.htm" target="main"><img
+        src="../images/back2.gif" alt="Zurück" align="left"
+        border="0" hspace="0" width="32" height="32"></a></td>
+        <td align="right"><a href="wshop02.htm" target="main"><img
+        src="../images/next2.gif" alt="Weiter" align="right"
+        border="0" hspace="0" width="32" height="32"></a></td>
+    </tr>
+</table>
+
+<hr>
+</body>
+</html>

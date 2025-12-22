@@ -1,0 +1,234 @@
+{backimage bg.iff}
+{center}
+{subhead}Technical overview of the Predator PCI board{def}{p}
+Article by Eyetech
+{left}
+{pp}
+(Taken from http://www.eyetech.co.uk/PRODUCT/PAMA1/PREDA001.HTM. Some formatting of the
+original document may be lost - Paul)
+{pp}
+Predator PCI / AGP / SDRAM / G3 / G4 expansion board update
+{pp}
+Predator PCI/AGP board for the A1200 tower and A4000 Desktop
+{pp}
+{bold}Overview{nobold}
+{pp}
+The Predator busboard is a design commissioned by Eyetech to allow full advantage
+to be taken of the high speed local bus built into every Cyberstorm PPC and Blizzard
+PPC accelerator to enable PC-type PCI expansion and graphics cards to be used on
+a PPC-equipped Amiga.
+{pp}
+The response to our Predator announcement in August 2000 has been overwhelming and
+entirely positive. However, many potential purchasers have asked us if it would be
+possible to incorporate a G3/G4 processor slot for future expansion, along with
+the AGP and SDRAM socket of the original specification. Our engineers have
+confirmed that this is possible, but that it would require the reworking of some
+of the complex logic associated with the AGP and SDRAM interface implementations
+of the Predator. Nevertheless we believe that this step is very worthwhile and
+will be enormously beneficial to potential Predator purchasers wishing to achieve
+the very best levels of performance from their machines. We have therefore decided
+to produce two levels of Predator board for both the A1200 and A4000, to suit
+different budgets and performance requirements, the Predator-SE and the
+Predator-Plus.
+{pp}
+All Predator models therefore represent a high performance solution for owners
+of phase5/DCE PPC accelerators only. This contrasts with the superficially
+similar A1200-only Mediator design from Elbox.   The Mediator is designed to
+communicate over the 8MB wide Zorro2 address space, and at A1200 expansion
+connector bus speeds, and as a consequence is therefore hardware compatible
+with 68000 series accelerators. Subject to satisfactory performance testing
+Eyetech will also stock the Mediator board for less demanding configurations
+and/or users who do not intend to purchase a Predator-compatible PPC
+accelerator.
+{pp}
+The Predator will be available in two different form factor designs, one for
+the A4000 desktop and one for the A1200. The A1200 form factor version will
+come with 3xPCI and 1 x AGP simultaneously usable slots and will fit in any
+tower capable of taking a Z4 busboard. The A4000 desktop form factor version
+will come with 2xPCI and one AGP slots plus one shared PCI and regular, Video
+Toaster-compatible A4000 video/Zorro3 slot (making 4 simultaneously usable
+slots altogether). Both form factor versions will also have provision for a
+G3/G4 PPC & SDRAM slot.
+{pp}
+Each form factor design will be available in two versions, the Predator-SE
+and the Predator-Plus. The Predator-SE will be a low cost version supporting
+PCI cards only, albeit over the high speed PPC local bus connector (see
+below). The Predator-Plus will be the fully featured version with AGP, G3/G4
+and SDRAM slots activated.  A trade-in/upgrade option will be available for
+purchasers of the Predator-SE who subsequently wish to add Predator-Plus
+facilities.
+{pp}
+{bold}Development Timeframes{nobold}
+{pp}
+{pp}
+The PCB design for both the A4000 form factor versions (ie Predator-SE and
+Predator-Plus) is complete, with the A1200 PCB versions at about the 70%
+level and expected to be complete by the end of September 2000.
+The logic design and simulation is complete for both A1200 and A4000 Predator-SE
+versions (which are logically identical) . Testing of the A4000 Predator-SE 
+hardware is expected to be underway at the end of September/early October with
+retail shipments expected to start about 5 weeks later. The A1200 version will 
+follow about 4 weeks behind the A4000 product.
+{pp}
+We are currently planning to ship the A1200/A4000 Predator-Plus versions
+(with AGP/G3/G4/SDRAM slot) in early 2001.
+{pp}
+{bold}Technical design philosophy{nobold}
+{pp}
+The following notes help to illustrate the technical approach we have adopted
+in designing the Predator expansion board and how it differs from the
+superficially similar Mediator design from Elbox.
+{pp}
+{bold}Accelerator to PCI interface{nobold}
+{pp}
+In designing the (PPC) accelerator to PCI/AGP bus interface we had two
+possible alternatives. We could use the existing Blizzard PPC/CyberstormPPC
+local bus interface normally used for connecting Permedia-type graphics cards
+(which is very fast but restricts the use to PPC-equipped Amigas only).
+Alternatively we could transfer data over the existing A1200 expansion
+interface (edge connector) or Zorro3 bus (A4000), an approach that would
+allow compatibility with 68000 series accelerators. This latter approach has
+(in our opinion) several major performance disadvantages over the PPC local
+bus method. The relative merits of both approaches are as follows:
+{pp}
+{bold}PPC local bus interface{nobold}
+{pp}
+The specifications of the local bus controller chip used in the
+Blizzard/CyberstormPPC show that it is capable of transferring data across
+the local bus connector at 50MB/s in single byte access mode or up to 80MB/s
+in burst access mode. In addition, as the full 4GB address space is linearly
+decoded there is no register-setting overhead (as with a paged memory data
+transfer system) and DMA facilities can be implemented fairly easily. Finally,
+as the interface for both BlizzardPPC and CyberstormPPC local bus connectors
+are identical, one Predator logic design can be used for both A1200 and A4000
+implementations.
+{pp}
+{bold}Amiga expansion connector interface{nobold}
+{pp}
+The alternative method of transferring data - that is over the A1200 expansion
+bus - must use a paging method to map the (maximum) 8MB of Zorro2 address
+space to the 4GB of PCI address space. Using paged memory means that a
+paging register has to be set at the start of each data transfer and whenever
+a data transfer block crosses a page boundary. For small block transfers -
+such as when the CPU is updating a graphics card - this overhead can be
+significant. For single byte transfers it reduces the actual transfer speed
+to exactly half the nominal speed.
+{pp}
+In addition to this, the speed of the A1200 expansion bus data transfer rates
+are much lower than those for the PPC local bus interface. The A1200 expansion
+bus is clocked at 14.2 MHz and requires a minimum of 3 clock cycles to transfer
+each word of up to 4 bytes. In the worst case - that of a single byte transfer
+to a random PCI address - the data transfer rate (including setting the paging
+register) is therefore just 2.36MB/s. This rises to a maximum of 18.9MB/s for
+block transfers within the same memory page. These rates assume an optimal bus
+transfer mechanism with no wait states. In practice an asychronous interface is
+usually necessary to match the CPU and expansion connector bus speeds resulting
+in the addition of wait states during data transfer thus further slowing actual
+data transfer speeds. For technical reasons it is not practical to implement a
+`burst' data transfer mechanism (within the PCI definition of `burst' mode)
+over the A1200 edge connector, with existing accelerator designs.
+{pp}
+A further compromise is in the size of the the Zorro2 address `window' used
+for memory paging. An 8MB window (ie as large as is possible) will tend to
+minimise the amount of paging overhead - but has the disadvantage of disabling
+non-relocatable Zorro2 addresses - such as the A1200's PCMCIA slot. A smaller -
+say 4MB - paging window imposes more overhead but allows (for example) full
+PCMCIA functionality.
+{pp}
+Based on the above we believe that there are overwhelming performance merits in
+using the PPC local bus to interface to the Predator board.
+{pp}
+{bold}Slot-to-Slot data transfer speeds{nobold}
+{pp}
+Provided that the busboard is properly designed - which at high speeds means
+separate ground and power planes and trace length equalisation - there is no
+limitation on the card-to-card transfer speeds other than that imposed by the
+PCI cards themselves - irrespective of how the PCI to CPU bus is implemented.
+Having said that, a high card-to-card transfer rate is only of limited
+functionality, and is used mainly (in PC's) for overlaying TV card etc output
+directly on a graphics screen.
+{pp}
+{bold}DMA{nobold}
+{pp}
+DMA (Direct Memory Access) is the mechanism whereby a peripheral card (eg a
+network card) can transfer its data directly into a processor-accessible
+memory area without cpu intervention. All PCI/AGP cards with `bus mastering'
+facilities have the potential to carry out DMA both between cards (as above)
+and - more importantly - between card and CPU memory. However PCI cards are
+designed to carry out DMA in a linear (ie non-paged) cpu address space, making
+it extremely difficult - if not impossible - to implement on an paged memory
+interface using Zorro2 address space.
+{pp}
+{bold}AGP vs PCI{nobold}
+{pp}
+Why did we choose to implement AGP on the Predator-Plus? Well apart from AGP
+graphics cards being the defacto standard in the PC market, and therefore much
+more easily available than their PCI equivalents, an AGP graphics card has two
+significant performance advantages over its PCI equivalent. It is therefore an
+appropriate choice of technology for the highest performance expansion boards.
+{pp}
+These advantages are:
+{pp}
+{italic}Protocol & bus mastering{noitalic}
+{pp}
+The AGP protocol is designed to be much more efficient than PCI at moving the
+sort of data used by graphics cards - particularly in bus mastering mode when
+transfering data directly to the cpu's memory area. Amongst other things it
+eliminates PCI bus inefficiencies associated with non-deterministic data
+transfer lengths (which can be significant in graphics card operations).
+This results in much more usable data being transferred within a given time
+slot than for a PCI card running at the same nominal bus speed.
+{pp}
+{italic}PCI card compatibility{noitalic}
+{pp}
+Because of the AGP protocol enhancements (over PCI) an AGP card will continue
+to operate at full bus speed even when there are slower PCI cards on the bus
+(eg modem cards). The PCI protocol by contrast automatically drives the whole
+bus at the speed of the slowest card. In addition, by using the direct PPC
+local bus interface, the graphics card can effectively use CPU memory as its
+own for increased performance under certain circumstances.
+Finally it is worth pointing out that, in all versions of the Predator, all
+the PCI and AGP protocols are implemented in hardware and thus put no load on
+the (PPC) cpu during associated data transfers.
+{pp}
+{italic}G3/G4/SDRAM{noitalic}
+{pp}
+The CPU / SDRAM slot provided on the Predator-Plus is designed to take a
+plug-in board carrying a G3 / G4 CPU and/or SDRAM memory with minimal additional
+support circuitry. This approach allows us to keep the Predator CPU/memory
+upgrade costs low, and is possible because the Cyberstorm PPC / Blizzard PPC
+accelerator (which is still needed) is used to provide the relatively complex
+local-bus-to-Amiga-motherboard interfacing logic.
+{pp}
+The Predator for A4000 tower systems and A3000 desktop and tower systems.
+Our current plans are to bring the A4000 desktop and A1200 tower versions of
+the Predator-SE and Predator-Plus to market before undertaking any further
+design work for additional Amiga platforms. We will however start conducting
+feasibility studies for the introduction of Predator expansion boards for the
+A4000 Tower (both A4000 desktop conversions and  Amiga Technologies A4000T's)
+and for the Commodore manufactured A3000 desktops and towers once the Predator-SE
+for A1200 and A4000 systems are shipping in volume. The priority with which
+we tackle these new designs will depend on the technical/mechanical complexity
+of the design and the perceived demand for the products.
+{pp}
+So if you are interested in potentially purchasing a Predator for any of
+these types of systems it would be enormously helpful if you could
+email our sales
+address indicating in the subject line the type of system you would like to use
+the Predator with. It does not matter at this stage whether you are interested
+in the Predator-SE or Predator-Plus models.
+{pp}
+Your subject line should read "Predator for xxxxx"
+where "xxxxx" is:{p}
+{fixed}
+ - "A4000 desktop tower conversion using (manufacturers name) tower"
+or
+ - "A4000T tower Amiga International design"
+or
+ - "A3000 desktop system by Commodore"
+or
+ - "A3000 tower system by Commodore"
+{pp}
+{def}
+Thanks for your help.
+{pp}

@@ -1,0 +1,66 @@
+CheckMouse by Mattias Axelsson (Doom) 1995
+------------------------------------------
+This is a VERY simple routine to check the condition of the left or right
+mousebuttons, useful in scripts for example. By checking the returncodes
+you can decide what to do if the user is pressing one of them as the
+program is being executed. The returncodes are:
+
+5  (WARN)  = left mousebutton
+10 (ERROR) = right mousebutton
+
+Lets say you want to start a special menu if the user is pressing the left
+mousebutton when your Amiga is booting, add these lines at the beginning of
+your startup-sequence:
+
+CheckMouse
+IF WARN
+  MyMenuProgram
+ELSE
+  <the rest of your startup-sequence>
+ENDIF
+
+- - -
+
+If you just want to type something funny (and then continue booting):
+
+CheckMouse
+IF WARN
+  ECHO "PC - go to hell!"
+ENDIF
+<the rest of your startup-sequence>
+
+- - -
+
+You can also check the right mousebutton, in order to make this work you
+got to set the error limit to a value higher than 10 by using FAILAT:
+
+FAILAT 11
+
+Should be fine, this tells the Amiga not to abort the execution if a program
+returns a error value higher than 5. You may want to change it back to the
+defaultvalue (usually 10) after using CheckMouse. To check the right mouse-
+button, use the keyword ERROR instead of WARN. Lets say yo want to list
+WORK: if the user is pressing the right mousebutton, do like this;
+
+Failat 11
+CheckMouse
+
+IF ERROR
+  List WORK:
+  Failat 10
+ELSE
+  Failat 10
+  <Do something else>
+ENDIF
+
+- - -
+
+Thats it! Hope you like it, it's one of the most uncomplicated programs I've
+ever written...
+
+To contact me:
+--------------
+Mattias Axelsson
+Kattfotsgränd 3
+774 61 Avesta
+SWEDEN

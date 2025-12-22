@@ -1,0 +1,171 @@
+#Titel GaMa-Befehle
+#Logo gadget45:pinsel/ag.intern
+
+#Font Losse 16
+#C32
+        GAMA-BEFEHLSÜBERSICHT
+#C21
+#Font topaz 8
+
+   Dies ist eine Übersicht derjenigen Befehle, die von Autoren  in  AMIGA
+Gadget  benutzt  werden  dürfen. [Die Weiterentwicklung von "GaMa" ist bis
+auf weiteres eingestellt. (an)]
+#Seitenende
+#C31
+ #Font Fontname Größe
+#C21
+   Dieser Befehl dient zum Setzen des Zeichensatzes. Es  können  beliebig
+viele Zeichensätze benutzt werden.
+
+Beispiel:
+#C10
+ #Font Losse 16
+#C31
+
+ #Cxy
+#C21
+   Hiermit lassen sich Schrift-  und  Schattenfarbe  setzen.  Die  Zahlen
+x  und  y  müssen  innerhalb von 0-3 liegen. Bei Programmstart werden die
+Workbench-Farben benutzt. Im Magazin kann das entweder  durch  den  GaMa-
+Befehl #SF (der nicht von Gadget-Autoren zu benutzen  ist,  deshalb  hier
+auch nicht erklärt wird) oder durch den Benutzer mittels des Farb-Reques­
+ters geändert werden.
+
+Beispiel:
+#C10
+ #C31
+#C31
+#Seitenende
+ #Titel text
+#C21
+   Überraschenderweise kann man mit diesem Befehl die Überschrift setzen.
+Ein interessantes Beispiel hierfür  sind  die  Beschreibungen  der  Fish-
+Disks von Michael Loßin.
+
+Beispiel:
+#C10
+ #Titel Kann Kupfer denken?
+#C31
+
+ #S2
+#C21
+   Der Text wird in zwei Spalten gesetzt. Die Textbreite sollte  38  Zei­
+chen  nicht  überschreiten.  Der Befehl ist nur in der ersten Zeile eines
+Textes erlaubt.
+#Seitenende
+#C31
+ #Pinsel dateiname [mitte] [rechts] [oben]
+ #Logo dateiname [mitte] [rechts] [oben]
+#C21
+
+   Der Pinsel "dateiname" im IFF-ILBM-Format wird angezeigt. Ohne  ander­
+weitige Angabe wird er linksbündig angezeigt. Bei Angabe der Option "mit­
+te"  wird  erwartungsgemäß zentriert und bei "rechts" -- ja, was passiert
+dann wohl? Bei der Option "oben" wird der Pinsel  durch  den  Text  über­
+schrieben.  Dadurch  kann  man den Text nach einiger Arbeit um den Pinsel
+herumfließen lassen. Der Befehl "#Logo" leistet dasselbe, die Pinsel wer­
+den  dann jedoch auf jeder Seite angezeigt. Zweckmäßigerweise sollte die­
+ser Befehl jedoch am  Anfang  einer  Seite  vor  jeder  weiteren  Ausgabe
+stehen.
+
+Beispiel:
+#C10
+ #Pinsel Gadget11:pinsel/ag.intern
+#Seitenende
+#C31
+ #Seitenende [y]
+ #Spaltenende [y]
+#C21
+   Hiermit läßt sich ein Spalten- bzw. Seitenumbruch erzwingen.  Es  kann
+eine y-Koordinate angegeben werden, die einen Umbruch auslöst, wenn diese
+Koordinate  bei  der  Bildschirmausgabe erreicht oder schon überschritten
+wurde.
+
+Beispiel:
+#C10
+ #Spaltenende 200
+
+#C31
+
+                                                            (nk, 13.2.93)
+#Seitenende
+#Font Losse 16
+#C32
+           GAMA IN DER PRAXIS
+#C21
+#Font topaz 8
+
+Für alle die, die sich bereits an der Erstellung von Dateien im GaMa-Format
+versucht haben, sollen an dieser Stelle noch ein paar praktische Hinweise
+aufgeführt werden.
+
+#C31
+Der "topaz"-Zeichensatz
+#C21
+
+Bei Verwendung des normalen Zeichensatzes kann es manchmal zu sehr
+eigentümlichen und scheinbar unerklärlichen Fehlern kommen. Die Ursache
+liegt dann im Zuweisungsbefehl "#Font". Bei "topaz" und NUR bei "topaz"
+ist es notwendig, den Namen des Zeichensatzes komplett klein zu schreiben.
+D.h. die Befehlsfolge "#Font Topaz 8" führt zu einem Darstellungsfehler.
+Korrekt muß es "#Font topaz 8" heißen.
+#Seitenende
+#C31
+Zu große Brushes
+#C21
+
+Im Normalfall erkennt GaMa Pinsel, die zu hoch sind, um dargestellt zu
+werden und zeigt das mit einem Fehlerrequester an. In einem knappen
+Grenzbereich funktioniert dies jedoch nicht. D.h. es werden Pinsel, die
+ein kleines Stück zu groß sind nicht angezeigt und gleichzeitig wird
+der Grund des Nichtanzeigens von GaMa nicht erkannt. In einem solchen
+Fall werden einfach Leerseiten produziert. Tritt so etwas auf, gilt es
+schlicht und einfach, den verwendeten Pinsel so weit zu verkleinern, bis
+er korrekt dargestellt wird.
+
+#C31
+Mehrfarbige Textzeilen
+#C21
+
+GaMa unterstützt zunächst nur den zeilenweisen Farbwechsel. Möchte man
+jedoch unterschiedliche Schriftstile in einer Zeile verwenden, muß man
+einen kleinen Trick anwenden. Dazu muß man wissen, daß eine Textzeile in
+GaMa die Höhe Font.YSize+2 hat. Bei einem 8-Pixel-Font wie topaz hat also
+eine GaMa-Textzeile (wegen der Schatten) eine Höhe von 10 Pixel - egal ob
+nun tatsächlich Schatten verwendet werden oder nicht. Möchte man jetzt
+zweifarbig in einer Zeile drucken, gibt man zunächst den Text der einen
+Farbe aus, springt dann mit dem #Y-Befehl in die vorige Zeile zurück, ändert
+die Schriftfarbe und druckt den Rest des Textes aus. Ein Beispiel :
+
+#C10
+    #C21
+    #Font topaz 8
+    Programmname :
+    #Y-10
+    #C10
+                    GaMa
+
+#C21
+liefert
+
+Programmname :
+#Y-10
+#C10
+                GaMa
+#Seitenende
+#C31
+Die Zeilenlänge
+#C21
+
+Schließlich kann auch die mögliche Zeilenlänge außerhalb des Zwei
+Spalten-Modus von Interesse sein: GaMa stellt in diesem Fall maximal
+80 Zeichen/Zeile dar, bei mehr kommt es zu unschönen Zeilenumbrüchen und
+Formatierungsfehlern.
+
+Mittels dieser praktischen Hinweise sollten interessierten Textautoren
+manche Eigentümlichkeiten GaMas etwas verständlicher und der Weg hin zum
+selbst layouteten Text einfacher geworden sein. Weitere Anfragen zur
+Funktionsweise von GaMa bitte an die Redaktion. Und tschüß.
+
+#C31
+                                                             (an, 11.9.97)

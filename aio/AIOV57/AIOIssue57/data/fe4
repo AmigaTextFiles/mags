@@ -1,0 +1,209 @@
+{backimage bg.iff}
+{center}
+{subhead}Amiga OS4 Development Update Summary{def}{p}
+Article by Mark Tierno
+{left}
+{pp}
+The following is a summary update of the work in progress for OS4, as
+taken from the informatipon recently published by those working on 
+it. I reduced it to more of a summary format to make scanning it
+easier...
+{pp}
+{pp}
+{bold}AMIGA OS 4.0 DESIGN GOALS{nobold}{p}
+ - 1 -  Migrate OS 3.9 from 68K to PPC{p}
+ - 2 -  Untie the OS from the Amiga custom chipsets{p}
+ - 3 -  Introduce modern functionality{p}
+ - 4 -  Eliminate key performance bottle-necks{p}
+ - 5 -  Prepare the Amiga OS as a host-OS for Amiga DE
+{pp}
+{pp}
+{bold}DEVELOPMENT UPDATE{nobold}
+{pp}
+{pp}
+{bold}Exec Second Generation (Exec SG){nobold}{pp}
+Exec will be re-written for in C and new functionality will be introduced to
+allow the deployment of OS 4 on any suitable PPC hardware including but not
+limited to the Amiga One, Blizzard PPC, Cyberstorm PPC, Shark PPC from Elbox,
+Pegasos from bPlan etc.{p}
+ The following features are planned:{p}
+ Hardware abstraction layer Virtual memory  New library interface Resource
+tracking and management  Optional memory protection  WarpOS backwards
+compatibility {p}
+ The following design documents regarding Exec SG were already written and are
+either finalised or being discussed:{p}
+ - New library model (final draft){p}
+ - Hardware abstraction layer (first draft){p}
+ - Virtual environment (first draft){p}
+ All design documents are available as PDF files.{p}
+ Actual coding on the higher level functionality of Exec is already
+under way.{p}
+ Most of the `high level' functionality of Exec SG is already implemented (some
+50 functions) which includes all list and tag functions and most notably the
+memory subsystem and parts of the new library scheme.{p}
+ The memory system is for now limited to the `classic' memory system i.e. the
+MemHeader/MemChunk functionality. A more sophisticated system is planned and VM
+support will also be added down the line.{p}
+ Work is currently underway on the booting process.{p}
+ All in all the work is around 50% done.
+{pp}
+{bold}68K emulation{nobold}{pp}
+ Development status of the JIT emulator:   Nearly all 68040 integer
+instructions are now emulated and work is about to start on FPU
+emulation, OS integration and further performance optimisation.
+{pp}
+{bold}PPC native TCP/IP stack & PPP drivers{nobold}{pp}
+ Early tests already suggest that this is the fastest TCP/IP stack found on the
+Amiga.{p}
+ Features are as follows:{p}
+- implemented as a single shared library{p}
+- compatible with the Amiga standard "bsdsocket" API, as defined by the AmiTCP product{p}
+- enhanced API for more control over the inner workings and
+configuration{p}
+- built-in DHCP client{p}
+- Internet Superserver (inetd){p}
+- IP filtering and networking address translation{p}
+- drivers for asynchronous PPP (dial-up networking) and PPP over
+Ethernet{p}
+ The TCP/IP stack (`Roadshow') and PPP drivers have been completed with the
+following issues outstanding:{p}
+- GUI (also required for the PPP drivers){p}
+- SSL implementation/integration.{p}
+SSL V2 is very close to completion.
+{pp}
+{bold}Re-implementation of the Amiga file system (FFS2) for PPC{nobold}{pp}
+ FFS2 is a fully backwards compatible re-implementation in C of the Fast File
+System. It supports media > 4 GByte, and a new variant of the file/directory
+name storage format which allows for long file names (up to 108
+characters).{p}
+ Development status:  Completed and successfully tested.
+{pp}
+{bold}Recovery and Salvage tools for FFS2 and SFS{nobold}{pp}
+ Salvage, Undelete, Unformat, Repair, RDBSalv, ReOrg/Defrag, Check Integrity
+etc. with full support for FFS2 and SFS{p}
+ Filesystem Check, Salvage (recovery by copying to another partition), Undelete,
+Optimize ("ReOrg"/"Defrag"), Find Partitions and Unformat are done. The
+filesystem Repair function still needs some work. Localization and user
+documenation is not done yet.
+{pp}
+{bold}PPC native RTG system (Picasso 96 V3){nobold}{pp}
+Development status:{p}
+Permedia 2 driver: 85% completed{p}
+Permedia 3 driver: 60% completed{p}
+Voodoo 3 driver:    100% completed{p}
+Matrox G450/G550:  work in progress{p}
+ATI Radeon family:  work in progress{p}
+Picasso 96 V3 will subsequently be ported to PPC with the use of the new Exec
+SG library model for optimal performance.{p}
+An arithmetically optimised PPC native version of layers.library is planned.
+{pp}
+{bold}Warp3D (3D driver system){nobold}{pp}
+Permedia 2 driver: 100% completed{p}
+Permedia 3 driver: work to start upon completion of 2D drivers{p}
+Voodoo 3 driver:  100% completed Matrox{p}
+G450/G550:  work to start upon completion of 2D drivers{p}
+ATI Radeon family: work to start upon completion of 2D drivers
+{pp}
+{bold}OpenGL 1.3 support (Mesa 4.0){nobold}{pp}
+ Support for OpenGL 1.3 will be provided by porting the open source project Mesa
+(which now passes all SGI compliance tests) which will sit on top of Warp3D so
+that graphics-card functionality not currently offered by the OpenGL API may be
+supported nonetheless.{p}
+ Work will start once Warp3D V5 has been completed.
+{pp}
+{bold}PPC native RTA system based on AHI{nobold}{pp}
+ Developer: Martin Blom and others{p}
+ A Retargetable Audio System allows the use of plug-in soundcards (PCI
+or Zorro II).{p}
+ Development status:   Martin Blom has started work on the Soundblaster Live drivers.
+{pp}
+{bold}PPC native Intuition and Reaction{nobold}{pp}
+ The functionality of Reaction will be extended by providing more classes and be
+integrating Reaction better within the OS.{p}
+ The addition of the following classes is being contemplated:{p}
+ -application.class - name not finalized. This class will be a "parent" and
+likely unify window class and arexx class management together, ease management
+of multi-window applications and support easy creation of applications as
+commodities.{p}
+ -speedhint.class - a new help display class based on the speenthint code from
+window.class, however this will allow for a more powerful API and future growth
+path.{p}
+ -popwin.gadget - similar to chooser.gadget but allows a popup display
+containing most any other gadget as a child - most useful for a popup listview.
+For this gadget to function, Intuition needs to gain some new ability. The
+safety of making these changes and therefore including the gadget will need to
+be evaluated via beta testing.{p}
+ - prefs.class - a new baseclass that allows for custom plug-in preferences
+modules for any of the ReAction classes. Subclasses need to be written for the
+existing ReAction classes and supported in ReActionPrefs.{p}
+ The following functionality will also be implemented:{p}
+ Drag and Drop support.{p}
+ New `ghosted' look
+{pp}
+Intuition will sport the following new features:
+ New DrawInfo pens,  Enhanced window borders Resolution-adaptive system gadgets
+User-selectable styles for system glyphs and 3D frames with support for external
+plug-ins Configurable look for proportional gadgets New-style (3D recessed)
+`disabled' look for gadgets where applicable Gad-Tools enhancements (pop-up
+capability for cycle gadgets etc.) Full-user control of Workbench
+palette.{p}
+ Work is expected to be completed in time for release of OS 4.0 with more work
+already planned for subsequent updates of the OS 4.0.
+{pp}
+{bold}SCSI drivers for onboard (UW) SCSI controllers{nobold}{pp}
+ The current SCSI drivers for the onboard SCSI controllers of the Cyberstorm PPC
+and the BlizzardPPC are written in 68K code which cannot be emulated due to the
+usage of MMU instructions and the different MMU pagesizes of the 68K and PPC
+line of CPU's.   It is therefore necessary to replace these
+drivers.{p}
+ Support for other SCRIPTS based PCI-based SCSI controllers is planned to allow
+an easy migration of SCSI hardware to non-SCSI systems such as the
+AmigaOne.{p}
+ The SCSI driver framework is completed with work in progress on implementing
+the actual driver for the Cyberstorm PPC onboard SCSI controller.{p}
+ Good progress is being made and the driver is expected to be finished
+in time.
+{pp}
+{bold}WarpInput API{nobold}{pp}
+ WarpInput is an API for multimedia controller devices (akin to DirectInput on
+Windows) which allows a programmer to provide support through one API for a wide
+variety of input-devices such as keyboard, mouse, joysticks(analog and digital),
+track-ball, Playstation controller etc.{p}
+ The design document is in its second draft and implementation has
+started.{p}
+ Work is underway to re-implement lowlevel.library in C.
+{pp}
+{bold}Minimal USB stack{nobold}{pp}
+ Design documents are drafted and implementation work is underway.
+{pp}
+{bold}PPC native datatypes{nobold}{pp}
+ PPC native datatypes for common formats such TIFF, JPEG, PNG and
+BMP.{p}
+ Completed but still need to be recompiled for OS 4.
+{pp}
+{bold}New HDToolbox{nobold}{pp}
+ The new incarnation of HDToolbox will offer substantially more functionality
+than the current version.{p}
+ Development status:{p}
+ - Lowlevel part ('the Engine'):{p}
+ Some 80% of the written code was tested with a total of about 85% written.
+Succesfully tested code includes: removing/adding partition and filesystem,
+moving and sizing partition, saving RDB back to disk or to a file. The automatic
+error reporting and correction of RDB structures is still missing. This is the
+last remaining major item which remains to be implemented in the
+Engine.{p}
+ - Highlevel part (GUI):{p}
+ The partitioning window is 100% complete owing to a new gadget designed by
+Massimo Tantignone. So is the filesystem selection window barring the gadgets
+related to the correction/error reporting of RDB values. Two windows remain to
+be fully managed: the Installation window (already working but incomplete) and
+the lowlevel SCSI utilities window which is fully designed but not yet working.
+Also missing is a complete test of the GUI layout functionalities: the GUI will
+try to open a custom screen if the current screen is not big enough but this is
+not tested yet.{p}
+ Still to do: support for localization and user documentation.{p}
+ Overall the development status is estimated to be 85% completed.
+{pp}
+ {bold}Support for TrueType/OpenType fonts{nobold}{pp}
+ Work on the initial version for OS 4 is around 95% completed.
+{pp}

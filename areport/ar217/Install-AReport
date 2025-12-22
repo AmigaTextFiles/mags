@@ -1,0 +1,101 @@
+; $VER: 2.15 Amiga Report Installer Script written by David Tiberio
+; email dtiberio@libserv1.ic.sunysb.edu for more information
+
+    (set AR_dest (getassign "AR"))
+
+    (set FALSE 0)
+    (set TRUE 1)
+    (set @default-dest "SYS:")
+
+
+; Viewer routines excerpted from the Amiga/Toaster Reference Manual with permission
+(procedure Viewer
+
+    (if (AND (exists "SYS:Utilities/MultiView") (NOT (exists "T:viewer.s")))
+        (
+            (tooltype
+                (prompt "MultiView has been detected in your SYS:Utilities/ drawer. "
+                        "Amiga Report can be configured to automatically access MultiView. "
+                        "The AmigaGuide DataType will have to be available to the system. "
+                        "Do you wish to use MultiView to access Amiga Report?")
+                (help "No help available.")
+                (dest "AR217.guide")
+                (setdefaulttool "SYS:Utilities/MultiView")
+                (noposition)
+                (confirm)
+                )
+            (if (AND (NOT(exists "DEVS:DataTypes/AmigaGuide")) (NOT(exists "SYS:WBStartup/AmigaGuide")))
+                (message "\nThe AmigaGuide DataType was not found. You will have to place it in "
+                         "your WBStartup drawer or your DEVS:DataTypes drawer before MultiView can "
+                         "use the Amiga/Toaster Reference Manual.")
+                )
+            )
+        (
+            (if (exists "AmigaGuide")
+                (copylib
+                    (source "AmigaGuide")
+                    (dest "SYS:Utilities/")
+                    (infos)
+                    )
+                )
+            (if (exists "SYS:Utilities/AmigaGuide")
+                (                                   ;otherwise, use AmigaGuide if detected
+                    (tooltype
+                        (prompt "AmigaGuide has been detected in your SYS:Utilities/ drawer. "
+                                "Amiga Report can be configured to automatically access AmigaGuide. "
+                                "Do you wish to use AmigaGuide to access Amiga Report?")
+                        (help "No help available.")
+                        (dest "AR217.guide")
+                        (setdefaulttool "SYS:Utilities/AmigaGuide")
+                        (noposition)
+                        (confirm)
+                        )
+                    )
+                (if (exists "SYS:Utilities/More")
+                    (tooltype
+                        (prompt "More has been detected in your SYS:Utilities/ drawer. "
+                                "Amiga Report can be configured to automatically access More. "
+                                "Do you wish to use More to access Amiga Report?")
+                        (help "No help available.")
+                        (dest "AR217.guide")
+                        (setdefaulttool "SYS:Utilities/More")
+                        (noposition)
+                        (confirm)
+                        )
+                    )
+                )
+            )
+        )
+    )
+
+(procedure Destination
+    (message "\nWARNING: Using with XPK may cause problems.\n\n"
+            "AmigaGuide may not function properly when accessed via the xloadseg handler. "
+            "Similar programs that compress executable files may pose similar problems.\n\n"
+            "XPK and XFH are shareware products and are not included with your "
+            "normal Workbench. Please disregard if you do not use XPK.\n")
+
+    (set AR_dest
+        (tackon
+        (askdir
+        (prompt "In which disk or drawer should Amiga Report be installed? (A drawer named AmigaReport will be created there.)")
+        (help @askdir-help)
+        (default @default-dest)
+        )"AmigaReport")
+        )
+
+    (set @default-dest AR_dest)
+
+    (makedir AR_dest (infos))
+    (makeassign "AR" AR_dest)
+    )
+
+
+(Destination)
+(Viewer)
+(Library)
+
+(copyfiles (source "AR217.guide") (dest AR_dest) (infos))
+(copyfiles (source "display.s") (dest AR_dest) (infos))
+
+(exit "Amiga Report Install Script\nwritten by\n\nDavid Tiberio")

@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 12/98 - CC: Lotto-Beispiel</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Lotto-Beispiel</H1><BR>von<BR><A HREF="mailto:c.jahn@gmx.de">Carsten Jahn</A><BR>
+
+<P>Lotto: Ausgabe von 6 Zufallszahlen aus 49 (Entscheidungshilfe f&uuml;r
+unentschlossene Tipper :)</P><P>
+ANSI-C - Sollte mit jedem C-Compiler auf jeder Plattform funktionieren.
+</P>
+</div>
+<HR><PRE>
+/* Ben&ouml;tigte Include-Dateien */
+#include &lt;stdlib.h&gt;
+/* f&uuml;r abs(), rand(), srand() und qsort() */
+
+#include &lt;stdio.h&gt;
+/* f&uuml;r vprintf() */
+
+#include &lt;time.h&gt;
+/* f&uuml;r time() */
+
+
+/* Prototypen f&uuml;r eigene Funktionen */
+int sortfunc(const void *a, const void *b);
+
+
+/* Die Beh&auml;lter f&uuml;r die sechs Kugeln... */
+int zahl[6] = {0, 0, 0, 0, 0, 0};
+
+
+/* Die Hauptfunktion. Es werden keine Parameter ben&ouml;tigt, und es wird
+   nichts zur&uuml;ckgegeben. Wenn der Compiler sich beschwert, kann man
+   unbesorgt auch
+
+   int main(int argc, char **argv)
+
+   schreiben. */
+
+void main(void)
+{
+   int i, j;   /* Zwei Schleifenz&auml;hler */
+
+   srand(time(0));   /* Zufallsgenerator mit Zufallswert starten */
+
+   /* Wir brauchen sechs Zahlen */
+   for(i = 0; i &lt; 6; i++)  /* ZUFALLSZAHLEN-SCHLEIFE */
+   {
+      /* Zahl aus 1 bis 49 besorgen:
+         Vom Zufallswert &quot;rand()&quot; wird per Modulo-Operator der Rest
+         der Division durch 49 erzeugt. Vorher sicherstellen, daﬂ die
+         Zahl auch positiv ist (mit abs()). Der Rest kann die Werte
+         0 bis 48 annehmen. Also noch eins dazurechnen und fertig! */
+
+      zahl[i] = (abs(rand()) % 49) + 1;
+
+      /* Erst mal sehen, ob die Zahl schon mal erzeugt wurde. Dazu
+         m&uuml;ssen alle durchgesehen werden. Die Initialisierung mit
+         dem (f&uuml;r Lottozahlen ung&uuml;ltigen) Wert null bei der Deklaration
+         sorgt schon mal f&uuml;r etwas Kontrolle. */
+
+      for(j = 0; j &lt; 6; j++)  /* VERGLEICHS-SCHLEIFE */
+      {
+         /* Diese Bedingung greift nur solange, wie schon Zahlen
+            erzeugt wurden. Wurden z.B. erst zwei erzeugt, braucht
+            man nat&uuml;rlich nicht nachsehen, ob die anderen vier
+            eventuell auch doppelt sind. Das spart einiges an Zeit. */
+
+         if(i != j)
+         {
+            /* Hier werden jetzt die Zahlen verglichen. Ist es eine,
+               die schon mal vorkam, wird sie in der Zufallszahlen-
+               schleife neu berechnet (i--;) und die Vergleichs-
+               schleife abgebrochen (j = 6;). */
+
+            if(zahl[i] == zahl[j])
+            {
+               i--;
+               j = 6;
+            }
+         }
+
+         /* Optional k&ouml;nnte man auch auf (j &lt; i) abfragen und dann
+            die Vergleichs-Schleife hier mittels (else j = 6;) oder
+            (else break;) abbrechen. Das w&auml;re noch schneller, erzeugt
+            aber auch mehr Code. Und verstehen sollte man es nach ein
+            paar Jahren auch noch k&ouml;nnen. */
+      }
+   }
+
+   /* Jetzt noch die Zahlen aufsteigend sortieren. Dazu muﬂ man der
+      qsort()-Funktion das Array (&quot;zahl&quot;), die Anzahl der Eintr&auml;ge
+      im Array (&quot;6&quot;), die Gr&ouml;ﬂe der zu verarbeitenden Elemente
+      (&quot;sizeof(int)&quot;) und letztlich die Verarbeitungsvorschrift in
+      Form einer Funktion (&quot;&sortfunc&quot;) &uuml;bergeben. */
+
+   qsort(zahl, 6, sizeof(int), &sortfunc);
+
+   /* Und zum Schluﬂ trickreich ausgeben */
+
+   vprintf(&quot;Lottozahlenvorschlag (6 aus 49): %d, %d, %d, %d, %d, %d\n&quot;,
+      (va_list) zahl);
+}
+
+
+/* Die qsort()-Funktion erwartet von der Vergleichsvorschrift, daﬂ sie
+   den Wert -1 zur&uuml;ckgibt, wenn das erste Argument kleiner als das zweite
+   ist; den Wert 0, falls beide Argumente gleich sind; und den Wert 1,
+   wenn das erste Argument gr&ouml;ﬂer ist. Das ist aber nicht zwingend:
+   Vertauscht man 1 und -1, sortiert man eben absteigend, statt
+   aufsteigend. */
+
+int sortfunc(const void *a, const void *b)
+{
+   /* Der folgende Typecast ist n&ouml;tig, wenn man ANSI-konform bleiben will.
+      Um qsort() nicht beim Datentyp einzuschr&auml;nken, sind die Argumente
+      als typenlose Zeiger (void *) deklariert. Wir wollen aber Integers
+      f&uuml;r unsere Zahlen, also definiert man eben zwei Integer-Zeiger und
+      konvertiert den Datentyp ausdr&uuml;cklich nach (int *). */
+
+   int *aa, *bb;
+
+   aa = (int *) a;
+   bb = (int *) b;
+
+   /* ACHTUNG: Die Argumente sind nicht die Zahlen aus unserem Array,
+      sondern nur ZEIGER auf die Zahlen IM Array. Man muﬂ hier also
+      dereferenzieren, entweder mit (*aa), wie hier geschehen, oder
+      mit (aa[0]), was auch m&ouml;glich ist. */
+
+   if(*aa &lt; *bb)
+   {
+      return(-1);
+   }
+   else if(*aa &gt; *bb)
+   {
+      return(1);
+   }
+
+   return(0);
+}
+</PRE>
+
+Das Listing ist auch direkt im <A HREF="../amz1298/bin.lha">Bin-Archiv</A> zu finden.
+
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="9812pb.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz1298/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9812bb.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98 <A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>
+

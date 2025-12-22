@@ -1,0 +1,299 @@
+
+                             Workshop zu SCSI
+                           --------------------
+
+
+Was ist SCSI überhaupt?
+-----------------------
+
+SCSI bildet  eine Schnittstelle  zwischen dem Computer  und seinen Peripherie-
+geräten. Es gibt  viele Geräte mit  einer SCSI-Schnittstelle  wie Festplatten,
+CD-ROM-Laufwerke,  Wechselplatten,  Streamer,  CD-Writer  und  so  weiter.  Es
+lassen sich an einen SCSI-Controller  bis zu 7 Geräte anschließen. Das ist ein
+Vorteil von SCSI.  Aber zu den Vor- und Nachteilen  später mehr. SCSI  ist die
+Abkürzung für:
+
+Small
+Computer
+System
+Interface
+
+
+AT oder SCSI?
+-------------
+
+Erstmal muß  man sich  die Frage  stellen, ob man  SCSI unbedingt braucht. Auf
+folgende Fragen kommt es dabei an:
+
+
+ * Wieviele Geräte will ich benutzen?
+
+   Sind es mehr als zwei, rate ich zu SCSI; es  gibt zwar  diese  vierfach AT-
+   Adapter, aber diese haben einen nicht  so guten Ruf, was die Kompatibilität
+   angeht.
+
+ * Gibt es die Geräte, die ich benutzen will, mit beiden Schnittstellen?
+
+   CD-Brenner sollten aus Geschwindigkeitsgründen  immer am SCSI-Bus betrieben
+   werden. Zumal es auch erst einen Brenner mit AT-Schnittstelle gibt.
+
+ * Müssen die Geräte schnell sein?
+
+   In einigen Bereichen  ist z.B. eine schnelle Festplatte  unverzichtbar (auf
+   Internet-Servern; dort werden 24h am tag News sortiert...)
+
+ * Hab ich viel Geld?
+
+   Wenn ja, sollte man SCSI wählen, wenn nein, AT! SCSI ist  eine teure Sache,
+   man erhält aber dafür  unvergleichbare Performance. AT-Geräte sind meistens
+   100-200 Mark billiger als die entsprechende SCSI-Ausführung!
+
+
+Was benötige ich?
+-----------------
+
+Um SCSI-Geräte an einem Computer betreiben zu können, muß man sich einen SCSI-
+Controller zulegen.  Dieser Controller ist das Herzstück  der ganzen Sache. An
+ihn werden alle Geräte angeschlossen.
+
+Es gibt  verschiedene  Varianten von  SCSI-Controllern, je  nach  Bauweise des
+Rechners.
+
+A500 : Es gab da mal  einen Controller für den Expansion-Port, der  nennt sich
+       "Multi-Evolution", ich glaube  von der Firma BSC. Ob man den  noch  neu
+       oder gebraucht bekommt, kann ich  nicht sagen. Wer Interesse hat, melde
+       sich bei mir, denn kenne jemanden, der so einen verkauft.
+
+A1200: Dieses Modell bietet  zwei Möglichkeiten, das System  zu erweitern. Zum
+       einen wäre das der PCMCIA-Port an der linken Seite, zum anderen wäre da
+       der  CPU-Erweiterungsschacht  an  der  Unterseite. Die  PCMCIA-Variante
+       nennt  sich Squirrel, bzw.  SurfSquirrel.  Beide  sind  identisch,  der
+       letztgenannte hat  jedoch noch  zusätzlich eine  serielle Schnittstelle
+       spendiert bekommen, die mit  einer  maximalen  Baudrate  von ca. 230000
+       aufwartet. Eine  andere Möglichkeit wäre  eine Turbokarte, auf  der der
+       SCSI-Controller  aufgesetzt  wird  und  die  Buchse  an  der  Rückseite
+       ausführt. Beide Varianten  erfordern  ein externes Gehäuse, in dem  die
+       Geräte  alle  untergebracht  werden.   Eine  andere,  mit  mehr  Kosten
+       verbundene Alternative ist der Umbau des Rechners  in ein Towergehäuse,
+       in dem dann ein Shuttle-Board  mit Zorro-Erweiterungsslots  installiert
+       wird. Dann hat  man den Vorteil, daß man wesentlich  mehr Möglichkeiten
+       hat, den Rechner  mit z.B. Grafikkarten  oder  Schnittstellenkarten  zu
+       erweitern.
+
+A600 : Für dieses System  ist die einzigst  sinnvolle  Methode  der  Squirrel.
+       Details stehen unter A1200.
+
+A2000: Bei diesen Rechnern gibt es  zwei Möglichkeiten, einmal die Zorro-Slots
+A3000  und  einmal  das  Prozessorboard.  Es  gibt  viele  Controller  für die
+A4000  Zorro-Slots,  darunter  der  legendäre Oktagon 2008/4008,  Fastlane Z3,
+       einen von GVP (Name fällt mir jetzt nicht ein) und natürlich die guten,
+       alten A2091 und A4091  von Commodore. Welchen kann  ich empfehlen?  Auf
+       jeden Fall  laufen  die beiden  von  Commodore  sehr  zuverlässig.  Der
+       Oktagon 2008  läuft nur einigermaßen  im A4000 (ROM-Version 6.8!),  wie
+       die anderen sind, keine Ahnung.
+
+
+Nun  haben wir  einen Controller.  Brauchen  wir  nur noch ein SCSI-Gerät. Als
+Beispiel soll eine Festplatte dienen.
+
+Ich gehe davon aus, daß sie in einem externen Gehäuse eingebaut wird.
+
+Erstmal schauen wir  uns die Festplatte  und die Anleitung  dazu etwas genauer
+an. Da stehen dann so wirre Wörter wie "Terminierung" und "Jumper".
+
+
+Die SCSI-ID
+-----------
+
+Jedes angeschlossene Gerät bekommt eine Nummer, die SCSI-ID. Diese ID wird mit
+Hilfe von Jumpern (Steckbrücken)  an der Festplatte eingestellt. Normalerweise
+beginnt man mit 0 und geht dann weiter bis 6. Wie die ID eingestellt wird, muß
+man der Anleitung  zum jeweiligen Gerät entnehmen.  Unsere Festplatte  bekommt
+also die ID 0, was  bedeutet, daß bei  den ID-Jumpern  keiner  gesetzt  werden
+darf. Das  nächste Gerät bekommt dann  die ID 1.  Das geht  dann bis zur ID 6,
+denn dann haben wir unsere 7 Geräte angeschlossen.
+
+Hinweis: Immer darauf achten, daß zwei Geräte nicht die gleiche ID haben, denn
+         das mag der Controller überhaupt nicht!
+
+
+Die Terminierung
+----------------
+
+Mit Terminierung ist "Abschluß" gemeint. Bei SCSI muß immer ein "Kreislauf" zu
+den einzelnen Geräten sein. Eine falsche Terminierung ist eine häufige Fehler-
+quelle, deshalb  hier  eine  ausführliche  Beschreibung. Erst  einmal ein paar
+Beispiele.  Doch  bevor  es  losgeht,  noch  eine Info. Bei  den meisten SCSI-
+Controllern kann man interne  sowie  externe Geräte  betreiben, also  mischen.
+Terminiert wird mit Hilfe eines Abschlußwiderstandes. Der sieht so aus wie ein
+Kamm. Bei manchen Geräten muß aber einfach nur ein Jumper gesetzt werden, also
+wirkt hier - wie immer - ein Blick  in die Anleitung. Ich versuche  das mal an
+folgendes Beispielen deutlich zu machen:
+
+
+                    Beispiel 1: eine externe Festplatte
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                           .-------------------.
+                           |                   |
+                           |  SCSI-Controller  |
+                           | intern terminiert |
+                           |         .         |
+                           `---------+---------'
+                                     |
+                                   extern
+                                     |
+                               .-----+------.
+                               |            |
+                               | Festplatte |
+                               | SCSI-ID=0  |
+                               | terminiert |
+                               |            |
+                               `------------'
+
+
+
+                      Beispiel 2: zwei externe Geräte
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                           .-------------------.
+                           |                   |
+                           |  SCSI-Controller  |
+                           | intern terminiert |
+                           |         .         |
+                           `---------+---------'
+                                     |
+                                   extern
+                                     |
+                               .-----+------.
+                               |            |
+                               | Festplatte |
+                               | SCSI-ID=0  |
+                               |     .      |
+                               `-----+------'
+                                     |
+                               .-----+------.
+                               |            |
+                               |   CD-ROM   |
+                               | SCSI-ID=1  |
+                               | terminiert |
+                               |            |
+                               `------------'
+
+
+
+           Beispiel 3: zwei externe Geräte & ein internes Gerät
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                           .-------------------.
+                           |                   |
+                           |  SCSI-Controller  |
+                           | .               . |
+                           `-+---------------+-'
+                             |               |
+                           extern          intern
+                             |               |
+                       .-----+------.  .-----+------.
+                       |            |  |            |
+                       | Festplatte |  | Streamer   |
+                       | SCSI-ID=0  |  | SCSI-ID=2  |
+                       |     .      |  | terminiert |
+                       `-----+------'  |            |
+                             |         `------------'
+                       .-----+------.
+                       |            |
+                       |   CD-ROM   |
+                       | SCSI-ID=1  |
+                       | terminiert |
+                       |            |
+                       `------------'
+
+
+Es  müssen  also  immer  das  letzte  externe  und  das  letzte  interne Gerät
+terminiert  sein.  Wenn kein  internes  Gerät  angeschlossen ist, so  muß  der
+Controller  selbst  intern   terminiert  werden,  wenn  kein   externes  Gerät
+angeschlossen ist, muß der Controller extern terminiert sein.
+
+Puuhh, nach soviel anstrengender  Theorie  setzen wir  unser Wissen nun in die
+Praxis um ;-)
+
+Gut, wir stellen also zuerst mal  die SCSI-ID unserer Festplatte auf 0. Danach
+prüfen wir die Terminierung. Wir  haben kein  internes  Gerät,  also wird  der
+Controller schonmal intern terminiert. Wir haben  ein externes Gerät, also muß
+unsere Festplatte  terminiert werden. Wie  das geht, steht  in der  Anleitung.
+Dann bauen wir unsere Festplatte in unser  Gehäuse ein und  schließen das  dem
+Gehäuse beigelegten SCSI-Kabel an. Das Kabel sollte in etwa so aussehen:
+
+  _                                            _
+ | \            __             __             | \
+ |  |==========|::|===========|::|============|  |
+ |  |==========|::|===========|::|============|  |
+ |  |==========|::|===========|::|============|  |
+ |  |==========|::|===========|::|============|  |
+ |  |==========|::|===========|::|============|  |
+ |_X            ¯¯\           /¯¯             |_X
+    \               Abgriff für ein SCSI-Gerät   \
+     \                                             eventuell eine weiterere
+       Centronics-ähnlicher Buchse                 Centronics-Buchse, damit
+                                                   weitere Gehäuse anschließen
+                                                   kann :-)
+
+
+Die Montierung dieses Kabels sieht so aus: Die erste Centronics-Buchse wird an
+das eine dafür  vorgesehene Loch  in der Rückwand  des Gehäuses geschraubt und
+die andere an das verbleibende. Nun wird der erste SCSI-Abgriff und ein Strom-
+kabel aus dem Kabelstrang  mit der Festplatte  verbunden. Beide sollten  nicht
+verkehrt verbunden werden KÖNNEN!
+
+Gut, wenn wir das  geschafft haben, dann  können wir das  gleich  mal  auspro-
+bieren, ob das so hinhaut, was wir fabriziert haben.
+
+Der Rechner  wird einfach ganz normal hochgefahren.  Wenn der Rechner schonmal
+ganz normal bootet, das ist  die halbe Miete. Sollte er es  nicht tun,  prüfen
+wir folgende Sachen:
+
+
+ * Sind alle Kabel richtig angeschlossen?
+
+   Dabei  kann  eigentlich  nichtviel falschgemacht werden,  es sei  denn, der
+   SCSI-Abgriff  kann auf zwei verschiedene Art und Weisen aufgesteckt werden.
+
+ * Ist die SCSI-ID richtig eingestellt?
+
+ * Ist die Terminierung korrekt?
+
+
+Dann müßte das klappen. Wenn nicht, ist Pech.
+
+Gut, wir starten dann mal unser  Installationsprogramm,  was wir  mitgeliefert
+bekommen haben.  Dort kann man  nun alle  erdenklichen  Einstellungen  für die
+Festplatte vornehmen.
+
+Damit endet der Workshop. Zum Schluß aber noch ein paar Infos:
+
+Wie  alles  wurde/wird auch SCSI  weiterentwickelt.  Ich will  hier mal  einen
+kleinen Überblick über die verschiedenen SCSI-Standards geben:
+
+
+SCSI-1..........: Ist der älteste  Standard.  Datendurchsatz  von  max. 5MB/s.
+                  Zum größten Teil durch SCSI-2 ersetzt.
+
+SCSI-2..........: Weiterentwicklung von SCSI-1. Datendurchsatz von max 10MB/s.
+                  Geräte werden  mit genaueren Angaben erkannt. 100%  abwärts-
+                  kompatibel zu SCSI-1.
+
+SCSI-3..........: Noch in Entwicklung. Größter Fortschritt  soll sein, daß man
+                  statt 7 nun 14 Geräte an einem Controller anschließen kann.
+
+WIDE-SCSI.......: Dies ist eine spezielle Variante von SCSI-2. Es werden extra
+                  dafür spezielle Kabel, Geräte und Controller benötigt.
+
+ULTRA-SCSI......: Veränderter SCSI-2 Standard, der Datendurchsätze  von bis zu
+                  20MB/s erlaubt.
+
+ULTRA-WIDE-SCSI.: Mischung aus WIDE und ULTRA-WIDE. Erlaubt  einen Datendurch-
+                  satz von 40MB/s. Denke  mal, es  sind spezielle  Controller,
+                  Kabel und Geräte erforderlich.
+
+
+So, ich hoffe, einen guten Einblick  in die Welt von SCSI verschafft zu haben.
+Bei Fragen, Verbesserungen, Kritik oder Fun einfach ne Mail an mich schreiben.
+
+* hoshi@iceberg.dame.de

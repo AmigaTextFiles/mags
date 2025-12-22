@@ -1,0 +1,123 @@
+WBStartup
+WbToScreen 3
+Use Screen 3
+
+LoadFont 2,"topaz.font",8
+Use IntuiFont 2
+
+DosBuffLen 8192
+MaxLen chemin_source$=192
+MaxLen nom_source$=192
+MaxLen chemin_target$=192
+MaxLen nom_target$=192
+
+GTButton 0,1,75,0,160,15,"Choose source",$10
+GTButton 0,2,235,0,160,15,"Choose target",$10
+GTButton 0,3,75,15,160,15,"Crypt",$10
+GTButton 0,4,235,15,160,15,"Uncrypt",$10
+
+Window 0,0,14,480,105,$140e,"NCrypt v1.0 - A simple and dirty text file trasher",-1,-1
+DefaultOutput
+
+AttachGTList 0,0
+
+Use Window 0
+
+WLocate 10,60
+Print "Source :"
+WLocate 10,70
+Print "Target :"
+
+;Boucle principale du programme
+While ev.l<>$200
+
+    ;On recupere les evenements qui se produisent dans la fenetre du logiciel
+    ev.l=Event
+
+    WindowOutput 0
+
+    ;Si on clique sur un bouton
+    If ev.l=64
+      ;Si on clique sur le bouton CHOOSE SOURCE
+      If GadgetHit=1
+        chemin_source$=""
+        nom_source$=""
+        source$=""
+        source$=ASLFileRequest$("Select SOURCE file",chemin_source$,nom_source$,0,14,320,256)
+        If nom_source$=""
+          WLocate 80,60
+          Print "No file selected           "
+        EndIf
+        If nom_source$<>""
+          WLocate 80,60
+          Print nom_source$+"          "
+        EndIf
+      EndIf
+      ;Si on clique sur le bouton CHOOSE TARGET
+      If GadgetHit=2
+        chemin_target$=""
+        nom_target$=""
+        target$=""
+        target$=ASLFileRequest$("Select TARGET file",chemin_target$,nom_target$,0,14,320,256)
+        If nom_target$=""
+          WLocate 80,70
+          Print "No file selected          "
+        EndIf
+        If nom_target$<>""
+          WLocate 80,70
+          Print nom_target$+"          "
+        EndIf
+      EndIf
+      ;Si on clique sur le bouton CRYPT
+      If GadgetHit=3
+        If nom_source$<>"" AND nom_target$<>"" AND nom_source$<>nom_target$
+          WLocate 30,80
+          Print "Crypting...          "
+          KillFile target$
+          If ReadFile(0,source$)
+            FileInput 0
+            If WriteFile(1,target$)
+              FileOutput 1
+              While NOT Eof(0)
+                Print Chr$(Asc(Inkey$)+1)
+              Wend
+              CloseFile 1
+            EndIf
+            CloseFile 0
+          EndIf
+          WindowOutput 0
+          WLocate 30,80
+          Print "OK              "
+        EndIf
+      EndIf
+      ;Si on clique sur le bouton UNCRYPT
+      If GadgetHit=4
+        If nom_source$<>"" AND nom_target$<>"" AND nom_source$<>nom_target$
+          WLocate 30,80
+          Print "Uncrypting...          "
+          KillFile target$
+          If ReadFile(0,source$)
+            FileInput 0
+            If WriteFile(1,target$)
+              FileOutput 1
+              While NOT Eof(0)
+                Print Chr$(Asc(Inkey$)-1)
+              Wend
+              CloseFile 1
+            EndIf
+            CloseFile 0
+          EndIf
+          WindowOutput 0
+          WLocate 30,80
+          Print "OK              "
+        EndIf
+      EndIf
+    EndIf
+
+Wend
+
+DetachGTList 0
+Free Window 0
+
+End
+

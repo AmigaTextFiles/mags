@@ -1,0 +1,120 @@
+<!!!!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+		<title>Sekalaiset</title>
+		<meta name="generator" content="Handmade in Finland">
+	</head>
+
+	<body bgcolor="white" link="navy" vlink="navy" alink="red" leftmargin="0" marginheight="0" marginwidth="0" topmargin="0">
+		<center>
+			<a name="top"></a>
+			<table border="0" cellspacing="0" cellpadding="12">
+				<tr>
+					<td><img src="../../framet/grafiikka/bullet.gif" alt="" height="8" width="8" border="0" hspace="6"><font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica"><a href="hakemisto.html" target="_self">Sekalaiset</a></font>&nbsp;&nbsp;&nbsp;<img src="../../framet/grafiikka/bullet.gif" alt="" height="8" width="8" border="0" hspace="6"><font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica"><a href="../sivukartta.html" target="_self">Sivukartta</a></font></td>
+				</tr>
+			</table>
+			<table width="80%" border="0" cellspacing="1" cellpadding="4" bgcolor="navy">
+				<tr>
+					<td align="center" bgcolor="navy" width="100%"><font size="3" color="yellow" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular"><b>Kuvien lataaminen datatyypeill&auml;</b></font></td>
+				</tr>
+				<tr height="15">
+					<td align="center" bgcolor="#d8ecfd" width="100%" height="15"><font size="2" color="#000066" face="Arial,Helvetica,Geneva,Swiss,SunSans-Regular">Ilkka Lehtoranta &lt;<a href="mailto:ilkleht@isoveli.org">ilkleht@isoveli.org</a>&gt;</font></td>
+				</tr>
+			</table>
+			<font size="1" face="Trebuchet MS,Verdana,Arial,Helvetica"><br>
+			</font>
+			<table width="80%" border="0" cellspacing="1" cellpadding="3" bgcolor="navy">
+				<tr>
+					<td bgcolor="#d8ecfd" width="50%"><b><font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica">AmigaOS:n datatypes.library on oliopainotteinen kirjasto, joka toteuttaa olio-ohjelmoinnin ideologiaa hyvin monipuolisesti. J&auml;rjestelm&auml; koostuu muutamasta p&auml;&auml;luokasta (&auml;&auml;ni, kuva, animaatio ja teksti) ja alaluokista, jotka toteuttavat varsinaisen yhteensopivuuden eri tiedostoformaattien v&auml;lill&auml;. Datatyyppej&auml; kannattaakin k&auml;ytt&auml;&auml; aina kun mahdollista. Ohjelma saa automaattisesti tuen kaikille mahdollisille tiedostoformaateille, ja toisaalta kooderin ty&ouml;m&auml;&auml;r&auml; v&auml;henee. Yksi yleisimmist&auml; datatyyppien k&auml;ytt&ouml;tarkoituksista on kuvien lataaminen.</font></b></td>
+				</tr>
+			</table>
+			<font size="1" face="Trebuchet MS,Verdana,Arial,Helvetica"><br>
+			</font>
+			<table width="80%" border="0" cellspacing="1" cellpadding="3" bgcolor="navy">
+				<tr>
+					<td align="center" bgcolor="#b0c4de" width="50%">
+						<table border="0" cellspacing="0" cellpadding="0" align="right" height="20">
+							<tr>
+								<td><a title="Alkuun" href="#top" target="_self"><img src="../../framet/grafiikka/top.gif" alt="alkuun" height="14" width="15" border="0"></a></td>
+							</tr>
+						</table>
+						<b><font size="3" face="Trebuchet MS,Verdana,Arial,Helvetica">Toteutus</font></b></td>
+				</tr>
+				<tr>
+					<td bgcolor="#d8ecfd" width="50%"><font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica">Lyhyell&auml; koodinp&auml;tk&auml;ll&auml; kuvat voidaan ladata helposti niin ett&auml; voimme k&auml;ytt&auml;&auml; my&ouml;s </font><font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica">graphics.libraryn kirjastofunktioita.<br>
+							<br>
+						</font><font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica">Koska kuvan piirtoon tarvitaan jonkin verran tietoa m&auml;&auml;rittelemme ensin oman apustruktuurin, johon talletetaan useimmin tarvittavat tiedot:</font>
+						<pre><font size="2">struct Kuva
+{
+   ULONG          width, height;
+   struct BitMap  *myBitMap;
+   PLANEPTR       *mask;
+   Object         *dtobj;
+};
+</font></pre>
+						<font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica">Seuraavaksi kirjoitamme kuvalataajan, jonka prototyyppi n&auml;ytt&auml;&auml; seuraavalta:</font>
+						<pre><font size="2">struct Kuva *LataaKuva(char *tiedosto, struct Screen *screen)
+{
+   struct BitMapHeader  *bmh;
+   struct Kuva *kuva;
+   Object      *obj;
+
+   Kuva   = AllocVec(sizeof(struct Kuva), MEMF_CLEAR);
+
+   if ( kuva != NULL )
+   {
+      obj   = NewDTObj((APTR)tiedosto,
+                  DTA_GroupID, GID_PICTURE,
+                  PDTA_DestMode, PMODE_V43,
+                  PDTA_Screen, screen,
+               TAG_DONE
+
+      if ( obj != NULL )
+      {
+         GetDTAttrs(obj, PDTA_BitMapHeader, &bmh, TAG_DONE);
+
+         kuva-&gt;width    = bmh-&gt;bmh_Width;
+         kuva-&gt;height   = bmh-&gt;bmh_Height;
+         kuva-&gt;dtobj    = obj;
+
+         /* V&auml;rien uudelleenkartoitus (remap) *(
+
+         DoMethod(obj, DTM_PROCLAYOUT, NULL, 1);
+
+         GetDTAttrs(obj,
+               PDTA_DestBitMap, &kuva-&gt;myBitMap,
+               PDTA_MaskPlane, &kuva-&gt;mask,
+               TAG_DONE);
+      }
+
+      if (( obj == NULL ) || ( kuva-&gt;myBitMap == NULL ))
+      {
+         FreeVec(kuva);
+         kuva = NULL;
+      }
+   }
+   return( kuva );
+}
+</font></pre>
+						<font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica">NewDTObject() tekee varsinaisen ty&ouml;n eli lataa kuvatiedoston ja tunnistaa kuvaformaatin. Funktio palauttaa osoittimen kuvaobjektiin tai NULL, jos kuvaa ei voitu ladata (todenn&auml;k&ouml;isesti muisti loppu tai tuntematon tiedostoformaatti). Mik&auml;li kaikki onnistui, funktio LataaKuva() palauttaa osoittimen Kuva-struktuuriin. Kun kuvaa ei en&auml;&auml; tarvita, voidaan se vapauttaa:</font>
+						<pre><font size="2">void PoistaKuva(struct Kuva *kuva)
+{
+   DisposeDTObject(kuva-&gt;dtobj);
+   FreeVec(kuva);
+}
+</font></pre>
+						<font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica">Kaiken kaikkiaan kuvien k&auml;sitteleminen datatyyppien avulla on eritt&auml;in helppoa.</font></td>
+				</tr>
+			</table>
+			<table border="0" cellspacing="0" cellpadding="12">
+				<tr>
+					<td><img src="../../framet/grafiikka/bullet.gif" alt="" height="8" width="8" border="0" hspace="6"><font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica"><a href="hakemisto.html" target="_self">Sekalaiset</a></font>&nbsp;&nbsp;&nbsp;<img src="../../framet/grafiikka/bullet.gif" alt="" height="8" width="8" border="0" hspace="6"><font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica"><a href="#top" target="_self">Sivun alkuun</a>&nbsp;&nbsp;</font><img src="../../framet/grafiikka/bullet.gif" alt="" height="8" width="8" border="0" hspace="6"><font size="2" face="Trebuchet MS,Verdana,Arial,Helvetica"><a href="../sivukartta.html" target="_self">Sivukartta</a></font>&nbsp;&nbsp;&nbsp;</td>
+				</tr>
+			</table>
+		</center>
+	</body>
+
+</html>

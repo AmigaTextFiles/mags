@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 //EN">
+<HTML>
+<HEAD>
+    <TITLE>AmZeiger 03/98 - Coder's Corner!</TITLE>
+</HEAD>
+<BODY BACKGROUND="../images/bg.gif">
+<DIV ALIGN=CENTER><H1>Willkommen zur Coder's Corner!</H1>von<BR><A HREF=mailto:"C.Jahn@gmx.de">Carsten Jahn</A></DIV>
+<P>Diese kleine Einleitung soll einerseits darauf aufmerksam machen, da&szlig;
+die Rubrik schon zum zweiten Mal dabei ist (seit Ausgabe 3).
+</P><P>Der MUI-Kurs erh&auml;lt seine Fortsetzung durch einen Kursteil zum Einstieg
+in die Programmierung von <A HREF="9803mui.htm">Custom Classes</A>. Der Ausstieg kommt in der
+n&auml;chsten Ausgabe. Zum vorigen und gleichzeitig ersten Kursteil folgt
+ein <A HREF="9803max.htm">Nachruf</A> in Form einer Erg&auml;nzung zur Einbindung der
+MUI-Includes in MaxonC++.</P><P>
+Wer schon immer mal wissen wollte, wie Programmierer es wohl schaffen,
+einen gr&auml;&szlig;lich langen Index in ihre Programmanleitungen zu schreiben,
+kann es in einem Artikel &uuml;ber <A HREF="9803texi.htm">TexInfo</A> in der Softwarerubrik nachlesen.
+</P><P>
+Und dank Thomas Heinrich, der schon letztes Mal was zum AmZeiger
+beigetragen hat, gibt es noch einen Artikel &uuml;ber <A HREF="9803pool.htm">Memory Pools</A>, die
+der Speicherfragmentierung entgegenwirken sollen.
+</P><P>
+Andererseits hat diese Einleitung noch eine andere Aufgabe, und jetzt
+gilt Euer Dank meinem Chefredakteur: ich sag' noch schnell, wie man
+Programme an verschiedene Sprachen anpa&szlig;t (lokalisiert).
+</P>
+<PRE>GetCatalogStr(mycatalog,number,alt)</PRE>;.
+<P>
+Jau, das ist schon die wichtigste Funktion der locale.library. :-)
+Sie gibt einen Zeiger auf einen String zur&uuml;ck, und zwar auf den ggf.
+lokalisierten String. Alle Texte des Programms stehen in einem Katalog
+(mycatalog ist ein Zeiger darauf), und dessen Strings sind durchnumeriert
+(number). Ist eine Nummer nicht zu finden, mu&szlig; ja trotzdem was im Fenster
+stehen. Daher gibt es noch die M&ouml;glichkeit, einen Zeiger auf einen Default-
+String zu &uuml;bergeben (alt).
+</P><P>
+Da viele Programme ab OS 2.1 lokalisiert sind, aber auch noch unter OS 2.0
+laufen sollen, bietet es sich an, eine eigene Funktion zu schreiben, die
+GetCatalogStr() nicht aufruft, wenn der Katalog nicht ge&ouml;ffnet werden
+konnte oder OS 2.0 vorliegt, sondern gleich den Default-String zur&uuml;ckgibt.
+</P><P>
+Bei mir sieht diese Funktion so aus:
+</P>
+<PRE>
+        char *LocStr( LONG number )
+        {
+                static char undef[] = &quot;#!!!&quot;;
+
+                char *r;
+                if( mycatalog )
+                        r = (char *) GetCatalogStr(mycatalog,number,undef);
+                else
+                        r = CatCompArray[number].cca_Str;
+
+                if( r ) {
+                        r++;
+                        return r;
+                        // Fall sollte eigentlich immer eintreten.
+                }
+                r = undef
+                return ++r;
+        }
+</PRE>
+<P>
+Wozu nur dieses omin&ouml;se &quot;r++&quot;? Ich &uuml;berspringe damit das erste Zeichen
+des Strings. Ich finde es n&auml;mlich recht praktisch, wenn ein Programm auch
+Tastaturk&uuml;rzel (Shortcuts) versteht. Die m&uuml;ssen nat&uuml;rlich auch lokalisiert
+werden. Anstatt zwei Strings f&uuml;r jeden Text zu haben, schlage ich so zwei
+Fliegen mit einer Klappe.
+</P><P>
+Der Shortcut selbst l&auml;&szlig;t sich &uuml;ber diese Funktion auslesen:
+</P>
+<PRE>
+        char LocKey( LONG number )
+        {
+                char *r;
+                char k;
+                if( mycatalog )
+                        r = (char *) GetCatalogStr(mycatalog,number,NULL);
+                else
+                        r = CatCompArray[number].cca_Str;
+
+                if( r ) {
+                        k = *r;
+                        if( k == ' ' ) return '#';
+                        return k;
+                }
+                return '#';
+        }
+</PRE>
+<P>
+Die Raute ist also f&uuml;r den Fehlerfall (der nur bei einem Fehler des
+Programmierers eintritt) zust&auml;ndig.
+</P><P>
+Naja, und wo wir gerade so sch&ouml;n bei MUI sind: die BubbleHelps sollen ja
+auch lokalisiert werden. Das mache ich zwar nicht im gleichen String, aber
+immer im String danach. Da es auch BubbleHelp f&uuml;r Fl&auml;chen gibt (zu denen
+kein Text pa&szlig;t), addiere ich nicht einfach nur 1 zur Stringnummer, sondern
+pr&uuml;fe erst, ob der &uuml;bergebene String mit einem @-Zeichen anf&auml;ngt. So sind
+bei mir die BubbleHelps markiert. Wie w&auml;r's mit
+</P><PRE>
+        char *LocHelp( LONG number )
+        {
+                static char null[] = &quot;&quot;;
+
+                char *r;
+                for( short i=0; i&lt;2; i++ ) {
+                        if( mycatalog )
+                                r = (char *) GetCatalogStr(mycatalog, number+i, "undefined");
+                        else
+                                r = CatCompArray[number+i].cca_Str;
+
+                        if( r ) {
+                                if( *r == '@' ) {
+                                        r++;
+                                        return r;
+                                }
+                        }
+                }
+
+                return null;
+        }
+</PRE>
+<P>
+Also l&auml;&szlig;t sich jetzt eine Stringnummer (f&uuml;r ein Gadget) angeben, auf die
+eine Stringnummer mit BubbleHelp folgt. Au&szlig;erdem kann eine Stringnummer
+direkt die BubbleHelp bezeichnen, dann wird nicht weitergesprungen.
+</P><P>
+Wie kommt man nun an den &quot;mycatalog&quot;?
+</P>
+<PRE>
+       mycatalog = NULL;
+       if( LocaleBase=OpenLibrary(&quot;locale.library&quot;,38) ) {
+                if( loc = OpenLocale( NULL ) ) {
+                        //                        z.B. &quot;madhouse.catalog&quot;
+                        mycatalog=OpenCatalog(loc,CatalogName,OC_Version,27, TAG_DONE);
+                        //      Version des Katalogs, in der #?.ct-Datei /\ anzugeben.
+                }
+        }
+</PRE>
+<P>
+Und so wird er wieder am Programmende freigegeben:
+</P>
+<PRE>
+        if( LocaleBase ) {
+                if( loc ) {
+                            if( mycatalog ) CloseCatalog( mycatalog );
+                        CloseLocale( loc )
+                }
+                CloseLibrary( LocaleBase );
+        }
+</PRE>
+<P>
+Dann mu&szlig; nur noch die #?.catalog-Datei erstellt werden. Das macht man
+am besten mit <B>CatComp</B> von Commodore (z.B. auf der Geek Gadgets 2). Das
+CatComp erlaubt auch die Ausgabe von C-Quelltext, der das Array mit der
+eingebauten Sprache (oben CatCompArray genannt) erzeugen kann.
+</P><P>
+Wichtig bei meiner recht spartanischen (aber meiner Meinung nach
+praktischen) L&ouml;sung ist es, da&szlig; auch wirklich der erste String die
+Nummer 0 erh&auml;lt und fortlaufend durchnumeriert wird.
+</P><P>
+Jupp, das war jetzt wirklich der Schnelldurchlauf, noch dazu in letzter
+Minute (morgen ist Redaktionsschlu&szlig;). Vielleicht sind auch Programmierer
+an meiner L&ouml;sung interessiert, die sich schon mal mit Locale besch&auml;ftigt
+haben.
+</P><P>
+Viel Fun und Erfolg mit der Coder's Corner w&uuml;nscht Euch<BR><BR>
+<B>Carsten Jahn</B><BR>
+ Coder's Corner-Redakteur
+<P><HR>
+<TABLE WIDTH=100%>
+<TR>
+    <TD ALIGN=LEFT><A HREF="../hw/9803hw.htm"><IMG SRC="../images/prev.gif" ALT="Prev" BORDER=0></A></TD>
+    <TD ALIGN=CENTER><FONT SIZE=2><A HREF="../amz0398/main.htm">Inhaltsverzeichnis</A></FONT></TD>
+    <TD ALIGN=RIGHT><A HREF="9803max.htm"><IMG SRC="../images/next.gif" ALT="Next" BORDER=0></A></TD>
+</TR>
+<TR>
+    <TD COLSPAN=3 ALIGN=CENTER><FONT SIZE=2>&copy;`98<A HREF="mailto:AmZeiger@gmx.de">Der AmZeiger</A></FONT></TD>
+</TR>
+</TABLE>
+</P>
+</BODY>
+</HTML>

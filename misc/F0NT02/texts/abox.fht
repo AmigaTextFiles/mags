@@ -1,0 +1,169 @@
+BG fontbg.iff
+COLUMN 1
+LIMIT 10 5 635 200
+
+§TEXT
+§SHCOL 0
+§FONT 3 §CENTER §CR §SH+ §COL 15
+§I+ A\BOX project, az Amiga újraszületése? §I- §PG
+§FONT 1
+§PG §SPACES 2 §FILL §SH-
+ "Szerelmes vagyok!"- jelentettem be kedvenc IRC csatornámon (az #amigahu-n),
+miután elolvastam a §I+ Phase5 §I- homepage-én legújabb hírüket az §I+ A\BOX §I- projectrõl.
+§PG §SPACES 2
+ Utoljára akkor éreztem ezt az érzést egy számítógép iránt, amikor megláttam
+egy A500-ast, ahogy épp a Hardwired futott rajta.  Kedvenc cégem, a Phase5
+úgy döntött, hogy nem várnak tovább a töketlenkedõ VisCorp-ra, nem mûködnek
+együtt a PIOS-szal az álom-kis-hibákkal megvalósításában, hanem csinálnak
+valami forradalmian újat, valami olyat, mint az A1000 volt 12 évvel ezelõtt.
+Szerény véleményem szerint ez sikerülthet is nekik!
+§PG §SPACES 2
+ Ennyi bevezetõ után nézzük a tényeket: mi is ez a §I+ "Silicon Dream"? §I-
+§SL 2 §SPACES 2
+ Elõször is a hardverrõl:
+§SL 1 §SPACES 2
+ A §I+ Phase 5 Digital Products §I- fejlesztõ mérnökei úgy gondolják, hogy egy új
+számítógépnek új képességekkel kell rendelkeznie, nem pedig más technikák
+átvett eszközeibõl összetákolni valamit, sok megalkuvással.  (Ez némi burkolt
+célzás a PIOS-ra, õk ugyanis PCI buszos SVGA kártyás PowerPC alapú gépet
+képzeltek el, ami azt jelenti, hogy csak egy felturbózott PC-t kapunk
+végeredményül, abból pedig tizenkettõ egy tucat.)
+§PG §SPACES 2
+ Ezért alapul vették az Amiga custom chip rendszerét, és tulajdonképp
+korszerûsítették.  Ez az új chipset is tartalmaz blitter- és copper-szerû
+dolgokat, melyeknek feladata ismét az, hogy a processzor és a memória
+terhelését csökkentsék.
+§SL 2 §SPACES 2
+ Az egész gépnek a lelke egy §I+ CAIPIRINHA §I- nevû chip, melyben szinte minden
+funkciót integrálnak.  A CHIP VLSI 0.35µm CMOS ASIC technológiával készül
+közel 575 lábbal BGA házban.  Buszszélessége §I+ 128 bit, §I- adatvonalain FIFO
+bufferekkel, 100Mhz-es külsõ és 200Mhz-es belsõ órajellel üzemel.
+§PG §SPACES 2
+ Az összes adat ezen a vezérlõ egységen keresztül fut keresztül, így
+alakították ki az un.  §U+ Unified Memory Architecture-t, §U- amit magyarra fordítani
+elég bajos lenne, körülbelül megfelel az Amiga Chip Ram filozófiájának, azaz
+az összes külsõ és belsõ egység elérheti a teljes memóriát DMA-kon keresztül,
+nincs beszorítva egyetlen egység sem valamely memória területre.  (Á'la
+grafikus- és hangkártyák PC-n.) A szinkron DRAM elérés 100Mhz-en 1.6Gb/sec-es
+átvitelt biztosít, és mivel SDRAM-okat akarnak használni, így jelentõsen
+csökken a Ram-ok elérési ideje is (amíg a processzor malmozgat magában).
+§SL 2 §SPACES 2
+ Két video DMA lesz integrálva a chipbe,-egy 220Mhz pixel rate-es, amely
+tökéletes képet ad 1600x1280-as méretben akár 75Hz-es képfrissítéssel is 24
+biten, és egy 135Mhz-es, mely §U+ S-VHS minõségû §U- és felbontású képet produkál
+-szintén 24 biten.  (Természetesen ezek párhuzamosan is mûködhetnek!)
+§PG §SPACES 2
+ Ráadásul még olyan speciális tulajdonsággal is rendelkeznek majd, hogy nem
+raszter letapogatással dolgoznak majd, hanem un.  §I+ Random Access Display
+§I- technikával, mely lehetõvé teszi, hogy bármilyen adat bármely
+képernyõpozíción megjelenjen.  (Magyarul olyasmi, mint Amigán a screen-ek, de
+nem csak vízszintesen határolhatók el, hanem függõlegesen is, tehát egyfajta
+hardver ablakokat képeznek a képernyõn.) Hogy ez mire jó?  Pl.:  egy MPEG
+filmet nézve egy ablakban a processzor egy külön 24 bites képernyõre
+pakolhatja ki az adatokat, miközben azt a képernyõn mozgatva szinte semmilyen
+memória-beli változtatást nem kell eszközölni, és a háttér akár 8 bit
+mélységû is lehet.  (Ezzel egy csomó memóriát takarítva meg...) Ezeket a
+lehetõségeket egy display-list RISC processor (DLRP) kezeli, amely
+tulajdonképpen a Copper továbbfejlesztése.  (Gondoltad volna, hogy a Copper is
+RISC?  Nem hiszed?  Pedig az!  Csökkentett utasításkészletû...  Három parancs
+nem elég csökkentett?  Hehe...  Na de komolyan újra:)
+§PG §SPACES 2
+ Mindkét DMA képes megnyitni a képernyõnél jóval nagyobb méretû screen-t,
+amit simán lehet scrollozni, ahogy azt már Amigán is megszoktuk. Az adatok a
+memóriában nem csak §I+ RGB, §I- de §I+ YUV §I- és §I+ CMYK §I- formában is
+tárolhatók, így például azzal sem kell idõt töltenie a procinak, hogy az MPEG
+file dekódolásánál átkonvertálja a képadatot YUV-ról RGB-re. (Mily' csodás
+lesz majd egyszerre 3-4 MPEG filmet nézni 25 frame/sec-kel...)
+§SL 2 §SPACES 2
+ És a csoda még mindíg nem ért véget!  A grafikánál maradva a CAIPIRINHA
+tartalmaz még egy blitterhez hasonló, de azt magasan felülmúló komplexitású
+funkciós egységet, a FAME-t §I+ (Flexible Area Movement Engine). §I- Ez az egység
+egyesíti magában a blitterek adatmozgatási és a DSP-k jelkielemzõ-
+és módosító funkcióit. Képes adatokat mozgatni -nem csak négyzet alakú
+területek között-, miközben komplex logikai- és mátrixmûveleteket végez
+velük. (Aki ismeri pl. a többdimenziós geometria alapjait, az tudja, hogy az
+összes térbeli mûvelet visszavezethetõ mátrix mûveletekre.)
+§SL 2 §SPACES 2
+ A hangról: a CAIPIRINHA két digitális csatornával rendelkezik, melyek
+sztereóban vannak elosztva. Ez elég kevésnek tûnik, de ha hozzátesszük, hogy
+a FAME DSP funkciói képesek -elméletileg- végtelen csatornát leképezni erre a
+két csatornára, miközben esetleg a hangmintákkal különbözõ hang-effekteket
+végez, akkor bizony már nem is olyan kevés! Sõt! (Mostanában a szintikben is
+általában DSP-ket alkalmaznak FM szinti csippek helyett.)
+§SL 2 §SPACES 2
+ Bõvíthetõség: a külvilág felõl akár PCI busz, akár 16 bites DMA busz
+elérhetõ, de beépítik az IEEE 1394-es szabványû firewire buszt is mely
+-szerintük-  nagy jelentõsséggel bír majd az elkövetkezendõ multimédiás
+világban. (Ez egy soros busz, amire sok minden köthetõ majd.) A PCI buszos
+SCSI és egyéb vezérlõkártyák már most is viszonylag olcsón beszerezhetõk, így
+a gép (relatíve) olcsón bõvíthetõ minden nyalánksággal.
+§SL 1 §SPACES 2
+Ennyit a custom chiprõl, és most nézzük a rendszert:
+§SL 1 §SPACES 2
+ A fõ processzorok, melyre ez az egész család épül majd, a PowerPC 603e és
+604e lesz. (Elméleti maximális órajelük: 500Mhz.) Egyelõre "csak" két
+processzort illeszthetsz egyszerre a rendszerbe.
+§PG §SPACES 2
+ Memória bõvíthetõ 64 bites SDRAM modulokkal, nyolc foglalat lesz az
+alaplapon, így maximálisan 1 Gb-ig lehet memóriát növelni. (Soknak tûnik?
+Hát...)
+§PG §SPACES 2
+ Két videokimenet a két független DMA csatornának, Fast SCSI-II kontroller
+külsõ porttal, 2 video és egy audio §I+ INPUT §I- (szinkronizálhatóak egymáshoz és a
+kimenetekhez), IEEE 1394 Firewire soros port, egér, billentyûzet, stb...
+§SL 1 §SPACES 2
+És végül -de nem utolsósorban- az operációs rendszer:
+§PG  §SPACES 2
+ Fõként az AmigaOS3.1 kompatibilis rendszert támogatja majd a Phase5, de
+lehetõség lesz Linux és NetBSD installálásához is.  (Ez már szinte
+elengedhetetlen a mai rendszereknél.) Ezeken kívûl partnerek minden
+rendszerrel kapcsolatban, különös tekintettel a PowerPC-t támogatókra.
+(Ebbõl lesz majd egy vagon a közeljövõben, mert a PPC procikat több
+rendszerben is használni fogják.) Az AmigaOS-t kipofozzák (remélhetõleg lesz
+végre benne normális memória védelem és virtuális memória), állításuk szerint
+már teszt alatt van az AmigaOS 3.1 PPC-s magja. (Idõközben megegyezés
+született a ProDAD és a Phase5 között a pOS liszencérõl, tehát azt is
+használhatjuk majd.)
+§SL 2 §SPACES 2
+ "Na jó," - gondoljátok - "de mindennek biztos borsos ára van!" Nos, egyelõre
+3000DM-re ígérik, ami szinte "ingyen" van egy ilyen kategóriájú rendszernél.
+§I+ (Ez a minimálkonfigurációjuk ára:  150Mhz-es PPC, 16Mb memóriával, 1Gb-os
+Hard Disk-kel és CD-ROM-mal.) §I- De nyitottak maradnak esetleges liszencekre egy
+"light" verzióra a CAIPIRINHA-ból, ami egy olcsóbb gépet (1000DM)
+eredményezne.  A nemzetközi terjesztést 1997 folyamán kezdik meg, amint
+sikerül kiépíteni a hálózatukat.
+§NEWPAGE §SPACES 2
+ Eddig tartott a tájékoztató a Phase 5-tól, de engedtessék meg nekem még
+néhány észrevétel:
+§PG  §SPACES 2
+ Lehet, hogy a Phase5 most egy kissé nagyot akar markolni, és esetleg mégsem
+sikerül neki teljesen így megvalósítani a dolgokat, de ettõl függetlenül én
+nagyon bízom benne. Remélem az árat nem viszik feljebb, mert -bár nem túl
+alacsony, de mégis- elfogadható. Sajnos egy szót sem szólnak az esetleges
+Amiga kompatibilitás -vagy emuláció- lehetõségérõl. (Persze ez nem azt
+jelenti, hogy ilyesmi szóba se kerülhet, elvégre mind az oprendszer, mind a
+hardver bõségesen lehetõvé teszi.)
+§PG §SPACES 2
+ Nagyon remélem azt is, hogy tényleg fejlesztenek majd az AmigaDOS-on,
+elkelne a normális memória-védelem, hogy a korrupt programoktól ne szálljon
+el az egész rendszer.  (Ez a PPC-s környezetben nem jelenthet gondot.)
+§PG §SPACES 2
+ Szerencsére nem követték el újra ugyanazokat a hibákat, mint a Commodore és
+az Escom, hogy pitiáner dolgokon spóroljanak, és így a gép sokat vesztett
+kevés nyereség ellenében.
+§PG  §SPACES 2
+ Örülnék annak is, ha a neve végül nem A\BOX lenne, hanem inkább mégis Amiga.
+Én nagyon megszerettem ezt a nevet, ami -nekem legalább is- egyet jelent A
+Számítógéppel.  (Ha már a neveknél tartunk, a CAIPIRINHA egy dél-amerikai
+nemzeti ital, olyasmi, mint nálunk a pálinka...)
+§SL 1 §SPACES 2
+ Végül egy idézet, mellyel én is teljesen egyet értek, és amit valószínûleg
+az ex-Commodore-os Dave Haynie-nek, a PIOS vezetõjének szántak a dokumentum
+Disclaimer részében:
+§PG §SPACES 2
+§I+  "Now, Davy, that's what we call Cool Stuff!" §I-
+§PG (azaz: "Nos, Davy, ez az, amit mi Fasza Cuccnak hívunk!")
+§PG §RIGHT
+§I+ Rachy of BiøHazard §I-
+§PG
+Forrás: HTTP://www.phase5.de/news/.... §CR

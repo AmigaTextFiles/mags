@@ -1,0 +1,124 @@
+<html><head><title>FixPath.e</title></head><body><pre>
+/*
+**      FixPath.e
+**
+**      Fix the current Process search patch list by faking a CLI
+**
+**      C version:
+**
+**      Copyright © 1990-1996 by Olaf `Olsen' Barthel
+**              All Rights Reserved
+**
+**      E translation:
+**
+**      Copyright © 1990-1996 by Ali Graham
+**              (hoping that OB doesn't mind :)
+**
+**
+*/
+
+OPT PREPROCESS, MODULE
+
+MODULE 'dos/dos', 'dos/dosextens', 'workbench/startup'
+
+MODULE 'exec/ports'
+
+        -> This is how a linked LIST of directory search paths looks like.
+
+OBJECT path
+
+    next       -> Pointer TO next entry
+    lock       -> The drawer in question; may be NULL
+
+ENDOBJECT
+
+        /* ClonePath(BPTR StartPath):
+         *
+         *      Make a copy of the command search path attached to a
+         *      CLI process.
+         */
+
+PROC clonePath(startpath:PTR TO path)
+
+    DEF lst=NIL:PTR TO path, first=NIL:PTR TO path, last=NIL:PTR TO path, nw=NIL:PTR TO path,
+        x
+
+    lst:=BADDR(startpath)
+
+    WHILE lst
+
+        IF lst.lock
+
+            NEW nw
+
+            IF (x:=DupLock(lst.lock))
+
+                nw.lock:=x
+
+                nw.next:=NIL
+
+                IF last THEN last.next:=MKBADDR(nw)
+
+                IF first=NIL THEN first:=nw
+
+                last:=nw
+
+            ELSE
+
+                END nw
+
+            ENDIF
+
+        ENDIF
+
+        lst:=BADDR(lst.next)
+
+    ENDWHILE
+
+ENDPROC MKBADDR(first)
+
+EXPORT PROC attachCLI(startup:PTR TO wbstartup)
+
+   DEF destcli:PTR TO commandlineinterface, dest:PTR TO process,
+       rp:PTR TO mp, sourcecli:PTR TO commandlineinterface
+
+    /*
+
+     Note: FreeDosObject can't free it, but the DOS
+           process termination code can.
+
+    */
+
+    IF (destcli:=AllocDosObject(DOS_CLI, NIL))
+
+        dest:=FindTask(NIL)
+
+        destcli.defaultstack:=(4096/(SIZEOF LONG))
+
+        dest.cli:=MKBADDR(destcli)
+        dest.flags:=(dest.flags OR PRB_FREECLI)
+
+        Forbid()
+
+        rp:=startup.message.replyport
+
+        IF (rp AND ((rp.flags AND PF_ACTION) = PA_SIGNAL) AND TypeOfMem(rp.sigtask))
+
+            IF (sourcecli:=BADDR(rp.sigtask::process.cli))
+
+                destcli.defaultstack:=sourcecli.defaultstack
+
+                IF sourcecli.prompt THEN SetPrompt(BADDR(sourcecli.prompt))
+
+                IF sourcecli.commanddir THEN destcli.commanddir:= clonePath(sourcecli.commanddir)
+
+            ENDIF
+
+        ENDIF
+
+        Permit()
+
+    ENDIF
+
+ENDPROC
+</pre></body></html>

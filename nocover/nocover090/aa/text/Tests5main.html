@@ -1,0 +1,295 @@
+<HTML>
+<BODY ALINK=#FFAA00 VLINK=#000077 LINK=#0022CC BGCOLOR=#FFFFFF TEXT=#000000>
+<TABLE BORDER=0 WIDTH="100%">
+<TR><TD><PRE>
+5. Erfahrungsbericht: DVD-Nutzung am Amiga mit AMP (von Carsten Siegner)
+
+Ich h&auml;tte nicht geglaubt, dass man DVD-Videos am Amiga abspielen kann,
+doch es ist tats&auml;chlich m&ouml;glich.
+
+F&uuml;r meine Tests verwendete ich folgende Hardware:
+
+* Amiga 1200T
+* ZIV-Busboard
+* Delta DVD-ROM-Laufwerk mit Atapi-Interface
+* Elbox FastATA-ZIV-IDE-Controller
+* Panasonic DVD-RAM-Laufwerk mit Fast-SCSI-II-Hostadapter,
+* Western-Digital-Festplatte mit EIDE-Interface
+* Blizzard PPC603e+/210/040/25-Turbokarte
+* BlizzardVisionPPC-Grafikkarte
+* 128 MByte RAM (EDO - 64ns Zugriffszeit)
+* Prelude-Soundkarte
+
+Software:
+
+* AmigaOS 3.9 mit Boingbag 1
+* CyberGraphX 4.28,
+* AllegroCDFS-CD- und DVD-Filesystem
+* FastATA-Driver 2.4,
+* Frogger 1.65 beta7 (Preis f&uuml;r Keyfile incl. SoftCinema, Shipping
+  und Handling $25.- bei http://www.reg.net)
+* AMP 2.02 beta 010630 (Preis f&uuml;r Keyfile incl. Shipping und
+  Handling $18.- bei http://www.reg.net)
+* AHI 4.16
+
+Folgendes vorweg: Ich zeige Ihnen hier mal den Unterschied zwischen AMP2
+
+Screenshot:
+<IMG SRC="../extra/dvd_amp.jpg" ALT="Screenshot">
+
+und Frogger,
+
+Screenshot:
+<IMG SRC="../extra/dvd_frogger.jpg" ALT="Screenshot">
+
+da ich Ihnen hier nur verdeutlichen will, dass Frogger sich mehr f&uuml;r nicht
+CSS-verschl&uuml;sselte .vob-Files eignet. Deshalb besch&auml;ftige ich mich jetzt
+haupts&auml;chlich mit AMP2. AMP2 ist ein universeller MPEG-Film-Abspieler.
+Dieser wird von Matthias Roslund programmiert und kann Dateien mit
+folgenden Endungen abspielen: .mpg, .dat, .bin, .vob, .mp2, .mpeg.
+Weiterhin beherrscht AMP2 seit einiger Zeit die Wiedergabe von Video-CDs
+und seit der letzten Betaversion auch die von Video-DVDs.
+
+Viele Amiga-User wussten bereits fr&uuml;her schon, wie man DVDs zum "laufen"
+bekommt. Man legt eine DVD mit einem Videofilm in ein DVD-Laufwerk und
+liest dann mit Frogger oder AMP2 einfach die darauf befindlichen .vob-
+Dateien aus. Die Ergebnisse sehen dann sehr oft wie mein Screenshot von
+Frogger aus. Da es aber auch ganz anders geht, zeige ich Ihnen jetzt, wie
+man "ordentliche" Bilder auf die Workbench zaubert.
+
+Man nehme ein beliebiges Shell-Fenster, &ouml;ffne ein weiteres mit AMP2 beta
+010630 drin und schaue in dem AMP2.guide nach, was man nun in die Shell
+eintippen mu&szlig; :).
+
+Nein, ich zeige es Ihnen :)) . Hier nun mein pers&ouml;nlicher Eingabetext:
+
+"work:AMP2/AMP lowcolor readall vcddevice scsi.device vcdunit 2 ahi
+ divisor 4 dvd"
+
+Eine Bemerkung nebenbei: Das AMP-GUI ist f&uuml;r dieses Experiment vollkommen
+fehl am Platz, weil es nicht die DVD-Selbsterkennung von AMP zul&auml;&szlig;t.
+
+Bei mir habe ich mir anschlie&szlig;end noch ein selbststartendes Skript daraus
+gebastelt (unter Zuhilfenahme des Befehls IconX). Ich habe es dann von der
+Workbench aus gestartet, woraufhin das IconX-Fenster
+
+Screenshot:
+<IMG SRC="../extra/dvd_shelloutput.jpg" ALT="Screenshot">
+
+erscheint. Allerdings auch nur dann, wenn man eine entsprechende DVD
+eingelegt hat. &Uuml;brigens: Zwingende Voraussetzung ist das AllegroCDFS-
+Filesystem, das als einziges mit den UDF-Daten der DVD umgehen kann. Da ich
+aber f&uuml;r meine Tests einen FastATA-ZIV-Controller besitze (Verkauf immer
+inklusive AllegroCDFS), ist das auch kein Problem. Leider beherrscht AMP2
+die Wiedergabe von Video-DVDs nicht ohne AllegroCDFS.
+
+Dies habe ich auf einem externen DVD-RAM-Laufwerk getestet. Dieses ist an
+meinem SCSI-Hostadapter angeschlossen und besitzt einen DMA-Zugriff auf den
+Hauptspeicher, was ja besser ist als &uuml;ber ATAPI. Obwohl AMP2 neuerdings
+&uuml;ber einen UDF-Parser verf&uuml;gt, kann es nicht ohne AllegroCDFS selbst&auml;ndig
+auf ein DVD-Laufwerk zugreifen.
+
+(Ein Hinweis f&uuml;r alle CacheCDFS-Benutzer: Dieses Filesystem kann KEINE
+Videos aus DVDs lesen. Es folgt die Erkl&auml;rung:
+Genauso wie die VideoCD besitzt die DVD zwei oder mehrere Datentracks. Bei
+der Video-CD ist der erste ein ISO-Track, der zweite und alle weiteren sind
+MODE-2 Datentracks. Bei der Video-DVD ist der erste wieder ein ISO-Track,
+der zweite und alle weiteren sind UDF-Datentrack.
+Es scheint, als ob man eine Video-CD ebenso wie eine DVD mit CacheCDFS
+auslesen k&ouml;nne. Das ist aber ein Irrtum, das Filesystem kann nur das
+Inhaltsverzeichnis auslesen, mehr nicht. Versucht das Filesystem, auf die
+Daten zuzugreifen, werden diese nur fehlerhaft zur&uuml;ck gegeben. Das Ganze
+ist unabh&auml;ngig von der Datenposition auf der Video-CD oder DVD.)
+
+So, wenn ich nun das Icon anklicke, erscheint folgender Requester:
+
+Screenshot:
+<IMG SRC="../extra/dvd_sequencerequester.jpg" ALT="Screenshot">
+
+Dort kann ich die abzuspielende Sequenz anw&auml;hlen. Leider scheint aber in
+der Betaversion von AMP noch irgendein Bug zu sein, da nur der
+Hauptvideofilm ohne Bildartefakte abgespielt wird. Doch hat es einen
+Vorteil, da AMP immer automatisch den Hauptfilm als Vorgabe f&uuml;r diesen
+Requester angibt. Wenn ich nun diesen mit "OK" best&auml;tige, erscheint ein
+neuer Requester:
+
+Screenshot:
+<IMG SRC="../extra/dvd_audiosubtitle.jpg" ALT="Screenshot">
+
+In diesem Requester kann ich anschlie&szlig;end die Sprache f&uuml;r Audio und die
+Untertitel ausw&auml;hlen. Best&auml;tige ich nun wieder mit "OK", dann erscheint in
+meinem Falle ein neuer Requester f&uuml;r die Screenauswahl. Erst danach wird
+der Film gestartet. (Man kann AMP sogar zweimal mit unterschiedlichen
+Szenen starten [bei 1-2 fps]).
+
+Wenn ich nun den Videofilm auf einen 8bit-Screen mit 800x600-Aufl&ouml;sung, AHI
+auf "Prelude:Fast 16bit stereo++" und Frequenzteiler auf "4" starte, dann
+l&auml;uft dieser Film in Mono mit ungef&auml;hr 8 fps inklusive Ton. Dabei ist dann
+im Ton zun&auml;chst nach 10 sec. und dann alle 3-4 sec. eine Unterbrechung zu
+h&ouml;ren.
+
+Mit Frogger w&uuml;rde dies bei einem unverschl&uuml;sselten Video so aussehen:
+Video = 2 fps, Audio = kontinuierliche Tonwiedergabe (keine
+Tonunterbrechung)
+Dabei habe ich meine Hardware folgenderma&szlig;en eingestellt:
+
+DVD-ROM  -------&gt; FastATA-ZIV-Controller =  PIO 5 = 2.95 MByte/sec.
+DVD-RAM  -------&gt; Fast SCSI II Hostadapter = 1.2 MByte/sec.
+
+Mein Fast-RAM habe ich im Bootmen&uuml; (ESC-Taste beim Booten) auf 60ns und auf
+Fastrom eingestellt. Ich hatte die Wiedergabe auch mal &uuml;ber einen LowLewel-
+Devicecache ausprobiert, aber ohne erkennbaren Erfolg. Die
+Wiedergabegeschwindigkeit blieb exakt gleich.
+
+
+AMP-Bugs
+--------
+Folgende Bugs habe ich festgestellt:
+
+Die "Truecolor" Funktion in AMP l&auml;uft nicht zusammen mir Cybergraphics und
+der BlizzardVision. AHI st&uuml;rzt ab, wenn ich versuche, mit Overlay im Window
+auf die Prelude zuzugreifen.
+
+
+Abspielkompatibilit&auml;t
+---------------------
+Ich mu&szlig; sagen, dass AMP sehr viele Video-DVDs abspielen kann. Von neun DVDs
+kann AMP acht abspielen.
+
+
+Bedienung
+---------
+AMP hat eine sehr begrenzte Bedienm&ouml;glichkeit. W&auml;hrend der Wiedergabe kann
+der Film mit der "ESC"-Taste abgebrochen werden, mit den Zahlentasten
+oberhalb der Buchstaben kann eine bestimmte Position im Film angefahren
+werden. Die Zahlen bedeuten dabei "Taste" x 10% des Films.
+
+
+Einstellungen
+-------------
+Anwendung: AMP &lt;Filmdatei&gt; &lt;Optionen&gt;
+
+REQUESTER/S   : use an ASL requester to get the screenmode (def: BestMode).
+                [Verwende einen ASL-Requester, um den Screenmode
+                einzustellen
+                (Standard: BestMode).]
+PAL/S         : use PAL Lores (def: BestMode).
+                [Verwende PAL Lores (Standard: BestMode).]
+HIPAL/S       : use PAL Hires Laced (def: BestMode).
+                [Verwende PAL Hires Laced (Standard: BestMode).]
+
+GRAY/S        : Gray output (def: color).
+                [Ausgabe in Grau (Standard: Color).]
+HAM/S         : HAM output (def: color).
+                [Ausgabe in HAM (Standard: Color).]
+
+HAMDEPTH/N    : HAM depth (6 or 8 bitplanes, def: 8).
+                [HAM-Farbtiefe (6 oder 8 Bitebenen, Standard: 8).]
+HAMWIDTH/N    : HAM width (1, 2 or 4 HAM pixels per RGB pixel, def: 2).
+                [HAM-Bereich (1, 2 oder 4 Pixel pro RGB-Pixel,
+                Standard: 2).]
+HAMHQ/S       : HAM high quality (def: normal quality).
+                [HAM mit hoher Qualit&auml;t (Standard: Normale Qualit&auml;t).]
+HALF/S        : half height (PAL only) (def: off).
+                [Halbe H&ouml;he (nur PAL) (Standard: aus).]
+
+GRAYDEPTH/N   : Gray depth (4, 6 or 8 bitplanes, def: 8).
+                [Tiefe bei Grau (4, 6 oder 8 Bitebenen, Standard: 8).]
+LOWCOLOR/S    : 8bit CGFX (used for BestMode).
+                [8-Bit CGFX (wird bei BestMode verwendet).]
+HIGHCOLOR/S   : 16/15bit CGFX (used for BestMode).
+                [16/15-Bit CGFX (wird bei BestMode verwendet).]
+TRUECOLOR/S   : 32bit CGFX (used for BestMode).
+                [32-Bit CGFX (wird bei BestMode verwendet).]
+
+WINDOW/S      : use a window on Workbench for playback (def: off).
+                [Verwende ein Fenster auf der Workbench zum Abspielen
+                (Standard: Aus).]
+DEBUG/S       : use this if you have problems and send me the output (def:
+                off).
+                [Verwenden Sie dieses, wenn Probleme auftreten, und senden
+                Sie mir die Ausgabe zu (Standard: Aus).]
+VERBOSE/S     : gives additional information while/after playing (def:
+                off).
+                [Gibt zus&auml;tzliche Informationen w&auml;hrend/nach Abspiel aus
+                (Standard: Aus).]
+OVERLAY/S     : enable CGFX overlay support (def: off).
+                [Erm&ouml;gliche CGFX Overlay-Unterst&uuml;tzung (Standard: Aus).]
+PIP/S         : enable P96 PiP support (def: off).
+                [Erm&ouml;gliche P96-PiP-Unterst&uuml;tzung (Standard: Aus).]
+STEREO/S      : play and decode stereo audio (def: off).
+                [Spiele und dekodiere Stereo-Audio (Standard: Aus).]
+NOVIDEO/S     : no video playback, only audio.
+                [Kein Video-Abspiel, nur Audio.]
+NOAUDIO/S     : no audio playback, only video.
+                [Kein Audio-Abspiel, nur Video.]
+
+VCDDEVICE/K   : device of the CD-ROM for VCD playback (def: atapi.device).
+                [Device der CD-ROM f&uuml;r VCD-Abspiel (Standard:
+                atapi.device).]
+VCDUNIT/N     : unit of the CD-ROM for VCD playback (def: 2).
+                [Einheit der CD-Rom f&uuml;r VCD-Abspiel (Standard: 2).]
+VCDTRACK/K    : the VCD track to play (def: 1).
+                [Die VCD-Spur, die gespielt werden soll (Standard: 1).]
+
+AHI/S         : use AHI instead of audio.device (def: off).
+                [Verwende AHI anstatt audio.device (Standard: Aus).]
+TRIPLE/S      : enable triple buffering (def: off).
+                [Erm&ouml;gliche dreifaches Puffern (Standard: Aus).]
+FILTER/S      : turn on audio filter (def: off).
+                [Schalte Audio-Filter ein (Standard: Aus).]
+READALL/S     : read the entire movie to memory before playing (def: off).
+                [Lies den ganzen Film in den Speicher vor dem Abspielen
+                (Standard: Aus).]
+DIVISOR/N     : audio frequency divisor (1, 2 or 4, def: 2).
+                [Audio-Frequenz-Teiler (1, 2 oder 4, Standard: 2).]
+
+
+Achtung, Update!
+----------------
+Soeben wurde ein neues Update von AMP ver&ouml;ffentlicht. Leider hatte ich
+nicht mehr die Zeit, den Text noch umzuschreiben, deshalb ein paar
+Einblicke in die neue Version 2.03.
+
+- Durch Umschreiben des mpegv-Parsers h&ouml;here Gesamtgeschwindigkeit
+- Wesentlich bessere DVD-Kompatibilit&auml;t durch Neuprogrammierung des
+  CSS-Decoder
+- Anpassen des AMP-GUI an das neue Programm
+- Umschreiben der audio.device-Unterst&uuml;tzung (dadurch nahezu
+  kontinuierliche Tonwiedergabe!)
+- H&ouml;here Wiedergabegeschwindigkeit?
+
+Der Verfasser eines Kommentars zu meiner News-Meldung auf
+http://www.amiga-news.de schrieb, dass das Umkopieren des Inhalts einer DVD
+auf die Festplatte eine h&ouml;here Geschwindigkeit zur Folge habe. Dies ist
+nicht (immer) richtig. Mein DVD-ROM Laufwerk &uuml;bertr&auml;gt die Daten mit einer
+Geschwindigkeit von 2,95 MByte/sec. &uuml;ber den IDE-Bus. Dies ist schneller
+als die Verarbeitungsgeschwindigkeit von AMP (angetrieben von WarpOS 5.0).
+Ich besitze zwar auch eine Festplatte mit einer Geschwindigkeit von 7,2
+MByte/sec. Doch wenn AMP nicht mit dem Dekodieren hinterher kommt, w&uuml;rde
+diese Geschwindigkeitssteigerung auch nichts n&uuml;tzen.
+
+
+Fazit zu AMP 2.03
+-----------------
+Mit der neuen Version der Software ist es m&ouml;glich, jede DVD abzuspielen.
+Mir ist jedenfalls noch keine untergekommen, die nicht l&auml;uft. Auch das
+Zusatzmaterial kann man schon fast komplett abspielen, dies war bei der
+Vorg&auml;ngerversion noch nicht der Fall.
+
+Ein gro&szlig;es Manko besitzt AMP aber immer noch (wobei dieses haupts&auml;chlich
+prozessorbedingt ist): Die zu geringe Wiedergabegeschwindigkeit. Diese
+betr&auml;gt im Idealfall 5-6 fps mit abgehackter Tonwiedergabe. Das bedeutet,
+dass man f&uuml;r die Echtzeit-Wiedergabe seiner DVDs im Moment noch die gute
+alte Heimkinoanlage mit DVD-Player benutzen mu&szlig;.
+
+Carsten Siegner &lt;CarstenSiegner2@t-online.de&gt;
+
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>
+</PRE></TD></TR>
+</TABLE>
+</BODY>
+</HTML>

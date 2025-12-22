@@ -1,0 +1,306 @@
+--------- START OF FORWARDED MESSAGE ---------
+
+From System ....: Internet
+From Conference : fr.comp.sys.amiga
+MessageID ......: <13123.7010T1262T2739@serveur.dtr.fr>
+Originally from : Gerard Cornu <gcornu@serveur.dtr.fr>
+Subject ........: Some relatively new Internet concepts
+
+Hi!
+
+Un message qui je crois, malgré sa taille et le fait qu'il soit 
+en anglais, mérite d'être lu par ceux qui le peuvent. 
+
+Il provient d'Holger Kruse (Miami, etc...)
+
+
+--------------------- début d'insertion ---------------------------
+
+This is an informational mail that explains some relatively new Internet
+concepts, particularly the idea of "Multicasting", and its impact on
+multimedia applications on the Internet. (Don't skip this mail just
+yet. When I say "multimedia" I mean *real* multimedia, not this "two
+speakers, CD-ROM and SoundBlaster" style of multimedia that PC people
+tend to use :-)).
+
+I have received many questions about this area recently by personal
+email, so I put together a general introduction that first explains
+what multicasting is all about, and then gives you some idea where
+Miami is going in the next months or year with respect to this area.
+
+If you are interested in developing Amiga networking software this
+could also be an interesting and lucrative :-) area for you. I'll
+give more details at the end of this mail.
+
+
+Now about multicasting:
+
+So far most Internet applications (telnet, ftp, www etc.) did not
+*require* a high bandwidth to work properly (although they could
+*use* more bandwidth, of course :-)). However if you look at some
+of the things on the horizon, in particular real-time applications
+such as live-audio and live-video then you will get into areas where
+high bandwidth is absolutely required to get anything to work at all.
+
+This not only affects the link from your Amiga to your ISP (where
+x2, K56Flex, ISDN and cable modems should help), but also affects
+links across the Internet: so far all (well, most) Internet
+applications create direct links between the client and the server,
+transmitting the data point-to-point, e.g. when reading a web page.
+
+Now imagine the same type of technique being used for a video
+transmission: say, NASA transmits a shuttle launch by live-video
+(requiring about 30-60 kpbs) to, say, 100000 interested viewers in
+the world, all of them connecting to the NASA site. That would require
+3-6 Gbps of bandwidth on NASA's server -- several orders of magnitude
+more than is technically feasible in "common" setups.
+
+The obvious solution is: don't let all users connect directly to
+the NASA site, but instead distribute the data more intelligently,
+using a "star" type of topology to reduce the load on NASA's
+machine.
+
+That is what protocols like CUSeeMe use. The problem with programs
+like CUSeeMe is though: the topology (i.e. the way machines connect
+to each other) has to be defined by the *user* and a few network
+sysops, so there is no guarantee that the connections they choose
+are "good" (from a topological point of view).
+
+Basically, the user has to magically know (or guess) which reflector
+to connect to for best results. If he makes a bad decision, connecting
+to a reflector far away or across a slow link, then this can cause data
+to be sent back and forth across the same routers multiple times.
+
+Besides with CUSeeMe the location and number of reflectors (and their
+interconnections) do not adapt to the number and location of receivers,
+so even with "good user decisions" data is still transmitted much more
+often across single links than necessary.
+
+Now imagine this kind of protocol to be used by millions of users at
+the same time...
+
+This is why protocols like the one in CUSeeMe have never become
+Internet standards, and don't really have a future. They are not
+scalable and require *users* to optimize the flow on wide area
+networks. This is simply not acceptable for any future Internet
+standard.
+
+
+The solution is multicasting. The idea behind multicasting is:
+
+Out of all machines on the Internet, at any time only a subset S
+is interested in a particular transmission originating at machine T.
+All machines in S then *do not* just connect to T, but simply join
+the same "IP multicast group" (thus becoming members of a group
+of receivers for the transmission originating at T).
+
+This membership information is then cleverly transmitted among a few
+multicast routers over the Internet (keyword "IGMP"), in the process
+creating a *distributed* spanning tree which includes all machines
+on the Internet which are interested in the transmission.
+
+The actual data is then sent from T to the *closest* multicast router,
+and is from there forwarded by each multicast router, following the
+topology of the spanning tree that contains all interested machines,
+so all interested machines will eventually get the data, on the
+shortest multicast-router path from the source to the destination.
+
+This also ensures that for any given link on the Internet data is
+transmitted across the link no more than once, reducing the load
+on the Internet for each video transmission to the theoretical
+minimum.
+
+Areas on the Internet which do not contain any interested machines
+(and which are thus not part of the spanning tree) do not get the
+video feed at all, so their lines are not unnecessarily congested.
+Spanning trees are dynamic, so machines can join and leave a
+multicast group at any time, and the spanning trees are automatically
+updated each time, without user or sysop intervention.
+
+
+So the bottom line is: multicasting is a technique that minimizes
+the load on the Internet and optimizes throughput for
+live-audio/video transmissions and other high-bandwidth real-time
+applications. It is thus a very essential part in future protocol
+stacks.
+
+
+Since 1994 the "MBone" has been in existance. It is an experimental
+"virtual network" of multicast routers on top of the Internet.
+All of these routers are connected by IP tunnels. Various programs
+exist which have been used on the MBone, e.g. live audio
+senders/receivers, live video senders/receivers, session managers,
+shared text editors, shared drawing tools and other things. Most of
+the software was written for Unix and X, but the source code is
+usually available.
+
+The MBone has been used, among other things, to video-transmit space
+shuttle launches, to audio-transmit rock concerts, political
+speeches, etc.
+
+Many people say that within a year or two the MBone will probably
+experience a similar boom as the Internet did a few years ago.
+I tend to agree. Just recently several protocols used on the MBone
+have become proposed Internet standards (in RFCs), indicating that
+the MBone will "go commercial" soon.
+
+
+This is why I consider multicasting and MBone compatibility such
+an important feature for the Amiga and Miami. The MBone can give the
+Amiga the chance to finally be one of the front-runners again, a
+leader in new technology, exploiting the strengths the Amiga has
+traditionally had in the multimedia and networking fields.
+
+I don't think the Amiga still has a chance to win (or even tie)
+the "web browser battle", but web browsers are not going to remain
+the most important Internet tools forever, and I think we CAN still
+beat PCs on the MBone playing field within the next two years.
+
+
+My concrete plans for Miami and multicasting/MBone include:
+
+Miami 2.1 (possibly to be renamed Miami 3.0 -- I don't know yet)
+will have full support for multicasting, and will be compatible to
+the latest version of the multicasting/MRouteD kernel used by all
+machines on the MBone.
+
+Miami 2.1 can be used as a multicast router (even Miami, not just
+Miami Deluxe), by running the new program MiamiMRouteD, allowing
+Miami to directly connect ("tunnel") to the closest multicast
+router on the Internet, to get an audio/video feed and distribute
+it on the local Ethernet. All of this is already implemented and
+working. (The single-interface restriction in Miami is still in
+place though).
+
+Miami Deluxe will also support multicast routing (of course),
+allowing machines running Miami Deluxe to be used as multicast
+routers, e.g. to "bridge" multicast traffic across several
+networks, or to get a multicast feed via PPP and distribute it
+on a *different* interface, e.g. the local Ethernet.
+
+
+The term "multicasting" as used so far actually refers to
+"protocol-level multicasting" (or, more specifically:
+"IP multicasting"). There is another type of multicasting,
+called "link-level multicasting". This term refers to a
+specialized, rectricted form of broadcasting used on Ethernet
+networks, that drastically reduces the CPU load for IP multicasting
+traffic on some machines, compared to the same traffic being
+carried by ordinary broadcasting.
+
+Miami 2.1 also supports "link-level multicasting" with SANA-II
+Ethernet drivers, to carry "IP multicasting" traffic.
+
+However not all drivers support this. Besides to fully use it
+for multicast routers an extension to the SANA-II standard is
+required. I have already written up the technical paper for this
+extension, talked to Amiga Technologies about it, and will
+publish it on my web page soon, so hopefully vendors will
+implement it in their SANA-II drivers in the near future.
+
+IP multicasting *should* be transmitted across local networks
+using link-level multicasting, but this is not absolutely
+required. Networks which do not support link-level multicasting
+(such as Arcnet) can still use IP multicasting, using
+link-level broadcasting.
+
+
+I will take care of the Miami/Miami Deluxe/MRouteD side of
+multicasting and most of the interoperability testing, but
+something I *cannot* do is port all available MBone software
+(video/audio etc) to AmigaOS. This would simply be too much
+work, delaying other projects such as Miami 2.1, Miami Deluxe,
+and the new AmiWin release.
+
+I am therefore asking for your help on this: if you are looking
+for an interesting Amiga project that involves networking,
+multimedia applications, and which you could market on your
+own (PD, shareware, commercial, whatever you want), please
+contact me. Possible projects would include:
+
+- a session manager with a built-in calendar, lots of text
+  fields, a scheduler etc., which launches the actual
+  application.
+
+- an audio sender, which gets an audio feed from a digitizer
+  or some other source, and transmits it to the net, plus an
+  audio receiver, which gets an audio feed from the net and
+  plays it on the Amiga (built-in ECS/AGA or sound board).
+
+- a video sender which gets frames from a video source
+  (QuickCam, VLab etc.), and encodes and transmits them to
+  the net, plus a video receiver which gets frames from the
+  net and displays them in a MUI window.
+
+- a shared drawing tool
+
+- probably many other interesting things...
+
+You would write the software "for yourself", to do with it as
+you please, not under any contract. However if I "like" your
+software I could imagine recommendations, bundling arrangements,
+possibly even offering you some sort of licensing...
+
+The Miami API, additional include files, and any other information
+and/or help you receive from me would be royalty-free, of course,
+but you would be responsible for obtaining appropriate licenses
+for anything else you use in your software (e.g. the Unix sources,
+MUI developer licenses etc.), and for complying with any applicable
+laws and regulations (e.g. regarding encryption).
+
+
+Some recommendations:
+
+- You should have some experience in TCP/IP network programming
+  (AmigaOS or Unix).
+
+- You should have some experience in MUI programming: sub-classing,
+  etc. (Yes, considering that Miami uses MUI and that real-time
+  applications tend to have a complex GUI, I consider it essential
+  that such applications use MUI as well).
+
+- Some background knowledge on Internet programming, audio/video (or
+  whatever project you want to go with), real-time issues (such
+  as RTP), and multicasting/MBone would help as well.
+
+- For the video applications you should also have prior experience
+  with writing rendering classes for MUI, and you should know about
+  things like color models, pen allocation, double-buffering etc.
+
+- If you want to port the session manager from its Unix sources
+  ("sdr") you should have experience with X11 and Tcl/Tk.
+
+- Also, please try to make the port "clean", using AmigaOS and ANSI-C
+  code when possible, *not* using emulation engines such as
+  ixemul.library or Unix-specific things like fork().
+
+If you are interested then I could provide you with pointers
+to web pages (for source code, other information etc.), and
+with the relevant standards documents. I would also help you in
+any other way possible, e.g. during testing, to set up multicast
+tunnels between our machines :-), to set up mailing lists etc.
+
+There is no real deadline, but "summer 1997" would probably
+be a good time for a first release (a public beta, at least).
+
+--
+Holger Kruse   kruse@nordicglobal.com
+               http://www.nordicglobal.com
+_____________________________________________________________
+ Mailinglist 'miami-talk-ml' Admin: <kruse@nordicglobal.com> 
+  Send listserv-requests to <amiga-lists@nordicglobal.com>   
+
+-------------------------- fin d'insertion --------------------
+
+
+
+             ,
+   /\_/\    Gerard Cornu  <gcornu@serveur.dtr.fr>
+ =( ^*^ )=  http://www.dtr.fr/homepage/gcornu
+   / ~ \    micr©s®ft netw©rk is EXPLICITLY forbidden
+ _( ! ! )___to redistribute this message
+   ~^"^~_)
+
+
+---------- END OF FORWARDED MESSAGE ----------
+
